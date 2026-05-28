@@ -1,117 +1,136 @@
-# AeroMAPS — État des lieux : rendre la `start_year` flexible
+# Plan — Make `prospection_start_year` flexible (code-only)
 
-**Statut :** Draft | **Créé :** 2026-04-20
+**Status :** Draft | **Updated :** 2026-05-28
 
----
+## Context
 
-## 1. Contexte
+Today, `prospection_start_year = 2020` is effectively hard-coded throughout the engine via repeated `.loc[2019]`, `.loc[2020]` and `(k - 2019)` constructs, plus parameter names like `*_2019` / `*_2020`. The user wants to be able to change `prospection_start_year` (e.g. to 2025) and have the simulation still run, **without** changing the other bounds (`historic_start_year=2000`, `climate_historic_start_year=1940`, `end_year=2050`).
 
-La "start_year" d'un scénario recouvre en réalité **trois bornes couplées** définies dans [aeromaps/resources/data/parameters.json](aeromaps/resources/data/parameters.json) :
+Scope decisions (confirmed in plan-mode dialog):
+- **Code-only flex.** Defaults stay at 2020. The user opts in by supplying their own JSON/YAML with extended `*_init` vectors and updated reference scalars. No new default data shipped.
+- **Renaming.** `*_2019` parameters (encoding the pivot year in the name) get renamed to **`*_last_historical_year`**, with backward-compat aliases so existing user JSONs still load. (`_last_historical_year` is preferred over `_reference` to avoid clashing with the existing `_reference_periods` interpolation suffix already used across the codebase.)
+- **COVID 2020 patches.** When `2020 < prospection_start_year`, the `.loc[2020] = …` patches are skipped silently. User-provided historic `*_init` data is expected to already reflect the observed 2020 drop.
+- **Climate scope.** Generalize the `co2_emissions.loc[2019]` pivot in `carbon_offset.py`. Do **not** touch the climate historical CSV ([temperature_historical_dataset.csv](aeromaps/resources/climate_data/temperature_historical_dataset.csv)); the user extends it on their side if needed.
 
-| Paramètre | Valeur actuelle | Rôle |
-|---|---|---|
-| `climate_historic_start_year` | 1940 | Début de l'historique climat (émissions CO2, NOx, H2O, etc.) |
-| `historic_start_year` | 2000 | Début de l'historique transport aérien (RPK, ASK, …) |
-| `prospection_start_year` | 2020 | Début de la période prospective |
-| `end_year` | 2050 | Fin du scénario |
+## Approach
 
-L'objectif est de pouvoir faire varier ces bornes (notamment `prospection_start_year` et `historic_start_year`) sans casser les modèles.
+Centralize the notion of "last historical year" = `prospection_start_year - 1` in one place, then mechanically replace the literal `2019` (pivot reads / quadratic anchor) and `2020` (COVID patches) across the models.
 
----
+Three categories of change:
+1. **Last-historical-year reads** (`.loc[2019]`, `(k - 2019)`) → expressed in terms of `prospection_start_year - 1`.
+2. **COVID 2020 patches** (`.loc[2020, …] = …`) → wrapped in `if self.prospection_start_year <= 2020` so they become no-ops for later starts.
+3. **`*_2019`-named parameters** (in `parameters.json` / `markets.yaml`) → renamed to `*_last_historical_year`, with a compatibility shim that reads either old or new name.
 
-## 2. Données d'entrée figées
+A length-validation guard is added at input load so users with mismatched `*_init` length get a clear error rather than an obscure pandas exception.
 
-### 2.1 Vecteurs `*_init` (taille 20, implicitement 2000→2019)
+## Phases
 
-Dans [parameters.json:6-149](aeromaps/resources/data/parameters.json#L6-L149) :
+### Phase A — Centralize the "last historical year" (single source of truth)
 
-- `rpk_init`, `ask_init`, `rtk_init`, `pax_init`, `freight_init`, `energy_consumption_init`, `total_aircraft_distance_init`
+Add a derived attribute that every model can read uniformly.
 
-Ces listes sont converties en `pd.Series` indexées sur `range(historic_start_year, prospection_start_year)` dans [utils/functions.py:93-105](aeromaps/utils/functions.py#L93-L105) et rééchantillonnées dans [core/process.py:1599-1651](aeromaps/core/process.py#L1599-L1651).
+- **[aeromaps/core/process.py](aeromaps/core/process.py)** — in `_initialize_years` (around line 1561), already builds the year ranges generically. No change needed here, but expose a convenience in the same hook:
+  - In `_initialize_inputs` (around line 1605), after `Parameters` is loaded, set `self.parameters.last_historical_year = self.parameters.prospection_start_year - 1`.
+- **[aeromaps/models/base.py](aeromaps/models/base.py)** — `AeroMAPSModel` already propagates `prospection_start_year`, `historic_start_year`, `end_year` (see line ~118). Add `self.last_historical_year` alongside, derived from `prospection_start_year - 1`. Every model can then use `self.last_historical_year` instead of literal `2019`.
 
-**Implication :** si on change `historic_start_year` ou `prospection_start_year`, il faut fournir autant de valeurs que la nouvelle plage — mais la structure de `parameters.json` n'expose pas d'index explicite (contrairement aux JSON de partitionnement).
+This is **the** anchor used by Phases B–D.
 
-### 2.2 CSV climat historique
+### Phase B — Replace last-historical-year reads (`.loc[2019]`, `(k - 2019)`)
 
-[temperature_historical_dataset.csv](aeromaps/resources/climate_data/temperature_historical_dataset.csv) — années 1940→2019 codées en dur. Lecture dans [core/process.py:1532-1574](aeromaps/core/process.py#L1532-L1574), consommation dans :
-- [co2_emissions.py:382-386](aeromaps/models/impacts/emissions/co2_emissions.py#L382-L386)
-- [impacts/climate/climate.py:116-154](aeromaps/models/impacts/climate/climate.py#L116)
+Mechanical substitution: `2019` → `self.last_historical_year` everywhere it means "last historic year / calibration anchor". Narrowed to non-COVID occurrences:
 
-### 2.3 Partitionnement
+| File | What changes |
+|------|---------------|
+| [aeromaps/models/air_transport/aircraft_fleet_and_operations/load_factor/load_factor.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/load_factor/load_factor.py) | `load_factor_2019 = self.df.loc[2019, col]` → `… self.df.loc[self.last_historical_year, col]`. Quadratic `a * (k-2019)**2 + b * (k-2019) + load_factor_2019` → use `self.last_historical_year`. Rename local var `load_factor_2019` → `load_factor_lhy` (or similar). Same in `_parameters_load_factor_model` (replace literal `2019` with a parameter). |
+| [aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/aircraft_efficiency.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/aircraft_efficiency.py) | All `.loc[2019, …]` reads (lines ~160, ~511, ~891, ~1129) → `.loc[self.last_historical_year, …]`. Same for any `(k - 2019)` patterns. |
+| [aeromaps/models/impacts/emissions/carbon_offset.py](aeromaps/models/impacts/emissions/carbon_offset.py) | `co2_emissions.loc[2019]` (lines 74, 80) → `co2_emissions.loc[self.last_historical_year]`. The DataFrame column name `carbon_offset_baseline_level_vs_2019` and the parameter names `carbon_offset_baseline_level_vs_2019_*` are handled in Phase D. |
+| [aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/fleet_model.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/fleet_model.py) | The `_calibrate_reference_aircraft` energy-per-ASK calibration block (around lines 914-921) uses `energy_consumption_init.loc[2019]` / `ask_init.loc[2019]` → `self.last_historical_year`. |
+| [aeromaps/models/impacts/costs/efficiency_abatement_cost/fleet_abatement_cost.py](aeromaps/models/impacts/costs/efficiency_abatement_cost/fleet_abatement_cost.py) | Same pattern — `.loc[2019]` reads (lines 118, 121) → `self.last_historical_year`. |
+| [aeromaps/models/air_transport/air_traffic/rpk.py](aeromaps/models/air_transport/air_traffic/rpk.py), [price_elasticity.py](aeromaps/models/air_transport/air_traffic/price_elasticity.py), [short_range_distribution.py](aeromaps/models/air_transport/air_traffic/short_range_distribution.py), [carbon_budget.py](aeromaps/models/sustainability_assessment/climate/carbon_budget.py) | Sweep for any remaining `2019` literals and apply the same substitution. |
 
-[utils/functions.py:206-251](aeromaps/utils/functions.py#L206-L251) : `for k in range(0, 20)` + accès `[19]` (= 2019) en dur.
+`short_range_distribution.py:80` (`reference_years = [2019, 2030, 2040, end_year]`) — replace `2019` with `self.last_historical_year`; leave the intermediate waypoints alone.
 
----
+### Phase C — Make COVID 2020 patches conditional
 
-## 3. Paramètres scalaires nommés `_2019`
+Three patches today unconditionally overwrite year 2020. Each must become a no-op when 2020 is no longer in the prospective window.
 
-~15 clés portent 2019 dans leur nom (`short_range_energy_share_2019`, `world_co2_emissions_2019`, `carbon_offset_baseline_level_vs_2019_*`, etc.). Le nom encode l'année de référence, ce qui crée un couplage implicite.
-
-**Pistes :** renommer en `*_reference` ou `*_base_year` + stocker l'année de référence, ou dériver dynamiquement depuis `prospection_start_year - 1`.
-
----
-
-## 4. Accès `.loc[year]` en dur dans les modèles
-
-**~105 occurrences** de `.loc[2019]`, `.loc[2020]`, `(k - 2019)` dans 8 fichiers :
-
-| Fichier | # occ. | Notes |
-|---|---|---|
-| [aircraft_efficiency.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/aircraft_efficiency.py) | ~50 | Patchs COVID `.loc[2020]=.loc[2019]`, calibration initiale |
-| [rpk.py](aeromaps/models/air_transport/air_traffic/rpk.py) | 9 | |
-| [price_elasticity.py](aeromaps/models/air_transport/air_traffic/price_elasticity.py) | 9 | |
-| [carbon_offset.py:74-80](aeromaps/models/impacts/emissions/carbon_offset.py#L74-L80) | 9 | Baseline emissions 2019 |
-| [short_range_distribution.py:80](aeromaps/models/air_transport/air_traffic/short_range_distribution.py#L80) | 9 | `reference_years = [2019, 2030, 2040, end_year]` |
-| [load_factor.py:58-69](aeromaps/models/air_transport/aircraft_fleet_and_operations/load_factor/load_factor.py#L58-L69) | 7 | `load_factor_2019`, `(k-2019)`, override COVID 2020 |
-| [carbon_budget.py](aeromaps/models/sustainability_assessment/climate/carbon_budget.py) | 6 | Budget carbone 2020-2050 |
-| [fleet_model.py:914-921](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/fleet_model.py#L914-L921) | 6 | Ratio énergie/ASK en 2019 |
-
-Sémantiquement, la plupart correspondent à "année pivot" = `prospection_start_year - 1`. Un TODO explicite existe déjà dans [comparison.py:48](aeromaps/models/sustainability_assessment/climate/comparison.py#L48).
-
----
-
-## 5. Spécificité COVID
-
-Le patch `.loc[2020]` (load_factor, aircraft_efficiency) suppose que `prospection_start_year == 2020`. Exemple dans [load_factor.py:58-69](aeromaps/models/air_transport/aircraft_fleet_and_operations/load_factor/load_factor.py#L58-L69) :
-
+Pattern to apply in every site:
 ```python
-load_factor_2019 = self.df.loc[2019, "load_factor"]
-...
-for k in range(self.prospection_start_year, self.end_year + 1):
-    self.df.loc[k, "load_factor"] = a * (k - 2019) ** 2 + b * (k - 2019) + load_factor_2019
-# Covid-19 : à refaire proprement
-self.df.loc[2020, "load_factor"] = covid_load_factor_2020
+if self.prospection_start_year <= 2020:
+    self.df.loc[2020, col] = …  # COVID override
 ```
 
-À rendre conditionnel au cas `prospection_start_year == 2020`, ou à généraliser à une liste d'années/valeurs de correction.
+Sites:
+- [load_factor.py:110](aeromaps/models/air_transport/aircraft_fleet_and_operations/load_factor/load_factor.py#L110) — `self.df.loc[2020, col] = covid_2020`.
+- [aircraft_efficiency.py:160](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/aircraft_efficiency.py#L160), [:511](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/aircraft_efficiency.py#L511), [:891](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/aircraft_efficiency.py#L891), [:1129](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/aircraft_efficiency.py#L1129) — `self.df.loc[2020, …] = self.df.loc[2019, …] * (1 + covid_increase/100)` (the `2019` read is already covered by Phase B; just wrap in the guard).
 
----
+The parameter names `covid_load_factor_2020`, `covid_energy_intensity_per_ask_increase_2020`, `covid_energy_intensity_per_rtk_increase_2020` are **kept as-is** — they really do describe a 2020 event, not a generic pivot. They remain in `markets.yaml` / `parameters.json` and are simply ignored when the guard short-circuits.
 
-## 6. Notebooks et publications
+### Phase D — Rename `*_2019` parameters
 
-Plages d'années codées en dur :
-- `np.arange(2020, 2055, 5)` (run_opt_B*.ipynb)
-- `range(2019, 2071)` (tsas_2025, ecats_2026)
-- `range(2000, 2051)` (main.ipynb optim)
+Rename parameters whose `_2019` suffix encodes "last historical year" (not a real-world 2019 event). Keep backward-compat aliases so existing user configs still load.
 
-Choix à faire : paramétrer ou accepter comme "snapshots publication" figés.
+Renames:
 
----
+| Old name | New name |
+|----------|----------|
+| `world_co2_emissions_2019` | `world_co2_emissions_last_historical_year` |
+| `carbon_offset_baseline_level_vs_2019_reference_periods` | `carbon_offset_baseline_level_vs_last_historical_year_reference_periods` |
+| `carbon_offset_baseline_level_vs_2019_reference_periods_values` | `carbon_offset_baseline_level_vs_last_historical_year_reference_periods_values` |
+| (column) `carbon_offset_baseline_level_vs_2019` | `carbon_offset_baseline_level_vs_last_historical_year` |
+| `<mid>_rpk_share_2019` (markets.yaml) | `<mid>_rpk_share_last_historical_year` |
+| `<mid>_energy_share_2019` (markets.yaml) | `<mid>_energy_share_last_historical_year` |
+| `freight_energy_share_2019` | `freight_energy_share_last_historical_year` |
+| `total_seats_2019` (partitioning helper arg) | `total_seats_last_historical_year` |
 
-## 7. Synthèse des chantiers
+Compatibility shim: in [aeromaps/core/process.py](aeromaps/core/process.py) `_initialize_inputs`, after the JSON load, walk a small `LEGACY_NAME_ALIASES` dict and copy any old-named attribute onto the new name (logging a one-time deprecation warning per alias). This keeps every existing tutorial / user JSON / `markets.yaml` working unchanged.
 
-Par ordre suggéré :
+Files touched by the rename (consumer side):
+- [aeromaps/resources/data/parameters.json](aeromaps/resources/data/parameters.json) — rename keys.
+- [aeromaps/resources/data/default_markets/markets.yaml](aeromaps/resources/data/default_markets/markets.yaml) — rename `rpk_share_2019` / `energy_share_2019` leaves.
+- [aeromaps/models/impacts/emissions/carbon_offset.py](aeromaps/models/impacts/emissions/carbon_offset.py) — update input names + column name.
+- [aeromaps/utils/functions.py](aeromaps/utils/functions.py) `compute_partitioning` / `create_partitioning` — rename local vars and output JSON keys (`other_float_data` keys).
+- Any model that reads `<mid>_rpk_share_2019` / `<mid>_energy_share_2019` (fleet_model.py, ask.py, the freight share computation). Sweep with grep over the codebase.
 
-1. **Format de `parameters.json`** : introduire un index `years` explicite pour les `*_init` (comme le fait déjà le JSON de partitionnement via `other_vector_data.years`).
-2. **Renommer `*_2019` → `*_reference`** (ou `*_base_year`) + centraliser la résolution via `prospection_start_year - 1`.
-3. **Purger les `.loc[2019]` / `(k - 2019)` / `[19]`** au profit de `prospection_start_year - 1` / bornes paramétrées.
-4. **Rendre le patch COVID conditionnel** (skip si `prospection_start_year != 2020`, ou liste d'overrides year→value en paramètre).
-5. **Données climat historiques** : vérifier la troncature/extension dynamique selon `climate_historic_start_year` (le code gère déjà le reindex dans `_format_input_vectors`, mais à tester sur des bornes non-1940).
-6. **`create_partitioning`** : remplacer `range(0, 20)` et `[19]` par des bornes issues des paramètres.
-7. **Notebooks de publication** : décider cas par cas (figer vs paramétrer).
+**COVID names are NOT renamed.** `covid_load_factor_2020`, `covid_energy_intensity_per_ask_increase_2020`, `covid_energy_intensity_per_rtk_increase_2020` describe a fixed historical event.
 
-### Points de vigilance
+### Phase E — Input-length validation
 
-- Volume le plus lourd : [aircraft_efficiency.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/aircraft_efficiency.py) (~50 occurrences).
-- Point le plus sensible fonctionnellement : gestion COVID + calibration prospective initialisée sur l'année pivot.
-- Les conventions de nommage `*_2019` fuitent vers les JSON utilisateurs et les notebooks → migration avec alias de compatibilité à prévoir.
+Add a clear error when `*_init` vector lengths don't match `prospection_start_year - historic_start_year`.
+
+- [aeromaps/utils/functions.py](aeromaps/utils/functions.py) `_dict_from_parameters_dict` (lines 89-103) — before the `pd.Series(value, index=new_index)` call, check `len(value) == new_index.stop - new_index.start`. If not, raise a `ValueError` naming the offending key, the expected length (`prospection_start_year - historic_start_year`), the actual length, and a hint that the user must extend the vector to match.
+
+Same check on the vector inputs path in [process.py:1716-1733](aeromaps/core/process.py#L1716) when an `other_vector_data` list mismatches its declared `years` index, but that path already uses an explicit `years` array so the mismatch is more visible.
+
+### Phase F — Verification
+
+1. **Smoke test the default (regression).** Run the `01_basic` tutorial (per the user's testing-scope preference — full notebook suite is opt-in only):
+   ```bash
+   cd aeromaps/notebooks/tutorials/01_run_a_basic_calculation
+   python -c "from aeromaps.utils.functions import compare_json_files; \
+              compare_json_files('./data/reference/outputs.json', './data/outputs.json', rtol=1e-6, atol=0)"
+   ```
+   Expectation: zero diff (we're only renaming + parameterizing — math unchanged for `prospection_start_year == 2020`).
+2. **Run pytest** (`pytest aeromaps/`) to catch any model-level regressions.
+3. **Custom-scenario smoke test.** Create a minimal config with `prospection_start_year=2025`, 25-element `*_init` vectors (e.g. extrapolated from 2019 + flat 2020-2024), updated `*_last_historical_year` scalars, and run `AeroMAPSProcess.compute()` to end-of-pipeline. Confirm:
+   - No exceptions at load time (Phase E gate passes).
+   - `load_factor.loc[2020]` is taken from the user's historic `rpk_init/ask_init`, not from `covid_load_factor_2020` (Phase C guard).
+   - `carbon_offset_baseline_level_vs_last_historical_year.loc[2024]` is the offset baseline (Phase B/D).
+4. **Legacy-config smoke test.** Run the `01_basic` tutorial after Phase D with an unmodified `parameters.json` (the old `_2019` names) to confirm the alias shim fires and produces identical outputs.
+
+## Critical files (modify list)
+
+- [aeromaps/core/process.py](aeromaps/core/process.py) — `last_historical_year` derivation + legacy-name alias shim.
+- [aeromaps/models/base.py](aeromaps/models/base.py) — propagate `self.last_historical_year` to all models.
+- [aeromaps/models/air_transport/aircraft_fleet_and_operations/load_factor/load_factor.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/load_factor/load_factor.py) — pivot generalization + COVID guard.
+- [aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/aircraft_efficiency.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/aircraft_efficiency.py) — heaviest file (Phase B + C combined).
+- [aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/fleet_model.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/fleet_model.py) — calibration anchor.
+- [aeromaps/models/impacts/emissions/carbon_offset.py](aeromaps/models/impacts/emissions/carbon_offset.py) — pivot generalization + name rename.
+- [aeromaps/models/impacts/costs/efficiency_abatement_cost/fleet_abatement_cost.py](aeromaps/models/impacts/costs/efficiency_abatement_cost/fleet_abatement_cost.py) — `.loc[2019]` reads + COVID guard.
+- [aeromaps/utils/functions.py](aeromaps/utils/functions.py) — length validation + `compute_partitioning` rename.
+- [aeromaps/resources/data/parameters.json](aeromaps/resources/data/parameters.json), [aeromaps/resources/data/default_markets/markets.yaml](aeromaps/resources/data/default_markets/markets.yaml) — rename keys (with alias shim covering older user files).
+
+## Open points to revisit during implementation
+
+1. **Tutorial / publication notebooks.** Out of scope here; they keep their hard-coded year arrays unless the user later asks.
+2. **Climate historical CSV extension.** Out of scope; the user supplies an extended CSV if they want `prospection_start_year > 2020` with climate models.
