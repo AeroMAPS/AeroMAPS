@@ -63,18 +63,39 @@ DEFAULT_FLEET_CONFIG_FILE = DEFAULT_FLEET_DATA_DIR / "fleet.yaml"
 class AircraftParameters:
     """Parameters defining an aircraft's characteristics and performance.
 
+    Performance metrics (energy per ASK, NOx, soot, non-energy DOC) can be
+    declared in one of two modes per metric, independently:
+
+    - **Relative**: ``*_evolution`` field, expressed as a percentage delta vs
+      the subcategory's recent reference aircraft.
+    - **Absolute**: same field name as on the reference-aircraft card
+      (``energy_per_ask``, ``emission_index_nox``, ``emission_index_soot``,
+      ``doc_non_energy_base``), expressed in absolute units.
+
+    For each of the four metrics, **exactly one** of the relative or absolute
+    field must be set. Both-set or neither-set raises ``ValueError`` at YAML
+    load time (see :func:`Fleet._load_aircraft_inventory`).
+
     Attributes
     ----------
     entry_into_service_year
         Year when the aircraft enters service [yr].
     consumption_evolution
         Relative change in energy consumption compared to reference aircraft [%].
+    energy_per_ask
+        Absolute energy consumption per ASK [MJ/ASK]. Alternative to ``consumption_evolution``.
     nox_evolution
         Relative change in NOx emissions compared to reference aircraft [%].
+    emission_index_nox
+        Absolute NOx emission index per ASK [kg/ASK]. Alternative to ``nox_evolution``.
     soot_evolution
         Relative change in soot emissions compared to reference aircraft [%].
+    emission_index_soot
+        Absolute soot emission index per ASK [kg/ASK]. Alternative to ``soot_evolution``.
     doc_non_energy_evolution
         Relative change in non-energy direct operating costs compared to reference aircraft [%].
+    doc_non_energy_base
+        Absolute non-energy DOC per ASK [€/ASK]. Alternative to ``doc_non_energy_evolution``.
     cruise_altitude
         Typical cruise altitude of the aircraft [m].
     hybridization_factor
@@ -93,9 +114,13 @@ class AircraftParameters:
 
     entry_into_service_year: Optional[float] = None
     consumption_evolution: Optional[float] = None
+    energy_per_ask: Optional[float] = None
     nox_evolution: Optional[float] = None
+    emission_index_nox: Optional[float] = None
     soot_evolution: Optional[float] = None
+    emission_index_soot: Optional[float] = None
     doc_non_energy_evolution: Optional[float] = None
+    doc_non_energy_base: Optional[float] = None
     cruise_altitude: Optional[float] = None
     hybridization_factor: float = 0.0
     ask_year: Optional[float] = None
