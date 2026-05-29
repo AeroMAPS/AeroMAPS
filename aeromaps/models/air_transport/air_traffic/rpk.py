@@ -192,7 +192,7 @@ class RPK(AeroMAPSModel):
                 covid_start_year - 1, "rpk_short_range"
             ] * covid_function(k)
 
-        # todo : remove these for loops!!
+        # TECHDEBT(AEROMAPS-195): Vectorize/refactor this post-COVID recurrence to replace the per-year loop.
         for k in range(covid_end_year_passenger + 1, self.end_year + 1):
             self.df.loc[k, "rpk_short_range"] = self.df.loc[k - 1, "rpk_short_range"] * (
                 1 + self.df.loc[k, "annual_growth_rate_passenger_short_range"] / 100
@@ -283,48 +283,48 @@ class RPK(AeroMAPSModel):
         # Compound Annual Growth Rate (CAGR. Removed potential division by zero by setting growth rate to NaN when previous year RPK is zero.
         if self.df.loc[self.prospection_start_year - 1, "rpk_short_range"] != 0:
             cagr_rpk_short_range = 100 * (
-            (
-                self.df.loc[self.end_year, "rpk_short_range"]
-                / self.df.loc[self.prospection_start_year - 1, "rpk_short_range"]
-            )
-            ** (1 / (self.end_year - self.prospection_start_year))
-            - 1
+                (
+                    self.df.loc[self.end_year, "rpk_short_range"]
+                    / self.df.loc[self.prospection_start_year - 1, "rpk_short_range"]
+                )
+                ** (1 / (self.end_year - self.prospection_start_year))
+                - 1
             )
         else:
             cagr_rpk_short_range = np.nan
-        
+
         if self.df.loc[self.prospection_start_year - 1, "rpk_medium_range"] != 0:
             cagr_rpk_medium_range = 100 * (
-            (
-                self.df.loc[self.end_year, "rpk_medium_range"]
-                / self.df.loc[self.prospection_start_year - 1, "rpk_medium_range"]
-            )
-            ** (1 / (self.end_year - self.prospection_start_year))
-            - 1
+                (
+                    self.df.loc[self.end_year, "rpk_medium_range"]
+                    / self.df.loc[self.prospection_start_year - 1, "rpk_medium_range"]
+                )
+                ** (1 / (self.end_year - self.prospection_start_year))
+                - 1
             )
         else:
             cagr_rpk_medium_range = np.nan
-        
+
         if self.df.loc[self.prospection_start_year - 1, "rpk_long_range"] != 0:
             cagr_rpk_long_range = 100 * (
-            (
-                self.df.loc[self.end_year, "rpk_long_range"]
-                / self.df.loc[self.prospection_start_year - 1, "rpk_long_range"]
-            )
-            ** (1 / (self.end_year - self.prospection_start_year))
-            - 1
+                (
+                    self.df.loc[self.end_year, "rpk_long_range"]
+                    / self.df.loc[self.prospection_start_year - 1, "rpk_long_range"]
+                )
+                ** (1 / (self.end_year - self.prospection_start_year))
+                - 1
             )
         else:
             cagr_rpk_long_range = np.nan
-        
+
         if self.df.loc[self.prospection_start_year - 1, "rpk"] != 0:
             cagr_rpk = 100 * (
-            (
-                self.df.loc[self.end_year, "rpk"]
-                / self.df.loc[self.prospection_start_year - 1, "rpk"]
-            )
-            ** (1 / (self.end_year - self.prospection_start_year))
-            - 1
+                (
+                    self.df.loc[self.end_year, "rpk"]
+                    / self.df.loc[self.prospection_start_year - 1, "rpk"]
+                )
+                ** (1 / (self.end_year - self.prospection_start_year))
+                - 1
             )
         else:
             cagr_rpk = np.nan
@@ -332,35 +332,36 @@ class RPK(AeroMAPSModel):
         # Prospective evolution of RPK (between prospection_start_year-1 and end_year)
         if self.df.loc[self.prospection_start_year - 1, "rpk_short_range"] != 0:
             prospective_evolution_rpk_short_range = 100 * (
-            self.df.loc[self.end_year, "rpk_short_range"]
-            / self.df.loc[self.prospection_start_year - 1, "rpk_short_range"]
-            - 1
+                self.df.loc[self.end_year, "rpk_short_range"]
+                / self.df.loc[self.prospection_start_year - 1, "rpk_short_range"]
+                - 1
             )
         else:
             prospective_evolution_rpk_short_range = np.nan
-        
+
         if self.df.loc[self.prospection_start_year - 1, "rpk_medium_range"] != 0:
             prospective_evolution_rpk_medium_range = 100 * (
-            self.df.loc[self.end_year, "rpk_medium_range"]
-            / self.df.loc[self.prospection_start_year - 1, "rpk_medium_range"]
-            - 1
+                self.df.loc[self.end_year, "rpk_medium_range"]
+                / self.df.loc[self.prospection_start_year - 1, "rpk_medium_range"]
+                - 1
             )
         else:
             prospective_evolution_rpk_medium_range = np.nan
-        
+
         if self.df.loc[self.prospection_start_year - 1, "rpk_long_range"] != 0:
             prospective_evolution_rpk_long_range = 100 * (
-            self.df.loc[self.end_year, "rpk_long_range"]
-            / self.df.loc[self.prospection_start_year - 1, "rpk_long_range"]
-            - 1
+                self.df.loc[self.end_year, "rpk_long_range"]
+                / self.df.loc[self.prospection_start_year - 1, "rpk_long_range"]
+                - 1
             )
         else:
             prospective_evolution_rpk_long_range = np.nan
-        
+
         if self.df.loc[self.prospection_start_year - 1, "rpk"] != 0:
             prospective_evolution_rpk = 100 * (
-            self.df.loc[self.end_year, "rpk"] / self.df.loc[self.prospection_start_year - 1, "rpk"]
-            - 1
+                self.df.loc[self.end_year, "rpk"]
+                / self.df.loc[self.prospection_start_year - 1, "rpk"]
+                - 1
             )
         else:
             prospective_evolution_rpk = np.nan

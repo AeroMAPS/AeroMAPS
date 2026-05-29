@@ -94,7 +94,7 @@ class LevelCarbonOffset(AeroMAPSModel):
             / 100
         )
 
-        # compute the ammount offsetted. "clip" sets it to zero if emissions do not exceeds the baseline.
+        # compute the ammount offset. "clip" sets it to zero if emissions do not exceeds the baseline.
         self.df.loc[self.prospection_start_year : self.end_year, "level_carbon_offset"] = (
             (
                 (

@@ -78,7 +78,7 @@ def disable_gemseo_execution_statistics():
     try:
         from gemseo.core.execution_statistics import ExecutionStatistics
 
-        def _patched_init(self):
+        def _patched_init(self, *args, **kwargs):
             """Skip shared memory initialization to avoid semaphore exhaustion."""
             # Initialize as regular attributes instead of shared memory
             self._ExecutionStatistics__duration = 0.0

@@ -75,8 +75,15 @@ def create_process(
 
             config = read_yaml_file(configuration_file)
             use_multi_regional = "regionalisation" in config
-        except Exception:
-            pass
+        except Exception as exc:
+            import warnings
+
+            warnings.warn(
+                "Failed to auto-detect multi-regional mode from configuration file "
+                f"{configuration_file!r}: {exc}. Falling back to single-region mode. "
+                "Set multi_regional=True explicitly to force multi-regional mode.",
+                UserWarning,
+            )
 
     if use_multi_regional:
         if optimisation:
