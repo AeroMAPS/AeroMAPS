@@ -296,23 +296,23 @@ class CO2Emissions(AeroMAPSModel):
             Total CO2 emissions [MtCO2].
         """
         # Locally filling incomplete emission factors with zeros so that sums are not nan if one is undefined
-        dropin_fuel_mean_co2_emission_factor.fillna(0, inplace=True)
-        hydrogen_mean_co2_emission_factor.fillna(0, inplace=True)
-        electric_mean_co2_emission_factor.fillna(0, inplace=True)
+        dropin_fuel_mean_co2_emission_factor = dropin_fuel_mean_co2_emission_factor.fillna(0)
+        hydrogen_mean_co2_emission_factor = hydrogen_mean_co2_emission_factor.fillna(0)
+        electric_mean_co2_emission_factor = electric_mean_co2_emission_factor.fillna(0)
 
         # Locally filling void energy per ask/rtk with zeros so that sums are not nan if one is undefined
-        energy_per_ask_short_range_dropin_fuel.fillna(0, inplace=True)
-        energy_per_ask_medium_range_dropin_fuel.fillna(0, inplace=True)
-        energy_per_ask_long_range_dropin_fuel.fillna(0, inplace=True)
-        energy_per_rtk_freight_dropin_fuel.fillna(0, inplace=True)
-        energy_per_ask_short_range_hydrogen.fillna(0, inplace=True)
-        energy_per_ask_medium_range_hydrogen.fillna(0, inplace=True)
-        energy_per_ask_long_range_hydrogen.fillna(0, inplace=True)
-        energy_per_rtk_freight_hydrogen.fillna(0, inplace=True)
-        energy_per_ask_short_range_electric.fillna(0, inplace=True)
-        energy_per_ask_medium_range_electric.fillna(0, inplace=True)
-        energy_per_ask_long_range_electric.fillna(0, inplace=True)
-        energy_per_rtk_freight_electric.fillna(0, inplace=True)
+        energy_per_ask_short_range_dropin_fuel = energy_per_ask_short_range_dropin_fuel.fillna(0)
+        energy_per_ask_medium_range_dropin_fuel = energy_per_ask_medium_range_dropin_fuel.fillna(0)
+        energy_per_ask_long_range_dropin_fuel = energy_per_ask_long_range_dropin_fuel.fillna(0)
+        energy_per_rtk_freight_dropin_fuel = energy_per_rtk_freight_dropin_fuel.fillna(0)
+        energy_per_ask_short_range_hydrogen = energy_per_ask_short_range_hydrogen.fillna(0)
+        energy_per_ask_medium_range_hydrogen = energy_per_ask_medium_range_hydrogen.fillna(0)
+        energy_per_ask_long_range_hydrogen = energy_per_ask_long_range_hydrogen.fillna(0)
+        energy_per_rtk_freight_hydrogen = energy_per_rtk_freight_hydrogen.fillna(0)
+        energy_per_ask_short_range_electric = energy_per_ask_short_range_electric.fillna(0)
+        energy_per_ask_medium_range_electric = energy_per_ask_medium_range_electric.fillna(0)
+        energy_per_ask_long_range_electric = energy_per_ask_long_range_electric.fillna(0)
+        energy_per_rtk_freight_electric = energy_per_rtk_freight_electric.fillna(0)
 
         # Short range
         co2_emissions_short_range = (
@@ -384,7 +384,7 @@ class CO2Emissions(AeroMAPSModel):
             )
             * 10 ** (-12)
         )
-        
+
         # Passenger
         co2_emissions_passenger = (
             co2_emissions_short_range + co2_emissions_medium_range + co2_emissions_long_range
@@ -757,7 +757,9 @@ class DetailedCumulativeCO2Emissions(AeroMAPSModel):
         ).cumsum()
 
         cumulative_co2_emissions_including_aircraft_efficiency = (
-            co2_emissions_including_aircraft_efficiency.loc[self.prospection_start_year : self.end_year]
+            co2_emissions_including_aircraft_efficiency.loc[
+                self.prospection_start_year : self.end_year
+            ]
             / 1000
         ).cumsum()
 
