@@ -67,7 +67,7 @@ class RegionalAggregator(AeroMAPSModel):
     ...     aggregation_config={
     ...         "sum": ["co2_emissions", "rpk"],
     ...         "weighted_average": [
-    ...             {"variable": "load_factor", "weight_by": "rpk"}
+    ...             {"variable": "load_factor", "weight_by": "ask"}
     ...         ]
     ...     }
     ... )
@@ -230,7 +230,9 @@ class RegionalAggregator(AeroMAPSModel):
                 weighted_value = value * weight
 
                 if weighted_sum is None:
-                    weighted_sum = weighted_value.copy() if hasattr(weighted_value, "copy") else weighted_value
+                    weighted_sum = (
+                        weighted_value.copy() if hasattr(weighted_value, "copy") else weighted_value
+                    )
                     total_weight = weight.copy() if hasattr(weight, "copy") else weight
                 else:
                     weighted_sum = weighted_sum + weighted_value
