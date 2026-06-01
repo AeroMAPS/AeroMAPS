@@ -812,18 +812,10 @@ class MultiRegionalProcess(AeroMAPSProcess):
             Dictionary mapping DataFrame names to pandas DataFrame instances.
             Includes vector_outputs, climate_outputs, float_outputs, and global_outputs.
         """
-        # Build float_outputs DataFrame
-        float_outputs_df = pd.DataFrame(
-            {
-                "Name": list(self.data["float_outputs"].keys()),
-                "Value": list(self.data["float_outputs"].values()),
-            }
-        )
-
         return {
             "vector_outputs": self.data["vector_outputs"].copy(),
             "climate_outputs": self.data["climate_outputs"].copy(),
-            "float_outputs": float_outputs_df,
+            "float_outputs": self._get_float_outputs_df(),
             "global_outputs": self.get_global_outputs(),
         }
 

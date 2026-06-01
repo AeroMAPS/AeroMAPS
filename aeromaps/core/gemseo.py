@@ -69,6 +69,7 @@ def disable_gemseo_execution_statistics():
     instead of shared memory, avoiding semaphore creation.
 
     Safe to call multiple times (only patches once).
+    # TODO: Investigate possibilities with gemseo.configure ?
     """
     global _EXECUTION_STATISTICS_PATCHED
 
