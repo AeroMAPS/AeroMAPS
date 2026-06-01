@@ -160,7 +160,7 @@ class AeroMAPSProcess(object):
         configuration_file=None,
         custom_models=None,
         optimisation=False,
-        disable_execution_statistics=None,
+        disable_execution_statistics=False,
     ):
         """Initialize an AeroMAPSProcess instance.
 
@@ -184,7 +184,7 @@ class AeroMAPSProcess(object):
             pure MDA chain.
         disable_execution_statistics
             Whether to disable GEMSEO's execution statistics shared memory.
-            If None, statistics are enabled. Set to True to disable
+            If False, statistics are enabled. Set to True to disable
             (useful when running many disciplines to avoid semaphore exhaustion).
         """
         # Initialize pathways_manager to None - will be populated if energy models are used
