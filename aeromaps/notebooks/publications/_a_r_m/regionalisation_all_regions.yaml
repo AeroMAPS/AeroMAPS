@@ -5,13 +5,25 @@
 # Uses separate_processes mode for sequential/parallel execution.
 # ============================================================================
 
-models:
-  standards:
-    - default_models_top_down
-
 regionalisation:
   execution_mode: "separate_processes"
   global_namespace: "overall"
+
+  # --------------------------------------------------------------------------
+  # Top-level models (optional)
+  # --------------------------------------------------------------------------
+  # Models that run on the aggregated (global-namespace) data, AFTER the regional
+  # processes and the aggregator. They consume the aggregator's "overall:*" outputs
+  # and produce further "overall:*" outputs, coupling by variable name. Use the same
+  # "standards"/"customs" structure as a regional models block.
+  # NOTE: a region's own model selection lives in its config_file; that is unrelated
+  # to this top-level block. Only standard models that couple purely within the global
+  # namespace are supported here (no climate historical data / pathways / fleet yet).
+  # top_level_models:
+  #   standards:
+  #     - <model_group_name>
+  #   customs:
+  #     my_global_model: "path/to/model.py::MyGlobalModel"
 
   regions:
     # Africa Domestic

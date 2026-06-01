@@ -31,10 +31,12 @@ from tqdm.auto import tqdm
 # Local application imports
 from aeromaps.core.process import AeroMAPSProcess
 from aeromaps.core.gemseo import (
+    AeroMAPSAutoModelWrapper,
     AeroMAPSCustomModelWrapper,
     apply_namespace_to_disciplines,
     build_namespaced_inputs,
 )
+from aeromaps.core import models as aeromaps_models
 from aeromaps.models.multi_regional.regional_aggregator import RegionalAggregator
 
 
@@ -154,14 +156,18 @@ class MultiRegionalProcess(AeroMAPSProcess):
         self.models = {}
         self._create_aggregator()
 
+        # Load optional top-level models that run on aggregated (global-namespace) data
+        self._load_top_level_models()
+
+        # Reference parameters (year indexing, etc.) from the first region. Needed
+        # before building top-level disciplines so models can initialize their dataframes.
+        self.parameters = self._regional_processes[self._region_ids[0]].parameters
+
         # Mode-specific setup
         if self._execution_mode == "unified_mda":
             self._setup_unified_mda()
         else:
-            # For separate_processes mode, we don't need an MDAChain
-            # Each regional process has its own
-            self.mda_chain = None
-            self.disciplines = []
+            self._setup_separate_processes()
 
         # Initialize data containers for aggregated results
         self._initialize_data_containers()
@@ -274,6 +280,172 @@ class MultiRegionalProcess(AeroMAPSProcess):
             f"{len(aggregator.output_names)} outputs"
         )
 
+    def _load_top_level_models(self):
+        """Load optional top-level models that run on aggregated (global) data.
+
+        Top-level models are specified under ``regionalisation.top_level_models`` using
+        the same ``standards``/``customs`` structure as a regional ``models`` block.
+        Unlike regional models, they operate in the global namespace: they consume the
+        aggregated ``{global_namespace}:*`` series produced by the aggregator and emit
+        further ``{global_namespace}:*`` outputs. The aggregator therefore behaves like
+        any upstream discipline, and top-level models couple to it purely by name.
+
+        Supports standard models whose inputs/outputs couple within the global namespace.
+
+        TODO: models needing process-level initialization (climate historical data,
+        pathways manager, fleet model) are not supported at the top level yet; see
+        ``_wrap_top_level_model`` for the guard that rejects them.
+
+        Loaded models are registered in ``self.models`` (like the aggregator) and their
+        names tracked in ``self._top_level_model_names``.
+        """
+        self._top_level_model_names = []
+
+        top_level_config = self._regionalisation_config.get("top_level_models", {})
+        if not top_level_config:
+            return
+
+        # Resolve standard model groups by name from aeromaps.core.models
+        loaded = {}
+        for model_name in top_level_config.get("standards", []):
+            if hasattr(aeromaps_models, model_name):
+                loaded[model_name] = getattr(aeromaps_models, model_name)
+            else:
+                raise ValueError(
+                    f"Top-level model '{model_name}' specified in 'regionalisation."
+                    f"top_level_models.standards' is not found in aeromaps.core.models."
+                )
+
+        # Resolve custom models (path::Class specs), reusing the AeroMAPSProcess loader
+        customs = top_level_config.get("customs", None)
+        if customs is not None:
+            loaded.update(self._load_custom_models_from_config(customs))
+
+        # Flatten (groups may be nested dicts of AeroMAPSModel instances) and register
+        self._register_top_level_models(loaded)
+
+        logging.info(
+            f"Loaded {len(self._top_level_model_names)} top-level model(s): "
+            f"{self._top_level_model_names}"
+        )
+
+    def _register_top_level_models(self, models):
+        """Recursively register AeroMAPSModel instances from a (possibly nested) dict.
+
+        Parameters
+        ----------
+        models
+            Dict whose values are either AeroMAPSModel instances or nested dicts of them.
+        """
+        from aeromaps.models.base import AeroMAPSModel
+
+        for key, value in models.items():
+            if isinstance(value, dict):
+                self._register_top_level_models(value)
+            elif isinstance(value, AeroMAPSModel):
+                self.models[value.name] = value
+                self._top_level_model_names.append(value.name)
+            else:
+                raise TypeError(
+                    f"Top-level model entry '{key}' is not an AeroMAPSModel instance "
+                    f"(got {type(value).__name__})."
+                )
+
+    def _wrap_top_level_model(self, model):
+        """Initialize and wrap a single top-level model as a GEMSEO discipline.
+
+        Mirrors the per-model setup done in AeroMAPSProcess._initialize_disciplines.
+
+        TODO: models requiring special process-level initialization (climate historical
+        data, pathways manager, fleet model) are not supported at the top level yet and
+        are rejected below with a clear error.
+
+        Parameters
+        ----------
+        model
+            The AeroMAPSModel instance to wrap.
+
+        Returns
+        -------
+        Discipline
+            The wrapped (not yet namespaced) GEMSEO discipline.
+        """
+        model.parameters = self.parameters
+        model._initialize_df()
+
+        unsupported = []
+        if hasattr(model, "climate_historical_data"):
+            unsupported.append("climate_historical_data")
+        if hasattr(model, "pathways_manager") and hasattr(model, "custom_setup"):
+            unsupported.append("pathways_manager/custom_setup")
+        if unsupported:
+            raise NotImplementedError(
+                f"Top-level model '{model.name}' requires {unsupported}, which is not "
+                "supported at the top level yet. Only standard models that couple purely "
+                "within the global namespace are currently supported here."
+            )
+
+        if getattr(model, "model_type") == "custom":
+            return AeroMAPSCustomModelWrapper(model=model)
+        return AeroMAPSAutoModelWrapper(model=model)
+
+    def _build_namespaced_top_level_disciplines(self):
+        """Build top-level model disciplines namespaced to the global namespace.
+
+        Top-level models operate on un-namespaced variable names, so each is namespaced
+        with ``self._global_namespace`` to read/write ``{global_namespace}:*`` variables,
+        matching the aggregator's outputs.
+
+        Returns
+        -------
+        list
+            List of namespaced GEMSEO disciplines (empty if no top-level models).
+        """
+        disciplines = []
+        for model_name in self._top_level_model_names:
+            wrapped = self._wrap_top_level_model(self.models[model_name])
+            disciplines.extend(apply_namespace_to_disciplines([wrapped], self._global_namespace))
+        return disciplines
+
+    def _build_top_level_disciplines(self):
+        """Build the full top-level discipline list: aggregator + top-level models.
+
+        The aggregator's grammar is already expressed in namespaced terms (region inputs
+        -> global outputs), so it is wrapped directly. Top-level models are namespaced to
+        the global namespace so they couple to the aggregator's outputs by name.
+
+        Returns
+        -------
+        list
+            [aggregator_discipline, *namespaced_top_level_disciplines].
+        """
+        return [
+            AeroMAPSCustomModelWrapper(model=self.models["aggregator"])
+        ] + self._build_namespaced_top_level_disciplines()
+
+    def _setup_separate_processes(self):
+        """Set up separate_processes mode.
+
+        Each regional process owns its own MDAChain (so the multi-regional process has
+        no combined regional chain). The top level (aggregator + optional top-level
+        models) is assembled into a standard MDAChain that is executed after the regional
+        processes, fed with their namespaced outputs. This replaces the previous bespoke
+        aggregator call with a normal MDA execution.
+        """
+        self.mda_chain = None
+        self.disciplines = self._build_top_level_disciplines()
+        self._top_level_mda_chain = MDAChain(
+            disciplines=self.disciplines,
+            tolerance=1e-5,
+            initialize_defaults=True,
+            inner_mda_name="MDAGaussSeidel",
+            log_convergence=False,
+        )
+        logging.info(
+            f"Top-level MDAChain created with {len(self.disciplines)} discipline(s) "
+            f"(aggregator + {len(self._top_level_model_names)} top-level model(s))"
+        )
+
     def _setup_unified_mda(self):
         """Set up unified MDA mode with all disciplines in one MDAChain."""
         self._regional_disciplines = {}
@@ -293,6 +465,10 @@ class MultiRegionalProcess(AeroMAPSProcess):
         # Add aggregator as a discipline
         aggregator_discipline = AeroMAPSCustomModelWrapper(model=self.models["aggregator"])
         all_disciplines.append(aggregator_discipline)
+
+        # Add optional top-level models (namespaced to the global namespace) so they
+        # couple to the aggregator's outputs within the single MDAChain.
+        all_disciplines.extend(self._build_namespaced_top_level_disciplines())
 
         self.disciplines = all_disciplines
 
@@ -520,18 +696,21 @@ class MultiRegionalProcess(AeroMAPSProcess):
                     raise
 
     def _aggregate_regional_outputs(self):
-        """Aggregate outputs from all regional processes.
+        """Aggregate outputs from all regional processes via the top-level MDAChain.
 
         Populates all data structures with namespaced keys:
         - vector_outputs: "FR:co2_emissions", "overall:co2_emissions"
         - float_outputs: "FR:metric", "overall:metric"
         - climate_outputs: "FR:temperature", "overall:temperature"
 
-        All output types are passed to the aggregator for potential aggregation.
+        Regional outputs are gathered from each regional process and fed as inputs to
+        the top-level MDAChain (aggregator + optional top-level models). The aggregator
+        is thus executed as a standard discipline rather than via a bespoke call, and any
+        top-level models couple to its "{global_namespace}:*" outputs by name.
         """
-        # Build aggregator input from ALL regional outputs
-        # Collect all series to avoid DataFrame fragmentation from repeated inserts
-        aggregator_input = {}
+        # Collect all series to avoid DataFrame fragmentation from repeated inserts.
+        # The flat regional dict also serves as input to the top-level MDAChain.
+        top_level_input = {}
         vector_series = {}
         climate_series = {}
         climate_years = self.data["years"].get("climate_full_years", [])
@@ -542,14 +721,14 @@ class MultiRegionalProcess(AeroMAPSProcess):
             if regional_vectors is not None and not regional_vectors.empty:
                 for col in regional_vectors.columns:
                     namespaced_key = f"{region_id}:{col}"
-                    aggregator_input[namespaced_key] = regional_vectors[col]
+                    top_level_input[namespaced_key] = regional_vectors[col]
                     vector_series[namespaced_key] = regional_vectors[col]
 
             # Get float_outputs from regional process data
             regional_floats = regional_process.data.get("float_outputs", {})
             for key, value in regional_floats.items():
                 namespaced_key = f"{region_id}:{key}"
-                aggregator_input[namespaced_key] = value
+                top_level_input[namespaced_key] = value
                 self.data["float_outputs"][namespaced_key] = value
 
             # Get climate_outputs from regional process data
@@ -557,14 +736,18 @@ class MultiRegionalProcess(AeroMAPSProcess):
             if regional_climate is not None and not regional_climate.empty:
                 for col in regional_climate.columns:
                     namespaced_key = f"{region_id}:{col}"
-                    aggregator_input[namespaced_key] = regional_climate[col]
+                    top_level_input[namespaced_key] = regional_climate[col]
                     climate_series[namespaced_key] = regional_climate[col]
 
-        # Run aggregator on ALL inputs (it will aggregate what's in its config)
-        global_outputs = self.models["aggregator"].compute(aggregator_input)
+        # Execute the top-level disciplines (aggregator + optional top-level models)
+        # as a standard MDA, fed with the regional outputs.
+        self._top_level_mda_chain.execute(top_level_input)
 
-        # Store global outputs based on their type
-        for key, value in global_outputs.items():
+        # Harvest global (namespaced) outputs produced by the top-level chain.
+        global_prefix = f"{self._global_namespace}:"
+        for key, value in self._top_level_mda_chain.local_data.items():
+            if not key.startswith(global_prefix):
+                continue
             if isinstance(value, pd.Series):
                 # Check if it belongs in climate_outputs (by checking index length)
                 if len(value) == len(climate_years) and climate_years:
