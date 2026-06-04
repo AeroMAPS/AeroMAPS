@@ -374,9 +374,14 @@ class AeroMAPSProcess(object):
         # Initialize disciplines
         self._initialize_disciplines()
 
+        # Tolerance must be tight enough to resolve the price-elastic demand loop
+        # (doc_net_energy_per_rpk_mean <-> rpk). At 1e-5 the Gauss-Seidel solver
+        # reports convergence while that coupling is still ~25% off in SAF-type
+        # scenarios; max_mda_iter gives it room to reach the tighter tolerance.
         self.mda_chain = MDAChain(
             disciplines=self.disciplines,
-            tolerance=1e-5,
+            tolerance=1e-10,
+            max_mda_iter=200,
             initialize_defaults=True,
             inner_mda_name="MDAGaussSeidel",
             log_convergence=True,

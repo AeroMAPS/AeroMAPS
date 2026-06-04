@@ -3188,6 +3188,15 @@ class NetEnergyDOCPerRPKBreakdown(SingleScenarioPlot):
             label="Total energy costs per RPK",
         )
 
+        # delayed (consumer-perceived) price line, if the demand model exposes it
+        if "doc_net_energy_per_rpk_delayed" in self.df.columns:
+            delayed = self.df.loc[y, "doc_net_energy_per_rpk_delayed"]
+            if delayed.notna().any():
+                self.ax.plot(
+                    y, delayed, color="red", linestyle="--", linewidth=1.5,
+                    zorder=4, label="Delayed (perceived) energy costs per RPK",
+                )
+
     def _draw_legends(self, pathways, pathway_colors):
         """Add two legends: one for carrier colours, one for component hatches."""
         from matplotlib.lines import Line2D
@@ -3238,6 +3247,20 @@ class NetEnergyDOCPerRPKBreakdown(SingleScenarioPlot):
                 label="Total energy costs per RPK",
             ),
         ]
+        if (
+            "doc_net_energy_per_rpk_delayed" in self.df.columns
+            and self.df["doc_net_energy_per_rpk_delayed"].notna().any()
+        ):
+            overlay_handles.append(
+                Line2D(
+                    [0],
+                    [0],
+                    color="red",
+                    linewidth=1.5,
+                    linestyle="--",
+                    label="Delayed (perceived) energy costs per RPK",
+                )
+            )
         legend2 = self.ax.legend(
             handles=overlay_handles,
             loc="upper right",

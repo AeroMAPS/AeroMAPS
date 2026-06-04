@@ -1,5 +1,6 @@
 from typing import Tuple
 
+import numpy as np
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
@@ -22,15 +23,16 @@ class RPKPriceIncomeElasticity(AeroMAPSModel):
     name : str
         Name of the model instance ('rpk_constant_elasticity' by default).
     """
-
     def __init__(self, name="rpk_constant_elasticity", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
         # Calibrated constant-elasticity parameters (fixed at class level)
-        self.sigma: float = 0.0015018367707702585
-        self.income_elast: float = 1.318374753418146
-        self.price_elast: float = -0.2808214954796415
+        self.sigma: float = 0.0004016258667105296
+        self.income_elast: float = 1.4207611236946205
+        self.price_elast: float = -0.38053802791092983
         # Exchange rate used to convert doc_net_energy_per_rpk_mean from EUR to USD [EUR/USD]
         self.eur_usd_exchange_rate: float = 0.9
+        # Calibrated price-response delay (first-order lag time constant) [yr]; 0.0 disables it.
+        self.price_delay: float = 1.3312445030564617
 
     def _initialize_df(self):
         super()._initialize_df()
@@ -41,6 +43,19 @@ class RPKPriceIncomeElasticity(AeroMAPSModel):
                 index=range(self.historic_start_year, self.end_year + 1),
             )
         }
+
+    def _apply_price_delay(self, price):
+        delayed = price.copy()
+        tau = getattr(self, "price_delay", 0.0)
+        if not tau or tau <= 0.0:
+            return delayed
+        a = float(np.exp(-1.0 / tau))  # annual step, dt = 1 year
+        prev = float(price.loc[self.prospection_start_year])
+        delayed.loc[self.prospection_start_year] = prev
+        for year in range(self.prospection_start_year + 1, self.end_year + 1):
+            prev = a * prev + (1.0 - a) * float(price.loc[year])
+            delayed.loc[year] = prev
+        return delayed
 
     def compute(
         self,
@@ -77,6 +92,7 @@ class RPKPriceIncomeElasticity(AeroMAPSModel):
         float,
         float,
         float,
+        pd.Series,
         pd.Series,
     ]:
         """
@@ -157,8 +173,12 @@ class RPKPriceIncomeElasticity(AeroMAPSModel):
             from the constant-elasticity model using gdp_per_capita_init and population_init
             (at reference price); prospective years use the projected inputs without the
             COVID shift [RPK].
+        doc_net_energy_per_rpk_delayed
+            Energy cost per RPK after applying the first-order price-response lag, i.e. the
+            consumer-perceived price that drives the demand response [€/RPK].
         """
-        price_usd = doc_net_energy_per_rpk_mean / self.eur_usd_exchange_rate
+        doc_net_energy_per_rpk_delayed = self._apply_price_delay(doc_net_energy_per_rpk_mean)
+        price_usd = doc_net_energy_per_rpk_delayed / self.eur_usd_exchange_rate
         covid_shift = gdp_per_capita_covid_end - gdp_per_capita_2019
         hist_slice = slice(self.historic_start_year, self.prospection_start_year - 1)
 
@@ -278,6 +298,7 @@ class RPKPriceIncomeElasticity(AeroMAPSModel):
         self.df.loc[:, "annual_growth_rate_passenger_long_range"] = annual_growth_rate_passenger_long_range
         self.df.loc[:, "annual_growth_rate_passenger"] = annual_growth_rate_passenger
         self.df.loc[:, "rpk_model_without_covid"] = rpk_model_without_covid
+        self.df.loc[:, "doc_net_energy_per_rpk_delayed"] = doc_net_energy_per_rpk_delayed
 
         self.float_outputs["cagr_rpk_short_range"] = cagr_rpk_short_range
         self.float_outputs["cagr_rpk_medium_range"] = cagr_rpk_medium_range
@@ -308,4 +329,5 @@ class RPKPriceIncomeElasticity(AeroMAPSModel):
             prospective_evolution_rpk_long_range,
             prospective_evolution_rpk,
             rpk_model_without_covid,
+            doc_net_energy_per_rpk_delayed,
         )

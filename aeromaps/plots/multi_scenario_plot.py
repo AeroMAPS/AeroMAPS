@@ -1,4 +1,6 @@
 import matplotlib.pyplot as plt
+import matplotlib.lines as mlines
+import matplotlib.patches as mpatches
 import numpy as np
 import pandas as pd
 from abc import ABC, abstractmethod
@@ -23,7 +25,7 @@ DEFAULT_COLORS = [
 ]
 
 # Default line styles for scenarios within a group
-DEFAULT_LINESTYLES = ['-', '--', '-.', ':']
+DEFAULT_LINESTYLES = ['-', ':', '-.', '--']
 
 # Color palette for energy origins (used by energy/fuel supply plots)
 ENERGY_ORIGIN_COLORS = {
@@ -483,11 +485,35 @@ class MultiScenarioPlot(ABC):
             alpha=self.group_envelope_alpha,
             linewidth=0,
         )
+        # Always resolve to a concrete scenario index (closest to computed median/mean
+        # when group_envelope_middle is "median"/"mean", or the user-picked index).
+        if picked is None:
+            diffs = [np.nansum(np.abs(arr[:, i] - y_mid)) for i in range(arr.shape[1])]
+            effective_picked = int(min(range(len(diffs)), key=lambda i: diffs[i]))
+        else:
+            effective_picked = picked
+
+        mid_scenario = scenario_names[effective_picked]
+        mid_ls = self.get_scenario_style(mid_scenario)['linestyle']
+
+        # Background lines: all scenarios except the last and the mid scenario,
+        # each using its pre-assigned index-based linestyle from scenario_styles.
+        for scenario_name in scenario_names[:-1]:
+            if scenario_name == mid_scenario:
+                continue
+            style = self.get_scenario_style(scenario_name)
+            self.ax.plot(
+                x, series_by_scenario[scenario_name],
+                color=group_color,
+                linestyle=style['linestyle'],
+                linewidth=linewidth,
+            )
+        # y_mid uses the mid scenario's pre-assigned linestyle.
         self.ax.plot(
             x, y_mid,
             color=group_color,
+            linestyle=mid_ls,
             linewidth=linewidth,
-            label=label if label is not None else group_name,
         )
 
     def _filter_processes_by_outputs(self, required_outputs):
@@ -671,10 +697,106 @@ class MultiScenarioPlot(ABC):
             leg = self.ax.get_legend()
             if leg is not None:
                 leg.set_visible(False)
-        elif isinstance(legend, str):
+            return
+
+        # Two-column legend for envelope mode with groups
+        if self.group_display == "envelope" and self.scenario_groups:
+            loc = legend if isinstance(legend, str) else "best"
+            self._build_two_column_legend(loc=loc)
+            return
+
+        if isinstance(legend, str):
             handles, labels = self.ax.get_legend_handles_labels()
             if handles:
                 self.ax.legend(handles, labels, loc=legend)
+
+    def _build_two_column_legend(self, loc="best"):
+        """
+        Build a two-column legend for envelope mode.
+
+        Left column  – one coloured fill patch per scenario group, labeled
+                       with just the group name.
+        Right column – one grey fill patch labeled ``"s0 to sLast range"``
+                       (group name stripped from scenario names), followed by
+                       one grey line per plotted variant (all except the last
+                       scenario, which is only shown in the fill band).
+
+        Linestyle entries are derived from the first group (linestyles are
+        shared across groups by index position). The two columns are
+        interleaved so that ``ncols=2`` places them side-by-side.
+        """
+        all_groups = list(self._iter_scenario_groups())
+        if not all_groups:
+            return
+
+        # --- Left column: colored patches, one per group ---
+        group_handles, group_labels = [], []
+        for group_name, _, members in all_groups:
+            color = self.scenario_styles[members[0]]['color']
+            group_handles.append(
+                mpatches.Patch(facecolor=color,
+                               alpha=min(1.0, self.group_envelope_alpha + 0.4))
+            )
+            group_labels.append(group_name)
+
+        # --- Right column: range patch + one line per plotted variant ---
+        # Use the first group's member names as canonical variant labels.
+        first_group_name, _, first_members = all_groups[0]
+
+        style_handles, style_labels = [], []
+
+        # Range entry (grey fill patch)
+        first_unique = self._variant_label(first_group_name, first_members[0])
+        last_unique = self._variant_label(first_group_name, first_members[-1])
+        style_handles.append(
+            mpatches.Patch(facecolor="grey", alpha=self.group_envelope_alpha + 0.15)
+        )
+        style_labels.append(f"{first_unique} to {last_unique} range")
+
+        # One grey line per plotted variant (all except the last)
+        for i, member in enumerate(first_members[:-1]):
+            ls = DEFAULT_LINESTYLES[i % len(DEFAULT_LINESTYLES)]
+            style_handles.append(
+                mlines.Line2D([], [], color="grey", linestyle=ls, linewidth=2)
+            )
+            style_labels.append(self._variant_label(first_group_name, member))
+
+        # --- Put all group entries first, then all style entries ---
+        # matplotlib fills ncols=2 column-major (top-down per column), so
+        # [g0, g1, …, gN, s0, s1, …, sN] → col0=[g0..gN], col1=[s0..sN]
+        nrows = max(len(group_handles), len(style_handles))
+        blank_line = mlines.Line2D([], [], color="none")
+        blank_patch = mpatches.Patch(color="none")
+        while len(group_handles) < nrows:
+            group_handles.append(blank_patch)
+            group_labels.append("")
+        while len(style_handles) < nrows:
+            style_handles.append(blank_line)
+            style_labels.append("")
+
+        combined_handles = group_handles + style_handles
+        combined_labels = group_labels + style_labels
+
+        self.ax.legend(combined_handles, combined_labels, ncols=2, loc=loc)
+
+    @staticmethod
+    def _variant_label(group_name: str, scenario_name: str) -> str:
+        """
+        Return the unique part of ``scenario_name`` relative to ``group_name``.
+
+        Strips the group name prefix and any leading separators (``-``, ``_``,
+        space), then replaces remaining underscores with spaces.
+
+        Examples
+        --------
+        >>> _variant_label("SSP2", "SSP2-19")   # → "19"
+        >>> _variant_label("Baseline", "Baseline_High")  # → "High"
+        >>> _variant_label("MyGroup", "other")  # → "other"
+        """
+        if scenario_name.startswith(group_name):
+            suffix = scenario_name[len(group_name):].lstrip('-_ ')
+            return suffix.replace('_', ' ') if suffix else scenario_name
+        return scenario_name.replace('_', ' ')
 
     def _configure_canvas(self):
         """Configure matplotlib canvas properties."""

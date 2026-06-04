@@ -28,19 +28,20 @@ class RPKLogisticIncomePriceElasticity(AeroMAPSModel):
     name : str
         Name of the model instance ('rpk_price_adjusted_logistic' by default).
     """
-
     def __init__(self, name="rpk_price_adjusted_logistic", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
         # Calibrated logistic parameters (fixed at class level)
         self.left_asymptote: float = 0.0
-        self.capacity: float = 11107.928628672116
-        self.growth_rate: float = 0.00010075258175566807
+        self.capacity: float = 10567.171437822739
+        self.growth_rate: float = 0.00011537900000000001
         self.logistic_nu: float = 0.168484473
         self.asymptote_coeff: float = 1.148428926
         self.x_lag: float = 0.0
-        self.price_elast: float = -0.26608795863374457
+        self.price_elast: float = -0.34504782729982275
         # Reference all-energy cost per RPK from calibration [USD/RPK]
-        self.price_ref: float = 0.012613517478578513
+        self.price_ref: float = 0.00947670537084349
+        # Calibrated price-response delay (first-order lag time constant) [yr]; 0.0 disables it.
+        self.price_delay: float = 1.2562195408290782
         # Exchange rate used to convert price_ref from USD to EUR [EUR/USD]
         self.eur_usd_exchange_rate: float = 0.9
 
@@ -53,6 +54,19 @@ class RPKLogisticIncomePriceElasticity(AeroMAPSModel):
                 index=range(self.historic_start_year, self.end_year + 1),
             )
         }
+
+    def _apply_price_delay(self, price):
+        delayed = price.copy()
+        tau = getattr(self, "price_delay", 0.0)
+        if not tau or tau <= 0.0:
+            return delayed
+        a = float(exp(-1.0 / tau))  # annual step, dt = 1 year
+        prev = float(price.loc[self.prospection_start_year])
+        delayed.loc[self.prospection_start_year] = prev
+        for year in range(self.prospection_start_year + 1, self.end_year + 1):
+            prev = a * prev + (1.0 - a) * float(price.loc[year])
+            delayed.loc[year] = prev
+        return delayed
 
     def compute(
         self,
@@ -91,6 +105,7 @@ class RPKLogisticIncomePriceElasticity(AeroMAPSModel):
         float,
         float,
         float,
+        pd.Series,
         pd.Series,
     ]:
         """
@@ -174,6 +189,9 @@ class RPKLogisticIncomePriceElasticity(AeroMAPSModel):
             estimated from the logistic model using gdp_per_capita_init and population_init
             (at reference price); prospective years use the projected inputs without the
             COVID shift [RPK].
+        doc_net_energy_per_rpk_delayed
+            Energy cost per RPK after applying the first-order price-response lag, i.e. the
+            consumer-perceived price that drives the price index [€/RPK].
         """
         price_ref_eur = self.price_ref * self.eur_usd_exchange_rate
         covid_shift = gdp_per_capita_covid_end - gdp_per_capita_2019
@@ -208,7 +226,8 @@ class RPKLogisticIncomePriceElasticity(AeroMAPSModel):
             x_lag=self.x_lag,
         )
 
-        price_index = (doc_net_energy_per_rpk_mean / price_ref_eur) ** self.price_elast
+        doc_net_energy_per_rpk_delayed = self._apply_price_delay(doc_net_energy_per_rpk_mean)
+        price_index = (doc_net_energy_per_rpk_delayed / price_ref_eur) ** self.price_elast
         rpk_per_capita = rpk_per_capita_trend * price_index
 
         # --- Total RPK (model, no measures yet) ---
@@ -306,6 +325,7 @@ class RPKLogisticIncomePriceElasticity(AeroMAPSModel):
         self.df.loc[:, "rpk_no_elasticity"] = rpk_no_elasticity
         self.df.loc[:, "rpk_per_capita_trend"] = rpk_per_capita_trend
         self.df.loc[:, "price_index"] = price_index
+        self.df.loc[:, "doc_net_energy_per_rpk_delayed"] = doc_net_energy_per_rpk_delayed
         self.df.loc[:, "rpk_per_capita"] = rpk_per_capita
         self.df.loc[:, "annual_growth_rate_passenger_short_range"] = annual_growth_rate_passenger_short_range
         self.df.loc[:, "annual_growth_rate_passenger_medium_range"] = annual_growth_rate_passenger_medium_range
@@ -344,4 +364,5 @@ class RPKLogisticIncomePriceElasticity(AeroMAPSModel):
             prospective_evolution_rpk_long_range,
             prospective_evolution_rpk,
             rpk_model_without_covid,
+            doc_net_energy_per_rpk_delayed,
         )
