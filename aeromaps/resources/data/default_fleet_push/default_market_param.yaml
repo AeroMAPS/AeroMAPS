@@ -1,0 +1,57 @@
+markets:
+  TP : 
+    age_utilisation_sensib: -0.01
+    age_retirement_sensib: 0.19
+    reference_growth:
+    - year: 2035
+      rate : 0.0
+    - year: 2037
+      rate : -0.15
+    - year: 2040
+      rate : 0.1
+    - year : 2050
+      rate: 0.02
+    - year : 2071
+      rate: 0
+  RJ :  
+    age_utilisation_sensib: -0.01
+    age_retirement_sensib: 0.19
+    reference_growth:
+    - year: 2035
+      rate : 0.01
+    - year: 2037
+      rate : -0.15
+    - year: 2040
+      rate : 0.1
+    - year : 2050
+      rate: 0.02
+    - year : 2071
+      rate: 0
+  NB :  
+    age_utilisation_sensib: -0.01
+    age_retirement_sensib: 0.19
+    reference_growth:
+    - year: 2035
+      rate : 0.02
+    - year: 2037
+      rate : -0.15
+    - year: 2040
+      rate : 0.1
+    - year : 2050
+      rate: 0.01
+    - year : 2071
+      rate: 0
+  WB :  
+    age_utilisation_sensib: -0.01
+    age_retirement_sensib: 0.19
+    reference_growth:
+    - year: 2035
+      rate : 0.01
+    - year: 2037
+      rate : -0.15
+    - year: 2040
+      rate : 0.1
+    - year : 2050
+      rate: 0.01
+    - year : 2071
+      rate: 0
