@@ -224,26 +224,34 @@ class PassengerAircraftEfficiencySimpleShares(AeroMAPSModel):
         years_proj = np.arange(self.prospection_start_year, self.end_year + 1)
         idx_proj = pd.Index(years_proj)
 
-        self.df.loc[idx_hist, "energy_per_ask_without_operations_short_range_dropin_fuel"] = np.where(
-            short_range_rpk_share_2019 != 0,
-            energy_consumption_per_ask_init.loc[idx_hist]
-            * short_range_energy_share_2019
-            / short_range_rpk_share_2019, 
-            np.nan
+        # TODO: improve divison by zero handling
+
+        self.df.loc[idx_hist, "energy_per_ask_without_operations_short_range_dropin_fuel"] = (
+            np.where(
+                short_range_rpk_share_2019 != 0,
+                energy_consumption_per_ask_init.loc[idx_hist]
+                * short_range_energy_share_2019
+                / short_range_rpk_share_2019,
+                np.nan,
+            )
         )
-        self.df.loc[idx_hist, "energy_per_ask_without_operations_medium_range_dropin_fuel"] = np.where(
-            medium_range_energy_share_2019 != 0,
-            energy_consumption_per_ask_init.loc[idx_hist]
-            * medium_range_energy_share_2019
-            / medium_range_rpk_share_2019, 
-            np.nan
+        self.df.loc[idx_hist, "energy_per_ask_without_operations_medium_range_dropin_fuel"] = (
+            np.where(
+                medium_range_energy_share_2019 != 0,
+                energy_consumption_per_ask_init.loc[idx_hist]
+                * medium_range_energy_share_2019
+                / medium_range_rpk_share_2019,
+                np.nan,
+            )
         )
-        self.df.loc[idx_hist, "energy_per_ask_without_operations_long_range_dropin_fuel"] = np.where(
-            long_range_energy_share_2019 != 0,
-            energy_consumption_per_ask_init.loc[idx_hist]
-            * long_range_energy_share_2019
-            / long_range_rpk_share_2019, 
-            np.nan
+        self.df.loc[idx_hist, "energy_per_ask_without_operations_long_range_dropin_fuel"] = (
+            np.where(
+                long_range_energy_share_2019 != 0,
+                energy_consumption_per_ask_init.loc[idx_hist]
+                * long_range_energy_share_2019
+                / long_range_rpk_share_2019,
+                np.nan,
+            )
         )
 
         # Projections
@@ -895,27 +903,33 @@ class PassengerAircraftEfficiencyComplex(AeroMAPSModel):
 
         # Historical years: vectorized with NaN handling for zero RPK shares (regionalisation)
         years_hist = np.arange(self.historic_start_year, self.prospection_start_year)
-        
-        self.df.loc[years_hist, "energy_per_ask_without_operations_short_range_dropin_fuel"] = np.where(
-            short_range_rpk_share_2019 != 0,
-            energy_consumption_per_ask_init.loc[years_hist]
-            * short_range_energy_share_2019
-            / short_range_rpk_share_2019,
-            np.nan
+        # TODO: improve divison by zero handling
+        self.df.loc[years_hist, "energy_per_ask_without_operations_short_range_dropin_fuel"] = (
+            np.where(
+                short_range_rpk_share_2019 != 0,
+                energy_consumption_per_ask_init.loc[years_hist]
+                * short_range_energy_share_2019
+                / short_range_rpk_share_2019,
+                np.nan,
+            )
         )
-        self.df.loc[years_hist, "energy_per_ask_without_operations_medium_range_dropin_fuel"] = np.where(
-            medium_range_rpk_share_2019 != 0,
-            energy_consumption_per_ask_init.loc[years_hist]
-            * medium_range_energy_share_2019
-            / medium_range_rpk_share_2019,
-            np.nan
+        self.df.loc[years_hist, "energy_per_ask_without_operations_medium_range_dropin_fuel"] = (
+            np.where(
+                medium_range_rpk_share_2019 != 0,
+                energy_consumption_per_ask_init.loc[years_hist]
+                * medium_range_energy_share_2019
+                / medium_range_rpk_share_2019,
+                np.nan,
+            )
         )
-        self.df.loc[years_hist, "energy_per_ask_without_operations_long_range_dropin_fuel"] = np.where(
-            long_range_rpk_share_2019 != 0,
-            energy_consumption_per_ask_init.loc[years_hist]
-            * long_range_energy_share_2019
-            / long_range_rpk_share_2019,
-            np.nan
+        self.df.loc[years_hist, "energy_per_ask_without_operations_long_range_dropin_fuel"] = (
+            np.where(
+                long_range_rpk_share_2019 != 0,
+                energy_consumption_per_ask_init.loc[years_hist]
+                * long_range_energy_share_2019
+                / long_range_rpk_share_2019,
+                np.nan,
+            )
         )
         # Share
         self.df["ask_short_range_dropin_fuel_share"] = 100.0
@@ -1321,31 +1335,33 @@ class FreightAircraftEfficiency(AeroMAPSModel):
                 + ask_long_range_dropin_fuel_k
             )
 
-            # Handling zero divisions if no traffic on a specific range category. 
+            # Handling zero divisions if no traffic on a specific range category.
             energy_per_rtk_without_operations_freight_dropin_fuel_k = 0.0
-            
+            # TODO: improve divison by zero handling
             if ask_short_range_dropin_fuel_k != 0:
                 energy_per_rtk_without_operations_freight_dropin_fuel_k += (
                     energy_per_rtk_without_operations_freight_dropin_fuel_short_range_k
                     * ask_short_range_dropin_fuel_k
                     / ask_total_dropin_fuel_k
                 )
-            
+
             if ask_medium_range_dropin_fuel_k != 0:
                 energy_per_rtk_without_operations_freight_dropin_fuel_k += (
                     energy_per_rtk_without_operations_freight_dropin_fuel_medium_range_k
                     * ask_medium_range_dropin_fuel_k
                     / ask_total_dropin_fuel_k
                 )
-            
+
             if ask_long_range_dropin_fuel_k != 0:
                 energy_per_rtk_without_operations_freight_dropin_fuel_k += (
                     energy_per_rtk_without_operations_freight_dropin_fuel_long_range_k
                     * ask_long_range_dropin_fuel_k
                     / ask_total_dropin_fuel_k
                 )
-            
-            self.df.loc[k, "energy_per_rtk_without_operations_freight_dropin_fuel"] = energy_per_rtk_without_operations_freight_dropin_fuel_k
+
+            self.df.loc[k, "energy_per_rtk_without_operations_freight_dropin_fuel"] = (
+                energy_per_rtk_without_operations_freight_dropin_fuel_k
+            )
 
         # Covid
         self.df.loc[2020, "energy_per_rtk_without_operations_freight_dropin_fuel"] = self.df.loc[
@@ -1366,7 +1382,7 @@ class FreightAircraftEfficiency(AeroMAPSModel):
             + ask_medium_range_electric_share * (ask_medium_range / ask)
             + ask_long_range_electric_share * (ask_long_range / ask)
         )
-        
+
         rtk_dropin_fuel_share = 100 - rtk_hydrogen_share - rtk_electric_share
         self.df.loc[:, "rtk_hydrogen_share"] = rtk_hydrogen_share
         self.df.loc[:, "rtk_dropin_fuel_share"] = rtk_dropin_fuel_share
@@ -1413,9 +1429,12 @@ class FreightAircraftEfficiency(AeroMAPSModel):
             self.df.loc[hydrogen_zero_mask, "energy_per_rtk_without_operations_freight_dropin_fuel"]
         )
 
-
-        short_range_hydrogen_total_share_ask = ask_short_range_hydrogen_share * (ask_short_range / ask)
-        medium_range_hydrogen_total_share_ask = ask_medium_range_hydrogen_share * (ask_medium_range / ask)
+        short_range_hydrogen_total_share_ask = ask_short_range_hydrogen_share * (
+            ask_short_range / ask
+        )
+        medium_range_hydrogen_total_share_ask = ask_medium_range_hydrogen_share * (
+            ask_medium_range / ask
+        )
         long_range_hydrogen_total_share_ask = ask_long_range_hydrogen_share * (ask_long_range / ask)
 
         hydrogen_weighted_sum = 0
@@ -1437,9 +1456,9 @@ class FreightAircraftEfficiency(AeroMAPSModel):
                 * long_range_hydrogen_total_share_ask
             )
 
-        
-        
-        hydrogen_weighted_sum = hydrogen_weighted_sum / rtk_hydrogen_share.loc[hydrogen_nonzero_mask]
+        hydrogen_weighted_sum = (
+            hydrogen_weighted_sum / rtk_hydrogen_share.loc[hydrogen_nonzero_mask]
+        )
 
         self.df.loc[hydrogen_nonzero_mask, "energy_per_rtk_without_operations_freight_hydrogen"] = (
             energy_per_rtk_without_operations_freight_dropin_fuel.loc[hydrogen_nonzero_mask]
@@ -1453,7 +1472,6 @@ class FreightAircraftEfficiency(AeroMAPSModel):
         self.df.loc[electric_zero_mask, "energy_per_rtk_without_operations_freight_electric"] = (
             self.df.loc[electric_zero_mask, "energy_per_rtk_without_operations_freight_dropin_fuel"]
         )
-
 
         short_range_electric_total_sum = ask_short_range_electric_share * (ask_short_range / ask)
         medium_range_electric_total_sum = ask_medium_range_electric_share * (ask_medium_range / ask)
@@ -1473,13 +1491,15 @@ class FreightAircraftEfficiency(AeroMAPSModel):
                 relative_energy_per_ask_electric_wrt_dropin_medium_range
                 * medium_range_electric_total_sum
             )
-        if long_range_electric_total_sum.sum() != 0:    
+        if long_range_electric_total_sum.sum() != 0:
             electric_weighted_sum += (
                 relative_energy_per_ask_electric_wrt_dropin_long_range
                 * long_range_electric_total_sum
             )
 
-        electric_weighted_sum = electric_weighted_sum / rtk_electric_share.loc[electric_nonzero_mask]
+        electric_weighted_sum = (
+            electric_weighted_sum / rtk_electric_share.loc[electric_nonzero_mask]
+        )
 
         self.df.loc[electric_nonzero_mask, "energy_per_rtk_without_operations_freight_electric"] = (
             energy_per_rtk_without_operations_freight_dropin_fuel.loc[electric_nonzero_mask]

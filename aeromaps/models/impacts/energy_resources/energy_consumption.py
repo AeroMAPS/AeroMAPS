@@ -113,19 +113,21 @@ class DropInFuelConsumption(AeroMAPSModel):
         # Drop-in fuel
 
         ### Handle potential NaN values in energy per ASK for drop-in fuel without operations (e.g., due to zero ASK for certain market segments in some years) by filling NaN with 0, which will lead to zero energy consumption for those segments instead of propagating NaN values.
+        # TODO: improve divison by zero handling
         if ask_short_range_dropin_fuel.sum() == 0.0:
             energy_consumption_short_range_dropin_fuel_without_operations = (
-            0.0 * ask_short_range_dropin_fuel
-        )
+                0.0 * ask_short_range_dropin_fuel
+            )
         else:
             energy_consumption_short_range_dropin_fuel_without_operations = (
-            energy_per_ask_without_operations_short_range_dropin_fuel * ask_short_range_dropin_fuel
-        )
-            
+                energy_per_ask_without_operations_short_range_dropin_fuel
+                * ask_short_range_dropin_fuel
+            )
+
         if ask_medium_range_dropin_fuel.sum() == 0.0:
             energy_consumption_medium_range_dropin_fuel_without_operations = (
-            0.0 * ask_medium_range_dropin_fuel
-        )
+                0.0 * ask_medium_range_dropin_fuel
+            )
         else:
             energy_consumption_medium_range_dropin_fuel_without_operations = (
                 energy_per_ask_without_operations_medium_range_dropin_fuel
@@ -134,11 +136,12 @@ class DropInFuelConsumption(AeroMAPSModel):
 
         if ask_long_range_dropin_fuel.sum() == 0.0:
             energy_consumption_long_range_dropin_fuel_without_operations = (
-            0.0 * ask_long_range_dropin_fuel
-        )
+                0.0 * ask_long_range_dropin_fuel
+            )
         else:
             energy_consumption_long_range_dropin_fuel_without_operations = (
-                energy_per_ask_without_operations_long_range_dropin_fuel * ask_long_range_dropin_fuel
+                energy_per_ask_without_operations_long_range_dropin_fuel
+                * ask_long_range_dropin_fuel
             )
 
         energy_consumption_passenger_dropin_fuel_without_operations = (
@@ -147,16 +150,14 @@ class DropInFuelConsumption(AeroMAPSModel):
             + energy_consumption_long_range_dropin_fuel_without_operations
         )
 
-        # in case freight consumption becomes independant of pax in the future, case discjunction still made preventively 
+        # in case freight consumption becomes independant of pax in the future, case discjunction still made preventively
         if rtk_dropin_fuel.sum() == 0.0:
-             energy_consumption_freight_dropin_fuel_without_operations = (
-            0.0 * rtk_dropin_fuel
-        )
+            energy_consumption_freight_dropin_fuel_without_operations = 0.0 * rtk_dropin_fuel
         else:
             energy_consumption_freight_dropin_fuel_without_operations = (
-            energy_per_rtk_without_operations_freight_dropin_fuel * rtk_dropin_fuel
-        )
-            
+                energy_per_rtk_without_operations_freight_dropin_fuel * rtk_dropin_fuel
+            )
+
         energy_consumption_dropin_fuel_without_operations = (
             energy_consumption_passenger_dropin_fuel_without_operations
             + energy_consumption_freight_dropin_fuel_without_operations
@@ -185,25 +186,19 @@ class DropInFuelConsumption(AeroMAPSModel):
         # Drop-in fuel
 
         if ask_short_range_dropin_fuel.sum() == 0.0:
-             energy_consumption_short_range_dropin_fuel = (
-            0.0 * ask_short_range_dropin_fuel
-        )
+            energy_consumption_short_range_dropin_fuel = 0.0 * ask_short_range_dropin_fuel
         else:
             energy_consumption_short_range_dropin_fuel = (
-            energy_per_ask_short_range_dropin_fuel * ask_short_range_dropin_fuel
-        )
+                energy_per_ask_short_range_dropin_fuel * ask_short_range_dropin_fuel
+            )
         if ask_medium_range_dropin_fuel.sum() == 0.0:
-             energy_consumption_medium_range_dropin_fuel = (
-            0.0 * ask_medium_range_dropin_fuel
-        )
+            energy_consumption_medium_range_dropin_fuel = 0.0 * ask_medium_range_dropin_fuel
         else:
             energy_consumption_medium_range_dropin_fuel = (
                 energy_per_ask_medium_range_dropin_fuel * ask_medium_range_dropin_fuel
             )
         if ask_long_range_dropin_fuel.sum() == 0.0:
-             energy_consumption_long_range_dropin_fuel = (
-            0.0 * ask_long_range_dropin_fuel
-        )     
+            energy_consumption_long_range_dropin_fuel = 0.0 * ask_long_range_dropin_fuel
         else:
             energy_consumption_long_range_dropin_fuel = (
                 energy_per_ask_long_range_dropin_fuel * ask_long_range_dropin_fuel
@@ -215,16 +210,13 @@ class DropInFuelConsumption(AeroMAPSModel):
             + energy_consumption_long_range_dropin_fuel
         )
 
-        # in case freight consumption becomes independant of pax in the future, case discjunction still made preventively 
+        # in case freight consumption becomes independant of pax in the future, case discjunction still made preventively
         if rtk_dropin_fuel.sum() == 0.0:
-             energy_consumption_freight_dropin_fuel = (
-            0.0 * rtk_dropin_fuel
-        )
+            energy_consumption_freight_dropin_fuel = 0.0 * rtk_dropin_fuel
         else:
             energy_consumption_freight_dropin_fuel = (
                 energy_per_rtk_freight_dropin_fuel * rtk_dropin_fuel
             )
-
 
         energy_consumption_dropin_fuel = (
             energy_consumption_passenger_dropin_fuel + energy_consumption_freight_dropin_fuel
@@ -837,35 +829,37 @@ class HydrogenConsumption(AeroMAPSModel):
 
         # WITHOUT OPERATIONS
 
-        ### Handle potential NaN values in energy per ASK for drop-in fuel without operations 
-        # (e.g., due to zero ASK for certain market segments in some years) by filling NaN with 0, 
+        ### Handle potential NaN values in energy per ASK for drop-in fuel without operations
+        # (e.g., due to zero ASK for certain market segments in some years) by filling NaN with 0,
         # which will lead to zero energy consumption for those segments instead of propagating NaN values.
+
+        # TODO: improve divison by zero handling
         if ask_short_range_hydrogen.sum() == 0.0:
             energy_consumption_short_range_hydrogen_without_operations = (
-            0.0 * ask_short_range_hydrogen
-        )
+                0.0 * ask_short_range_hydrogen
+            )
         else:
             energy_consumption_short_range_hydrogen_without_operations = (
-            energy_per_ask_without_operations_short_range_hydrogen * ask_short_range_hydrogen
-        )
-            
+                energy_per_ask_without_operations_short_range_hydrogen * ask_short_range_hydrogen
+            )
+
         if ask_medium_range_hydrogen.sum() == 0.0:
             energy_consumption_medium_range_hydrogen_without_operations = (
-            0.0 * ask_medium_range_hydrogen
-        )
+                0.0 * ask_medium_range_hydrogen
+            )
         else:
             energy_consumption_medium_range_hydrogen_without_operations = (
-            energy_per_ask_without_operations_medium_range_hydrogen * ask_medium_range_hydrogen
-        )
+                energy_per_ask_without_operations_medium_range_hydrogen * ask_medium_range_hydrogen
+            )
         if ask_long_range_hydrogen.sum() == 0.0:
             energy_consumption_long_range_hydrogen_without_operations = (
-            0.0 * ask_long_range_hydrogen
-        )
-        else:             
+                0.0 * ask_long_range_hydrogen
+            )
+        else:
             energy_consumption_long_range_hydrogen_without_operations = (
-            energy_per_ask_without_operations_long_range_hydrogen * ask_long_range_hydrogen
-        )
-            
+                energy_per_ask_without_operations_long_range_hydrogen * ask_long_range_hydrogen
+            )
+
         energy_consumption_passenger_hydrogen_without_operations = (
             energy_consumption_short_range_hydrogen_without_operations
             + energy_consumption_medium_range_hydrogen_without_operations
@@ -873,13 +867,11 @@ class HydrogenConsumption(AeroMAPSModel):
         )
 
         if rtk_hydrogen.sum() == 0.0:
-            energy_consumption_freight_hydrogen_without_operations = (
-            0.0 * rtk_hydrogen
-        )
+            energy_consumption_freight_hydrogen_without_operations = 0.0 * rtk_hydrogen
         else:
             energy_consumption_freight_hydrogen_without_operations = (
-            energy_per_rtk_without_operations_freight_hydrogen * rtk_hydrogen
-        )
+                energy_per_rtk_without_operations_freight_hydrogen * rtk_hydrogen
+            )
         energy_consumption_hydrogen_without_operations = (
             energy_consumption_passenger_hydrogen_without_operations
             + energy_consumption_freight_hydrogen_without_operations
@@ -906,35 +898,29 @@ class HydrogenConsumption(AeroMAPSModel):
 
         # WITH OPERATIONS
 
-        ### Handle potential NaN values in energy per ASK for drop-in fuel without operations 
-        # (e.g., due to zero ASK for certain market segments in some years) by filling NaN with 0, 
+        ### Handle potential NaN values in energy per ASK for drop-in fuel without operations
+        # (e.g., due to zero ASK for certain market segments in some years) by filling NaN with 0,
         # which will lead to zero energy consumption for those segments instead of propagating NaN values.
-
+        # TODO: improve divison by zero handling
         if ask_short_range_hydrogen.sum() == 0.0:
-            energy_consumption_short_range_hydrogen = (
-            0.0 * ask_short_range_hydrogen
-        )
+            energy_consumption_short_range_hydrogen = 0.0 * ask_short_range_hydrogen
         else:
             energy_consumption_short_range_hydrogen = (
                 energy_per_ask_short_range_hydrogen * ask_short_range_hydrogen
             )
         if ask_medium_range_hydrogen.sum() == 0.0:
-            energy_consumption_medium_range_hydrogen = (
-            0.0 * ask_medium_range_hydrogen
-        )
+            energy_consumption_medium_range_hydrogen = 0.0 * ask_medium_range_hydrogen
         else:
             energy_consumption_medium_range_hydrogen = (
-            energy_per_ask_medium_range_hydrogen * ask_medium_range_hydrogen
-        )
+                energy_per_ask_medium_range_hydrogen * ask_medium_range_hydrogen
+            )
         if ask_long_range_hydrogen.sum() == 0.0:
-            energy_consumption_long_range_hydrogen = (
-            0.0 * ask_long_range_hydrogen
-        )
+            energy_consumption_long_range_hydrogen = 0.0 * ask_long_range_hydrogen
         else:
             energy_consumption_long_range_hydrogen = (
-            energy_per_ask_long_range_hydrogen * ask_long_range_hydrogen
-        )
-            
+                energy_per_ask_long_range_hydrogen * ask_long_range_hydrogen
+            )
+
         energy_consumption_passenger_hydrogen = (
             energy_consumption_short_range_hydrogen
             + energy_consumption_medium_range_hydrogen
@@ -942,13 +928,9 @@ class HydrogenConsumption(AeroMAPSModel):
         )
 
         if rtk_hydrogen.sum() == 0.0:
-            energy_consumption_freight_hydrogen = (
-            0.0 * rtk_hydrogen
-        )
+            energy_consumption_freight_hydrogen = 0.0 * rtk_hydrogen
         else:
-            energy_consumption_freight_hydrogen = (
-                energy_per_rtk_freight_hydrogen * rtk_hydrogen
-            )
+            energy_consumption_freight_hydrogen = energy_per_rtk_freight_hydrogen * rtk_hydrogen
 
         energy_consumption_hydrogen = (
             energy_consumption_passenger_hydrogen + energy_consumption_freight_hydrogen
@@ -1086,34 +1068,34 @@ class ElectricConsumption(AeroMAPSModel):
 
         # WITHOUT OPERATIONS
 
-        ### Handle potential NaN values in energy per ASK for drop-in fuel without operations 
-        # (e.g., due to zero ASK for certain market segments in some years) by filling NaN with 0, 
+        ### Handle potential NaN values in energy per ASK for drop-in fuel without operations
+        # (e.g., due to zero ASK for certain market segments in some years) by filling NaN with 0,
         # which will lead to zero energy consumption for those segments instead of propagating NaN values.
-
+        # TODO: improve divison by zero handling
         if ask_short_range_electric.sum() == 0.0:
             energy_consumption_short_range_electric_without_operations = (
-            0.0 * ask_short_range_electric
-        )
+                0.0 * ask_short_range_electric
+            )
         else:
             energy_consumption_short_range_electric_without_operations = (
-            energy_per_ask_without_operations_short_range_electric * ask_short_range_electric
-        )
+                energy_per_ask_without_operations_short_range_electric * ask_short_range_electric
+            )
         if ask_medium_range_electric.sum() == 0.0:
             energy_consumption_medium_range_electric_without_operations = (
-            0.0 * ask_medium_range_electric
-        )
+                0.0 * ask_medium_range_electric
+            )
         else:
             energy_consumption_medium_range_electric_without_operations = (
-            energy_per_ask_without_operations_medium_range_electric * ask_medium_range_electric
-        )
+                energy_per_ask_without_operations_medium_range_electric * ask_medium_range_electric
+            )
         if ask_long_range_electric.sum() == 0.0:
             energy_consumption_long_range_electric_without_operations = (
-            0.0 * ask_long_range_electric
-        )
+                0.0 * ask_long_range_electric
+            )
         else:
             energy_consumption_long_range_electric_without_operations = (
-            energy_per_ask_without_operations_long_range_electric * ask_long_range_electric
-        )
+                energy_per_ask_without_operations_long_range_electric * ask_long_range_electric
+            )
 
         energy_consumption_passenger_electric_without_operations = (
             energy_consumption_short_range_electric_without_operations
@@ -1122,14 +1104,11 @@ class ElectricConsumption(AeroMAPSModel):
         )
 
         if rtk_electric.sum() == 0.0:
-            energy_consumption_freight_electric_without_operations = (
-            0.0 * rtk_electric
-        )
+            energy_consumption_freight_electric_without_operations = 0.0 * rtk_electric
         else:
             energy_consumption_freight_electric_without_operations = (
                 energy_per_rtk_without_operations_freight_electric * rtk_electric
             )
-
 
         energy_consumption_electric_without_operations = (
             energy_consumption_passenger_electric_without_operations
@@ -1156,34 +1135,27 @@ class ElectricConsumption(AeroMAPSModel):
         )
 
         # WITH OPERATIONS
-        
 
-        ### Handle potential NaN values in energy per ASK for drop-in fuel without operations 
-        # (e.g., due to zero ASK for certain market segments in some years) by filling NaN with 0, 
+        ### Handle potential NaN values in energy per ASK for drop-in fuel without operations
+        # (e.g., due to zero ASK for certain market segments in some years) by filling NaN with 0,
         # which will lead to zero energy consumption for those segments instead of propagating NaN values.
-        
+        # TODO: improve divison by zero handling
         if ask_short_range_electric.sum() == 0.0:
-            energy_consumption_short_range_electric = (
-            0.0 * ask_short_range_electric
-        )
+            energy_consumption_short_range_electric = 0.0 * ask_short_range_electric
         else:
             energy_consumption_short_range_electric = (
-            energy_per_ask_short_range_electric * ask_short_range_electric
-        )
-            
+                energy_per_ask_short_range_electric * ask_short_range_electric
+            )
+
         if ask_medium_range_electric.sum() == 0.0:
-            energy_consumption_medium_range_electric = (
-            0.0 * ask_medium_range_electric
-        )
+            energy_consumption_medium_range_electric = 0.0 * ask_medium_range_electric
         else:
             energy_consumption_medium_range_electric = (
                 energy_per_ask_medium_range_electric * ask_medium_range_electric
             )
 
         if ask_long_range_electric.sum() == 0.0:
-            energy_consumption_long_range_electric = (
-            0.0 * ask_long_range_electric
-        )
+            energy_consumption_long_range_electric = 0.0 * ask_long_range_electric
         else:
             energy_consumption_long_range_electric = (
                 energy_per_ask_long_range_electric * ask_long_range_electric
@@ -1196,12 +1168,10 @@ class ElectricConsumption(AeroMAPSModel):
         )
 
         if rtk_electric.sum() == 0.0:
-            energy_consumption_freight_electric = (
-            0.0 * rtk_electric
-        )
+            energy_consumption_freight_electric = 0.0 * rtk_electric
         else:
             energy_consumption_freight_electric = energy_per_rtk_freight_electric * rtk_electric
-        
+
         energy_consumption_electric = (
             energy_consumption_passenger_electric + energy_consumption_freight_electric
         )
@@ -1466,7 +1436,7 @@ class EnergyConsumption(AeroMAPSModel):
             + energy_consumption_medium_range_electric
         )
         energy_consumption_long_range = (
-            + energy_consumption_long_range_dropin_fuel
+            +energy_consumption_long_range_dropin_fuel
             + energy_consumption_long_range_hydrogen
             + energy_consumption_long_range_electric
         )
