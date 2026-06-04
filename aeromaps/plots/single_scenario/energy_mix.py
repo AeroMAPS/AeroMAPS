@@ -161,7 +161,7 @@ _PATHWAY_COLORS = [
 # Blending mandates — relative share of drop-in fuel by energy origin (%)
 # ---------------------------------------------------------------------------
 
-class BlendingMandatePlot(SingleScenarioPlot):
+class DropInSharesBreakdownPlot(SingleScenarioPlot):
     """
     Stacked area (0–100 %) showing the share of each energy origin in the
     drop-in fuel blend.
@@ -217,7 +217,7 @@ class BlendingMandatePlot(SingleScenarioPlot):
             self.ax.set_ylim(0, 100)
 
         self.ax.grid(True, alpha=0.3)
-        self.ax.set_title("Drop-in fuel blending mandate (share by origin)")
+        self.ax.set_title("Drop-in fuel shares breakdown (by origin)")
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Share of drop-in fuel blend [%]")
         self.ax.set_xlim(years[0], years[-1])

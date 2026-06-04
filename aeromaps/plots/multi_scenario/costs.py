@@ -83,7 +83,7 @@ class AirfareComparisonPlot(MultiScenarioPlot):
         self.ax.grid(True, alpha=0.3)
 
 
-class AllEnergyCostsPerRPKComparisonPlot(MultiScenarioPlot):
+class DocNetEnergyPerRPKComparisonPlot(MultiScenarioPlot):
     """Compare total energy-related costs per RPK across scenarios.
 
     Plots ``doc_net_energy_per_rpk_mean`` (energy + carbon tax − subsidy +
@@ -97,7 +97,7 @@ class AllEnergyCostsPerRPKComparisonPlot(MultiScenarioPlot):
 
     def create_plot(self):
         self._plot_grouped_series()
-        self.ax.set_title("All Energy Costs per RPK – Scenario Comparison")
+        self.ax.set_title("Net Energy Cost per RPK – Scenario Comparison")
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Energy costs [€/RPK]")
         self.ax.legend(loc="best")

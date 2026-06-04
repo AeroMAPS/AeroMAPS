@@ -374,6 +374,8 @@ class AeroMAPSProcess(object):
         # Initialize disciplines
         self._initialize_disciplines()
 
+        # TODO: expose these MDA settings (tolerance, max_mda_iter, inner_mda_name,
+        # ...) as kwargs read from the configuration file instead of hardcoding them.
         # Tolerance must be tight enough to resolve the price-elastic demand loop
         # (doc_net_energy_per_rpk_mean <-> rpk). At 1e-5 the Gauss-Seidel solver
         # reports convergence while that coupling is still ~25% off in SAF-type
