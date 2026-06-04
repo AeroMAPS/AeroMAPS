@@ -1,7 +1,10 @@
 # ============================================================================
 # Multi-Regional AeroMAPS Configuration - Europe (Tutorial)
 # ============================================================================
-# Two-region example: EU Domestic and EU International
+# Two-region example: EU Domestic and EU International.
+# This variant runs in "separate_processes" mode (each region solved independently,
+# then aggregated). It is identical to regionalisation_europe_unified_mda.yaml except
+# for `execution_mode`, so the tutorial can run both and check they agree.
 # ============================================================================
 
 regionalisation:
