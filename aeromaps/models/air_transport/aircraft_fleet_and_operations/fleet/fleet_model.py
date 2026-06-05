@@ -871,11 +871,14 @@ class Fleet(object):
             recent_sr_energy = sr_nb_cat.recent_reference_aircraft.energy_per_ask
             if old_sr_energy is None or recent_sr_energy is None:
                 raise ValueError("Short Range reference aircraft energy_per_ask must be defined")
-
-            mean_energy_init_ask_short_range = (
-                self.parameters.energy_consumption_init[2019]
-                * self.parameters.short_range_energy_share_2019
-            ) / (self.parameters.ask_init[2019] * self.parameters.short_range_rpk_share_2019)
+            
+            if self.parameters.short_range_rpk_share_2019==0.0:
+                mean_energy_init_ask_short_range = np.nan
+            else:
+                mean_energy_init_ask_short_range = (
+                    self.parameters.energy_consumption_init[2019]
+                    * self.parameters.short_range_energy_share_2019
+                ) / (self.parameters.ask_init[2019] * self.parameters.short_range_rpk_share_2019)
 
             share_recent_short_range = (mean_energy_init_ask_short_range - old_sr_energy) / (
                 recent_sr_energy - old_sr_energy
@@ -924,10 +927,14 @@ class Fleet(object):
             if old_mr_energy is None or recent_mr_energy is None:
                 raise ValueError("Medium Range reference aircraft energy_per_ask must be defined")
 
-            mean_energy_init_ask_medium_range = (
+            if self.parameters.medium_range_rpk_share_2019==0.0:
+                mean_energy_init_ask_medium_range = np.nan
+            else:
+                mean_energy_init_ask_medium_range = (
                 self.parameters.energy_consumption_init[2019]
                 * self.parameters.medium_range_energy_share_2019
-            ) / (self.parameters.ask_init[2019] * self.parameters.medium_range_rpk_share_2019)
+                ) / (self.parameters.ask_init[2019] * self.parameters.medium_range_rpk_share_2019)
+            
 
             share_recent_medium_range = (mean_energy_init_ask_medium_range - old_mr_energy) / (
                 recent_mr_energy - old_mr_energy
@@ -975,10 +982,13 @@ class Fleet(object):
             if old_lr_energy is None or recent_lr_energy is None:
                 raise ValueError("Long Range reference aircraft energy_per_ask must be defined")
 
-            mean_energy_init_ask_long_range = (
-                self.parameters.energy_consumption_init[2019]
-                * self.parameters.long_range_energy_share_2019
-            ) / (self.parameters.ask_init[2019] * self.parameters.long_range_rpk_share_2019)
+            if self.parameters.long_range_rpk_share_2019==0.0:
+                mean_energy_init_ask_long_range = np.nan
+            else:
+                mean_energy_init_ask_long_range = (
+                    self.parameters.energy_consumption_init[2019]
+                    * self.parameters.long_range_energy_share_2019
+                ) / (self.parameters.ask_init[2019] * self.parameters.long_range_rpk_share_2019)
 
             share_recent_long_range = (mean_energy_init_ask_long_range - old_lr_energy) / (
                 recent_lr_energy - old_lr_energy
