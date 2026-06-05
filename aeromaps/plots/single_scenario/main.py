@@ -7,9 +7,19 @@ from aeromaps.plots.single_scenario_plot import plot_1_y
 
 
 class AirTransportCO2EmissionsPlot(SingleScenarioPlot):
-    def __init__(self, process, figsize=None):
+    required_outputs = [
+        "co2_emissions_2019technology",
+        "co2_emissions_including_aircraft_efficiency",
+        "co2_emissions_including_load_factor",
+        "co2_emissions_including_energy",
+        "co2_emissions_2019technology_baseline3",
+        "carbon_offset",
+        "co2_emissions",
+    ]
+
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_1_x, plot_1_y)
@@ -216,9 +226,18 @@ class AirTransportCO2EmissionsPlot(SingleScenarioPlot):
 
 
 class AirTransportClimateImpactsPlot(SingleScenarioPlot):
-    def __init__(self, process, figsize=None):
+    required_outputs = [
+        "co2_erf",
+        "co2_h2o_erf",
+        "co2_h2o_nox_erf",
+        "co2_h2o_nox_contrails_erf",
+        "aerosol_erf",
+        "total_erf",
+    ]
+
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_1_x, plot_1_y)

@@ -1,0 +1,30 @@
+# Sensitivity: USA without SAF mandate
+# Only USA_DOM and USA_INT, with zeroed SAF quantities
+
+models:
+  standards:
+    - default_models_top_down
+
+regionalisation:
+  execution_mode: "separate_processes"
+  global_namespace: "overall"
+
+  regions:
+    USA_DOM:
+      config_file: "./usa_dom_config.yaml"
+    USA_INT:
+      config_file: "./usa_int_config.yaml"
+
+  aggregation:
+    sum:
+      - co2_emissions_including_energy
+      - co2_emissions_including_aircraft_efficiency
+      - co2_emissions_including_load_factor
+      - co2_emissions_2019technology
+      - cumulative_co2_emissions
+      - cumulative_co2_emissions_including_load_factor
+      - cumulative_co2_emissions_2019technology
+      - cumulative_carbon_offset
+      - carbon_offset
+      - rpk
+      - ask

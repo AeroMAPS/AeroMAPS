@@ -5,7 +5,11 @@ This module tests the multi-scenario plot classes and their functionality.
 """
 
 import pytest
-from aeromaps import create_process, create_multi_process
+from aeromaps import create_process, assemble_processes
+from aeromaps.plots.multi_scenario import available_multi_plots
+
+
+_MULTI_PLOTS = sorted(available_multi_plots.keys())
 
 
 @pytest.fixture(scope="module")
@@ -15,7 +19,7 @@ def processes():
     # Create first process
     config_basic = os.path.join(
         os.path.dirname(__file__),
-        "../core/tested_configs/config_basic.yaml"
+        "../tested_configs/config_basic.yaml"
     )
     proc1 = create_process(configuration_file=config_basic)
     proc1.compute()
@@ -33,7 +37,7 @@ def processes():
 
     config_full = os.path.join(
         os.path.dirname(__file__),
-        "../core/tested_configs/config_basic_full.yaml"
+        "../tested_configs/config_basic_full.yaml"
     )
     proc3 = create_process(configuration_file=config_full)
     proc3.compute()
@@ -41,75 +45,30 @@ def processes():
     return {"scenario_1": proc1, "scenario_2": proc2, "scenario_3": proc3}
 
 
-def test_list_available_plots(processes):
-    """Test that list_available_plots returns plot names."""
-    multi = create_multi_process(processes)
+def test_multi_plots_registry_nonempty():
+    """Guard against an accidentally-empty registry."""
+    assert _MULTI_PLOTS, "available_multi_plots is empty"
+
+
+def test_list_available_plots_matches_registry(processes):
+    """list_available_plots() must surface every registered multi-scenario plot."""
+    multi = assemble_processes(processes)
     plots = multi.list_available_plots()
-    
-    assert plots is not None
-    assert isinstance(plots, list)
-    assert len(plots) > 0
-    
-    # Check some expected plots are available
-    assert "co2_emissions_comparison" in plots
-    assert "energy_consumption_comparison" in plots
-    assert "co2_per_rpk_comparison" in plots
-    assert "fuel_supply_breakdown" in plots
-    assert "carbon_budget_comparison" in plots
+    assert isinstance(plots, list) and plots
+    for name in _MULTI_PLOTS:
+        assert name in plots, f"Registered plot '{name}' missing from list_available_plots()"
 
 
-def test_new_intensity_plots_available(processes):
-    """Test that new intensity plots are available."""
-    multi = create_multi_process(processes)
-    plots = multi.list_available_plots()
-    
-    assert "co2_per_rpk_comparison" in plots
-    assert "co2_per_rtk_comparison" in plots
-    assert "energy_per_ask_comparison" in plots
-    assert "energy_per_rtk_comparison" in plots
-
-
-def test_new_fuel_supply_plots_available(processes):
-    """Test that new fuel supply plots are available."""
-    multi = create_multi_process(processes)
-    plots = multi.list_available_plots()
-    
-    assert "fuel_supply_breakdown" in plots
-    assert "hydrogen_supply_comparison" in plots
-    assert "electric_supply_comparison" in plots
-    assert "biofuel_production_comparison" in plots
-    assert "electrofuel_production_comparison" in plots
-
-
-def test_carbon_budget_plot_available(processes):
-    """Test that carbon budget plot is available."""
-    multi = create_multi_process(processes)
-    plots = multi.list_available_plots()
-    
-    assert "carbon_budget_comparison" in plots
-
-
-def test_plot_co2_emissions_comparison(processes):
-    """Test creating CO2 emissions comparison plot."""
-    multi = create_multi_process(processes)
-    
-    # Create plot - should not raise exception
-    fig = multi.plot("co2_emissions_comparison")
-    assert fig is not None
-
-
-def test_plot_energy_consumption_comparison(processes):
-    """Test creating energy consumption comparison plot."""
-    multi = create_multi_process(processes)
-    
-    # Create plot - should not raise exception
-    fig = multi.plot("energy_consumption_comparison")
-    assert fig is not None
+@pytest.mark.parametrize("plot_name", _MULTI_PLOTS)
+def test_multi_plot(processes, plot_name):
+    """Every registered multi-scenario plot must build."""
+    multi = assemble_processes(processes)
+    assert multi.plot(plot_name) is not None
 
 
 def test_plot_with_invalid_name(processes):
     """Test that invalid plot name raises KeyError."""
-    multi = create_multi_process(processes)
+    multi = assemble_processes(processes)
     
     with pytest.raises(KeyError):
         multi.plot("nonexistent_plot")
@@ -117,7 +76,7 @@ def test_plot_with_invalid_name(processes):
 
 def test_required_outputs_validation(processes):
     """Test that plots validate required outputs."""
-    multi = create_multi_process(processes)
+    multi = assemble_processes(processes)
     
     # This should work fine since processes are computed
     fig = multi.plot("co2_emissions_comparison")
@@ -126,7 +85,7 @@ def test_required_outputs_validation(processes):
 
 def test_plot_with_check_outputs_false(processes):
     """Test that check_outputs=False skips validation."""
-    multi = create_multi_process(processes)
+    multi = assemble_processes(processes)
     
     # Should work even if validation is disabled
     fig = multi.plot("co2_emissions_comparison", check_outputs=False)
@@ -139,7 +98,11 @@ def test_multi_scenario_plot_filters_invalid_scenarios(processes):
 
     # Create a test plot class
     class TestPlot(MultiScenarioPlot):
-        required_outputs = ["total_erf"]
+
+        def __init__(self, processes):
+                super().__init__(
+                    processes, check_outputs=True, required_outputs=["total_erf"]
+                )
 
         def _get_default_figsize(self):
             return (10, 6)

@@ -34,7 +34,9 @@ class LevelCarbonOffset(AeroMAPSModel):
         co2_emissions: pd.Series,
         carbon_offset_baseline_level_vs_2019_reference_periods: list,
         carbon_offset_baseline_level_vs_2019_reference_periods_values: list,
-    ) -> Tuple[pd.Series, pd.Series]:
+        carbon_offset_baseline_share_total_emissions_reference_periods: list,
+        carbon_offset_baseline_share_total_emissions_reference_periods_values: list,
+    ) -> Tuple[pd.Series, pd.Series, pd.Series]:
         """
         Execute the computation of carbon offset required to level emissions.
 
@@ -46,6 +48,10 @@ class LevelCarbonOffset(AeroMAPSModel):
             Reference periods for the level of CO2 emissions relative to 2019 from which higher emissions are offset [years].
         carbon_offset_baseline_level_vs_2019_reference_periods_values
             Level of CO2 emissions relative to 2019 from which higher emissions are offset for the reference periods [%].
+        carbon_offset_baseline_share_total_emissions_reference_periods
+            Reference periods for the share of total CO2 emissions on which offset is applied [years].
+        carbon_offset_baseline_share_total_emissions_reference_periods_values
+            Share of total CO2 emissions on which offset is applied for the reference periods [%].
 
         Returns
         -------
@@ -61,32 +67,54 @@ class LevelCarbonOffset(AeroMAPSModel):
             carbon_offset_baseline_level_vs_2019_reference_periods_values,
             model_name=self.name,
         )
+
+        carbon_offset_baseline_share_total_emissions = aeromaps_leveling_function(
+            self,
+            carbon_offset_baseline_share_total_emissions_reference_periods,
+            carbon_offset_baseline_share_total_emissions_reference_periods_values,
+            model_name=self.name,
+        )
+
         self.df.loc[:, "carbon_offset_baseline_level_vs_2019"] = (
             carbon_offset_baseline_level_vs_2019
         )
+        self.df.loc[:, "carbon_offset_baseline_share_total_emissions"] = (
+            carbon_offset_baseline_share_total_emissions
+        )
 
-        for k in range(self.historic_start_year, self.prospection_start_year):
-            self.df.loc[k, "level_carbon_offset"] = 0.0
+        self.df.loc[
+            self.historic_start_year : self.prospection_start_year - 1, "level_carbon_offset"
+        ] = 0.0
 
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            if (
-                co2_emissions.loc[k]
-                > co2_emissions.loc[2019]
-                * self.df.loc[k, "carbon_offset_baseline_level_vs_2019"]
-                / 100
-            ):
-                self.df.loc[k, "level_carbon_offset"] = (
-                    co2_emissions.loc[k]
-                    - co2_emissions.loc[2019]
-                    * self.df.loc[k, "carbon_offset_baseline_level_vs_2019"]
-                    / 100
-                )
-            else:
-                self.df.loc[k, "level_carbon_offset"] = 0.0
+        baseline_level = (
+            co2_emissions.loc[2019]
+            * self.df.loc[
+                self.prospection_start_year : self.end_year, "carbon_offset_baseline_level_vs_2019"
+            ]
+            / 100
+        )
+
+        # compute the ammount offset. "clip" sets it to zero if emissions do not exceeds the baseline.
+        self.df.loc[self.prospection_start_year : self.end_year, "level_carbon_offset"] = (
+            (
+                (
+                    co2_emissions.loc[self.prospection_start_year : self.end_year] - baseline_level
+                ).clip(lower=0.0)
+            )
+            * self.df.loc[
+                self.prospection_start_year : self.end_year,
+                "carbon_offset_baseline_share_total_emissions",
+            ]
+            / 100
+        )
 
         level_carbon_offset = self.df["level_carbon_offset"]
 
-        return (carbon_offset_baseline_level_vs_2019, level_carbon_offset)
+        return (
+            carbon_offset_baseline_level_vs_2019,
+            carbon_offset_baseline_share_total_emissions,
+            level_carbon_offset,
+        )
 
 
 class ResidualCarbonOffset(AeroMAPSModel):
@@ -243,7 +271,11 @@ class CarbonOffset(AeroMAPSModel):
             Total annual carbon offset [MtCO2].
 
         """
-        carbon_offset = level_carbon_offset + residual_carbon_offset + prescribed_carbon_offset
+        carbon_offset = (
+            level_carbon_offset.fillna(0)
+            + residual_carbon_offset.fillna(0)
+            + prescribed_carbon_offset.fillna(0)
+        )
 
         self.df.loc[:, "carbon_offset"] = carbon_offset
 

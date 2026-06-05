@@ -296,9 +296,23 @@ class CO2Emissions(AeroMAPSModel):
             Total CO2 emissions [MtCO2].
         """
         # Locally filling incomplete emission factors with zeros so that sums are not nan if one is undefined
-        dropin_fuel_mean_co2_emission_factor.fillna(0, inplace=True)
-        hydrogen_mean_co2_emission_factor.fillna(0, inplace=True)
-        electric_mean_co2_emission_factor.fillna(0, inplace=True)
+        dropin_fuel_mean_co2_emission_factor = dropin_fuel_mean_co2_emission_factor.fillna(0)
+        hydrogen_mean_co2_emission_factor = hydrogen_mean_co2_emission_factor.fillna(0)
+        electric_mean_co2_emission_factor = electric_mean_co2_emission_factor.fillna(0)
+
+        # Locally filling void energy per ask/rtk with zeros so that sums are not nan if one is undefined
+        energy_per_ask_short_range_dropin_fuel = energy_per_ask_short_range_dropin_fuel.fillna(0)
+        energy_per_ask_medium_range_dropin_fuel = energy_per_ask_medium_range_dropin_fuel.fillna(0)
+        energy_per_ask_long_range_dropin_fuel = energy_per_ask_long_range_dropin_fuel.fillna(0)
+        energy_per_rtk_freight_dropin_fuel = energy_per_rtk_freight_dropin_fuel.fillna(0)
+        energy_per_ask_short_range_hydrogen = energy_per_ask_short_range_hydrogen.fillna(0)
+        energy_per_ask_medium_range_hydrogen = energy_per_ask_medium_range_hydrogen.fillna(0)
+        energy_per_ask_long_range_hydrogen = energy_per_ask_long_range_hydrogen.fillna(0)
+        energy_per_rtk_freight_hydrogen = energy_per_rtk_freight_hydrogen.fillna(0)
+        energy_per_ask_short_range_electric = energy_per_ask_short_range_electric.fillna(0)
+        energy_per_ask_medium_range_electric = energy_per_ask_medium_range_electric.fillna(0)
+        energy_per_ask_long_range_electric = energy_per_ask_long_range_electric.fillna(0)
+        energy_per_rtk_freight_electric = energy_per_rtk_freight_electric.fillna(0)
 
         # Short range
         co2_emissions_short_range = (
@@ -693,9 +707,11 @@ class DetailedCumulativeCO2Emissions(AeroMAPSModel):
         self,
         co2_emissions_2019technology_baseline3: pd.Series,
         co2_emissions_2019technology: pd.Series,
+        co2_emissions_including_aircraft_efficiency: pd.Series,
+        co2_emissions_including_operations: pd.Series,
         co2_emissions_including_load_factor: pd.Series,
         co2_emissions_including_energy: pd.Series,
-    ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series]:
+    ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series]:
         """
         Execute the computation of detailed cumulative CO2 emissions breakdown.
         Parameters
@@ -704,6 +720,10 @@ class DetailedCumulativeCO2Emissions(AeroMAPSModel):
             CO2 emissions from all commercial air transport based on 2019 technological level with a baseline air traffic growth [MtCO2].
         co2_emissions_2019technology
             CO2 emissions from all commercial air transport based on 2019 technological level [MtCO2].
+        co2_emissions_including_aircraft_efficiency
+            CO2 emissions from all commercial air transport including aircraft efficiency improvements [MtCO2].
+        co2_emissions_including_operations
+            CO2 emissions from all commercial air transport including aircraft efficiency and operations improvements [MtCO2].
         co2_emissions_including_load_factor
             CO2 emissions from all commercial air transport including aircraft efficiency, operation and load factor improvements [MtCO2].
         co2_emissions_including_energy
@@ -715,6 +735,10 @@ class DetailedCumulativeCO2Emissions(AeroMAPSModel):
             Cumulative CO2 emissions from all commercial air transport based on 2019 technological level with a baseline air traffic growth [GtCO2].
         cumulative_co2_emissions_2019technology
             Cumulative CO2 emissions from all commercial air transport based on 2019 technological level [GtCO2].
+        cumulative_co2_emissions_including_aircraft_efficiency
+            Cumulative CO2 emissions from all commercial air transport including aircraft efficiency improvements [GtCO2].
+        cumulative_co2_emissions_including_operations
+            Cumulative CO2 emissions from all commercial air transport including aircraft efficiency and operations improvements [GtCO2].
         cumulative_co2_emissions_including_load_factor
             Cumulative CO2 emissions from all commercial air transport including aircraft efficiency, operation and load factor
             improvements [GtCO2].
@@ -732,6 +756,18 @@ class DetailedCumulativeCO2Emissions(AeroMAPSModel):
             co2_emissions_2019technology.loc[self.prospection_start_year : self.end_year] / 1000
         ).cumsum()
 
+        cumulative_co2_emissions_including_aircraft_efficiency = (
+            co2_emissions_including_aircraft_efficiency.loc[
+                self.prospection_start_year : self.end_year
+            ]
+            / 1000
+        ).cumsum()
+
+        cumulative_co2_emissions_including_operations = (
+            co2_emissions_including_operations.loc[self.prospection_start_year : self.end_year]
+            / 1000
+        ).cumsum()
+
         cumulative_co2_emissions_including_load_factor = (
             co2_emissions_including_load_factor.loc[self.prospection_start_year : self.end_year]
             / 1000
@@ -745,6 +781,12 @@ class DetailedCumulativeCO2Emissions(AeroMAPSModel):
             cumulative_co2_emissions_2019technology_baseline3
         )
         self.df["cumulative_co2_emissions_2019technology"] = cumulative_co2_emissions_2019technology
+        self.df["cumulative_co2_emissions_including_aircraft_efficiency"] = (
+            cumulative_co2_emissions_including_aircraft_efficiency
+        )
+        self.df["cumulative_co2_emissions_including_operations"] = (
+            cumulative_co2_emissions_including_operations
+        )
         self.df["cumulative_co2_emissions_including_load_factor"] = (
             cumulative_co2_emissions_including_load_factor
         )
@@ -755,6 +797,8 @@ class DetailedCumulativeCO2Emissions(AeroMAPSModel):
         return (
             cumulative_co2_emissions_2019technology_baseline3,
             cumulative_co2_emissions_2019technology,
+            cumulative_co2_emissions_including_aircraft_efficiency,
+            cumulative_co2_emissions_including_operations,
             cumulative_co2_emissions_including_load_factor,
             cumulative_co2_emissions_including_energy,
         )

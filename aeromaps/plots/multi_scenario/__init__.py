@@ -5,7 +5,7 @@ This module provides plots for comparing multiple AeroMAPS scenarios.
 
 from aeromaps.plots.multi_scenario.emissions import (
     CO2EmissionsComparisonPlot,
-    CarbonBudgetComparisonPlot,
+    CumulativeCO2EmissionsComparisonPlot,
 )
 from aeromaps.plots.multi_scenario.energy import (
     EnergyConsumptionComparisonPlot,
@@ -21,20 +21,34 @@ from aeromaps.plots.multi_scenario.intensities import (
     EnergyPerASKComparisonPlot,
     EnergyPerRTKComparisonPlot,
 )
-from aeromaps.plots.multi_scenario.fuel_supply import (
-    FuelSupplyBreakdownPlot,
+from aeromaps.plots.multi_scenario.drop_in_supply import (
+    DropInSupplyBreakdownPlot,
     HydrogenSupplyComparisonPlot,
     ElectricSupplyComparisonPlot,
     BiofuelProductionComparisonPlot,
     ElectrofuelProductionComparisonPlot,
     BiofuelMixComparisonPlot,
 )
+from aeromaps.plots.multi_scenario.climate import (
+    TotalERFComparisonPlot,
+    TemperatureIncreaseComparisonPlot,
+    CO2ERFComparisonPlot,
+    NonCO2ERFComparisonPlot,
+)
+from aeromaps.plots.multi_scenario.costs import (
+    EnergyExpensesComparisonPlot,
+    NetEnergyExpensesComparisonPlot,
+    DOCComparisonPlot,
+    DOCEnergyComparisonPlot,
+    AirfareComparisonPlot,
+    DocNetEnergyPerRPKComparisonPlot,
+)
 
 # Dictionary of available multi-scenario plots
 available_multi_plots = {
     # Emissions
     "co2_emissions_comparison": CO2EmissionsComparisonPlot,
-    "carbon_budget_comparison": CarbonBudgetComparisonPlot,
+    "cumulative_co2_emissions_comparison": CumulativeCO2EmissionsComparisonPlot,
     
     # Energy
     "energy_consumption_comparison": EnergyConsumptionComparisonPlot,
@@ -51,10 +65,24 @@ available_multi_plots = {
     "energy_per_rtk_comparison": EnergyPerRTKComparisonPlot,
     
     # Fuel Supply
-    "fuel_supply_breakdown": FuelSupplyBreakdownPlot,
+    "drop_in_supply_breakdown": DropInSupplyBreakdownPlot,
     "hydrogen_supply_comparison": HydrogenSupplyComparisonPlot,
     "electric_supply_comparison": ElectricSupplyComparisonPlot,
     "biofuel_production_comparison": BiofuelProductionComparisonPlot,
     "electrofuel_production_comparison": ElectrofuelProductionComparisonPlot,
     "biofuel_mix_comparison": BiofuelMixComparisonPlot,
+
+    # Climate
+    "total_erf_comparison": TotalERFComparisonPlot,
+    "temperature_increase_comparison": TemperatureIncreaseComparisonPlot,
+    "co2_erf_comparison": CO2ERFComparisonPlot,
+    "non_co2_erf_comparison": NonCO2ERFComparisonPlot,
+
+    # Costs
+    "energy_expenses_comparison": EnergyExpensesComparisonPlot,
+    "net_energy_expenses_comparison": NetEnergyExpensesComparisonPlot,
+    "doc_comparison": DOCComparisonPlot,
+    "doc_energy_comparison": DOCEnergyComparisonPlot,
+    "airfare_comparison": AirfareComparisonPlot,
+    "doc_net_energy_per_rpk_comparison": DocNetEnergyPerRPKComparisonPlot,
 }

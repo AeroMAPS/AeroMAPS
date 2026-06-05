@@ -26,9 +26,21 @@ def _dict_from_json(file_name="parameters.json") -> dict:
     -------
     dict
         Dictionary containing the parameters from the JSON file.
+
+    Raises
+    ------
+    FileNotFoundError
+        If the file does not exist.
+    json.JSONDecodeError
+        If the file contains invalid JSON.
     """
-    with open(file_name, "r", encoding="utf-8") as f:
-        parameters_dict = load(f)
+    try:
+        with open(file_name, "r", encoding="utf-8") as f:
+            parameters_dict = load(f)
+    except FileNotFoundError:
+        raise FileNotFoundError(f"Parameters file not found: '{file_name}'")
+    except json.JSONDecodeError as e:
+        raise json.JSONDecodeError(f"Invalid JSON in '{file_name}': {e.msg}", e.doc, e.pos) from e
     dict = _dict_from_parameters_dict(parameters_dict)
     return dict
 
@@ -84,6 +96,8 @@ def _dict_from_parameters_dict(parameters_dict) -> dict:
             "freight_init",
             "energy_consumption_init",
             "total_aircraft_distance_init",
+            "gdp_per_capita_init",
+            "population_init",
         ]:
             new_index = range(
                 parameters_dict["historic_start_year"], parameters_dict["prospection_start_year"]
@@ -161,15 +175,52 @@ def create_partitioning(file, path=""):
         * total_ask_2019
         / (1 - freight_energy_share_2019_partitioned / 2 / 100)
     )  # Dedicated freight (half of total freight) not included in AeroSCOPE
-    short_range_energy_consumption_2019 = (
-        short_range_energy_consumption_per_ask_2019 * short_range_ask_2019
-    ) * (1 - 0.075 / (1 - 0.075))
-    medium_range_energy_consumption_2019 = (
-        medium_range_energy_consumption_per_ask_2019 * medium_range_ask_2019
-    ) * (1 - 0.075 / (1 - 0.075))
-    long_range_energy_consumption_2019 = (
-        long_range_energy_consumption_per_ask_2019 * long_range_ask_2019
-    ) * (1 - 0.075 / (1 - 0.075))
+
+    ded_freight_ratio = freight_energy_share_2019_partitioned / 2 / 100
+
+    # Check short range: case distinction if there is no traffic.
+    if pd.isna(short_range_ask_2019) or short_range_ask_2019 == 0.0:
+        logging.warning("No traffic is assumed for short range.")
+        short_range_energy_consumption_2019 = 0
+    # If there is traffic, energy per ASK should not be null
+    elif (
+        pd.isna(short_range_energy_consumption_per_ask_2019)
+        or short_range_energy_consumption_per_ask_2019 is None
+    ):
+        raise ValueError("Short range ASK is not null but energy per ASK is null.")
+    # nominal case: both values are not null
+    else:
+        short_range_energy_consumption_2019 = (
+            short_range_energy_consumption_per_ask_2019 * short_range_ask_2019
+        ) * (1 - ded_freight_ratio / (1 - ded_freight_ratio))
+
+    # Check medium range
+    if pd.isna(medium_range_ask_2019) or medium_range_ask_2019 == 0.0:
+        logging.warning("No traffic is assumed for medium range.")
+        medium_range_energy_consumption_2019 = 0
+    elif (
+        pd.isna(medium_range_energy_consumption_per_ask_2019)
+        or medium_range_energy_consumption_per_ask_2019 is None
+    ):
+        raise ValueError("Medium range ASK is not null but energy per ASK is null.")
+    else:
+        medium_range_energy_consumption_2019 = (
+            medium_range_energy_consumption_per_ask_2019 * medium_range_ask_2019
+        ) * (1 - ded_freight_ratio / (1 - ded_freight_ratio))
+
+    # Check long range
+    if pd.isna(long_range_ask_2019) or long_range_ask_2019 == 0.0:
+        logging.warning("No traffic is assumed for long range.")
+        long_range_energy_consumption_2019 = 0
+    elif (
+        pd.isna(long_range_energy_consumption_per_ask_2019)
+        or long_range_energy_consumption_per_ask_2019 is None
+    ):
+        raise ValueError("Long range ASK is not null but energy per ASK is null.")
+    else:
+        long_range_energy_consumption_2019 = (
+            long_range_energy_consumption_per_ask_2019 * long_range_ask_2019
+        ) * (1 - ded_freight_ratio / (1 - ded_freight_ratio))
 
     # Calculation of the partitioned input values
 
@@ -183,6 +234,7 @@ def create_partitioning(file, path=""):
     long_range_energy_share_2019_partitioned = (
         long_range_energy_consumption_2019 / total_energy_consumption_2019 * 100
     )
+
     short_range_rpk_share_2019_partitioned = short_range_ask_2019 / total_ask_2019 * 100
     medium_range_rpk_share_2019_partitioned = medium_range_ask_2019 / total_ask_2019 * 100
     long_range_rpk_share_2019_partitioned = long_range_ask_2019 / total_ask_2019 * 100
@@ -249,7 +301,7 @@ def create_partitioning(file, path=""):
     climate_world_data_soot_emissions = climate_world_data[:, 4]
     climate_world_data_sulfur_emissions = climate_world_data[:, 5]
     climate_world_data_distance = climate_world_data[:, 6]
-    
+
     climate_partitioned_data_years = climate_world_data_years.tolist()
     climate_partitioned_data_co2_emissions = (
         climate_world_data_co2_emissions * share_energy_consumption_partitioned_vs_world_2019 / 100
@@ -273,7 +325,9 @@ def create_partitioning(file, path=""):
     ).tolist()
 
     # Build years list for other_data (historic_start_year to prospection_start_year - 1)
-    other_data_years = list(range(historic_start_year_partitioned, prospection_start_year_partitioned))
+    other_data_years = list(
+        range(historic_start_year_partitioned, prospection_start_year_partitioned)
+    )
 
     # Generation of a single JSON file with all partitioned inputs
     partitioning_updated_inputs_dict = {
@@ -286,7 +340,7 @@ def create_partitioning(file, path=""):
             "short_range_rpk_share_2019": short_range_rpk_share_2019_partitioned,
             "medium_range_rpk_share_2019": medium_range_rpk_share_2019_partitioned,
             "long_range_rpk_share_2019": long_range_rpk_share_2019_partitioned,
-            "commercial_aviation_coefficient": commercial_aviation_coefficient_partitioned
+            "commercial_aviation_coefficient": commercial_aviation_coefficient_partitioned,
         },
         # Other data (lists indexed by historic_start_year to prospection_start_year - 1)
         "other_vector_data": {

@@ -2,7 +2,11 @@
 This module creates dictionaries of default models for various AeroMAPS configurations.
 """
 
-from aeromaps.models.air_transport.air_traffic.price_elasticity import RPKWithElasticity
+from aeromaps.models.air_transport.air_traffic.price_elasticity import RPKPriceElasticity
+from aeromaps.models.air_transport.air_traffic.price_and_income_elasticity import \
+    RPKPriceIncomeElasticity
+from aeromaps.models.air_transport.air_traffic.price_elasticity_logistic_income import \
+    RPKLogisticIncomePriceElasticity
 from aeromaps.models.impacts.costs.airlines.direct_operating_costs import (
     PassengerAircraftDocEnergy,
     PassengerAircraftDocNonEnergyComplex,
@@ -168,7 +172,29 @@ models_traffic = {
 
 
 models_traffic_cost_feedback = {
-    "rpk_with_elasticity": RPKWithElasticity("rpk_with_elasticity"),
+    "rpk_with_elasticity": RPKPriceElasticity("rpk_with_elasticity"),
+    "rpk_measures": RPKMeasures("rpk_measures"),
+    "rpk_reference": RPKReference("rpk_reference"),
+    "total_aircraft_distance": TotalAircraftDistance("total_aircraft_distance"),
+    "rtk": RTK("rtk"),
+    "rtk_reference": RTKReference("rtk_reference"),
+    "ask": ASK("ask"),
+}
+
+
+models_traffic_price_adjusted_logistic = {
+    "rpk_logistic_income_price_elasticity": RPKLogisticIncomePriceElasticity("rpk_with_elasticity"),
+    "rpk_measures": RPKMeasures("rpk_measures"),
+    "rpk_reference": RPKReference("rpk_reference"),
+    "total_aircraft_distance": TotalAircraftDistance("total_aircraft_distance"),
+    "rtk": RTK("rtk"),
+    "rtk_reference": RTKReference("rtk_reference"),
+    "ask": ASK("ask"),
+}
+
+
+models_traffic_constant_elasticities = {
+    "rpk_price_income_elasticity": RPKPriceIncomeElasticity("rpk_with_elasticity"),
     "rpk_measures": RPKMeasures("rpk_measures"),
     "rpk_reference": RPKReference("rpk_reference"),
     "total_aircraft_distance": TotalAircraftDistance("total_aircraft_distance"),
@@ -289,7 +315,9 @@ models_sustainability = {
     "gross_carbon_budget": GrossCarbonBudget("gross_carbon_budget"),
     "temperature_target": TemperatureTarget("temperature_target"),
     "carbon_budget_consumed_share": CarbonBudgetConsumedShare("carbon_budget_consumed_share"),
-    "temperature_target_consumed_share": TemperatureTargetConsumedShare("temperature_target_consumed_share"),
+    "temperature_target_consumed_share": TemperatureTargetConsumedShare(
+        "temperature_target_consumed_share"
+    ),
 }
 
 models_energy_cost = {
@@ -465,6 +493,10 @@ carbon_budget_constraint = {
     "carbon_budget_constraint": CarbonBudgetConstraint("carbon_budget_constraint"),
 }
 
+carbon_tax = {
+    "carbon_tax": CarbonTax("carbon_tax"),
+}
+
 # models_optim_complex_v2 = {
 #     "models_traffic_cost_feedback": models_traffic_cost_feedback,
 #     "models_efficiency_top_down": models_efficiency_top_down,
@@ -502,3 +534,30 @@ carbon_budget_constraint = {
 #     "tax_revenue_loss": TaxRevenueLoss("tax_revenue_loss"),
 #     "total_welfare_loss": TotalWelfareLoss("total_welfare_loss"),
 # }
+
+
+models_optim_bastien = {
+    "models_traffic": models_traffic,
+    "carbon_tax": CarbonTax("carbon_tax"),
+    "models_efficiency_top_down": models_efficiency_top_down,
+    "drop_in_fuel_consumption": DropInFuelConsumption("drop_in_fuel_consumption"),
+    "hydrogen_consumption": HydrogenConsumption("hydrogen_consumption"),
+    "energy_consumption": EnergyConsumption("energy_consumption"),
+    "electric_consumption": ElectricConsumption("electric_consumption"),
+    # "without_fuel_effect_correction_contrails": WithoutFuelEffectCorrectionContrails(
+    #    "without_fuel_effect_correction_contrails"
+    # ),
+    "energy_carriers_massic_shares": EnergyCarriersMassicShares(
+        "energy_carriers_massic_shares"
+    ),  # keep ?
+    "kaya_factors": KayaFactors("kaya_factors"),
+    "co2_emissions": CO2Emissions("co2_emissions"),
+    "cumulative_co2_emissions": CumulativeCO2Emissions("cumulative_co2_emissions"),
+    "detailed_co2_emissions": DetailedCo2Emissions("detailed_co2_emissions"),
+    "detailed_cumulative_co2_emissions": DetailedCumulativeCO2Emissions(
+        "detailed_cumulative_co2_emissions"
+    ),
+    "gross_carbon_budget": GrossCarbonBudget("gross_carbon_budget"),
+    "carbon_budget_consumed_share": CarbonBudgetConsumedShare("carbon_budget_consumed_share"),
+    "carbon_budget_constraint": CarbonBudgetConstraint("carbon_budget_constraint"),
+}

@@ -2,6 +2,7 @@
 *.png
 *.svg
 *.idea
+*.DS_Store
 
 **/.ipynb_checkpoints
 /.ipynb_checkpoints
@@ -10,7 +11,8 @@
 
 __pycache__/
 .python-version
-/aeromaps/notebooks/private/opt_2025/
-/aeromaps/notebooks/private/proto_wctr/
 /docs/_build/
 /site/
+/aeromaps/notebooks/private/
+/aeromaps/notebooks/tutorials/07_life_cycle_assessment/data/config_files/lca/tmp/
+/aeromaps/notebooks/publications/ecats_2026/data/config_files/lca/tmp/

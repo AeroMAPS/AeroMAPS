@@ -6,13 +6,21 @@ from ipywidgets import widgets
 from ipywidgets import interact
 from matplotlib.lines import Line2D
 
-from aeromaps.plots.single_scenario_plot import SingleScenarioPlot, plot_3_x, plot_3_y
+from aeromaps.plots.single_scenario_plot import SingleScenarioPlot
+from aeromaps.plots.single_scenario_plot import plot_1_x
+from aeromaps.plots.single_scenario_plot import plot_1_y
+from aeromaps.plots.single_scenario_plot import plot_3_x
+from aeromaps.plots.single_scenario_plot import plot_3_y
 
 
 class MeanFuelEmissionFactorPlot(SingleScenarioPlot):
-    def __init__(self, process, figsize=None):
+    required_outputs = [
+        "co2_per_energy_mean",
+    ]
+
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
@@ -42,6 +50,7 @@ class MeanFuelEmissionFactorPlot(SingleScenarioPlot):
         )
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Fuel emission factor [gCO2-eq/MJ]")
+        
         self.ax.legend()
         self.ax.set_xlim(self.years[0], self.years[-1])
 
@@ -52,9 +61,17 @@ class MeanFuelEmissionFactorPlot(SingleScenarioPlot):
 
 
 class EmissionFactorPerFuelCategory(SingleScenarioPlot):
-    def __init__(self, process, figsize=None):
+    required_outputs = [
+        "dropin_fuel_biomass_mean_co2_emission_factor",
+        "hydrogen_mean_co2_emission_factor",
+        "dropin_fuel_electricity_mean_co2_emission_factor",
+        "fossil_kerosene_mean_co2_emission_factor",
+        "electric_mean_co2_emission_factor",
+    ]
+
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
@@ -109,6 +126,7 @@ class EmissionFactorPerFuelCategory(SingleScenarioPlot):
         self.ax.set_title("Evolution of the CO2 emission factor\nof aviation fuels")
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Fuel emission factor [gCO2-eq/MJ]")
+        
         self.ax.legend()
         self.ax.set_xlim(self.prospective_years[0] + 1, self.prospective_years[-1])
 
@@ -131,12 +149,15 @@ class EmissionFactorPerFuelCategory(SingleScenarioPlot):
 
 
 class EmissionFactorPerFuel(SingleScenarioPlot):
-    def __init__(self, process, figsize=None):
+    # Dynamic columns based on pathways - no static required_outputs
+    required_outputs = []
+
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
-        return (10, 6)
+        return (plot_1_x, plot_1_y)
 
     def create_plot(self):
         pathways = self.process.pathways_manager.get_all()
@@ -259,9 +280,12 @@ class EmissionFactorPerFuel(SingleScenarioPlot):
 
 
 class ShareFuelPlot(SingleScenarioPlot):
-    def __init__(self, process, figsize=None):
+    # Dynamic columns based on pathways - no static required_outputs
+    required_outputs = []
+
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
         self.pathways_manager = self.process.pathways_manager
         self.plot_interact()
 
@@ -454,9 +478,13 @@ class ShareFuelPlot(SingleScenarioPlot):
 
 
 class EnergyConsumptionPlot(SingleScenarioPlot):
-    def __init__(self, process, figsize=None):
+    required_outputs = [
+        "energy_consumption",
+    ]
+
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
@@ -484,6 +512,7 @@ class EnergyConsumptionPlot(SingleScenarioPlot):
         self.ax.set_title("Evolution of the air transport\nenergy consumption")
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Energy consumption [EJ]")
+        
         self.ax.legend()
         self.ax.set_xlim(self.years[0], self.years[-1])
 

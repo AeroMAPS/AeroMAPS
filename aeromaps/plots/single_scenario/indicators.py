@@ -4,9 +4,13 @@ from aeromaps.plots.single_scenario_plot import SingleScenarioPlot, plot_3_x, pl
 
 
 class MeanCO2PerRPKPlot(SingleScenarioPlot):
-    def __init__(self, process, figsize=None):
+    required_outputs = [
+        "co2_emissions_per_rpk",
+    ]
+
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
@@ -46,9 +50,13 @@ class MeanCO2PerRPKPlot(SingleScenarioPlot):
 
 
 class MeanCO2PerRTKPlot(SingleScenarioPlot):
-    def __init__(self, process, figsize=None):
+    required_outputs = [
+        "co2_emissions_per_rtk",
+    ]
+
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
@@ -88,9 +96,17 @@ class MeanCO2PerRTKPlot(SingleScenarioPlot):
 
 
 class PassengerKayaFactorsPlot(SingleScenarioPlot):
-    def __init__(self, process, figsize=None):
+    required_outputs = [
+        "co2_emissions_passenger",
+        "rpk",
+        "energy_per_ask_mean",
+        "load_factor",
+        "co2_per_energy_mean",
+    ]
+
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
@@ -170,9 +186,16 @@ class PassengerKayaFactorsPlot(SingleScenarioPlot):
 
 
 class FreightKayaFactorsPlot(SingleScenarioPlot):
-    def __init__(self, process, figsize=None):
+    required_outputs = [
+        "co2_emissions_freight",
+        "rtk",
+        "energy_per_rtk_mean",
+        "co2_per_energy_mean",
+    ]
+
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
@@ -240,9 +263,17 @@ class FreightKayaFactorsPlot(SingleScenarioPlot):
 
 
 class LeversOfActionDistributionPlot(SingleScenarioPlot):
-    def __init__(self, process, figsize=None):
+    required_outputs = [
+        "cumulative_co2_emissions_2019technology_baseline3",
+        "cumulative_co2_emissions_2019technology",
+        "cumulative_co2_emissions_including_load_factor",
+        "cumulative_co2_emissions_including_energy",
+        "cumulative_co2_emissions",
+    ]
+
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)

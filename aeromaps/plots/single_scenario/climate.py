@@ -1,12 +1,26 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from aeromaps.plots.single_scenario_plot import SingleScenarioPlot, plot_3_x, plot_3_y
+
+from aeromaps.plots.single_scenario_plot import SingleScenarioPlot
+from aeromaps.plots.single_scenario_plot import plot_2_x
+from aeromaps.plots.single_scenario_plot import plot_2_y
+from aeromaps.plots.single_scenario_plot import plot_3_x
+from aeromaps.plots.single_scenario_plot import plot_3_y
 
 
 class FinalEffectiveRadiativeForcingPlot(SingleScenarioPlot):
-    def __init__(self, process, figsize=None):
+    required_outputs = [
+        "total_erf",
+        "contrails_erf",
+        "aerosol_erf",
+        "h2o_erf",
+        "nox_erf",
+        "co2_erf",
+    ]
+
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
@@ -67,9 +81,18 @@ class FinalEffectiveRadiativeForcingPlot(SingleScenarioPlot):
 
 
 class DistributionEffectiveRadiativeForcingPlot(SingleScenarioPlot):
-    def __init__(self, process, figsize=None):
+    required_outputs = [
+        "co2_erf",
+        "h2o_erf",
+        "nox_erf",
+        "contrails_erf",
+        "aerosol_erf",
+        "total_erf",
+    ]
+
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
@@ -175,9 +198,14 @@ class DistributionEffectiveRadiativeForcingPlot(SingleScenarioPlot):
 
 
 class TemperatureIncreaseFromAirTransportPlot(SingleScenarioPlot):
-    def __init__(self, process, figsize=None):
+    required_outputs = [
+        "temperature_increase_from_aviation",
+        "temperature_increase_from_co2_from_aviation",
+    ]
+
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
@@ -230,6 +258,7 @@ class TemperatureIncreaseFromAirTransportPlot(SingleScenarioPlot):
         self.ax.set_title("Evolution of temperature increase\nfrom air transport")
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Temperature increase [mK]")
+        
         self.ax.legend()
         self.ax.set_xlim(self.years[0], self.years[-1])
         # self.ax.set_ylim(0,)
@@ -260,12 +289,25 @@ class TemperatureIncreaseFromAirTransportPlot(SingleScenarioPlot):
 
 
 class DetailedTemperatureIncreaseFromAirTransportPlot(SingleScenarioPlot):
-    def __init__(self, process, figsize=None):
+    required_outputs = [
+        "temperature_increase_from_aviation",
+        "temperature_increase_from_co2_from_aviation",
+        "temperature_increase_from_nox_short_term_o3_increase_from_aviation",
+        "temperature_increase_from_h2o_from_aviation",
+        "temperature_increase_from_contrails_from_aviation",
+        "temperature_increase_from_nox_long_term_o3_decrease_from_aviation",
+        "temperature_increase_from_nox_ch4_decrease_from_aviation",
+        "temperature_increase_from_nox_stratospheric_water_vapor_decrease_from_aviation",
+        "temperature_increase_from_soot_from_aviation",
+        "temperature_increase_from_sulfur_from_aviation",
+    ]
+
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
-        return (plot_3_x, plot_3_y)
+        return (plot_2_x, plot_2_y)
 
     def create_plot(self):
         self.ax.plot(
@@ -403,6 +445,7 @@ class DetailedTemperatureIncreaseFromAirTransportPlot(SingleScenarioPlot):
         self.ax.set_title("Evolution of temperature increase\nfrom air transport")
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Temperature increase [mK]")
+        
         self.ax.legend()
         self.ax.set_xlim(self.years[0], self.years[-1])
         # self.ax.set_ylim(0,)

@@ -6,6 +6,7 @@ AeroMAPS framework.
 """
 
 # Standard library imports
+import json
 import logging
 import os
 from json import load, dump
@@ -64,11 +65,16 @@ from aeromaps.models.impacts.climate.climate import ClimateModel
 # LCA models imports
 # Check if LCA packages for custom model are installed
 try:
-    from aeromaps.models.impacts.life_cycle_assessment.life_cycle_assessment_custom import LifeCycleAssessmentCustom
+    from aeromaps.models.impacts.life_cycle_assessment.life_cycle_assessment_custom import (
+        LifeCycleAssessmentCustom,
+    )
+
     LCA_PACKAGES_INSTALLED = True
 except ImportError:
     LCA_PACKAGES_INSTALLED = False
-from aeromaps.models.impacts.life_cycle_assessment.life_cycle_assessment_default import LifeCycleAssessmentDefault
+from aeromaps.models.impacts.life_cycle_assessment.life_cycle_assessment_default import (
+    LifeCycleAssessmentDefault,
+)
 
 # Settings
 pd.options.display.max_rows = 150
@@ -154,6 +160,7 @@ class AeroMAPSProcess(object):
         configuration_file=None,
         custom_models=None,
         optimisation=False,
+        disable_execution_statistics=False,
     ):
         """Initialize an AeroMAPSProcess instance.
 
@@ -175,24 +182,40 @@ class AeroMAPSProcess(object):
         optimisation
             Whether to configure GEMSEO for optimization instead of a
             pure MDA chain.
+        disable_execution_statistics
+            Whether to disable GEMSEO's execution statistics shared memory.
+            If False, statistics are enabled. Set to True to disable
+            (useful when running many disciplines to avoid semaphore exhaustion).
         """
         # Initialize pathways_manager to None - will be populated if energy models are used
         self.pathways_manager = None
-        
+
         self.configuration_file = (
             os.path.abspath(os.fspath(configuration_file))
             if configuration_file is not None
             else None
         )
+
+        # Handle execution statistics
+        if disable_execution_statistics:
+            from aeromaps.core.gemseo import disable_gemseo_execution_statistics
+
+            disable_gemseo_execution_statistics()
+            logging.info("Disabled GEMSEO execution statistics")
+
         self._initialize_configuration()
 
+        # Store mode flags
+        self._optimisation = optimisation
+
+        # --- Standard initialization ---
         # Load standard models from config
         standard_models = self._load_models_from_config()
-        
+
         # Merge with user-provided models (user models override/extend standard models)
         if custom_models is not None:
             standard_models.update(custom_models)
-        
+
         models = standard_models
 
         # Recopy models to avoid shared state between instances.
@@ -205,11 +228,14 @@ class AeroMAPSProcess(object):
         # Initialize inputs
         self._initialize_inputs()
 
+        # Common setup (disciplines list, data containers, etc.)
         self.common_setup()
-        if not optimisation:
-            self.setup_mda()
-        else:
+
+        # --- Mode-specific setup ---
+        if optimisation:
             self.setup_optimisation()
+        else:
+            self.setup_mda()
 
     def _load_models_from_config(self):
         """Load models from the configuration file's standards and customs lists.
@@ -230,11 +256,11 @@ class AeroMAPSProcess(object):
             If a model name from the config is not found in aeromaps.core.models.
         """
         standards = self._get_config_value("models", "standards", default=[])
-        
+
         if not standards:
             # Fallback to default_models_top_down if no standards specified
             return aeromaps_models.default_models_top_down
-        
+
         models = {}
         for model_name in standards:
             if hasattr(aeromaps_models, model_name):
@@ -245,13 +271,13 @@ class AeroMAPSProcess(object):
                     f"Model '{model_name}' specified in config.yaml is not found in "
                     f"aeromaps.core.models. Available models: {[name for name in dir(aeromaps_models) if name.startswith('models_')]}"
                 )
-        
+
         # Load custom models from config if specified
         customs = self._get_user_config_value("models", "customs", default=None)
         if customs is not None:
             custom_models = self._load_custom_models_from_config(customs)
             models.update(custom_models)
-        
+
         return models
 
     def _load_custom_models_from_config(self, customs: dict) -> dict:
@@ -280,9 +306,9 @@ class AeroMAPSProcess(object):
             If the module cannot be imported.
         """
         import importlib.util
-        
+
         custom_models = {}
-        
+
         for model_name, path_spec in customs.items():
             # Parse the path specification
             if "::" in path_spec:
@@ -291,48 +317,43 @@ class AeroMAPSProcess(object):
                 module_path = path_spec
                 # Convert model_name to CamelCase for class name
                 class_name = "".join(word.capitalize() for word in model_name.split("_"))
-            
+
             # Resolve the module path relative to the config file directory
             if not os.path.isabs(module_path):
-                module_path = os.path.normpath(
-                    os.path.join(self._config_base_dir, module_path)
-                )
-            
+                module_path = os.path.normpath(os.path.join(self._config_base_dir, module_path))
+
             if not os.path.exists(module_path):
                 raise ValueError(
-                    f"Custom model file not found: '{module_path}' "
-                    f"(model: {model_name})"
+                    f"Custom model file not found: '{module_path}' (model: {model_name})"
                 )
-            
+
             # Dynamically import the module
             spec = importlib.util.spec_from_file_location(model_name, module_path)
             if spec is None or spec.loader is None:
-                raise ImportError(
-                    f"Cannot load module from '{module_path}' "
-                    f"(model: {model_name})"
-                )
-            
+                raise ImportError(f"Cannot load module from '{module_path}' (model: {model_name})")
+
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
-            
+
             # Get the class from the module
             if not hasattr(module, class_name):
                 available_classes = [
-                    name for name in dir(module) 
+                    name
+                    for name in dir(module)
                     if not name.startswith("_") and isinstance(getattr(module, name), type)
                 ]
                 raise ValueError(
                     f"Class '{class_name}' not found in '{module_path}'. "
                     f"Available classes: {available_classes}"
                 )
-            
+
             model_class = getattr(module, class_name)
-            
+
             # Instantiate the model
             custom_models[model_name] = model_class(name=model_name)
-            
+
             logging.info(f"Loaded custom model '{model_name}' from '{module_path}'")
-        
+
         return custom_models
 
     def common_setup(self):
@@ -373,9 +394,16 @@ class AeroMAPSProcess(object):
         # Initialize disciplines
         self._initialize_disciplines()
 
+        # TODO: expose these MDA settings (tolerance, max_mda_iter, inner_mda_name,
+        # ...) as kwargs read from the configuration file instead of hardcoding them.
+        # Tolerance must be tight enough to resolve the price-elastic demand loop
+        # (doc_net_energy_per_rpk_mean <-> rpk). At 1e-5 the Gauss-Seidel solver
+        # reports convergence while that coupling is still ~25% off in SAF-type
+        # scenarios; max_mda_iter gives it room to reach the tighter tolerance.
         self.mda_chain = MDAChain(
             disciplines=self.disciplines,
-            tolerance=1e-5,
+            tolerance=1e-10,
+            max_mda_iter=200,
             initialize_defaults=True,
             inner_mda_name="MDAGaussSeidel",
             log_convergence=True,
@@ -469,17 +497,23 @@ class AeroMAPSProcess(object):
         input_data = self._pre_compute()
         if hasattr(self, "scenario") and self.scenario:
             if hasattr(self, "scenario_adapted") and self.scenario_adapted:
-                print("Running bi-level MDO")
+                if self.gemseo_settings.get("algorithm_outer") is None:
+                    raise ValueError(
+                        "Cannot run bi-level MDO: 'algorithm_outer' is not set in gemseo_settings."
+                    )
+                logging.info("Running bi-level MDO")
                 # self.scenario.default_inputs.update(self.scenario.options)
                 self.scenario_adapted.execute(self.gemseo_settings["algorithm_outer"])
             else:
-                print("Running MDO")
+                if self.gemseo_settings.get("algorithm") is None:
+                    raise ValueError("Cannot run MDO: 'algorithm' is not set in gemseo_settings.")
+                logging.info("Running MDO")
                 self.scenario.execute(self.gemseo_settings["algorithm"])
         else:
             if not hasattr(self, "mda_chain") or self.mda_chain is None:
                 raise ValueError("MDA chain not created. Please call setup_mda() first.")
             else:
-                print("Running MDA")
+                logging.info("Running MDA")
                 self.mda_chain.execute(input_data=input_data)
 
         self._update_data_from_model()
@@ -534,18 +568,25 @@ class AeroMAPSProcess(object):
         """
         if file_name is None:
             file_name = self._resolve_config_path(
-                "data", "outputs", "json_outputs_file",
-                default_filename="outputs.json"
+                "data", "outputs", "json_outputs_file", default_filename="outputs.json"
             )
+        if file_name is None:
+            raise ValueError("Cannot resolve output JSON file path. Check your configuration.")
 
         # Ensure the directory exists
-        os.makedirs(os.path.dirname(file_name), exist_ok=True)
+        try:
+            os.makedirs(os.path.dirname(file_name), exist_ok=True)
+        except OSError as e:
+            raise OSError(f"Cannot create output directory for '{file_name}': {e}") from e
 
         # Retrieve the data from the model
         json_data = self.get_json()
 
-        with open(file_name, "w", encoding="utf-8") as f:
-            dump(json_data, f, ensure_ascii=False, indent=4)
+        try:
+            with open(file_name, "w", encoding="utf-8") as f:
+                dump(json_data, f, ensure_ascii=False, indent=4)
+        except OSError as e:
+            raise OSError(f"Failed to write JSON output to '{file_name}': {e}") from e
 
     def write_excel(self, file_name=None):
         """Write main result tables to an Excel workbook.
@@ -561,18 +602,22 @@ class AeroMAPSProcess(object):
         """
         if file_name is None:
             file_name = self._resolve_config_path(
-                "data", "outputs", "excel_outputs_file",
-                default_filename="data.xlsx"
+                "data", "outputs", "excel_outputs_file", default_filename="data.xlsx"
             )
-        with pd.ExcelWriter(file_name) as writer:
-            self._get_data_information_df().to_excel(writer, sheet_name="Data Information")
-            self._get_vector_inputs_df().to_excel(writer, sheet_name="Vector Inputs")
-            self._get_float_inputs_df().to_excel(writer, sheet_name="Float Inputs")
-            self._get_str_inputs_df().to_excel(writer, sheet_name="String Inputs")
-            self._get_vector_outputs_df().to_excel(writer, sheet_name="Vector Outputs")
-            self._get_float_outputs_df().to_excel(writer, sheet_name="Float Outputs")
-            self._get_climate_outputs_df().to_excel(writer, sheet_name="Climate Outputs")
-            # self.lca_outputs_xarray.to_excel(writer, sheet_name="LCA Outputs")
+        if file_name is None:
+            raise ValueError("Cannot resolve output Excel file path. Check your configuration.")
+        try:
+            with pd.ExcelWriter(file_name) as writer:
+                self._get_data_information_df().to_excel(writer, sheet_name="Data Information")
+                self._get_vector_inputs_df().to_excel(writer, sheet_name="Vector Inputs")
+                self._get_float_inputs_df().to_excel(writer, sheet_name="Float Inputs")
+                self._get_str_inputs_df().to_excel(writer, sheet_name="String Inputs")
+                self._get_vector_outputs_df().to_excel(writer, sheet_name="Vector Outputs")
+                self._get_float_outputs_df().to_excel(writer, sheet_name="Float Outputs")
+                self._get_climate_outputs_df().to_excel(writer, sheet_name="Climate Outputs")
+                # self.lca_outputs_xarray.to_excel(writer, sheet_name="LCA Outputs")
+        except OSError as e:
+            raise OSError(f"Failed to write Excel output to '{file_name}': {e}") from e
 
     def generate_n2(self):
         """Generate an N2 diagram for the current disciplines.
@@ -590,7 +635,7 @@ class AeroMAPSProcess(object):
         plot_names
             List of strings identifying available plot functions.
         """
-        return list(available_plots.keys())
+        return list([*available_plots.keys(), *available_plots_fleet.keys()])
 
     def list_float_inputs(self):
         """Return the current scalar input values.
@@ -612,7 +657,8 @@ class AeroMAPSProcess(object):
         """
         return self.data["str_inputs"]
 
-    def plot(self, name, save=False, size_inches=None, remove_title=False):
+    def plot(self, name, save=False, size_inches=None, remove_title=False,
+             fig=None, ax=None, legend=True):
         """Generate a predefined AeroMAPS plot.
 
         Depending on the plot name, this method uses either generic or
@@ -629,6 +675,15 @@ class AeroMAPSProcess(object):
             Optional figure size in inches as a tuple or list.
         remove_title
             Whether to remove the plot title before saving.
+        fig : matplotlib.figure.Figure, optional
+            Existing figure to draw into. If provided together with ``ax``,
+            no new figure/axes are created.
+        ax : matplotlib.axes.Axes, optional
+            Existing axes to draw into. Must be provided together with ``fig``.
+        legend : bool or str, optional
+            Controls the legend. ``True`` (default) keeps the legend as created
+            by the plot. ``False`` hides it. A string value (e.g. ``"upper right"``)
+            moves the legend to the given location.
 
         Returns
         -------
@@ -636,33 +691,33 @@ class AeroMAPSProcess(object):
             Object holding the created plot, as returned by the plot
             function.
         """
+        plot_kwargs = dict(fig=fig, ax=ax, legend=legend)
         if name in available_plots_fleet:
             try:
-                # todo: if we pass the process to the plot, fleet_model is no longer needed as an argument.
-                fig = available_plots_fleet[name](self)
+                fig_obj = available_plots_fleet[name](self, **plot_kwargs)
                 if save:
                     if size_inches is not None:
-                        fig.fig.set_size_inches(size_inches)
+                        fig_obj.fig.set_size_inches(size_inches)
                     if remove_title:
-                        fig.fig.gca().set_title("")
-                    fig.fig.savefig(f"{name}.pdf", bbox_inches="tight")
+                        fig_obj.fig.gca().set_title("")
+                    fig_obj.fig.savefig(f"{name}.pdf", bbox_inches="tight")
             except AttributeError as e:
                 raise NameError(
                     f"Plot {name} requires using bottom up fleet model. Original error: {e}"
                 )
         elif name in available_plots:
-            fig = available_plots[name](self)
+            fig_obj = available_plots[name](self, **plot_kwargs)
             if save:
                 if size_inches is not None:
-                    fig.fig.set_size_inches(size_inches)
+                    fig_obj.fig.set_size_inches(size_inches)
                 if remove_title:
-                    fig.fig.gca().set_title("")
-                fig.fig.savefig(f"{name}.pdf", bbox_inches="tight")
+                    fig_obj.fig.gca().set_title("")
+                fig_obj.fig.savefig(f"{name}.pdf", bbox_inches="tight")
         else:
             raise NameError(
                 f"Plot {name} is not available. List of available plots: {list(available_plots.keys()), list(available_plots_fleet.keys())}"
             )
-        return fig
+        return fig_obj
 
     def _pre_compute(self):
         """Prepare inputs and dependent models before execution.
@@ -705,7 +760,11 @@ class AeroMAPSProcess(object):
         # Load the default configuration file
         self._default_config = read_yaml_file(DEFAULT_CONFIG_PATH)
         self.config = deepcopy(self._default_config)
-        
+        if not self.config:
+            raise RuntimeError(
+                f"Default configuration file is empty or missing: '{DEFAULT_CONFIG_PATH}'"
+            )
+
         # Set the base directory for resolving relative paths
         self._config_base_dir = DEFAULT_RESOURCES_DATA_DIR
 
@@ -857,7 +916,7 @@ class AeroMAPSProcess(object):
         -------
         path
             Resolved absolute path.
-            
+
         Notes
         -----
         If the user specifies `"default"` as the value, the path will be resolved
@@ -865,7 +924,7 @@ class AeroMAPSProcess(object):
         This is useful when the package is installed via pip and relative paths would not work.
         """
         resolved_path = None
-        
+
         # First check if user explicitly set this in their config
         user_value = self._get_user_config_value(*keys)
         if user_value is not None and isinstance(user_value, str):
@@ -876,24 +935,34 @@ class AeroMAPSProcess(object):
                     if os.path.isabs(default_value):
                         resolved_path = Path(default_value)
                     else:
-                        resolved_path = Path(os.path.normpath(os.path.join(DEFAULT_RESOURCES_DATA_DIR, default_value)))
+                        resolved_path = Path(
+                            os.path.normpath(
+                                os.path.join(DEFAULT_RESOURCES_DATA_DIR, default_value)
+                            )
+                        )
             elif os.path.isabs(user_value):
                 resolved_path = Path(user_value)
             else:
-                resolved_path = Path(os.path.normpath(os.path.join(self._config_base_dir, user_value)))
-        
+                resolved_path = Path(
+                    os.path.normpath(os.path.join(self._config_base_dir, user_value))
+                )
+
         # Check if value exists in merged config (from default config)
-        elif (config_value := self._get_config_value(*keys)) is not None and isinstance(config_value, str):
+        elif (config_value := self._get_config_value(*keys)) is not None and isinstance(
+            config_value, str
+        ):
             if os.path.isabs(config_value):
                 resolved_path = Path(config_value)
             else:
                 # Resolve relative to default resources/data directory
-                resolved_path = Path(os.path.normpath(os.path.join(DEFAULT_RESOURCES_DATA_DIR, config_value)))
-        
+                resolved_path = Path(
+                    os.path.normpath(os.path.join(DEFAULT_RESOURCES_DATA_DIR, config_value))
+                )
+
         # Fallback to default filename if provided
         elif default_filename is not None:
             resolved_path = Path(os.path.join(DEFAULT_RESOURCES_DATA_DIR, default_filename))
-        
+
         # Warn if the resolved path doesn't exist
         if resolved_path is not None and not resolved_path.exists():
             config_key = ".".join(keys)
@@ -901,7 +970,7 @@ class AeroMAPSProcess(object):
                 f"Configuration file not found: '{resolved_path}' "
                 f"(config key: {config_key}). Please check the path in your configuration file."
             )
-        
+
         return resolved_path
 
     def _initialize_data(self):
@@ -934,7 +1003,7 @@ class AeroMAPSProcess(object):
         energy_config = self._get_user_config_value("models", "energy", default=None)
         if energy_config is None:
             return
-            
+
         self._read_generic_resources_data()
         self._read_generic_process_data()
         self._instantiate_generic_energy_models()
@@ -950,13 +1019,16 @@ class AeroMAPSProcess(object):
 
         # Check if resources model data file is specified in config
         resources_config = self._get_user_config_value(
-            "models", "energy", "resources_model_data_file", default=None)
+            "models", "energy", "resources_model_data_file", default=None
+        )
         if resources_config is None:
             return
 
         resources_data_file_path = self._resolve_config_path(
-            "models", "energy", "resources_model_data_file",
-            default_filename="default_energy_carriers/resources_data.yaml"
+            "models",
+            "energy",
+            "resources_model_data_file",
+            default_filename="default_energy_carriers/resources_data.yaml",
         )
 
         self.energy_resources_data = read_yaml_file(str(resources_data_file_path))
@@ -989,13 +1061,16 @@ class AeroMAPSProcess(object):
 
         # Check if processes model data file is specified in config
         processes_config = self._get_user_config_value(
-            "models", "energy", "processes_model_data_file", default=None)
+            "models", "energy", "processes_model_data_file", default=None
+        )
         if processes_config is None:
             return
 
         processes_data_path = self._resolve_config_path(
-            "models", "energy", "processes_model_data_file",
-            default_filename="default_energy_carriers/processes_data.yaml"
+            "models",
+            "energy",
+            "processes_model_data_file",
+            default_filename="default_energy_carriers/processes_data.yaml",
         )
 
         self.energy_processes_data = read_yaml_file(str(processes_data_path))
@@ -1032,8 +1107,10 @@ class AeroMAPSProcess(object):
         dictionary.
         """
         energy_carriers_data_file_path = self._resolve_config_path(
-            "models", "energy", "energy_carriers_model_data_file",
-            default_filename="default_energy_carriers/energy_carriers_data.yaml"
+            "models",
+            "energy",
+            "energy_carriers_model_data_file",
+            default_filename="default_energy_carriers/energy_carriers_data.yaml",
         )
 
         self.energy_carriers_data = read_yaml_file(str(energy_carriers_data_file_path))
@@ -1124,28 +1201,32 @@ class AeroMAPSProcess(object):
         - species_settings: dict, settings for each species
         - model_settings: dict, settings for the climate model
         Refer to the documentation of AeroCM for more details: https://github.com/AeroMAPS/AeroCM
-        
+
         Skipped if models.climate key is not present in the user configuration.
         """
         # Check if climate model should be used (key must be present in user config)
         climate_config = self._get_user_config_value("models", "climate", default=None)
         if climate_config is None:
             return
-            
+
         climate_model_file_path = self._resolve_config_path(
-            "models", "climate", "climate_model_data_file",
-            default_filename="../climate_data/climate_model_fair.yaml"
+            "models",
+            "climate",
+            "climate_model_data_file",
+            default_filename="../climate_data/climate_model_fair.yaml",
         )
 
         if climate_model_file_path and climate_model_file_path.exists():
             climate_model_data = read_yaml_file(str(climate_model_file_path))
             self.models.update(
-                {"climate_model": ClimateModel(
-                    name="climate_model",
-                    climate_model=climate_model_data.get("climate_model", "FaIR"),
-                    species_settings=climate_model_data.get("species_settings", {}),
-                    model_settings=climate_model_data.get("model_settings", {})
-                )}
+                {
+                    "climate_model": ClimateModel(
+                        name="climate_model",
+                        climate_model=climate_model_data.get("climate_model", "FaIR"),
+                        species_settings=climate_model_data.get("species_settings", {}),
+                        model_settings=climate_model_data.get("model_settings", {}),
+                    )
+                }
             )
 
     def _initialize_lca_model(self):
@@ -1170,28 +1251,35 @@ class AeroMAPSProcess(object):
         lca_tmp_file_path = tmp_dir / "lca_tmp.pkl"
 
         # The user can specify to load the LCA model from a temporary file, e.g. if already compiled in the same session
-        if lca_config.get("lca_model_data_file") == '#tmp':
+        if lca_config.get("lca_model_data_file") == "#tmp":
             with open(lca_tmp_file_path, "rb") as f:
                 lca_instance = dill.load(f)
-            logging.info("Loaded LCA model from temporary file (precompiled from latest run in current session).")
-            self.models.update(
-                {"life_cycle_assessment": lca_instance}
+            logging.info(
+                "Loaded LCA model from temporary file (precompiled from latest run in current session)."
             )
+            self.models.update({"life_cycle_assessment": lca_instance})
             return
 
         # Otherwise, read the LCA model file path from config
         lca_model_file_path = self._resolve_config_path(
-            "models", "life_cycle_assessment", "lca_model_data_file",
-            default_filename="../lca_data/default_lca_model.json"
+            "models",
+            "life_cycle_assessment",
+            "lca_model_data_file",
+            default_filename="../lca_data/default_lca_model.json",
         )
         if lca_model_file_path and lca_model_file_path.exists():
             # If json file, use the default LCA model class
             if lca_model_file_path.suffix.lower() == ".json":
                 lca_instance = LifeCycleAssessmentDefault(
-                        name="life_cycle_assessment",
-                        json_file=str(lca_model_file_path),
-                        split_by=self._get_config_value("models", "life_cycle_assessment", "split_by", default=None)
-                    )
+                    name="life_cycle_assessment",
+                    json_file=str(lca_model_file_path),
+                    split_by=self._get_config_value(
+                        "models", "life_cycle_assessment", "split_by", default=None
+                    ),
+                    methods=self._get_config_value(
+                        "models", "life_cycle_assessment", "methods", default=None
+                    ),
+                )
             # If yaml file, use the custom LCA model class
             elif lca_model_file_path.suffix.lower() in [".yaml", ".yml"]:
                 if LCA_PACKAGES_INSTALLED is False:
@@ -1202,16 +1290,17 @@ class AeroMAPSProcess(object):
                 lca_instance = LifeCycleAssessmentCustom(
                     name="life_cycle_assessment",
                     configuration_file=lca_model_file_path,
-                    split_by=self._get_config_value("models", "life_cycle_assessment", "split_by", default=None)
+                    split_by=self._get_config_value(
+                        "models", "life_cycle_assessment", "split_by", default=None
+                    ),
                 )
             else:
                 raise ValueError(
-                    "LCA model file must be either a .json (default LCA model) or .yaml/.yml (custom LCA model) file.")
+                    "LCA model file must be either a .json (default LCA model) or .yaml/.yml (custom LCA model) file."
+                )
 
             # Update the models dictionary
-            self.models.update(
-                {"life_cycle_assessment": lca_instance}
-            )
+            self.models.update({"life_cycle_assessment": lca_instance})
 
             # Store the LCA model instance in a temporary file for faster loading in the same session
             with open(lca_tmp_file_path, "wb") as f:
@@ -1265,17 +1354,20 @@ class AeroMAPSProcess(object):
         # Fleet model is enabled only if models.fleet key exists in user config and is a dict
         fleet_config = self._get_user_config_value("models", "fleet", default=None)
         use_fleet_model = isinstance(fleet_config, dict)
-        
-        if use_fleet_model:
 
+        if use_fleet_model:
             aircraft_inventory_path = self._resolve_config_path(
-                "models", "fleet", "aircraft_inventory_model_data_file",
-                default_filename="default_fleet/aircraft_inventory.yaml"
+                "models",
+                "fleet",
+                "aircraft_inventory_model_data_file",
+                default_filename="default_fleet/aircraft_inventory.yaml",
             )
 
             fleet_config_path = self._resolve_config_path(
-                "models", "fleet", "fleet_model_data_file",
-                default_filename="default_fleet/fleet.yaml"
+                "models",
+                "fleet",
+                "fleet_model_data_file",
+                default_filename="default_fleet/fleet.yaml",
             )
             self.fleet = Fleet(
                 parameters=self.parameters,
@@ -1298,24 +1390,47 @@ class AeroMAPSProcess(object):
                     # TODO: check how to avoid providing all parameters
                     model.parameters = self.parameters
                     model._initialize_df()
-                    if hasattr(model, "pathways_manager") and hasattr(model, "custom_setup") and self.pathways_manager is not None:
+                    if (
+                        hasattr(model, "pathways_manager")
+                        and hasattr(model, "custom_setup")
+                        and self.pathways_manager is not None
+                    ):
                         # TODO harmonise the way to pass the pathways manager with generic models
+                        # self.pathways_manager is only set when models.energy is present in config;
+                        # _initialize_generic_energy() returns early otherwise.
+                        if not hasattr(self, "pathways_manager"):
+                            raise RuntimeError(
+                                f"Model '{model.name}' requires a pathways_manager but "
+                                "generic energy has not been initialized. "
+                                "Add 'models.energy' to your configuration."
+                            )
                         model.pathways_manager = self.pathways_manager
                         model.custom_setup()
                     if hasattr(self, "fleet_model"):
                         model.fleet_model = self.fleet_model
                     if hasattr(model, "climate_historical_data"):
+                        if not hasattr(self, "climate_historical_data"):
+                            raise RuntimeError(
+                                f"Model '{model.name}' requires climate_historical_data but "
+                                "climate data has not been initialized."
+                            )
                         model.climate_historical_data = self.climate_historical_data
                     if hasattr(model, "compute"):
-                        if model.model_type == "custom":
+                        if getattr(model, "model_type") == "custom":
                             model = AeroMAPSCustomModelWrapper(model=model)
                         else:
                             model = AeroMAPSAutoModelWrapper(model=model)
                         self.disciplines.append(model)
                     else:
-                        print(model.name)
+                        raise AttributeError(
+                            f"Model '{model.name}' has no compute() method. "
+                            "All AeroMAPSModel subclasses must implement compute()."
+                        )
                 else:
-                    print(f"{key} is not an instance of AeroMAPSModel")
+                    raise TypeError(
+                        f"Entry '{key}' in the models dict is not an AeroMAPSModel instance "
+                        f"(got {type(value).__name__}). Only AeroMAPSModel subclasses are allowed."
+                    )
 
         check_instance_in_dict(self.models)
 
@@ -1366,9 +1481,7 @@ class AeroMAPSProcess(object):
         self.parameters = Parameters()
 
         # First use main parameters.json as default values (always from resources/data)
-        default_params_path = Path(
-            os.path.join(DEFAULT_RESOURCES_DATA_DIR, "parameters.json")
-        )
+        default_params_path = Path(os.path.join(DEFAULT_RESOURCES_DATA_DIR, "parameters.json"))
         if use_defaults:
             self.parameters.read_json(file_name=str(default_params_path))
 
@@ -1382,14 +1495,27 @@ class AeroMAPSProcess(object):
                 merged_data = {}
                 for json_file in json_inputs_config:
                     file_path = os.path.join(self._config_base_dir, json_file)
-                    with open(file_path, "r") as f:
-                        data = load(f)
-                        for key, value in data.items():
-                            if key in merged_data:
-                                print(
-                                    f"Warning: '{key}' was given twice, only the last value was kept."
-                                )
-                            merged_data[key] = value
+                    try:
+                        with open(file_path, "r") as f:
+                            data = load(f)
+                    except FileNotFoundError:
+                        raise FileNotFoundError(
+                            f"Input JSON file not found: '{file_path}' "
+                            f"(referenced in configuration under 'data.inputs.json_inputs_file')"
+                        )
+                    except json.JSONDecodeError as e:
+                        raise json.JSONDecodeError(
+                            f"Invalid JSON in '{file_path}': {e.msg}", e.doc, e.pos
+                        ) from e
+                    for key, value in data.items():
+                        if key in merged_data:
+                            logging.warning(
+                                "Parameter '%s' is defined in multiple input JSON files; "
+                                "the value from file '%s' will override the previous one.",
+                                key,
+                                json_file,
+                            )
+                        merged_data[key] = value
                 self.parameters.read_json_direct(merged_data)
             # If the alternative file is a single json file
             else:
@@ -1415,14 +1541,14 @@ class AeroMAPSProcess(object):
         """Load and register vector input time series from a JSON file.
 
         This method reads the vector inputs JSON file, converts each
-        key into a pandas Series indexed by years, and attaches them as 
+        key into a pandas Series indexed by years, and attaches them as
         attributes to the parameters object.
-        
+
         The JSON file should contain a dictionary with:
         - "other_float_data": scalar values (stored as-is)
         - "other_vector_data": vector inputs indexed by years
         - "climate_data": handled separately by _initialize_climate_historical_data
-        
+
         Example JSON format:
         {
             "other_float_data": {
@@ -1442,32 +1568,31 @@ class AeroMAPSProcess(object):
         }
         """
         vector_inputs_data_file_path = self._resolve_config_path(
-            "data", "inputs", "partitioning_data_file",
-            default_filename="partitioning_data.json"
+            "data", "inputs", "partitioning_data_file", default_filename="partitioning_data.json"
         )
-        
+
         if vector_inputs_data_file_path is None:
             return
 
         # Read JSON file (utf-8-sig handles BOM if present)
         with open(vector_inputs_data_file_path, "r", encoding="utf-8-sig") as f:
             vector_inputs_data = load(f)
-        
+
         # Store climate_data section for later use by _initialize_climate_historical_data
         if "climate_data" in vector_inputs_data:
             self._partitioned_climate_data = vector_inputs_data.pop("climate_data")
-        
+
         # Process other_float_data section (scalar inputs)
         if "other_float_data" in vector_inputs_data:
             other_float_data = vector_inputs_data.pop("other_float_data")
             for param_name, value in other_float_data.items():
                 setattr(self.parameters, param_name, value)
-        
+
         # Process other_vector_data section (vector inputs with years index)
         if "other_vector_data" in vector_inputs_data:
             other_vector_data = vector_inputs_data.pop("other_vector_data")
             years_index = other_vector_data.pop("years", None)
-            
+
             for param_name, value in other_vector_data.items():
                 if isinstance(value, list) and years_index is not None:
                     setattr(self.parameters, param_name, pd.Series(value, index=years_index))
@@ -1480,32 +1605,49 @@ class AeroMAPSProcess(object):
         This method reads the configured climate data from either:
         - A "climate_data" section in the partitioning JSON file (if available)
         - A CSV file specified by partitioning_climate_data_file config key
-        
+
         The data is stored as a NumPy array for climate-related models.
         """
         # Check if climate data was loaded from the partitioning JSON file
-        if hasattr(self, "_partitioned_climate_data") and self._partitioned_climate_data is not None:
+        if (
+            hasattr(self, "_partitioned_climate_data")
+            and self._partitioned_climate_data is not None
+        ):
             climate_data = self._partitioned_climate_data
-            self.climate_historical_data = np.column_stack([
-                climate_data["years"],
-                climate_data["co2_emissions"],
-                climate_data["nox_emissions"],
-                climate_data["h2o_emissions"],
-                climate_data["soot_emissions"],
-                climate_data["sulfur_emissions"],
-                climate_data["distance"],
-            ])
+            self.climate_historical_data = np.column_stack(
+                [
+                    climate_data["years"],
+                    climate_data["co2_emissions"],
+                    climate_data["nox_emissions"],
+                    climate_data["h2o_emissions"],
+                    climate_data["soot_emissions"],
+                    climate_data["sulfur_emissions"],
+                    climate_data["distance"],
+                ]
+            )
             return
-        
+
         # Fallback to CSV file
         climate_historical_data_file_path = self._resolve_config_path(
-            "data", "inputs", "partitioning_climate_data_file",
-            default_filename="../climate_data/temperature_historical_dataset.csv"
+            "data",
+            "inputs",
+            "partitioning_climate_data_file",
+            default_filename="../climate_data/temperature_historical_dataset.csv",
         )
 
-        historical_dataset_df = pd.read_csv(
-            climate_historical_data_file_path, delimiter=";", header=None
-        )
+        try:
+            historical_dataset_df = pd.read_csv(
+                climate_historical_data_file_path, delimiter=";", header=None
+            )
+        except FileNotFoundError:
+            raise FileNotFoundError(
+                f"Climate historical data file not found: '{climate_historical_data_file_path}'"
+            )
+        except Exception as e:
+            raise ValueError(
+                f"Failed to parse climate historical data file "
+                f"'{climate_historical_data_file_path}': {e}"
+            ) from e
         self.climate_historical_data = historical_dataset_df.values
 
     def _initialize_gemseo_settings(self):
@@ -1547,6 +1689,8 @@ class AeroMAPSProcess(object):
                 "freight_init",
                 "energy_consumption_init",
                 "total_aircraft_distance_init",
+                "gdp_per_capita_init",
+                "population_init",
             ]
             if field_name in list_init:
                 new_size = self.parameters.end_year - self.parameters.historic_start_year + 1
@@ -1577,7 +1721,14 @@ class AeroMAPSProcess(object):
                     new_value = pd.Series(field_value, index=index)
                     setattr(self.parameters, field_name, new_value)
                 else:
-                    print(f"Field {field_name} has an unexpected size {field_value.size}")
+                    logging.warning(
+                        "Field '%s' has an unexpected size %d (expected %d or %d); "
+                        "cannot reformat it to a time-indexed Series.",
+                        field_name,
+                        field_value.size,
+                        self.parameters.end_year - self.parameters.climate_historic_start_year + 1,
+                        self.parameters.end_year - self.parameters.historic_start_year + 1,
+                    )
 
     def _update_variables(self):
         """Refresh data, DataFrames, and JSON cache from model results.
@@ -1629,7 +1780,7 @@ class AeroMAPSProcess(object):
                             new_values.append(val)
                     self.data["vector_inputs"][name] = new_values
             except AttributeError:
-                pass
+                logging.debug("Input '%s' not found in process parameters; skipping.", name)
 
         # Outputs
         if self.data["vector_outputs"].columns.size == 0:
@@ -1822,10 +1973,21 @@ class AeroMAPSProcess(object):
         """
         if file_name is None:
             file_name = self._resolve_config_path(
-                "data", "inputs", "csv_data_information_file",
-                default_filename="data_information.csv"
+                "data",
+                "inputs",
+                "csv_data_information_file",
+                default_filename="data_information.csv",
             )
-        df = pd.read_csv(file_name, encoding="utf-8", sep=";")
+        if file_name is None:
+            raise ValueError(
+                "Cannot resolve data information CSV file path. Check your configuration."
+            )
+        try:
+            df = pd.read_csv(file_name, encoding="utf-8", sep=";")
+        except FileNotFoundError:
+            raise FileNotFoundError(f"Data information file not found: '{file_name}'")
+        except Exception as e:
+            raise ValueError(f"Failed to parse data information file '{file_name}': {e}") from e
 
         var_infos_df = pd.DataFrame()
         for data_type, variables in self.data.items():

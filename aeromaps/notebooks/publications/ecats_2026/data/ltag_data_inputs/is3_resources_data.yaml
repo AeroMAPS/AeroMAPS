@@ -1,0 +1,31 @@
+
+
+generic_electricity:
+  # ID
+  name: "generic_electricity"
+  origin: "electricity"
+  specifications:
+  # Technical:
+    availability:
+      global: 250.0e+12 # [EJ]
+      aviation_allocated_share: 5 # [%] Share of the global availability
+
+co2_dac:
+  #ID
+  name: "co2_dac"
+  specifications:
+
+co2_indus:
+  #ID
+  name: "co2_indus"
+  specifications:
+  
+generic_biomass:
+  # ID
+  name: "generic_biomass"
+  origin: "biomass"
+  specifications:
+    # Availability
+    availability:
+      global: 164.0e+12 # [MJ]
+      aviation_allocated_share: 5 # [%] Share of the global availability

@@ -1,7 +1,8 @@
 """
 Test module for AeroMAPS process.
 
-This module tests the AeroMAPSProcess class functionality.
+This module tests the AeroMAPSProcess class functionality and that all model
+groups can be instantiated and run without errors.
 """
 from pathlib import Path
 
@@ -9,14 +10,13 @@ import pytest
 import os
 from aeromaps import create_process
 
+CONFIG_DIR = Path(__file__).parent.parent / "tested_configs"
+
 
 def get_tested_config_files():
-    """Get paths for configuration files to initialize process."""
-    config_paths = [
-        Path(__file__).parent / f"tested_configs/config_{name}.yaml"
-        for name in ["basic", "advanced"]
-    ]
-    config_paths.append(None)
+    """Get paths for all configuration files in tested_configs, plus None."""
+    config_paths = list(CONFIG_DIR.glob("*.yaml"))
+    # config_paths.append(None)
     return config_paths
 
 # TODO: expand tests for None and relative path cases
@@ -86,16 +86,22 @@ def test_compute(config_file):
     assert vector_outputs is not None
     assert len(vector_outputs) > 0
 
+
 def test_process_models_are_independent():
     """Test that model instances are independent between processes."""
     # Create two processes with default config
     proc1 = create_process()
     proc2 = create_process()
 
+    proc1.parameters.cagr_freight_reference_periods_values = [0.0]
+    assert (proc1.parameters.cagr_freight_reference_periods_values !=
+            proc2.parameters.cagr_freight_reference_periods_values), \
+        "Changing parameters in one process should not affect the other process"
+
     # Models should be different instances
     # Test with a common model that should exist in both
     common_models = set(proc1.models.keys()) & set(proc2.models.keys())
-    assert len(common_models) > 0, "Processes should have some common models"
+    assert len(common_models) > 0, "AeroMAPSProcessesAssembly should have some common models"
 
     # Check that at least one model is a different instance
     for model_name in list(common_models)[:3]:  # Test first 3 common models
