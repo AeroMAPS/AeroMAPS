@@ -7328,7 +7328,21 @@
 <span class="normal">523</span>
 <span class="normal">524</span>
 <span class="normal">525</span>
-<span class="normal">526</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span>
+<span class="normal">526</span>
+<span class="normal">527</span>
+<span class="normal">528</span>
+<span class="normal">529</span>
+<span class="normal">530</span>
+<span class="normal">531</span>
+<span class="normal">532</span>
+<span class="normal">533</span>
+<span class="normal">534</span>
+<span class="normal">535</span>
+<span class="normal">536</span>
+<span class="normal">537</span>
+<span class="normal">538</span>
+<span class="normal">539</span>
+<span class="normal">540</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">energy_consumption_init</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
     <span class="n">ask_init</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
@@ -7525,20 +7539,34 @@
     <span class="n">years_proj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
     <span class="n">idx_proj</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">(</span><span class="n">years_proj</span><span class="p">)</span>
 
+    <span class="c1"># TODO: improve divison by zero handling</span>
+
     <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx_hist</span><span class="p">,</span> <span class="s2">&quot;energy_per_ask_without_operations_short_range_dropin_fuel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">energy_consumption_per_ask_init</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx_hist</span><span class="p">]</span>
-        <span class="o">*</span> <span class="n">short_range_energy_share_2019</span>
-        <span class="o">/</span> <span class="n">short_range_rpk_share_2019</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+            <span class="n">short_range_rpk_share_2019</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="n">energy_consumption_per_ask_init</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx_hist</span><span class="p">]</span>
+            <span class="o">*</span> <span class="n">short_range_energy_share_2019</span>
+            <span class="o">/</span> <span class="n">short_range_rpk_share_2019</span><span class="p">,</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span>
+        <span class="p">)</span>
     <span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx_hist</span><span class="p">,</span> <span class="s2">&quot;energy_per_ask_without_operations_medium_range_dropin_fuel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">energy_consumption_per_ask_init</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx_hist</span><span class="p">]</span>
-        <span class="o">*</span> <span class="n">medium_range_energy_share_2019</span>
-        <span class="o">/</span> <span class="n">medium_range_rpk_share_2019</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+            <span class="n">medium_range_energy_share_2019</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="n">energy_consumption_per_ask_init</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx_hist</span><span class="p">]</span>
+            <span class="o">*</span> <span class="n">medium_range_energy_share_2019</span>
+            <span class="o">/</span> <span class="n">medium_range_rpk_share_2019</span><span class="p">,</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span>
+        <span class="p">)</span>
     <span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx_hist</span><span class="p">,</span> <span class="s2">&quot;energy_per_ask_without_operations_long_range_dropin_fuel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">energy_consumption_per_ask_init</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx_hist</span><span class="p">]</span>
-        <span class="o">*</span> <span class="n">long_range_energy_share_2019</span>
-        <span class="o">/</span> <span class="n">long_range_rpk_share_2019</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+            <span class="n">long_range_energy_share_2019</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="n">energy_consumption_per_ask_init</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx_hist</span><span class="p">]</span>
+            <span class="o">*</span> <span class="n">long_range_energy_share_2019</span>
+            <span class="o">/</span> <span class="n">long_range_rpk_share_2019</span><span class="p">,</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span>
+        <span class="p">)</span>
     <span class="p">)</span>
 
     <span class="c1"># Projections</span>
@@ -7899,8 +7927,8 @@
 
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/aircraft_efficiency.py</code></summary>
-                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">548</span>
-<span class="normal">549</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;passenger_aircraft_efficiency_simple_ask&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">562</span>
+<span class="normal">563</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;passenger_aircraft_efficiency_simple_ask&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -8228,21 +8256,7 @@
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/aircraft_efficiency.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">551</span>
-<span class="normal">552</span>
-<span class="normal">553</span>
-<span class="normal">554</span>
-<span class="normal">555</span>
-<span class="normal">556</span>
-<span class="normal">557</span>
-<span class="normal">558</span>
-<span class="normal">559</span>
-<span class="normal">560</span>
-<span class="normal">561</span>
-<span class="normal">562</span>
-<span class="normal">563</span>
-<span class="normal">564</span>
-<span class="normal">565</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">565</span>
 <span class="normal">566</span>
 <span class="normal">567</span>
 <span class="normal">568</span>
@@ -8366,7 +8380,21 @@
 <span class="normal">686</span>
 <span class="normal">687</span>
 <span class="normal">688</span>
-<span class="normal">689</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span>
+<span class="normal">689</span>
+<span class="normal">690</span>
+<span class="normal">691</span>
+<span class="normal">692</span>
+<span class="normal">693</span>
+<span class="normal">694</span>
+<span class="normal">695</span>
+<span class="normal">696</span>
+<span class="normal">697</span>
+<span class="normal">698</span>
+<span class="normal">699</span>
+<span class="normal">700</span>
+<span class="normal">701</span>
+<span class="normal">702</span>
+<span class="normal">703</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">ask_short_range</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
     <span class="n">ask_medium_range</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
@@ -8604,9 +8632,9 @@
 
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/aircraft_efficiency.py</code></summary>
-                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">707</span>
-<span class="normal">708</span>
-<span class="normal">709</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;passenger_aircraft_efficiency_complex&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">721</span>
+<span class="normal">722</span>
+<span class="normal">723</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;passenger_aircraft_efficiency_complex&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">fleet_model</span> <span class="o">=</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
@@ -9149,21 +9177,7 @@
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/aircraft_efficiency.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 711</span>
-<span class="normal"> 712</span>
-<span class="normal"> 713</span>
-<span class="normal"> 714</span>
-<span class="normal"> 715</span>
-<span class="normal"> 716</span>
-<span class="normal"> 717</span>
-<span class="normal"> 718</span>
-<span class="normal"> 719</span>
-<span class="normal"> 720</span>
-<span class="normal"> 721</span>
-<span class="normal"> 722</span>
-<span class="normal"> 723</span>
-<span class="normal"> 724</span>
-<span class="normal"> 725</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 725</span>
 <span class="normal"> 726</span>
 <span class="normal"> 727</span>
 <span class="normal"> 728</span>
@@ -9564,7 +9578,35 @@
 <span class="normal">1123</span>
 <span class="normal">1124</span>
 <span class="normal">1125</span>
-<span class="normal">1126</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span>
+<span class="normal">1126</span>
+<span class="normal">1127</span>
+<span class="normal">1128</span>
+<span class="normal">1129</span>
+<span class="normal">1130</span>
+<span class="normal">1131</span>
+<span class="normal">1132</span>
+<span class="normal">1133</span>
+<span class="normal">1134</span>
+<span class="normal">1135</span>
+<span class="normal">1136</span>
+<span class="normal">1137</span>
+<span class="normal">1138</span>
+<span class="normal">1139</span>
+<span class="normal">1140</span>
+<span class="normal">1141</span>
+<span class="normal">1142</span>
+<span class="normal">1143</span>
+<span class="normal">1144</span>
+<span class="normal">1145</span>
+<span class="normal">1146</span>
+<span class="normal">1147</span>
+<span class="normal">1148</span>
+<span class="normal">1149</span>
+<span class="normal">1150</span>
+<span class="normal">1151</span>
+<span class="normal">1152</span>
+<span class="normal">1153</span>
+<span class="normal">1154</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">dummy_fleet_model_output</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="n">energy_consumption_init</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
@@ -9743,22 +9785,36 @@
     <span class="c1"># Drop-in - Initialization based on 2019 share - To check for consistency</span>
     <span class="n">energy_consumption_per_ask_init</span> <span class="o">=</span> <span class="n">energy_consumption_init</span> <span class="o">/</span> <span class="n">ask</span>
 
-    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">historic_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot;energy_per_ask_without_operations_short_range_dropin_fuel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">energy_consumption_per_ask_init</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+    <span class="c1"># Historical years: vectorized with NaN handling for zero RPK shares (regionalisation)</span>
+    <span class="n">years_hist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">historic_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span><span class="p">)</span>
+    <span class="c1"># TODO: improve divison by zero handling</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">years_hist</span><span class="p">,</span> <span class="s2">&quot;energy_per_ask_without_operations_short_range_dropin_fuel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+            <span class="n">short_range_rpk_share_2019</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="n">energy_consumption_per_ask_init</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">years_hist</span><span class="p">]</span>
             <span class="o">*</span> <span class="n">short_range_energy_share_2019</span>
-            <span class="o">/</span> <span class="n">short_range_rpk_share_2019</span>
+            <span class="o">/</span> <span class="n">short_range_rpk_share_2019</span><span class="p">,</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot;energy_per_ask_without_operations_medium_range_dropin_fuel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">energy_consumption_per_ask_init</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">years_hist</span><span class="p">,</span> <span class="s2">&quot;energy_per_ask_without_operations_medium_range_dropin_fuel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+            <span class="n">medium_range_rpk_share_2019</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="n">energy_consumption_per_ask_init</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">years_hist</span><span class="p">]</span>
             <span class="o">*</span> <span class="n">medium_range_energy_share_2019</span>
-            <span class="o">/</span> <span class="n">medium_range_rpk_share_2019</span>
+            <span class="o">/</span> <span class="n">medium_range_rpk_share_2019</span><span class="p">,</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot;energy_per_ask_without_operations_long_range_dropin_fuel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">energy_consumption_per_ask_init</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">years_hist</span><span class="p">,</span> <span class="s2">&quot;energy_per_ask_without_operations_long_range_dropin_fuel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+            <span class="n">long_range_rpk_share_2019</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="n">energy_consumption_per_ask_init</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">years_hist</span><span class="p">]</span>
             <span class="o">*</span> <span class="n">long_range_energy_share_2019</span>
-            <span class="o">/</span> <span class="n">long_range_rpk_share_2019</span>
+            <span class="o">/</span> <span class="n">long_range_rpk_share_2019</span><span class="p">,</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span>
         <span class="p">)</span>
+    <span class="p">)</span>
     <span class="c1"># Share</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;ask_short_range_dropin_fuel_share&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">100.0</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;ask_medium_range_dropin_fuel_share&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">100.0</span>
@@ -10054,8 +10110,8 @@
 
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/aircraft_efficiency.py</code></summary>
-                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1138</span>
-<span class="normal">1139</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;freight_aircraft_efficiency&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1166</span>
+<span class="normal">1167</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;freight_aircraft_efficiency&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -10625,35 +10681,7 @@
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/aircraft_efficiency.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1141</span>
-<span class="normal">1142</span>
-<span class="normal">1143</span>
-<span class="normal">1144</span>
-<span class="normal">1145</span>
-<span class="normal">1146</span>
-<span class="normal">1147</span>
-<span class="normal">1148</span>
-<span class="normal">1149</span>
-<span class="normal">1150</span>
-<span class="normal">1151</span>
-<span class="normal">1152</span>
-<span class="normal">1153</span>
-<span class="normal">1154</span>
-<span class="normal">1155</span>
-<span class="normal">1156</span>
-<span class="normal">1157</span>
-<span class="normal">1158</span>
-<span class="normal">1159</span>
-<span class="normal">1160</span>
-<span class="normal">1161</span>
-<span class="normal">1162</span>
-<span class="normal">1163</span>
-<span class="normal">1164</span>
-<span class="normal">1165</span>
-<span class="normal">1166</span>
-<span class="normal">1167</span>
-<span class="normal">1168</span>
-<span class="normal">1169</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1169</span>
 <span class="normal">1170</span>
 <span class="normal">1171</span>
 <span class="normal">1172</span>
@@ -10929,7 +10957,87 @@
 <span class="normal">1442</span>
 <span class="normal">1443</span>
 <span class="normal">1444</span>
-<span class="normal">1445</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span>
+<span class="normal">1445</span>
+<span class="normal">1446</span>
+<span class="normal">1447</span>
+<span class="normal">1448</span>
+<span class="normal">1449</span>
+<span class="normal">1450</span>
+<span class="normal">1451</span>
+<span class="normal">1452</span>
+<span class="normal">1453</span>
+<span class="normal">1454</span>
+<span class="normal">1455</span>
+<span class="normal">1456</span>
+<span class="normal">1457</span>
+<span class="normal">1458</span>
+<span class="normal">1459</span>
+<span class="normal">1460</span>
+<span class="normal">1461</span>
+<span class="normal">1462</span>
+<span class="normal">1463</span>
+<span class="normal">1464</span>
+<span class="normal">1465</span>
+<span class="normal">1466</span>
+<span class="normal">1467</span>
+<span class="normal">1468</span>
+<span class="normal">1469</span>
+<span class="normal">1470</span>
+<span class="normal">1471</span>
+<span class="normal">1472</span>
+<span class="normal">1473</span>
+<span class="normal">1474</span>
+<span class="normal">1475</span>
+<span class="normal">1476</span>
+<span class="normal">1477</span>
+<span class="normal">1478</span>
+<span class="normal">1479</span>
+<span class="normal">1480</span>
+<span class="normal">1481</span>
+<span class="normal">1482</span>
+<span class="normal">1483</span>
+<span class="normal">1484</span>
+<span class="normal">1485</span>
+<span class="normal">1486</span>
+<span class="normal">1487</span>
+<span class="normal">1488</span>
+<span class="normal">1489</span>
+<span class="normal">1490</span>
+<span class="normal">1491</span>
+<span class="normal">1492</span>
+<span class="normal">1493</span>
+<span class="normal">1494</span>
+<span class="normal">1495</span>
+<span class="normal">1496</span>
+<span class="normal">1497</span>
+<span class="normal">1498</span>
+<span class="normal">1499</span>
+<span class="normal">1500</span>
+<span class="normal">1501</span>
+<span class="normal">1502</span>
+<span class="normal">1503</span>
+<span class="normal">1504</span>
+<span class="normal">1505</span>
+<span class="normal">1506</span>
+<span class="normal">1507</span>
+<span class="normal">1508</span>
+<span class="normal">1509</span>
+<span class="normal">1510</span>
+<span class="normal">1511</span>
+<span class="normal">1512</span>
+<span class="normal">1513</span>
+<span class="normal">1514</span>
+<span class="normal">1515</span>
+<span class="normal">1516</span>
+<span class="normal">1517</span>
+<span class="normal">1518</span>
+<span class="normal">1519</span>
+<span class="normal">1520</span>
+<span class="normal">1521</span>
+<span class="normal">1522</span>
+<span class="normal">1523</span>
+<span class="normal">1524</span>
+<span class="normal">1525</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">energy_consumption_init</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
     <span class="n">rtk</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
@@ -11098,16 +11206,32 @@
             <span class="o">+</span> <span class="n">ask_long_range_dropin_fuel_k</span>
         <span class="p">)</span>
 
+        <span class="c1"># Handling zero divisions if no traffic on a specific range category.</span>
+        <span class="n">energy_per_rtk_without_operations_freight_dropin_fuel_k</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="c1"># TODO: improve divison by zero handling</span>
+        <span class="k">if</span> <span class="n">ask_short_range_dropin_fuel_k</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">energy_per_rtk_without_operations_freight_dropin_fuel_k</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="n">energy_per_rtk_without_operations_freight_dropin_fuel_short_range_k</span>
+                <span class="o">*</span> <span class="n">ask_short_range_dropin_fuel_k</span>
+                <span class="o">/</span> <span class="n">ask_total_dropin_fuel_k</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ask_medium_range_dropin_fuel_k</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">energy_per_rtk_without_operations_freight_dropin_fuel_k</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="n">energy_per_rtk_without_operations_freight_dropin_fuel_medium_range_k</span>
+                <span class="o">*</span> <span class="n">ask_medium_range_dropin_fuel_k</span>
+                <span class="o">/</span> <span class="n">ask_total_dropin_fuel_k</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ask_long_range_dropin_fuel_k</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">energy_per_rtk_without_operations_freight_dropin_fuel_k</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="n">energy_per_rtk_without_operations_freight_dropin_fuel_long_range_k</span>
+                <span class="o">*</span> <span class="n">ask_long_range_dropin_fuel_k</span>
+                <span class="o">/</span> <span class="n">ask_total_dropin_fuel_k</span>
+            <span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot;energy_per_rtk_without_operations_freight_dropin_fuel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">energy_per_rtk_without_operations_freight_dropin_fuel_short_range_k</span>
-            <span class="o">*</span> <span class="n">ask_short_range_dropin_fuel_k</span>
-            <span class="o">/</span> <span class="p">(</span><span class="n">ask_total_dropin_fuel_k</span><span class="p">)</span>
-            <span class="o">+</span> <span class="n">energy_per_rtk_without_operations_freight_dropin_fuel_medium_range_k</span>
-            <span class="o">*</span> <span class="n">ask_medium_range_dropin_fuel_k</span>
-            <span class="o">/</span> <span class="p">(</span><span class="n">ask_total_dropin_fuel_k</span><span class="p">)</span>
-            <span class="o">+</span> <span class="n">energy_per_rtk_without_operations_freight_dropin_fuel_long_range_k</span>
-            <span class="o">*</span> <span class="n">ask_long_range_dropin_fuel_k</span>
-            <span class="o">/</span> <span class="p">(</span><span class="n">ask_total_dropin_fuel_k</span><span class="p">)</span>
+            <span class="n">energy_per_rtk_without_operations_freight_dropin_fuel_k</span>
         <span class="p">)</span>
 
     <span class="c1"># Covid</span>
@@ -11129,6 +11253,7 @@
         <span class="o">+</span> <span class="n">ask_medium_range_electric_share</span> <span class="o">*</span> <span class="p">(</span><span class="n">ask_medium_range</span> <span class="o">/</span> <span class="n">ask</span><span class="p">)</span>
         <span class="o">+</span> <span class="n">ask_long_range_electric_share</span> <span class="o">*</span> <span class="p">(</span><span class="n">ask_long_range</span> <span class="o">/</span> <span class="n">ask</span><span class="p">)</span>
     <span class="p">)</span>
+
     <span class="n">rtk_dropin_fuel_share</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">-</span> <span class="n">rtk_hydrogen_share</span> <span class="o">-</span> <span class="n">rtk_electric_share</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;rtk_hydrogen_share&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rtk_hydrogen_share</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;rtk_dropin_fuel_share&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rtk_dropin_fuel_share</span>
@@ -11175,17 +11300,36 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">hydrogen_zero_mask</span><span class="p">,</span> <span class="s2">&quot;energy_per_rtk_without_operations_freight_dropin_fuel&quot;</span><span class="p">]</span>
     <span class="p">)</span>
 
+    <span class="n">short_range_hydrogen_total_share_ask</span> <span class="o">=</span> <span class="n">ask_short_range_hydrogen_share</span> <span class="o">*</span> <span class="p">(</span>
+        <span class="n">ask_short_range</span> <span class="o">/</span> <span class="n">ask</span>
+    <span class="p">)</span>
+    <span class="n">medium_range_hydrogen_total_share_ask</span> <span class="o">=</span> <span class="n">ask_medium_range_hydrogen_share</span> <span class="o">*</span> <span class="p">(</span>
+        <span class="n">ask_medium_range</span> <span class="o">/</span> <span class="n">ask</span>
+    <span class="p">)</span>
+    <span class="n">long_range_hydrogen_total_share_ask</span> <span class="o">=</span> <span class="n">ask_long_range_hydrogen_share</span> <span class="o">*</span> <span class="p">(</span><span class="n">ask_long_range</span> <span class="o">/</span> <span class="n">ask</span><span class="p">)</span>
+
+    <span class="n">hydrogen_weighted_sum</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1">## add to the sum only if the disctance category exists.</span>
+    <span class="k">if</span> <span class="n">short_range_hydrogen_total_share_ask</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">hydrogen_weighted_sum</span> <span class="o">+=</span> <span class="p">(</span>
+            <span class="n">relative_energy_per_ask_hydrogen_wrt_dropin_short_range</span>
+            <span class="o">*</span> <span class="n">short_range_hydrogen_total_share_ask</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">medium_range_hydrogen_total_share_ask</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">hydrogen_weighted_sum</span> <span class="o">+=</span> <span class="p">(</span>
+            <span class="n">relative_energy_per_ask_hydrogen_wrt_dropin_medium_range</span>
+            <span class="o">*</span> <span class="n">medium_range_hydrogen_total_share_ask</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">long_range_hydrogen_total_share_ask</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">hydrogen_weighted_sum</span> <span class="o">+=</span> <span class="p">(</span>
+            <span class="n">relative_energy_per_ask_hydrogen_wrt_dropin_long_range</span>
+            <span class="o">*</span> <span class="n">long_range_hydrogen_total_share_ask</span>
+        <span class="p">)</span>
+
     <span class="n">hydrogen_weighted_sum</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">relative_energy_per_ask_hydrogen_wrt_dropin_short_range</span>
-        <span class="o">*</span> <span class="n">ask_short_range_hydrogen_share</span>
-        <span class="o">*</span> <span class="p">(</span><span class="n">ask_short_range</span> <span class="o">/</span> <span class="n">ask</span><span class="p">)</span>
-        <span class="o">+</span> <span class="n">relative_energy_per_ask_hydrogen_wrt_dropin_medium_range</span>
-        <span class="o">*</span> <span class="n">ask_medium_range_hydrogen_share</span>
-        <span class="o">*</span> <span class="p">(</span><span class="n">ask_medium_range</span> <span class="o">/</span> <span class="n">ask</span><span class="p">)</span>
-        <span class="o">+</span> <span class="n">relative_energy_per_ask_hydrogen_wrt_dropin_long_range</span>
-        <span class="o">*</span> <span class="n">ask_long_range_hydrogen_share</span>
-        <span class="o">*</span> <span class="p">(</span><span class="n">ask_long_range</span> <span class="o">/</span> <span class="n">ask</span><span class="p">)</span>
-    <span class="p">)</span> <span class="o">/</span> <span class="n">rtk_hydrogen_share</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">hydrogen_nonzero_mask</span><span class="p">]</span>
+        <span class="n">hydrogen_weighted_sum</span> <span class="o">/</span> <span class="n">rtk_hydrogen_share</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">hydrogen_nonzero_mask</span><span class="p">]</span>
+    <span class="p">)</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">hydrogen_nonzero_mask</span><span class="p">,</span> <span class="s2">&quot;energy_per_rtk_without_operations_freight_hydrogen&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">energy_per_rtk_without_operations_freight_dropin_fuel</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">hydrogen_nonzero_mask</span><span class="p">]</span>
@@ -11200,17 +11344,33 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">electric_zero_mask</span><span class="p">,</span> <span class="s2">&quot;energy_per_rtk_without_operations_freight_dropin_fuel&quot;</span><span class="p">]</span>
     <span class="p">)</span>
 
+    <span class="n">short_range_electric_total_sum</span> <span class="o">=</span> <span class="n">ask_short_range_electric_share</span> <span class="o">*</span> <span class="p">(</span><span class="n">ask_short_range</span> <span class="o">/</span> <span class="n">ask</span><span class="p">)</span>
+    <span class="n">medium_range_electric_total_sum</span> <span class="o">=</span> <span class="n">ask_medium_range_electric_share</span> <span class="o">*</span> <span class="p">(</span><span class="n">ask_medium_range</span> <span class="o">/</span> <span class="n">ask</span><span class="p">)</span>
+    <span class="n">long_range_electric_total_sum</span> <span class="o">=</span> <span class="n">ask_long_range_electric_share</span> <span class="o">*</span> <span class="p">(</span><span class="n">ask_long_range</span> <span class="o">/</span> <span class="n">ask</span><span class="p">)</span>
+
+    <span class="n">electric_weighted_sum</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1">## add to the sum only if the disctance category exists.</span>
+
+    <span class="k">if</span> <span class="n">short_range_electric_total_sum</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">electric_weighted_sum</span> <span class="o">+=</span> <span class="p">(</span>
+            <span class="n">relative_energy_per_ask_electric_wrt_dropin_short_range</span>
+            <span class="o">*</span> <span class="n">short_range_electric_total_sum</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">medium_range_electric_total_sum</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">electric_weighted_sum</span> <span class="o">+=</span> <span class="p">(</span>
+            <span class="n">relative_energy_per_ask_electric_wrt_dropin_medium_range</span>
+            <span class="o">*</span> <span class="n">medium_range_electric_total_sum</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">long_range_electric_total_sum</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">electric_weighted_sum</span> <span class="o">+=</span> <span class="p">(</span>
+            <span class="n">relative_energy_per_ask_electric_wrt_dropin_long_range</span>
+            <span class="o">*</span> <span class="n">long_range_electric_total_sum</span>
+        <span class="p">)</span>
+
     <span class="n">electric_weighted_sum</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">relative_energy_per_ask_electric_wrt_dropin_short_range</span>
-        <span class="o">*</span> <span class="n">ask_short_range_electric_share</span>
-        <span class="o">*</span> <span class="p">(</span><span class="n">ask_short_range</span> <span class="o">/</span> <span class="n">ask</span><span class="p">)</span>
-        <span class="o">+</span> <span class="n">relative_energy_per_ask_electric_wrt_dropin_medium_range</span>
-        <span class="o">*</span> <span class="n">ask_medium_range_electric_share</span>
-        <span class="o">*</span> <span class="p">(</span><span class="n">ask_medium_range</span> <span class="o">/</span> <span class="n">ask</span><span class="p">)</span>
-        <span class="o">+</span> <span class="n">relative_energy_per_ask_electric_wrt_dropin_long_range</span>
-        <span class="o">*</span> <span class="n">ask_long_range_electric_share</span>
-        <span class="o">*</span> <span class="p">(</span><span class="n">ask_long_range</span> <span class="o">/</span> <span class="n">ask</span><span class="p">)</span>
-    <span class="p">)</span> <span class="o">/</span> <span class="n">rtk_electric_share</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">electric_nonzero_mask</span><span class="p">]</span>
+        <span class="n">electric_weighted_sum</span> <span class="o">/</span> <span class="n">rtk_electric_share</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">electric_nonzero_mask</span><span class="p">]</span>
+    <span class="p">)</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">electric_nonzero_mask</span><span class="p">,</span> <span class="s2">&quot;energy_per_rtk_without_operations_freight_electric&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">energy_per_rtk_without_operations_freight_dropin_fuel</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">electric_nonzero_mask</span><span class="p">]</span>
