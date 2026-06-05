@@ -1,0 +1,253 @@
+# ============================================================================
+# Multi-Regional AeroMAPS Configuration - Supertest (Exec Time Scaling)
+# ============================================================================
+# This configuration contains many region copies to benchmark how execution
+# time scales with number of regions. All duplicated regions reuse the same
+# underlying config_file (content is irrelevant for timing).
+#
+# The notebook subsets this file to N regions and times compute() for each N.
+# ============================================================================
+
+models:
+  standards:
+    - default_models_top_down
+
+regionalisation:
+  execution_mode: "separate_processes"
+  global_namespace: "overall"
+
+  regions:
+    # --- Copy 0 (base 20 regions) ---
+    AF_DOM_0:
+      config_file: "data/region_af_dom/config.yaml"
+    AF_INT_0:
+      config_file: "data/region_af_int/config.yaml"
+    AS_DOM_0:
+      config_file: "data/region_as_dom/config.yaml"
+    BRAS_DOM_0:
+      config_file: "data/region_bras_dom/config.yaml"
+    EU_DOM_0:
+      config_file: "data/region_eu_dom/config.yaml"
+    EU_INT_0:
+      config_file: "data/region_eu_int/config.yaml"
+    OC_DOM_0:
+      config_file: "data/region_oc_dom/config.yaml"
+    OC_INT_0:
+      config_file: "data/region_oc_int/config.yaml"
+    OTHER_AS_INT_0:
+      config_file: "data/region_other_as_int/config.yaml"
+    OTHER_EUR_DOM_0:
+      config_file: "data/region_other_eur_dom/config.yaml"
+    OTHER_EUR_INT_0:
+      config_file: "data/region_other_eur_int/config.yaml"
+    OTHER_NAM_DOM_0:
+      config_file: "data/region_other_nam_dom/config.yaml"
+    OTHER_NAM_INT_0:
+      config_file: "data/region_other_nam_int/config.yaml"
+    OTHER_SAM_DOM_0:
+      config_file: "data/region_other_sam_dom/config.yaml"
+    SIN_INT_0:
+      config_file: "data/region_sin_int/config.yaml"
+    UK_DOM_0:
+      config_file: "data/region_uk_dom/config.yaml"
+    UK_INT_0:
+      config_file: "data/region_uk_int/config.yaml"
+    USA_DOM_0:
+      config_file: "data/region_usa_dom/config.yaml"
+    USA_INT_0:
+      config_file: "data/region_usa_int/config.yaml"
+    SAM_INT_0:
+      config_file: "data/region_sam_int/config.yaml"
+
+    # --- Copy 1 ---
+    AF_DOM_1:
+      config_file: "data/region_af_dom/config.yaml"
+    AF_INT_1:
+      config_file: "data/region_af_int/config.yaml"
+    AS_DOM_1:
+      config_file: "data/region_as_dom/config.yaml"
+    BRAS_DOM_1:
+      config_file: "data/region_bras_dom/config.yaml"
+    EU_DOM_1:
+      config_file: "data/region_eu_dom/config.yaml"
+    EU_INT_1:
+      config_file: "data/region_eu_int/config.yaml"
+    OC_DOM_1:
+      config_file: "data/region_oc_dom/config.yaml"
+    OC_INT_1:
+      config_file: "data/region_oc_int/config.yaml"
+    OTHER_AS_INT_1:
+      config_file: "data/region_other_as_int/config.yaml"
+    OTHER_EUR_DOM_1:
+      config_file: "data/region_other_eur_dom/config.yaml"
+    OTHER_EUR_INT_1:
+      config_file: "data/region_other_eur_int/config.yaml"
+    OTHER_NAM_DOM_1:
+      config_file: "data/region_other_nam_dom/config.yaml"
+    OTHER_NAM_INT_1:
+      config_file: "data/region_other_nam_int/config.yaml"
+    OTHER_SAM_DOM_1:
+      config_file: "data/region_other_sam_dom/config.yaml"
+    SIN_INT_1:
+      config_file: "data/region_sin_int/config.yaml"
+    UK_DOM_1:
+      config_file: "data/region_uk_dom/config.yaml"
+    UK_INT_1:
+      config_file: "data/region_uk_int/config.yaml"
+    USA_DOM_1:
+      config_file: "data/region_usa_dom/config.yaml"
+    USA_INT_1:
+      config_file: "data/region_usa_int/config.yaml"
+    SAM_INT_1:
+      config_file: "data/region_sam_int/config.yaml"
+
+    # --- Copy 2 ---
+    AF_DOM_2:
+      config_file: "data/region_af_dom/config.yaml"
+    AF_INT_2:
+      config_file: "data/region_af_int/config.yaml"
+    AS_DOM_2:
+      config_file: "data/region_as_dom/config.yaml"
+    BRAS_DOM_2:
+      config_file: "data/region_bras_dom/config.yaml"
+    EU_DOM_2:
+      config_file: "data/region_eu_dom/config.yaml"
+    EU_INT_2:
+      config_file: "data/region_eu_int/config.yaml"
+    OC_DOM_2:
+      config_file: "data/region_oc_dom/config.yaml"
+    OC_INT_2:
+      config_file: "data/region_oc_int/config.yaml"
+    OTHER_AS_INT_2:
+      config_file: "data/region_other_as_int/config.yaml"
+    OTHER_EUR_DOM_2:
+      config_file: "data/region_other_eur_dom/config.yaml"
+    OTHER_EUR_INT_2:
+      config_file: "data/region_other_eur_int/config.yaml"
+    OTHER_NAM_DOM_2:
+      config_file: "data/region_other_nam_dom/config.yaml"
+    OTHER_NAM_INT_2:
+      config_file: "data/region_other_nam_int/config.yaml"
+    OTHER_SAM_DOM_2:
+      config_file: "data/region_other_sam_dom/config.yaml"
+    SIN_INT_2:
+      config_file: "data/region_sin_int/config.yaml"
+    UK_DOM_2:
+      config_file: "data/region_uk_dom/config.yaml"
+    UK_INT_2:
+      config_file: "data/region_uk_int/config.yaml"
+    USA_DOM_2:
+      config_file: "data/region_usa_dom/config.yaml"
+    USA_INT_2:
+      config_file: "data/region_usa_int/config.yaml"
+    SAM_INT_2:
+      config_file: "data/region_sam_int/config.yaml"
+
+    # --- Copy 3 ---
+    AF_DOM_3:
+      config_file: "data/region_af_dom/config.yaml"
+    AF_INT_3:
+      config_file: "data/region_af_int/config.yaml"
+    AS_DOM_3:
+      config_file: "data/region_as_dom/config.yaml"
+    BRAS_DOM_3:
+      config_file: "data/region_bras_dom/config.yaml"
+    EU_DOM_3:
+      config_file: "data/region_eu_dom/config.yaml"
+    EU_INT_3:
+      config_file: "data/region_eu_int/config.yaml"
+    OC_DOM_3:
+      config_file: "data/region_oc_dom/config.yaml"
+    OC_INT_3:
+      config_file: "data/region_oc_int/config.yaml"
+    OTHER_AS_INT_3:
+      config_file: "data/region_other_as_int/config.yaml"
+    OTHER_EUR_DOM_3:
+      config_file: "data/region_other_eur_dom/config.yaml"
+    OTHER_EUR_INT_3:
+      config_file: "data/region_other_eur_int/config.yaml"
+    OTHER_NAM_DOM_3:
+      config_file: "data/region_other_nam_dom/config.yaml"
+    OTHER_NAM_INT_3:
+      config_file: "data/region_other_nam_int/config.yaml"
+    OTHER_SAM_DOM_3:
+      config_file: "data/region_other_sam_dom/config.yaml"
+    SIN_INT_3:
+      config_file: "data/region_sin_int/config.yaml"
+    UK_DOM_3:
+      config_file: "data/region_uk_dom/config.yaml"
+    UK_INT_3:
+      config_file: "data/region_uk_int/config.yaml"
+    USA_DOM_3:
+      config_file: "data/region_usa_dom/config.yaml"
+    USA_INT_3:
+      config_file: "data/region_usa_int/config.yaml"
+    SAM_INT_3:
+      config_file: "data/region_sam_int/config.yaml"
+
+    # --- Copy 4 ---
+    AF_DOM_4:
+      config_file: "data/region_af_dom/config.yaml"
+    AF_INT_4:
+      config_file: "data/region_af_int/config.yaml"
+    AS_DOM_4:
+      config_file: "data/region_as_dom/config.yaml"
+    BRAS_DOM_4:
+      config_file: "data/region_bras_dom/config.yaml"
+    EU_DOM_4:
+      config_file: "data/region_eu_dom/config.yaml"
+    EU_INT_4:
+      config_file: "data/region_eu_int/config.yaml"
+    OC_DOM_4:
+      config_file: "data/region_oc_dom/config.yaml"
+    OC_INT_4:
+      config_file: "data/region_oc_int/config.yaml"
+    OTHER_AS_INT_4:
+      config_file: "data/region_other_as_int/config.yaml"
+    OTHER_EUR_DOM_4:
+      config_file: "data/region_other_eur_dom/config.yaml"
+    OTHER_EUR_INT_4:
+      config_file: "data/region_other_eur_int/config.yaml"
+    OTHER_NAM_DOM_4:
+      config_file: "data/region_other_nam_dom/config.yaml"
+    OTHER_NAM_INT_4:
+      config_file: "data/region_other_nam_int/config.yaml"
+    OTHER_SAM_DOM_4:
+      config_file: "data/region_other_sam_dom/config.yaml"
+    SIN_INT_4:
+      config_file: "data/region_sin_int/config.yaml"
+    UK_DOM_4:
+      config_file: "data/region_uk_dom/config.yaml"
+    UK_INT_4:
+      config_file: "data/region_uk_int/config.yaml"
+    USA_DOM_4:
+      config_file: "data/region_usa_dom/config.yaml"
+    USA_INT_4:
+      config_file: "data/region_usa_int/config.yaml"
+    SAM_INT_4:
+      config_file: "data/region_sam_int/config.yaml"
+
+  # --------------------------------------------------------------------------
+  # Aggregation Rules
+  # --------------------------------------------------------------------------
+  aggregation:
+    sum:
+      - co2_emissions_including_energy
+      - co2_emissions_including_aircraft_efficiency
+      - co2_emissions_including_operations
+      - co2_emissions_including_load_factor
+      - co2_emissions_2019technology
+      - cumulative_co2_emissions
+      - cumulative_co2_emissions_including_aircraft_efficiency
+      - cumulative_co2_emissions_including_operations
+      - cumulative_co2_emissions_including_load_factor
+      - cumulative_co2_emissions_2019technology
+      - cumulative_carbon_offset
+      - biomass_total_consumption
+      - carbon_offset
+      - rpk
+      - ask
+
+    weighted_average:
+      - variable: load_factor
+        weight_by: ask
