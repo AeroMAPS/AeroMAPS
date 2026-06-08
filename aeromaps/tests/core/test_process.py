@@ -92,9 +92,13 @@ def test_compute(config_file):
 
 def test_process_models_are_independent():
     """Test that model instances are independent between processes."""
-    # Create two processes with default config
-    proc1 = create_process()
-    proc2 = create_process()
+    # Build two processes from a valid config. (The no-argument default path is a
+    # separate, known-broken case — its relative resource paths can't resolve, so
+    # models.energy/markets are skipped and bottom-up custom models crash in
+    # custom_setup; see get_tested_config_files note.)
+    config_file = CONFIG_DIR / "config_basic.yaml"
+    proc1 = create_process(configuration_file=str(config_file))
+    proc2 = create_process(configuration_file=str(config_file))
 
     proc1.parameters.freight_cagr_reference_periods_values = [0.0]
     assert (
@@ -109,6 +113,6 @@ def test_process_models_are_independent():
 
     # Check that at least one model is a different instance
     for model_name in list(common_models)[:3]:  # Test first 3 common models
-        assert (
-            proc1.models[model_name] is not proc2.models[model_name]
-        ), f"Model {model_name} should be independent between processes"
+        assert proc1.models[model_name] is not proc2.models[model_name], (
+            f"Model {model_name} should be independent between processes"
+        )
