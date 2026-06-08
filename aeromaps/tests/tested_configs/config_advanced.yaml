@@ -1,6 +1,6 @@
 data:
   inputs:
-    json_inputs_file: "./advanced/inputs_advanced.json"
+    json_inputs_file: "./data/inputs_advanced.json"
   outputs:
     json_outputs_file: "./outputs.json"
 
@@ -9,13 +9,13 @@ models:
     climate_model_data_file: default
 
   fleet:
-    aircraft_inventory_model_data_file: "./advanced/aircraft_inventory.yaml"
-    fleet_model_data_file: "./advanced/fleet.yaml"
+    aircraft_inventory_model_data_file: "./data/aircraft_inventory.yaml"
+    fleet_model_data_file: "./data/fleet.yaml"
 
   energy:
-    energy_carriers_model_data_file: "./advanced/energy_carriers_data.yaml"
-    resources_model_data_file: "./advanced/resources_data.yaml"
-    processes_model_data_file: "./advanced/processes_data.yaml"
+    energy_carriers_model_data_file: "./data/energy_carriers_data.yaml"
+    resources_model_data_file: "./data/resources_data.yaml"
+    processes_model_data_file: "./data/processes_data.yaml"
 
   standards:
     - default_models_bottom_up

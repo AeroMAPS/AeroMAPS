@@ -1944,7 +1944,9 @@ class PassengerAircraftTotalDoc(AeroMAPSModel):
         doc_energy_tax_per_ask_medium_range_mean: pd.Series,
         doc_energy_tax_per_ask_short_range_mean: pd.Series,
         doc_energy_tax_per_ask_mean: pd.Series,
+        load_factor: pd.Series,
     ) -> Tuple[
+        pd.Series,
         pd.Series,
         pd.Series,
         pd.Series,
@@ -2093,6 +2095,8 @@ class PassengerAircraftTotalDoc(AeroMAPSModel):
             Energy tax direct operating cost per ASK for passenger short-range market aircraft average [€/ASK].
         doc_energy_tax_per_ask_mean
             Energy tax direct operating cost per ASK for passenger overall market aircraft average [€/ASK].
+        load_factor
+            Annual passenger load factor [%].
 
         Returns
         -------
@@ -2122,6 +2126,8 @@ class PassengerAircraftTotalDoc(AeroMAPSModel):
             Total direct operating cost per ASK for passenger long-range market aircraft average [€/ASK].
         doc_total_per_ask_mean
             Total direct operating cost per ASK for passenger overall market aircraft average [€/ASK].
+        doc_net_energy_per_rpk_mean
+            Total energy-related direct operating cost (energy + carbon tax - subsidy + energy tax) per Revenue Passenger Kilometer [€/RPK].
         """
         # Drop-in
         doc_total_per_ask_short_range_dropin_fuel = (
@@ -2264,6 +2270,20 @@ class PassengerAircraftTotalDoc(AeroMAPSModel):
         self.df.loc[:, "doc_total_per_ask_long_range_mean"] = doc_total_per_ask_long_range_mean
         self.df.loc[:, "doc_total_per_ask_mean"] = doc_total_per_ask_mean
 
+        # All energy-related costs per ASK (energy + carbon tax - subsidy + energy tax)
+        doc_net_energy_per_ask_mean = (
+            doc_energy_per_ask_mean
+            + doc_energy_carbon_tax_per_ask_mean
+            - doc_energy_subsidy_per_ask_mean
+            + doc_energy_tax_per_ask_mean
+        )
+
+        # Convert to per-RPK using load factor: RPK = ASK * load_factor / 100
+        doc_net_energy_per_rpk_mean = (doc_net_energy_per_ask_mean * 100 / load_factor).where(
+            load_factor > 0, 0
+        )
+        self.df.loc[:, "doc_net_energy_per_rpk_mean"] = doc_net_energy_per_rpk_mean
+
         return (
             doc_total_per_ask_short_range_dropin_fuel,
             doc_total_per_ask_medium_range_dropin_fuel,
@@ -2278,4 +2298,5 @@ class PassengerAircraftTotalDoc(AeroMAPSModel):
             doc_total_per_ask_medium_range_mean,
             doc_total_per_ask_long_range_mean,
             doc_total_per_ask_mean,
+            doc_net_energy_per_rpk_mean,
         )

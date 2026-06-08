@@ -394,9 +394,16 @@ class AeroMAPSProcess(object):
         # Initialize disciplines
         self._initialize_disciplines()
 
+        # TODO: expose these MDA settings (tolerance, max_mda_iter, inner_mda_name,
+        # ...) as kwargs read from the configuration file instead of hardcoding them.
+        # Tolerance must be tight enough to resolve the price-elastic demand loop
+        # (doc_net_energy_per_rpk_mean <-> rpk). At 1e-5 the Gauss-Seidel solver
+        # reports convergence while that coupling is still ~25% off in SAF-type
+        # scenarios; max_mda_iter gives it room to reach the tighter tolerance.
         self.mda_chain = MDAChain(
             disciplines=self.disciplines,
-            tolerance=1e-5,
+            tolerance=1e-10,
+            max_mda_iter=200,
             initialize_defaults=True,
             inner_mda_name="MDAGaussSeidel",
             log_convergence=True,
@@ -650,7 +657,8 @@ class AeroMAPSProcess(object):
         """
         return self.data["str_inputs"]
 
-    def plot(self, name, save=False, size_inches=None, remove_title=False):
+    def plot(self, name, save=False, size_inches=None, remove_title=False,
+             fig=None, ax=None, legend=True):
         """Generate a predefined AeroMAPS plot.
 
         Depending on the plot name, this method uses either generic or
@@ -667,6 +675,15 @@ class AeroMAPSProcess(object):
             Optional figure size in inches as a tuple or list.
         remove_title
             Whether to remove the plot title before saving.
+        fig : matplotlib.figure.Figure, optional
+            Existing figure to draw into. If provided together with ``ax``,
+            no new figure/axes are created.
+        ax : matplotlib.axes.Axes, optional
+            Existing axes to draw into. Must be provided together with ``fig``.
+        legend : bool or str, optional
+            Controls the legend. ``True`` (default) keeps the legend as created
+            by the plot. ``False`` hides it. A string value (e.g. ``"upper right"``)
+            moves the legend to the given location.
 
         Returns
         -------
@@ -674,32 +691,33 @@ class AeroMAPSProcess(object):
             Object holding the created plot, as returned by the plot
             function.
         """
+        plot_kwargs = dict(fig=fig, ax=ax, legend=legend)
         if name in available_plots_fleet:
             try:
-                fig = available_plots_fleet[name](self)
+                fig_obj = available_plots_fleet[name](self, **plot_kwargs)
                 if save:
                     if size_inches is not None:
-                        fig.fig.set_size_inches(size_inches)
+                        fig_obj.fig.set_size_inches(size_inches)
                     if remove_title:
-                        fig.fig.gca().set_title("")
-                    fig.fig.savefig(f"{name}.pdf", bbox_inches="tight")
+                        fig_obj.fig.gca().set_title("")
+                    fig_obj.fig.savefig(f"{name}.pdf", bbox_inches="tight")
             except AttributeError as e:
                 raise NameError(
                     f"Plot {name} requires using bottom up fleet model. Original error: {e}"
                 )
         elif name in available_plots:
-            fig = available_plots[name](self)
+            fig_obj = available_plots[name](self, **plot_kwargs)
             if save:
                 if size_inches is not None:
-                    fig.fig.set_size_inches(size_inches)
+                    fig_obj.fig.set_size_inches(size_inches)
                 if remove_title:
-                    fig.fig.gca().set_title("")
-                fig.fig.savefig(f"{name}.pdf", bbox_inches="tight")
+                    fig_obj.fig.gca().set_title("")
+                fig_obj.fig.savefig(f"{name}.pdf", bbox_inches="tight")
         else:
             raise NameError(
                 f"Plot {name} is not available. List of available plots: {list(available_plots.keys()), list(available_plots_fleet.keys())}"
             )
-        return fig
+        return fig_obj
 
     def _pre_compute(self):
         """Prepare inputs and dependent models before execution.
@@ -1671,6 +1689,8 @@ class AeroMAPSProcess(object):
                 "freight_init",
                 "energy_consumption_init",
                 "total_aircraft_distance_init",
+                "gdp_per_capita_init",
+                "population_init",
             ]
             if field_name in list_init:
                 new_size = self.parameters.end_year - self.parameters.historic_start_year + 1

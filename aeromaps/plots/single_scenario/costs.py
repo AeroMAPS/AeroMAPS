@@ -2,14 +2,10 @@
 # @Author : a.salgas
 # @File : costs.py
 # @Software: PyCharm
-import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 from matplotlib.patches import Patch
 
 from aeromaps.plots.single_scenario_plot import SingleScenarioPlot
-from aeromaps.plots.single_scenario_plot import plot_1_x
-from aeromaps.plots.single_scenario_plot import plot_1_y
 from aeromaps.plots.single_scenario_plot import plot_2_x
 from aeromaps.plots.single_scenario_plot import plot_2_y
 from aeromaps.plots.single_scenario_plot import plot_3_x
@@ -26,9 +22,9 @@ class ScenarioEnergyExpensesComparison(SingleScenarioPlot):
         "carbon_tax_full_kero",
     ]
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_2_x, plot_2_y)
@@ -89,7 +85,7 @@ class ScenarioEnergyExpensesComparison(SingleScenarioPlot):
         self.ax.legend(loc="upper left")
         self.ax.set_title("Annual energy expenses per pathway")
         self.ax.set_ylabel("Energy expenses [M€]")
-        
+
 
         self.ax.set_xlim(2020, self.years[-1])
         # #
@@ -173,9 +169,9 @@ class DiscountEffect(SingleScenarioPlot):
         "discounted_energy_expenses",
     ]
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
@@ -202,7 +198,7 @@ class DiscountEffect(SingleScenarioPlot):
         self.ax.grid(axis="y")
         self.ax.set_title("Total (energy) expenses (M€)")
         self.ax.set_ylabel("M€ / year")
-        
+
         self.ax.legend()
         self.ax.set_xlim(2020, self.years[-1])
 
@@ -227,9 +223,9 @@ class DOCEvolutionBreakdown(SingleScenarioPlot):
         "doc_carbon_tax_lowering_offset_per_ask_mean",
     ]
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
@@ -339,7 +335,7 @@ class DOCEvolutionBreakdown(SingleScenarioPlot):
         self.ax.set_title("Direct Operating Costs breakdown")
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Direct Operating Costs [€/ASK]")
-        
+
 
         components_handles = [
             Patch(facecolor="cornflowerblue", edgecolor="black", label="Energy"),
@@ -396,9 +392,9 @@ class DOCEvolutionCategory(SingleScenarioPlot):
         "doc_total_per_ask_mean",
     ]
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_2_x, plot_2_y)
@@ -488,7 +484,7 @@ class DOCEvolutionCategory(SingleScenarioPlot):
         self.ax.grid(axis="y")
         self.ax.set_title("Average direct operating cost by aircraft category")
         self.ax.set_ylabel("€ / ASK")
-        
+
         self.ax.legend(title="Direct Operating Cost")
         self.ax.set_xlim(2020, self.years[-1])
 
@@ -548,9 +544,9 @@ class AirfareEvolutionBreakdown(SingleScenarioPlot):
         "operational_profit_per_ask",
     ]
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_2_x, plot_2_y)
@@ -768,7 +764,7 @@ class AirfareEvolutionBreakdown(SingleScenarioPlot):
         self.ax.set_title("Airfare breakdown")
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Airfare [€/ASK]")
-        
+
         self.ax.legend(fontsize="8", loc="upper left")
         self.ax.set_xlim(self.prospective_years[0], self.prospective_years[-1])
 

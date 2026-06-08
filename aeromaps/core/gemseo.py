@@ -209,6 +209,11 @@ class AeroMAPSAutoModelWrapper(AutoPyDiscipline):
             #     self.default_inputs[input] = array([0])
             if hasattr(self.model.parameters, input):
                 self.default_input_data[input] = getattr(self.model.parameters, input)
+        # Also register coupling defaults from the model (seed values for MDA initialization)
+        if hasattr(self.model, '_coupling_defaults'):
+            for key, value in self.model._coupling_defaults.items():
+                if key in self.input_grammar.names and key not in self.default_input_data:
+                    self.default_input_data[key] = value
 
     def _run(self, input_data):
         try:

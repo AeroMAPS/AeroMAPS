@@ -774,34 +774,34 @@ class MultiRegionalProcess(AeroMAPSProcess):
     def _update_data_from_unified_mda(self):
         """Update all data structures from unified MDA results.
 
-        In unified_mda mode, the MDAChain runs all namespaced disciplines together.
-        We gather outputs the same way as separate_processes: from regional process data.
+        In unified_mda mode, the MDAChain runs all namespaced disciplines together and
+        the individual regional processes' ``compute()`` is never called, so their
+        ``data`` dicts stay empty. The regional results instead live on the namespaced
+        discipline copies stored in ``self._regional_disciplines`` (the exact instances
+        the MDAChain executed). We harvest them from ``disc.model.df`` /
+        ``disc.model.df_climate`` / ``disc.model.float_outputs`` here, mirroring
+        AeroMAPSProcess._update_data_from_model so the regional content matches what
+        separate_processes produces.
         """
         # Collect all series to avoid DataFrame fragmentation from repeated inserts
         vector_series = {}
         climate_series = {}
         climate_years = self.data["years"].get("climate_full_years", [])
 
-        for region_id, regional_process in self._regional_processes.items():
-            # Get vector_outputs from regional process data
-            regional_vectors = regional_process.data.get("vector_outputs")
-            if regional_vectors is not None and not regional_vectors.empty:
-                for col in regional_vectors.columns:
-                    namespaced_key = f"{region_id}:{col}"
-                    vector_series[namespaced_key] = regional_vectors[col]
-
-            # Get float_outputs from regional process data
-            regional_floats = regional_process.data.get("float_outputs", {})
-            for key, value in regional_floats.items():
-                namespaced_key = f"{region_id}:{key}"
-                self.data["float_outputs"][namespaced_key] = value
-
-            # Get climate_outputs from regional process data
-            regional_climate = regional_process.data.get("climate_outputs")
-            if regional_climate is not None and not regional_climate.empty:
-                for col in regional_climate.columns:
-                    namespaced_key = f"{region_id}:{col}"
-                    climate_series[namespaced_key] = regional_climate[col]
+        for region_id in self._region_ids:
+            for disc in self._regional_disciplines[region_id]:
+                model = disc.model
+                # Vector outputs (un-namespaced columns -> "{region_id}:col")
+                if hasattr(model, "df") and model.df.columns.size:
+                    for col in model.df.columns:
+                        vector_series[f"{region_id}:{col}"] = model.df[col]
+                # Climate outputs
+                if hasattr(model, "df_climate") and model.df_climate.columns.size:
+                    for col in model.df_climate.columns:
+                        climate_series[f"{region_id}:{col}"] = model.df_climate[col]
+                # Float outputs
+                for key, value in model.float_outputs.items():
+                    self.data["float_outputs"][f"{region_id}:{key}"] = value
 
         # Get global (aggregated) outputs from MDA local_data
         local_data = self.mda_chain.local_data

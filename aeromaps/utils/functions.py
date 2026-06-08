@@ -96,6 +96,8 @@ def _dict_from_parameters_dict(parameters_dict) -> dict:
             "freight_init",
             "energy_consumption_init",
             "total_aircraft_distance_init",
+            "gdp_per_capita_init",
+            "population_init",
         ]:
             new_index = range(
                 parameters_dict["historic_start_year"], parameters_dict["prospection_start_year"]

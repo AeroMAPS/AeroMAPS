@@ -1,0 +1,28 @@
+data:
+  inputs:
+    json_inputs_file: "../data/inputs_2070.json"
+  outputs:
+    json_outputs_file: "../data/outputs.json"
+
+models:
+  climate:
+    climate_model_data_file: default
+
+  energy:
+    energy_carriers_model_data_file: "../data/energy_data_fossil_2019.yaml"
+    resources_model_data_file: "../data/resources_data.yaml"
+    processes_model_data_file: default
+
+  standards:
+    - models_traffic_price_adjusted_logistic
+    - models_efficiency_top_down_interp
+    - models_energy_with_fuel_effect
+    - models_offset
+    - models_emissions
+    - models_sustainability
+    - models_energy_cost
+    - models_operation_cost_top_down_feedback
+    - models_abatements_cost_simplified
+
+  customs:
+    socioeconomic_drivers: "../models/socioeconomic_drivers.py::SocioeconomicDrivers"

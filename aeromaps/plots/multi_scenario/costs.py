@@ -7,157 +7,98 @@ class EnergyExpensesComparisonPlot(MultiScenarioPlot):
     """Compare total (non-discounted) energy expenses across scenarios."""
 
     required_outputs = ["non_discounted_energy_expenses"]
-
-    def _get_default_figsize(self):
-        return (12, 6)
+    column_name = "non_discounted_energy_expenses"
+    years_source = "prospective_years"
 
     def create_plot(self):
-        for scenario_name, data in self.scenario_data.items():
-            style = self.get_scenario_style(scenario_name)
-            years = data["prospective_years"]
-            self.ax.plot(
-                years,
-                data["df"].loc[years, "non_discounted_energy_expenses"],
-                label=scenario_name,
-                color=style["color"],
-                linestyle=style["linestyle"],
-                linewidth=2,
-            )
-
+        self._plot_grouped_series()
         self.ax.set_title("Annual Energy Expenses Comparison")
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Energy expenses [M€]")
         self.ax.legend(loc="best")
         self.ax.grid(True, alpha=0.3)
 
-    def _update_plot_elements(self):
-        self.ax.clear()
-        self.create_plot()
-
 
 class NetEnergyExpensesComparisonPlot(MultiScenarioPlot):
     """Compare net (non-discounted) energy expenses (incl. carbon tax) across scenarios."""
 
     required_outputs = ["non_discounted_net_energy_expenses"]
-
-    def _get_default_figsize(self):
-        return (12, 6)
+    column_name = "non_discounted_net_energy_expenses"
+    years_source = "prospective_years"
 
     def create_plot(self):
-        for scenario_name, data in self.scenario_data.items():
-            style = self.get_scenario_style(scenario_name)
-            years = data["prospective_years"]
-            self.ax.plot(
-                years,
-                data["df"].loc[years, "non_discounted_net_energy_expenses"],
-                label=scenario_name,
-                color=style["color"],
-                linestyle=style["linestyle"],
-                linewidth=2,
-            )
-
+        self._plot_grouped_series()
         self.ax.set_title("Annual Net Energy Expenses Comparison (incl. carbon tax)")
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Net energy expenses [M€]")
         self.ax.legend(loc="best")
         self.ax.grid(True, alpha=0.3)
 
-    def _update_plot_elements(self):
-        self.ax.clear()
-        self.create_plot()
-
 
 class DOCComparisonPlot(MultiScenarioPlot):
     """Compare fleet-average Direct Operating Cost (DOC) per ASK across scenarios."""
 
     required_outputs = ["doc_total_per_ask_mean"]
-
-    def _get_default_figsize(self):
-        return (12, 6)
+    column_name = "doc_total_per_ask_mean"
+    years_source = "prospective_years"
 
     def create_plot(self):
-        for scenario_name, data in self.scenario_data.items():
-            style = self.get_scenario_style(scenario_name)
-            years = data["prospective_years"]
-            self.ax.plot(
-                years,
-                data["df"].loc[years, "doc_total_per_ask_mean"],
-                label=scenario_name,
-                color=style["color"],
-                linestyle=style["linestyle"],
-                linewidth=2,
-            )
-
+        self._plot_grouped_series()
         self.ax.set_title("Fleet-Average Direct Operating Cost (DOC) Comparison")
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("DOC [€/ASK]")
         self.ax.legend(loc="best")
         self.ax.grid(True, alpha=0.3)
 
-    def _update_plot_elements(self):
-        self.ax.clear()
-        self.create_plot()
-
 
 class DOCEnergyComparisonPlot(MultiScenarioPlot):
     """Compare the energy component of DOC per ASK across scenarios."""
 
     required_outputs = ["doc_energy_per_ask_mean"]
-
-    def _get_default_figsize(self):
-        return (12, 6)
+    column_name = "doc_energy_per_ask_mean"
+    years_source = "prospective_years"
 
     def create_plot(self):
-        for scenario_name, data in self.scenario_data.items():
-            style = self.get_scenario_style(scenario_name)
-            years = data["prospective_years"]
-            self.ax.plot(
-                years,
-                data["df"].loc[years, "doc_energy_per_ask_mean"],
-                label=scenario_name,
-                color=style["color"],
-                linestyle=style["linestyle"],
-                linewidth=2,
-            )
-
+        self._plot_grouped_series()
         self.ax.set_title("Energy Component of DOC Comparison")
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("DOC energy [€/ASK]")
         self.ax.legend(loc="best")
         self.ax.grid(True, alpha=0.3)
 
-    def _update_plot_elements(self):
-        self.ax.clear()
-        self.create_plot()
-
 
 class AirfareComparisonPlot(MultiScenarioPlot):
     """Compare total airfare per ASK across scenarios."""
 
     required_outputs = ["airfare_per_ask"]
-
-    def _get_default_figsize(self):
-        return (12, 6)
+    column_name = "airfare_per_ask"
+    years_source = "prospective_years"
 
     def create_plot(self):
-        for scenario_name, data in self.scenario_data.items():
-            style = self.get_scenario_style(scenario_name)
-            years = data["prospective_years"]
-            self.ax.plot(
-                years,
-                data["df"].loc[years, "airfare_per_ask"],
-                label=scenario_name,
-                color=style["color"],
-                linestyle=style["linestyle"],
-                linewidth=2,
-            )
-
+        self._plot_grouped_series()
         self.ax.set_title("Total Airfare Comparison")
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Airfare [€/ASK]")
         self.ax.legend(loc="best")
         self.ax.grid(True, alpha=0.3)
 
-    def _update_plot_elements(self):
-        self.ax.clear()
-        self.create_plot()
+
+class DocNetEnergyPerRPKComparisonPlot(MultiScenarioPlot):
+    """Compare total energy-related costs per RPK across scenarios.
+
+    Plots ``doc_net_energy_per_rpk_mean`` (energy + carbon tax − subsidy +
+    energy tax, expressed per Revenue Passenger Kilometer) so trajectories
+    can be compared visually.
+    """
+
+    required_outputs = ["doc_net_energy_per_rpk_mean"]
+    column_name = "doc_net_energy_per_rpk_mean"
+    years_source = "prospective_years"
+
+    def create_plot(self):
+        self._plot_grouped_series()
+        self.ax.set_title("Net Energy Cost per RPK – Scenario Comparison")
+        self.ax.set_xlabel("Year")
+        self.ax.set_ylabel("Energy costs [€/RPK]")
+        self.ax.legend(loc="best")
+        self.ax.grid(True, alpha=0.3)

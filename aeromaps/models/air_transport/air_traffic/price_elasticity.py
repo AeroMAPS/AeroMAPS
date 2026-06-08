@@ -19,7 +19,7 @@ from aeromaps.models.base import (
 )
 
 
-class RPKWithElasticity(AeroMAPSModel):
+class RPKPriceElasticity(AeroMAPSModel):
     """
     Class to compute Revenue Passenger Kilometers (RPK) with price elasticity and COVID-19 impact, considering exogenous growth rates by segment.
 
@@ -31,6 +31,16 @@ class RPKWithElasticity(AeroMAPSModel):
 
     def __init__(self, name="rpk_with_elasticity", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
+    
+    def _initialize_df(self):
+        super()._initialize_df()
+        # Seed value for MDA coupling initialization with 2019 values
+        self._coupling_defaults = {
+            "airfare_per_rpk": pd.Series(
+                0.09236379319842411,  # EUR/RPK
+                index=range(self.historic_start_year, self.end_year + 1),
+            )
+        }
 
     def compute(
         self,
