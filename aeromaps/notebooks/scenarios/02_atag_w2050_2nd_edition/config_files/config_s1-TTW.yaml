@@ -1,0 +1,24 @@
+data:
+  inputs:
+    json_inputs_file: "../data_inputs/s1_inputs.json"
+  outputs:
+    json_outputs_file: "../data_outputs/s1-TTW.json"
+
+models:
+  climate:
+    climate_model_data_file: default
+
+  energy:
+    energy_carriers_model_data_file: "../data_inputs/s1-TTW_energy.yaml"
+    resources_model_data_file: "../data_inputs/resources.yaml"
+    processes_model_data_file: "../data_inputs/processes.yaml"
+
+  standards:
+    - models_traffic
+    - models_efficiency_top_down_interp
+    - models_energy_with_fuel_effect
+    - models_energy_cost
+    - models_emissions
+    - models_offset
+    - models_sustainability
+    - models_operation_cost_top_down
