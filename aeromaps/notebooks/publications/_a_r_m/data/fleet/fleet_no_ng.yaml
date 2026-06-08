@@ -22,7 +22,7 @@ subcategories:
 
 
 categories:
-  - id: short_range
+  - market_served: short_range
     name: "Short Range"
     parameters:
       life: 25
@@ -30,7 +30,7 @@ categories:
     subcategories:
       - sr_conventional_nb
 
-  - id: medium_range
+  - market_served: medium_range
     name: "Medium Range"
     parameters:
       life: 25
@@ -38,7 +38,7 @@ categories:
     subcategories:
       - mr_conventional_nb
 
-  - id: long_range
+  - market_served: long_range
     name: "Long Range"
     parameters:
       life: 25
