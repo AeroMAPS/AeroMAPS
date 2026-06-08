@@ -779,43 +779,55 @@ class FreightAircraftEfficiency(AeroMAPSModel):
 
         # begin with operations on passsneger markets to derive freight market values, then loop over freight markets to compute outputs
 
+        # An empty passenger market (zero ASK — e.g. a region with no traffic in the scenario)
+        # has an undefined per-ASK efficiency: PassengerAircraftEfficiency* sets it to NaN when
+        # rpk_share is 0. It carries zero ASK weight, so it must contribute nothing to the freight
+        # averages below; an unmasked ``NaN * 0`` would otherwise poison every freight market.
+        def _passenger_ask_weighted_sum(per_market_value):
+            """ASK-weighted sum over passenger markets; empty markets (zero ASK) contribute zero."""
+            total = None
+            for market in passenger_markets:
+                mid = market.id
+                contribution = (per_market_value(mid) * (ask_per_market[mid] / ask)).where(
+                    ask_per_market[mid] != 0.0, 0.0
+                )
+                total = contribution if total is None else total + contribution
+            return total
+
         # RTK shares: freight propulsion mix follows passenger ASK-weighted propulsion mix
         # (same for all freight markets, driven by the global passenger mix)
-        rtk_hydrogen_share = sum(
-            ask_hydrogen_share_per_market[m.id] * (ask_per_market[m.id] / ask)
-            for m in passenger_markets
+        rtk_hydrogen_share = _passenger_ask_weighted_sum(
+            lambda mid: ask_hydrogen_share_per_market[mid]
         )
-        rtk_electric_share = sum(
-            ask_electric_share_per_market[m.id] * (ask_per_market[m.id] / ask)
-            for m in passenger_markets
+        rtk_electric_share = _passenger_ask_weighted_sum(
+            lambda mid: ask_electric_share_per_market[mid]
         )
         rtk_dropin_fuel_share = 100 - rtk_hydrogen_share - rtk_electric_share
 
-        # Relative efficiency of hydrogen and electric wrt dropin, per passenger market
-        relative_energy_per_ask_hydrogen_wrt_dropin_per_market = {
-            m.id: energy_per_ask_without_operations_hydrogen_per_market[m.id]
-            / energy_per_ask_without_operations_dropin_fuel_per_market[m.id]
-            for m in passenger_markets
-        }
-        relative_energy_per_ask_electric_wrt_dropin_per_market = {
-            m.id: energy_per_ask_without_operations_electric_per_market[m.id]
-            / energy_per_ask_without_operations_dropin_fuel_per_market[m.id]
-            for m in passenger_markets
-        }
+        # Relative efficiency of hydrogen and electric wrt dropin, per passenger market.
+        # Empty markets yield NaN here (0/0 — both intensities are NaN); they are masked out of
+        # the weighted sums above/below, so silence the intended divide-by-undefined.
+        with np.errstate(invalid="ignore", divide="ignore"):
+            relative_energy_per_ask_hydrogen_wrt_dropin_per_market = {
+                m.id: energy_per_ask_without_operations_hydrogen_per_market[m.id]
+                / energy_per_ask_without_operations_dropin_fuel_per_market[m.id]
+                for m in passenger_markets
+            }
+            relative_energy_per_ask_electric_wrt_dropin_per_market = {
+                m.id: energy_per_ask_without_operations_electric_per_market[m.id]
+                / energy_per_ask_without_operations_dropin_fuel_per_market[m.id]
+                for m in passenger_markets
+            }
 
         # Hydrogen and electric efficiency weighted sums across passenger markets
         # (same for all freight markets, used to derive freight energy per RTK for alt. propulsion)
-        hydrogen_weighted_sum = sum(
-            relative_energy_per_ask_hydrogen_wrt_dropin_per_market[m.id]
-            * ask_hydrogen_share_per_market[m.id]
-            * (ask_per_market[m.id] / ask)
-            for m in passenger_markets
+        hydrogen_weighted_sum = _passenger_ask_weighted_sum(
+            lambda mid: relative_energy_per_ask_hydrogen_wrt_dropin_per_market[mid]
+            * ask_hydrogen_share_per_market[mid]
         )
-        electric_weighted_sum = sum(
-            relative_energy_per_ask_electric_wrt_dropin_per_market[m.id]
-            * ask_electric_share_per_market[m.id]
-            * (ask_per_market[m.id] / ask)
-            for m in passenger_markets
+        electric_weighted_sum = _passenger_ask_weighted_sum(
+            lambda mid: relative_energy_per_ask_electric_wrt_dropin_per_market[mid]
+            * ask_electric_share_per_market[mid]
         )
 
         # Masks for years with/without hydrogen and electric usage (same for all freight markets)
@@ -864,9 +876,14 @@ class FreightAircraftEfficiency(AeroMAPSModel):
                     energy_per_ask_dropin_fuel_k = (
                         energy_per_ask_without_operations_dropin_fuel_per_market[mid].loc[k]
                     )
+                    # Empty passenger markets have undefined (NaN) per-ASK efficiency; keep their
+                    # proxy unchanged (ratio 1.0) so it stays finite. They contribute nothing once
+                    # weighted by their zero ASK below.
                     efficiency_ratio = (
                         energy_per_ask_dropin_fuel_k / energy_per_ask_dropin_fuel_prev
                         if energy_per_ask_dropin_fuel_prev != 0
+                        and np.isfinite(energy_per_ask_dropin_fuel_prev)
+                        and np.isfinite(energy_per_ask_dropin_fuel_k)
                         else 1.0
                     )
                     energy_per_rtk_without_operations_dropin_fuel_per_market_k[mid] = (
@@ -880,6 +897,8 @@ class FreightAircraftEfficiency(AeroMAPSModel):
                 )
 
                 if ask_total_dropin_fuel_k > 0:
+                    # Skip empty markets (zero dropin ASK): their proxy may be undefined and
+                    # ``NaN * 0`` would leak into the freight efficiency.
                     self.df.loc[
                         k, f"energy_per_rtk_without_operations_{freight_mid}_dropin_fuel"
                     ] = sum(
@@ -887,6 +906,7 @@ class FreightAircraftEfficiency(AeroMAPSModel):
                         * ask_dropin_fuel_per_market[mid].loc[k]
                         / ask_total_dropin_fuel_k
                         for mid in ask_dropin_fuel_per_market
+                        if ask_dropin_fuel_per_market[mid].loc[k] != 0
                     )
                 else:
                     self.df.loc[

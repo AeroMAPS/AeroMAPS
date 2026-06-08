@@ -207,25 +207,26 @@ class RPKMarket(AeroMAPSModel):
         # Demand-reduction measures multiplier
         self.df.loc[:, rpk_col] = self.df[rpk_col] * measures_impact
 
-        # Overwrite with actual historic growth rates
+        # Overwrite with actual historic growth rates. A market with no traffic (zero RPK,
+        # e.g. a region absent from the scenario) has an undefined growth rate; report 0
+        # rather than emitting a 0/0 RuntimeWarning and a NaN diagnostic.
         for k in range(self.historic_start_year + 1, self.prospection_start_year):
+            rpk_prev = self.df.loc[k - 1, rpk_col]
             self.df.loc[k, rate_col] = (
-                self.df.loc[k, rpk_col] / self.df.loc[k - 1, rpk_col] - 1
-            ) * 100
-
-        cagr = 100 * (
-            (
-                self.df.loc[self.end_year, rpk_col]
-                / self.df.loc[self.prospection_start_year - 1, rpk_col]
+                (self.df.loc[k, rpk_col] / rpk_prev - 1) * 100 if rpk_prev != 0 else 0.0
             )
-            ** (1 / (self.end_year - self.prospection_start_year))
-            - 1
-        )
-        prospective_evolution = 100 * (
-            self.df.loc[self.end_year, rpk_col]
-            / self.df.loc[self.prospection_start_year - 1, rpk_col]
-            - 1
-        )
+
+        rpk_base = self.df.loc[self.prospection_start_year - 1, rpk_col]
+        if rpk_base != 0:
+            cagr = 100 * (
+                (self.df.loc[self.end_year, rpk_col] / rpk_base)
+                ** (1 / (self.end_year - self.prospection_start_year))
+                - 1
+            )
+            prospective_evolution = 100 * (self.df.loc[self.end_year, rpk_col] / rpk_base - 1)
+        else:
+            cagr = 0.0
+            prospective_evolution = 0.0
 
         output_data = {
             rpk_col: self.df[rpk_col],
