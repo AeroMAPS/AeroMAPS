@@ -5,6 +5,9 @@ data:
     json_outputs_file: "./data/outputs.json"
 
 models:
+  markets:
+    markets_data_file: "./data/markets_demand_logistic.yaml"
+
   climate:
     climate_model_data_file: default
 
@@ -14,7 +17,7 @@ models:
     processes_model_data_file: default
 
   standards:
-    - models_traffic_price_adjusted_logistic
+    - models_traffic
     - models_efficiency_top_down_interp
     - models_energy_with_fuel_effect
     - models_offset

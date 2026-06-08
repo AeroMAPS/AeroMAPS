@@ -487,6 +487,19 @@ class RPKElasticity(AeroMAPSModel):
             self.output_names[f"cagr_rpk_{mid}"] = 0.0
             self.output_names[f"prospective_evolution_rpk_{mid}"] = 0.0
 
+    def _initialize_df(self):
+        super()._initialize_df()
+        # Seed the airfare ↔ RPK coupling for MDA initialization with the 2019
+        # reference airfare (matches ``global.elasticity.initial_airfare_per_rpk``
+        # in markets.yaml). Saves the user from manually seeding
+        # ``process.parameters.airfare_per_rpk`` before the first MDA iteration.
+        self._coupling_defaults = {
+            "airfare_per_rpk": pd.Series(
+                0.09236379319842411,  # EUR/RPK
+                index=range(self.historic_start_year, self.end_year + 1),
+            )
+        }
+
     def compute(self, input_data: dict) -> dict:
         """Apply the global elasticity multiplier to baseline RPK trajectories.
 

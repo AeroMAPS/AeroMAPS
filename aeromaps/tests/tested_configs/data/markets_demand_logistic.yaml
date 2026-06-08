@@ -1,3 +1,5 @@
+# Test fixture for the price-coupled demand models.
+# Copy of default_markets/markets.yaml with global.demand.model switched.
 # Default market definitions for AeroMAPS.
 # These reproduce the previous hard-coded 4-market structure exactly.
 # FLEET REFACTORING FLAG In Phase 3 the fleet.yaml will reference these market ids.
@@ -54,7 +56,7 @@ global:
   # when selected the CAGR chain / RPKElasticity are not instantiated and the
   # ``elasticity`` block is ignored.
   demand:
-    model: cagr
+    model: logistic_income
   # Price elasticity of demand — global calibration (not per-market for now).
   # Used only by ``demand.model: cagr_elasticity``. ``use_elasticity: true`` is a
   # legacy alias for that mode (kept for configs predating ``demand.model``).

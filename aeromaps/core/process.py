@@ -67,6 +67,7 @@ from aeromaps.models.air_transport.markets.markets_factory import (
     create_market_ask_models,
     create_market_load_factor_models,
     create_market_rpk_aggregator,
+    create_market_rpk_demand_model,
     create_market_rpk_elasticity,
     create_market_rpk_models,
     create_market_rtk_aggregator,
@@ -1077,7 +1078,18 @@ class AeroMAPSProcess(object):
         # elasticity layer is wired into the discipline graph; it is read here
         # so the case distinction lives in YAML rather than in model dicts.
         globals_block = self.markets_data.pop("global", {}) or {}
+        # ``demand.model`` selects the passenger demand model among four modes:
+        #   ``cagr``               — CAGR RPKMarket chain (no price feedback);
+        #   ``cagr_elasticity``    — CAGR chain + RPKElasticity (airfare feedback);
+        #   ``constant_elasticity``— RPKPriceIncomeElasticity (income/price model);
+        #   ``logistic_income``    — RPKLogisticIncomePriceElasticity.
+        # Build-time selector, not a model parameter, so the ``demand`` sub-block
+        # is dropped before flattening. ``elasticity.use_elasticity`` is kept as a
+        # legacy fallback for configs predating ``demand.model``.
         with_elasticity = bool(globals_block.get("elasticity", {}).get("use_elasticity", False))
+        demand_model = (globals_block.pop("demand", {}) or {}).get("model")
+        if demand_model is None:
+            demand_model = "cagr_elasticity" if with_elasticity else "cagr"
         for value in globals_block.values():
             if isinstance(value, dict):
                 flattened = _flatten_dict(value)
@@ -1129,16 +1141,31 @@ class AeroMAPSProcess(object):
             market_data["inputs"] = inputs
             self.markets_data[market_id] = market_data
 
-        self.models.update(
-            create_market_rpk_models(
-                self.markets, self.markets_data, with_elasticity=with_elasticity
+        if demand_model in ("cagr", "cagr_elasticity"):
+            with_elast = demand_model == "cagr_elasticity"
+            self.models.update(
+                create_market_rpk_models(
+                    self.markets, self.markets_data, with_elasticity=with_elast
+                )
             )
-        )
-        self.models.update(
-            create_market_rpk_aggregator(self.markets, with_elasticity=with_elasticity)
-        )
-        if with_elasticity:
-            self.models.update(create_market_rpk_elasticity(self.markets))
+            self.models.update(
+                create_market_rpk_aggregator(self.markets, with_elasticity=with_elast)
+            )
+            if with_elast:
+                self.models.update(create_market_rpk_elasticity(self.markets))
+        elif demand_model in ("constant_elasticity", "logistic_income"):
+            # Price-coupled demand model: owns the per-market RPK split and its
+            # own price feedback, so the CAGR chain / RPKElasticity are skipped.
+            self.models.update(
+                create_market_rpk_demand_model(
+                    self.markets, self.markets_data, demand_model=demand_model
+                )
+            )
+        else:
+            raise ValueError(
+                f"Unknown global.demand.model '{demand_model}'. Expected one of: "
+                "cagr, cagr_elasticity, constant_elasticity, logistic_income."
+            )
         self.models.update(create_market_rtk_models(self.markets, self.markets_data))
         self.models.update(create_market_rtk_aggregator(self.markets))
         self.models.update(create_market_ask_models(self.markets))

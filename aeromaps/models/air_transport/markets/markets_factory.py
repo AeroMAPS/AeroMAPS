@@ -1,6 +1,12 @@
 """Factory helpers to instantiate market-driven traffic models."""
 
 from aeromaps.models.air_transport.air_traffic.ask_market import ASKAggregator, ASKMarket
+from aeromaps.models.air_transport.air_traffic.price_and_income_elasticity import (
+    RPKPriceIncomeElasticity,
+)
+from aeromaps.models.air_transport.air_traffic.price_elasticity_logistic_income import (
+    RPKLogisticIncomePriceElasticity,
+)
 from aeromaps.models.air_transport.air_traffic.rpk_market import (
     RPKAggregator,
     RPKElasticity,
@@ -103,6 +109,61 @@ def create_market_rpk_elasticity(markets) -> dict:
     return {
         "rpk_elasticity": RPKElasticity(name="rpk_elasticity", passenger_market_ids=passenger_ids)
     }
+
+
+def create_market_rpk_demand_model(
+    markets, markets_data: dict = None, demand_model: str = "constant_elasticity"
+) -> dict:
+    """Create a price-coupled demand-model chain for the passenger markets.
+
+    Used when ``global.demand.model`` selects a demand model
+    (``constant_elasticity`` or ``logistic_income``) instead of the default
+    CAGR chain. The selected demand discipline computes a global per-capita RPK
+    with its own price feedback (reading ``doc_net_energy_per_rpk_mean``) and
+    splits it across markets, so ``RPKMarket`` / ``RPKAggregator`` /
+    ``RPKElasticity`` are *not* instantiated.
+
+    Per-market ``RPKMeasuresMarket`` (when measures inputs are present) and
+    ``RPKReferenceMarket`` (when reference inputs are present) are still created;
+    the demand discipline consumes their outputs and aggregates the references
+    into the total ``rpk_reference``.
+
+    Returns an empty mapping when no passenger markets are configured.
+    """
+    if markets is None:
+        return {}
+    passenger_markets = markets.get(traffic_type="passenger")
+    passenger_ids = [m.id for m in passenger_markets]
+    if not passenger_ids:
+        return {}
+
+    if demand_model == "constant_elasticity":
+        demand_class = RPKPriceIncomeElasticity
+    elif demand_model == "logistic_income":
+        demand_class = RPKLogisticIncomePriceElasticity
+    else:
+        raise ValueError(
+            f"Unknown demand model '{demand_model}'. "
+            "Expected one of: constant_elasticity, logistic_income."
+        )
+
+    markets_data = markets_data or {}
+    models = {}
+
+    for market in passenger_markets:
+        mid = market.id
+        market_inputs = markets_data.get(mid, {}).get("inputs", {})
+
+        if _has_measures_inputs(market_inputs):
+            measures_name = f"rpk_measures_{mid}"
+            models[measures_name] = RPKMeasuresMarket(name=measures_name, market_id=mid)
+
+        if _has_reference_inputs(market_inputs):
+            reference_name = f"rpk_reference_{mid}"
+            models[reference_name] = RPKReferenceMarket(name=reference_name, market_id=mid)
+
+    models["rpk_demand"] = demand_class(name="rpk_demand", passenger_market_ids=passenger_ids)
+    return models
 
 
 def create_market_ask_models(markets) -> dict:

@@ -1198,7 +1198,7 @@ class PassengerAircraftTotalDoc(AeroMAPSModel):
         doc_net_energy_per_rpk_mean = (
             doc_net_energy_per_ask_mean * 100 / input_data["load_factor"]
         ).where(input_data["load_factor"] > 0, 0)
-        self.df.loc[:, "doc_net_energy_per_rpk_mean"] = doc_net_energy_per_rpk_mean
+        output_data["doc_net_energy_per_rpk_mean"] = doc_net_energy_per_rpk_mean
 
         self._store_outputs(output_data)
         return output_data
