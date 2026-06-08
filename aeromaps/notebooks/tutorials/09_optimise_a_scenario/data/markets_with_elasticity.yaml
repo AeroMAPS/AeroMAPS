@@ -2,6 +2,8 @@ global:
   # Price elasticity of demand — global calibration (not per-market for now).
   # ``use_elasticity: true`` wires the ``RPKElasticity`` discipline into the
   # MDA, closing the airfare ↔ RPK cycle.
+  demand:
+    model: cagr_elasticity
   elasticity:
     use_elasticity: true
     price_elasticity: -0.9
