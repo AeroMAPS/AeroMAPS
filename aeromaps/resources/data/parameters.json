@@ -184,6 +184,8 @@
     "social_discount_rate": 0.03,
     "carbon_offset_baseline_level_vs_2019_reference_periods": [],
     "carbon_offset_baseline_level_vs_2019_reference_periods_values": [850000.0],
+    "carbon_offset_baseline_share_total_emissions_reference_periods": [],
+    "carbon_offset_baseline_share_total_emissions_reference_periods_values": [100.0],
     "residual_carbon_offset_share_reference_years": [],
     "residual_carbon_offset_share_reference_years_values": [0.0],
     "carbon_offset_price_reference_years": [],

@@ -119,8 +119,14 @@ class DropInFuelConsumption(AeroMAPSModel):
             ]
             energy_per_ask = input_data[f"energy_per_ask_{mid}_dropin_fuel"]
 
-            energy_consumption_without_operations = energy_per_ask_without_operations * ask
-            energy_consumption = energy_per_ask * ask
+            # Guard: energy_per_ask may be NaN when ask is zero (division by zero upstream).
+            # TODO: improve division by zero handling
+            if ask.sum() == 0.0:
+                energy_consumption_without_operations = 0.0 * ask
+                energy_consumption = 0.0 * ask
+            else:
+                energy_consumption_without_operations = energy_per_ask_without_operations * ask
+                energy_consumption = energy_per_ask * ask
 
             output_data[f"energy_consumption_{mid}_dropin_fuel_without_operations"] = (
                 energy_consumption_without_operations
@@ -150,8 +156,14 @@ class DropInFuelConsumption(AeroMAPSModel):
             ]
             energy_per_rtk = input_data[f"energy_per_rtk_{mid}_dropin_fuel"]
 
-            energy_consumption_without_operations = energy_per_rtk_without_operations * rtk
-            energy_consumption = energy_per_rtk * rtk
+            # Guard: energy_per_rtk may be NaN when rtk is zero (division by zero upstream).
+            # TODO: improve division by zero handling
+            if rtk.sum() == 0.0:
+                energy_consumption_without_operations = 0.0 * rtk
+                energy_consumption = 0.0 * rtk
+            else:
+                energy_consumption_without_operations = energy_per_rtk_without_operations * rtk
+                energy_consumption = energy_per_rtk * rtk
 
             output_data[f"energy_consumption_{mid}_dropin_fuel_without_operations"] = (
                 energy_consumption_without_operations
@@ -459,8 +471,14 @@ class HydrogenConsumption(AeroMAPSModel):
             ]
             energy_per_ask = input_data[f"energy_per_ask_{mid}_hydrogen"]
 
-            energy_consumption_without_operations = energy_per_ask_without_operations * ask
-            energy_consumption = energy_per_ask * ask
+            # Guard: energy_per_ask may be NaN when ask is zero (division by zero upstream).
+            # TODO: improve division by zero handling
+            if ask.sum() == 0.0:
+                energy_consumption_without_operations = 0.0 * ask
+                energy_consumption = 0.0 * ask
+            else:
+                energy_consumption_without_operations = energy_per_ask_without_operations * ask
+                energy_consumption = energy_per_ask * ask
 
             output_data[f"energy_consumption_{mid}_hydrogen_without_operations"] = (
                 energy_consumption_without_operations
@@ -488,8 +506,14 @@ class HydrogenConsumption(AeroMAPSModel):
             ]
             energy_per_rtk = input_data[f"energy_per_rtk_{mid}_hydrogen"]
 
-            energy_consumption_without_operations = energy_per_rtk_without_operations * rtk
-            energy_consumption = energy_per_rtk * rtk
+            # Guard: energy_per_rtk may be NaN when rtk is zero (division by zero upstream).
+            # TODO: improve division by zero handling
+            if rtk.sum() == 0.0:
+                energy_consumption_without_operations = 0.0 * rtk
+                energy_consumption = 0.0 * rtk
+            else:
+                energy_consumption_without_operations = energy_per_rtk_without_operations * rtk
+                energy_consumption = energy_per_rtk * rtk
 
             output_data[f"energy_consumption_{mid}_hydrogen_without_operations"] = (
                 energy_consumption_without_operations
@@ -625,8 +649,14 @@ class ElectricConsumption(AeroMAPSModel):
             ]
             energy_per_ask = input_data[f"energy_per_ask_{mid}_electric"]
 
-            energy_consumption_without_operations = energy_per_ask_without_operations * ask
-            energy_consumption = energy_per_ask * ask
+            # Guard: energy_per_ask may be NaN when ask is zero (division by zero upstream).
+            # TODO: improve division by zero handling
+            if ask.sum() == 0.0:
+                energy_consumption_without_operations = 0.0 * ask
+                energy_consumption = 0.0 * ask
+            else:
+                energy_consumption_without_operations = energy_per_ask_without_operations * ask
+                energy_consumption = energy_per_ask * ask
 
             output_data[f"energy_consumption_{mid}_electric_without_operations"] = (
                 energy_consumption_without_operations
@@ -654,8 +684,14 @@ class ElectricConsumption(AeroMAPSModel):
             ]
             energy_per_rtk = input_data[f"energy_per_rtk_{mid}_electric"]
 
-            energy_consumption_without_operations = energy_per_rtk_without_operations * rtk
-            energy_consumption = energy_per_rtk * rtk
+            # Guard: energy_per_rtk may be NaN when rtk is zero (division by zero upstream).
+            # TODO: improve division by zero handling
+            if rtk.sum() == 0.0:
+                energy_consumption_without_operations = 0.0 * rtk
+                energy_consumption = 0.0 * rtk
+            else:
+                energy_consumption_without_operations = energy_per_rtk_without_operations * rtk
+                energy_consumption = energy_per_rtk * rtk
 
             output_data[f"energy_consumption_{mid}_electric_without_operations"] = (
                 energy_consumption_without_operations

@@ -152,9 +152,11 @@ class AeroMAPSProcessesAssembly:
         
         return filtered_processes
     
-    def plot(self, name: str, save: bool = False, size_inches=None, 
+    def plot(self, name: str, save: bool = False, size_inches=None,
              remove_title: bool = False, check_outputs: bool = True,
-             scenario_groups: dict = None):
+             scenario_groups: dict = None, fig=None, ax=None, legend=True,
+             colors=None, group_display: str = "lines",
+             group_envelope_middle="median", group_envelope_alpha: float = 0.25):
         """
         Generate a multi-scenario comparison plot.
         
@@ -177,7 +179,34 @@ class AeroMAPSProcessesAssembly:
             within a group will share the same color but use different line styles.
             Example: {"Baseline": ["s1", "s2"], "Optimistic": ["s3", "s4"]}
             If None, each scenario gets its own color.
-            
+        fig : matplotlib.figure.Figure, optional
+            Existing figure to draw into. If provided together with ``ax``,
+            no new figure/axes are created.
+        ax : matplotlib.axes.Axes, optional
+            Existing axes to draw into. Must be provided together with ``fig``.
+        legend : bool or str, optional
+            Controls the legend. ``True`` (default) keeps the legend as created
+            by the plot. ``False`` hides it. A string value (e.g. ``"upper right"``)
+            moves the legend to the given location.
+        colors : list or dict, optional
+            Custom colors for scenarios. A list assigns one color per scenario
+            (in scenario order). A dict maps group names to colors when
+            ``scenario_groups`` is used. If ``None``, the default palette is used.
+        group_display : str, optional
+            ``"lines"`` (default) draws one line per scenario.
+            ``"envelope"`` draws a ``fill_between`` band between the min and
+            max of each group's scenarios at every year, plus a single middle
+            line. Singleton groups always fall back to a single line.
+        group_envelope_middle : str or dict, optional
+            Selects the middle line in envelope mode. ``"median"`` (default)
+            takes the pointwise median across the group, ``"mean"`` the
+            pointwise mean. A dict ``{group_name: scenario_name}`` lets the
+            caller pin a specific scenario as the middle line per group;
+            groups omitted from the dict fall back to ``"median"``.
+        group_envelope_alpha : float, optional
+            Transparency of the ``fill_between`` band in envelope mode.
+            Default ``0.25``.
+
         Returns
         -------
         fig
@@ -205,7 +234,14 @@ class AeroMAPSProcessesAssembly:
             self.processes, 
             figsize=size_inches,
             check_outputs=check_outputs,
-            scenario_groups=scenario_groups
+            scenario_groups=scenario_groups,
+            fig=fig,
+            ax=ax,
+            legend=legend,
+            colors=colors,
+            group_display=group_display,
+            group_envelope_middle=group_envelope_middle,
+            group_envelope_alpha=group_envelope_alpha,
         )
         
         # Save if requested

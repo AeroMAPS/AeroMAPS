@@ -6,6 +6,10 @@ This module tests the multi-scenario plot classes and their functionality.
 
 import pytest
 from aeromaps import create_process, assemble_processes
+from aeromaps.plots.multi_scenario import available_multi_plots
+
+
+_MULTI_PLOTS = sorted(available_multi_plots.keys())
 
 
 @pytest.fixture(scope="module")
@@ -38,55 +42,25 @@ def processes():
     return {"scenario_1": proc1, "scenario_2": proc2, "scenario_3": proc3}
 
 
-EXPECTED_PLOTS = [
-    # Emissions
-    "co2_emissions_comparison",
-    "cumulative_co2_emissions_comparison",
-    # Energy
-    "energy_consumption_comparison",
-    # Intensity
-    "co2_per_rpk_comparison",
-    "co2_per_rtk_comparison",
-    "energy_per_ask_comparison",
-    "energy_per_rtk_comparison",
-    # Fuel supply
-    "drop_in_supply_breakdown",
-    "hydrogen_supply_comparison",
-    "electric_supply_comparison",
-    "biofuel_production_comparison",
-    "electrofuel_production_comparison",
-]
+def test_multi_plots_registry_nonempty():
+    """Guard against an accidentally-empty registry."""
+    assert _MULTI_PLOTS, "available_multi_plots is empty"
 
 
-def test_expected_plots_available(processes):
-    """Test that list_available_plots returns all expected plot names."""
+def test_list_available_plots_matches_registry(processes):
+    """list_available_plots() must surface every registered multi-scenario plot."""
     multi = assemble_processes(processes)
     plots = multi.list_available_plots()
-
-    assert plots is not None
-    assert isinstance(plots, list)
-    assert len(plots) > 0
-
-    for plot_name in EXPECTED_PLOTS:
-        assert plot_name in plots, f"Expected plot '{plot_name}' not found in available plots"
+    assert isinstance(plots, list) and plots
+    for name in _MULTI_PLOTS:
+        assert name in plots, f"Registered plot '{name}' missing from list_available_plots()"
 
 
-def test_plot_co2_emissions_comparison(processes):
-    """Test creating CO2 emissions comparison plot."""
+@pytest.mark.parametrize("plot_name", _MULTI_PLOTS)
+def test_multi_plot(processes, plot_name):
+    """Every registered multi-scenario plot must build."""
     multi = assemble_processes(processes)
-
-    # Create plot - should not raise exception
-    fig = multi.plot("co2_emissions_comparison")
-    assert fig is not None
-
-
-def test_plot_energy_consumption_comparison(processes):
-    """Test creating energy consumption comparison plot."""
-    multi = assemble_processes(processes)
-
-    # Create plot - should not raise exception
-    fig = multi.plot("energy_consumption_comparison")
-    assert fig is not None
+    assert multi.plot(plot_name) is not None
 
 
 def test_plot_with_invalid_name(processes):

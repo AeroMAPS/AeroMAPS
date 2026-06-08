@@ -96,6 +96,8 @@ def _dict_from_parameters_dict(parameters_dict) -> dict:
             "freight_init",
             "energy_consumption_init",
             "total_aircraft_distance_init",
+            "gdp_per_capita_init",
+            "population_init",
         ]:
             new_index = range(
                 parameters_dict["historic_start_year"], parameters_dict["prospection_start_year"]
@@ -287,22 +289,28 @@ def create_partitioning(file, path="", freight_energy_share_2019=15.0):
     #    from per-market passenger energy using the world belly-freight fraction.
     # 2. Dedicated freight: AeroSCOPE covers passenger aircraft only; we scale total
     #    energy up to include dedicated freighters (half of total freight energy share).
-    _BELLY_FREIGHT_FRACTION = freight_energy_share_2019_partitioned / 2 / 100
-    _DEDICATED_FREIGHT_FRACTION = freight_energy_share_2019_partitioned / 2 / 100
-    belly_correction = 1 - _BELLY_FREIGHT_FRACTION / (1 - _DEDICATED_FREIGHT_FRACTION)
+    _belly_frac = freight_energy_share_2019_partitioned / 2 / 100
+    _ded_frac = freight_energy_share_2019_partitioned / 2 / 100
+    belly_correction = 1 - _belly_frac / (1 - _ded_frac)
 
-    aeroscope_markets = {
+    _raw_markets = {
         "short_range": (partitioned_data[0, 2], partitioned_data[4, 2]),
         "medium_range": (partitioned_data[0, 3], partitioned_data[4, 3]),
         "long_range": (partitioned_data[0, 4], partitioned_data[4, 4]),
     }
-    per_market_passenger_data = {
-        mid: {
+    per_market_passenger_data = {}
+    for mid, (ask, epask) in _raw_markets.items():
+        if pd.isna(ask) or ask == 0.0:
+            # Void market: keep it in the scope but with zero traffic and energy.
+            logging.warning(f"No traffic is assumed for {mid}.")
+            per_market_passenger_data[mid] = {"ask_2019": 0.0, "energy_ask_2019": 0.0}
+            continue
+        if pd.isna(epask):
+            raise ValueError(f"{mid} ASK is non-zero but energy per ASK is null.")
+        per_market_passenger_data[mid] = {
             "ask_2019": ask,
-            "energy_ask_2019": epask * belly_correction,  # corrected value => e_ask without freight
+            "energy_ask_2019": epask * belly_correction,
         }
-        for mid, (ask, epask) in aeroscope_markets.items()
-    }
 
     compute_partitioning(
         world_data=world_data_dict,

@@ -23,8 +23,8 @@ subcategories:
     name: "SR hydrogen conventional narrow-body"
     share: 50.0
     reference_aircraft:
-      old_ref: sr_hydrogen_nb_old
-      recent_ref: sr_hydrogen_nb_recent
+      old_ref: sr_conventional_nb_old
+      recent_ref: sr_conventional_nb_recent
     aircraft:
       - sr_h2_2035
 

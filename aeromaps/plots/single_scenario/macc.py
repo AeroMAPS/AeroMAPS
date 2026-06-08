@@ -30,31 +30,27 @@ def _aircraft_color(fleet, category_name: str) -> str:
     return _MARKET_AIRCRAFT_COLORS.get(market_id, _DEFAULT_AIRCRAFT_COLOR)
 
 
-class AnnualMACC:
-    def __init__(self, process):
-        data = process.data
-        self.df = data["vector_outputs"]
+class AnnualMACC(SingleScenarioPlot):
+    def __init__(self, process, figsize=None, **kwargs):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize, **kwargs)
         self.fleet_model = process.fleet_model
-        self.float_outputs = data["float_outputs"]
-        self.float_inputs = data["float_inputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-        self.pathways_manager = process.pathways_manager
-
         try:
-            self.fig, self.ax = plt.subplots(
-                figsize=(10, 7),
-            )
             self.ax2 = self.ax.twiny()
             self.create_plot_data()
             self.plot_interact()
-
         except Exception as e:
             raise RuntimeError(
                 "Error in creating plot. Possible cause: this plot requires top-down fleet model, "
                 "abatement cost and complex energy cost models. Be sure to select them in the scenario settings."
             ) from e
+
+    def _get_default_figsize(self):
+        return (10, 7)
+
+    def create_plot(self):
+        # Drawing happens in update() via ipywidgets.interact
+        pass
 
     def plot_interact(self):
         year_widget = widgets.IntSlider(
@@ -317,8 +313,7 @@ class AnnualMACC:
         scc_year = None
         if metric == "specific_carbon_abatement_cost":
             scc_year = scc_start * (
-                (1 + self.float_inputs["social_discount_rate"])
-                ** (year - self.prospective_years[0])
+                (1 + self.parameters["social_discount_rate"]) ** (year - self.prospective_years[0])
             )
         elif metric == "generic_specific_carbon_abatement_cost":
             scc_year = self.df.loc[year, "exogenous_carbon_price_trajectory"]
@@ -594,22 +589,12 @@ class AnnualMACC:
         self.fig.canvas.draw()
 
 
-class CumulativeMACC:
-    def __init__(self, process):
-        data = process.data
-        self.df = data["vector_outputs"]
+class CumulativeMACC(SingleScenarioPlot):
+    def __init__(self, process, figsize=None, **kwargs):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize, **kwargs)
         self.fleet_model = process.fleet_model
-        self.float_outputs = data["float_outputs"]
-        self.float_inputs = data["float_inputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-        self.pathways_manager = process.pathways_manager
-
         try:
-            self.fig, self.ax = plt.subplots(
-                figsize=(10, 7),
-            )
             self.ax2 = self.ax.twiny()
             self.create_plot_data()
             self.update()
@@ -619,8 +604,15 @@ class CumulativeMACC:
                 "abatement cost and complex energy cost models. Be sure to select them in the scenario settings."
             ) from e
 
+    def _get_default_figsize(self):
+        return (10, 7)
+
+    def create_plot(self):
+        # Drawing happens in update()
+        pass
+
     def create_plot_data(self):
-        social_discount_rate = self.float_inputs["social_discount_rate"]
+        social_discount_rate = self.parameters["social_discount_rate"]
         start_year = self.prospective_years[1]  # not 2019
         end_year = self.prospective_years[-1]
 
@@ -1159,31 +1151,28 @@ class CumulativeMACC:
         self.fig.canvas.draw()
 
 
-class ScenarioMACC:
-    def __init__(self, process):
-        data = process.data
-        self.df = data["vector_outputs"]
+class ScenarioMACC(SingleScenarioPlot):
+    def __init__(self, process, figsize=None, fig=None, ax=None, **kwargs):
+        figsize = figsize or self._get_default_figsize()
+        if fig is None or ax is None:
+            fig, (ax, ax_scc) = plt.subplots(
+                2,
+                1,
+                figsize=figsize,
+                sharex=True,
+                gridspec_kw={"height_ratios": [20, 1]},
+            )
+        else:
+            ax_scc = None
+        super().__init__(process, figsize=figsize, fig=fig, ax=ax, **kwargs)
+        self.ax_scc = ax_scc
         self.fleet_model = process.fleet_model
-        self.float_outputs = data["float_outputs"]
-        self.float_inputs = data["float_inputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-        self.pathways_manager = process.pathways_manager
-
-        self.fig, (self.ax, self.ax_scc) = plt.subplots(
-            2, 1, figsize=(10, 7), sharex=True, gridspec_kw={"height_ratios": [20, 1]}
-        )
-        divider = make_axes_locatable(self.ax)
-        dummy_divider = make_axes_locatable(self.ax_scc)
-
         try:
-            # Create ax2 for the colorbar
+            divider = make_axes_locatable(self.ax)
+            dummy_divider = make_axes_locatable(self.ax_scc)
             self.ax2 = divider.append_axes("right", size="3%", pad=0.1)
-            # Create a dummy ax to keep sharex
             self.dummy_ax = dummy_divider.append_axes("right", size="3%", pad=0.1)
             self.dummy_ax.set_visible(False)
-
             self.create_plot_data()
             self.plot_interact()
         except Exception as e:
@@ -1191,6 +1180,13 @@ class ScenarioMACC:
                 "Error in creating plot. Possible cause: this plot requires top-down fleet model, "
                 "abatement cost and complex energy cost models. Be sure to select them in the scenario settings."
             ) from e
+
+    def _get_default_figsize(self):
+        return (10, 7)
+
+    def create_plot(self):
+        # Drawing happens in update() via ipywidgets.interact
+        pass
 
     def plot_interact(self):
         metric_widget = widgets.Dropdown(
@@ -1439,7 +1435,7 @@ class ScenarioMACC:
 
             if metric == "specific_carbon_abatement_cost":
                 scc_year = scc_start * (
-                    (1 + self.float_inputs["social_discount_rate"])
+                    (1 + self.parameters["social_discount_rate"])
                     ** (year - self.prospective_years[0])
                 )
                 scc_list.append(scc_year)
@@ -1517,7 +1513,6 @@ class ScenarioMACC:
                 )
             else:
                 self.ax_scc.set_visible(False)
-
                 self.ax.legend(
                     handles=[
                         mpatches.Patch(facecolor="none", edgecolor="black", hatch="xx"),
@@ -1554,21 +1549,12 @@ class ScenarioMACC:
         self.fig.canvas.draw()
 
 
-class ShadowCarbonPrice:
-    def __init__(self, process):
-        data = process.data
-        self.df = data["vector_outputs"]
+class ShadowCarbonPrice(SingleScenarioPlot):
+    def __init__(self, process, figsize=None, **kwargs):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize, **kwargs)
         self.fleet_model = process.fleet_model
-        self.float_outputs = data["float_outputs"]
-        self.float_inputs = data["float_inputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-        self.pathways_manager = process.pathways_manager
-
         try:
-            self.fig, self.ax = plt.subplots(figsize=(10, 7))
-
             self.create_plot_data()
             self.plot_interact()
         except Exception as e:
@@ -1576,6 +1562,13 @@ class ShadowCarbonPrice:
                 "Error in creating plot. Possible cause: this plot requires top-down fleet model, "
                 "abatement cost and complex energy cost models. Be sure to select them in the scenario settings."
             ) from e
+
+    def _get_default_figsize(self):
+        return (10, 7)
+
+    def create_plot(self):
+        # Drawing happens in update() via ipywidgets.interact
+        pass
 
     def plot_interact(self):
         metric_widget = widgets.Dropdown(
@@ -1824,7 +1817,7 @@ class ShadowCarbonPrice:
 
             if metric == "specific_carbon_abatement_cost":
                 scc_year = scc_start * (
-                    (1 + self.float_inputs["social_discount_rate"])
+                    (1 + self.parameters["social_discount_rate"])
                     ** (year - self.prospective_years[0])
                 )
                 scc_list.append(scc_year)
@@ -1892,9 +1885,9 @@ class ShadowCarbonPrice:
 
 
 class AnnualMACCSimple(SingleScenarioPlot):
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
         try:
             self.ax2 = self.ax.twiny()
             self.create_plot_data()
@@ -2140,8 +2133,7 @@ class AnnualMACCSimple(SingleScenarioPlot):
         scc_year = None
         if metric == "specific_carbon_abatement_cost":
             scc_year = scc_start * (
-                (1 + self.float_inputs["social_discount_rate"])
-                ** (year - self.prospective_years[0])
+                (1 + self.parameters["social_discount_rate"]) ** (year - self.prospective_years[0])
             )
         elif metric == "generic_specific_carbon_abatement_cost":
             scc_year = self.df.loc[year, "exogenous_carbon_price_trajectory"]
@@ -2397,9 +2389,9 @@ class AnnualMACCSimple(SingleScenarioPlot):
 
 
 class ShadowCarbonPriceSimple(SingleScenarioPlot):
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
         try:
             self.create_plot_data()
             self.plot_interact()
@@ -2639,7 +2631,7 @@ class ShadowCarbonPriceSimple(SingleScenarioPlot):
 
             if metric == "specific_carbon_abatement_cost":
                 scc_year = scc_start * (
-                    (1 + self.float_inputs["social_discount_rate"])
+                    (1 + self.parameters["social_discount_rate"])
                     ** (year - self.prospective_years[0])
                 )
                 scc_list.append(scc_year)

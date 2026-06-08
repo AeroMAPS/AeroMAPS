@@ -1078,10 +1078,13 @@ class Fleet(object):
         if old_energy is None or recent_energy is None:
             raise ValueError(f"{category_name} reference aircraft energy_per_ask must be defined")
 
-        mean_energy_init_ask = (
-            self.parameters.energy_consumption_init[2019]
-            * getattr(self.parameters, energy_share_param)
-        ) / (self.parameters.ask_init[2019] * getattr(self.parameters, rpk_share_param))
+        if getattr(self.parameters, rpk_share_param) == 0.0:
+            mean_energy_init_ask = np.nan
+        else:
+            mean_energy_init_ask = (
+                self.parameters.energy_consumption_init[2019]
+                * getattr(self.parameters, energy_share_param)
+            ) / (self.parameters.ask_init[2019] * getattr(self.parameters, rpk_share_param))
 
         share_recent = (mean_energy_init_ask - old_energy) / (recent_energy - old_energy)
 

@@ -1089,10 +1089,12 @@ class PassengerAircraftTotalDoc(AeroMAPSModel):
         - doc_energy_tax_per_ask_<market>_<energy>: Tax DOC per ASK [€/ASK].
         - doc_energy_tax_per_ask_<market>_mean: Tax DOC per market [€/ASK].
         - All global means (no <market> suffix) of above categories [€/ASK].
+        - load_factor: Average load factor across passenger markets [%].
     Outputs
         - doc_total_per_ask_<market>_<energy>: Total DOC per ASK [€/ASK].
         - doc_total_per_ask_<market>_mean: Total DOC per market [€/ASK].
         - doc_total_per_ask_mean: Global total DOC [€/ASK].
+        - doc_net_energy_per_rpk_mean:Total energy-related direct operating cost (energy + carbon tax - subsidy + energy tax) per Revenue Passenger Kilometer [€/RPK].
     Notes
         - <market> is the MarketManager id (passenger markets).
         - <energy> is one of: dropin_fuel, hydrogen, electric.
@@ -1138,6 +1140,10 @@ class PassengerAircraftTotalDoc(AeroMAPSModel):
             self.input_names[f"{prefix}_mean"] = pd.Series([0.0])
         self.output_names["doc_total_per_ask_mean"] = pd.Series([0.0])
 
+        # add load facor for Ian's branch
+        self.input_names["load_factor"] = pd.Series([0.0])
+        self.output_names["doc_net_energy_per_rpk_mean"] = pd.Series([0.0])
+
     def compute(self, input_data) -> dict:
         """
         Aggregate DOC components into a total per (market, energy_type),
@@ -1179,6 +1185,20 @@ class PassengerAircraftTotalDoc(AeroMAPSModel):
             input_data["doc_energy_subsidy_per_ask_mean"],
             input_data["doc_energy_tax_per_ask_mean"],
         )
+
+        # All energy-related costs per ASK (energy + carbon tax - subsidy + energy tax)
+        doc_net_energy_per_ask_mean = (
+            input_data["doc_energy_per_ask_mean"]
+            + input_data["doc_energy_carbon_tax_per_ask_mean"]
+            - input_data["doc_energy_subsidy_per_ask_mean"]
+            + input_data["doc_energy_tax_per_ask_mean"]
+        )
+
+        # Convert to per-RPK using load factor: RPK = ASK * load_factor / 100
+        doc_net_energy_per_rpk_mean = (
+            doc_net_energy_per_ask_mean * 100 / input_data["load_factor"]
+        ).where(input_data["load_factor"] > 0, 0)
+        self.df.loc[:, "doc_net_energy_per_rpk_mean"] = doc_net_energy_per_rpk_mean
 
         self._store_outputs(output_data)
         return output_data

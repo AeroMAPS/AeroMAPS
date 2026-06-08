@@ -41,6 +41,7 @@ from aeromaps.plots.multi_scenario.costs import (
     DOCComparisonPlot,
     DOCEnergyComparisonPlot,
     AirfareComparisonPlot,
+    DocNetEnergyPerRPKComparisonPlot,
 )
 
 # Dictionary of available multi-scenario plots
@@ -83,4 +84,5 @@ available_multi_plots = {
     "doc_comparison": DOCComparisonPlot,
     "doc_energy_comparison": DOCEnergyComparisonPlot,
     "airfare_comparison": AirfareComparisonPlot,
+    "doc_net_energy_per_rpk_comparison": DocNetEnergyPerRPKComparisonPlot,
 }

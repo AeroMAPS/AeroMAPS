@@ -138,8 +138,11 @@ class PassengerAircraftEfficiencySimpleShares(AeroMAPSModel):
 
             dropin_col = f"energy_per_ask_without_operations_{mid}_dropin_fuel"
 
-            self.df.loc[idx_hist, dropin_col] = (
-                energy_consumption_per_ask_init.loc[idx_hist] * energy_share / rpk_share
+            # TODO: improve division by zero handling
+            self.df.loc[idx_hist, dropin_col] = np.where(
+                rpk_share != 0,
+                energy_consumption_per_ask_init.loc[idx_hist] * energy_share / rpk_share,
+                np.nan,
             )
 
             gain = aeromaps_interpolation_function(
@@ -473,10 +476,13 @@ class PassengerAircraftEfficiencyComplex(AeroMAPSModel):
             # idx_hist = pd.Index(range(self.historic_start_year, self.prospection_start_year))
             idx_proj = slice(self.prospection_start_year, self.end_year + 1)
 
-            for k in range(self.historic_start_year, self.prospection_start_year):
-                self.df.loc[k, energy_per_ask_without_operations_dropin_fuel_col] = (
-                    energy_consumption_per_ask_init.loc[k] * energy_share / rpk_share
-                )
+            years_hist = np.arange(self.historic_start_year, self.prospection_start_year)
+            # TODO: improve division by zero handling
+            self.df.loc[years_hist, energy_per_ask_without_operations_dropin_fuel_col] = np.where(
+                rpk_share != 0,
+                energy_consumption_per_ask_init.loc[years_hist] * energy_share / rpk_share,
+                np.nan,
+            )
 
             fleet_energy_per_ask_without_operations_dropin_fuel = self.fleet_model.df[
                 f"{market_name}:energy_consumption:dropin_fuel"

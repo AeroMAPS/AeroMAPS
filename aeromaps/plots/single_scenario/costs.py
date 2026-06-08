@@ -22,9 +22,9 @@ class ScenarioEnergyExpensesComparison(SingleScenarioPlot):
         "carbon_tax_full_kero",
     ]
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_2_x, plot_2_y)
@@ -168,9 +168,9 @@ class DiscountEffect(SingleScenarioPlot):
         "discounted_energy_expenses",
     ]
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
@@ -222,9 +222,9 @@ class DOCEvolutionBreakdown(SingleScenarioPlot):
         "doc_carbon_tax_lowering_offset_per_ask_mean",
     ]
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
@@ -376,7 +376,6 @@ class DOCEvolutionBreakdown(SingleScenarioPlot):
         # self.ax.set_ylim(0,)
 
 
-# Energy carriers carried by the DOC model (see direct_operating_costs.py).
 _DOC_ENERGY_TYPES = [
     ("dropin_fuel", "D.in"),
     ("hydrogen", "H2"),
@@ -385,7 +384,7 @@ _DOC_ENERGY_TYPES = [
 
 
 class DOCEvolutionCategory(SingleScenarioPlot):
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         passenger_markets = list(process.markets.get(traffic_type="passenger"))
         required = [
             f"doc_total_per_ask_{m.id}_{et}"
@@ -395,7 +394,7 @@ class DOCEvolutionCategory(SingleScenarioPlot):
         required.append("doc_total_per_ask_mean")
         self._passenger_markets = passenger_markets
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize, required_outputs=required)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_2_x, plot_2_y)
@@ -457,9 +456,9 @@ class AirfareEvolutionBreakdown(SingleScenarioPlot):
         "operational_profit_per_ask",
     ]
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_2_x, plot_2_y)

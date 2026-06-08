@@ -7,123 +7,65 @@ class TotalERFComparisonPlot(MultiScenarioPlot):
     """Compare total effective radiative forcing (ERF) across scenarios."""
 
     required_outputs = ["total_erf"]
-
-    def _get_default_figsize(self):
-        return (12, 6)
+    column_name = "total_erf"
+    data_source = "df_climate"
 
     def create_plot(self):
-        for scenario_name, data in self.scenario_data.items():
-            style = self.get_scenario_style(scenario_name)
-            self.ax.plot(
-                data["years"],
-                data["df_climate"].loc[data["years"], "total_erf"],
-                label=scenario_name,
-                color=style["color"],
-                linestyle=style["linestyle"],
-                linewidth=2,
-            )
-
+        self._plot_grouped_series()
         self.ax.set_title("Total Effective Radiative Forcing Comparison")
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Total ERF [mW/m²]")
         self.ax.legend(loc="best")
         self.ax.grid(True, alpha=0.3)
 
-    def _update_plot_elements(self):
-        self.ax.clear()
-        self.create_plot()
-
 
 class TemperatureIncreaseComparisonPlot(MultiScenarioPlot):
     """Compare temperature increase from aviation across scenarios."""
 
     required_outputs = ["temperature_increase_from_aviation"]
-
-    def _get_default_figsize(self):
-        return (12, 6)
+    column_name = "temperature_increase_from_aviation"
+    data_source = "df_climate"
+    y_scale = 1000  # convert from K to mK
 
     def create_plot(self):
-        for scenario_name, data in self.scenario_data.items():
-            style = self.get_scenario_style(scenario_name)
-            self.ax.plot(
-                data["years"],
-                data["df_climate"].loc[data["years"], "temperature_increase_from_aviation"] * 1000,
-                label=scenario_name,
-                color=style["color"],
-                linestyle=style["linestyle"],
-                linewidth=2,
-            )
-
+        self._plot_grouped_series()
         self.ax.set_title("Temperature Increase from Aviation Comparison")
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Temperature increase [mK]")
         self.ax.legend(loc="best")
         self.ax.grid(True, alpha=0.3)
 
-    def _update_plot_elements(self):
-        self.ax.clear()
-        self.create_plot()
-
 
 class CO2ERFComparisonPlot(MultiScenarioPlot):
     """Compare CO2 effective radiative forcing across scenarios."""
 
     required_outputs = ["co2_erf"]
-
-    def _get_default_figsize(self):
-        return (12, 6)
+    column_name = "co2_erf"
+    data_source = "df_climate"
 
     def create_plot(self):
-        for scenario_name, data in self.scenario_data.items():
-            style = self.get_scenario_style(scenario_name)
-            self.ax.plot(
-                data["years"],
-                data["df_climate"].loc[data["years"], "co2_erf"],
-                label=scenario_name,
-                color=style["color"],
-                linestyle=style["linestyle"],
-                linewidth=2,
-            )
-
+        self._plot_grouped_series()
         self.ax.set_title("CO₂ Effective Radiative Forcing Comparison")
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("CO₂ ERF [mW/m²]")
         self.ax.legend(loc="best")
         self.ax.grid(True, alpha=0.3)
 
-    def _update_plot_elements(self):
-        self.ax.clear()
-        self.create_plot()
-
 
 class NonCO2ERFComparisonPlot(MultiScenarioPlot):
-    """Compare non-CO2 effective radiative forcing across scenarios (total minus CO2)."""
+    """Compare non-CO2 ERF across scenarios (total minus CO2)."""
 
     required_outputs = ["total_erf", "co2_erf"]
 
-    def _get_default_figsize(self):
-        return (12, 6)
+    def _scenario_xy(self, scenario_name, data):
+        df = data["df_climate"]
+        x = data["years"]
+        return x, df.loc[x, "total_erf"] - df.loc[x, "co2_erf"]
 
     def create_plot(self):
-        for scenario_name, data in self.scenario_data.items():
-            style = self.get_scenario_style(scenario_name)
-            df = data["df_climate"]
-            years = data["years"]
-            self.ax.plot(
-                years,
-                df.loc[years, "total_erf"] - df.loc[years, "co2_erf"],
-                label=scenario_name,
-                color=style["color"],
-                linestyle=style["linestyle"],
-                linewidth=2,
-            )
-
+        self._plot_grouped_series()
         self.ax.set_title("Non-CO₂ Effective Radiative Forcing Comparison")
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Non-CO₂ ERF [mW/m²]")
         self.ax.legend(loc="best")
         self.ax.grid(True, alpha=0.3)
-
-    def _update_plot_elements(self):
-        self.ax.clear()
-        self.create_plot()
