@@ -2401,19 +2401,19 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#aeromaps.models.air_transport.air_traffic.price_elasticity.RPKWithElasticity" class="md-nav__link">
+  <a href="#aeromaps.models.air_transport.air_traffic.price_elasticity.RPKPriceElasticity" class="md-nav__link">
     <span class="md-ellipsis">
       
-        RPKWithElasticity
+        RPKPriceElasticity
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="RPKWithElasticity">
+    <nav class="md-nav" aria-label="RPKPriceElasticity">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#aeromaps.models.air_transport.air_traffic.price_elasticity.RPKWithElasticity.compute" class="md-nav__link">
+  <a href="#aeromaps.models.air_transport.air_traffic.price_elasticity.RPKPriceElasticity.compute" class="md-nav__link">
     <span class="md-ellipsis">
       
         compute
@@ -5787,12 +5787,12 @@
 
 
 
-<h2 id="aeromaps.models.air_transport.air_traffic.price_elasticity.RPKWithElasticity" class="doc doc-heading">
-            <span class="doc doc-object-name doc-class-name">RPKWithElasticity</span>
+<h2 id="aeromaps.models.air_transport.air_traffic.price_elasticity.RPKPriceElasticity" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">RPKPriceElasticity</span>
 
 
-<a href="#aeromaps.models.air_transport.air_traffic.price_elasticity.RPKWithElasticity" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">RPKWithElasticity</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;rpk_with_elasticity&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<a href="#aeromaps.models.air_transport.air_traffic.price_elasticity.RPKPriceElasticity" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">RPKPriceElasticity</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;rpk_with_elasticity&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -5864,11 +5864,11 @@
 <div class="doc doc-object doc-function">
 
 
-<h3 id="aeromaps.models.air_transport.air_traffic.price_elasticity.RPKWithElasticity.compute" class="doc doc-heading">
+<h3 id="aeromaps.models.air_transport.air_traffic.price_elasticity.RPKPriceElasticity.compute" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">compute</span>
 
 
-<a href="#aeromaps.models.air_transport.air_traffic.price_elasticity.RPKWithElasticity.compute" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#aeromaps.models.air_transport.air_traffic.price_elasticity.RPKPriceElasticity.compute" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span><span class="n">rpk_init</span><span class="p">,</span> <span class="n">short_range_rpk_share_2019</span><span class="p">,</span> <span class="n">medium_range_rpk_share_2019</span><span class="p">,</span> <span class="n">long_range_rpk_share_2019</span><span class="p">,</span> <span class="n">covid_start_year</span><span class="p">,</span> <span class="n">covid_rpk_drop_start_year</span><span class="p">,</span> <span class="n">covid_end_year_passenger</span><span class="p">,</span> <span class="n">covid_end_year_reference_rpk_ratio</span><span class="p">,</span> <span class="n">cagr_passenger_short_range_reference_periods</span><span class="p">,</span> <span class="n">cagr_passenger_short_range_reference_periods_values</span><span class="p">,</span> <span class="n">cagr_passenger_medium_range_reference_periods</span><span class="p">,</span> <span class="n">cagr_passenger_medium_range_reference_periods_values</span><span class="p">,</span> <span class="n">cagr_passenger_long_range_reference_periods</span><span class="p">,</span> <span class="n">cagr_passenger_long_range_reference_periods_values</span><span class="p">,</span> <span class="n">rpk_short_range_measures_impact</span><span class="p">,</span> <span class="n">rpk_medium_range_measures_impact</span><span class="p">,</span> <span class="n">rpk_long_range_measures_impact</span><span class="p">,</span> <span class="n">airfare_per_rpk</span><span class="p">,</span> <span class="n">price_elasticity</span><span class="p">)</span>
 </code></pre></div>
 
@@ -6411,17 +6411,7 @@
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/models/air_transport/air_traffic/price_elasticity.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 35</span>
-<span class="normal"> 36</span>
-<span class="normal"> 37</span>
-<span class="normal"> 38</span>
-<span class="normal"> 39</span>
-<span class="normal"> 40</span>
-<span class="normal"> 41</span>
-<span class="normal"> 42</span>
-<span class="normal"> 43</span>
-<span class="normal"> 44</span>
-<span class="normal"> 45</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 45</span>
 <span class="normal"> 46</span>
 <span class="normal"> 47</span>
 <span class="normal"> 48</span>
@@ -6800,7 +6790,17 @@
 <span class="normal">421</span>
 <span class="normal">422</span>
 <span class="normal">423</span>
-<span class="normal">424</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span>
+<span class="normal">424</span>
+<span class="normal">425</span>
+<span class="normal">426</span>
+<span class="normal">427</span>
+<span class="normal">428</span>
+<span class="normal">429</span>
+<span class="normal">430</span>
+<span class="normal">431</span>
+<span class="normal">432</span>
+<span class="normal">433</span>
+<span class="normal">434</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">rpk_init</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
     <span class="n">short_range_rpk_share_2019</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
