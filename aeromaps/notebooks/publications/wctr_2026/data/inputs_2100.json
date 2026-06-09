@@ -2,8 +2,6 @@
   "end_year": 2100,
   "historic_start_year": 2000,
   "prospection_start_year": 2020,
-  "covid_end_year_passenger": 2024,
-  "covid_end_year_freight": 2022,
   "rpk_init": [
         3129400000000.0,
         3038600000000.0,
