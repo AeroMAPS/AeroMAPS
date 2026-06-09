@@ -232,8 +232,6 @@ def compute_partitioning(
     other_float_data["freight_energy_share_2019"] = freight_energy_share_2019
     other_float_data["commercial_aviation_coefficient"] = 1
 
-    print(market_rpk_shares)
-
     other_years = list(
         range(world_data["historic_start_year"], world_data["prospection_start_year"])
     )
