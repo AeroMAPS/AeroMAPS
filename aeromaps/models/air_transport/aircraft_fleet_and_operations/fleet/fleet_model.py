@@ -1034,16 +1034,34 @@ class Fleet(object):
             mid = market.id
             cat_name = market.name
 
-            # Calibration subcategory is declared in fleet.yaml via
-            # ``calibration_subcategory: <id>``.
-            sub_id = self._calibration_subcategory_for(mid)
-            if sub_id is None:
-                continue
-            sub_name = self._subcategory_display_name(sub_id)
-            if sub_name is None:
+            category = self.categories.get(cat_name)
+            if category is None:
                 continue
 
-            subcat = self._get_subcategory(cat_name, sub_name)
+            # Calibration subcategory is normally declared in fleet.yaml via
+            # ``calibration_subcategory: <id>``. When it is omitted, fall back to the
+            # category's sole subcategory (the choice is then unambiguous) instead of
+            # silently skipping calibration — skipping leaves the reference aircraft on
+            # their default entry-into-service years and makes the fleet look wrongly
+            # efficient. Only a genuinely ambiguous category (>1 subcategory, no field)
+            # is skipped, and loudly.
+            sub_id = self._calibration_subcategory_for(mid)
+            subcat = None
+            if sub_id is not None:
+                sub_name = self._subcategory_display_name(sub_id)
+                if sub_name is not None:
+                    subcat = self._get_subcategory(cat_name, sub_name)
+            else:
+                subcats = list(category.subcategories.values())
+                if len(subcats) == 1:
+                    subcat = subcats[0]
+                elif len(subcats) > 1:
+                    warnings.warn(
+                        f"Warning Message - Fleet Model: category '{cat_name}' has multiple "
+                        f"subcategories but no 'calibration_subcategory' declared in fleet.yaml — "
+                        f"reference-aircraft calibration is skipped for this market."
+                    )
+
             if subcat is None:
                 continue
 
