@@ -35,7 +35,7 @@ categories:
     subcategories:
       - sr_conventional_nb
 
-  - id: medium_range
+  - market_served: medium_range
     parameters:
       life: 25
       limit: 2
@@ -43,7 +43,7 @@ categories:
     subcategories:
       - mr_conventional_nb
 
-  - id: long_range
+  - market_served: long_range
     parameters:
       life: 25
       limit: 2
