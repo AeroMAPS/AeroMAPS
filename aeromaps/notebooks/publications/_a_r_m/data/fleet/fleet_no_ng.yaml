@@ -24,6 +24,7 @@ subcategories:
 categories:
   - market_served: short_range
     name: "Short Range"
+    calibration_subcategory: sr_conventional_nb
     parameters:
       life: 25
       limit: 2
@@ -32,6 +33,7 @@ categories:
 
   - market_served: medium_range
     name: "Medium Range"
+    calibration_subcategory: mr_conventional_nb
     parameters:
       life: 25
       limit: 2
@@ -40,6 +42,7 @@ categories:
 
   - market_served: long_range
     name: "Long Range"
+    calibration_subcategory: lr_conventional_wb
     parameters:
       life: 25
       limit: 2
