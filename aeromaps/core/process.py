@@ -106,6 +106,42 @@ DEFAULT_CONFIG_PATH = os.path.join(CURRENT_DIR, "..", "resources", "data", "conf
 # Base directory for resources/data (used to resolve relative paths in config.yaml)
 DEFAULT_RESOURCES_DATA_DIR = os.path.join(CURRENT_DIR, "..", "resources", "data")
 
+# TODO(flex-start-year): delete this guard once downstream configs are migrated
+# and a release cycle has passed (target: remove after 2026-12, or once no
+# in-repo config and no known external scenario still carries a `_2019` key).
+#
+# When prospection_start_year became flexible, parameters whose `_2019` suffix
+# encoded "last historical year" (or a fixed CORSIA / carbon-budget reference)
+# were renamed with NO backward-compat alias. The loader blindly setattrs any
+# key, so a stale `_2019` key would silently resolve to a default (share -> 0%,
+# NaN cascade) — wrong numbers, no crash. This guard turns that into a loud,
+# self-documenting error. It is NOT a general unknown-key validator: it matches
+# only the specific renamed patterns below, none of which any current internal
+# code emits, so scanning parameters.__dict__ cannot false-positive.
+RENAMED_INPUTS = {
+    "world_co2_emissions_2019": "world_co2_emissions_carbon_budget_reference_year",
+    "carbon_offset_baseline_level_vs_2019_reference_periods": "carbon_offset_baseline_level_vs_corsia_reference_year_reference_periods",
+    "carbon_offset_baseline_level_vs_2019_reference_periods_values": "carbon_offset_baseline_level_vs_corsia_reference_year_reference_periods_values",
+    "gdp_per_capita_2019": "gdp_per_capita_last_historical_year",
+}
+# Matched against the tail of any (possibly market-prefixed) flattened key. The
+# single `_share_2019` rule covers every share family: <mid>_rpk_share_2019,
+# <mid>_energy_share_2019, <mid>_rtk_share_2019, freight_energy_share_2019 and
+# the short_range_*_share_2019 interpolation anchors.
+RENAMED_INPUT_SUFFIXES = {
+    "_share_2019": "_share_last_historical_year",
+}
+
+
+def _renamed_input_replacement(key: str):
+    """Return the new name for a stale renamed input key, or None if not renamed."""
+    if key in RENAMED_INPUTS:
+        return RENAMED_INPUTS[key]
+    for old_suffix, new_suffix in RENAMED_INPUT_SUFFIXES.items():
+        if key.endswith(old_suffix):
+            return key[: -len(old_suffix)] + new_suffix
+    return None
+
 
 class AeroMAPSProcess(object):
     """High-level AeroMAPS process driver.
@@ -408,6 +444,11 @@ class AeroMAPSProcess(object):
         self._initialize_lca_model()
         self._initialize_generic_energy()
         self._initialize_vector_inputs()
+
+        # Fail loudly on stale `_2019` config keys (renamed when prospection_start_year
+        # became flexible). Runs after every user surface (JSON inputs, market YAML
+        # leaves, vector/partitioning inputs) has been applied to self.parameters.
+        self._check_renamed_inputs()
 
         self.disciplines = []
         self.data = {}
@@ -1655,6 +1696,23 @@ class AeroMAPSProcess(object):
             range(self.parameters.prospection_start_year - 1, self.parameters.end_year + 1)
         )
 
+    def _check_renamed_inputs(self):
+        """Raise a clear error if a user config carries a renamed ``_2019`` key.
+
+        See ``RENAMED_INPUTS`` / ``RENAMED_INPUT_SUFFIXES``. Scans the applied
+        parameter names (every user surface funnels into ``self.parameters``);
+        no internal code emits these old patterns, so this is rename-breakage
+        detection only, never a general typo validator.
+        """
+        for key in list(self.parameters.__dict__):
+            new_name = _renamed_input_replacement(key)
+            if new_name is not None:
+                raise ValueError(
+                    f"input '{key}' was renamed to '{new_name}' "
+                    "(prospection_start_year is now flexible). "
+                    "Update your config — no backward-compat alias is provided."
+                )
+
     def _initialize_inputs(self, use_defaults=True):
         """Initialize model parameters from JSON and vector inputs.
 
@@ -1786,6 +1844,13 @@ class AeroMAPSProcess(object):
 
             for param_name, value in other_vector_data.items():
                 if isinstance(value, list) and years_index is not None:
+                    if len(value) != len(years_index):
+                        raise ValueError(
+                            f"Vector input '{param_name}' has {len(value)} values but its "
+                            f"'years' index has {len(years_index)} entries. "
+                            f"The value list and the declared 'years' array must be the "
+                            f"same length."
+                        )
                     new_series = pd.Series(value, index=years_index)
                     existing = getattr(self.parameters, param_name, None)
                     if isinstance(existing, pd.Series):

@@ -102,6 +102,20 @@ def _dict_from_parameters_dict(parameters_dict) -> dict:
             new_index = range(
                 parameters_dict["historic_start_year"], parameters_dict["prospection_start_year"]
             )
+            expected_len = (
+                parameters_dict["prospection_start_year"] - parameters_dict["historic_start_year"]
+            )
+            if len(value) != expected_len:
+                raise ValueError(
+                    f"Historic input '{key}' has {len(value)} values but "
+                    f"{expected_len} are expected "
+                    f"(prospection_start_year - historic_start_year = "
+                    f"{parameters_dict['prospection_start_year']} - "
+                    f"{parameters_dict['historic_start_year']}). "
+                    f"Extend or trim the '{key}' vector to cover exactly the "
+                    f"historic years [{parameters_dict['historic_start_year']}, "
+                    f"{parameters_dict['prospection_start_year'] - 1}]."
+                )
             parameters_dict[key] = pd.Series(value, index=new_index)
 
     return parameters_dict
