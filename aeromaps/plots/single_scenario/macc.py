@@ -577,10 +577,10 @@ class AnnualMACC(SingleScenarioPlot):
         self.ax2.xaxis.set_ticks_position("bottom")
 
         self.ax2.set_xlim(
-            self.df.loc[year, "co2_emissions_2019technology"]
+            self.df.loc[year, "co2_emissions_last_historical_year_technology"]
             - self.ax.get_xlim()[0]
             - cumwidths_effective_neg[-1],
-            self.df.loc[year, "co2_emissions_2019technology"]
+            self.df.loc[year, "co2_emissions_last_historical_year_technology"]
             - self.ax.get_xlim()[1]
             - cumwidths_effective_neg[-1],
         )
@@ -1137,11 +1137,17 @@ class CumulativeMACC(SingleScenarioPlot):
         self.ax2.xaxis.set_ticks_position("bottom")
 
         self.ax2.set_xlim(
-            self.df.loc[self.prospective_years[-1], "cumulative_co2_emissions_2019technology"]
+            self.df.loc[
+                self.prospective_years[-1],
+                "cumulative_co2_emissions_last_historical_year_technology",
+            ]
             * 1000
             - self.ax.get_xlim()[0]
             - cumwidths_effective_neg[-1],
-            self.df.loc[self.prospective_years[-1], "cumulative_co2_emissions_2019technology"]
+            self.df.loc[
+                self.prospective_years[-1],
+                "cumulative_co2_emissions_last_historical_year_technology",
+            ]
             * 1000
             - self.ax.get_xlim()[1]
             - cumwidths_effective_neg[-1],
@@ -2376,10 +2382,10 @@ class AnnualMACCSimple(SingleScenarioPlot):
         self.ax2.xaxis.set_ticks_position("bottom")
 
         self.ax2.set_xlim(
-            self.df.loc[year, "co2_emissions_2019technology"]
+            self.df.loc[year, "co2_emissions_last_historical_year_technology"]
             - self.ax.get_xlim()[0]
             - cumwidths_effective_neg[-1],
-            self.df.loc[year, "co2_emissions_2019technology"]
+            self.df.loc[year, "co2_emissions_last_historical_year_technology"]
             - self.ax.get_xlim()[1]
             - cumwidths_effective_neg[-1],
         )

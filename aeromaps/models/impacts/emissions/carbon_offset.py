@@ -32,8 +32,9 @@ class LevelCarbonOffset(AeroMAPSModel):
     def compute(
         self,
         co2_emissions: pd.Series,
-        carbon_offset_baseline_level_vs_2019_reference_periods: list,
-        carbon_offset_baseline_level_vs_2019_reference_periods_values: list,
+        corsia_reference_year: int,
+        carbon_offset_baseline_level_vs_corsia_reference_year_reference_periods: list,
+        carbon_offset_baseline_level_vs_corsia_reference_year_reference_periods_values: list,
         carbon_offset_baseline_share_total_emissions_reference_periods: list,
         carbon_offset_baseline_share_total_emissions_reference_periods_values: list,
     ) -> Tuple[pd.Series, pd.Series, pd.Series]:
@@ -44,9 +45,13 @@ class LevelCarbonOffset(AeroMAPSModel):
         ----------
         co2_emissions
             CO2 emissions trajectory [MtCO2].
-        carbon_offset_baseline_level_vs_2019_reference_periods
+        corsia_reference_year
+            Fixed regulatory baseline year for CORSIA offsetting (default 2019).
+            The offsetting baseline is measured against this year's emissions,
+            independent of prospection_start_year.
+        carbon_offset_baseline_level_vs_corsia_reference_year_reference_periods
             Reference periods for the level of CO2 emissions relative to 2019 from which higher emissions are offset [years].
-        carbon_offset_baseline_level_vs_2019_reference_periods_values
+        carbon_offset_baseline_level_vs_corsia_reference_year_reference_periods_values
             Level of CO2 emissions relative to 2019 from which higher emissions are offset for the reference periods [%].
         carbon_offset_baseline_share_total_emissions_reference_periods
             Reference periods for the share of total CO2 emissions on which offset is applied [years].
@@ -55,16 +60,16 @@ class LevelCarbonOffset(AeroMAPSModel):
 
         Returns
         -------
-        carbon_offset_baseline_level_vs_2019
+        carbon_offset_baseline_level_vs_corsia_reference_year
             Level of CO2 emissions relative to 2019 from which higher emissions are offset [%].
         level_carbon_offset
             Annual carbon offset due to offsetting for a given level of emissions [MtCO2].
 
         """
-        carbon_offset_baseline_level_vs_2019 = aeromaps_leveling_function(
+        carbon_offset_baseline_level_vs_corsia_reference_year = aeromaps_leveling_function(
             self,
-            carbon_offset_baseline_level_vs_2019_reference_periods,
-            carbon_offset_baseline_level_vs_2019_reference_periods_values,
+            carbon_offset_baseline_level_vs_corsia_reference_year_reference_periods,
+            carbon_offset_baseline_level_vs_corsia_reference_year_reference_periods_values,
             model_name=self.name,
         )
 
@@ -75,8 +80,8 @@ class LevelCarbonOffset(AeroMAPSModel):
             model_name=self.name,
         )
 
-        self.df.loc[:, "carbon_offset_baseline_level_vs_2019"] = (
-            carbon_offset_baseline_level_vs_2019
+        self.df.loc[:, "carbon_offset_baseline_level_vs_corsia_reference_year"] = (
+            carbon_offset_baseline_level_vs_corsia_reference_year
         )
         self.df.loc[:, "carbon_offset_baseline_share_total_emissions"] = (
             carbon_offset_baseline_share_total_emissions
@@ -87,9 +92,10 @@ class LevelCarbonOffset(AeroMAPSModel):
         ] = 0.0
 
         baseline_level = (
-            co2_emissions.loc[self.last_historical_year]
+            co2_emissions.loc[corsia_reference_year]
             * self.df.loc[
-                self.prospection_start_year : self.end_year, "carbon_offset_baseline_level_vs_2019"
+                self.prospection_start_year : self.end_year,
+                "carbon_offset_baseline_level_vs_corsia_reference_year",
             ]
             / 100
         )
@@ -111,7 +117,7 @@ class LevelCarbonOffset(AeroMAPSModel):
         level_carbon_offset = self.df["level_carbon_offset"]
 
         return (
-            carbon_offset_baseline_level_vs_2019,
+            carbon_offset_baseline_level_vs_corsia_reference_year,
             carbon_offset_baseline_share_total_emissions,
             level_carbon_offset,
         )

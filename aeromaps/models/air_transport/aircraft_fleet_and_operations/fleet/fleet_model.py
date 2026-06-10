@@ -1065,8 +1065,8 @@ class Fleet(object):
             if subcat is None:
                 continue
 
-            energy_share_param = f"{mid}_energy_share_2019"
-            rpk_share_param = f"{mid}_rpk_share_2019"
+            energy_share_param = f"{mid}_energy_share_last_historical_year"
+            rpk_share_param = f"{mid}_rpk_share_last_historical_year"
             self._run_calibration_for_subcat(subcat, cat_name, energy_share_param, rpk_share_param)
 
     def _run_calibration_for_subcat(
@@ -1085,11 +1085,11 @@ class Fleet(object):
         category_name
             Human-readable market / category name (used in warning messages).
         energy_share_param
-            Attribute name on ``self.parameters`` for the 2019 energy share
-            (e.g. ``"short_range_energy_share_2019"``).
+            Attribute name on ``self.parameters`` for the last_historical_year energy share
+            (e.g. ``"short_range_energy_share_last_historical_year"``).
         rpk_share_param
-            Attribute name on ``self.parameters`` for the 2019 RPK share
-            (e.g. ``"short_range_rpk_share_2019"``).
+            Attribute name on ``self.parameters`` for the last_historical_year RPK share
+            (e.g. ``"short_range_rpk_share_last_historical_year"``).
         """
         old_energy = subcat.old_reference_aircraft.energy_per_ask
         recent_energy = subcat.recent_reference_aircraft.energy_per_ask

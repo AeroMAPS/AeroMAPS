@@ -351,7 +351,8 @@ class CumulativeCO2Emissions(AeroMAPSModel):
     def compute(
         self,
         co2_emissions: pd.Series,
-    ) -> pd.Series:
+        carbon_budget_reference_year: int,
+    ) -> Tuple[pd.Series, pd.Series]:
         """
         Execute the computation of cumulative CO2 emissions.
 
@@ -359,20 +360,39 @@ class CumulativeCO2Emissions(AeroMAPSModel):
         ----------
         co2_emissions
             Annual CO2 emissions [MtCO2].
+        carbon_budget_reference_year
+            Fixed reference year from which the budget-comparable cumulative is
+            summed (default 2019), matching the aviation carbon budget framing.
 
         Returns
         -------
         cumulative_co2_emissions
-            Cumulative CO2 emissions [GtCO2].
+            Cumulative CO2 emissions over the prospective window
+            (prospection_start_year -> end_year) [GtCO2].
+        cumulative_co2_emissions_from_carbon_budget_reference_year
+            Cumulative CO2 emissions summed from carbon_budget_reference_year ->
+            end_year [GtCO2]. Includes observed historic emissions from the
+            reference year onward, so it is directly comparable to the aviation
+            carbon budget regardless of prospection_start_year.
 
         """
         cumulative_co2_emissions = (
             co2_emissions.loc[self.prospection_start_year : self.end_year] / 1000
         ).cumsum()
 
-        self.df["cumulative_co2_emissions"] = cumulative_co2_emissions
+        cumulative_co2_emissions_from_carbon_budget_reference_year = (
+            co2_emissions.loc[carbon_budget_reference_year : self.end_year] / 1000
+        ).cumsum()
 
-        return cumulative_co2_emissions
+        self.df["cumulative_co2_emissions"] = cumulative_co2_emissions
+        self.df["cumulative_co2_emissions_from_carbon_budget_reference_year"] = (
+            cumulative_co2_emissions_from_carbon_budget_reference_year
+        )
+
+        return (
+            cumulative_co2_emissions,
+            cumulative_co2_emissions_from_carbon_budget_reference_year,
+        )
 
 
 class DetailedCo2Emissions(AeroMAPSModel):
@@ -430,10 +450,10 @@ class DetailedCo2Emissions(AeroMAPSModel):
 
         Returns
         -------
-        co2_emissions_2019technology_baseline3
-            CO2 emissions from all commercial air transport based on 2019 technological level with a baseline air traffic growth [MtCO2].
-        co2_emissions_2019technology
-            CO2 emissions from all commercial air transport based on 2019 technological level [MtCO2].
+        co2_emissions_last_historical_year_technology_baseline3
+            CO2 emissions from all commercial air transport based on last-historical-year technological level with a baseline air traffic growth [MtCO2].
+        co2_emissions_last_historical_year_technology
+            CO2 emissions from all commercial air transport based on last-historical-year technological level [MtCO2].
         co2_emissions_including_aircraft_efficiency
             CO2 emissions from all commercial air transport including aircraft efficiency improvements [MtCO2].
         co2_emissions_including_operations
@@ -480,7 +500,7 @@ class DetailedCo2Emissions(AeroMAPSModel):
             self.prospection_start_year - 1
         ]
 
-        co2_emissions_2019technology_baseline3 = (
+        co2_emissions_last_historical_year_technology_baseline3 = (
             rpk_reference_local
             * energy_per_ask_mean_without_operations_start_year_local
             * energy_per_ask_mean_start_year_local
@@ -497,7 +517,7 @@ class DetailedCo2Emissions(AeroMAPSModel):
             * 10 ** (-12)
         )
 
-        co2_emissions_2019technology = (
+        co2_emissions_last_historical_year_technology = (
             rpk_local
             * energy_per_ask_mean_without_operations_start_year_local
             * energy_per_ask_mean_start_year_local
@@ -582,10 +602,12 @@ class DetailedCo2Emissions(AeroMAPSModel):
             * 10 ** (-12)
         )
 
-        self.df.loc[years, "co2_emissions_2019technology_baseline3"] = (
-            co2_emissions_2019technology_baseline3
+        self.df.loc[years, "co2_emissions_last_historical_year_technology_baseline3"] = (
+            co2_emissions_last_historical_year_technology_baseline3
         )
-        self.df.loc[years, "co2_emissions_2019technology"] = co2_emissions_2019technology
+        self.df.loc[years, "co2_emissions_last_historical_year_technology"] = (
+            co2_emissions_last_historical_year_technology
+        )
         self.df.loc[years, "co2_emissions_including_aircraft_efficiency"] = (
             co2_emissions_including_aircraft_efficiency
         )
@@ -598,8 +620,8 @@ class DetailedCo2Emissions(AeroMAPSModel):
         self.df.loc[years, "co2_emissions_including_energy"] = co2_emissions_including_energy
 
         return (
-            co2_emissions_2019technology_baseline3,
-            co2_emissions_2019technology,
+            co2_emissions_last_historical_year_technology_baseline3,
+            co2_emissions_last_historical_year_technology,
             co2_emissions_including_aircraft_efficiency,
             co2_emissions_including_operations,
             co2_emissions_including_load_factor,
@@ -622,8 +644,8 @@ class DetailedCumulativeCO2Emissions(AeroMAPSModel):
 
     def compute(
         self,
-        co2_emissions_2019technology_baseline3: pd.Series,
-        co2_emissions_2019technology: pd.Series,
+        co2_emissions_last_historical_year_technology_baseline3: pd.Series,
+        co2_emissions_last_historical_year_technology: pd.Series,
         co2_emissions_including_aircraft_efficiency: pd.Series,
         co2_emissions_including_operations: pd.Series,
         co2_emissions_including_load_factor: pd.Series,
@@ -633,10 +655,10 @@ class DetailedCumulativeCO2Emissions(AeroMAPSModel):
         Execute the computation of detailed cumulative CO2 emissions breakdown.
         Parameters
         ----------
-        co2_emissions_2019technology_baseline3
-            CO2 emissions from all commercial air transport based on 2019 technological level with a baseline air traffic growth [MtCO2].
-        co2_emissions_2019technology
-            CO2 emissions from all commercial air transport based on 2019 technological level [MtCO2].
+        co2_emissions_last_historical_year_technology_baseline3
+            CO2 emissions from all commercial air transport based on last-historical-year technological level with a baseline air traffic growth [MtCO2].
+        co2_emissions_last_historical_year_technology
+            CO2 emissions from all commercial air transport based on last-historical-year technological level [MtCO2].
         co2_emissions_including_aircraft_efficiency
             CO2 emissions from all commercial air transport including aircraft efficiency improvements [MtCO2].
         co2_emissions_including_operations
@@ -648,10 +670,10 @@ class DetailedCumulativeCO2Emissions(AeroMAPSModel):
 
         Returns
         -------
-        cumulative_co2_emissions_2019technology_baseline3
-            Cumulative CO2 emissions from all commercial air transport based on 2019 technological level with a baseline air traffic growth [GtCO2].
-        cumulative_co2_emissions_2019technology
-            Cumulative CO2 emissions from all commercial air transport based on 2019 technological level [GtCO2].
+        cumulative_co2_emissions_last_historical_year_technology_baseline3
+            Cumulative CO2 emissions from all commercial air transport based on last-historical-year technological level with a baseline air traffic growth [GtCO2].
+        cumulative_co2_emissions_last_historical_year_technology
+            Cumulative CO2 emissions from all commercial air transport based on last-historical-year technological level [GtCO2].
         cumulative_co2_emissions_including_aircraft_efficiency
             Cumulative CO2 emissions from all commercial air transport including aircraft efficiency improvements [GtCO2].
         cumulative_co2_emissions_including_operations
@@ -664,13 +686,18 @@ class DetailedCumulativeCO2Emissions(AeroMAPSModel):
             improvements and energy decarbonization [GtCO2].
 
         """
-        cumulative_co2_emissions_2019technology_baseline3 = (
-            co2_emissions_2019technology_baseline3.loc[self.prospection_start_year : self.end_year]
+        cumulative_co2_emissions_last_historical_year_technology_baseline3 = (
+            co2_emissions_last_historical_year_technology_baseline3.loc[
+                self.prospection_start_year : self.end_year
+            ]
             / 1000
         ).cumsum()
 
-        cumulative_co2_emissions_2019technology = (
-            co2_emissions_2019technology.loc[self.prospection_start_year : self.end_year] / 1000
+        cumulative_co2_emissions_last_historical_year_technology = (
+            co2_emissions_last_historical_year_technology.loc[
+                self.prospection_start_year : self.end_year
+            ]
+            / 1000
         ).cumsum()
 
         cumulative_co2_emissions_including_aircraft_efficiency = (
@@ -694,10 +721,12 @@ class DetailedCumulativeCO2Emissions(AeroMAPSModel):
             co2_emissions_including_energy.loc[self.prospection_start_year : self.end_year] / 1000
         ).cumsum()
 
-        self.df["cumulative_co2_emissions_2019technology_baseline3"] = (
-            cumulative_co2_emissions_2019technology_baseline3
+        self.df["cumulative_co2_emissions_last_historical_year_technology_baseline3"] = (
+            cumulative_co2_emissions_last_historical_year_technology_baseline3
         )
-        self.df["cumulative_co2_emissions_2019technology"] = cumulative_co2_emissions_2019technology
+        self.df["cumulative_co2_emissions_last_historical_year_technology"] = (
+            cumulative_co2_emissions_last_historical_year_technology
+        )
         self.df["cumulative_co2_emissions_including_aircraft_efficiency"] = (
             cumulative_co2_emissions_including_aircraft_efficiency
         )
@@ -712,8 +741,8 @@ class DetailedCumulativeCO2Emissions(AeroMAPSModel):
         )
 
         return (
-            cumulative_co2_emissions_2019technology_baseline3,
-            cumulative_co2_emissions_2019technology,
+            cumulative_co2_emissions_last_historical_year_technology_baseline3,
+            cumulative_co2_emissions_last_historical_year_technology,
             cumulative_co2_emissions_including_aircraft_efficiency,
             cumulative_co2_emissions_including_operations,
             cumulative_co2_emissions_including_load_factor,

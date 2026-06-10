@@ -29,7 +29,7 @@ class RPKPriceIncomeElasticity(AeroMAPSModel):
     original calibration.
 
     The global per-capita demand is split across the registry's passenger markets by
-    ``<mid>_rpk_share_2019`` and multiplied by each market's ``rpk_<mid>_measures_impact``.
+    ``<mid>_rpk_share_last_historical_year`` and multiplied by each market's ``rpk_<mid>_measures_impact``.
     It reads ``doc_net_energy_per_rpk_mean`` to close the cost <-> demand MDA cycle and
     aggregates the per-market reference trajectories into the total ``rpk_reference``.
 
@@ -58,13 +58,14 @@ class RPKPriceIncomeElasticity(AeroMAPSModel):
             "population": pd.Series([0.0]),
             "gdp_per_capita": pd.Series([0.0]),
             "doc_net_energy_per_rpk_mean": pd.Series([0.0]),
-            "gdp_per_capita_2019": 0.0,
+            "gdp_per_capita_last_historical_year": 0.0,
             "gdp_per_capita_covid_end": 0.0,
+            "covid_end_year_passenger": 0.0,
             "gdp_per_capita_init": pd.Series([0.0]),
             "population_init": pd.Series([0.0]),
         }
         for mid in self.passenger_market_ids:
-            self.input_names[f"{mid}_rpk_share_2019"] = 0.0
+            self.input_names[f"{mid}_rpk_share_last_historical_year"] = 0.0
             self.input_names[f"rpk_{mid}_measures_impact"] = pd.Series([0.0])
             self.input_names[f"rpk_reference_{mid}"] = pd.Series([0.0])
 
@@ -132,14 +133,23 @@ class RPKPriceIncomeElasticity(AeroMAPSModel):
         population = input_data["population"]
         gdp_per_capita = input_data["gdp_per_capita"]
         doc_net_energy_per_rpk_mean = input_data["doc_net_energy_per_rpk_mean"]
-        gdp_per_capita_2019 = float(input_data["gdp_per_capita_2019"])
+        gdp_per_capita_last_historical_year = float(
+            input_data["gdp_per_capita_last_historical_year"]
+        )
         gdp_per_capita_covid_end = float(input_data["gdp_per_capita_covid_end"])
         gdp_per_capita_init = input_data["gdp_per_capita_init"]
         population_init = input_data["population_init"]
 
         doc_net_energy_per_rpk_delayed = self._apply_price_delay(doc_net_energy_per_rpk_mean)
         price_usd = doc_net_energy_per_rpk_delayed / self.eur_usd_exchange_rate
-        covid_shift = gdp_per_capita_covid_end - gdp_per_capita_2019
+        covid_end_year = int(input_data["covid_end_year_passenger"])
+        # When the prospective window starts after COVID (prospection_start_year >
+        # covid_end_year), the GDP series already reflects the post-COVID level, so
+        # re-applying covid_shift would double-count the COVID dampening.
+        if self.prospection_start_year > covid_end_year:
+            covid_shift = 0.0
+        else:
+            covid_shift = gdp_per_capita_covid_end - gdp_per_capita_last_historical_year
         hist_slice = slice(self.historic_start_year, self.prospection_start_year - 1)
 
         # --- Per-capita RPK (with and without COVID lag) ---
@@ -173,7 +183,7 @@ class RPKPriceIncomeElasticity(AeroMAPSModel):
         rpk = rpk_no_elasticity = rpk_model_without_covid = rpk_reference = None
 
         for mid in self.passenger_market_ids:
-            share = float(input_data[f"{mid}_rpk_share_2019"]) / 100
+            share = float(input_data[f"{mid}_rpk_share_last_historical_year"]) / 100
             measures_impact = self._full_series(input_data[f"rpk_{mid}_measures_impact"], 1.0)
 
             rpk_m = rpk_model_total * share

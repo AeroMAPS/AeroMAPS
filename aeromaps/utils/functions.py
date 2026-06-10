@@ -136,8 +136,8 @@ def _dict_to_df(data, orient="index") -> pd.DataFrame:
 def compute_partitioning(
     world_data: dict,
     per_market_passenger_data: dict,
-    total_seats_2019: float,
-    freight_energy_share_2019: float,
+    total_seats_last_historical_year: float,
+    freight_energy_share_last_historical_year: float,
     path: str = "",
 ) -> None:
     """
@@ -148,12 +148,12 @@ def compute_partitioning(
     world_data
         World parameters dict loaded from parameters.json.
     per_market_passenger_data
-        Mapping of market_id to {"ask_2019": float, "energy_2019": float}
+        Mapping of market_id to {"ask_last_historical_year": float, "energy_last_historical_year": float}
         for every passenger market in the scope. Energy values must already
         be expressed in the AeroMAPS scope (i.e. passeger only, belly freight excluded).
-    total_seats_2019
+    total_seats_last_historical_year
         Total seats in 2019 for the partitioned scope, used to scale pax_init.
-    freight_energy_share_2019
+    freight_energy_share_last_historical_year
         Freight energy share in 2019 for the scope [%]. Must cover all freight
         (belly + dedicated). Total energy is derived from the market energies
         and this share: total = passenger_energy / (1 - freight_share / 100).
@@ -162,34 +162,45 @@ def compute_partitioning(
     """
 
     n_historic_years = world_data["prospection_start_year"] - world_data["historic_start_year"]
-    world_ask_2019 = world_data["ask_init"][n_historic_years - 1]
-    world_seats_2019 = (
+    world_ask_last_historical_year = world_data["ask_init"][n_historic_years - 1]
+    world_seats_last_historical_year = (
         world_data["pax_init"][n_historic_years - 1]
         * world_data["ask_init"][n_historic_years - 1]
         / world_data["rpk_init"][n_historic_years - 1]
         * 100
     )
 
-    total_ask_2019 = sum(d["ask_2019"] for d in per_market_passenger_data.values())
-    passenger_energy_2019 = sum(
-        d["energy_ask_2019"] * d["ask_2019"] for d in per_market_passenger_data.values()
+    total_ask_last_historical_year = sum(
+        d["ask_last_historical_year"] for d in per_market_passenger_data.values()
     )
-    total_energy_2019 = passenger_energy_2019 / (1 - freight_energy_share_2019 / 100)
+    passenger_energy_last_historical_year = sum(
+        d["energy_ask_last_historical_year"] * d["ask_last_historical_year"]
+        for d in per_market_passenger_data.values()
+    )
+    total_energy_last_historical_year = passenger_energy_last_historical_year / (
+        1 - freight_energy_share_last_historical_year / 100
+    )
 
     # Per-market shares
     market_energy_shares = {
-        mid: d["energy_ask_2019"] * d["ask_2019"] / total_energy_2019 * 100
+        mid: d["energy_ask_last_historical_year"]
+        * d["ask_last_historical_year"]
+        / total_energy_last_historical_year
+        * 100
         for mid, d in per_market_passenger_data.items()
     }
     market_rpk_shares = {
-        mid: d["ask_2019"] / total_ask_2019 * 100 for mid, d in per_market_passenger_data.items()
+        mid: d["ask_last_historical_year"] / total_ask_last_historical_year * 100
+        for mid, d in per_market_passenger_data.items()
     }
 
     # Scaling ratios for historical vectors
-    share_ask = total_ask_2019 / world_ask_2019 * 100
-    share_seats = total_seats_2019 / world_seats_2019
+    share_ask = total_ask_last_historical_year / world_ask_last_historical_year * 100
+    share_seats = total_seats_last_historical_year / world_seats_last_historical_year
     share_energy = (
-        total_energy_2019 / world_data["energy_consumption_init"][n_historic_years - 1] * 100
+        total_energy_last_historical_year
+        / world_data["energy_consumption_init"][n_historic_years - 1]
+        * 100
     )
 
     historical_years = range(n_historic_years)
@@ -226,10 +237,12 @@ def compute_partitioning(
     # Build output — market float data uses <market_id>_<leaf> naming
     other_float_data = {}
     for mid, share in market_energy_shares.items():
-        other_float_data[f"{mid}_energy_share_2019"] = share
+        other_float_data[f"{mid}_energy_share_last_historical_year"] = share
     for mid, share in market_rpk_shares.items():
-        other_float_data[f"{mid}_rpk_share_2019"] = share
-    other_float_data["freight_energy_share_2019"] = freight_energy_share_2019
+        other_float_data[f"{mid}_rpk_share_last_historical_year"] = share
+    other_float_data["freight_energy_share_last_historical_year"] = (
+        freight_energy_share_last_historical_year
+    )
     other_float_data["commercial_aviation_coefficient"] = 1
 
     other_years = list(
@@ -246,7 +259,7 @@ def compute_partitioning(
         json.dump(output, outfile, indent=4)
 
 
-def create_partitioning(file, path="", freight_energy_share_2019=15.0):
+def create_partitioning(file, path="", freight_energy_share_last_historical_year=15.0):
     """
     Generate a partitioned AeroMAPS inputs JSON from an AeroSCOPE CSV file.
 
@@ -256,7 +269,7 @@ def create_partitioning(file, path="", freight_energy_share_2019=15.0):
         Path to the CSV file containing AeroSCOPE data for the partitioned scope.
     path
         Directory path where the generated files will be saved.
-    freight_energy_share_2019
+    freight_energy_share_last_historical_year
         Freight energy share in 2019 for the partitioned scope [%]. Defaults to
         the world value declared in ``default_markets/markets.yaml`` (15.0).
         Override when partitioning to a region whose freight share differs.
@@ -272,14 +285,16 @@ def create_partitioning(file, path="", freight_energy_share_2019=15.0):
     with open(world_data_path, "r") as parameters_file:
         world_data_dict = json.load(parameters_file)
 
-    freight_energy_share_2019_partitioned = freight_energy_share_2019
+    freight_energy_share_last_historical_year_partitioned = (
+        freight_energy_share_last_historical_year
+    )
 
     # AeroSCOPE CSV layout (fixed format):
     #   row 0: ASK        — col 1=total, col 2=SR, col 3=MR, col 4=LR
     #   row 2: seats      — col 1=total
     #   row 4: energy/ASK — col 1=total, col 2=SR, col 3=MR, col 4=LR
     partitioned_data = read_csv(file, delimiter=",").values
-    total_seats_2019 = partitioned_data[2, 1]
+    total_seats_last_historical_year = partitioned_data[2, 1]
 
     # AeroSCOPE scope → AeroMAPS scope corrections:
     # 1. Belly freight: AeroSCOPE energy-per-ASK includes belly freight carried on
@@ -287,8 +302,8 @@ def create_partitioning(file, path="", freight_energy_share_2019=15.0):
     #    from per-market passenger energy using the world belly-freight fraction.
     # 2. Dedicated freight: AeroSCOPE covers passenger aircraft only; we scale total
     #    energy up to include dedicated freighters (half of total freight energy share).
-    _belly_frac = freight_energy_share_2019_partitioned / 2 / 100
-    _ded_frac = freight_energy_share_2019_partitioned / 2 / 100
+    _belly_frac = freight_energy_share_last_historical_year_partitioned / 2 / 100
+    _ded_frac = freight_energy_share_last_historical_year_partitioned / 2 / 100
     belly_correction = 1 - _belly_frac / (1 - _ded_frac)
 
     _raw_markets = {
@@ -301,20 +316,23 @@ def create_partitioning(file, path="", freight_energy_share_2019=15.0):
         if pd.isna(ask) or ask == 0.0:
             # Void market: keep it in the scope but with zero traffic and energy.
             logging.warning(f"No traffic is assumed for {mid}.")
-            per_market_passenger_data[mid] = {"ask_2019": 0.0, "energy_ask_2019": 0.0}
+            per_market_passenger_data[mid] = {
+                "ask_last_historical_year": 0.0,
+                "energy_ask_last_historical_year": 0.0,
+            }
             continue
         if pd.isna(epask):
             raise ValueError(f"{mid} ASK is non-zero but energy per ASK is null.")
         per_market_passenger_data[mid] = {
-            "ask_2019": ask,
-            "energy_ask_2019": epask * belly_correction,
+            "ask_last_historical_year": ask,
+            "energy_ask_last_historical_year": epask * belly_correction,
         }
 
     compute_partitioning(
         world_data=world_data_dict,
         per_market_passenger_data=per_market_passenger_data,
-        total_seats_2019=total_seats_2019,
-        freight_energy_share_2019=freight_energy_share_2019_partitioned,
+        total_seats_last_historical_year=total_seats_last_historical_year,
+        freight_energy_share_last_historical_year=freight_energy_share_last_historical_year_partitioned,
         path=path,
     )
 

@@ -1038,7 +1038,7 @@ class AeroMAPSProcess(object):
         Sub-grouping keys under ``inputs`` (e.g. ``initial``, ``growth``,
         ``covid``, ``measures``, ``efficiency_simple``, ``costs``) are treated
         as organisational groupings only: their names are *not* included in the
-        flattened variable names.  This makes names like ``short_range_rpk_share_2019``
+        flattened variable names.  This makes names like ``short_range_rpk_share_last_historical_year``
         coincide with legacy flat names in ``parameters.json``, so for default
         scenarios the push is a numerical no-op.  Names introduced under new
         sub-groupings are harmless extras until Phase 2 consumes them.
@@ -1743,7 +1743,7 @@ class AeroMAPSProcess(object):
         Example JSON format:
         {
             "other_float_data": {
-                "short_range_energy_share_2019": 10.5,
+                "short_range_energy_share_last_historical_year": 10.5,
                 ...
             },
             "other_vector_data": {

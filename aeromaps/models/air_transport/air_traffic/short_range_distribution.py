@@ -32,11 +32,11 @@ class ShortRangeDistribution(AeroMAPSModel):
 
     def compute(
         self,
-        short_range_basicturbofan_share_2019: float,
+        short_range_basicturbofan_share_last_historical_year: float,
         short_range_basicturbofan_share_2030: float,
         short_range_basicturbofan_share_2040: float,
         short_range_basicturbofan_share_2050: float,
-        short_range_regionalturboprop_share_2019: float,
+        short_range_regionalturboprop_share_last_historical_year: float,
         short_range_regionalturboprop_share_2030: float,
         short_range_regionalturboprop_share_2040: float,
         short_range_regionalturboprop_share_2050: float,
@@ -50,7 +50,7 @@ class ShortRangeDistribution(AeroMAPSModel):
 
         Parameters
         ----------
-        short_range_basicturbofan_share_2019
+        short_range_basicturbofan_share_last_historical_year
             Share of narrow-body turbofan architectures in passenger short-range market in 2019 [%].
         short_range_basicturbofan_share_2030
             Share of narrow-body turbofan architectures in passenger short-range market in 2030 [%].
@@ -58,7 +58,7 @@ class ShortRangeDistribution(AeroMAPSModel):
             Share of narrow-body turbofan architectures in passenger short-range market in 2040 [%].
         short_range_basicturbofan_share_2050
             Share of narrow-body turbofan architectures in passenger short-range market in 2050 [%].
-        short_range_regionalturboprop_share_2019
+        short_range_regionalturboprop_share_last_historical_year
             Share of regional turboprop architectures in passenger short-range market in 2019 [%].
         short_range_regionalturboprop_share_2030
             Share of regional turboprop architectures in passenger short-range market in 2030 [%].
@@ -80,13 +80,13 @@ class ShortRangeDistribution(AeroMAPSModel):
         reference_years = [self.last_historical_year, 2030, 2040, self.end_year]
 
         # Reference
-        # "short_range_basicturbofan_share_2019": 88.4,
-        # "short_range_regionalturboprop_share_2019": 2.5,
-        # "short_range_regionalturbofan_share_2019": 9.1,
+        # "short_range_basicturbofan_share_last_historical_year": 88.4,
+        # "short_range_regionalturboprop_share_last_historical_year": 2.5,
+        # "short_range_regionalturbofan_share_last_historical_year": 9.1,
 
         # Basic Turbofan
         reference_values_basicturbofan = [
-            short_range_basicturbofan_share_2019,
+            short_range_basicturbofan_share_last_historical_year,
             short_range_basicturbofan_share_2030,
             short_range_basicturbofan_share_2040,
             short_range_basicturbofan_share_2050,
@@ -101,7 +101,7 @@ class ShortRangeDistribution(AeroMAPSModel):
 
         # Regional Turboprop
         reference_values_regionalturboprop = [
-            short_range_regionalturboprop_share_2019,
+            short_range_regionalturboprop_share_last_historical_year,
             short_range_regionalturboprop_share_2030,
             short_range_regionalturboprop_share_2040,
             short_range_regionalturboprop_share_2050,
