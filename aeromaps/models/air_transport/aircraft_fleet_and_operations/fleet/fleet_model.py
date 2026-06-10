@@ -1099,10 +1099,11 @@ class Fleet(object):
         if getattr(self.parameters, rpk_share_param) == 0.0:
             mean_energy_init_ask = np.nan
         else:
+            lhy = self.parameters.last_historical_year
             mean_energy_init_ask = (
-                self.parameters.energy_consumption_init[2019]
+                self.parameters.energy_consumption_init[lhy]
                 * getattr(self.parameters, energy_share_param)
-            ) / (self.parameters.ask_init[2019] * getattr(self.parameters, rpk_share_param))
+            ) / (self.parameters.ask_init[lhy] * getattr(self.parameters, rpk_share_param))
 
         share_recent = (mean_energy_init_ask - old_energy) / (recent_energy - old_energy)
 

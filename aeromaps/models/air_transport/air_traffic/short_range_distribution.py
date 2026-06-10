@@ -77,7 +77,7 @@ class ShortRangeDistribution(AeroMAPSModel):
             Share of regional turbofan architectures in passenger short-range market [%].
         """
 
-        reference_years = [2019, 2030, 2040, self.end_year]
+        reference_years = [self.last_historical_year, 2030, 2040, self.end_year]
 
         # Reference
         # "short_range_basicturbofan_share_2019": 88.4,

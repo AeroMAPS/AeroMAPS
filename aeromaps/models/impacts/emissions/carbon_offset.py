@@ -87,7 +87,7 @@ class LevelCarbonOffset(AeroMAPSModel):
         ] = 0.0
 
         baseline_level = (
-            co2_emissions.loc[2019]
+            co2_emissions.loc[self.last_historical_year]
             * self.df.loc[
                 self.prospection_start_year : self.end_year, "carbon_offset_baseline_level_vs_2019"
             ]

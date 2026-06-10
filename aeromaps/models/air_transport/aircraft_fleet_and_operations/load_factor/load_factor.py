@@ -14,15 +14,19 @@ import pandas as pd
 from aeromaps.models.base import AeroMAPSModel
 
 
-def _parameters_load_factor_model(end_year, load_factor_2019, load_factor_end_year):
+def _parameters_load_factor_model(
+    end_year, last_historical_year, load_factor_lhy, load_factor_end_year
+):
     """Compute the parameters of the quadratic model for load factor evolution.
 
     Parameters
     ----------
     end_year
         Year at which the target load factor is reached [yr]
-    load_factor_2019
-        Load factor in 2019 [%]
+    last_historical_year
+        Last historical year, used as the quadratic anchor (x = 0) [yr]
+    load_factor_lhy
+        Load factor in the last historical year [%]
     load_factor_end_year
         Target load factor in end_year [%]
 
@@ -33,13 +37,11 @@ def _parameters_load_factor_model(end_year, load_factor_2019, load_factor_end_ye
     b
         First order parameter of the quadratic model
     """
-    # Calculate via derivative : 2ax+b
-    derivative = 2 * (-5.62003082e-05) * 31 + 3.59670410e-03
-    a = (
-        -(load_factor_end_year - load_factor_2019 - derivative * (end_year - 2019))
-        / (end_year - 2019) ** 2
-    )
-    b = derivative - 2 * a * (end_year - 2019)
+    # Calculate via derivative : 2ax+b, evaluated at the end_year offset
+    horizon = end_year - last_historical_year
+    derivative = 2 * (-5.62003082e-05) * horizon + 3.59670410e-03
+    a = -(load_factor_end_year - load_factor_lhy - derivative * horizon) / horizon**2
+    b = derivative - 2 * a * horizon
     return [a, b]
 
 
@@ -98,13 +100,16 @@ class LoadFactorMarket(AeroMAPSModel):
             self.df.loc[k, col] = rpk_init.loc[k] / ask_init.loc[k] * 100
 
         # Initialization for load factor
-        load_factor_2019 = self.df.loc[2019, col]
+        load_factor_lhy = self.df.loc[self.last_historical_year, col]
 
         # Parameters for the model
-        a, b = _parameters_load_factor_model(self.end_year, load_factor_2019, end_year_value)
+        a, b = _parameters_load_factor_model(
+            self.end_year, self.last_historical_year, load_factor_lhy, end_year_value
+        )
 
+        lhy = self.last_historical_year
         for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, col] = a * (k - 2019) ** 2 + b * (k - 2019) + load_factor_2019
+            self.df.loc[k, col] = a * (k - lhy) ** 2 + b * (k - lhy) + load_factor_lhy
 
         # Covid-19 : à refaire proprement
         self.df.loc[2020, col] = covid_2020
