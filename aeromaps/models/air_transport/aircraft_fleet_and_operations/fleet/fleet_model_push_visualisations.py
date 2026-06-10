@@ -18,7 +18,7 @@ colors_26 = ["#E41A1C",     "#377EB8",    "#4DAF4A",      "#984EA3",
     "#808000",    "#87CEEB",      "#B22222",    "#CFA0E9",
     "#FFD700",    "#228B22",      "#003F5C",   "#D100D1",    "#000000",]
 
-def visualise_10y_seats_deliveries_by_submarket(
+def visualise_10y_seats_deliveries_by_market(
     classification_yaml_path: str,
     aircraft_parameters_excel_path: str,
     fleet_excel_path: str,
@@ -26,17 +26,17 @@ def visualise_10y_seats_deliveries_by_submarket(
     fleet_sheet_name=0,
 ) -> pd.DataFrame:
     """
-    Compute and visualise weighted aircraft production volumes by submarket over 2020-2024.
+    Compute and visualise weighted aircraft production volumes by market over 2020-2024.
 
     The weighted volume for each aircraft type is:
         production_volume * average_seats
 
-    Then values are aggregated by submarket for each year.
+    Then values are aggregated by market for each year.
 
     Parameters
     ----------
     classification_yaml_path : str
-        Path to the YAML file mapping aircraft types to submarkets.
+        Path to the YAML file mapping aircraft types to markets.
     aircraft_parameters_excel_path : str
         Path to the Excel file containing at least:
         - 'Aircraft Type'
@@ -53,7 +53,7 @@ def visualise_10y_seats_deliveries_by_submarket(
     Returns
     -------
     pd.DataFrame
-        Aggregated weighted production volumes by submarket and year.
+        Aggregated weighted production volumes by market and year.
     """
     module_dir = Path(__file__).resolve().parent
     project_root = module_dir.parents[4]
@@ -75,19 +75,19 @@ def visualise_10y_seats_deliveries_by_submarket(
         classification_data = yaml.safe_load(f) or {}
 
     mapping = {
-        str(aircraft_type).strip(): str(submarket).strip()
+        str(aircraft_type).strip(): str(market).strip()
         for item in classification_data.get("aircraft_types", [])
         if isinstance(item, dict)
-        for aircraft_type, submarket in item.items()
+        for aircraft_type, market in item.items()
     }
 
     params_df = pd.read_excel(aircraft_parameters_excel_path, sheet_name=aircraft_parameters_sheet_name)
     params_df = params_df.copy()
     params_df["Aircraft Type"] = params_df["Aircraft Type"].astype(str).str.strip()
-    params_df["submarket"] = params_df["Aircraft Type"].map(mapping)
+    params_df["market"] = params_df["Aircraft Type"].map(mapping)
     params_df["average_seats"] = pd.to_numeric(params_df["average_seats"], errors="coerce")
 
-    params_df = params_df[params_df["submarket"].notna() & params_df["average_seats"].notna()].copy()
+    params_df = params_df[params_df["market"].notna() & params_df["average_seats"].notna()].copy()
 
     production_df = pd.read_excel(
         fleet_excel_path,
@@ -105,7 +105,7 @@ def visualise_10y_seats_deliveries_by_submarket(
     for year in years:
         year_col = str(year)
 
-        merged = params_df[["Aircraft Type", "submarket", "average_seats"]].merge(
+        merged = params_df[["Aircraft Type", "market", "average_seats"]].merge(
             production_df[[year_col]],
             left_on="Aircraft Type",
             right_index=True,
@@ -118,7 +118,7 @@ def visualise_10y_seats_deliveries_by_submarket(
         merged["weighted_seats_deliveries"] = merged[year_col] * merged["average_seats"]
 
         grouped = (
-            merged.groupby("submarket", as_index=False)["weighted_seats_deliveries"]
+            merged.groupby("market", as_index=False)["weighted_seats_deliveries"]
             .sum()
             .assign(year=year)
         )
@@ -127,7 +127,7 @@ def visualise_10y_seats_deliveries_by_submarket(
 
     result_df = pd.concat(result_rows, ignore_index=True)
 
-    pivot_df = result_df.pivot(index="submarket", columns="year", values="weighted_seats_deliveries").fillna(0.0)
+    pivot_df = result_df.pivot(index="market", columns="year", values="weighted_seats_deliveries").fillna(0.0)
     pivot_df = pivot_df[years]
 
     ax = pivot_df.T.plot(
@@ -137,7 +137,7 @@ def visualise_10y_seats_deliveries_by_submarket(
     )
     ax.set_xlabel("Year")
     ax.set_ylabel("Seats production volumes")
-    ax.legend(title="Submarket", bbox_to_anchor=(1.02, 1), loc="upper left")
+    ax.legend(title="market", bbox_to_anchor=(1.02, 1), loc="upper left")
     ax.grid(axis="y", alpha=0.3)
     plt.yscale('log')
     plt.tight_layout()
