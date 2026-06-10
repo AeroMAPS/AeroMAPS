@@ -38,6 +38,7 @@ jobs:
       - name: Install latest version of dependencies
         run: |
           poetry env use ${{ matrix.python-version }}
+          poetry env remove --all || true
           poetry update
           poetry install
 
