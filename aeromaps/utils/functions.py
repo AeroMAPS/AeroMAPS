@@ -133,9 +133,122 @@ def _dict_to_df(data, orient="index") -> pd.DataFrame:
     return df
 
 
-def create_partitioning(file, path=""):
+def compute_partitioning(
+    world_data: dict,
+    per_market_passenger_data: dict,
+    total_seats_2019: float,
+    freight_energy_share_2019: float,
+    path: str = "",
+) -> None:
     """
-    Generation of a JSON input file (air transport data) and a CSV file (climate data) for running an AeroMAPS process for a partitioned scope.
+    Generate a partitioned AeroMAPS inputs JSON for a geographic scope.
+
+    Parameters
+    ----------
+    world_data
+        World parameters dict loaded from parameters.json.
+    per_market_passenger_data
+        Mapping of market_id to {"ask_2019": float, "energy_2019": float}
+        for every passenger market in the scope. Energy values must already
+        be expressed in the AeroMAPS scope (i.e. passeger only, belly freight excluded).
+    total_seats_2019
+        Total seats in 2019 for the partitioned scope, used to scale pax_init.
+    freight_energy_share_2019
+        Freight energy share in 2019 for the scope [%]. Must cover all freight
+        (belly + dedicated). Total energy is derived from the market energies
+        and this share: total = passenger_energy / (1 - freight_share / 100).
+    path
+        Directory where partitioning_updated_inputs.json will be written.
+    """
+
+    n_historic_years = world_data["prospection_start_year"] - world_data["historic_start_year"]
+    world_ask_2019 = world_data["ask_init"][n_historic_years - 1]
+    world_seats_2019 = (
+        world_data["pax_init"][n_historic_years - 1]
+        * world_data["ask_init"][n_historic_years - 1]
+        / world_data["rpk_init"][n_historic_years - 1]
+        * 100
+    )
+
+    total_ask_2019 = sum(d["ask_2019"] for d in per_market_passenger_data.values())
+    passenger_energy_2019 = sum(
+        d["energy_ask_2019"] * d["ask_2019"] for d in per_market_passenger_data.values()
+    )
+    total_energy_2019 = passenger_energy_2019 / (1 - freight_energy_share_2019 / 100)
+
+    # Per-market shares
+    market_energy_shares = {
+        mid: d["energy_ask_2019"] * d["ask_2019"] / total_energy_2019 * 100
+        for mid, d in per_market_passenger_data.items()
+    }
+    market_rpk_shares = {
+        mid: d["ask_2019"] / total_ask_2019 * 100 for mid, d in per_market_passenger_data.items()
+    }
+
+    # Scaling ratios for historical vectors
+    share_ask = total_ask_2019 / world_ask_2019 * 100
+    share_seats = total_seats_2019 / world_seats_2019
+    share_energy = (
+        total_energy_2019 / world_data["energy_consumption_init"][n_historic_years - 1] * 100
+    )
+
+    historical_years = range(n_historic_years)
+    scaled_vectors = {
+        "rpk_init": [world_data["rpk_init"][k] * share_ask / 100 for k in historical_years],
+        "ask_init": [world_data["ask_init"][k] * share_ask / 100 for k in historical_years],
+        "rtk_init": [world_data["rtk_init"][k] * share_ask / 100 for k in historical_years],
+        "freight_init": [world_data["freight_init"][k] * share_ask / 100 for k in historical_years],
+        "total_aircraft_distance_init": [
+            world_data["total_aircraft_distance_init"][k] * share_ask / 100
+            for k in historical_years
+        ],
+        "pax_init": [world_data["pax_init"][k] * share_seats / 100 for k in historical_years],
+        "energy_consumption_init": [
+            world_data["energy_consumption_init"][k] * share_energy / 100 for k in historical_years
+        ],
+    }
+
+    # Climate data
+    climate_world_data_path = pth.join(
+        climate_data.__path__[0], "temperature_historical_dataset.csv"
+    )
+    climate_world_data = pd.read_csv(climate_world_data_path, delimiter=";", header=None).values
+    climate_data_dict = {
+        "years": climate_world_data[:, 0].tolist(),
+        "co2_emissions": (climate_world_data[:, 1] * share_energy / 100).tolist(),
+        "nox_emissions": (climate_world_data[:, 2] * share_energy / 100).tolist(),
+        "h2o_emissions": (climate_world_data[:, 3] * share_energy / 100).tolist(),
+        "soot_emissions": (climate_world_data[:, 4] * share_energy / 100).tolist(),
+        "sulfur_emissions": (climate_world_data[:, 5] * share_energy / 100).tolist(),
+        "distance": (climate_world_data[:, 6] * share_ask / 100).tolist(),
+    }
+
+    # Build output — market float data uses <market_id>_<leaf> naming
+    other_float_data = {}
+    for mid, share in market_energy_shares.items():
+        other_float_data[f"{mid}_energy_share_2019"] = share
+    for mid, share in market_rpk_shares.items():
+        other_float_data[f"{mid}_rpk_share_2019"] = share
+    other_float_data["freight_energy_share_2019"] = freight_energy_share_2019
+    other_float_data["commercial_aviation_coefficient"] = 1
+
+    other_years = list(
+        range(world_data["historic_start_year"], world_data["prospection_start_year"])
+    )
+    output = {
+        "other_float_data": other_float_data,
+        "other_vector_data": {"years": other_years, **scaled_vectors},
+        "climate_data": climate_data_dict,
+    }
+
+    partitioning_updated_inputs_path = pth.join(path, "partitioning_updated_inputs.json")
+    with open(partitioning_updated_inputs_path, "w") as outfile:
+        json.dump(output, outfile, indent=4)
+
+
+def create_partitioning(file, path="", freight_energy_share_2019=15.0):
+    """
+    Generate a partitioned AeroMAPS inputs JSON from an AeroSCOPE CSV file.
 
     Parameters
     ----------
@@ -143,6 +256,10 @@ def create_partitioning(file, path=""):
         Path to the CSV file containing AeroSCOPE data for the partitioned scope.
     path
         Directory path where the generated files will be saved.
+    freight_energy_share_2019
+        Freight energy share in 2019 for the partitioned scope [%]. Defaults to
+        the world value declared in ``default_markets/markets.yaml`` (15.0).
+        Override when partitioning to a region whose freight share differs.
 
     Returns
     -------
@@ -155,220 +272,51 @@ def create_partitioning(file, path=""):
     with open(world_data_path, "r") as parameters_file:
         world_data_dict = json.load(parameters_file)
 
-    # Assumption on freight
-    freight_energy_share_2019_partitioned = world_data_dict["freight_energy_share_2019"]
+    freight_energy_share_2019_partitioned = freight_energy_share_2019
 
-    # AeroSCOPE data recovery
-    partitioned_data_df = read_csv(file, delimiter=",")
-    partitioned_data = partitioned_data_df.values
-    total_ask_2019 = partitioned_data[0, 1]
-    short_range_ask_2019 = partitioned_data[0, 2]
-    medium_range_ask_2019 = partitioned_data[0, 3]
-    long_range_ask_2019 = partitioned_data[0, 4]
+    # AeroSCOPE CSV layout (fixed format):
+    #   row 0: ASK        — col 1=total, col 2=SR, col 3=MR, col 4=LR
+    #   row 2: seats      — col 1=total
+    #   row 4: energy/ASK — col 1=total, col 2=SR, col 3=MR, col 4=LR
+    partitioned_data = read_csv(file, delimiter=",").values
     total_seats_2019 = partitioned_data[2, 1]
-    total_energy_consumption_per_ask_2019 = partitioned_data[4, 1]
-    short_range_energy_consumption_per_ask_2019 = partitioned_data[4, 2]
-    medium_range_energy_consumption_per_ask_2019 = partitioned_data[4, 3]
-    long_range_energy_consumption_per_ask_2019 = partitioned_data[4, 4]
-    total_energy_consumption_2019 = (
-        total_energy_consumption_per_ask_2019
-        * total_ask_2019
-        / (1 - freight_energy_share_2019_partitioned / 2 / 100)
-    )  # Dedicated freight (half of total freight) not included in AeroSCOPE
 
-    ded_freight_ratio = freight_energy_share_2019_partitioned / 2 / 100
+    # AeroSCOPE scope → AeroMAPS scope corrections:
+    # 1. Belly freight: AeroSCOPE energy-per-ASK includes belly freight carried on
+    #    passenger aircraft; AeroMAPS accounts for it separately, so we remove it
+    #    from per-market passenger energy using the world belly-freight fraction.
+    # 2. Dedicated freight: AeroSCOPE covers passenger aircraft only; we scale total
+    #    energy up to include dedicated freighters (half of total freight energy share).
+    _belly_frac = freight_energy_share_2019_partitioned / 2 / 100
+    _ded_frac = freight_energy_share_2019_partitioned / 2 / 100
+    belly_correction = 1 - _belly_frac / (1 - _ded_frac)
 
-    # Check short range: case distinction if there is no traffic.
-    if pd.isna(short_range_ask_2019) or short_range_ask_2019 == 0.0:
-        logging.warning("No traffic is assumed for short range.")
-        short_range_energy_consumption_2019 = 0
-    # If there is traffic, energy per ASK should not be null
-    elif (
-        pd.isna(short_range_energy_consumption_per_ask_2019)
-        or short_range_energy_consumption_per_ask_2019 is None
-    ):
-        raise ValueError("Short range ASK is not null but energy per ASK is null.")
-    # nominal case: both values are not null
-    else:
-        short_range_energy_consumption_2019 = (
-            short_range_energy_consumption_per_ask_2019 * short_range_ask_2019
-        ) * (1 - ded_freight_ratio / (1 - ded_freight_ratio))
-
-    # Check medium range
-    if pd.isna(medium_range_ask_2019) or medium_range_ask_2019 == 0.0:
-        logging.warning("No traffic is assumed for medium range.")
-        medium_range_energy_consumption_2019 = 0
-    elif (
-        pd.isna(medium_range_energy_consumption_per_ask_2019)
-        or medium_range_energy_consumption_per_ask_2019 is None
-    ):
-        raise ValueError("Medium range ASK is not null but energy per ASK is null.")
-    else:
-        medium_range_energy_consumption_2019 = (
-            medium_range_energy_consumption_per_ask_2019 * medium_range_ask_2019
-        ) * (1 - ded_freight_ratio / (1 - ded_freight_ratio))
-
-    # Check long range
-    if pd.isna(long_range_ask_2019) or long_range_ask_2019 == 0.0:
-        logging.warning("No traffic is assumed for long range.")
-        long_range_energy_consumption_2019 = 0
-    elif (
-        pd.isna(long_range_energy_consumption_per_ask_2019)
-        or long_range_energy_consumption_per_ask_2019 is None
-    ):
-        raise ValueError("Long range ASK is not null but energy per ASK is null.")
-    else:
-        long_range_energy_consumption_2019 = (
-            long_range_energy_consumption_per_ask_2019 * long_range_ask_2019
-        ) * (1 - ded_freight_ratio / (1 - ded_freight_ratio))
-
-    # Calculation of the partitioned input values
-
-    ## Float inputs
-    short_range_energy_share_2019_partitioned = (
-        short_range_energy_consumption_2019 / total_energy_consumption_2019 * 100
-    )
-    medium_range_energy_share_2019_partitioned = (
-        medium_range_energy_consumption_2019 / total_energy_consumption_2019 * 100
-    )
-    long_range_energy_share_2019_partitioned = (
-        long_range_energy_consumption_2019 / total_energy_consumption_2019 * 100
-    )
-
-    short_range_rpk_share_2019_partitioned = short_range_ask_2019 / total_ask_2019 * 100
-    medium_range_rpk_share_2019_partitioned = medium_range_ask_2019 / total_ask_2019 * 100
-    long_range_rpk_share_2019_partitioned = long_range_ask_2019 / total_ask_2019 * 100
-    commercial_aviation_coefficient_partitioned = 1
-
-    ## Vector inputs
-    share_ask_partitioned_vs_world_2019 = total_ask_2019 / world_data_dict["ask_init"][19] * 100
-    share_seats_partitioned_vs_world_2019 = total_seats_2019 / (
-        world_data_dict["pax_init"][19]
-        * world_data_dict["ask_init"][19]
-        / world_data_dict["rpk_init"][19]
-        * 100
-    )
-    share_energy_consumption_partitioned_vs_world_2019 = (
-        total_energy_consumption_2019 / world_data_dict["energy_consumption_init"][19] * 100
-    )
-    rpk_init_partitioned = []
-    ask_init_partitioned = []
-    rtk_init_partitioned = []
-    total_aircraft_distance_init_partitioned = []
-    freight_init_partitioned = []
-    pax_init_partitioned = []
-    energy_consumption_init_partitioned = []
-    for k in range(0, 20):
-        rpk_init_partitioned.append(
-            world_data_dict["rpk_init"][k] * share_ask_partitioned_vs_world_2019 / 100
-        )
-        ask_init_partitioned.append(
-            world_data_dict["ask_init"][k] * share_ask_partitioned_vs_world_2019 / 100
-        )
-        rtk_init_partitioned.append(
-            world_data_dict["rtk_init"][k] * share_ask_partitioned_vs_world_2019 / 100
-        )
-        freight_init_partitioned.append(
-            world_data_dict["freight_init"][k] * share_ask_partitioned_vs_world_2019 / 100
-        )
-        total_aircraft_distance_init_partitioned.append(
-            world_data_dict["total_aircraft_distance_init"][k]
-            * share_ask_partitioned_vs_world_2019
-            / 100
-        )
-        pax_init_partitioned.append(
-            world_data_dict["pax_init"][k] * share_seats_partitioned_vs_world_2019 / 100
-        )
-        energy_consumption_init_partitioned.append(
-            world_data_dict["energy_consumption_init"][k]
-            * share_energy_consumption_partitioned_vs_world_2019
-            / 100
-        )
-
-    historic_start_year_partitioned = world_data_dict["historic_start_year"]
-    prospection_start_year_partitioned = world_data_dict["prospection_start_year"]
-
-    # Climate data computation
-    climate_world_data_path = pth.join(
-        climate_data.__path__[0], "temperature_historical_dataset.csv"
-    )
-    climate_world_data_df = pd.read_csv(climate_world_data_path, delimiter=";", header=None)
-    climate_world_data = climate_world_data_df.values
-    climate_world_data_years = climate_world_data[:, 0]
-    climate_world_data_co2_emissions = climate_world_data[:, 1]
-    climate_world_data_nox_emissions = climate_world_data[:, 2]
-    climate_world_data_h2o_emissions = climate_world_data[:, 3]
-    climate_world_data_soot_emissions = climate_world_data[:, 4]
-    climate_world_data_sulfur_emissions = climate_world_data[:, 5]
-    climate_world_data_distance = climate_world_data[:, 6]
-
-    climate_partitioned_data_years = climate_world_data_years.tolist()
-    climate_partitioned_data_co2_emissions = (
-        climate_world_data_co2_emissions * share_energy_consumption_partitioned_vs_world_2019 / 100
-    ).tolist()
-    climate_partitioned_data_nox_emissions = (
-        climate_world_data_nox_emissions * share_energy_consumption_partitioned_vs_world_2019 / 100
-    ).tolist()
-    climate_partitioned_data_h2o_emissions = (
-        climate_world_data_h2o_emissions * share_energy_consumption_partitioned_vs_world_2019 / 100
-    ).tolist()
-    climate_partitioned_data_soot_emissions = (
-        climate_world_data_soot_emissions * share_energy_consumption_partitioned_vs_world_2019 / 100
-    ).tolist()
-    climate_partitioned_data_sulfur_emissions = (
-        climate_world_data_sulfur_emissions
-        * share_energy_consumption_partitioned_vs_world_2019
-        / 100
-    ).tolist()
-    climate_partitioned_data_distance = (
-        climate_world_data_distance * share_ask_partitioned_vs_world_2019 / 100
-    ).tolist()
-
-    # Build years list for other_data (historic_start_year to prospection_start_year - 1)
-    other_data_years = list(
-        range(historic_start_year_partitioned, prospection_start_year_partitioned)
-    )
-
-    # Generation of a single JSON file with all partitioned inputs
-    partitioning_updated_inputs_dict = {
-        # Float inputs
-        "other_float_data": {
-            "short_range_energy_share_2019": short_range_energy_share_2019_partitioned,
-            "medium_range_energy_share_2019": medium_range_energy_share_2019_partitioned,
-            "long_range_energy_share_2019": long_range_energy_share_2019_partitioned,
-            "freight_energy_share_2019": freight_energy_share_2019_partitioned,
-            "short_range_rpk_share_2019": short_range_rpk_share_2019_partitioned,
-            "medium_range_rpk_share_2019": medium_range_rpk_share_2019_partitioned,
-            "long_range_rpk_share_2019": long_range_rpk_share_2019_partitioned,
-            "commercial_aviation_coefficient": commercial_aviation_coefficient_partitioned,
-        },
-        # Other data (lists indexed by historic_start_year to prospection_start_year - 1)
-        "other_vector_data": {
-            "years": other_data_years,
-            "rpk_init": rpk_init_partitioned,
-            "ask_init": ask_init_partitioned,
-            "rtk_init": rtk_init_partitioned,
-            "pax_init": pax_init_partitioned,
-            "freight_init": freight_init_partitioned,
-            "energy_consumption_init": energy_consumption_init_partitioned,
-            "total_aircraft_distance_init": total_aircraft_distance_init_partitioned,
-        },
-        # Climate data (lists indexed by climate_historic_start_year to prospection_start_year - 1)
-        "climate_data": {
-            "years": climate_partitioned_data_years,
-            "co2_emissions": climate_partitioned_data_co2_emissions,
-            "nox_emissions": climate_partitioned_data_nox_emissions,
-            "h2o_emissions": climate_partitioned_data_h2o_emissions,
-            "soot_emissions": climate_partitioned_data_soot_emissions,
-            "sulfur_emissions": climate_partitioned_data_sulfur_emissions,
-            "distance": climate_partitioned_data_distance,
-        },
+    _raw_markets = {
+        "short_range": (partitioned_data[0, 2], partitioned_data[4, 2]),
+        "medium_range": (partitioned_data[0, 3], partitioned_data[4, 3]),
+        "long_range": (partitioned_data[0, 4], partitioned_data[4, 4]),
     }
-    partitioning_updated_inputs_path = pth.join(path, "partitioning_updated_inputs.json")
-    with open(partitioning_updated_inputs_path, "w") as outfile:
-        json.dump(partitioning_updated_inputs_dict, outfile, indent=4)
+    per_market_passenger_data = {}
+    for mid, (ask, epask) in _raw_markets.items():
+        if pd.isna(ask) or ask == 0.0:
+            # Void market: keep it in the scope but with zero traffic and energy.
+            logging.warning(f"No traffic is assumed for {mid}.")
+            per_market_passenger_data[mid] = {"ask_2019": 0.0, "energy_ask_2019": 0.0}
+            continue
+        if pd.isna(epask):
+            raise ValueError(f"{mid} ASK is non-zero but energy per ASK is null.")
+        per_market_passenger_data[mid] = {
+            "ask_2019": ask,
+            "energy_ask_2019": epask * belly_correction,
+        }
 
-    return
+    compute_partitioning(
+        world_data=world_data_dict,
+        per_market_passenger_data=per_market_passenger_data,
+        total_seats_2019=total_seats_2019,
+        freight_energy_share_2019=freight_energy_share_2019_partitioned,
+        path=path,
+    )
 
 
 def merge_json_files(file1, file2, output_file):
@@ -628,8 +576,11 @@ def _custom_series_addition(s1, s2) -> pd.Series:
 
 def custom_logger_config(logger):
     """
-    Specific filter to remove a warning triggered in the absence of a docstring in each discipline.
-    Hopefully temporary!!!
+    Configure logging and docstring parsing for GEMSEO disciplines.
+
+    Applies a filter to enrich GEMSEO's missing Args-section warning with the
+    offending callable, and patches GEMSEO's docstring parser to support NumPy
+    "Parameters" sections in addition to Google-style "Args".
 
 
     Parameters
@@ -644,13 +595,132 @@ def custom_logger_config(logger):
 
     """
 
-    # Specific filter to remove a warning triggered in the absence of a docstring in each discipline.
+    # Patch GEMSEO docstring parsing to support NumPy-style Parameters sections.
+    try:
+        import inspect
+        import re
+        import gemseo.utils.source_parsing as source_parsing
+
+        if not getattr(source_parsing, "_aeromaps_numpy_docstring_patch", False):
+
+            def _parse_numpy_parameters(docstring: str) -> dict:
+                lines = inspect.cleandoc(docstring).splitlines()
+                params = {}
+
+                # Locate "Parameters" section header
+                start_idx = None
+                for i, line in enumerate(lines):
+                    if line.strip() == "Parameters":
+                        if i + 1 < len(lines) and set(lines[i + 1].strip()) == {"-"}:
+                            start_idx = i + 2
+                            break
+                if start_idx is None:
+                    return {}
+
+                current_name = None
+                current_desc = []
+
+                def flush_param():
+                    if current_name:
+                        params[current_name] = " ".join(current_desc).strip()
+
+                i = start_idx
+                while i < len(lines):
+                    line = lines[i]
+                    # Stop at next section header
+                    if line and not line.startswith(" "):
+                        if i + 1 < len(lines) and set(lines[i + 1].strip()) == {"-"}:
+                            break
+
+                    if line and not line.startswith(" "):
+                        flush_param()
+                        header = line.strip()
+                        if not header:
+                            current_name = None
+                            current_desc = []
+                        else:
+                            # Accept both "name : type" and bare "name" entries.
+                            name = header.split(" :", 1)[0].strip()
+                            current_name = name if name else None
+                            current_desc = []
+                    else:
+                        if current_name is not None:
+                            current_desc.append(line.strip())
+                    i += 1
+
+                flush_param()
+                return params
+
+            def _parse_google_or_numpy(docstring: str, n_arguments: int = 0) -> dict:
+                args_sections = source_parsing.RE_PATTERN_ARGS_SECTION.findall(docstring)
+                if len(args_sections) == 1:
+                    args_section = inspect.cleandoc(args_sections[0])
+                    parsed_doc = {}
+                    for name, desc in source_parsing.RE_PATTERN_ARGS.findall(args_section):
+                        parsed_doc[name] = re.sub(
+                            r"\n ", "\n", re.sub(r"[\r\t\f\v ]+", " ", desc).strip()
+                        )
+                    return parsed_doc
+
+                numpy_doc = _parse_numpy_parameters(docstring)
+                if numpy_doc:
+                    return numpy_doc
+
+                if n_arguments:
+                    source_parsing.LOGGER.warning("The Args section is missing.")
+                return {}
+
+            source_parsing.parse_google = _parse_google_or_numpy
+            source_parsing._aeromaps_numpy_docstring_patch = True
+    except Exception:
+        # If GEMSEO is unavailable, keep logger config functional.
+        pass
+
+    # Enrich the warning with the originating callable when available.
     class SuppressArgsSectionWarning(logging.Filter):
         def filter(self, record: logging.LogRecord) -> bool:
-            return record.getMessage() != "The Args section is missing."
+            message = record.getMessage()
+            if message != "The Args section is missing.":
+                return True
 
+            model_name = None
+            frame = None
+            try:
+                import inspect
+
+                frame = inspect.currentframe()
+                while frame:
+                    if (
+                        frame.f_code.co_name == "get_options_doc"
+                        and frame.f_globals.get("__name__") == "gemseo.utils.source_parsing"
+                    ):
+                        func = frame.f_locals.get("function")
+                        qualname = getattr(func, "__qualname__", None) if func else None
+                        module = getattr(func, "__module__", None) if func else None
+                        if qualname and module:
+                            model_name = f"{module}.{qualname}"
+                        elif qualname:
+                            model_name = qualname
+                        break
+                    frame = frame.f_back
+            finally:
+                del frame
+
+            if model_name:
+                record.msg = f"{message} (function: {model_name})"
+                record.args = ()
+            return True
+
+    args_warning_filter = getattr(logger, "_aeromaps_args_warning_filter", None)
+    if args_warning_filter is None:
+        args_warning_filter = SuppressArgsSectionWarning()
+        logger._aeromaps_args_warning_filter = args_warning_filter
+
+    if args_warning_filter not in logger.filters:
+        logger.addFilter(args_warning_filter)
     for handler in logger.handlers:
-        handler.addFilter(SuppressArgsSectionWarning())
+        if args_warning_filter not in handler.filters:
+            handler.addFilter(args_warning_filter)
 
     return logger
 

@@ -76,7 +76,6 @@ class LoadFactorEfficiencyCost(AeroMAPSModel):
     def compute(
         self,
         load_factor_cost_non_energy_per_ask_final_value: float,
-        load_factor_end_year: float,
         load_factor: pd.Series,
     ) -> pd.Series:
         """
@@ -86,8 +85,6 @@ class LoadFactorEfficiencyCost(AeroMAPSModel):
         ----------
         load_factor_cost_non_energy_per_ask_final_value
             Extra cost related to implementation of load factor efficiency measures [€/ASK].
-        load_factor_end_year
-            Load factor at the end of the prospection period [%].
         load_factor
             Mean aircraft load factor [%].
 
@@ -97,10 +94,11 @@ class LoadFactorEfficiencyCost(AeroMAPSModel):
             Load factor efficiency cost non-energy per ASK [€/ASK].
         """
         load_factor_init = load_factor[self.prospection_start_year - 1]
+        load_factor_end_year_value = load_factor[self.end_year]
         load_factor_cost_non_energy_per_ask = (
             load_factor_cost_non_energy_per_ask_final_value
             * (load_factor - load_factor_init)
-            / (load_factor_end_year - load_factor_init)
+            / (load_factor_end_year_value - load_factor_init)
         )
         self.df.loc[:, "load_factor_cost_non_energy_per_ask"] = load_factor_cost_non_energy_per_ask
 

@@ -1,0 +1,53 @@
+# Fleet structure for the Phase 3 custom-market smoke test.
+#
+# Two passenger markets (regional, intercontinental) matching custom_markets.yaml.
+# market_served must match a market id declared in custom_markets.yaml.
+#
+#   regional        → 2 subcategories: conventional NB (75 %) + hydrogen NB (25 %)
+#   intercontinental → 1 subcategory: conventional WB (100 %)
+#
+# Subcategory shares within each category must sum to 100 %.
+
+subcategories:
+  - id: regional_conventional_nb
+    name: "Regional conventional NB"
+    share: 75.0
+    reference_aircraft:
+      old_ref: regional_conventional_nb_old
+      recent_ref: regional_conventional_nb_recent
+    aircraft:
+      - regional_nb_2035
+
+  - id: regional_hydrogen_nb
+    name: "Regional hydrogen NB"
+    share: 25.0
+    aircraft:
+      - regional_h2_2040
+
+  - id: intercont_conventional_wb
+    name: "Intercontinental conventional WB"
+    share: 100.0
+    reference_aircraft:
+      old_ref: intercont_conventional_wb_old
+      recent_ref: intercont_conventional_wb_recent
+    aircraft:
+      - intercont_wb_2035
+
+categories:
+  - market_served: regional
+    parameters:
+      life: 25
+      limit: 2
+    calibration_subcategory: regional_conventional_nb
+    subcategories:
+      - regional_conventional_nb
+      - regional_hydrogen_nb
+
+  - market_served: intercontinental
+    parameters:
+      life: 30
+      limit: 2
+    calibration_subcategory: intercont_conventional_wb
+    subcategories:
+      - intercont_conventional_wb
+

@@ -166,7 +166,7 @@
     "end_year": 2070,
     "covid_end_year_passenger": 2024,
     "covid_end_year_freight": 2022,
-    "cagr_passenger_short_range_reference_periods": [
+    "short_range_cagr_reference_periods": [
         2020,
         2029,
         2039,
@@ -174,14 +174,14 @@
         2061,
         2070
     ],
-    "cagr_passenger_short_range_reference_periods_values": [
+    "short_range_cagr_reference_periods_values": [
         5.36,
         4.0,
         3.9,
         3.2,
         3.0
     ],
-    "cagr_passenger_medium_range_reference_periods": [
+    "medium_range_cagr_reference_periods": [
         2020,
         2029,
         2039,
@@ -189,14 +189,14 @@
         2061,
         2070
     ],
-    "cagr_passenger_medium_range_reference_periods_values": [
+    "medium_range_cagr_reference_periods_values": [
         5.36,
         4.0,
         3.9,
         3.2,
         3.0
     ],
-    "cagr_passenger_long_range_reference_periods": [
+    "long_range_cagr_reference_periods": [
         2020,
         2029,
         2039,
@@ -204,14 +204,14 @@
         2061,
         2070
     ],
-    "cagr_passenger_long_range_reference_periods_values": [
+    "long_range_cagr_reference_periods_values": [
         5.36,
         4.0,
         3.9,
         3.2,
         3.0
     ],
-    "cagr_freight_reference_periods": [
+    "freight_cagr_reference_periods": [
         2020,
         2029,
         2039,
@@ -219,7 +219,7 @@
         2061,
         2070
     ],
-    "cagr_freight_reference_periods_values": [
+    "freight_cagr_reference_periods_values": [
         6.42,
         3.4,
         3.5,
@@ -241,7 +241,7 @@
         3.2,
         3.0
     ],
-    "reference_cagr_freight_reference_periods": [
+    "freight_reference_cagr_reference_periods": [
         2020,
         2029,
         2039,
@@ -249,7 +249,7 @@
         2061,
         2070
     ],
-    "reference_cagr_freight_reference_periods_values": [
+    "freight_reference_cagr_reference_periods_values": [
         6.42,
         3.4,
         3.5,
@@ -257,7 +257,7 @@
         3.0
     ],
     "load_factor_end_year": 82.399312,
-    "energy_per_ask_short_range_dropin_fuel_gain_reference_years": [
+    "short_range_energy_per_ask_dropin_fuel_gain_reference_years": [
         2020,
         2021,
         2022,
@@ -310,7 +310,7 @@
         2069,
         2070
     ],
-    "energy_per_ask_short_range_dropin_fuel_gain_reference_years_values": [
+    "short_range_energy_per_ask_dropin_fuel_gain_reference_years_values": [
         4.15,
         0.81,
         0.98,
@@ -363,7 +363,7 @@
         0.51,
         0.52
     ],
-    "energy_per_ask_medium_range_dropin_fuel_gain_reference_years": [
+    "medium_range_energy_per_ask_dropin_fuel_gain_reference_years": [
         2020,
         2021,
         2022,
@@ -416,7 +416,7 @@
         2069,
         2070
     ],
-    "energy_per_ask_medium_range_dropin_fuel_gain_reference_years_values": [
+    "medium_range_energy_per_ask_dropin_fuel_gain_reference_years_values": [
         4.15,
         0.81,
         0.98,
@@ -469,7 +469,7 @@
         0.51,
         0.52
     ],
-    "energy_per_ask_long_range_dropin_fuel_gain_reference_years": [
+    "long_range_energy_per_ask_dropin_fuel_gain_reference_years": [
         2020,
         2021,
         2022,
@@ -522,7 +522,7 @@
         2069,
         2070
     ],
-    "energy_per_ask_long_range_dropin_fuel_gain_reference_years_values": [
+    "long_range_energy_per_ask_dropin_fuel_gain_reference_years_values": [
         4.15,
         0.81,
         0.98,

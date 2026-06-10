@@ -5,6 +5,8 @@ data:
   outputs:
     json_outputs_file: ./other_nam_dom_outputs.json
 models:
+  markets:
+    markets_data_file: ../region_other_nam_dom/markets.yaml
   fleet:
     fleet_model_data_file: ../fleet/fleet.yaml
     aircraft_inventory_model_data_file: ../fleet/aircraft_inventory.yaml

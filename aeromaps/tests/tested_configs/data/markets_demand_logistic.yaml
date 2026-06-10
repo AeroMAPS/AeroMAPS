@@ -1,0 +1,165 @@
+# Test fixture for the price-coupled demand models.
+# Copy of default_markets/markets.yaml with global.demand.model switched.
+# Default market definitions for AeroMAPS.
+# These reproduce the previous hard-coded 4-market structure exactly.
+# FLEET REFACTORING FLAG In Phase 3 the fleet.yaml will reference these market ids.
+#
+# ─────────────────────────────────────────────────────────────────────────────
+# File structure
+# ─────────────────────────────────────────────────────────────────────────────
+# Three kinds of top-level blocks:
+#   global    (optional) — pipeline-wide switches, NOT overridable per market.
+#   defaults  (optional) — input templates merged into every market.
+#   <market_id> (one or more, required) — per-market overrides of defaults.
+#
+# Flattening convention: leaf keys are pushed to ``self.parameters``.
+#   - ``global`` leaves         → no prefix         (e.g. ``use_elasticity``)
+#   - market / defaults leaves  → ``<market_id>_<leaf_key>``
+# Sub-grouping keys (initial, growth, covid, …) are organisational only and
+# NOT included in flattened names. Leaves that would otherwise collide embed
+# the group name explicitly (``measures_start_year``, ``covid_end_year``, …).
+#
+# Merge rules (defaults → market): deep-merge keyed by traffic_type; per-market
+# values override at the leaf level; lists are replaced wholesale; sub-groups
+# absent in both remain absent (so optional disciplines stay opt-in via their
+# factory checks).
+#
+# ─────────────────────────────────────────────────────────────────────────────
+# Per-market schema (see individual market entries below)
+# ─────────────────────────────────────────────────────────────────────────────
+# Required:
+#   name, traffic_type (passenger|freight), traffic_unit (RPK|RTK),
+#   inputs.initial  (2019 share + energy calibration; passenger costs.init too)
+# Optional sub-groups (fallback to ``defaults`` when omitted):
+#   inputs.growth, inputs.covid, inputs.reference        (all markets)
+#   inputs.load_factor, inputs.measures, inputs.costs    (passenger only)
+#   inputs.efficiency_simple
+#       passenger: gain curve + H2/electric introduction
+#       freight:   drop-in gain curve only — consumed when the
+#                  ``FreightAircraftEfficiencySimple`` model is included in the
+#                  user's model dict (see ``aeromaps/core/models.py``).
+
+# Pipeline-wide switches. Applied once for the whole run; cannot be overridden
+# per market. Leaves are flattened WITHOUT a market prefix when reading the yaml.
+global:
+  # Passenger demand model selector — four modes. Build-time only (not a model
+  # parameter). Pick exactly one ``model``:
+  #   cagr                 (default) — CAGR-based RPKMarket chain, no price feedback.
+  #   cagr_elasticity      — CAGR chain + RPKElasticity (airfare ↔ RPK power-law
+  #                          feedback closed by GEMSEO's MDA). Uses the
+  #                          ``elasticity`` block below.
+  #   constant_elasticity  — RPKPriceIncomeElasticity: RPK/cap = sigma·GDP^a·price^b.
+  #   logistic_income      — RPKLogisticIncomePriceElasticity: logistic income
+  #                          trend × price index.
+  # ``constant_elasticity`` and ``logistic_income`` are independent demand models
+  # that carry their own cost feedback (reading ``doc_net_energy_per_rpk_mean``);
+  # when selected the CAGR chain / RPKElasticity are not instantiated and the
+  # ``elasticity`` block is ignored.
+  demand:
+    model: logistic_income
+  # Price elasticity of demand — global calibration (not per-market for now).
+  # Used only by ``demand.model: cagr_elasticity``. ``use_elasticity: true`` is a
+  # legacy alias for that mode (kept for configs predating ``demand.model``).
+  elasticity:
+    use_elasticity: false
+    price_elasticity: -0.9
+    initial_airfare_per_rpk: 0.09236379319842411
+
+# Per-market input templates, keyed by traffic_type. Deep-merged into every
+# market's ``inputs`` before flattening; any leaf set on a market wins.
+defaults:
+  passenger:
+    inputs:
+      growth:
+        cagr_reference_periods: []
+        cagr_reference_periods_values: [3.0]
+      covid:
+        covid_drop_start_year: 66.0
+        covid_end_year: 2024
+        covid_end_year_reference_ratio: 100.0
+      load_factor:
+        load_factor_end_year: 85.0
+        covid_load_factor_2020: 65.2
+      measures:
+        measures_final_impact: 0.0
+        measures_start_year: 2051
+        measures_duration: 5.0
+      efficiency_simple: # only whitout bottom up fleet model 
+        energy_per_ask_dropin_fuel_gain_reference_years: []
+        energy_per_ask_dropin_fuel_gain_reference_years_values: [2.0]
+        hydrogen_final_market_share: 0.0
+        hydrogen_introduction_year: 2051
+        electric_final_market_share: 0.0
+        electric_introduction_year: 2051
+        relative_energy_per_ask_hydrogen_wrt_dropin_reference_years: []
+        relative_energy_per_ask_hydrogen_wrt_dropin_reference_years_values: [1.0]
+        relative_energy_per_ask_electric_wrt_dropin_reference_years: []
+        relative_energy_per_ask_electric_wrt_dropin_reference_years_values: [1.0]
+      costs: # only whitout bottom up fleet model 
+        doc_non_energy_per_ask_dropin_fuel_gain: 0.0
+        relative_doc_non_energy_per_ask_hydrogen_wrt_dropin: 1.1
+        relative_doc_non_energy_per_ask_electric_wrt_dropin: 1.0
+      reference:
+        reference_cagr_reference_periods: []
+        reference_cagr_reference_periods_values: [3.0]
+  freight:
+    inputs:
+      growth:
+        cagr_reference_periods: []
+        cagr_reference_periods_values: [3.0]
+      covid:
+        covid_drop_start_year: 66.0
+        covid_end_year: 2024
+        covid_end_year_reference_ratio: 100.0
+      reference:
+        reference_cagr_reference_periods: []
+        reference_cagr_reference_periods_values: [3.0]
+      # Used only when ``global.freight_efficiency.mode == simple``.
+      # efficiency_simple:
+      #  energy_per_rtk_dropin_fuel_gain_reference_years: []
+      #  energy_per_rtk_dropin_fuel_gain_reference_years_values: [1.5]
+
+# Market entries. Each block declares one market; the YAML key is its id.
+# Only ``initial`` (and ``costs`` for passenger) is required here — every other
+# sub-group falls back to ``defaults``.
+short_range:
+  name: "Short Range"
+  traffic_type: passenger
+  traffic_unit: RPK
+  inputs:
+    initial:
+      rpk_share_2019: 27.2
+      energy_share_2019: 26.01
+    costs:
+      doc_non_energy_per_ask_dropin_fuel_init: 0.048375
+
+medium_range:
+  name: "Medium Range"
+  traffic_type: passenger
+  traffic_unit: RPK
+  inputs:
+    initial:
+      rpk_share_2019: 35.1
+      energy_share_2019: 26.18
+    costs:
+      doc_non_energy_per_ask_dropin_fuel_init: 0.0301
+
+long_range:
+  name: "Long Range"
+  traffic_type: passenger
+  traffic_unit: RPK
+  inputs:
+    initial:
+      rpk_share_2019: 37.7
+      energy_share_2019: 32.81
+    costs:
+      doc_non_energy_per_ask_dropin_fuel_init: 0.024725
+
+freight:
+  name: "Freight"
+  traffic_type: freight
+  traffic_unit: RTK
+  inputs:
+    initial:
+      rtk_share_2019: 100.0
+      energy_share_2019: 15.0

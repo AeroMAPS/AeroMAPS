@@ -86,7 +86,6 @@ class ScenarioEnergyExpensesComparison(SingleScenarioPlot):
         self.ax.set_title("Annual energy expenses per pathway")
         self.ax.set_ylabel("Energy expenses [M€]")
 
-
         self.ax.set_xlim(2020, self.years[-1])
         # #
 
@@ -336,7 +335,6 @@ class DOCEvolutionBreakdown(SingleScenarioPlot):
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Direct Operating Costs [€/ASK]")
 
-
         components_handles = [
             Patch(facecolor="cornflowerblue", edgecolor="black", label="Energy"),
             Patch(facecolor="royalblue", edgecolor="black", label="Non-energy"),
@@ -378,21 +376,23 @@ class DOCEvolutionBreakdown(SingleScenarioPlot):
         # self.ax.set_ylim(0,)
 
 
-class DOCEvolutionCategory(SingleScenarioPlot):
-    required_outputs = [
-        "doc_total_per_ask_short_range_dropin_fuel",
-        "doc_total_per_ask_medium_range_dropin_fuel",
-        "doc_total_per_ask_long_range_dropin_fuel",
-        "doc_total_per_ask_short_range_hydrogen",
-        "doc_total_per_ask_medium_range_hydrogen",
-        "doc_total_per_ask_long_range_hydrogen",
-        "doc_total_per_ask_short_range_electric",
-        "doc_total_per_ask_medium_range_electric",
-        "doc_total_per_ask_long_range_electric",
-        "doc_total_per_ask_mean",
-    ]
+_DOC_ENERGY_TYPES = [
+    ("dropin_fuel", "D.in"),
+    ("hydrogen", "H2"),
+    ("electric", "battery electric"),
+]
 
+
+class DOCEvolutionCategory(SingleScenarioPlot):
     def __init__(self, process, figsize=None, **kwargs):
+        passenger_markets = list(process.markets.get(traffic_type="passenger"))
+        required = [
+            f"doc_total_per_ask_{m.id}_{et}"
+            for m in passenger_markets
+            for et, _ in _DOC_ENERGY_TYPES
+        ]
+        required.append("doc_total_per_ask_mean")
+        self._passenger_markets = passenger_markets
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize, **kwargs)
 
@@ -400,77 +400,19 @@ class DOCEvolutionCategory(SingleScenarioPlot):
         return (plot_2_x, plot_2_y)
 
     def create_plot(self):
-        (self.line_srdi,) = self.ax.plot(
-            self.prospective_years,
-            self.df.loc[self.prospective_years, "doc_total_per_ask_short_range_dropin_fuel"],
-            linestyle="-",
-            label="Short range-D.in",
-            linewidth=2,
-        )
-
-        (self.line_mrdi,) = self.ax.plot(
-            self.prospective_years,
-            self.df.loc[self.prospective_years, "doc_total_per_ask_medium_range_dropin_fuel"],
-            linestyle="-",
-            label="Medium range-D.in",
-            linewidth=2,
-        )
-
-        (self.line_lrdi,) = self.ax.plot(
-            self.prospective_years,
-            self.df.loc[self.prospective_years, "doc_total_per_ask_long_range_dropin_fuel"],
-            linestyle="-",
-            label="Long range-D.in",
-            linewidth=2,
-        )
-
-        (self.line_srh,) = self.ax.plot(
-            self.prospective_years,
-            self.df.loc[self.prospective_years, "doc_total_per_ask_short_range_hydrogen"],
-            linestyle="-",
-            label="Short range-H2",
-            linewidth=2,
-        )
-
-        (self.line_mrh,) = self.ax.plot(
-            self.prospective_years,
-            self.df.loc[self.prospective_years, "doc_total_per_ask_medium_range_hydrogen"],
-            linestyle="-",
-            label="Medium range-H2",
-            linewidth=2,
-        )
-
-        (self.line_lrh,) = self.ax.plot(
-            self.prospective_years,
-            self.df.loc[self.prospective_years, "doc_total_per_ask_long_range_hydrogen"],
-            linestyle="-",
-            label="Long range-H2",
-            linewidth=2,
-        )
-
-        (self.line_sre,) = self.ax.plot(
-            self.prospective_years,
-            self.df.loc[self.prospective_years, "doc_total_per_ask_short_range_electric"],
-            linestyle="-",
-            label="Short range-battery electric",
-            linewidth=2,
-        )
-
-        (self.line_mre,) = self.ax.plot(
-            self.prospective_years,
-            self.df.loc[self.prospective_years, "doc_total_per_ask_medium_range_electric"],
-            linestyle="-",
-            label="Medium range-battery electric",
-            linewidth=2,
-        )
-
-        (self.line_lre,) = self.ax.plot(
-            self.prospective_years,
-            self.df.loc[self.prospective_years, "doc_total_per_ask_long_range_electric"],
-            linestyle="-",
-            label="Long range-battery electric",
-            linewidth=2,
-        )
+        self.lines = {}
+        for market in self._passenger_markets:
+            self.lines[market.id] = {}
+            for energy_type, energy_label in _DOC_ENERGY_TYPES:
+                col = f"doc_total_per_ask_{market.id}_{energy_type}"
+                (line,) = self.ax.plot(
+                    self.prospective_years,
+                    self.df.loc[self.prospective_years, col],
+                    linestyle="-",
+                    label=f"{market.name}-{energy_label}",
+                    linewidth=2,
+                )
+                self.lines[market.id][energy_type] = line
 
         (self.line_tot,) = self.ax.plot(
             self.prospective_years,
@@ -489,42 +431,12 @@ class DOCEvolutionCategory(SingleScenarioPlot):
         self.ax.set_xlim(2020, self.years[-1])
 
     def _update_plot_elements(self):
-        self.line_lrh.set_ydata(
-            self.df.loc[self.prospective_years, "doc_total_per_ask_long_range_hydrogen"]
-        )
-
-        self.line_lrdi.set_ydata(
-            self.df.loc[self.prospective_years, "doc_total_per_ask_long_range_dropin_fuel"]
-        )
-
-        self.line_lre.set_ydata(
-            self.df.loc[self.prospective_years, "doc_total_per_ask_long_range_electric"]
-        )
-
-        self.line_mrh.set_ydata(
-            self.df.loc[self.prospective_years, "doc_total_per_ask_medium_range_hydrogen"]
-        )
-
-        self.line_mrdi.set_ydata(
-            self.df.loc[self.prospective_years, "doc_total_per_ask_medium_range_dropin_fuel"]
-        )
-
-        self.line_mre.set_ydata(
-            self.df.loc[self.prospective_years, "doc_total_per_ask_medium_range_electric"]
-        )
-
-        self.line_srh.set_ydata(
-            self.df.loc[self.prospective_years, "doc_total_per_ask_short_range_hydrogen"]
-        )
-
-        self.line_srdi.set_ydata(
-            self.df.loc[self.prospective_years, "doc_total_per_ask_short_range_dropin_fuel"]
-        )
-
-        self.line_sre.set_ydata(
-            self.df.loc[self.prospective_years, "doc_total_per_ask_short_range_electric"]
-        )
-
+        for market in self._passenger_markets:
+            for energy_type, _ in _DOC_ENERGY_TYPES:
+                col = f"doc_total_per_ask_{market.id}_{energy_type}"
+                self.lines[market.id][energy_type].set_ydata(
+                    self.df.loc[self.prospective_years, col]
+                )
         self.line_tot.set_ydata(self.df.loc[self.prospective_years, "doc_total_per_ask_mean"])
 
 
@@ -769,12 +681,6 @@ class AirfareEvolutionBreakdown(SingleScenarioPlot):
         self.ax.set_xlim(self.prospective_years[0], self.prospective_years[-1])
 
     def _update_plot_elements(self):
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
         for collection in self.ax.collections:
             collection.remove()
 

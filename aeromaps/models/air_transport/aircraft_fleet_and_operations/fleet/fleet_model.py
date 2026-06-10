@@ -28,6 +28,12 @@ import numpy as np
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
+from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_assignment import (
+    FleetAssignmentMixin,
+)
+from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_performance import (
+    FleetPerformanceMixin,
+)
 from aeromaps.utils.yaml import read_yaml_file
 
 AIRCRAFT_COLUMNS = [
@@ -52,10 +58,51 @@ DEFAULT_FLEET_DATA_DIR = PACKAGE_ROOT / "resources" / "data" / "default_fleet"
 DEFAULT_AIRCRAFT_INVENTORY_CONFIG_FILE = DEFAULT_FLEET_DATA_DIR / "aircraft_inventory.yaml"
 DEFAULT_FLEET_CONFIG_FILE = DEFAULT_FLEET_DATA_DIR / "fleet.yaml"
 
+# Pairs of (absolute_field, relative_field) on AircraftParameters that describe
+# the same performance metric. Exactly one of the two must be set on each new
+# aircraft card. See _validate_perf_mode and Aircraft.resolved.
+_PERF_PAIRS = [
+    ("energy_per_ask", "consumption_evolution"),
+    ("emission_index_nox", "nox_evolution"),
+    ("emission_index_soot", "soot_evolution"),
+    ("doc_non_energy_base", "doc_non_energy_evolution"),
+]
+_RELATIVE_BY_ABSOLUTE = dict(_PERF_PAIRS)
+
+
+def _validate_perf_mode(aircraft_id: str, params: "AircraftParameters") -> None:
+    """Enforce that each performance metric is declared either absolute or relative, not both/neither."""
+    for absolute_name, relative_name in _PERF_PAIRS:
+        has_abs = getattr(params, absolute_name) is not None
+        has_rel = getattr(params, relative_name) is not None
+        if has_abs and has_rel:
+            raise ValueError(
+                f"Aircraft '{aircraft_id}': both '{absolute_name}' (absolute) and "
+                f"'{relative_name}' (relative) are set. Pick exactly one."
+            )
+        if not has_abs and not has_rel:
+            raise ValueError(
+                f"Aircraft '{aircraft_id}': neither '{absolute_name}' nor "
+                f"'{relative_name}' is set. Pick exactly one."
+            )
+
 
 @dataclass
 class AircraftParameters:
     """Parameters defining an aircraft's characteristics and performance.
+
+    Performance metrics (energy per ASK, NOx, soot, non-energy DOC) can be
+    declared in one of two modes per metric, independently:
+
+    - **Relative**: ``*_evolution`` field, expressed as a percentage delta vs
+      the subcategory's recent reference aircraft.
+    - **Absolute**: same field name as on the reference-aircraft card
+      (``energy_per_ask``, ``emission_index_nox``, ``emission_index_soot``,
+      ``doc_non_energy_base``), expressed in absolute units.
+
+    For each of the four metrics, **exactly one** of the relative or absolute
+    field must be set. Both-set or neither-set raises ``ValueError`` at YAML
+    load time (see :func:`Fleet._load_aircraft_inventory`).
 
     Attributes
     ----------
@@ -63,12 +110,20 @@ class AircraftParameters:
         Year when the aircraft enters service [yr].
     consumption_evolution
         Relative change in energy consumption compared to reference aircraft [%].
+    energy_per_ask
+        Absolute energy consumption per ASK [MJ/ASK]. Alternative to ``consumption_evolution``.
     nox_evolution
         Relative change in NOx emissions compared to reference aircraft [%].
+    emission_index_nox
+        Absolute NOx emission index per ASK [kg/ASK]. Alternative to ``nox_evolution``.
     soot_evolution
         Relative change in soot emissions compared to reference aircraft [%].
+    emission_index_soot
+        Absolute soot emission index per ASK [kg/ASK]. Alternative to ``soot_evolution``.
     doc_non_energy_evolution
         Relative change in non-energy direct operating costs compared to reference aircraft [%].
+    doc_non_energy_base
+        Absolute non-energy DOC per ASK [€/ASK]. Alternative to ``doc_non_energy_evolution``.
     cruise_altitude
         Typical cruise altitude of the aircraft [m].
     hybridization_factor
@@ -87,9 +142,13 @@ class AircraftParameters:
 
     entry_into_service_year: Optional[float] = None
     consumption_evolution: Optional[float] = None
+    energy_per_ask: Optional[float] = None
     nox_evolution: Optional[float] = None
+    emission_index_nox: Optional[float] = None
     soot_evolution: Optional[float] = None
+    emission_index_soot: Optional[float] = None
     doc_non_energy_evolution: Optional[float] = None
+    doc_non_energy_base: Optional[float] = None
     cruise_altitude: Optional[float] = None
     hybridization_factor: float = 0.0
     ask_year: Optional[float] = None
@@ -243,6 +302,26 @@ class Aircraft(object):
 
         return self
 
+    def resolved(self, metric: str, recent_ref: "ReferenceAircraftParameters") -> float:
+        """Return the absolute value of a performance metric for this aircraft.
+
+        ``metric`` is one of the absolute field names from :data:`_PERF_PAIRS`
+        (``energy_per_ask``, ``emission_index_nox``, ``emission_index_soot``,
+        ``doc_non_energy_base``). When the aircraft card sets that field
+        directly, its value is returned; otherwise the paired relative-evolution
+        field is applied to ``recent_ref``'s value for the same metric.
+        :func:`_validate_perf_mode` guarantees exactly one branch fires.
+
+        For an aircraft serving multiple markets, relative mode yields different
+        absolute values per market (each has its own recent reference); absolute
+        mode yields the user-provided value as-is in every market.
+        """
+        abs_value = getattr(self.parameters, metric)
+        if abs_value is not None:
+            return float(abs_value)
+        evolution = getattr(self.parameters, _RELATIVE_BY_ABSOLUTE[metric])
+        return float(getattr(recent_ref, metric)) * (1 + float(evolution) / 100)
+
 
 class SubCategory(object):
     """Represents a subcategory of aircraft within a category.
@@ -325,27 +404,39 @@ class Category(object):
     Parameters
     ----------
     name
-        Name identifier for the category (e.g., 'Short Range', 'Medium Range', 'Long Range').
+        Human-readable display name for the category (e.g., 'Short Range', 'Medium Range',
+        'Long Range'), populated from
+        :class:`~aeromaps.models.air_transport.markets.market.Market`.name when a
+        :class:`MarketManager` is available, otherwise from the ``market_id``.
     parameters
         Category parameters including aircraft lifetime.
+    market_id
+        Market identifier that references this category's entry in ``markets.yaml``
+        (e.g., ``short_range``).
 
     Attributes
     ----------
     name : str
-        Name identifier for the category.
+        Human-readable display name for the category.
+    market_id : str
+        Market identifier string (e.g., ``"short_range"``).
     parameters : CategoryParameters
         Category parameters including aircraft lifetime.
     subcategories : Dict[int, SubCategory]
         Dictionary of subcategories within this category.
     total_shares : float
         Sum of all subcategory market shares (should equal 100%).
+    calibration_subcategory_id : str or None
+        ID of the subcategory used for reference aircraft calibration.
     """
 
-    def __init__(self, name: str, parameters: CategoryParameters):
+    def __init__(self, name: str, parameters: CategoryParameters, market_id: str):
         self.name = name
+        self.market_id = market_id
         self.parameters = parameters
         self.subcategories: Dict[int, SubCategory] = {}
         self.total_shares = 0.0
+        self.calibration_subcategory_id: Optional[str] = None
 
     def _compute(self) -> None:
         """Validate shares and compute all subcategories."""
@@ -411,6 +502,13 @@ class Fleet(object):
     fleet_config_path
         Path to the YAML file containing the fleet structure configuration.
         Defaults to the package's default fleet configuration.
+    markets
+        :class:`~aeromaps.models.air_transport.markets.market_manager.MarketManager`
+        instance used to look up market display names and validate the
+        ``market_served:`` field of each category entry in ``fleet.yaml``.
+        When ``None``, validation is skipped and the
+        ``market_id`` is used as the display name (used by lightweight unit tests
+        that bypass the process-level wiring).
 
     Attributes
     ----------
@@ -418,6 +516,9 @@ class Fleet(object):
         Dictionary of aircraft categories indexed by category name.
     parameters
         External parameters for reference aircraft calibration.
+    markets
+        The :class:`~aeromaps.models.air_transport.markets.market_manager.MarketManager`
+        passed at construction time (or ``None``).
     aircraft_inventory_path : Path
         Path to the aircraft inventory YAML file.
     fleet_config_path : Path
@@ -431,9 +532,13 @@ class Fleet(object):
         parameters=None,
         aircraft_inventory_path: Optional[Path] = None,
         fleet_config_path: Optional[Path] = None,
+        markets=None,
     ):
         self._categories: Dict[str, Category] = {}
         self.parameters = parameters
+        self.markets = markets
+        # Populated during _build_fleet_from_yaml: subcategory id → display name.
+        self._subcategory_name_by_id: Dict[str, str] = {}
         self.aircraft_inventory_path = (
             Path(aircraft_inventory_path)
             if aircraft_inventory_path is not None
@@ -706,6 +811,7 @@ class Fleet(object):
             if aircraft_id is None:
                 continue
             params = AircraftParameters(**entry.get("parameters", {}))
+            _validate_perf_mode(aircraft_id, params)
             aircraft_inventory[aircraft_id] = Aircraft(
                 name=entry.get("name"),
                 parameters=params,
@@ -728,20 +834,58 @@ class Fleet(object):
         subcategory_inventory = self._build_subcategory_inventory(
             fleet_config.get("subcategories", [])
         )
+        # Build id → display name lookup used by _calibrate_reference_aircraft (3.B).
+        self._subcategory_name_by_id = {
+            sub_id: entry.get("name", sub_id) for sub_id, entry in subcategory_inventory.items()
+        }
 
-        for category_cfg in fleet_config.get("categories", []):
-            cat_name = category_cfg.get("name")
-            if cat_name is None:
+        # Schema: ``categories:`` is a list of entries; each entry must declare the
+        # ``market_served:`` it serves (a market_id from markets.yaml).
+        category_entries = fleet_config.get("categories", [])
+
+        # Build a lookup from market_id → Market when MarketManager is available.
+        market_lookup: Dict[str, Any] = {}
+        if self.markets is not None:
+            market_lookup = {m.id: m for m in self.markets.get_all()}
+
+            # Validate: every category entry must reference a known market_id.
+            unknown_ids = [
+                entry.get("market_served")
+                for entry in category_entries
+                if entry.get("market_served") not in market_lookup
+            ]
+            if unknown_ids:
+                raise KeyError(
+                    f"fleet.yaml references unknown market IDs: {unknown_ids}. "
+                    f"Known market IDs: {list(market_lookup)}"
+                )
+
+            # Validate: every passenger market must be served by a category entry.
+            served_ids = {entry.get("market_served") for entry in category_entries}
+            passenger_market_ids = {m.id for m in self.markets.get(traffic_type="passenger")}
+            missing_ids = passenger_market_ids - served_ids
+            if missing_ids:
+                raise KeyError(
+                    f"fleet.yaml is missing categories for passenger markets: {sorted(missing_ids)}"
+                )
+
+        for market_cfg in category_entries:
+            market_id = market_cfg.get("market_served")
+            if market_id is None:
                 continue
-            cat_params = CategoryParameters(**category_cfg.get("parameters", {}))
-            category = Category(cat_name, parameters=cat_params)
 
-            for sub_cfg_entry in category_cfg.get("subcategories", []):
+            # Resolve display name: prefer MarketManager, fall back to market_id.
+            cat_name = market_lookup[market_id].name if market_id in market_lookup else market_id
+
+            cat_params = CategoryParameters(**market_cfg.get("parameters", {}))
+            category = Category(cat_name, parameters=cat_params, market_id=market_id)
+            category.calibration_subcategory_id = market_cfg.get("calibration_subcategory")
+
+            for sub_cfg_entry in market_cfg.get("subcategories", []):
                 sub_cfg = self._normalize_subcategory_entry(sub_cfg_entry)
                 resolved_sub_cfg = self._resolve_subcategory_config(sub_cfg, subcategory_inventory)
 
                 share_value = resolved_sub_cfg.get("share", 0.0)
-
                 subcategory = SubCategory(
                     resolved_sub_cfg.get("name"),
                     parameters=SubcategoryParameters(share=share_value),
@@ -765,7 +909,8 @@ class Fleet(object):
                     aircraft_id = self._extract_aircraft_id(aircraft_entry)
                     if aircraft_id not in inventory:
                         raise KeyError(
-                            f"Aircraft '{aircraft_id}' is missing from inventory {self.aircraft_inventory_path}"
+                            f"Aircraft '{aircraft_id}' is missing from inventory "
+                            f"{self.aircraft_inventory_path}"
                         )
                     subcategory.add_aircraft(aircraft=deepcopy(inventory[aircraft_id]))
 
@@ -860,174 +1005,141 @@ class Fleet(object):
                 return subcategory
         return None
 
+    def _calibration_subcategory_for(self, market_id: str) -> Optional[str]:
+        """Return the calibration subcategory id for the given market id.
+
+        Looks up the :class:`Category` whose ``market_id`` matches *market_id*
+        and returns its ``calibration_subcategory_id`` (set during
+        ``_build_fleet_from_yaml`` from the ``calibration_subcategory:`` YAML
+        field).  Returns ``None`` if no matching category is found.
+        """
+        for cat in self.categories.values():
+            if cat.market_id == market_id:
+                return cat.calibration_subcategory_id
+        return None
+
+    def _subcategory_display_name(self, sub_id: str) -> Optional[str]:
+        """Return the display name for a subcategory id.
+
+        Uses the ``_subcategory_name_by_id`` lookup populated during
+        ``_build_fleet_from_yaml``.  Returns ``None`` when *sub_id* is not found.
+        """
+        return self._subcategory_name_by_id.get(sub_id)
+
     def _calibrate_reference_aircraft(self):
-        if self.parameters is None:
+        if self.parameters is None or self.markets is None:
             return
 
-        sr_cat = self.categories.get("Short Range")
-        sr_nb_cat = self._get_subcategory("Short Range", "SR conventional narrow-body")
-        if sr_cat is not None and sr_nb_cat is not None:
-            old_sr_energy = sr_nb_cat.old_reference_aircraft.energy_per_ask
-            recent_sr_energy = sr_nb_cat.recent_reference_aircraft.energy_per_ask
-            if old_sr_energy is None or recent_sr_energy is None:
-                raise ValueError("Short Range reference aircraft energy_per_ask must be defined")
-            
-            if self.parameters.short_range_rpk_share_2019==0.0:
-                mean_energy_init_ask_short_range = np.nan
+        for market in self.markets.get(traffic_type="passenger"):
+            mid = market.id
+            cat_name = market.name
+
+            category = self.categories.get(cat_name)
+            if category is None:
+                continue
+
+            # Calibration subcategory is normally declared in fleet.yaml via
+            # ``calibration_subcategory: <id>``. When it is omitted, fall back to the
+            # category's sole subcategory (the choice is then unambiguous) instead of
+            # silently skipping calibration — skipping leaves the reference aircraft on
+            # their default entry-into-service years and makes the fleet look wrongly
+            # efficient. Only a genuinely ambiguous category (>1 subcategory, no field)
+            # is skipped, and loudly.
+            sub_id = self._calibration_subcategory_for(mid)
+            subcat = None
+            if sub_id is not None:
+                sub_name = self._subcategory_display_name(sub_id)
+                if sub_name is not None:
+                    subcat = self._get_subcategory(cat_name, sub_name)
             else:
-                mean_energy_init_ask_short_range = (
-                    self.parameters.energy_consumption_init[2019]
-                    * self.parameters.short_range_energy_share_2019
-                ) / (self.parameters.ask_init[2019] * self.parameters.short_range_rpk_share_2019)
+                subcats = list(category.subcategories.values())
+                if len(subcats) == 1:
+                    subcat = subcats[0]
+                elif len(subcats) > 1:
+                    warnings.warn(
+                        f"Warning Message - Fleet Model: category '{cat_name}' has multiple "
+                        f"subcategories but no 'calibration_subcategory' declared in fleet.yaml — "
+                        f"reference-aircraft calibration is skipped for this market."
+                    )
 
-            share_recent_short_range = (mean_energy_init_ask_short_range - old_sr_energy) / (
-                recent_sr_energy - old_sr_energy
-            )
+            if subcat is None:
+                continue
 
-            # We fix the life of short-range aircraft to 25 years for calibration
-            # This way the share between old and recent reference aircraft in 2019 remains the same
-            sr_life = 25
-            # sr_life = sr_cat.parameters.life
-            lambda_short_range = np.log(100 / 2 - 1) / (sr_life / 2)
+            energy_share_param = f"{mid}_energy_share_2019"
+            rpk_share_param = f"{mid}_rpk_share_2019"
+            self._run_calibration_for_subcat(subcat, cat_name, energy_share_param, rpk_share_param)
 
-            if 1 > share_recent_short_range > 0:
-                t0_sr = np.log(
-                    (1 - share_recent_short_range) / share_recent_short_range
-                ) / lambda_short_range + (self.parameters.prospection_start_year - 1)
-                t_eis_short_range = t0_sr - sr_life / 2
-            elif share_recent_short_range > 1:
-                warnings.warn(
-                    "Warning Message - Fleet Model: Short Range Aircraft: "
-                    "Average initial short-range fleet energy per ASK is lower than default energy per ASK "
-                    "for the recent reference aircraft - AeroMAPS is using initial short-range fleet energy per ASK "
-                    "as old and recent reference aircraft energy performances!"
-                )
-                t_eis_short_range = self.parameters.prospection_start_year - 1 - sr_life
-                sr_nb_cat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask_short_range
-                sr_nb_cat.recent_reference_aircraft.energy_per_ask = (
-                    mean_energy_init_ask_short_range
-                )
-            else:
-                warnings.warn(
-                    "Warning Message - Fleet Model: Short Range Aircraft: "
-                    "Average initial short-range fleet energy per ASK is higher than default energy per ASK for the old reference aircraft - "
-                    "AeroMAPS is using initial short-range fleet energy per ASK as old aircraft energy performances. "
-                    "Recent reference aircraft is introduced on first prospective year"
-                )
-                t_eis_short_range = self.parameters.prospection_start_year
-                sr_nb_cat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask_short_range
+    def _run_calibration_for_subcat(
+        self,
+        subcat,
+        category_name: str,
+        energy_share_param: str,
+        rpk_share_param: str,
+    ) -> None:
+        """Calibrate a single reference-aircraft pair.
 
-            sr_nb_cat.recent_reference_aircraft.entry_into_service_year = t_eis_short_range
+        Parameters
+        ----------
+        subcat
+            The :class:`SubCategory` whose reference aircraft will be calibrated.
+        category_name
+            Human-readable market / category name (used in warning messages).
+        energy_share_param
+            Attribute name on ``self.parameters`` for the 2019 energy share
+            (e.g. ``"short_range_energy_share_2019"``).
+        rpk_share_param
+            Attribute name on ``self.parameters`` for the 2019 RPK share
+            (e.g. ``"short_range_rpk_share_2019"``).
+        """
+        old_energy = subcat.old_reference_aircraft.energy_per_ask
+        recent_energy = subcat.recent_reference_aircraft.energy_per_ask
+        if old_energy is None or recent_energy is None:
+            raise ValueError(f"{category_name} reference aircraft energy_per_ask must be defined")
 
-        mr_cat = self.categories.get("Medium Range")
-        mr_subcat = self._get_subcategory("Medium Range", "MR conventional narrow-body")
-        if mr_cat is not None and mr_subcat is not None:
-            old_mr_energy = mr_subcat.old_reference_aircraft.energy_per_ask
-            recent_mr_energy = mr_subcat.recent_reference_aircraft.energy_per_ask
-            if old_mr_energy is None or recent_mr_energy is None:
-                raise ValueError("Medium Range reference aircraft energy_per_ask must be defined")
-
-            if self.parameters.medium_range_rpk_share_2019==0.0:
-                mean_energy_init_ask_medium_range = np.nan
-            else:
-                mean_energy_init_ask_medium_range = (
+        if getattr(self.parameters, rpk_share_param) == 0.0:
+            mean_energy_init_ask = np.nan
+        else:
+            mean_energy_init_ask = (
                 self.parameters.energy_consumption_init[2019]
-                * self.parameters.medium_range_energy_share_2019
-                ) / (self.parameters.ask_init[2019] * self.parameters.medium_range_rpk_share_2019)
-            
+                * getattr(self.parameters, energy_share_param)
+            ) / (self.parameters.ask_init[2019] * getattr(self.parameters, rpk_share_param))
 
-            share_recent_medium_range = (mean_energy_init_ask_medium_range - old_mr_energy) / (
-                recent_mr_energy - old_mr_energy
+        share_recent = (mean_energy_init_ask - old_energy) / (recent_energy - old_energy)
+
+        # We fix the life to 25 years for calibration
+        # This way the share between old and recent reference aircraft in 2019 remains the same
+        life = 25
+        lam = np.log(100 / 2 - 1) / (life / 2)
+
+        if 1 > share_recent > 0:
+            t0 = np.log((1 - share_recent) / share_recent) / lam + (
+                self.parameters.prospection_start_year - 1
             )
-
-            # We fix the life of short-range aircraft to 25 years for calibration
-            # This way the share between old and recent reference aircraft in 2019 remains the same
-            mr_life = 25
-            # mr_life = mr_cat.parameters.life
-            lambda_medium_range = np.log(100 / 2 - 1) / (mr_life / 2)
-
-            if 1 > share_recent_medium_range > 0:
-                t0_mr = np.log(
-                    (1 - share_recent_medium_range) / share_recent_medium_range
-                ) / lambda_medium_range + (self.parameters.prospection_start_year - 1)
-                t_eis_medium_range = t0_mr - mr_life / 2
-            elif share_recent_medium_range > 1:
-                warnings.warn(
-                    "Warning Message - Fleet Model: medium Range Aircraft: "
-                    "Average initial medium-range fleet energy per ASK is lower than default energy per ASK for the recent reference aircraft - "
-                    "AeroMAPS is using initial medium-range fleet energy per ASK as old and recent reference aircraft energy performances!"
-                )
-                t_eis_medium_range = self.parameters.prospection_start_year - 1 - mr_life
-                mr_subcat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask_medium_range
-                mr_subcat.recent_reference_aircraft.energy_per_ask = (
-                    mean_energy_init_ask_medium_range
-                )
-            else:
-                warnings.warn(
-                    "Warning Message - Fleet Model: medium Range Aircraft: "
-                    "Average initial medium-range fleet energy per ASK is higher than default energy per ASK for the old reference aircraft - "
-                    "AeroMAPS is using initial medium-range fleet energy per ASK as old aircraft energy performances. "
-                    "Recent reference aircraft is introduced on first prospective year"
-                )
-                t_eis_medium_range = self.parameters.prospection_start_year
-                mr_subcat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask_medium_range
-
-            mr_subcat.recent_reference_aircraft.entry_into_service_year = t_eis_medium_range
-
-        lr_cat = self.categories.get("Long Range")
-        lr_subcat = self._get_subcategory("Long Range", "LR conventional wide-body")
-        if lr_cat is not None and lr_subcat is not None:
-            old_lr_energy = lr_subcat.old_reference_aircraft.energy_per_ask
-            recent_lr_energy = lr_subcat.recent_reference_aircraft.energy_per_ask
-            if old_lr_energy is None or recent_lr_energy is None:
-                raise ValueError("Long Range reference aircraft energy_per_ask must be defined")
-
-            if self.parameters.long_range_rpk_share_2019==0.0:
-                mean_energy_init_ask_long_range = np.nan
-            else:
-                mean_energy_init_ask_long_range = (
-                    self.parameters.energy_consumption_init[2019]
-                    * self.parameters.long_range_energy_share_2019
-                ) / (self.parameters.ask_init[2019] * self.parameters.long_range_rpk_share_2019)
-
-            share_recent_long_range = (mean_energy_init_ask_long_range - old_lr_energy) / (
-                recent_lr_energy - old_lr_energy
+            t_eis = t0 - life / 2
+        elif share_recent > 1:
+            warnings.warn(
+                f"Warning Message - Fleet Model: {category_name} Aircraft: "
+                f"Average initial {category_name} fleet energy per ASK is lower than default energy per ASK "
+                f"for the recent reference aircraft - AeroMAPS is using initial {category_name} fleet energy per ASK "
+                f"as old and recent reference aircraft energy performances!"
             )
+            t_eis = self.parameters.prospection_start_year - 1 - life
+            subcat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask
+            subcat.recent_reference_aircraft.energy_per_ask = mean_energy_init_ask
+        else:
+            warnings.warn(
+                f"Warning Message - Fleet Model: {category_name} Aircraft: "
+                f"Average initial {category_name} fleet energy per ASK is higher than default energy per ASK for the old reference aircraft - "
+                f"AeroMAPS is using initial {category_name} fleet energy per ASK as old aircraft energy performances. "
+                f"Recent reference aircraft is introduced on first prospective year"
+            )
+            t_eis = self.parameters.prospection_start_year
+            subcat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask
 
-            # We fix the life of short-range aircraft to 25 years for calibration
-            # This way the share between old and recent reference aircraft in 2019 remains the same
-            lr_life = 25
-            # lr_life = lr_cat.parameters.life
-            lambda_long_range = np.log(100 / 2 - 1) / (lr_life / 2)
-
-            if 1 > share_recent_long_range > 0:
-                t0_lr = np.log(
-                    (1 - share_recent_long_range) / share_recent_long_range
-                ) / lambda_long_range + (self.parameters.prospection_start_year - 1)
-                t_eis_long_range = t0_lr - lr_life / 2
-            elif share_recent_long_range > 1:
-                warnings.warn(
-                    "Warning Message - Fleet Model: long Range Aircraft: "
-                    "Average initial long-range fleet energy per ASK is lower than default energy per ASK for the recent reference aircraft - "
-                    "AeroMAPS is using initial long-range fleet energy per ASK as old and recent reference aircraft energy performances!"
-                )
-                t_eis_long_range = self.parameters.prospection_start_year - 1 - lr_life
-                lr_subcat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask_long_range
-                lr_subcat.recent_reference_aircraft.energy_per_ask = mean_energy_init_ask_long_range
-            else:
-                warnings.warn(
-                    "Warning Message - Fleet Model: long Range Aircraft: "
-                    "Average initial long-range fleet energy per ASK is higher than default energy per ASK for the old reference aircraft - "
-                    "AeroMAPS is using initial long-range fleet energy per ASK as old aircraft energy performances. "
-                    "Recent reference aircraft is introduced on first prospective year"
-                )
-                t_eis_long_range = self.parameters.prospection_start_year
-                lr_subcat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask_long_range
-
-            lr_subcat.recent_reference_aircraft.entry_into_service_year = t_eis_long_range
+        subcat.recent_reference_aircraft.entry_into_service_year = t_eis
 
 
-class FleetModel(AeroMAPSModel):
+class FleetModel(FleetAssignmentMixin, FleetPerformanceMixin, AeroMAPSModel):
     """AeroMAPS model for computing fleet evolution and characteristics over time.
 
     This model computes the temporal evolution of the aircraft fleet composition,
@@ -1063,9 +1175,10 @@ class FleetModel(AeroMAPSModel):
     - **Category means**: Weighted averages across subcategories for each category
     """
 
-    def __init__(self, name="fleet_model", fleet=None, *args, **kwargs):
+    def __init__(self, name="fleet_model", fleet=None, markets=None, *args, **kwargs):
         super().__init__(name, *args, **kwargs)
         self.fleet = fleet
+        self.markets = markets
 
     def compute(
         self,
@@ -1115,1096 +1228,11 @@ class FleetModel(AeroMAPSModel):
         # Compute mean non-CO2 emission index per category with respect to energy type
         self._compute_mean_non_co2_emission_index()
 
-    def _compute_single_aircraft_share(self):
-        """Compute cumulative single aircraft market penetration shares.
-
-        Uses S-shaped logistic functions to model the gradual introduction of
-        aircraft into the fleet based on their entry-into-service year and
-        the category's fleet renewal lifetime.
-
-        Handles two configuration modes:
-
-        - Single subcategory: All aircraft compete for the full 100% market share,
-          with reference aircraft (old and recent) taking the remaining share.
-        - Multiple subcategories: Each subcategory has a target share parameter,
-          and aircraft within subcategories compete for that share. The last
-          subcategory fills the remainder.
-
-        The computation adjusts reference aircraft curves to match historical
-        fleet composition by scaling between a baseline 25-year lifetime and
-        the actual category lifetime.
-
-        Results are stored in the DataFrame with keys like:
-        ``{category}:{subcategory}:{aircraft}:single_aircraft_share``
-        ``{category}:{subcategory}:old_reference:single_aircraft_share``
-        ``{category}:{subcategory}:recent_reference:single_aircraft_share``
-        """
-        temp_dict = {}
-
-        for category in self.fleet.categories.values():
-            limit = 2
-            life_base = 25
-            parameter_base = np.log(100 / limit - 1) / (life_base / 2)
-            parameter_renewal = np.log(100 / limit - 1) / (category.parameters.life / 2)
-
-            if len(category.subcategories) == 1:
-                subcategory = list(category.subcategories.values())[0]
-                year_ref_recent_begin = (
-                    subcategory.recent_reference_aircraft.entry_into_service_year
-                )
-                year_ref_recent_base = year_ref_recent_begin + life_base / 2
-                year_ref_recent = (
-                    self.prospection_start_year
-                    - parameter_base
-                    / parameter_renewal
-                    * (self.prospection_start_year - year_ref_recent_base)
-                )
-                ref_recent_single_aircraft_share = self._compute(
-                    float(category.parameters.life),
-                    float(year_ref_recent),
-                    float(subcategory.parameters.share),
-                    recent=True,
-                )
-                temp_dict[
-                    f"{category.name}:{subcategory.name}:recent_reference:single_aircraft_share"
-                ] = ref_recent_single_aircraft_share
-
-                ref_old_single_aircraft_share = 100
-                temp_dict[
-                    f"{category.name}:{subcategory.name}:old_reference:single_aircraft_share"
-                ] = ref_old_single_aircraft_share
-
-                for aircraft in subcategory.aircraft.values():
-                    single_aircraft_share = self._compute(
-                        float(category.parameters.life),
-                        float(aircraft.parameters.entry_into_service_year),
-                        float(subcategory.parameters.share),
-                    )
-                    temp_dict[
-                        f"{category.name}:{subcategory.name}:{aircraft.name}:single_aircraft_share"
-                    ] = single_aircraft_share
-
-            elif len(category.subcategories) == 2:
-                subcategory = list(category.subcategories.values())[-1]
-                for i, aircraft in subcategory.aircraft.items():
-                    single_aircraft_share = self._compute(
-                        float(category.parameters.life),
-                        float(aircraft.parameters.entry_into_service_year),
-                        float(subcategory.parameters.share),
-                    )
-                    temp_dict[
-                        f"{category.name}:{subcategory.name}:{aircraft.name}:single_aircraft_share"
-                    ] = single_aircraft_share
-                    if i == 0:
-                        oldest_single_aircraft_share = single_aircraft_share
-
-                subcategory = list(category.subcategories.values())[0]
-                year_ref_recent_begin = (
-                    subcategory.recent_reference_aircraft.entry_into_service_year
-                )
-                year_ref_recent_base = year_ref_recent_begin + life_base / 2
-                year_ref_recent = (
-                    self.prospection_start_year
-                    - parameter_base
-                    / parameter_renewal
-                    * (self.prospection_start_year - year_ref_recent_base)
-                )
-                ref_recent_single_aircraft_share = oldest_single_aircraft_share + self._compute(
-                    float(category.parameters.life),
-                    float(year_ref_recent),
-                    100 - oldest_single_aircraft_share,
-                    recent=True,
-                )
-                temp_dict[
-                    f"{category.name}:{subcategory.name}:recent_reference:single_aircraft_share"
-                ] = ref_recent_single_aircraft_share
-
-                ref_old_single_aircraft_share = 100
-                temp_dict[
-                    f"{category.name}:{subcategory.name}:old_reference:single_aircraft_share"
-                ] = ref_old_single_aircraft_share
-
-                for aircraft in subcategory.aircraft.values():
-                    single_aircraft_share = oldest_single_aircraft_share + self._compute(
-                        float(category.parameters.life),
-                        float(aircraft.parameters.entry_into_service_year),
-                        100 - oldest_single_aircraft_share,
-                    )
-                    temp_dict[
-                        f"{category.name}:{subcategory.name}:{aircraft.name}:single_aircraft_share"
-                    ] = single_aircraft_share
-
-            else:
-                for key, subcategory in reversed(category.subcategories.items()):
-                    if key == list(category.subcategories.keys())[-1]:
-                        for i, aircraft in subcategory.aircraft.items():
-                            single_aircraft_share = self._compute(
-                                float(category.parameters.life),
-                                float(aircraft.parameters.entry_into_service_year),
-                                float(subcategory.parameters.share),
-                            )
-                            temp_dict[
-                                f"{category.name}:{subcategory.name}:{aircraft.name}:single_aircraft_share"
-                            ] = single_aircraft_share
-                            if i == 0:
-                                oldest_single_aircraft_share = single_aircraft_share
-
-                    elif key == list(category.subcategories.keys())[0]:
-                        year_ref_recent_begin = (
-                            subcategory.recent_reference_aircraft.entry_into_service_year
-                        )
-                        year_ref_recent_base = year_ref_recent_begin + life_base / 2
-                        year_ref_recent = (
-                            self.prospection_start_year
-                            - parameter_base
-                            / parameter_renewal
-                            * (self.prospection_start_year - year_ref_recent_base)
-                        )
-                        ref_recent_single_aircraft_share = (
-                            oldest_single_aircraft_share
-                            + self._compute(
-                                float(category.parameters.life),
-                                float(year_ref_recent),
-                                100 - oldest_single_aircraft_share,
-                                recent=True,
-                            )
-                        )
-                        temp_dict[
-                            f"{category.name}:{subcategory.name}:recent_reference:single_aircraft_share"
-                        ] = ref_recent_single_aircraft_share
-
-                        ref_old_single_aircraft_share = 100
-                        temp_dict[
-                            f"{category.name}:{subcategory.name}:old_reference:single_aircraft_share"
-                        ] = ref_old_single_aircraft_share
-
-                        for aircraft in subcategory.aircraft.values():
-                            single_aircraft_share = oldest_single_aircraft_share + self._compute(
-                                float(category.parameters.life),
-                                float(aircraft.parameters.entry_into_service_year),
-                                100 - oldest_single_aircraft_share,
-                            )
-                            temp_dict[
-                                f"{category.name}:{subcategory.name}:{aircraft.name}:single_aircraft_share"
-                            ] = single_aircraft_share
-
-                    else:
-                        for i, aircraft in subcategory.aircraft.items():
-                            single_aircraft_share = oldest_single_aircraft_share + self._compute(
-                                float(category.parameters.life),
-                                float(aircraft.parameters.entry_into_service_year),
-                                float(subcategory.parameters.share),
-                            )
-                            temp_dict[
-                                f"{category.name}:{subcategory.name}:{aircraft.name}:single_aircraft_share"
-                            ] = single_aircraft_share
-                            if i == 0:
-                                new_oldest_single_aircraft_share = single_aircraft_share
-                        oldest_single_aircraft_share = new_oldest_single_aircraft_share
-
-        final_dict = {
-            key: np.array(values) if isinstance(values, list) else values
-            for key, values in temp_dict.items()
-        }
-
-        final_df = pd.DataFrame(final_dict, index=self.df.index)
-        self.df = pd.concat([self.df, final_df], axis=1)
-
-    def _compute_aircraft_share(self):
-        """Compute individual aircraft share in the fleet.
-
-        Calculates each aircraft's share (not cumulative) by differencing
-        single_aircraft_share values. The share represents the actual portion
-        of the fleet using that specific aircraft type, computed by subtracting
-        the single_aircraft_share of the next aircraft in sequence.
-
-        For the last aircraft in a subcategory/category, the share equals its
-        single_aircraft_share. For others, the share is the difference between
-        consecutive single_aircraft_share values.
-
-        Also computes reference aircraft shares:
-        - recent_reference: first subcategory reference minus first new aircraft
-        - old_reference: 100% minus recent_reference single_aircraft_share
-
-        Results are stored in the DataFrame with keys like:
-        ``{category}:{subcategory}:{aircraft}:aircraft_share``
-        """
-        temp_dict = {}
-
-        for category in self.fleet.categories.values():
-            for key, subcategory in reversed(category.subcategories.items()):
-                for i, aircraft in reversed(subcategory.aircraft.items()):
-                    subcategory_key = f"{category.name}:{subcategory.name}:{aircraft.name}"
-
-                    if (i == list(subcategory.aircraft.keys())[-1]) and (
-                        key == list(category.subcategories.keys())[-1]
-                    ):
-                        aircraft_share = self.df[f"{subcategory_key}:single_aircraft_share"].values
-                    elif (i == list(subcategory.aircraft.keys())[-1]) and (
-                        key != list(category.subcategories.keys())[-1]
-                    ):
-                        single_aircraft_share = self.df[
-                            f"{subcategory_key}:single_aircraft_share"
-                        ].values
-                        single_aircraft_share_n1 = self.df[
-                            f"{category.name}:{category.subcategories[key + 1].name}:{category.subcategories[key + 1].aircraft[0].name}:single_aircraft_share"
-                        ].values
-                        aircraft_share = single_aircraft_share - single_aircraft_share_n1
-                    else:
-                        single_aircraft_share = self.df[
-                            f"{subcategory_key}:single_aircraft_share"
-                        ].values
-                        single_aircraft_share_n1 = self.df[
-                            f"{category.name}:{subcategory.name}:{subcategory.aircraft[i + 1].name}:single_aircraft_share"
-                        ].values
-                        aircraft_share = single_aircraft_share - single_aircraft_share_n1
-
-                    temp_dict[f"{subcategory_key}:aircraft_share"] = aircraft_share
-
-            ref_recent_single_aircraft_share = self.df[
-                f"{category.name}:{category.subcategories[0].name}:recent_reference:single_aircraft_share"
-            ].values
-
-            if subcategory.aircraft:
-                next_aircraft_single_share = self.df[
-                    f"{category.name}:{category.subcategories[0].name}:{subcategory.aircraft[0].name}:single_aircraft_share"
-                ].values
-            else:
-                next_aircraft_single_share = np.zeros_like(ref_recent_single_aircraft_share)
-
-            ref_recent_aircraft_share = (
-                ref_recent_single_aircraft_share - next_aircraft_single_share
-            )
-            temp_dict[
-                f"{category.name}:{category.subcategories[0].name}:recent_reference:aircraft_share"
-            ] = ref_recent_aircraft_share
-
-            ref_old_aircraft_share = 100 - ref_recent_single_aircraft_share
-            temp_dict[
-                f"{category.name}:{category.subcategories[0].name}:old_reference:aircraft_share"
-            ] = ref_old_aircraft_share
-
-        final_dict = {
-            key: np.array(values) if isinstance(values, list) else values
-            for key, values in temp_dict.items()
-        }
-
-        final_df = pd.DataFrame(final_dict, index=self.df.index)
-        self.df = pd.concat([self.df, final_df], axis=1)
-
-    def _compute_energy_consumption_and_share_wrt_energy_type(self):
-        """Compute energy consumption and fleet share by energy type.
-
-        For each category and subcategory, calculates:
-
-        - Total energy consumption weighted by aircraft share
-        - Energy consumption broken down by energy type (drop-in fuel, hydrogen,
-          electric, hybrid electric)
-        - Fleet share by energy type
-
-        Reference aircraft (old and recent) are assumed to use drop-in fuel.
-        New aircraft contribute based on their defined energy type. Hybrid
-        electric aircraft split their consumption and share between drop-in
-        fuel and electric based on their hybridization factor.
-
-        Results are stored in the DataFrame with keys like:
-        ``{category}:{subcategory}:energy_consumption:{energy_type}``
-        ``{category}:{subcategory}:share:{energy_type}``
-        ``{category}:share:{energy_type}``
-        """
-        temp_dict = {}
-
-        for category in self.fleet.categories.values():
-            ref_old_aircraft_share = self.df[
-                f"{category.name}:{category.subcategories[0].name}:old_reference:aircraft_share"
-            ].values
-            ref_recent_aircraft_share = self.df[
-                f"{category.name}:{category.subcategories[0].name}:recent_reference:aircraft_share"
-            ].values
-
-            recent_reference_aircraft_energy_consumption = category.subcategories[
-                0
-            ].recent_reference_aircraft.energy_per_ask
-
-            for i, subcategory in category.subcategories.items():
-                subcategory_key = f"{category.name}:{subcategory.name}"
-
-                if i == 0:
-                    initial_energy_consumption = (
-                        subcategory.old_reference_aircraft.energy_per_ask
-                        * ref_old_aircraft_share
-                        / 100
-                        + subcategory.recent_reference_aircraft.energy_per_ask
-                        * ref_recent_aircraft_share
-                        / 100
-                    )
-                    initial_share = ref_old_aircraft_share + ref_recent_aircraft_share
-                else:
-                    initial_energy_consumption = np.zeros_like(ref_old_aircraft_share)
-                    initial_share = np.zeros_like(ref_old_aircraft_share)
-
-                temp_dict[f"{subcategory_key}:energy_consumption"] = (
-                    initial_energy_consumption.copy()
-                )
-                temp_dict[f"{subcategory_key}:energy_consumption:dropin_fuel"] = (
-                    initial_energy_consumption.copy()
-                )
-                temp_dict[f"{subcategory_key}:energy_consumption:hydrogen"] = np.zeros_like(
-                    ref_old_aircraft_share
-                )
-                temp_dict[f"{subcategory_key}:energy_consumption:electric"] = np.zeros_like(
-                    ref_old_aircraft_share
-                )
-                temp_dict[f"{subcategory_key}:energy_consumption:hybrid_electric"] = np.zeros_like(
-                    ref_old_aircraft_share
-                )
-                temp_dict[f"{subcategory_key}:share:total"] = initial_share.copy()
-                temp_dict[f"{subcategory_key}:share:dropin_fuel"] = initial_share.copy()
-                temp_dict[f"{subcategory_key}:share:hydrogen"] = np.zeros_like(
-                    ref_old_aircraft_share
-                )
-                temp_dict[f"{subcategory_key}:share:electric"] = np.zeros_like(
-                    ref_old_aircraft_share
-                )
-                temp_dict[f"{subcategory_key}:share:hybrid_electric"] = np.zeros_like(
-                    ref_old_aircraft_share
-                )
-
-                for aircraft in subcategory.aircraft.values():
-                    aircraft_share = self.df[
-                        f"{subcategory_key}:{aircraft.name}:aircraft_share"
-                    ].values
-
-                    energy_consumption = (
-                        recent_reference_aircraft_energy_consumption
-                        * (1 + float(aircraft.parameters.consumption_evolution) / 100)
-                        * aircraft_share
-                        / 100
-                    )
-
-                    temp_dict[f"{subcategory_key}:share:total"] += aircraft_share
-                    temp_dict[f"{subcategory_key}:energy_consumption"] += energy_consumption
-
-                    if aircraft.energy_type == "DROP_IN_FUEL":
-                        temp_dict[f"{subcategory_key}:share:dropin_fuel"] += aircraft_share
-                        temp_dict[f"{subcategory_key}:energy_consumption:dropin_fuel"] += (
-                            energy_consumption
-                        )
-
-                    if aircraft.energy_type == "HYDROGEN":
-                        temp_dict[f"{subcategory_key}:share:hydrogen"] += aircraft_share
-                        temp_dict[f"{subcategory_key}:energy_consumption:hydrogen"] += (
-                            energy_consumption
-                        )
-
-                    if aircraft.energy_type == "ELECTRIC":
-                        temp_dict[f"{subcategory_key}:share:electric"] += aircraft_share
-                        temp_dict[f"{subcategory_key}:energy_consumption:electric"] += (
-                            energy_consumption
-                        )
-
-                    if aircraft.energy_type == "HYBRID_ELECTRIC":
-                        hybridization_factor = float(aircraft.parameters.hybridization_factor)
-                        temp_dict[f"{subcategory_key}:share:dropin_fuel"] += (
-                            1 - hybridization_factor
-                        ) * aircraft_share
-                        temp_dict[f"{subcategory_key}:share:electric"] += (
-                            hybridization_factor * aircraft_share
-                        )
-                        temp_dict[f"{subcategory_key}:energy_consumption:hybrid_electric"] += (
-                            energy_consumption
-                        )
-                        temp_dict[f"{subcategory_key}:energy_consumption:dropin_fuel"] += (
-                            1 - hybridization_factor
-                        ) * energy_consumption
-                        temp_dict[f"{subcategory_key}:energy_consumption:electric"] += (
-                            hybridization_factor * energy_consumption
-                        )
-
-                for energy_type in ["dropin_fuel", "hydrogen", "electric", "hybrid_electric"]:
-                    category_share_key = f"{category.name}:share:{energy_type}"
-                    subcategory_share_key = f"{subcategory_key}:share:{energy_type}"
-                    if category_share_key in temp_dict:
-                        temp_dict[category_share_key] += temp_dict[subcategory_share_key]
-                    else:
-                        temp_dict[category_share_key] = temp_dict[subcategory_share_key].copy()
-
-        final_dict = {
-            key: np.array(values) if isinstance(values, list) else values
-            for key, values in temp_dict.items()
-        }
-
-        final_df = pd.DataFrame(final_dict, index=self.df.index)
-        self.df = pd.concat([self.df, final_df], axis=1)
-
-    def _compute_doc_non_energy(self):
-        """Compute direct operating costs excluding energy costs.
-
-        Calculates the non-energy portion of direct operating costs (DOC)
-        for each category and subcategory, weighted by aircraft share.
-        This includes costs like maintenance, crew, insurance, etc.
-
-        Reference aircraft use their base DOC values. New aircraft apply
-        their doc_non_energy_evolution percentage to the recent reference
-        aircraft's base value.
-
-        Results are broken down by energy type for allocation purposes:
-
-        - dropin_fuel: Drop-in fuel aircraft DOC
-        - hydrogen: Hydrogen aircraft DOC
-        - electric: Electric aircraft DOC
-        - hybrid_electric: Hybrid electric aircraft DOC
-
-        Results are stored in the DataFrame with keys like:
-        ``{category}:{subcategory}:doc_non_energy:{energy_type}``
-        ``{category}:doc_non_energy:{energy_type}``
-        """
-        temp_dict = {}
-
-        for category in self.fleet.categories.values():
-            ref_old_aircraft_share = self.df[
-                f"{category.name}:{category.subcategories[0].name}:old_reference:aircraft_share"
-            ].values
-            ref_recent_aircraft_share = self.df[
-                f"{category.name}:{category.subcategories[0].name}:recent_reference:aircraft_share"
-            ].values
-
-            recent_reference_aircraft_doc_non_energy = category.subcategories[
-                0
-            ].recent_reference_aircraft.doc_non_energy_base
-
-            for i, subcategory in category.subcategories.items():
-                subcategory_key = f"{category.name}:{subcategory.name}"
-
-                if i == 0:
-                    initial_doc_non_energy = (
-                        subcategory.old_reference_aircraft.doc_non_energy_base
-                        * ref_old_aircraft_share
-                        / 100
-                        + subcategory.recent_reference_aircraft.doc_non_energy_base
-                        * ref_recent_aircraft_share
-                        / 100
-                    )
-                else:
-                    initial_doc_non_energy = np.zeros_like(ref_old_aircraft_share)
-
-                temp_dict[f"{subcategory_key}:doc_non_energy"] = initial_doc_non_energy.copy()
-                temp_dict[f"{subcategory_key}:doc_non_energy:dropin_fuel"] = (
-                    initial_doc_non_energy.copy()
-                )
-                temp_dict[f"{subcategory_key}:doc_non_energy:hydrogen"] = np.zeros_like(
-                    ref_old_aircraft_share
-                )
-                temp_dict[f"{subcategory_key}:doc_non_energy:electric"] = np.zeros_like(
-                    ref_old_aircraft_share
-                )
-                temp_dict[f"{subcategory_key}:doc_non_energy:hybrid_electric"] = np.zeros_like(
-                    ref_old_aircraft_share
-                )
-
-                for aircraft in subcategory.aircraft.values():
-                    aircraft_share = self.df[
-                        f"{subcategory_key}:{aircraft.name}:aircraft_share"
-                    ].values
-
-                    doc_non_energy = (
-                        recent_reference_aircraft_doc_non_energy
-                        * (1 + float(aircraft.parameters.doc_non_energy_evolution) / 100)
-                        * aircraft_share
-                        / 100
-                    )
-
-                    temp_dict[f"{subcategory_key}:doc_non_energy"] += doc_non_energy
-
-                    if aircraft.energy_type == "DROP_IN_FUEL":
-                        temp_dict[f"{subcategory_key}:doc_non_energy:dropin_fuel"] += doc_non_energy
-
-                    if aircraft.energy_type == "HYDROGEN":
-                        temp_dict[f"{subcategory_key}:doc_non_energy:hydrogen"] += doc_non_energy
-
-                    if aircraft.energy_type == "ELECTRIC":
-                        temp_dict[f"{subcategory_key}:doc_non_energy:electric"] += doc_non_energy
-
-                    if aircraft.energy_type == "HYBRID_ELECTRIC":
-                        temp_dict[f"{subcategory_key}:doc_non_energy:hybrid_electric"] += (
-                            doc_non_energy
-                        )
-
-            # Summing up doc_non_energy for categories
-            for energy_type in ["dropin_fuel", "hydrogen", "electric", "hybrid_electric"]:
-                category_doc_key = f"{category.name}:doc_non_energy:{energy_type}"
-                subcategory_doc_key = f"{subcategory_key}:doc_non_energy:{energy_type}"
-                if category_doc_key in temp_dict:
-                    temp_dict[category_doc_key] += temp_dict[subcategory_doc_key]
-                else:
-                    temp_dict[category_doc_key] = temp_dict[subcategory_doc_key].copy()
-
-        final_dict = {
-            key: np.array(values) if isinstance(values, list) else values
-            for key, values in temp_dict.items()
-        }
-
-        final_df = pd.DataFrame(final_dict, index=self.df.index)
-        self.df = pd.concat([self.df, final_df], axis=1)
-
-    def _compute_non_co2_emission_index(self):
-        """Compute NOx and soot emission indices for the fleet.
-
-        Calculates emission indices for non-CO2 pollutants (NOx and soot)
-        for each category and subcategory. Reference aircraft use their
-        base emission index values. New aircraft apply evolution factors
-        (nox_evolution, soot_evolution) to the recent reference values.
-
-        Emission indices are computed per energy type:
-
-        - dropin_fuel: Conventional and SAF-powered aircraft emissions
-        - hydrogen: Hydrogen aircraft emissions (NOx only, no soot)
-        - electric: Electric aircraft emissions (none)
-        - hybrid_electric: Hybrid electric aircraft emissions
-
-        Category-level emission indices are computed as share-weighted
-        averages across all subcategories and energy types.
-
-        Results are stored directly in the DataFrame with keys like:
-        ``{category}:{subcategory}:emission_index_nox:{energy_type}``
-        ``{category}:{subcategory}:emission_index_soot:{energy_type}``
-        ``{category}:emission_index_nox``
-        ``{category}:emission_index_soot``
-        """
-        # Non-CO2 (NOx and soot) emission index calculations for drop-in fuel and hydrogen
-        for category in self.fleet.categories.values():
-            # Reference aircraft information
-            ref_old_aircraft_share = self.df[
-                f"{category.name}:{category.subcategories[0].name}:old_reference:aircraft_share"
-            ]
-            ref_recent_aircraft_share = self.df[
-                f"{category.name}:{category.subcategories[0].name}:recent_reference:aircraft_share"
-            ]
-
-            # Use the first subcategory's recent reference aircraft emission indices
-            recent_reference_aircraft_emission_index_nox = category.subcategories[
-                0
-            ].recent_reference_aircraft.emission_index_nox
-            recent_reference_aircraft_emission_index_soot = category.subcategories[
-                0
-            ].recent_reference_aircraft.emission_index_soot
-
-            for i, subcategory in category.subcategories.items():
-                subcategory_key = f"{category.name}:{subcategory.name}"
-                if i == 0:
-                    initial_nox = (
-                        subcategory.old_reference_aircraft.emission_index_nox
-                        * ref_old_aircraft_share
-                        / 100
-                        + subcategory.recent_reference_aircraft.emission_index_nox
-                        * ref_recent_aircraft_share
-                        / 100
-                    )
-                    initial_soot = (
-                        subcategory.old_reference_aircraft.emission_index_soot
-                        * ref_old_aircraft_share
-                        / 100
-                        + subcategory.recent_reference_aircraft.emission_index_soot
-                        * ref_recent_aircraft_share
-                        / 100
-                    )
-                else:
-                    initial_nox = np.zeros_like(ref_old_aircraft_share)
-                    initial_soot = np.zeros_like(ref_old_aircraft_share)
-
-                # Initialize emission index columns
-                self.df[f"{subcategory_key}:emission_index_nox"] = initial_nox
-                self.df[f"{subcategory_key}:emission_index_soot"] = initial_soot
-                self.df[f"{subcategory_key}:emission_index_nox:dropin_fuel"] = initial_nox.copy()
-                self.df[f"{subcategory_key}:emission_index_nox:hydrogen"] = np.zeros_like(
-                    ref_old_aircraft_share
-                )
-                self.df[f"{subcategory_key}:emission_index_nox:electric"] = np.zeros_like(
-                    ref_old_aircraft_share
-                )
-                self.df[f"{subcategory_key}:emission_index_nox:hybrid_electric"] = np.zeros_like(
-                    ref_old_aircraft_share
-                )
-                self.df[f"{subcategory_key}:emission_index_soot:dropin_fuel"] = initial_soot.copy()
-                self.df[f"{subcategory_key}:emission_index_soot:hydrogen"] = np.zeros_like(
-                    ref_old_aircraft_share
-                )
-                self.df[f"{subcategory_key}:emission_index_soot:electric"] = np.zeros_like(
-                    ref_old_aircraft_share
-                )
-                self.df[f"{subcategory_key}:emission_index_soot:hybrid_electric"] = np.zeros_like(
-                    ref_old_aircraft_share
-                )
-
-                for aircraft in subcategory.aircraft.values():
-                    aircraft_share_key = f"{subcategory_key}:{aircraft.name}:aircraft_share"
-                    if aircraft_share_key in self.df.columns:
-                        for idx in self.df.index:
-                            aircraft_share = self.df.at[idx, aircraft_share_key]
-                            if aircraft_share != 0.0:
-                                evolution_nox = 1 + float(aircraft.parameters.nox_evolution) / 100
-                                evolution_soot = 1 + float(aircraft.parameters.soot_evolution) / 100
-
-                                self.df.at[idx, f"{subcategory_key}:emission_index_nox"] += (
-                                    recent_reference_aircraft_emission_index_nox
-                                    * evolution_nox
-                                    * aircraft_share
-                                    / 100
-                                )
-                                self.df.at[idx, f"{subcategory_key}:emission_index_soot"] += (
-                                    recent_reference_aircraft_emission_index_soot
-                                    * evolution_soot
-                                    * aircraft_share
-                                    / 100
-                                )
-
-                                if aircraft.energy_type == "DROP_IN_FUEL":
-                                    self.df.at[
-                                        idx, f"{subcategory_key}:emission_index_nox:dropin_fuel"
-                                    ] += (
-                                        recent_reference_aircraft_emission_index_nox
-                                        * evolution_nox
-                                        * aircraft_share
-                                        / 100
-                                    )
-                                    self.df.at[
-                                        idx, f"{subcategory_key}:emission_index_soot:dropin_fuel"
-                                    ] += (
-                                        recent_reference_aircraft_emission_index_soot
-                                        * evolution_soot
-                                        * aircraft_share
-                                        / 100
-                                    )
-                                elif aircraft.energy_type == "HYDROGEN":
-                                    self.df.at[
-                                        idx, f"{subcategory_key}:emission_index_nox:hydrogen"
-                                    ] += (
-                                        recent_reference_aircraft_emission_index_nox
-                                        * evolution_nox
-                                        * aircraft_share
-                                        / 100
-                                    )
-                                elif aircraft.energy_type == "ELECTRIC":
-                                    self.df.at[
-                                        idx, f"{subcategory_key}:emission_index_nox:electric"
-                                    ] += (
-                                        recent_reference_aircraft_emission_index_nox
-                                        * evolution_nox
-                                        * aircraft_share
-                                        / 100
-                                    )
-                                elif aircraft.energy_type == "HYBRID_ELECTRIC":
-                                    self.df.at[
-                                        idx, f"{subcategory_key}:emission_index_nox:hybrid_electric"
-                                    ] += (
-                                        recent_reference_aircraft_emission_index_nox
-                                        * evolution_nox
-                                        * aircraft_share
-                                        / 100
-                                    )
-                                    self.df.at[
-                                        idx,
-                                        f"{subcategory_key}:emission_index_soot:hybrid_electric",
-                                    ] += (
-                                        recent_reference_aircraft_emission_index_soot
-                                        * evolution_soot
-                                        * aircraft_share
-                                        / 100
-                                    )
-
-            # Aggregating results for each category
-            temp_dict = {
-                key: np.zeros_like(self.df.index, dtype=float)
-                for key in [
-                    f"{category.name}:emission_index_nox",
-                    f"{category.name}:emission_index_soot",
-                    f"{category.name}:emission_index_nox:dropin_fuel",
-                    f"{category.name}:emission_index_nox:hydrogen",
-                    f"{category.name}:emission_index_nox:electric",
-                    f"{category.name}:emission_index_nox:hybrid_electric",
-                    f"{category.name}:emission_index_soot:dropin_fuel",
-                    f"{category.name}:emission_index_soot:hydrogen",
-                    f"{category.name}:emission_index_soot:electric",
-                    f"{category.name}:emission_index_soot:hybrid_electric",
-                ]
-            }
-
-            for subcategory in category.subcategories.values():
-                subcategory_key = f"{category.name}:{subcategory.name}"
-                for idx in self.df.index:
-                    for emission_type in ["nox", "soot"]:
-                        for energy_type in [
-                            "dropin_fuel",
-                            "hydrogen",
-                            "electric",
-                            "hybrid_electric",
-                        ]:
-                            key = f"{subcategory_key}:emission_index_{emission_type}:{energy_type}"
-                            if key in self.df.columns:
-                                temp_dict[
-                                    f"{category.name}:emission_index_{emission_type}:{energy_type}"
-                                ][self.df.index.get_loc(idx)] += self.df.at[idx, key]
-
-            # Final aggregation
-            for idx in self.df.index:
-                dropin_fuel_share = self.df.at[idx, f"{category.name}:share:dropin_fuel"]
-                hydrogen_share = self.df.at[idx, f"{category.name}:share:hydrogen"]
-                electric_share = self.df.at[idx, f"{category.name}:share:electric"]
-                hybrid_electric_share = self.df.at[idx, f"{category.name}:share:hybrid_electric"]
-
-                total_share = (
-                    dropin_fuel_share + hydrogen_share + electric_share + hybrid_electric_share
-                )
-                if total_share > 0:
-                    self.df.at[idx, f"{category.name}:emission_index_nox"] = (
-                        temp_dict[f"{category.name}:emission_index_nox:dropin_fuel"][
-                            self.df.index.get_loc(idx)
-                        ]
-                        * (dropin_fuel_share / 100)
-                        + temp_dict[f"{category.name}:emission_index_nox:hydrogen"][
-                            self.df.index.get_loc(idx)
-                        ]
-                        * (hydrogen_share / 100)
-                        + temp_dict[f"{category.name}:emission_index_nox:electric"][
-                            self.df.index.get_loc(idx)
-                        ]
-                        * (electric_share / 100)
-                        + temp_dict[f"{category.name}:emission_index_nox:hybrid_electric"][
-                            self.df.index.get_loc(idx)
-                        ]
-                        * (hybrid_electric_share / 100)
-                    )
-                    self.df.at[idx, f"{category.name}:emission_index_soot"] = (
-                        temp_dict[f"{category.name}:emission_index_soot:dropin_fuel"][
-                            self.df.index.get_loc(idx)
-                        ]
-                        * (dropin_fuel_share / 100)
-                        + temp_dict[f"{category.name}:emission_index_soot:hydrogen"][
-                            self.df.index.get_loc(idx)
-                        ]
-                        * (hydrogen_share / 100)
-                        + temp_dict[f"{category.name}:emission_index_soot:electric"][
-                            self.df.index.get_loc(idx)
-                        ]
-                        * (electric_share / 100)
-                        + temp_dict[f"{category.name}:emission_index_soot:hybrid_electric"][
-                            self.df.index.get_loc(idx)
-                        ]
-                        * (hybrid_electric_share / 100)
-                    )
-
-    def _compute_mean_energy_consumption_per_category_wrt_energy_type(self):
-        """Compute mean energy consumption per category by energy type.
-
-        Aggregates subcategory-level energy consumption values to the category
-        level. For each energy type (drop-in fuel, hydrogen, electric, hybrid
-        electric), calculates the share-weighted mean energy consumption.
-
-        The mean consumption for each energy type is computed by dividing
-        the total energy consumption by the corresponding share. The overall
-        category mean consumption is then computed as a weighted average
-        across all energy types.
-
-        Results are stored in the DataFrame with keys like:
-        ``{category}:energy_consumption:{energy_type}``
-        ``{category}:energy_consumption``
-        """
-        for category in self.fleet.categories.values():
-            # Mean energy consumption per category
-            # Initialization
-            self.df[category.name + ":energy_consumption:dropin_fuel"] = 0.0
-            self.df[category.name + ":energy_consumption:hydrogen"] = 0.0
-            self.df[category.name + ":energy_consumption:electric"] = 0.0
-            self.df[category.name + ":energy_consumption:hybrid_electric"] = 0.0
-            # Calculation
-            for subcategory in category.subcategories.values():
-                # TODO: verify aircraft order
-                for k in self.df.index:
-                    if self.df.loc[k, category.name + ":share:dropin_fuel"] != 0.0:
-                        self.df.loc[k, category.name + ":energy_consumption:dropin_fuel"] += (
-                            self.df.loc[
-                                k,
-                                category.name
-                                + ":"
-                                + subcategory.name
-                                + ":energy_consumption:dropin_fuel",
-                            ]
-                            / (self.df.loc[k, category.name + ":share:dropin_fuel"] / 100)
-                        )
-                    else:
-                        self.df.loc[k, category.name + ":energy_consumption:dropin_fuel"] = 0.0
-
-                    if self.df.loc[k, category.name + ":share:hydrogen"] != 0.0:
-                        self.df.loc[k, category.name + ":energy_consumption:hydrogen"] += (
-                            self.df.loc[
-                                k,
-                                category.name
-                                + ":"
-                                + subcategory.name
-                                + ":energy_consumption:hydrogen",
-                            ]
-                            / (self.df.loc[k, category.name + ":share:hydrogen"] / 100)
-                        )
-                    else:
-                        self.df.loc[k, category.name + ":energy_consumption:hydrogen"] = 0.0
-
-                    if self.df.loc[k, category.name + ":share:electric"] != 0.0:
-                        self.df.loc[k, category.name + ":energy_consumption:electric"] += (
-                            self.df.loc[
-                                k,
-                                category.name
-                                + ":"
-                                + subcategory.name
-                                + ":energy_consumption:electric",
-                            ]
-                            / (self.df.loc[k, category.name + ":share:electric"] / 100)
-                        )
-                    else:
-                        self.df.loc[k, category.name + ":energy_consumption:electric"] = 0.0
-
-                    if self.df.loc[k, category.name + ":share:hybrid_electric"] != 0.0:
-                        self.df.loc[k, category.name + ":energy_consumption:hybrid_electric"] += (
-                            self.df.loc[
-                                k,
-                                category.name
-                                + ":"
-                                + subcategory.name
-                                + ":energy_consumption:hybrid_electric",
-                            ]
-                            / (self.df.loc[k, category.name + ":share:hybrid_electric"] / 100)
-                        )
-                    else:
-                        self.df.loc[k, category.name + ":energy_consumption:hybrid_electric"] = 0.0
-
-            # Mean consumption
-            for k in self.df.index:
-                self.df.loc[k, category.name + ":energy_consumption"] = (
-                    self.df.loc[k, category.name + ":energy_consumption:dropin_fuel"]
-                    * (self.df.loc[k, category.name + ":share:dropin_fuel"] / 100)
-                    + self.df.loc[k, category.name + ":energy_consumption:hydrogen"]
-                    * (self.df.loc[k, category.name + ":share:hydrogen"] / 100)
-                    + self.df.loc[k, category.name + ":energy_consumption:electric"]
-                    * (self.df.loc[k, category.name + ":share:electric"] / 100)
-                    + self.df.loc[k, category.name + ":energy_consumption:hybrid_electric"]
-                    * (self.df.loc[k, category.name + ":share:hybrid_electric"] / 100)
-                )
-
-    def _compute_mean_doc_non_energy(self):
-        """Compute mean non-energy DOC per category by energy type.
-
-        Aggregates subcategory-level DOC (non-energy) values to the category
-        level. For each energy type (drop-in fuel, hydrogen, electric, hybrid
-        electric), calculates the share-weighted mean DOC.
-
-        The mean DOC for each energy type is computed by dividing the total
-        DOC by the corresponding share. The overall category mean DOC is
-        then computed as a weighted average across all energy types.
-
-        Results are stored in the DataFrame with keys like:
-        ``{category}:doc_non_energy:{energy_type}``
-        ``{category}:doc_non_energy``
-        """
-        for category in self.fleet.categories.values():
-            # Mean non energy DOC per category
-            # Initialization
-            self.df[category.name + ":doc_non_energy:dropin_fuel"] = 0.0
-            self.df[category.name + ":doc_non_energy:hydrogen"] = 0.0
-            self.df[category.name + ":doc_non_energy:electric"] = 0.0
-            self.df[category.name + ":doc_non_energy:hybrid_electric"] = 0.0
-            # Calculation
-            for subcategory in category.subcategories.values():
-                # TODO: verify aircraft order
-                for k in self.df.index:
-                    if self.df.loc[k, category.name + ":share:dropin_fuel"] != 0.0:
-                        self.df.loc[k, category.name + ":doc_non_energy:dropin_fuel"] += (
-                            self.df.loc[
-                                k,
-                                category.name
-                                + ":"
-                                + subcategory.name
-                                + ":doc_non_energy:dropin_fuel",
-                            ]
-                            / (self.df.loc[k, category.name + ":share:dropin_fuel"] / 100)
-                        )
-                    else:
-                        self.df.loc[k, category.name + ":doc_non_energy:dropin_fuel"] = 0.0
-
-                    if self.df.loc[k, category.name + ":share:hydrogen"] != 0.0:
-                        self.df.loc[k, category.name + ":doc_non_energy:hydrogen"] += self.df.loc[
-                            k,
-                            category.name + ":" + subcategory.name + ":doc_non_energy:hydrogen",
-                        ] / (self.df.loc[k, category.name + ":share:hydrogen"] / 100)
-                    else:
-                        self.df.loc[k, category.name + ":doc_non_energy:hydrogen"] = 0.0
-
-                    if self.df.loc[k, category.name + ":share:electric"] != 0.0:
-                        self.df.loc[k, category.name + ":doc_non_energy:electric"] += self.df.loc[
-                            k,
-                            category.name + ":" + subcategory.name + ":doc_non_energy:electric",
-                        ] / (self.df.loc[k, category.name + ":share:electric"] / 100)
-                    else:
-                        self.df.loc[k, category.name + ":doc_non_energy:electric"] = 0.0
-
-                    if self.df.loc[k, category.name + ":share:hybrid_electric"] != 0.0:
-                        self.df.loc[k, category.name + ":doc_non_energy:hybrid_electric"] += (
-                            self.df.loc[
-                                k,
-                                category.name
-                                + ":"
-                                + subcategory.name
-                                + ":doc_non_energy:hybrid_electric",
-                            ]
-                            / (self.df.loc[k, category.name + ":share:hybrid_electric"] / 100)
-                        )
-                    else:
-                        self.df.loc[k, category.name + ":doc_non_energy:hybrid_electric"] = 0.0
-
-            # Mean non energy DOC
-            for k in self.df.index:
-                self.df.loc[k, category.name + ":doc_non_energy"] = (
-                    self.df.loc[k, category.name + ":doc_non_energy:dropin_fuel"]
-                    * (self.df.loc[k, category.name + ":share:dropin_fuel"] / 100)
-                    + self.df.loc[k, category.name + ":doc_non_energy:hydrogen"]
-                    * (self.df.loc[k, category.name + ":share:hydrogen"] / 100)
-                    + self.df.loc[k, category.name + ":doc_non_energy:electric"]
-                    * (self.df.loc[k, category.name + ":share:electric"] / 100)
-                    + self.df.loc[k, category.name + ":doc_non_energy:hybrid_electric"]
-                    * (self.df.loc[k, category.name + ":share:hybrid_electric"] / 100)
-                )
-
-    def _compute_mean_non_co2_emission_index(self):
-        """Compute mean NOx and soot emission indices per category.
-
-        Aggregates subcategory-level emission indices to the category level.
-        For each energy type (drop-in fuel, hydrogen, electric, hybrid electric),
-        calculates the share-weighted mean emission index.
-
-        The mean emission index for each energy type is computed by dividing
-        the total emission index by the corresponding share. The overall
-        category mean is then computed as a weighted average across all
-        energy types.
-
-        Results are stored in the DataFrame with keys like:
-        ``{category}:emission_index_nox:{energy_type}``
-        ``{category}:emission_index_soot:{energy_type}``
-        ``{category}:emission_index_nox``
-        ``{category}:emission_index_soot``
-        """
-        temp_dict = {}
-
-        for category in self.fleet.categories.values():
-            category_name = category.name
-            # Initialize temporary storage for each energy type
-            for energy_type in ["dropin_fuel", "hydrogen", "electric", "hybrid_electric"]:
-                temp_dict[f"{category_name}:emission_index_nox:{energy_type}"] = np.zeros(
-                    len(self.df)
-                )
-                temp_dict[f"{category_name}:emission_index_soot:{energy_type}"] = np.zeros(
-                    len(self.df)
-                )
-
-            for subcategory in category.subcategories.values():
-                subcategory_key = f"{category_name}:{subcategory.name}"
-                for k in self.df.index:
-                    dropin_fuel_share = self.df.at[k, f"{category_name}:share:dropin_fuel"]
-                    hydrogen_share = self.df.at[k, f"{category_name}:share:hydrogen"]
-                    electric_share = self.df.at[k, f"{category_name}:share:electric"]
-                    hybrid_electric_share = self.df.at[k, f"{category_name}:share:hybrid_electric"]
-
-                    if dropin_fuel_share != 0.0:
-                        temp_dict[f"{category_name}:emission_index_nox:dropin_fuel"][
-                            k - self.df.index[0]
-                        ] += self.df.at[k, f"{subcategory_key}:emission_index_nox:dropin_fuel"] / (
-                            dropin_fuel_share / 100
-                        )
-                        temp_dict[f"{category_name}:emission_index_soot:dropin_fuel"][
-                            k - self.df.index[0]
-                        ] += self.df.at[k, f"{subcategory_key}:emission_index_soot:dropin_fuel"] / (
-                            dropin_fuel_share / 100
-                        )
-
-                    if hydrogen_share != 0.0:
-                        temp_dict[f"{category_name}:emission_index_nox:hydrogen"][
-                            k - self.df.index[0]
-                        ] += self.df.at[k, f"{subcategory_key}:emission_index_nox:hydrogen"] / (
-                            hydrogen_share / 100
-                        )
-                        temp_dict[f"{category_name}:emission_index_soot:hydrogen"][
-                            k - self.df.index[0]
-                        ] += self.df.at[k, f"{subcategory_key}:emission_index_soot:hydrogen"] / (
-                            hydrogen_share / 100
-                        )
-
-                    if electric_share != 0.0:
-                        temp_dict[f"{category_name}:emission_index_nox:electric"][
-                            k - self.df.index[0]
-                        ] += self.df.at[k, f"{subcategory_key}:emission_index_nox:electric"] / (
-                            electric_share / 100
-                        )
-                        temp_dict[f"{category_name}:emission_index_soot:electric"][
-                            k - self.df.index[0]
-                        ] += self.df.at[k, f"{subcategory_key}:emission_index_soot:electric"] / (
-                            electric_share / 100
-                        )
-
-                    if hybrid_electric_share != 0.0:
-                        temp_dict[f"{category_name}:emission_index_nox:hybrid_electric"][
-                            k - self.df.index[0]
-                        ] += self.df.at[
-                            k, f"{subcategory_key}:emission_index_nox:hybrid_electric"
-                        ] / (hybrid_electric_share / 100)
-                        temp_dict[f"{category_name}:emission_index_soot:hybrid_electric"][
-                            k - self.df.index[0]
-                        ] += self.df.at[
-                            k, f"{subcategory_key}:emission_index_soot:hybrid_electric"
-                        ] / (hybrid_electric_share / 100)
-
-            # Calculate mean emission index
-            for k in self.df.index:
-                self.df.at[k, f"{category_name}:emission_index_nox"] = (
-                    temp_dict[f"{category_name}:emission_index_nox:dropin_fuel"][
-                        k - self.df.index[0]
-                    ]
-                    * (self.df.at[k, f"{category_name}:share:dropin_fuel"] / 100)
-                    + temp_dict[f"{category_name}:emission_index_nox:hydrogen"][
-                        k - self.df.index[0]
-                    ]
-                    * (self.df.at[k, f"{category_name}:share:hydrogen"] / 100)
-                    + temp_dict[f"{category_name}:emission_index_nox:electric"][
-                        k - self.df.index[0]
-                    ]
-                    * (self.df.at[k, f"{category_name}:share:electric"] / 100)
-                    + temp_dict[f"{category_name}:emission_index_nox:hybrid_electric"][
-                        k - self.df.index[0]
-                    ]
-                    * (self.df.at[k, f"{category_name}:share:hybrid_electric"] / 100)
-                )
-                self.df.at[k, f"{category_name}:emission_index_soot"] = (
-                    temp_dict[f"{category_name}:emission_index_soot:dropin_fuel"][
-                        k - self.df.index[0]
-                    ]
-                    * (self.df.at[k, f"{category_name}:share:dropin_fuel"] / 100)
-                    + temp_dict[f"{category_name}:emission_index_soot:hydrogen"][
-                        k - self.df.index[0]
-                    ]
-                    * (self.df.at[k, f"{category_name}:share:hydrogen"] / 100)
-                    + temp_dict[f"{category_name}:emission_index_soot:electric"][
-                        k - self.df.index[0]
-                    ]
-                    * (self.df.at[k, f"{category_name}:share:electric"] / 100)
-                    + temp_dict[f"{category_name}:emission_index_soot:hybrid_electric"][
-                        k - self.df.index[0]
-                    ]
-                    * (self.df.at[k, f"{category_name}:share:hybrid_electric"] / 100)
-                )
-
-        final_dict = {
-            key: np.array(values) if isinstance(values, list) else values
-            for key, values in temp_dict.items()
-        }
-
-        final_df = pd.DataFrame(final_dict, index=self.df.index)
-        self.df = pd.concat([self.df, final_df], axis=1)
+        # Compute individual aircraft contributions to all performance metrics
+        self._compute_aircraft_performance_contributions()
+
+        # Compute fleet-renewal-only counterfactual performance (no new aircraft)
+        self._compute_fleet_renewal_performance()
 
     def plot(self):
         """Generate fleet renewal visualization plots.
@@ -2300,51 +1328,142 @@ class FleetModel(AeroMAPSModel):
         plt.plot()
         # plt.savefig("fleet_renewal.pdf")
 
-    def _compute(self, life, entry_into_service_year, share, recent=False):
-        """Compute S-shaped aircraft market penetration curve.
+    def plot_performance_contributions(self, metric="energy"):
+        """Plot individual aircraft contributions to a fleet performance metric.
 
-        Calculates the share of an aircraft type in the fleet over time
-        using a logistic (S-shaped) function. The curve models the typical
-        technology adoption pattern where market share grows slowly at first,
-        then accelerates, and finally levels off.
+        For each category shows:
+
+        - Dashed grey line: recent reference value (neutral baseline).
+        - Dashed orange line: fleet-renewal-only counterfactual (old aircraft
+          phased out, replaced by recent reference — no new technology).
+        - Red area above the baseline: penalty from old aircraft still in service.
+        - Stacked coloured areas below the baseline: gain from each new aircraft
+          type (stacked oldest-EIS first).
+        - Black line: actual fleet mean.
 
         Parameters
         ----------
-        life : float
-            Aircraft operational lifetime in years. Determines the slope
-            of the S-curve (shorter life = steeper curve).
-        entry_into_service_year : int
-            Year when the aircraft enters commercial service.
-        share : float
-            Target maximum market share for this aircraft type [%].
-        recent : bool, optional
-            If True, the midpoint is at entry_into_service_year (for recent
-            reference aircraft). If False, the midpoint is at entry + life/2
-            (for new aircraft). Default is False.
+        metric : str
+            One of ``"energy"``, ``"doc"``, ``"nox"``, ``"soot"``.
 
         Returns
         -------
-        numpy.ndarray
-            Array of share values [%] for each year from historic_start_year
-            to end_year. Values below a 2% threshold are set to zero.
+        matplotlib.figure.Figure
         """
-        x = np.linspace(
-            self.historic_start_year,
-            self.end_year,
-            self.end_year - self.historic_start_year + 1,
-        )
+        _cfg = {
+            "energy": {
+                "fleet_col": lambda cat: f"{cat}:energy_consumption",
+                "renewal_col": lambda cat: f"{cat}:energy_renewal_only",
+                "contrib_col": lambda cat,
+                sub,
+                ac: f"{cat}:{sub}:{ac}:energy_efficiency_contribution",
+                "old_col": lambda cat,
+                sub: f"{cat}:{sub}:old_reference:energy_efficiency_contribution",
+                "ref_val": lambda ref: float(ref.energy_per_ask),
+                "ylabel": "Energy per ASK [MJ/ASK]",
+            },
+            "doc": {
+                "fleet_col": lambda cat: f"{cat}:doc_non_energy",
+                "renewal_col": lambda cat: f"{cat}:doc_renewal_only",
+                "contrib_col": lambda cat, sub, ac: f"{cat}:{sub}:{ac}:doc_contribution",
+                "old_col": lambda cat, sub: f"{cat}:{sub}:old_reference:doc_contribution",
+                "ref_val": lambda ref: float(ref.doc_non_energy_base),
+                "ylabel": "Non-energy DOC [€/ASK]",
+            },
+            "nox": {
+                "fleet_col": lambda cat: f"{cat}:emission_index_nox",
+                "renewal_col": lambda cat: f"{cat}:nox_renewal_only",
+                "contrib_col": lambda cat, sub, ac: f"{cat}:{sub}:{ac}:nox_contribution",
+                "old_col": lambda cat, sub: f"{cat}:{sub}:old_reference:nox_contribution",
+                "ref_val": lambda ref: float(ref.emission_index_nox),
+                "ylabel": "NOx emission index [kg/ASK]",
+            },
+            "soot": {
+                "fleet_col": lambda cat: f"{cat}:emission_index_soot",
+                "renewal_col": lambda cat: f"{cat}:soot_renewal_only",
+                "contrib_col": lambda cat, sub, ac: f"{cat}:{sub}:{ac}:soot_contribution",
+                "old_col": lambda cat, sub: f"{cat}:{sub}:old_reference:soot_contribution",
+                "ref_val": lambda ref: float(ref.emission_index_soot),
+                "ylabel": "Soot emission index [kg/ASK]",
+            },
+        }
+        if metric not in _cfg:
+            raise ValueError(f"metric must be one of {list(_cfg)}; got {metric!r}")
+        cfg = _cfg[metric]
 
-        # Intermediate variable for S-shaped function
-        limit = 2
-        growth_rate = np.log(100 / limit - 1) / (life / 2)
+        years = self.df.loc[self.prospection_start_year : self.end_year].index
+        categories = list(self.fleet.categories.values())
+        fig, axs = plt.subplots(1, len(categories), figsize=(8 * len(categories), 5), squeeze=False)
+        cmap = plt.get_cmap("tab10")
 
-        if not recent:
-            midpoint_year = entry_into_service_year + life / 2
-        else:
-            midpoint_year = entry_into_service_year
+        for col_idx, category in enumerate(categories):
+            ax = axs[0, col_idx]
+            first_subcategory = category.subcategories[0]
+            ref_recent_val = cfg["ref_val"](first_subcategory.recent_reference_aircraft)
+            # prefix = f"{category.name}:{first_subcategory.name}"
 
-        y_share = share / (1 + np.exp(-growth_rate * (x - midpoint_year)))
-        y_share_max = 100 / (1 + np.exp(-growth_rate * (x - midpoint_year)))
+            # Old-reference penalty (above baseline)
+            old_penalty = -self.df.loc[
+                years, cfg["old_col"](category.name, first_subcategory.name)
+            ].values
+            ax.fill_between(
+                years,
+                ref_recent_val,
+                ref_recent_val + old_penalty,
+                color="tomato",
+                alpha=0.75,
+                label="Old reference aircraft (penalty)",
+            )
 
-        y = np.where(y_share_max < limit, 0.0, y_share)
-        return y
+            # New aircraft gains (below baseline, stacked oldest → newest EIS)
+            y_top = np.full(len(years), ref_recent_val)
+            color_idx = 0
+            for subcategory in category.subcategories.values():
+                for aircraft in self._sorted_aircraft(subcategory):
+                    gain = self.df.loc[
+                        years,
+                        cfg["contrib_col"](category.name, subcategory.name, aircraft.name),
+                    ].values
+                    ax.fill_between(
+                        years,
+                        y_top - gain,
+                        y_top,
+                        color=cmap(color_idx),
+                        alpha=0.75,
+                        label=f"{aircraft.name} (gain)",
+                    )
+                    y_top = y_top - gain
+                    color_idx += 1
+
+            # Recent reference baseline
+            ax.axhline(
+                ref_recent_val,
+                color="grey",
+                linestyle="--",
+                linewidth=1,
+                label="Recent reference baseline",
+            )
+
+            # Fleet-renewal-only counterfactual
+            renewal = self.df.loc[years, cfg["renewal_col"](category.name)].values
+            ax.plot(
+                years,
+                renewal,
+                color="orange",
+                linestyle="--",
+                linewidth=1.5,
+                label="Fleet renewal only (no new aircraft)",
+            )
+
+            # Actual fleet mean
+            fleet_mean = self.df.loc[years, cfg["fleet_col"](category.name)].values
+            ax.plot(years, fleet_mean, color="black", linewidth=2, label="Fleet mean")
+
+            ax.set_xlim(self.prospection_start_year, self.end_year)
+            ax.set_xlabel("Year")
+            ax.set_ylabel(cfg["ylabel"])
+            ax.set_title(category.name)
+            ax.legend(loc="upper right", prop={"size": 8})
+
+        fig.tight_layout()
+        return fig

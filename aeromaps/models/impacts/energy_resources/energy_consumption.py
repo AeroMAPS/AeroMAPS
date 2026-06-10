@@ -4,8 +4,6 @@ energy_consumption
 Module to compute energy consumption from different aircraft types.
 """
 
-from typing import Tuple
-
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
@@ -19,240 +17,196 @@ class DropInFuelConsumption(AeroMAPSModel):
     --------------
     name : str
         Name of the model instance ('drop_in_fuel_consumption' by default).
+
+    Documentation
+    --------------
+    Inputs
+        - ask_<market>_dropin_fuel: Passenger ASK for drop-in fuel aircraft [ASK].
+        - rtk_<market>_dropin_fuel: Freight RTK for drop-in fuel aircraft [RTK].
+        - energy_per_ask_without_operations_<market>_dropin_fuel: Passenger MJ/ASK (no ops).
+        - energy_per_ask_<market>_dropin_fuel: Passenger MJ/ASK (with ops).
+        - energy_per_rtk_without_operations_<market>_dropin_fuel: Freight MJ/RTK (no ops).
+        - energy_per_rtk_<market>_dropin_fuel: Freight MJ/RTK (with ops).
+    Outputs
+        - energy_consumption_<market>_dropin_fuel_without_operations: Per-market drop-in [MJ].
+        - energy_consumption_<market>_dropin_fuel: Per-market drop-in [MJ].
+        - energy_consumption_passenger_dropin_fuel_without_operations: Passenger total [MJ].
+        - energy_consumption_freight_dropin_fuel_without_operations: Freight total [MJ].
+        - energy_consumption_dropin_fuel_without_operations: Passenger + freight [MJ].
+        - energy_consumption_passenger_dropin_fuel: Passenger total [MJ].
+        - energy_consumption_freight_dropin_fuel: Freight total [MJ].
+        - energy_consumption_dropin_fuel: Passenger + freight [MJ].
+    Notes
+        - <market> is the MarketManager id (passenger and freight markets).
+        - I/O names are generated from configuration and passed to GEMSEO via
+          self.input_names and self.output_names grammars.
     """
 
     def __init__(self, name="drop_in_fuel_consumption", *args, **kwargs):
-        super().__init__(name=name, *args, **kwargs)
+        super().__init__(name=name, model_type="custom", *args, **kwargs)
+        self.markets = None
 
-    def compute(
-        self,
-        ask_short_range_dropin_fuel: pd.Series,
-        ask_medium_range_dropin_fuel: pd.Series,
-        ask_long_range_dropin_fuel: pd.Series,
-        rtk_dropin_fuel: pd.Series,
-        energy_per_ask_without_operations_short_range_dropin_fuel: pd.Series,
-        energy_per_ask_without_operations_medium_range_dropin_fuel: pd.Series,
-        energy_per_ask_without_operations_long_range_dropin_fuel: pd.Series,
-        energy_per_rtk_without_operations_freight_dropin_fuel: pd.Series,
-        energy_per_ask_short_range_dropin_fuel: pd.Series,
-        energy_per_ask_medium_range_dropin_fuel: pd.Series,
-        energy_per_ask_long_range_dropin_fuel: pd.Series,
-        energy_per_rtk_freight_dropin_fuel: pd.Series,
-    ) -> Tuple[
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-    ]:
+    def custom_setup(self):
         """
-        Execute drop-in fuel consumption calculation.
-        Parameters
-        ----------
-        ask_short_range_dropin_fuel
-            Number of Available Seat Kilometer (ASK) for passenger short-range market from drop-in fuel aircraft [ASK].
-        ask_medium_range_dropin_fuel
-            Number of Available Seat Kilometer (ASK) for passenger medium-range market from drop-in fuel aircraft [ASK].
-        ask_long_range_dropin_fuel
-            Number of Available Seat Kilometer (ASK) for passenger long-range market from drop-in fuel aircraft [ASK].
-        rtk_dropin_fuel
-            Number of Revenue Tonne Kilometer (RTK) for freight air transport from drop-in fuel aircraft [RTK].
-        energy_per_ask_without_operations_short_range_dropin_fuel
-            Energy consumption per ASK for passenger short-range market aircraft using drop-in fuel without considering operation improvements [MJ/ASK].
-        energy_per_ask_without_operations_medium_range_dropin_fuel
-            Energy consumption per ASK for passenger medium-range market aircraft using drop-in fuel without considering operation improvements [MJ/ASK].
-        energy_per_ask_without_operations_long_range_dropin_fuel
-            Energy consumption per ASK for passenger long-range market aircraft using drop-in fuel without considering operation improvements [MJ/ASK].
-        energy_per_rtk_without_operations_freight_dropin_fuel
-            Energy consumption per RTK for freight market aircraft using drop-in fuel without considering operation improvements [MJ/RTK].
-        energy_per_ask_short_range_dropin_fuel
-            Energy consumption per ASK for passenger short-range market aircraft using drop-in fuel [MJ/ASK].
-        energy_per_ask_medium_range_dropin_fuel
-            Energy consumption per ASK for passenger medium-range market aircraft using drop-in fuel [MJ/ASK].
-        energy_per_ask_long_range_dropin_fuel
-            Energy consumption per ASK for passenger long-range market aircraft using drop-in fuel [MJ/ASK].
-        energy_per_rtk_freight_dropin_fuel
-            Energy consumption per RTK for freight market aircraft using drop-in fuel [MJ/RTK].
-
-        Returns
-        -------
-        energy_consumption_short_range_dropin_fuel_without_operations
-                Energy consumption in the form of drop-in fuels without considering operation improvements from passenger short-range market air transport [MJ].
-        energy_consumption_medium_range_dropin_fuel_without_operations
-                Energy consumption in the form of drop-in fuels without considering operation improvements from passenger medium-range market air transport [MJ].
-        energy_consumption_long_range_dropin_fuel_without_operations
-                Energy consumption in the form of drop-in fuels without considering operation improvements from passenger long-range market air transport [MJ].
-        energy_consumption_passenger_dropin_fuel_without_operations
-                Energy consumption in the form of drop-in fuels without considering operation improvements from total passenger air transport [MJ].
-        energy_consumption_freight_dropin_fuel_without_operations
-                Energy consumption in the form of drop-in fuels without considering operation improvements from freight air transport [MJ].
-        energy_consumption_dropin_fuel_without_operations
-                Energy consumption in the form of drop-in fuels without considering operation improvements from all commercial air transport [MJ].
-        energy_consumption_short_range_dropin_fuel
-                Energy consumption in the form of drop-in fuels from passenger short-range market air transport [MJ].
-        energy_consumption_medium_range_dropin_fuel
-                Energy consumption in the form of drop-in fuels from passenger medium-range market air transport [MJ].
-        energy_consumption_long_range_dropin_fuel
-                Energy consumption in the form of drop-in fuels from passenger long-range market air transport [MJ].
-        energy_consumption_passenger_dropin_fuel
-                Energy consumption in the form of drop-in fuels from total passenger air transport [MJ].
-        energy_consumption_freight_dropin_fuel
-                Energy consumption in the form of drop-in fuels from freight air transport [MJ].
-        energy_consumption_dropin_fuel
-                Energy consumption in the form of drop-in fuels from all commercial air transport [MJ].
+        Build input_names / output_names dynamically from the MarketManager.
+        Called once by AeroMAPSProcess after self.markets is injected.
         """
+        self.input_names = {}
+        self.output_names = {}
 
-        # WITHOUT OPERATIONS
-        # Drop-in fuel
+        passenger_markets = list(self.markets.get(traffic_type="passenger"))
+        freight_markets = list(self.markets.get(traffic_type="freight"))
 
-        ### Handle potential NaN values in energy per ASK for drop-in fuel without operations (e.g., due to zero ASK for certain market segments in some years) by filling NaN with 0, which will lead to zero energy consumption for those segments instead of propagating NaN values.
-        # TODO: improve divison by zero handling
-        if ask_short_range_dropin_fuel.sum() == 0.0:
-            energy_consumption_short_range_dropin_fuel_without_operations = (
-                0.0 * ask_short_range_dropin_fuel
+        # Per-market inputs and outputs (passenger: ask-based; freight: rtk-based).
+        for market in passenger_markets:
+            mid = market.id
+            self.input_names[f"ask_{mid}_dropin_fuel"] = pd.Series([0.0])
+            self.input_names[f"energy_per_ask_without_operations_{mid}_dropin_fuel"] = pd.Series(
+                [0.0]
             )
-        else:
-            energy_consumption_short_range_dropin_fuel_without_operations = (
-                energy_per_ask_without_operations_short_range_dropin_fuel
-                * ask_short_range_dropin_fuel
+            self.input_names[f"energy_per_ask_{mid}_dropin_fuel"] = pd.Series([0.0])
+            self.output_names[f"energy_consumption_{mid}_dropin_fuel_without_operations"] = (
+                pd.Series([0.0])
             )
+            self.output_names[f"energy_consumption_{mid}_dropin_fuel"] = pd.Series([0.0])
 
-        if ask_medium_range_dropin_fuel.sum() == 0.0:
-            energy_consumption_medium_range_dropin_fuel_without_operations = (
-                0.0 * ask_medium_range_dropin_fuel
+        for market in freight_markets:
+            mid = market.id
+            self.input_names[f"rtk_{mid}_dropin_fuel"] = pd.Series([0.0])
+            self.input_names[f"energy_per_rtk_without_operations_{mid}_dropin_fuel"] = pd.Series(
+                [0.0]
             )
-        else:
-            energy_consumption_medium_range_dropin_fuel_without_operations = (
-                energy_per_ask_without_operations_medium_range_dropin_fuel
-                * ask_medium_range_dropin_fuel
+            self.input_names[f"energy_per_rtk_{mid}_dropin_fuel"] = pd.Series([0.0])
+            self.output_names[f"energy_consumption_{mid}_dropin_fuel_without_operations"] = (
+                pd.Series([0.0])
             )
+            self.output_names[f"energy_consumption_{mid}_dropin_fuel"] = pd.Series([0.0])
 
-        if ask_long_range_dropin_fuel.sum() == 0.0:
-            energy_consumption_long_range_dropin_fuel_without_operations = (
-                0.0 * ask_long_range_dropin_fuel
-            )
-        else:
-            energy_consumption_long_range_dropin_fuel_without_operations = (
-                energy_per_ask_without_operations_long_range_dropin_fuel
-                * ask_long_range_dropin_fuel
-            )
-
-        energy_consumption_passenger_dropin_fuel_without_operations = (
-            energy_consumption_short_range_dropin_fuel_without_operations
-            + energy_consumption_medium_range_dropin_fuel_without_operations
-            + energy_consumption_long_range_dropin_fuel_without_operations
+        # Aggregate outputs (passenger sum, freight sum, grand total) — both with and without operations.
+        self.output_names["energy_consumption_passenger_dropin_fuel_without_operations"] = (
+            pd.Series([0.0])
         )
+        self.output_names["energy_consumption_passenger_dropin_fuel"] = pd.Series([0.0])
+        self.output_names["energy_consumption_freight_dropin_fuel_without_operations"] = pd.Series(
+            [0.0]
+        )
+        self.output_names["energy_consumption_freight_dropin_fuel"] = pd.Series([0.0])
+        self.output_names["energy_consumption_dropin_fuel_without_operations"] = pd.Series([0.0])
+        self.output_names["energy_consumption_dropin_fuel"] = pd.Series([0.0])
 
-        # in case freight consumption becomes independant of pax in the future, case discjunction still made preventively
-        if rtk_dropin_fuel.sum() == 0.0:
-            energy_consumption_freight_dropin_fuel_without_operations = 0.0 * rtk_dropin_fuel
-        else:
-            energy_consumption_freight_dropin_fuel_without_operations = (
-                energy_per_rtk_without_operations_freight_dropin_fuel * rtk_dropin_fuel
+    def compute(self, input_data) -> dict:
+        """
+        Drop-in fuel energy consumption per market and aggregates.
+
+        Per-market: energy = energy_per_(ask|rtk) * (ask|rtk).
+        Aggregates: passenger sum over passenger markets, freight sum over freight
+        markets, grand total = passenger + freight. Both with-operations and
+        without-operations variants are produced.
+        """
+        output_data = {}
+
+        passenger_markets = list(self.markets.get(traffic_type="passenger"))
+        freight_markets = list(self.markets.get(traffic_type="freight"))
+
+        # Per-passenger-market consumption.
+        passenger_dropin_fuel = None
+        passenger_dropin_fuel_without_operations = None
+        for market in passenger_markets:
+            mid = market.id
+            ask = input_data[f"ask_{mid}_dropin_fuel"]
+            energy_per_ask_without_operations = input_data[
+                f"energy_per_ask_without_operations_{mid}_dropin_fuel"
+            ]
+            energy_per_ask = input_data[f"energy_per_ask_{mid}_dropin_fuel"]
+
+            # Energy is zero wherever there is no traffic, even when the per-ASK intensity is
+            # NaN/inf from an upstream division-by-zero (energy_per_ask = energy / ask). The mask
+            # is applied per-year so partially-empty markets (zero ASK in some years only) do not
+            # leak NaN: inf * 0 would otherwise produce NaN and propagate to every aggregate.
+            energy_consumption_without_operations = (energy_per_ask_without_operations * ask).where(
+                ask != 0.0, 0.0
             )
+            energy_consumption = (energy_per_ask * ask).where(ask != 0.0, 0.0)
 
-        energy_consumption_dropin_fuel_without_operations = (
-            energy_consumption_passenger_dropin_fuel_without_operations
-            + energy_consumption_freight_dropin_fuel_without_operations
-        )
-
-        self.df.loc[:, "energy_consumption_short_range_dropin_fuel_without_operations"] = (
-            energy_consumption_short_range_dropin_fuel_without_operations
-        )
-        self.df.loc[:, "energy_consumption_medium_range_dropin_fuel_without_operations"] = (
-            energy_consumption_medium_range_dropin_fuel_without_operations
-        )
-        self.df.loc[:, "energy_consumption_long_range_dropin_fuel_without_operations"] = (
-            energy_consumption_long_range_dropin_fuel_without_operations
-        )
-        self.df.loc[:, "energy_consumption_passenger_dropin_fuel_without_operations"] = (
-            energy_consumption_passenger_dropin_fuel_without_operations
-        )
-        self.df.loc[:, "energy_consumption_freight_dropin_fuel_without_operations"] = (
-            energy_consumption_freight_dropin_fuel_without_operations
-        )
-        self.df.loc[:, "energy_consumption_dropin_fuel_without_operations"] = (
-            energy_consumption_dropin_fuel_without_operations
-        )
-
-        # WITH OPERATIONS
-        # Drop-in fuel
-
-        if ask_short_range_dropin_fuel.sum() == 0.0:
-            energy_consumption_short_range_dropin_fuel = 0.0 * ask_short_range_dropin_fuel
-        else:
-            energy_consumption_short_range_dropin_fuel = (
-                energy_per_ask_short_range_dropin_fuel * ask_short_range_dropin_fuel
+            output_data[f"energy_consumption_{mid}_dropin_fuel_without_operations"] = (
+                energy_consumption_without_operations
             )
-        if ask_medium_range_dropin_fuel.sum() == 0.0:
-            energy_consumption_medium_range_dropin_fuel = 0.0 * ask_medium_range_dropin_fuel
-        else:
-            energy_consumption_medium_range_dropin_fuel = (
-                energy_per_ask_medium_range_dropin_fuel * ask_medium_range_dropin_fuel
+            output_data[f"energy_consumption_{mid}_dropin_fuel"] = energy_consumption
+
+            passenger_dropin_fuel_without_operations = (
+                energy_consumption_without_operations
+                if passenger_dropin_fuel_without_operations is None
+                else passenger_dropin_fuel_without_operations
+                + energy_consumption_without_operations
             )
-        if ask_long_range_dropin_fuel.sum() == 0.0:
-            energy_consumption_long_range_dropin_fuel = 0.0 * ask_long_range_dropin_fuel
-        else:
-            energy_consumption_long_range_dropin_fuel = (
-                energy_per_ask_long_range_dropin_fuel * ask_long_range_dropin_fuel
+            passenger_dropin_fuel = (
+                energy_consumption
+                if passenger_dropin_fuel is None
+                else passenger_dropin_fuel + energy_consumption
             )
 
-        energy_consumption_passenger_dropin_fuel = (
-            energy_consumption_short_range_dropin_fuel
-            + energy_consumption_medium_range_dropin_fuel
-            + energy_consumption_long_range_dropin_fuel
-        )
+        # Per-freight-market consumption.
+        freight_dropin_fuel = None
+        freight_dropin_fuel_without_operations = None
+        for market in freight_markets:
+            mid = market.id
+            rtk = input_data[f"rtk_{mid}_dropin_fuel"]
+            energy_per_rtk_without_operations = input_data[
+                f"energy_per_rtk_without_operations_{mid}_dropin_fuel"
+            ]
+            energy_per_rtk = input_data[f"energy_per_rtk_{mid}_dropin_fuel"]
 
-        # in case freight consumption becomes independant of pax in the future, case discjunction still made preventively
-        if rtk_dropin_fuel.sum() == 0.0:
-            energy_consumption_freight_dropin_fuel = 0.0 * rtk_dropin_fuel
-        else:
-            energy_consumption_freight_dropin_fuel = (
-                energy_per_rtk_freight_dropin_fuel * rtk_dropin_fuel
+            # Energy is zero wherever there is no traffic, even when the per-RTK intensity is
+            # NaN/inf from an upstream division-by-zero (energy_per_rtk = energy / rtk). The mask
+            # is applied per-year so partially-empty markets (zero RTK in some years only) do not
+            # leak NaN: inf * 0 would otherwise produce NaN and propagate to every aggregate.
+            energy_consumption_without_operations = (energy_per_rtk_without_operations * rtk).where(
+                rtk != 0.0, 0.0
+            )
+            energy_consumption = (energy_per_rtk * rtk).where(rtk != 0.0, 0.0)
+
+            output_data[f"energy_consumption_{mid}_dropin_fuel_without_operations"] = (
+                energy_consumption_without_operations
+            )
+            output_data[f"energy_consumption_{mid}_dropin_fuel"] = energy_consumption
+
+            freight_dropin_fuel_without_operations = (
+                energy_consumption_without_operations
+                if freight_dropin_fuel_without_operations is None
+                else freight_dropin_fuel_without_operations + energy_consumption_without_operations
+            )
+            freight_dropin_fuel = (
+                energy_consumption
+                if freight_dropin_fuel is None
+                else freight_dropin_fuel + energy_consumption
             )
 
-        energy_consumption_dropin_fuel = (
-            energy_consumption_passenger_dropin_fuel + energy_consumption_freight_dropin_fuel
-        )
+        # Default to zero series when no markets in a traffic_type (defensive — should not happen
+        # for the default 4-market config, but custom configs may have e.g. zero freight markets).
+        if passenger_dropin_fuel_without_operations is None:
+            passenger_dropin_fuel_without_operations = pd.Series(0.0, index=self.df.index)
+        if passenger_dropin_fuel is None:
+            passenger_dropin_fuel = pd.Series(0.0, index=self.df.index)
+        if freight_dropin_fuel_without_operations is None:
+            freight_dropin_fuel_without_operations = pd.Series(0.0, index=self.df.index)
+        if freight_dropin_fuel is None:
+            freight_dropin_fuel = pd.Series(0.0, index=self.df.index)
 
-        self.df.loc[:, "energy_consumption_short_range_dropin_fuel"] = (
-            energy_consumption_short_range_dropin_fuel
+        output_data["energy_consumption_passenger_dropin_fuel_without_operations"] = (
+            passenger_dropin_fuel_without_operations
         )
-        self.df.loc[:, "energy_consumption_medium_range_dropin_fuel"] = (
-            energy_consumption_medium_range_dropin_fuel
+        output_data["energy_consumption_passenger_dropin_fuel"] = passenger_dropin_fuel
+        output_data["energy_consumption_freight_dropin_fuel_without_operations"] = (
+            freight_dropin_fuel_without_operations
         )
-        self.df.loc[:, "energy_consumption_long_range_dropin_fuel"] = (
-            energy_consumption_long_range_dropin_fuel
+        output_data["energy_consumption_freight_dropin_fuel"] = freight_dropin_fuel
+        output_data["energy_consumption_dropin_fuel_without_operations"] = (
+            passenger_dropin_fuel_without_operations + freight_dropin_fuel_without_operations
         )
-        self.df.loc[:, "energy_consumption_passenger_dropin_fuel"] = (
-            energy_consumption_passenger_dropin_fuel
-        )
-        self.df.loc[:, "energy_consumption_freight_dropin_fuel"] = (
-            energy_consumption_freight_dropin_fuel
-        )
-        self.df.loc[:, "energy_consumption_dropin_fuel"] = energy_consumption_dropin_fuel
+        output_data["energy_consumption_dropin_fuel"] = passenger_dropin_fuel + freight_dropin_fuel
 
-        return (
-            energy_consumption_short_range_dropin_fuel_without_operations,
-            energy_consumption_medium_range_dropin_fuel_without_operations,
-            energy_consumption_long_range_dropin_fuel_without_operations,
-            energy_consumption_passenger_dropin_fuel_without_operations,
-            energy_consumption_freight_dropin_fuel_without_operations,
-            energy_consumption_dropin_fuel_without_operations,
-            energy_consumption_short_range_dropin_fuel,
-            energy_consumption_medium_range_dropin_fuel,
-            energy_consumption_long_range_dropin_fuel,
-            energy_consumption_passenger_dropin_fuel,
-            energy_consumption_freight_dropin_fuel,
-            energy_consumption_dropin_fuel,
-        )
+        self._store_outputs(output_data)
+        return output_data
 
 
 class DropInFuelDetailledConsumption(AeroMAPSModel):
@@ -263,469 +217,166 @@ class DropInFuelDetailledConsumption(AeroMAPSModel):
     --------------
     name : str
         Name of the model instance ('drop_in_fuel_detailled_consumption' by default).
+
+    Documentation
+    --------------
+    Inputs
+        - biomass_share_dropin_fuel: Share of biomass-based fuels in drop-in fuels [%].
+        - electricity_share_dropin_fuel: Share of electricity-based fuels in drop-in fuels [%].
+        - fossil_share_dropin_fuel: Share of fossil-based fuels in drop-in fuels [%].
+        - energy_consumption_<market>_dropin_fuel_without_operations: Drop-in fuel energy (no ops) [MJ].
+        - energy_consumption_<market>_dropin_fuel: Drop-in fuel energy (with ops) [MJ].
+    Outputs
+        - energy_consumption_<market>_<fuel>_without_operations: Per-market split by fuel [MJ].
+        - energy_consumption_<market>_<fuel>: Per-market split by fuel [MJ].
+        - energy_consumption_passenger_<fuel>_without_operations: Passenger total [MJ].
+        - energy_consumption_freight_<fuel>_without_operations: Freight total [MJ].
+        - energy_consumption_<fuel>_without_operations: Passenger + freight [MJ].
+        - energy_consumption_passenger_<fuel>: Passenger total [MJ].
+        - energy_consumption_freight_<fuel>: Freight total [MJ].
+        - energy_consumption_<fuel>: Passenger + freight [MJ].
+    Notes
+        - <market> is the MarketManager id (passenger and freight markets).
+        - <fuel> is one of: biofuel, electrofuel, kerosene.
+        - I/O names are generated from configuration and passed to GEMSEO via
+            self.input_names and self.output_names grammars.
     """
 
     def __init__(self, name="drop_in_fuel_detailled_consumption", *args, **kwargs):
-        super().__init__(name=name, *args, **kwargs)
+        super().__init__(name=name, model_type="custom", *args, **kwargs)
+        self.markets = None
 
-    def compute(
-        self,
-        biomass_share_dropin_fuel: pd.Series,
-        electricity_share_dropin_fuel: pd.Series,
-        fossil_share_dropin_fuel: pd.Series,
-        energy_consumption_short_range_dropin_fuel_without_operations: pd.Series,
-        energy_consumption_medium_range_dropin_fuel_without_operations: pd.Series,
-        energy_consumption_long_range_dropin_fuel_without_operations: pd.Series,
-        energy_consumption_freight_dropin_fuel_without_operations: pd.Series,
-        energy_consumption_short_range_dropin_fuel: pd.Series,
-        energy_consumption_medium_range_dropin_fuel: pd.Series,
-        energy_consumption_long_range_dropin_fuel: pd.Series,
-        energy_consumption_freight_dropin_fuel: pd.Series,
-    ) -> Tuple[
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-    ]:
-        # TODO further adapt to generic energy model outputs?
-        """
-        Drop-in fuel consumption calculation.
+    def custom_setup(self):
+        self.input_names = {
+            "biomass_share_dropin_fuel": pd.Series([0.0]),
+            "electricity_share_dropin_fuel": pd.Series([0.0]),
+            "fossil_share_dropin_fuel": pd.Series([0.0]),
+        }
+        self.output_names = {}
 
-        Parameters
-        ----------
-        biomass_share_dropin_fuel
-            Share of biomass-based fuels in drop-in fuels [%].
-        electricity_share_dropin_fuel
-            Share of electricity-based fuels in drop-in fuels [%].
-        fossil_share_dropin_fuel
-            Share of fossil-based fuels in drop-in fuels [%].
-        energy_consumption_short_range_dropin_fuel_without_operations
-            Energy consumption in the form of drop-in fuels without considering operation improvements from passenger short-range market air transport [MJ].
-        energy_consumption_medium_range_dropin_fuel_without_operations
-            Energy consumption in the form of drop-in fuels without considering operation improvements from passenger medium-range market air transport [MJ].
-        energy_consumption_long_range_dropin_fuel_without_operations
-            Energy consumption in the form of drop-in fuels without considering operation improvements from passenger long-range market air transport [MJ].
-        energy_consumption_freight_dropin_fuel_without_operations
-            Energy consumption in the form of drop-in fuels without considering operation improvements from freight air transport [MJ].
-        energy_consumption_short_range_dropin_fuel
-            Energy consumption in the form of drop-in fuels from passenger short-range market air transport [MJ].
-        energy_consumption_medium_range_dropin_fuel
-            Energy consumption in the form of drop-in fuels from passenger medium-range market air transport [MJ].
-        energy_consumption_long_range_dropin_fuel
-            Energy consumption in the form of drop-in fuels from passenger long-range market air transport [MJ].
-        energy_consumption_freight_dropin_fuel
-            Energy consumption in the form of drop-in fuels from freight air transport [MJ].
+        passenger_markets = list(self.markets.get(traffic_type="passenger"))
+        freight_markets = list(self.markets.get(traffic_type="freight"))
 
-        Returns
-        -------
-        energy_consumption_short_range_biofuel_without_operations
-                Energy consumption in the form of biofuels without considering operation improvements from passenger short-range market air transport [MJ].
-        energy_consumption_medium_range_biofuel_without_operations
-                Energy consumption in the form of biofuels without considering operation improvements from passenger medium-range market air transport [MJ].
-        energy_consumption_long_range_biofuel_without_operations
-                Energy consumption in the form of biofuels without considering operation improvements from passenger long-range market air transport [MJ].
-        energy_consumption_passenger_biofuel_without_operations
-                Energy consumption in the form of biofuels without considering operation improvements from total passenger air transport [MJ].
-        energy_consumption_freight_biofuel_without_operations
-                Energy consumption in the form of biofuels without considering operation improvements from freight air transport [MJ].
-        energy_consumption_biofuel_without_operations
-                Energy consumption in the form of biofuels without considering operation improvements from all commercial air transport [MJ].
-        energy_consumption_short_range_electrofuel_without_operations
-                Energy consumption in the form of electrofuels without considering operation improvements from passenger short-range market air transport [MJ].
-        energy_consumption_medium_range_electrofuel_without_operations
-                Energy consumption in the form of electrofuels without considering operation improvements from passenger medium-range market air transport [MJ].
-        energy_consumption_long_range_electrofuel_without_operations
-                Energy consumption in the form of electrofuels without considering operation improvements from passenger long-range market air transport [MJ].
-        energy_consumption_passenger_electrofuel_without_operations
-                Energy consumption in the form of electrofuels without considering operation improvements from total passenger air transport [MJ].
-        energy_consumption_freight_electrofuel_without_operations
-                Energy consumption in the form of electrofuels without considering operation improvements from freight air transport [MJ].
-        energy_consumption_electrofuel_without_operations
-                Energy consumption in the form of electrofuels without considering operation improvements from all commercial air transport [MJ].
-        energy_consumption_short_range_kerosene_without_operations
-                Energy consumption in the form of kerosene without considering operation improvements from passenger short-range market air transport [MJ].
-        energy_consumption_medium_range_kerosene_without_operations
-                Energy consumption in the form of kerosene without considering operation improvements from passenger medium-range market air transport [MJ].
-        energy_consumption_long_range_kerosene_without_operations
-                Energy consumption in the form of kerosene without considering operation improvements from passenger long-range market air transport [MJ].
-        energy_consumption_passenger_kerosene_without_operations
-                Energy consumption in the form of kerosene without considering operation improvements from total passenger air transport [MJ].
-        energy_consumption_freight_kerosene_without_operations
-                Energy consumption in the form of kerosene without considering operation improvements from freight air transport [MJ].
-        energy_consumption_kerosene_without_operations
-                Energy consumption in the form of kerosene without considering operation improvements from all commercial air transport [MJ].
-        energy_consumption_short_range_biofuel
-                Energy consumption in the form of biofuels from passenger short-range market air transport [MJ].
-        energy_consumption_medium_range_biofuel
-                Energy consumption in the form of biofuels from passenger medium-range market air transport [MJ].
-        energy_consumption_long_range_biofuel
-                Energy consumption in the form of biofuels from passenger long-range market air transport [MJ].
-        energy_consumption_passenger_biofuel
-                Energy consumption in the form of biofuels from total passenger air transport [MJ].
-        energy_consumption_freight_biofuel
-                Energy consumption in the form of biofuels from freight air transport [MJ].
-        energy_consumption_biofuel
-                Energy consumption in the form of biofuels from all commercial air transport [MJ].
-        energy_consumption_short_range_electrofuel
-                Energy consumption in the form of electrofuels from passenger short-range market air transport [MJ].
-        energy_consumption_medium_range_electrofuel
-                Energy consumption in the form of electrofuels from passenger medium-range market air transport [MJ].
-        energy_consumption_long_range_electrofuel
-                Energy consumption in the form of electrofuels from passenger long-range market air transport [MJ].
-        energy_consumption_passenger_electrofuel
-                Energy consumption in the form of electrofuels from total passenger air transport [MJ].
-        energy_consumption_freight_electrofuel
-                Energy consumption in the form of electrofuels from freight air transport [MJ].
-        energy_consumption_electrofuel
-                Energy consumption in the form of electrofuels from all commercial air transport [MJ].
-        energy_consumption_short_range_kerosene
-                Energy consumption in the form of kerosene from passenger short-range market air transport [MJ].
-        energy_consumption_medium_range_kerosene
-                Energy consumption in the form of kerosene from passenger medium-range market air transport [MJ].
-        energy_consumption_long_range_kerosene
-                Energy consumption in the form of kerosene from passenger long-range market air transport [MJ].
-        energy_consumption_passenger_kerosene
-                Energy consumption in the form of kerosene from total passenger air transport [MJ].
-        energy_consumption_freight_kerosene
-                Energy consumption in the form of kerosene from freight air transport [MJ].
-        energy_consumption_kerosene
-                Energy consumption in the form of kerosene from all commercial air transport [MJ].
-        """
-        # WITHOUT OPERATIONS
-        # Biofuel
-        energy_consumption_short_range_biofuel_without_operations = (
-            biomass_share_dropin_fuel
-            / 100
-            * energy_consumption_short_range_dropin_fuel_without_operations
-        )
-        energy_consumption_medium_range_biofuel_without_operations = (
-            biomass_share_dropin_fuel
-            / 100
-            * energy_consumption_medium_range_dropin_fuel_without_operations
-        )
-        energy_consumption_long_range_biofuel_without_operations = (
-            biomass_share_dropin_fuel
-            / 100
-            * energy_consumption_long_range_dropin_fuel_without_operations
-        )
-        energy_consumption_passenger_biofuel_without_operations = (
-            energy_consumption_short_range_biofuel_without_operations
-            + energy_consumption_medium_range_biofuel_without_operations
-            + energy_consumption_long_range_biofuel_without_operations
-        )
-        energy_consumption_freight_biofuel_without_operations = (
-            biomass_share_dropin_fuel
-            / 100
-            * energy_consumption_freight_dropin_fuel_without_operations
-        )
-        energy_consumption_biofuel_without_operations = (
-            energy_consumption_passenger_biofuel_without_operations
-            + energy_consumption_freight_biofuel_without_operations
-        )
+        for market in passenger_markets + freight_markets:
+            mid = market.id
+            self.input_names[f"energy_consumption_{mid}_dropin_fuel_without_operations"] = (
+                pd.Series([0.0])
+            )
+            self.input_names[f"energy_consumption_{mid}_dropin_fuel"] = pd.Series([0.0])
+            for fuel in ["biofuel", "electrofuel", "kerosene"]:
+                self.output_names[f"energy_consumption_{mid}_{fuel}_without_operations"] = (
+                    pd.Series([0.0])
+                )
+                self.output_names[f"energy_consumption_{mid}_{fuel}"] = pd.Series([0.0])
 
-        self.df.loc[:, "energy_consumption_short_range_biofuel_without_operations"] = (
-            energy_consumption_short_range_biofuel_without_operations
-        )
-        self.df.loc[:, "energy_consumption_medium_range_biofuel_without_operations"] = (
-            energy_consumption_medium_range_biofuel_without_operations
-        )
-        self.df.loc[:, "energy_consumption_long_range_biofuel_without_operations"] = (
-            energy_consumption_long_range_biofuel_without_operations
-        )
-        self.df.loc[:, "energy_consumption_passenger_biofuel_without_operations"] = (
-            energy_consumption_passenger_biofuel_without_operations
-        )
-        self.df.loc[:, "energy_consumption_freight_biofuel_without_operations"] = (
-            energy_consumption_freight_biofuel_without_operations
-        )
-        self.df.loc[:, "energy_consumption_biofuel_without_operations"] = (
-            energy_consumption_biofuel_without_operations
-        )
+        for fuel in ["biofuel", "electrofuel", "kerosene"]:
+            self.output_names[f"energy_consumption_passenger_{fuel}_without_operations"] = (
+                pd.Series([0.0])
+            )
+            self.output_names[f"energy_consumption_freight_{fuel}_without_operations"] = pd.Series(
+                [0.0]
+            )
+            self.output_names[f"energy_consumption_{fuel}_without_operations"] = pd.Series([0.0])
+            self.output_names[f"energy_consumption_passenger_{fuel}"] = pd.Series([0.0])
+            self.output_names[f"energy_consumption_freight_{fuel}"] = pd.Series([0.0])
+            self.output_names[f"energy_consumption_{fuel}"] = pd.Series([0.0])
 
-        # Electrofuel
-        energy_consumption_short_range_electrofuel_without_operations = (
-            electricity_share_dropin_fuel
-            / 100
-            * energy_consumption_short_range_dropin_fuel_without_operations
-        )
-        energy_consumption_medium_range_electrofuel_without_operations = (
-            electricity_share_dropin_fuel
-            / 100
-            * energy_consumption_medium_range_dropin_fuel_without_operations
-        )
-        energy_consumption_long_range_electrofuel_without_operations = (
-            electricity_share_dropin_fuel
-            / 100
-            * energy_consumption_long_range_dropin_fuel_without_operations
-        )
-        energy_consumption_passenger_electrofuel_without_operations = (
-            energy_consumption_short_range_electrofuel_without_operations
-            + energy_consumption_medium_range_electrofuel_without_operations
-            + energy_consumption_long_range_electrofuel_without_operations
-        )
-        energy_consumption_freight_electrofuel_without_operations = (
-            electricity_share_dropin_fuel
-            / 100
-            * energy_consumption_freight_dropin_fuel_without_operations
-        )
-        energy_consumption_electrofuel_without_operations = (
-            energy_consumption_passenger_electrofuel_without_operations
-            + energy_consumption_freight_electrofuel_without_operations
-        )
+    def compute(self, input_data) -> dict:
+        """Drop-in fuel detailed consumption per market and aggregates."""
+        output_data = {}
 
-        self.df.loc[:, "energy_consumption_short_range_electrofuel_without_operations"] = (
-            energy_consumption_short_range_electrofuel_without_operations
-        )
-        self.df.loc[:, "energy_consumption_medium_range_electrofuel_without_operations"] = (
-            energy_consumption_medium_range_electrofuel_without_operations
-        )
-        self.df.loc[:, "energy_consumption_long_range_electrofuel_without_operations"] = (
-            energy_consumption_long_range_electrofuel_without_operations
-        )
-        self.df.loc[:, "energy_consumption_passenger_electrofuel_without_operations"] = (
-            energy_consumption_passenger_electrofuel_without_operations
-        )
-        self.df.loc[:, "energy_consumption_freight_electrofuel_without_operations"] = (
-            energy_consumption_freight_electrofuel_without_operations
-        )
-        self.df.loc[:, "energy_consumption_electrofuel_without_operations"] = (
-            energy_consumption_electrofuel_without_operations
-        )
+        passenger_markets = list(self.markets.get(traffic_type="passenger"))
+        freight_markets = list(self.markets.get(traffic_type="freight"))
 
-        # Kerosene
-        energy_consumption_short_range_kerosene_without_operations = (
-            fossil_share_dropin_fuel
-            / 100
-            * energy_consumption_short_range_dropin_fuel_without_operations
-        )
-        energy_consumption_medium_range_kerosene_without_operations = (
-            fossil_share_dropin_fuel
-            / 100
-            * energy_consumption_medium_range_dropin_fuel_without_operations
-        )
-        energy_consumption_long_range_kerosene_without_operations = (
-            fossil_share_dropin_fuel
-            / 100
-            * energy_consumption_long_range_dropin_fuel_without_operations
-        )
-        energy_consumption_passenger_kerosene_without_operations = (
-            energy_consumption_short_range_kerosene_without_operations
-            + energy_consumption_medium_range_kerosene_without_operations
-            + energy_consumption_long_range_kerosene_without_operations
-        )
-        energy_consumption_freight_kerosene_without_operations = (
-            fossil_share_dropin_fuel
-            / 100
-            * energy_consumption_freight_dropin_fuel_without_operations
-        )
-        energy_consumption_kerosene_without_operations = (
-            energy_consumption_passenger_kerosene_without_operations
-            + energy_consumption_freight_kerosene_without_operations
-        )
+        shares = {
+            "biofuel": input_data["biomass_share_dropin_fuel"] / 100,
+            "electrofuel": input_data["electricity_share_dropin_fuel"] / 100,
+            "kerosene": input_data["fossil_share_dropin_fuel"] / 100,
+        }
 
-        self.df.loc[:, "energy_consumption_short_range_kerosene_without_operations"] = (
-            energy_consumption_short_range_kerosene_without_operations
-        )
-        self.df.loc[:, "energy_consumption_medium_range_kerosene_without_operations"] = (
-            energy_consumption_medium_range_kerosene_without_operations
-        )
-        self.df.loc[:, "energy_consumption_long_range_kerosene_without_operations"] = (
-            energy_consumption_long_range_kerosene_without_operations
-        )
-        self.df.loc[:, "energy_consumption_passenger_kerosene_without_operations"] = (
-            energy_consumption_passenger_kerosene_without_operations
-        )
-        self.df.loc[:, "energy_consumption_freight_kerosene_without_operations"] = (
-            energy_consumption_freight_kerosene_without_operations
-        )
-        self.df.loc[:, "energy_consumption_kerosene_without_operations"] = (
-            energy_consumption_kerosene_without_operations
-        )
+        passenger_fuel_totals_without_operations = {fuel: None for fuel in shares}
+        passenger_fuel_totals = {fuel: None for fuel in shares}
+        freight_fuel_totals_without_operations = {fuel: None for fuel in shares}
+        freight_fuel_totals = {fuel: None for fuel in shares}
 
-        # WITH OPERATIONS
-        # Biofuel
-        energy_consumption_short_range_biofuel = (
-            biomass_share_dropin_fuel / 100 * energy_consumption_short_range_dropin_fuel
-        )
-        energy_consumption_medium_range_biofuel = (
-            biomass_share_dropin_fuel / 100 * energy_consumption_medium_range_dropin_fuel
-        )
-        energy_consumption_long_range_biofuel = (
-            biomass_share_dropin_fuel / 100 * energy_consumption_long_range_dropin_fuel
-        )
-        energy_consumption_passenger_biofuel = (
-            energy_consumption_short_range_biofuel
-            + energy_consumption_medium_range_biofuel
-            + energy_consumption_long_range_biofuel
-        )
-        energy_consumption_freight_biofuel = (
-            biomass_share_dropin_fuel / 100 * energy_consumption_freight_dropin_fuel
-        )
-        energy_consumption_biofuel = (
-            energy_consumption_passenger_biofuel + energy_consumption_freight_biofuel
-        )
+        for market in passenger_markets:
+            mid = market.id
+            dropin_fuel_without_operations = input_data[
+                f"energy_consumption_{mid}_dropin_fuel_without_operations"
+            ]
+            dropin_fuel = input_data[f"energy_consumption_{mid}_dropin_fuel"]
+            for fuel, share in shares.items():
+                fuel_energy_without_operations = share * dropin_fuel_without_operations
+                fuel_energy = share * dropin_fuel
+                output_data[f"energy_consumption_{mid}_{fuel}_without_operations"] = (
+                    fuel_energy_without_operations
+                )
+                output_data[f"energy_consumption_{mid}_{fuel}"] = fuel_energy
+                passenger_fuel_totals_without_operations[fuel] = (
+                    fuel_energy_without_operations
+                    if passenger_fuel_totals_without_operations[fuel] is None
+                    else passenger_fuel_totals_without_operations[fuel]
+                    + fuel_energy_without_operations
+                )
+                passenger_fuel_totals[fuel] = (
+                    fuel_energy
+                    if passenger_fuel_totals[fuel] is None
+                    else passenger_fuel_totals[fuel] + fuel_energy
+                )
 
-        self.df.loc[:, "energy_consumption_short_range_biofuel"] = (
-            energy_consumption_short_range_biofuel
-        )
-        self.df.loc[:, "energy_consumption_medium_range_biofuel"] = (
-            energy_consumption_medium_range_biofuel
-        )
-        self.df.loc[:, "energy_consumption_long_range_biofuel"] = (
-            energy_consumption_long_range_biofuel
-        )
-        self.df.loc[:, "energy_consumption_passenger_biofuel"] = (
-            energy_consumption_passenger_biofuel
-        )
-        self.df.loc[:, "energy_consumption_freight_biofuel"] = energy_consumption_freight_biofuel
-        self.df.loc[:, "energy_consumption_biofuel"] = energy_consumption_biofuel
+        for market in freight_markets:
+            mid = market.id
+            dropin_fuel_without_operations = input_data[
+                f"energy_consumption_{mid}_dropin_fuel_without_operations"
+            ]
+            dropin_fuel = input_data[f"energy_consumption_{mid}_dropin_fuel"]
+            for fuel, share in shares.items():
+                fuel_energy_without_operations = share * dropin_fuel_without_operations
+                fuel_energy = share * dropin_fuel
+                output_data[f"energy_consumption_{mid}_{fuel}_without_operations"] = (
+                    fuel_energy_without_operations
+                )
+                output_data[f"energy_consumption_{mid}_{fuel}"] = fuel_energy
+                freight_fuel_totals_without_operations[fuel] = (
+                    fuel_energy_without_operations
+                    if freight_fuel_totals_without_operations[fuel] is None
+                    else freight_fuel_totals_without_operations[fuel]
+                    + fuel_energy_without_operations
+                )
+                freight_fuel_totals[fuel] = (
+                    fuel_energy
+                    if freight_fuel_totals[fuel] is None
+                    else freight_fuel_totals[fuel] + fuel_energy
+                )
 
-        # Electrofuel
-        energy_consumption_short_range_electrofuel = (
-            electricity_share_dropin_fuel / 100 * energy_consumption_short_range_dropin_fuel
-        )
-        energy_consumption_medium_range_electrofuel = (
-            electricity_share_dropin_fuel / 100 * energy_consumption_medium_range_dropin_fuel
-        )
-        energy_consumption_long_range_electrofuel = (
-            electricity_share_dropin_fuel / 100 * energy_consumption_long_range_dropin_fuel
-        )
-        energy_consumption_passenger_electrofuel = (
-            energy_consumption_short_range_electrofuel
-            + energy_consumption_medium_range_electrofuel
-            + energy_consumption_long_range_electrofuel
-        )
-        energy_consumption_freight_electrofuel = (
-            electricity_share_dropin_fuel / 100 * energy_consumption_freight_dropin_fuel
-        )
-        energy_consumption_electrofuel = (
-            energy_consumption_passenger_electrofuel + energy_consumption_freight_electrofuel
-        )
+        for fuel in shares:
+            if passenger_fuel_totals_without_operations[fuel] is None:
+                passenger_fuel_totals_without_operations[fuel] = pd.Series(0.0, index=self.df.index)
+            if passenger_fuel_totals[fuel] is None:
+                passenger_fuel_totals[fuel] = pd.Series(0.0, index=self.df.index)
+            if freight_fuel_totals_without_operations[fuel] is None:
+                freight_fuel_totals_without_operations[fuel] = pd.Series(0.0, index=self.df.index)
+            if freight_fuel_totals[fuel] is None:
+                freight_fuel_totals[fuel] = pd.Series(0.0, index=self.df.index)
 
-        self.df.loc[:, "energy_consumption_short_range_electrofuel"] = (
-            energy_consumption_short_range_electrofuel
-        )
-        self.df.loc[:, "energy_consumption_medium_range_electrofuel"] = (
-            energy_consumption_medium_range_electrofuel
-        )
-        self.df.loc[:, "energy_consumption_long_range_electrofuel"] = (
-            energy_consumption_long_range_electrofuel
-        )
-        self.df.loc[:, "energy_consumption_passenger_electrofuel"] = (
-            energy_consumption_passenger_electrofuel
-        )
-        self.df.loc[:, "energy_consumption_freight_electrofuel"] = (
-            energy_consumption_freight_electrofuel
-        )
-        self.df.loc[:, "energy_consumption_electrofuel"] = energy_consumption_electrofuel
+            output_data[f"energy_consumption_passenger_{fuel}_without_operations"] = (
+                passenger_fuel_totals_without_operations[fuel]
+            )
+            output_data[f"energy_consumption_freight_{fuel}_without_operations"] = (
+                freight_fuel_totals_without_operations[fuel]
+            )
+            output_data[f"energy_consumption_{fuel}_without_operations"] = (
+                passenger_fuel_totals_without_operations[fuel]
+                + freight_fuel_totals_without_operations[fuel]
+            )
+            output_data[f"energy_consumption_passenger_{fuel}"] = passenger_fuel_totals[fuel]
+            output_data[f"energy_consumption_freight_{fuel}"] = freight_fuel_totals[fuel]
+            output_data[f"energy_consumption_{fuel}"] = (
+                passenger_fuel_totals[fuel] + freight_fuel_totals[fuel]
+            )
 
-        # Kerosene
-        energy_consumption_short_range_kerosene = (
-            fossil_share_dropin_fuel / 100 * energy_consumption_short_range_dropin_fuel
-        )
-        energy_consumption_medium_range_kerosene = (
-            fossil_share_dropin_fuel / 100 * energy_consumption_medium_range_dropin_fuel
-        )
-        energy_consumption_long_range_kerosene = (
-            fossil_share_dropin_fuel / 100 * energy_consumption_long_range_dropin_fuel
-        )
-        energy_consumption_passenger_kerosene = (
-            energy_consumption_short_range_kerosene
-            + energy_consumption_medium_range_kerosene
-            + energy_consumption_long_range_kerosene
-        )
-        energy_consumption_freight_kerosene = (
-            fossil_share_dropin_fuel / 100 * energy_consumption_freight_dropin_fuel
-        )
-        energy_consumption_kerosene = (
-            energy_consumption_passenger_kerosene + energy_consumption_freight_kerosene
-        )
-
-        self.df.loc[:, "energy_consumption_short_range_kerosene"] = (
-            energy_consumption_short_range_kerosene
-        )
-        self.df.loc[:, "energy_consumption_medium_range_kerosene"] = (
-            energy_consumption_medium_range_kerosene
-        )
-        self.df.loc[:, "energy_consumption_long_range_kerosene"] = (
-            energy_consumption_long_range_kerosene
-        )
-        self.df.loc[:, "energy_consumption_passenger_kerosene"] = (
-            energy_consumption_passenger_kerosene
-        )
-        self.df.loc[:, "energy_consumption_freight_kerosene"] = energy_consumption_freight_kerosene
-        self.df.loc[:, "energy_consumption_kerosene"] = energy_consumption_kerosene
-
-        return (
-            energy_consumption_short_range_biofuel_without_operations,
-            energy_consumption_medium_range_biofuel_without_operations,
-            energy_consumption_long_range_biofuel_without_operations,
-            energy_consumption_passenger_biofuel_without_operations,
-            energy_consumption_freight_biofuel_without_operations,
-            energy_consumption_biofuel_without_operations,
-            energy_consumption_short_range_electrofuel_without_operations,
-            energy_consumption_medium_range_electrofuel_without_operations,
-            energy_consumption_long_range_electrofuel_without_operations,
-            energy_consumption_passenger_electrofuel_without_operations,
-            energy_consumption_freight_electrofuel_without_operations,
-            energy_consumption_electrofuel_without_operations,
-            energy_consumption_short_range_kerosene_without_operations,
-            energy_consumption_medium_range_kerosene_without_operations,
-            energy_consumption_long_range_kerosene_without_operations,
-            energy_consumption_passenger_kerosene_without_operations,
-            energy_consumption_freight_kerosene_without_operations,
-            energy_consumption_kerosene_without_operations,
-            energy_consumption_short_range_biofuel,
-            energy_consumption_medium_range_biofuel,
-            energy_consumption_long_range_biofuel,
-            energy_consumption_passenger_biofuel,
-            energy_consumption_freight_biofuel,
-            energy_consumption_biofuel,
-            energy_consumption_short_range_electrofuel,
-            energy_consumption_medium_range_electrofuel,
-            energy_consumption_long_range_electrofuel,
-            energy_consumption_passenger_electrofuel,
-            energy_consumption_freight_electrofuel,
-            energy_consumption_electrofuel,
-            energy_consumption_short_range_kerosene,
-            energy_consumption_medium_range_kerosene,
-            energy_consumption_long_range_kerosene,
-            energy_consumption_passenger_kerosene,
-            energy_consumption_freight_kerosene,
-            energy_consumption_kerosene,
-        )
+        self._store_outputs(output_data)
+        return output_data
 
 
 class HydrogenConsumption(AeroMAPSModel):
@@ -736,235 +387,174 @@ class HydrogenConsumption(AeroMAPSModel):
     --------------
     name : str
         Name of the model instance ('hydrogen_consumption' by default).
+
+    Documentation
+    --------------
+    Inputs
+        - ask_<market>_hydrogen: Passenger ASK for hydrogen aircraft [ASK].
+        - rtk_<market>_hydrogen: Freight RTK for hydrogen aircraft [RTK].
+        - energy_per_ask_without_operations_<market>_hydrogen: Passenger MJ/ASK (no ops).
+        - energy_per_ask_<market>_hydrogen: Passenger MJ/ASK (with ops).
+        - energy_per_rtk_without_operations_<market>_hydrogen: Freight MJ/RTK (no ops).
+        - energy_per_rtk_<market>_hydrogen: Freight MJ/RTK (with ops).
+    Outputs
+        - energy_consumption_<market>_hydrogen_without_operations: Per-market hydrogen [MJ].
+        - energy_consumption_<market>_hydrogen: Per-market hydrogen [MJ].
+        - energy_consumption_passenger_hydrogen_without_operations: Passenger total [MJ].
+        - energy_consumption_freight_hydrogen_without_operations: Freight total [MJ].
+        - energy_consumption_hydrogen_without_operations: Passenger + freight [MJ].
+        - energy_consumption_passenger_hydrogen: Passenger total [MJ].
+        - energy_consumption_freight_hydrogen: Freight total [MJ].
+        - energy_consumption_hydrogen: Passenger + freight [MJ].
+    Notes
+        - <market> is the MarketManager id (passenger and freight markets).
+        - I/O names are generated from configuration and passed to GEMSEO via
+            self.input_names and self.output_names grammars.
     """
 
     def __init__(self, name="hydrogen_consumption", *args, **kwargs):
-        super().__init__(name=name, *args, **kwargs)
+        super().__init__(name=name, model_type="custom", *args, **kwargs)
+        self.markets = None
 
-    def compute(
-        self,
-        ask_short_range_hydrogen: pd.Series,
-        ask_medium_range_hydrogen: pd.Series,
-        ask_long_range_hydrogen: pd.Series,
-        rtk_hydrogen: pd.Series,
-        energy_per_ask_without_operations_short_range_hydrogen: pd.Series,
-        energy_per_ask_without_operations_medium_range_hydrogen: pd.Series,
-        energy_per_ask_without_operations_long_range_hydrogen: pd.Series,
-        energy_per_rtk_without_operations_freight_hydrogen: pd.Series,
-        energy_per_ask_short_range_hydrogen: pd.Series,
-        energy_per_ask_medium_range_hydrogen: pd.Series,
-        energy_per_ask_long_range_hydrogen: pd.Series,
-        energy_per_rtk_freight_hydrogen: pd.Series,
-    ) -> Tuple[
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-    ]:
-        """
-        Hydrogen consumption calculation.
+    def custom_setup(self):
+        self.input_names = {}
+        self.output_names = {}
 
-        Parameters
-        ----------
-        ask_short_range_hydrogen
-            Number of Available Seat Kilometer (ASK) for passenger short-range market from hydrogen aircraft [ASK].
-        ask_medium_range_hydrogen
-            Number of Available Seat Kilometer (ASK) for passenger medium-range market from hydrogen aircraft [ASK].
-        ask_long_range_hydrogen
-            Number of Available Seat Kilometer (ASK) for passenger long-range market from hydrogen aircraft [ASK]
-        rtk_hydrogen
-            Number of Revenue Tonne Kilometer (RTK) for freight air transport from hydrogen aircraft [RTK].
-        energy_per_ask_without_operations_short_range_hydrogen
-            Energy consumption per ASK for passenger short-range market aircraft using hydrogen without considering operation improvements [MJ/ASK].
-        energy_per_ask_without_operations_medium_range_hydrogen
-            Energy consumption per ASK for passenger medium-range market aircraft using hydrogen without considering operation improvements [MJ/ASK].
-        energy_per_ask_without_operations_long_range_hydrogen
-            Energy consumption per ASK for passenger long-range market aircraft using hydrogen without considering operation improvements [MJ/ASK].
-        energy_per_rtk_without_operations_freight_hydrogen
-            Energy consumption per RTK for freight aircraft using hydrogen without considering operation improvements [MJ/RTK].
-        energy_per_ask_short_range_hydrogen
-            Energy consumption per ASK for passenger short-range market aircraft using hydrogen [MJ/ASK].
-        energy_per_ask_medium_range_hydrogen
-            Energy consumption per ASK for passenger medium-range market aircraft using hydrogen [MJ/ASK].
-        energy_per_ask_long_range_hydrogen
-            Energy consumption per ASK for passenger long-range market aircraft using hydrogen [MJ/ASK].
-        energy_per_rtk_freight_hydrogen
-            Energy consumption per RTK for freight aircraft using hydrogen [MJ/RTK].
+        passenger_markets = list(self.markets.get(traffic_type="passenger"))
+        freight_markets = list(self.markets.get(traffic_type="freight"))
 
-        Returns
-        -------
-        energy_consumption_short_range_hydrogen_without_operations
-            Energy consumption in the form of hydrogen without considering operation improvements from passenger short-range market air transport [MJ].
-        energy_consumption_medium_range_hydrogen_without_operations
-            Energy consumption in the form of hydrogen without considering operation improvements from passenger medium-range market air transport [MJ].
-        energy_consumption_long_range_hydrogen_without_operations
-            Energy consumption in the form of hydrogen without considering operation improvements from passenger long-range market air transport [MJ].
-        energy_consumption_passenger_hydrogen_without_operations
-            Energy consumption in the form of hydrogen without considering operation improvements from total passenger air transport [MJ].
-        energy_consumption_freight_hydrogen_without_operations
-            Energy consumption in the form of hydrogen without considering operation improvements from freight air transport [MJ].
-        energy_consumption_hydrogen_without_operations
-            Energy consumption in the form of hydrogen without considering operation improvements from all commercial air transport [MJ].
-        energy_consumption_short_range_hydrogen
-            Energy consumption in the form of hydrogen from passenger short-range market air transport [MJ].
-        energy_consumption_medium_range_hydrogen
-            Energy consumption in the form of hydrogen from passenger medium-range market air transport [MJ].
-        energy_consumption_long_range_hydrogen
-            Energy consumption in the form of hydrogen from passenger long-range market air transport [MJ].
-        energy_consumption_passenger_hydrogen
-            Energy consumption in the form of hydrogen from total passenger air transport [MJ].
-        energy_consumption_freight_hydrogen
-            Energy consumption in the form of hydrogen from freight air transport [MJ].
-        energy_consumption_hydrogen
-            Energy consumption in the form of hydrogen from all commercial air transport [MJ].
-        """
-
-        # WITHOUT OPERATIONS
-
-        ### Handle potential NaN values in energy per ASK for drop-in fuel without operations
-        # (e.g., due to zero ASK for certain market segments in some years) by filling NaN with 0,
-        # which will lead to zero energy consumption for those segments instead of propagating NaN values.
-
-        # TODO: improve divison by zero handling
-        if ask_short_range_hydrogen.sum() == 0.0:
-            energy_consumption_short_range_hydrogen_without_operations = (
-                0.0 * ask_short_range_hydrogen
+        for market in passenger_markets:
+            mid = market.id
+            self.input_names[f"ask_{mid}_hydrogen"] = pd.Series([0.0])
+            self.input_names[f"energy_per_ask_without_operations_{mid}_hydrogen"] = pd.Series([0.0])
+            self.input_names[f"energy_per_ask_{mid}_hydrogen"] = pd.Series([0.0])
+            self.output_names[f"energy_consumption_{mid}_hydrogen_without_operations"] = pd.Series(
+                [0.0]
             )
-        else:
-            energy_consumption_short_range_hydrogen_without_operations = (
-                energy_per_ask_without_operations_short_range_hydrogen * ask_short_range_hydrogen
+            self.output_names[f"energy_consumption_{mid}_hydrogen"] = pd.Series([0.0])
+
+        for market in freight_markets:
+            mid = market.id
+            self.input_names[f"rtk_{mid}_hydrogen"] = pd.Series([0.0])
+            self.input_names[f"energy_per_rtk_without_operations_{mid}_hydrogen"] = pd.Series([0.0])
+            self.input_names[f"energy_per_rtk_{mid}_hydrogen"] = pd.Series([0.0])
+            self.output_names[f"energy_consumption_{mid}_hydrogen_without_operations"] = pd.Series(
+                [0.0]
+            )
+            self.output_names[f"energy_consumption_{mid}_hydrogen"] = pd.Series([0.0])
+
+        self.output_names["energy_consumption_passenger_hydrogen_without_operations"] = pd.Series(
+            [0.0]
+        )
+        self.output_names["energy_consumption_freight_hydrogen_without_operations"] = pd.Series(
+            [0.0]
+        )
+        self.output_names["energy_consumption_hydrogen_without_operations"] = pd.Series([0.0])
+        self.output_names["energy_consumption_passenger_hydrogen"] = pd.Series([0.0])
+        self.output_names["energy_consumption_freight_hydrogen"] = pd.Series([0.0])
+        self.output_names["energy_consumption_hydrogen"] = pd.Series([0.0])
+
+    def compute(self, input_data) -> dict:
+        """Hydrogen consumption per market and aggregates."""
+        output_data = {}
+
+        passenger_markets = list(self.markets.get(traffic_type="passenger"))
+        freight_markets = list(self.markets.get(traffic_type="freight"))
+
+        passenger_hydrogen_without_operations = None
+        passenger_hydrogen = None
+        for market in passenger_markets:
+            mid = market.id
+            ask = input_data[f"ask_{mid}_hydrogen"]
+            energy_per_ask_without_operations = input_data[
+                f"energy_per_ask_without_operations_{mid}_hydrogen"
+            ]
+            energy_per_ask = input_data[f"energy_per_ask_{mid}_hydrogen"]
+
+            # Energy is zero wherever there is no traffic, even when the per-ASK intensity is
+            # NaN/inf from an upstream division-by-zero (energy_per_ask = energy / ask). The mask
+            # is applied per-year so partially-empty markets (zero ASK in some years only) do not
+            # leak NaN: inf * 0 would otherwise produce NaN and propagate to every aggregate.
+            energy_consumption_without_operations = (energy_per_ask_without_operations * ask).where(
+                ask != 0.0, 0.0
+            )
+            energy_consumption = (energy_per_ask * ask).where(ask != 0.0, 0.0)
+
+            output_data[f"energy_consumption_{mid}_hydrogen_without_operations"] = (
+                energy_consumption_without_operations
+            )
+            output_data[f"energy_consumption_{mid}_hydrogen"] = energy_consumption
+
+            passenger_hydrogen_without_operations = (
+                energy_consumption_without_operations
+                if passenger_hydrogen_without_operations is None
+                else passenger_hydrogen_without_operations + energy_consumption_without_operations
+            )
+            passenger_hydrogen = (
+                energy_consumption
+                if passenger_hydrogen is None
+                else passenger_hydrogen + energy_consumption
             )
 
-        if ask_medium_range_hydrogen.sum() == 0.0:
-            energy_consumption_medium_range_hydrogen_without_operations = (
-                0.0 * ask_medium_range_hydrogen
-            )
-        else:
-            energy_consumption_medium_range_hydrogen_without_operations = (
-                energy_per_ask_without_operations_medium_range_hydrogen * ask_medium_range_hydrogen
-            )
-        if ask_long_range_hydrogen.sum() == 0.0:
-            energy_consumption_long_range_hydrogen_without_operations = (
-                0.0 * ask_long_range_hydrogen
-            )
-        else:
-            energy_consumption_long_range_hydrogen_without_operations = (
-                energy_per_ask_without_operations_long_range_hydrogen * ask_long_range_hydrogen
-            )
+        freight_hydrogen_without_operations = None
+        freight_hydrogen = None
+        for market in freight_markets:
+            mid = market.id
+            rtk = input_data[f"rtk_{mid}_hydrogen"]
+            energy_per_rtk_without_operations = input_data[
+                f"energy_per_rtk_without_operations_{mid}_hydrogen"
+            ]
+            energy_per_rtk = input_data[f"energy_per_rtk_{mid}_hydrogen"]
 
-        energy_consumption_passenger_hydrogen_without_operations = (
-            energy_consumption_short_range_hydrogen_without_operations
-            + energy_consumption_medium_range_hydrogen_without_operations
-            + energy_consumption_long_range_hydrogen_without_operations
-        )
-
-        if rtk_hydrogen.sum() == 0.0:
-            energy_consumption_freight_hydrogen_without_operations = 0.0 * rtk_hydrogen
-        else:
-            energy_consumption_freight_hydrogen_without_operations = (
-                energy_per_rtk_without_operations_freight_hydrogen * rtk_hydrogen
+            # Energy is zero wherever there is no traffic, even when the per-RTK intensity is
+            # NaN/inf from an upstream division-by-zero (energy_per_rtk = energy / rtk). The mask
+            # is applied per-year so partially-empty markets (zero RTK in some years only) do not
+            # leak NaN: inf * 0 would otherwise produce NaN and propagate to every aggregate.
+            energy_consumption_without_operations = (energy_per_rtk_without_operations * rtk).where(
+                rtk != 0.0, 0.0
             )
-        energy_consumption_hydrogen_without_operations = (
-            energy_consumption_passenger_hydrogen_without_operations
-            + energy_consumption_freight_hydrogen_without_operations
-        )
+            energy_consumption = (energy_per_rtk * rtk).where(rtk != 0.0, 0.0)
 
-        self.df.loc[:, "energy_consumption_short_range_hydrogen_without_operations"] = (
-            energy_consumption_short_range_hydrogen_without_operations
-        )
-        self.df.loc[:, "energy_consumption_medium_range_hydrogen_without_operations"] = (
-            energy_consumption_medium_range_hydrogen_without_operations
-        )
-        self.df.loc[:, "energy_consumption_long_range_hydrogen_without_operations"] = (
-            energy_consumption_long_range_hydrogen_without_operations
-        )
-        self.df.loc[:, "energy_consumption_passenger_hydrogen_without_operations"] = (
-            energy_consumption_passenger_hydrogen_without_operations
-        )
-        self.df.loc[:, "energy_consumption_freight_hydrogen_without_operations"] = (
-            energy_consumption_freight_hydrogen_without_operations
-        )
-        self.df.loc[:, "energy_consumption_hydrogen_without_operations"] = (
-            energy_consumption_hydrogen_without_operations
-        )
-
-        # WITH OPERATIONS
-
-        ### Handle potential NaN values in energy per ASK for drop-in fuel without operations
-        # (e.g., due to zero ASK for certain market segments in some years) by filling NaN with 0,
-        # which will lead to zero energy consumption for those segments instead of propagating NaN values.
-        # TODO: improve divison by zero handling
-        if ask_short_range_hydrogen.sum() == 0.0:
-            energy_consumption_short_range_hydrogen = 0.0 * ask_short_range_hydrogen
-        else:
-            energy_consumption_short_range_hydrogen = (
-                energy_per_ask_short_range_hydrogen * ask_short_range_hydrogen
+            output_data[f"energy_consumption_{mid}_hydrogen_without_operations"] = (
+                energy_consumption_without_operations
             )
-        if ask_medium_range_hydrogen.sum() == 0.0:
-            energy_consumption_medium_range_hydrogen = 0.0 * ask_medium_range_hydrogen
-        else:
-            energy_consumption_medium_range_hydrogen = (
-                energy_per_ask_medium_range_hydrogen * ask_medium_range_hydrogen
+            output_data[f"energy_consumption_{mid}_hydrogen"] = energy_consumption
+
+            freight_hydrogen_without_operations = (
+                energy_consumption_without_operations
+                if freight_hydrogen_without_operations is None
+                else freight_hydrogen_without_operations + energy_consumption_without_operations
             )
-        if ask_long_range_hydrogen.sum() == 0.0:
-            energy_consumption_long_range_hydrogen = 0.0 * ask_long_range_hydrogen
-        else:
-            energy_consumption_long_range_hydrogen = (
-                energy_per_ask_long_range_hydrogen * ask_long_range_hydrogen
+            freight_hydrogen = (
+                energy_consumption
+                if freight_hydrogen is None
+                else freight_hydrogen + energy_consumption
             )
 
-        energy_consumption_passenger_hydrogen = (
-            energy_consumption_short_range_hydrogen
-            + energy_consumption_medium_range_hydrogen
-            + energy_consumption_long_range_hydrogen
-        )
+        if passenger_hydrogen_without_operations is None:
+            passenger_hydrogen_without_operations = pd.Series(0.0, index=self.df.index)
+        if passenger_hydrogen is None:
+            passenger_hydrogen = pd.Series(0.0, index=self.df.index)
+        if freight_hydrogen_without_operations is None:
+            freight_hydrogen_without_operations = pd.Series(0.0, index=self.df.index)
+        if freight_hydrogen is None:
+            freight_hydrogen = pd.Series(0.0, index=self.df.index)
 
-        if rtk_hydrogen.sum() == 0.0:
-            energy_consumption_freight_hydrogen = 0.0 * rtk_hydrogen
-        else:
-            energy_consumption_freight_hydrogen = energy_per_rtk_freight_hydrogen * rtk_hydrogen
+        output_data["energy_consumption_passenger_hydrogen_without_operations"] = (
+            passenger_hydrogen_without_operations
+        )
+        output_data["energy_consumption_freight_hydrogen_without_operations"] = (
+            freight_hydrogen_without_operations
+        )
+        output_data["energy_consumption_hydrogen_without_operations"] = (
+            passenger_hydrogen_without_operations + freight_hydrogen_without_operations
+        )
+        output_data["energy_consumption_passenger_hydrogen"] = passenger_hydrogen
+        output_data["energy_consumption_freight_hydrogen"] = freight_hydrogen
+        output_data["energy_consumption_hydrogen"] = passenger_hydrogen + freight_hydrogen
 
-        energy_consumption_hydrogen = (
-            energy_consumption_passenger_hydrogen + energy_consumption_freight_hydrogen
-        )
-
-        self.df.loc[:, "energy_consumption_short_range_hydrogen"] = (
-            energy_consumption_short_range_hydrogen
-        )
-        self.df.loc[:, "energy_consumption_medium_range_hydrogen"] = (
-            energy_consumption_medium_range_hydrogen
-        )
-        self.df.loc[:, "energy_consumption_long_range_hydrogen"] = (
-            energy_consumption_long_range_hydrogen
-        )
-        self.df.loc[:, "energy_consumption_passenger_hydrogen"] = (
-            energy_consumption_passenger_hydrogen
-        )
-        self.df.loc[:, "energy_consumption_freight_hydrogen"] = energy_consumption_freight_hydrogen
-        self.df.loc[:, "energy_consumption_hydrogen"] = energy_consumption_hydrogen
-
-        return (
-            energy_consumption_short_range_hydrogen_without_operations,
-            energy_consumption_medium_range_hydrogen_without_operations,
-            energy_consumption_long_range_hydrogen_without_operations,
-            energy_consumption_passenger_hydrogen_without_operations,
-            energy_consumption_freight_hydrogen_without_operations,
-            energy_consumption_hydrogen_without_operations,
-            energy_consumption_short_range_hydrogen,
-            energy_consumption_medium_range_hydrogen,
-            energy_consumption_long_range_hydrogen,
-            energy_consumption_passenger_hydrogen,
-            energy_consumption_freight_hydrogen,
-            energy_consumption_hydrogen,
-        )
+        self._store_outputs(output_data)
+        return output_data
 
 
 class ElectricConsumption(AeroMAPSModel):
@@ -975,505 +565,318 @@ class ElectricConsumption(AeroMAPSModel):
     --------------
     name : str
         Name of the model instance ('electric_consumption' by default).
+
+    Documentation
+    --------------
+    Inputs
+        - ask_<market>_electric: Passenger ASK for electric aircraft [ASK].
+        - rtk_<market>_electric: Freight RTK for electric aircraft [RTK].
+        - energy_per_ask_without_operations_<market>_electric: Passenger MJ/ASK (no ops).
+        - energy_per_ask_<market>_electric: Passenger MJ/ASK (with ops).
+        - energy_per_rtk_without_operations_<market>_electric: Freight MJ/RTK (no ops).
+        - energy_per_rtk_<market>_electric: Freight MJ/RTK (with ops).
+    Outputs
+        - energy_consumption_<market>_electric_without_operations: Per-market electricity [MJ].
+        - energy_consumption_<market>_electric: Per-market electricity [MJ].
+        - energy_consumption_passenger_electric_without_operations: Passenger total [MJ].
+        - energy_consumption_freight_electric_without_operations: Freight total [MJ].
+        - energy_consumption_electric_without_operations: Passenger + freight [MJ].
+        - energy_consumption_passenger_electric: Passenger total [MJ].
+        - energy_consumption_freight_electric: Freight total [MJ].
+        - energy_consumption_electric: Passenger + freight [MJ].
+    Notes
+        - <market> is the MarketManager id (passenger and freight markets).
+        - I/O names are generated from configuration and passed to GEMSEO via
+            self.input_names and self.output_names grammars.
     """
 
     def __init__(self, name="electric_consumption", *args, **kwargs):
-        super().__init__(name=name, *args, **kwargs)
+        super().__init__(name=name, model_type="custom", *args, **kwargs)
+        self.markets = None
 
-    def compute(
-        self,
-        ask_short_range_electric: pd.Series,
-        ask_medium_range_electric: pd.Series,
-        ask_long_range_electric: pd.Series,
-        rtk_electric: pd.Series,
-        energy_per_ask_without_operations_short_range_electric: pd.Series,
-        energy_per_ask_without_operations_medium_range_electric: pd.Series,
-        energy_per_ask_without_operations_long_range_electric: pd.Series,
-        energy_per_rtk_without_operations_freight_electric: pd.Series,
-        energy_per_ask_short_range_electric: pd.Series,
-        energy_per_ask_medium_range_electric: pd.Series,
-        energy_per_ask_long_range_electric: pd.Series,
-        energy_per_rtk_freight_electric: pd.Series,
-    ) -> Tuple[
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-    ]:
-        """
-        Electricity consumption calculation.
+    def custom_setup(self):
+        self.input_names = {}
+        self.output_names = {}
 
-        Parameters
-        ----------
-        ask_short_range_electric
-            Number of Available Seat Kilometer (ASK) for passenger short-range market from electric aircraft [ASK].
-        ask_medium_range_electric
-            Number of Available Seat Kilometer (ASK) for passenger medium-range market from electric aircraft [ASK].
-        ask_long_range_electric
-            Number of Available Seat Kilometer (ASK) for passenger long-range market from electric aircraft [ASK]
-        rtk_electric
-            Number of Revenue Tonne Kilometer (RTK) for freight air transport from electric aircraft [RTK].
-        energy_per_ask_without_operations_short_range_electric
-            Energy consumption per ASK for passenger short-range market aircraft using electricity without considering operation improvements [MJ/ASK].
-        energy_per_ask_without_operations_medium_range_electric
-            Energy consumption per ASK for passenger medium-range market aircraft using electricity without considering operation improvements [MJ/ASK].
-        energy_per_ask_without_operations_long_range_electric
-            Energy consumption per ASK for passenger long-range market aircraft using electricity without considering operation improvements [MJ/ASK].
-        energy_per_rtk_without_operations_freight_electric
-            Energy consumption per RTK for freight aircraft using electricity without considering operation improvements [MJ/RTK].
-        energy_per_ask_short_range_electric
-            Energy consumption per ASK for passenger short-range market aircraft using electricity [MJ/ASK].
-        energy_per_ask_medium_range_electric
-            Energy consumption per ASK for passenger medium-range market aircraft using electricity [MJ/ASK].
-        energy_per_ask_long_range_electric
-            Energy consumption per ASK for passenger long-range market aircraft using electricity [MJ/ASK].
-        energy_per_rtk_freight_electric
-            Energy consumption per RTK for freight aircraft using electricity [MJ/RTK].
+        passenger_markets = list(self.markets.get(traffic_type="passenger"))
+        freight_markets = list(self.markets.get(traffic_type="freight"))
 
-        Returns
-        -------
-        energy_consumption_short_range_electric_without_operations
-            Energy consumption in the form of electricity without considering operation improvements from passenger short-range market air transport [MJ].
-        energy_consumption_medium_range_electric_without_operations
-            Energy consumption in the form of electricity without considering operation improvements from passenger medium-range market air transport [MJ].
-        energy_consumption_long_range_electric_without_operations
-            Energy consumption in the form of electricity without considering operation improvements from passenger long-range market air transport [MJ].
-        energy_consumption_passenger_electric_without_operations
-            Energy consumption in the form of electricity without considering operation improvements from total passenger air transport [MJ].
-        energy_consumption_freight_electric_without_operations
-            Energy consumption in the form of electricity without considering operation improvements from freight air transport [MJ].
-        energy_consumption_electric_without_operations
-            Energy consumption in the form of electricity without considering operation improvements from all commercial air transport [MJ].
-        energy_consumption_short_range_electric
-            Energy consumption in the form of electricity from passenger short-range market air transport [MJ].
-        energy_consumption_medium_range_electric
-            Energy consumption in the form of electricity from passenger medium-range market air transport [MJ].
-        energy_consumption_long_range_electric
-            Energy consumption in the form of electricity from passenger long-range market air transport [MJ].
-        energy_consumption_passenger_electric
-            Energy consumption in the form of electricity from total passenger air transport [MJ].
-        energy_consumption_freight_electric
-            Energy consumption in the form of electricity from freight air transport [MJ].
-        energy_consumption_electric
-            Energy consumption in the form of electricity from all commercial air transport [MJ].
-        """
+        for market in passenger_markets:
+            mid = market.id
+            self.input_names[f"ask_{mid}_electric"] = pd.Series([0.0])
+            self.input_names[f"energy_per_ask_without_operations_{mid}_electric"] = pd.Series([0.0])
+            self.input_names[f"energy_per_ask_{mid}_electric"] = pd.Series([0.0])
+            self.output_names[f"energy_consumption_{mid}_electric_without_operations"] = pd.Series(
+                [0.0]
+            )
+            self.output_names[f"energy_consumption_{mid}_electric"] = pd.Series([0.0])
 
-        # WITHOUT OPERATIONS
+        for market in freight_markets:
+            mid = market.id
+            self.input_names[f"rtk_{mid}_electric"] = pd.Series([0.0])
+            self.input_names[f"energy_per_rtk_without_operations_{mid}_electric"] = pd.Series([0.0])
+            self.input_names[f"energy_per_rtk_{mid}_electric"] = pd.Series([0.0])
+            self.output_names[f"energy_consumption_{mid}_electric_without_operations"] = pd.Series(
+                [0.0]
+            )
+            self.output_names[f"energy_consumption_{mid}_electric"] = pd.Series([0.0])
 
-        ### Handle potential NaN values in energy per ASK for drop-in fuel without operations
-        # (e.g., due to zero ASK for certain market segments in some years) by filling NaN with 0,
-        # which will lead to zero energy consumption for those segments instead of propagating NaN values.
-        # TODO: improve divison by zero handling
-        if ask_short_range_electric.sum() == 0.0:
-            energy_consumption_short_range_electric_without_operations = (
-                0.0 * ask_short_range_electric
+        self.output_names["energy_consumption_passenger_electric_without_operations"] = pd.Series(
+            [0.0]
+        )
+        self.output_names["energy_consumption_freight_electric_without_operations"] = pd.Series(
+            [0.0]
+        )
+        self.output_names["energy_consumption_electric_without_operations"] = pd.Series([0.0])
+        self.output_names["energy_consumption_passenger_electric"] = pd.Series([0.0])
+        self.output_names["energy_consumption_freight_electric"] = pd.Series([0.0])
+        self.output_names["energy_consumption_electric"] = pd.Series([0.0])
+
+    def compute(self, input_data) -> dict:
+        """Electricity consumption per market and aggregates."""
+        output_data = {}
+
+        passenger_markets = list(self.markets.get(traffic_type="passenger"))
+        freight_markets = list(self.markets.get(traffic_type="freight"))
+
+        passenger_electric_without_operations = None
+        passenger_electric = None
+        for market in passenger_markets:
+            mid = market.id
+            ask = input_data[f"ask_{mid}_electric"]
+            energy_per_ask_without_operations = input_data[
+                f"energy_per_ask_without_operations_{mid}_electric"
+            ]
+            energy_per_ask = input_data[f"energy_per_ask_{mid}_electric"]
+
+            # Energy is zero wherever there is no traffic, even when the per-ASK intensity is
+            # NaN/inf from an upstream division-by-zero (energy_per_ask = energy / ask). The mask
+            # is applied per-year so partially-empty markets (zero ASK in some years only) do not
+            # leak NaN: inf * 0 would otherwise produce NaN and propagate to every aggregate.
+            energy_consumption_without_operations = (energy_per_ask_without_operations * ask).where(
+                ask != 0.0, 0.0
             )
-        else:
-            energy_consumption_short_range_electric_without_operations = (
-                energy_per_ask_without_operations_short_range_electric * ask_short_range_electric
+            energy_consumption = (energy_per_ask * ask).where(ask != 0.0, 0.0)
+
+            output_data[f"energy_consumption_{mid}_electric_without_operations"] = (
+                energy_consumption_without_operations
             )
-        if ask_medium_range_electric.sum() == 0.0:
-            energy_consumption_medium_range_electric_without_operations = (
-                0.0 * ask_medium_range_electric
+            output_data[f"energy_consumption_{mid}_electric"] = energy_consumption
+
+            passenger_electric_without_operations = (
+                energy_consumption_without_operations
+                if passenger_electric_without_operations is None
+                else passenger_electric_without_operations + energy_consumption_without_operations
             )
-        else:
-            energy_consumption_medium_range_electric_without_operations = (
-                energy_per_ask_without_operations_medium_range_electric * ask_medium_range_electric
-            )
-        if ask_long_range_electric.sum() == 0.0:
-            energy_consumption_long_range_electric_without_operations = (
-                0.0 * ask_long_range_electric
-            )
-        else:
-            energy_consumption_long_range_electric_without_operations = (
-                energy_per_ask_without_operations_long_range_electric * ask_long_range_electric
+            passenger_electric = (
+                energy_consumption
+                if passenger_electric is None
+                else passenger_electric + energy_consumption
             )
 
-        energy_consumption_passenger_electric_without_operations = (
-            energy_consumption_short_range_electric_without_operations
-            + energy_consumption_medium_range_electric_without_operations
-            + energy_consumption_long_range_electric_without_operations
-        )
+        freight_electric_without_operations = None
+        freight_electric = None
+        for market in freight_markets:
+            mid = market.id
+            rtk = input_data[f"rtk_{mid}_electric"]
+            energy_per_rtk_without_operations = input_data[
+                f"energy_per_rtk_without_operations_{mid}_electric"
+            ]
+            energy_per_rtk = input_data[f"energy_per_rtk_{mid}_electric"]
 
-        if rtk_electric.sum() == 0.0:
-            energy_consumption_freight_electric_without_operations = 0.0 * rtk_electric
-        else:
-            energy_consumption_freight_electric_without_operations = (
-                energy_per_rtk_without_operations_freight_electric * rtk_electric
+            # Energy is zero wherever there is no traffic, even when the per-RTK intensity is
+            # NaN/inf from an upstream division-by-zero (energy_per_rtk = energy / rtk). The mask
+            # is applied per-year so partially-empty markets (zero RTK in some years only) do not
+            # leak NaN: inf * 0 would otherwise produce NaN and propagate to every aggregate.
+            energy_consumption_without_operations = (energy_per_rtk_without_operations * rtk).where(
+                rtk != 0.0, 0.0
+            )
+            energy_consumption = (energy_per_rtk * rtk).where(rtk != 0.0, 0.0)
+
+            output_data[f"energy_consumption_{mid}_electric_without_operations"] = (
+                energy_consumption_without_operations
+            )
+            output_data[f"energy_consumption_{mid}_electric"] = energy_consumption
+
+            freight_electric_without_operations = (
+                energy_consumption_without_operations
+                if freight_electric_without_operations is None
+                else freight_electric_without_operations + energy_consumption_without_operations
+            )
+            freight_electric = (
+                energy_consumption
+                if freight_electric is None
+                else freight_electric + energy_consumption
             )
 
-        energy_consumption_electric_without_operations = (
-            energy_consumption_passenger_electric_without_operations
-            + energy_consumption_freight_electric_without_operations
-        )
+        if passenger_electric_without_operations is None:
+            passenger_electric_without_operations = pd.Series(0.0, index=self.df.index)
+        if passenger_electric is None:
+            passenger_electric = pd.Series(0.0, index=self.df.index)
+        if freight_electric_without_operations is None:
+            freight_electric_without_operations = pd.Series(0.0, index=self.df.index)
+        if freight_electric is None:
+            freight_electric = pd.Series(0.0, index=self.df.index)
 
-        self.df.loc[:, "energy_consumption_short_range_electric_without_operations"] = (
-            energy_consumption_short_range_electric_without_operations
+        output_data["energy_consumption_passenger_electric_without_operations"] = (
+            passenger_electric_without_operations
         )
-        self.df.loc[:, "energy_consumption_medium_range_electric_without_operations"] = (
-            energy_consumption_medium_range_electric_without_operations
+        output_data["energy_consumption_freight_electric_without_operations"] = (
+            freight_electric_without_operations
         )
-        self.df.loc[:, "energy_consumption_long_range_electric_without_operations"] = (
-            energy_consumption_long_range_electric_without_operations
+        output_data["energy_consumption_electric_without_operations"] = (
+            passenger_electric_without_operations + freight_electric_without_operations
         )
-        self.df.loc[:, "energy_consumption_passenger_electric_without_operations"] = (
-            energy_consumption_passenger_electric_without_operations
-        )
-        self.df.loc[:, "energy_consumption_freight_electric_without_operations"] = (
-            energy_consumption_freight_electric_without_operations
-        )
-        self.df.loc[:, "energy_consumption_electric_without_operations"] = (
-            energy_consumption_electric_without_operations
-        )
+        output_data["energy_consumption_passenger_electric"] = passenger_electric
+        output_data["energy_consumption_freight_electric"] = freight_electric
+        output_data["energy_consumption_electric"] = passenger_electric + freight_electric
 
-        # WITH OPERATIONS
-
-        ### Handle potential NaN values in energy per ASK for drop-in fuel without operations
-        # (e.g., due to zero ASK for certain market segments in some years) by filling NaN with 0,
-        # which will lead to zero energy consumption for those segments instead of propagating NaN values.
-        # TODO: improve divison by zero handling
-        if ask_short_range_electric.sum() == 0.0:
-            energy_consumption_short_range_electric = 0.0 * ask_short_range_electric
-        else:
-            energy_consumption_short_range_electric = (
-                energy_per_ask_short_range_electric * ask_short_range_electric
-            )
-
-        if ask_medium_range_electric.sum() == 0.0:
-            energy_consumption_medium_range_electric = 0.0 * ask_medium_range_electric
-        else:
-            energy_consumption_medium_range_electric = (
-                energy_per_ask_medium_range_electric * ask_medium_range_electric
-            )
-
-        if ask_long_range_electric.sum() == 0.0:
-            energy_consumption_long_range_electric = 0.0 * ask_long_range_electric
-        else:
-            energy_consumption_long_range_electric = (
-                energy_per_ask_long_range_electric * ask_long_range_electric
-            )
-
-        energy_consumption_passenger_electric = (
-            energy_consumption_short_range_electric
-            + energy_consumption_medium_range_electric
-            + energy_consumption_long_range_electric
-        )
-
-        if rtk_electric.sum() == 0.0:
-            energy_consumption_freight_electric = 0.0 * rtk_electric
-        else:
-            energy_consumption_freight_electric = energy_per_rtk_freight_electric * rtk_electric
-
-        energy_consumption_electric = (
-            energy_consumption_passenger_electric + energy_consumption_freight_electric
-        )
-
-        self.df.loc[:, "energy_consumption_short_range_electric"] = (
-            energy_consumption_short_range_electric
-        )
-        self.df.loc[:, "energy_consumption_medium_range_electric"] = (
-            energy_consumption_medium_range_electric
-        )
-        self.df.loc[:, "energy_consumption_long_range_electric"] = (
-            energy_consumption_long_range_electric
-        )
-        self.df.loc[:, "energy_consumption_passenger_electric"] = (
-            energy_consumption_passenger_electric
-        )
-        self.df.loc[:, "energy_consumption_freight_electric"] = energy_consumption_freight_electric
-        self.df.loc[:, "energy_consumption_electric"] = energy_consumption_electric
-
-        return (
-            energy_consumption_short_range_electric_without_operations,
-            energy_consumption_medium_range_electric_without_operations,
-            energy_consumption_long_range_electric_without_operations,
-            energy_consumption_passenger_electric_without_operations,
-            energy_consumption_freight_electric_without_operations,
-            energy_consumption_electric_without_operations,
-            energy_consumption_short_range_electric,
-            energy_consumption_medium_range_electric,
-            energy_consumption_long_range_electric,
-            energy_consumption_passenger_electric,
-            energy_consumption_freight_electric,
-            energy_consumption_electric,
-        )
+        self._store_outputs(output_data)
+        return output_data
 
 
 class EnergyConsumption(AeroMAPSModel):
     """
     Class to calculate total energy consumption for each type of market, aggregating all energy sources.
+
+    Documentation
+    --------------
+    Inputs
+        - energy_consumption_<market>_dropin_fuel_without_operations: Drop-in fuel [MJ].
+        - energy_consumption_<market>_hydrogen_without_operations: Hydrogen [MJ].
+        - energy_consumption_<market>_electric_without_operations: Electricity [MJ].
+        - energy_consumption_<market>_dropin_fuel: Drop-in fuel [MJ].
+        - energy_consumption_<market>_hydrogen: Hydrogen [MJ].
+        - energy_consumption_<market>_electric: Electricity [MJ].
+    Outputs
+        - energy_consumption_<market>_without_operations: Per-market total [MJ].
+        - energy_consumption_<market>: Per-market total [MJ].
+        - energy_consumption_passenger_without_operations: Passenger total [MJ].
+        - energy_consumption_freight_without_operations: Freight total [MJ].
+        - energy_consumption_without_operations: Passenger + freight [MJ].
+        - energy_consumption_passenger: Passenger total [MJ].
+        - energy_consumption_freight: Freight total [MJ].
+        - energy_consumption: Passenger + freight [MJ].
+    Notes
+        - <market> is the MarketManager id (passenger and freight markets).
+        - I/O names are generated from configuration and passed to GEMSEO via
+            self.input_names and self.output_names grammars.
     """
 
     def __init__(self, name="energy_consumption", *args, **kwargs):
-        super().__init__(name=name, *args, **kwargs)
+        super().__init__(name=name, model_type="custom", *args, **kwargs)
+        self.markets = None
 
-    def compute(
-        self,
-        energy_consumption_short_range_dropin_fuel_without_operations: pd.Series,
-        energy_consumption_medium_range_dropin_fuel_without_operations: pd.Series,
-        energy_consumption_long_range_dropin_fuel_without_operations: pd.Series,
-        energy_consumption_passenger_dropin_fuel_without_operations: pd.Series,
-        energy_consumption_freight_dropin_fuel_without_operations: pd.Series,
-        energy_consumption_short_range_hydrogen_without_operations: pd.Series,
-        energy_consumption_medium_range_hydrogen_without_operations: pd.Series,
-        energy_consumption_long_range_hydrogen_without_operations: pd.Series,
-        energy_consumption_passenger_hydrogen_without_operations: pd.Series,
-        energy_consumption_freight_hydrogen_without_operations: pd.Series,
-        energy_consumption_short_range_electric_without_operations: pd.Series,
-        energy_consumption_medium_range_electric_without_operations: pd.Series,
-        energy_consumption_long_range_electric_without_operations: pd.Series,
-        energy_consumption_passenger_electric_without_operations: pd.Series,
-        energy_consumption_freight_electric_without_operations: pd.Series,
-        energy_consumption_dropin_fuel_without_operations: pd.Series,
-        energy_consumption_hydrogen_without_operations: pd.Series,
-        energy_consumption_electric_without_operations: pd.Series,
-        energy_consumption_short_range_dropin_fuel: pd.Series,
-        energy_consumption_medium_range_dropin_fuel: pd.Series,
-        energy_consumption_long_range_dropin_fuel: pd.Series,
-        energy_consumption_passenger_dropin_fuel: pd.Series,
-        energy_consumption_freight_dropin_fuel: pd.Series,
-        energy_consumption_short_range_hydrogen: pd.Series,
-        energy_consumption_medium_range_hydrogen: pd.Series,
-        energy_consumption_long_range_hydrogen: pd.Series,
-        energy_consumption_passenger_hydrogen: pd.Series,
-        energy_consumption_freight_hydrogen: pd.Series,
-        energy_consumption_short_range_electric: pd.Series,
-        energy_consumption_medium_range_electric: pd.Series,
-        energy_consumption_long_range_electric: pd.Series,
-        energy_consumption_passenger_electric: pd.Series,
-        energy_consumption_freight_electric: pd.Series,
-        energy_consumption_dropin_fuel: pd.Series,
-        energy_consumption_hydrogen: pd.Series,
-        energy_consumption_electric: pd.Series,
-    ) -> Tuple[
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-    ]:
-        """
-        Energy consumption calculation.
+    def custom_setup(self):
+        self.input_names = {}
+        self.output_names = {}
 
-        Parameters
-        ----------
-        energy_consumption_short_range_dropin_fuel_without_operations
-            Energy consumption in the form of drop-in fuels without considering operation improvements from passenger short-range market air transport [MJ].
-        energy_consumption_medium_range_dropin_fuel_without_operations
-            Energy consumption in the form of drop-in fuels without considering operation improvements from passenger medium-range market air transport [MJ].
-        energy_consumption_long_range_dropin_fuel_without_operations
-            Energy consumption in the form of drop-in fuels without considering operation improvements from passenger long-range market air transport [MJ].
-        energy_consumption_passenger_dropin_fuel_without_operations
-            Energy consumption in the form of drop-in fuels without considering operation improvements from total passenger air transport [MJ].
-        energy_consumption_freight_dropin_fuel_without_operations
-            Energy consumption in the form of drop-in fuels without considering operation improvements from freight air transport [MJ].
-        energy_consumption_short_range_hydrogen_without_operations
-            Energy consumption in the form of hydrogen without considering operation improvements from passenger short-range market air transport [MJ].
-        energy_consumption_medium_range_hydrogen_without_operations
-            Energy consumption in the form of hydrogen without considering operation improvements from passenger medium-range market air transport [MJ].
-        energy_consumption_long_range_hydrogen_without_operations
-            Energy consumption in the form of hydrogen without considering operation improvements from passenger long-range market air transport [MJ].
-        energy_consumption_passenger_hydrogen_without_operations
-            Energy consumption in the form of hydrogen without considering operation improvements from total passenger air transport [MJ].
-        energy_consumption_freight_hydrogen_without_operations
-            Energy consumption in the form of hydrogen without considering operation improvements from freight air transport [MJ].
-        energy_consumption_short_range_electric_without_operations
-            Energy consumption in the form of electricity without considering operation improvements from passenger short-range market air transport [MJ].
-        energy_consumption_medium_range_electric_without_operations
-            Energy consumption in the form of electricity without considering operation improvements from passenger medium-range market air transport [MJ].
-        energy_consumption_long_range_electric_without_operations
-            Energy consumption in the form of electricity without considering operation improvements from passenger long-range market air transport [MJ].
-        energy_consumption_passenger_electric_without_operations
-            Energy consumption in the form of electricity without considering operation improvements from total passenger air transport [MJ].
-        energy_consumption_freight_electric_without_operations
-            Energy consumption in the form of electricity without considering operation improvements from freight air transport [MJ].
-        energy_consumption_dropin_fuel_without_operations
-            Energy consumption in the form of drop-in fuels without considering operation improvements from all commercial air transport [MJ].
-        energy_consumption_hydrogen_without_operations
-            Energy consumption in the form of hydrogen without considering operation improvements from all commercial air transport [MJ].
-        energy_consumption_electric_without_operations
-            Energy consumption in the form of electricity without considering operation improvements from all commercial air transport [MJ].
-        energy_consumption_short_range_dropin_fuel
-            Energy consumption in the form of drop-in fuels from passenger short-range market air transport [MJ].
-        energy_consumption_medium_range_dropin_fuel
-            Energy consumption in the form of drop-in fuels from passenger medium-range market air transport [MJ].
-        energy_consumption_long_range_dropin_fuel
-            Energy consumption in the form of drop-in fuels from passenger long-range market air transport [MJ].
-        energy_consumption_passenger_dropin_fuel
-            Energy consumption in the form of drop-in fuels from total passenger air transport [MJ].
-        energy_consumption_freight_dropin_fuel
-            Energy consumption in the form of drop-in fuels from freight air transport [MJ].
-        energy_consumption_short_range_hydrogen
-            Energy consumption in the form of hydrogen from passenger short-range market air transport [MJ].
-        energy_consumption_medium_range_hydrogen
-            Energy consumption in the form of hydrogen from passenger medium-range market air transport [MJ].
-        energy_consumption_long_range_hydrogen
-            Energy consumption in the form of hydrogen from passenger long-range market air transport [MJ].
-        energy_consumption_passenger_hydrogen
-            Energy consumption in the form of hydrogen from total passenger air transport [MJ].
-        energy_consumption_freight_hydrogen
-            Energy consumption in the form of hydrogen from freight air transport [MJ].
-        energy_consumption_short_range_electric
-            Energy consumption in the form of electricity from passenger short-range market air transport [MJ].
-        energy_consumption_medium_range_electric
-            Energy consumption in the form of electricity from passenger medium-range market air transport [MJ].
-        energy_consumption_long_range_electric
-            Energy consumption in the form of electricity from passenger long-range market air transport [MJ].
-        energy_consumption_passenger_electric
-            Energy consumption in the form of electricity from total passenger air transport [MJ].
-        energy_consumption_freight_electric
-            Energy consumption in the form of electricity from freight air transport [MJ].
-        energy_consumption_dropin_fuel
-            Energy consumption in the form of drop-in fuels from all commercial air transport [MJ].
-        energy_consumption_hydrogen
-            Energy consumption in the form of hydrogen from all commercial air transport [MJ].
-        energy_consumption_electric
-            Energy consumption in the form of electricity from all commercial air transport [MJ].
+        passenger_markets = list(self.markets.get(traffic_type="passenger"))
+        freight_markets = list(self.markets.get(traffic_type="freight"))
 
-        Returns
-        -------
-        energy_consumption_short_range_without_operations
-            Energy consumption including all fuels without considering operation improvements from passenger short-range market air transport [MJ].
-        energy_consumption_medium_range_without_operations
-            Energy consumption including all fuels without considering operation improvements from passenger medium-range market air transport [MJ].
-        energy_consumption_long_range_without_operations
-            Energy consumption including all fuels without considering operation improvements from passenger long-range market air transport [MJ
-        energy_consumption_passenger_without_operations
-            Energy consumption including all fuels without considering operation improvements from total passenger air transport [MJ].
-        energy_consumption_freight_without_operations
-            Energy consumption including all fuels without considering operation improvements from freight air transport [MJ].
-        energy_consumption_without_operations
-            Energy consumption including all fuels without considering operation improvements from all commercial air transport [MJ].
-        energy_consumption_short_range
-            Energy consumption including all fuels from passenger short-range market air transport [MJ].
-        energy_consumption_medium_range
-            Energy consumption including all fuels from passenger medium-range market air transport [MJ].
-        energy_consumption_long_range
-            Energy consumption including all fuels from passenger long-range market air transport [MJ].
-        energy_consumption_passenger
-            Energy consumption including all fuels from total passenger air transport [MJ].
-        energy_consumption_freight
-            Energy consumption including all fuels from freight air transport [MJ].
-        energy_consumption
-            Energy consumption including all fuels from all commercial air transport [MJ].
-        """
+        for market in passenger_markets + freight_markets:
+            mid = market.id
+            for fuel in ["dropin_fuel", "hydrogen", "electric"]:
+                self.input_names[f"energy_consumption_{mid}_{fuel}_without_operations"] = pd.Series(
+                    [0.0]
+                )
+                self.input_names[f"energy_consumption_{mid}_{fuel}"] = pd.Series([0.0])
+            self.output_names[f"energy_consumption_{mid}_without_operations"] = pd.Series([0.0])
+            self.output_names[f"energy_consumption_{mid}"] = pd.Series([0.0])
 
-        # WITHOUT OPERATIONS
-        energy_consumption_short_range_without_operations = (
-            +energy_consumption_short_range_dropin_fuel_without_operations
-            + energy_consumption_short_range_hydrogen_without_operations
-            + energy_consumption_short_range_electric_without_operations
-        )
-        energy_consumption_medium_range_without_operations = (
-            +energy_consumption_medium_range_dropin_fuel_without_operations
-            + energy_consumption_medium_range_hydrogen_without_operations
-            + energy_consumption_medium_range_electric_without_operations
-        )
-        energy_consumption_long_range_without_operations = (
-            +energy_consumption_long_range_dropin_fuel_without_operations
-            + energy_consumption_long_range_hydrogen_without_operations
-            + energy_consumption_long_range_electric_without_operations
-        )
-        energy_consumption_passenger_without_operations = (
-            +energy_consumption_passenger_dropin_fuel_without_operations
-            + energy_consumption_passenger_hydrogen_without_operations
-            + energy_consumption_passenger_electric_without_operations
-        )
-        energy_consumption_freight_without_operations = (
-            +energy_consumption_freight_dropin_fuel_without_operations
-            + energy_consumption_freight_hydrogen_without_operations
-            + energy_consumption_freight_electric_without_operations
-        )
-        energy_consumption_without_operations = (
-            +energy_consumption_dropin_fuel_without_operations
-            + energy_consumption_hydrogen_without_operations
-            + energy_consumption_electric_without_operations
-        )
+        self.output_names["energy_consumption_passenger_without_operations"] = pd.Series([0.0])
+        self.output_names["energy_consumption_freight_without_operations"] = pd.Series([0.0])
+        self.output_names["energy_consumption_without_operations"] = pd.Series([0.0])
+        self.output_names["energy_consumption_passenger"] = pd.Series([0.0])
+        self.output_names["energy_consumption_freight"] = pd.Series([0.0])
+        self.output_names["energy_consumption"] = pd.Series([0.0])
 
-        self.df.loc[:, "energy_consumption_short_range_without_operations"] = (
-            energy_consumption_short_range_without_operations
-        )
-        self.df.loc[:, "energy_consumption_medium_range_without_operations"] = (
-            energy_consumption_medium_range_without_operations
-        )
-        self.df.loc[:, "energy_consumption_long_range_without_operations"] = (
-            energy_consumption_long_range_without_operations
-        )
-        self.df.loc[:, "energy_consumption_passenger_without_operations"] = (
-            energy_consumption_passenger_without_operations
-        )
-        self.df.loc[:, "energy_consumption_freight_without_operations"] = (
-            energy_consumption_freight_without_operations
-        )
-        self.df.loc[:, "energy_consumption_without_operations"] = (
-            energy_consumption_without_operations
-        )
+    def compute(self, input_data) -> dict:
+        """Total energy consumption per market and aggregates."""
+        output_data = {}
 
-        # WITH OPERATIONS
-        energy_consumption_short_range = (
-            +energy_consumption_short_range_dropin_fuel
-            + energy_consumption_short_range_hydrogen
-            + energy_consumption_short_range_electric
-        )
-        energy_consumption_medium_range = (
-            +energy_consumption_medium_range_dropin_fuel
-            + energy_consumption_medium_range_hydrogen
-            + energy_consumption_medium_range_electric
-        )
-        energy_consumption_long_range = (
-            +energy_consumption_long_range_dropin_fuel
-            + energy_consumption_long_range_hydrogen
-            + energy_consumption_long_range_electric
-        )
-        energy_consumption_passenger = (
-            +energy_consumption_passenger_dropin_fuel
-            + energy_consumption_passenger_hydrogen
-            + energy_consumption_passenger_electric
-        )
-        energy_consumption_freight = (
-            +energy_consumption_freight_dropin_fuel
-            + energy_consumption_freight_hydrogen
-            + energy_consumption_freight_electric
-        )
-        energy_consumption = (
-            +energy_consumption_dropin_fuel
-            + energy_consumption_hydrogen
-            + energy_consumption_electric
-        )
+        passenger_markets = list(self.markets.get(traffic_type="passenger"))
+        freight_markets = list(self.markets.get(traffic_type="freight"))
 
-        self.df.loc[:, "energy_consumption_short_range"] = energy_consumption_short_range
-        self.df.loc[:, "energy_consumption_medium_range"] = energy_consumption_medium_range
-        self.df.loc[:, "energy_consumption_long_range"] = energy_consumption_long_range
-        self.df.loc[:, "energy_consumption_passenger"] = energy_consumption_passenger
-        self.df.loc[:, "energy_consumption_freight"] = energy_consumption_freight
-        self.df.loc[:, "energy_consumption"] = energy_consumption
+        passenger_energy_without_operations = None
+        passenger_energy = None
+        for market in passenger_markets:
+            mid = market.id
+            market_energy_without_operations = (
+                input_data[f"energy_consumption_{mid}_dropin_fuel_without_operations"]
+                + input_data[f"energy_consumption_{mid}_hydrogen_without_operations"]
+                + input_data[f"energy_consumption_{mid}_electric_without_operations"]
+            )
+            market_energy = (
+                input_data[f"energy_consumption_{mid}_dropin_fuel"]
+                + input_data[f"energy_consumption_{mid}_hydrogen"]
+                + input_data[f"energy_consumption_{mid}_electric"]
+            )
 
-        return (
-            energy_consumption_short_range_without_operations,
-            energy_consumption_medium_range_without_operations,
-            energy_consumption_long_range_without_operations,
-            energy_consumption_passenger_without_operations,
-            energy_consumption_freight_without_operations,
-            energy_consumption_without_operations,
-            energy_consumption_short_range,
-            energy_consumption_medium_range,
-            energy_consumption_long_range,
-            energy_consumption_passenger,
-            energy_consumption_freight,
-            energy_consumption,
+            output_data[f"energy_consumption_{mid}_without_operations"] = (
+                market_energy_without_operations
+            )
+            output_data[f"energy_consumption_{mid}"] = market_energy
+
+            passenger_energy_without_operations = (
+                market_energy_without_operations
+                if passenger_energy_without_operations is None
+                else passenger_energy_without_operations + market_energy_without_operations
+            )
+            passenger_energy = (
+                market_energy if passenger_energy is None else passenger_energy + market_energy
+            )
+
+        freight_energy_without_operations = None
+        freight_energy = None
+        for market in freight_markets:
+            mid = market.id
+            market_energy_without_operations = (
+                input_data[f"energy_consumption_{mid}_dropin_fuel_without_operations"]
+                + input_data[f"energy_consumption_{mid}_hydrogen_without_operations"]
+                + input_data[f"energy_consumption_{mid}_electric_without_operations"]
+            )
+            market_energy = (
+                input_data[f"energy_consumption_{mid}_dropin_fuel"]
+                + input_data[f"energy_consumption_{mid}_hydrogen"]
+                + input_data[f"energy_consumption_{mid}_electric"]
+            )
+
+            output_data[f"energy_consumption_{mid}_without_operations"] = (
+                market_energy_without_operations
+            )
+            output_data[f"energy_consumption_{mid}"] = market_energy
+
+            freight_energy_without_operations = (
+                market_energy_without_operations
+                if freight_energy_without_operations is None
+                else freight_energy_without_operations + market_energy_without_operations
+            )
+            freight_energy = (
+                market_energy if freight_energy is None else freight_energy + market_energy
+            )
+
+        if passenger_energy_without_operations is None:
+            passenger_energy_without_operations = pd.Series(0.0, index=self.df.index)
+        if passenger_energy is None:
+            passenger_energy = pd.Series(0.0, index=self.df.index)
+        if freight_energy_without_operations is None:
+            freight_energy_without_operations = pd.Series(0.0, index=self.df.index)
+        if freight_energy is None:
+            freight_energy = pd.Series(0.0, index=self.df.index)
+
+        output_data["energy_consumption_passenger_without_operations"] = (
+            passenger_energy_without_operations
         )
+        output_data["energy_consumption_freight_without_operations"] = (
+            freight_energy_without_operations
+        )
+        output_data["energy_consumption_without_operations"] = (
+            passenger_energy_without_operations + freight_energy_without_operations
+        )
+        output_data["energy_consumption_passenger"] = passenger_energy
+        output_data["energy_consumption_freight"] = freight_energy
+        output_data["energy_consumption"] = passenger_energy + freight_energy
+
+        self._store_outputs(output_data)
+        return output_data

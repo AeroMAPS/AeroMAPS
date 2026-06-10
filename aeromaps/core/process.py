@@ -40,6 +40,7 @@ from aeromaps.models.yaml_interpolator import YAMLInterpolator
 from aeromaps.utils.functions import (
     _dict_to_df,
     _flatten_dict,
+    custom_logger_config,
 )
 from aeromaps.utils.yaml import read_yaml_file
 from aeromaps.plots.single_scenario import available_plots, available_plots_fleet
@@ -57,6 +58,20 @@ from aeromaps.models.impacts.generic_energy_model.common.energy_carriers_manager
 )
 from aeromaps.models.impacts.generic_energy_model.common.energy_carriers_factory import (
     AviationEnergyCarriersFactory,
+)
+
+# Markets registry
+from aeromaps.models.air_transport.markets.market import Market
+from aeromaps.models.air_transport.markets.market_manager import MarketManager
+from aeromaps.models.air_transport.markets.markets_factory import (
+    create_market_ask_models,
+    create_market_load_factor_models,
+    create_market_rpk_aggregator,
+    create_market_rpk_demand_model,
+    create_market_rpk_elasticity,
+    create_market_rpk_models,
+    create_market_rtk_aggregator,
+    create_market_rtk_models,
 )
 
 # Climate model imports
@@ -190,6 +205,8 @@ class AeroMAPSProcess(object):
         # Initialize pathways_manager to None - will be populated if energy models are used
         self.pathways_manager = None
 
+        custom_logger_config(logging.getLogger("gemseo.utils.source_parsing"))
+
         self.configuration_file = (
             os.path.abspath(os.fspath(configuration_file))
             if configuration_file is not None
@@ -225,7 +242,6 @@ class AeroMAPSProcess(object):
             k: deepcopy(v) if getattr(v, "deepcopy_at_init", True) else v for k, v in models.items()
         }
 
-        # Initialize inputs
         self._initialize_inputs()
 
         # Common setup (disciplines list, data containers, etc.)
@@ -257,20 +273,22 @@ class AeroMAPSProcess(object):
         """
         standards = self._get_config_value("models", "standards", default=[])
 
-        if not standards:
-            # Fallback to default_models_top_down if no standards specified
-            return aeromaps_models.default_models_top_down
+        # Bypassing standards loading if the user explicitly set an empty list (to avoid loading default models)
+        # if not standards:
+        #    # Fallback to default_models_top_down if no standards specified
+        #    return aeromaps_models.default_models_top_down
 
         models = {}
-        for model_name in standards:
-            if hasattr(aeromaps_models, model_name):
-                model_dict = getattr(aeromaps_models, model_name)
-                models[model_name] = model_dict
-            else:
-                raise ValueError(
-                    f"Model '{model_name}' specified in config.yaml is not found in "
-                    f"aeromaps.core.models. Available models: {[name for name in dir(aeromaps_models) if name.startswith('models_')]}"
-                )
+        if standards:
+            for model_name in standards:
+                if hasattr(aeromaps_models, model_name):
+                    model_dict = getattr(aeromaps_models, model_name)
+                    models[model_name] = model_dict
+                else:
+                    raise ValueError(
+                        f"Model '{model_name}' specified in config.yaml is not found in "
+                        f"aeromaps.core.models. Available models: {[name for name in dir(aeromaps_models) if name.startswith('models_')]}"
+                    )
 
         # Load custom models from config if specified
         customs = self._get_user_config_value("models", "customs", default=None)
@@ -369,6 +387,28 @@ class AeroMAPSProcess(object):
         This method should be called only if end year was modified, otherwise it is called in __init__.
 
         """
+        # Initialization order is load-bearing — do not reorder:
+        #   1. _initialize_inputs()        — loads parameters.json + user JSON, then
+        #                                    calls _format_input_vectors() to pad and
+        #                                    index the *_init arrays from that JSON
+        #   2. _initialize_markets()       — pushes market YAML values (growth rates,
+        #                                    covid params, share defaults, …) into parameters
+        #   3. _initialize_climate_model() / _initialize_lca_model() / _initialize_generic_energy()
+        #   4. _initialize_vector_inputs() — loads AeroSCOPE-derived partitioning data;
+        #                                    scalars override YAML defaults for market shares,
+        #                                    vectors use .update() to fill only the historical
+        #                                    slice of already-formatted Series
+
+        # TODO : think about the execution order.
+        #    Currently it is driven by what should be available for models and what writes paramaters last (e.g. partitionning after custom setups)
+
+        # Initialize markets registry (must precede disciplines that consume it)
+        self._initialize_markets()
+        self._initialize_climate_model()
+        self._initialize_lca_model()
+        self._initialize_generic_energy()
+        self._initialize_vector_inputs()
+
         self.disciplines = []
         self.data = {}
         self.json = {}
@@ -385,13 +425,9 @@ class AeroMAPSProcess(object):
         ---------
         This method should be called only if end year was modified, otherwise it is called in __init__.
         """
-        # Initialize energy carriers
-        self._initialize_generic_energy()
-        # Initialize climate model
-        self._initialize_climate_model()
-        # Initialize LCA model
-        self._initialize_lca_model()
-        # Initialize disciplines
+        #  Initialize conventional disciplines.
+        # Here and not in common_setup because one need to create scenario
+        # and declare constraints as models from the same place. TODO; clarify why though.
         self._initialize_disciplines()
 
         # TODO: expose these MDA settings (tolerance, max_mda_iter, inner_mda_name,
@@ -425,9 +461,6 @@ class AeroMAPSProcess(object):
         ``gemseo_settings`` for objective, design space, scenario type,
         and formulation.
         """
-        self._initialize_generic_energy()
-        self._initialize_climate_model()
-        self._initialize_lca_model()
         self._initialize_disciplines()
 
         self.scenario = create_scenario(
@@ -657,8 +690,9 @@ class AeroMAPSProcess(object):
         """
         return self.data["str_inputs"]
 
-    def plot(self, name, save=False, size_inches=None, remove_title=False,
-             fig=None, ax=None, legend=True):
+    def plot(
+        self, name, save=False, size_inches=None, remove_title=False, fig=None, ax=None, legend=True
+    ):
         """Generate a predefined AeroMAPS plot.
 
         Depending on the plot name, this method uses either generic or
@@ -991,6 +1025,151 @@ class AeroMAPSProcess(object):
         self.data["vector_outputs"] = pd.DataFrame(index=self.data["years"]["full_years"])
         self.data["climate_outputs"] = pd.DataFrame(index=self.data["years"]["climate_full_years"])
         self.data["lca_outputs"] = xr.DataArray()
+
+    def _initialize_markets(self):
+        """Load the user-defined markets registry.
+
+        Reads the ``markets.yaml`` path from the user config, instantiates a
+        :class:`MarketManager` and stores it as ``self.markets``.  Flattened
+        per-market input values are pushed into ``self.parameters`` using the
+        ``<market_id>_<leaf_key>`` convention, analogous to the generic energy
+        pathway pattern in :meth:`_instantiate_generic_energy_models`.
+
+        Sub-grouping keys under ``inputs`` (e.g. ``initial``, ``growth``,
+        ``covid``, ``measures``, ``efficiency_simple``, ``costs``) are treated
+        as organisational groupings only: their names are *not* included in the
+        flattened variable names.  This makes names like ``short_range_rpk_share_2019``
+        coincide with legacy flat names in ``parameters.json``, so for default
+        scenarios the push is a numerical no-op.  Names introduced under new
+        sub-groupings are harmless extras until Phase 2 consumes them.
+
+        Always runs: when ``models.markets`` is absent from the user config the
+        default ``default_markets/markets.yaml`` is used, reproducing the legacy
+        four-market numerics exactly.  A custom file can be supplied via
+        ``models.markets.markets_data_file`` in the user config.
+        """
+        self.markets = MarketManager()
+        self.markets_data = {}
+
+        # Always load markets — default_markets/markets.yaml is the fallback when the
+        # user config has no models.markets block.  A custom file can be pointed to via
+        # models.markets.markets_data_file in the user config.yaml.
+        markets_file_path = self._resolve_config_path(
+            "models",
+            "markets",
+            "markets_data_file",
+            default_filename="default_markets/markets.yaml",
+        )
+        if markets_file_path is None or not markets_file_path.exists():
+            return
+
+        self.markets_data = read_yaml_file(str(markets_file_path))
+
+        # Pop the optional ``defaults`` block (keyed by traffic_type) so it is not
+        # treated as a market.  Each market's ``inputs`` is deep-merged on top of
+        # the corresponding traffic_type defaults — market values win at every
+        # leaf, lists are replaced wholesale, and absent sub-groups stay absent
+        # (so optional disciplines remain opt-in via their factory checks).
+        defaults = self.markets_data.pop("defaults", {}) or {}
+
+        # Pop the optional ``global`` block: scalars shared across all markets,
+        # flattened into ``self.parameters`` without market prefix.  The
+        # ``elasticity.use_elasticity`` flag controls whether the cost-feedback
+        # elasticity layer is wired into the discipline graph; it is read here
+        # so the case distinction lives in YAML rather than in model dicts.
+        globals_block = self.markets_data.pop("global", {}) or {}
+        # ``demand.model`` selects the passenger demand model among four modes:
+        #   ``cagr``               — CAGR RPKMarket chain (no price feedback);
+        #   ``cagr_elasticity``    — CAGR chain + RPKElasticity (airfare feedback);
+        #   ``constant_elasticity``— RPKPriceIncomeElasticity (income/price model);
+        #   ``logistic_income``    — RPKLogisticIncomePriceElasticity.
+        # Build-time selector, not a model parameter, so the ``demand`` sub-block
+        # is dropped before flattening. ``elasticity.use_elasticity`` is kept as a
+        # legacy fallback for configs predating ``demand.model``.
+        with_elasticity = bool(globals_block.get("elasticity", {}).get("use_elasticity", False))
+        demand_model = (globals_block.pop("demand", {}) or {}).get("model")
+        if demand_model is None:
+            demand_model = "cagr_elasticity" if with_elasticity else "cagr"
+        for value in globals_block.values():
+            if isinstance(value, dict):
+                flattened = _flatten_dict(value)
+                # ``use_elasticity`` is a build-time toggle, not a model parameter.
+                flattened.pop("use_elasticity", None)
+                self.parameters.from_dict(self._convert_custom_data_types(flattened))
+
+        def _deep_merge(base: dict, override: dict) -> dict:
+            out = dict(base)
+            for k, v in override.items():
+                if isinstance(v, dict) and isinstance(out.get(k), dict):
+                    out[k] = _deep_merge(out[k], v)
+                else:
+                    out[k] = v
+            return out
+
+        # The first level of the yaml conf file contains all the markets
+        market_ids = list(self.markets_data.keys())
+
+        for market_id in market_ids:
+            market_data = self.markets_data[market_id]
+            if "name" not in market_data:
+                raise ValueError("The market configuration file should contain its name")
+            if "inputs" not in market_data:
+                raise ValueError("The market configuration file should contain inputs")
+
+            tt_defaults = defaults.get(market_data.get("traffic_type"), {})
+            market_data["inputs"] = _deep_merge(
+                tt_defaults.get("inputs", {}),
+                market_data.get("inputs", {}),
+            )
+
+            market = Market(
+                id=market_id,
+                name=market_data["name"],
+                traffic_type=market_data.get("traffic_type"),
+                traffic_unit=market_data.get("traffic_unit"),
+            )
+            self.markets.add(market)
+
+            # Flatten each input group with <market_id> prefix and push values to parameters.
+            inputs = market_data["inputs"]
+            for key, value in inputs.items():
+                if isinstance(value, dict):
+                    flattened_yaml = _flatten_dict(value, market.id)
+                    inputs[key] = self._convert_custom_data_types(flattened_yaml)
+                    self.parameters.from_dict(inputs[key])
+
+            market_data["inputs"] = inputs
+            self.markets_data[market_id] = market_data
+
+        if demand_model in ("cagr", "cagr_elasticity"):
+            with_elast = demand_model == "cagr_elasticity"
+            self.models.update(
+                create_market_rpk_models(
+                    self.markets, self.markets_data, with_elasticity=with_elast
+                )
+            )
+            self.models.update(
+                create_market_rpk_aggregator(self.markets, with_elasticity=with_elast)
+            )
+            if with_elast:
+                self.models.update(create_market_rpk_elasticity(self.markets))
+        elif demand_model in ("constant_elasticity", "logistic_income"):
+            # Price-coupled demand model: owns the per-market RPK split and its
+            # own price feedback, so the CAGR chain / RPKElasticity are skipped.
+            self.models.update(
+                create_market_rpk_demand_model(
+                    self.markets, self.markets_data, demand_model=demand_model
+                )
+            )
+        else:
+            raise ValueError(
+                f"Unknown global.demand.model '{demand_model}'. Expected one of: "
+                "cagr, cagr_elasticity, constant_elasticity, logistic_income."
+            )
+        self.models.update(create_market_rtk_models(self.markets, self.markets_data))
+        self.models.update(create_market_rtk_aggregator(self.markets))
+        self.models.update(create_market_ask_models(self.markets))
+        self.models.update(create_market_load_factor_models(self.markets))
 
     def _initialize_generic_energy(self):
         """Initialize generic energy resources, processes, and carriers.
@@ -1373,8 +1552,9 @@ class AeroMAPSProcess(object):
                 parameters=self.parameters,
                 aircraft_inventory_path=aircraft_inventory_path,
                 fleet_config_path=fleet_config_path,
+                markets=self.markets,
             )
-            self.fleet_model = FleetModel(fleet=self.fleet)
+            self.fleet_model = FleetModel(fleet=self.fleet, markets=self.markets)
             self.fleet_model.parameters = self.parameters
             self.fleet_model._initialize_df()
         else:
@@ -1390,6 +1570,10 @@ class AeroMAPSProcess(object):
                     # TODO: check how to avoid providing all parameters
                     model.parameters = self.parameters
                     model._initialize_df()
+                    needs_custom_setup = False
+                    if hasattr(model, "markets") and hasattr(model, "custom_setup"):
+                        model.markets = self.markets
+                        needs_custom_setup = True
                     if (
                         hasattr(model, "pathways_manager")
                         and hasattr(model, "custom_setup")
@@ -1405,9 +1589,15 @@ class AeroMAPSProcess(object):
                                 "Add 'models.energy' to your configuration."
                             )
                         model.pathways_manager = self.pathways_manager
-                        model.custom_setup()
+                        needs_custom_setup = True
                     if hasattr(self, "fleet_model"):
                         model.fleet_model = self.fleet_model
+                        # Allow custom models to rebuild their I/O grammar once
+                        # fleet_model is injected (e.g. FleetEvolution 3.C).
+                        if hasattr(model, "custom_setup"):
+                            needs_custom_setup = True
+                    if needs_custom_setup:
+                        model.custom_setup()
                     if hasattr(model, "climate_historical_data"):
                         if not hasattr(self, "climate_historical_data"):
                             raise RuntimeError(
@@ -1532,9 +1722,10 @@ class AeroMAPSProcess(object):
                 value = value.reindex(new_index, fill_value=np.nan)
                 setattr(self.parameters, key, value)
 
-        self._initialize_vector_inputs()
-        # TODO clarify the role of _initialize_vector_inputs vs read_json_direct @Scott?
-        # Format input vectors
+        # Pad and index the *_init numpy arrays (rpk_init, ask_init, etc.) that come
+        # from parameters.json as plain lists. Must run here, before _initialize_markets()
+        # and _initialize_vector_inputs(), because those two only push scalars or use
+        # .update() to fill in the historical slice of already-formatted Series.
         self._format_input_vectors()
 
     def _initialize_vector_inputs(self):
@@ -1595,7 +1786,15 @@ class AeroMAPSProcess(object):
 
             for param_name, value in other_vector_data.items():
                 if isinstance(value, list) and years_index is not None:
-                    setattr(self.parameters, param_name, pd.Series(value, index=years_index))
+                    new_series = pd.Series(value, index=years_index)
+                    existing = getattr(self.parameters, param_name, None)
+                    if isinstance(existing, pd.Series):
+                        # The Series was already padded to end_year by _format_input_vectors().
+                        # Only overwrite the historical slice; future NaN padding is preserved.
+                        existing.update(new_series)
+                        setattr(self.parameters, param_name, existing)
+                    else:
+                        setattr(self.parameters, param_name, new_series)
                 else:
                     setattr(self.parameters, param_name, value)
 
@@ -1704,6 +1903,7 @@ class AeroMAPSProcess(object):
                 new_value = pd.Series(new_value, index=new_index)
                 setattr(self.parameters, field_name, new_value)
             elif not isinstance(field_value, (float, int, list, str)):
+                print(field_name, field_value, type(field_value))
                 if (
                     field_value.size
                     == self.parameters.end_year - self.parameters.climate_historic_start_year + 1

@@ -7,6 +7,10 @@ data:
     excel_outputs_file: "../resources/data/data.xlsx"
 
 models:
+
+  markets:
+    markets_data_file: default
+    
   climate:
     climate_model_data_file: default
 

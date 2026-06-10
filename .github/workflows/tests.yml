@@ -85,6 +85,7 @@ jobs:
           # Find all notebooks to test, excluding specified paths
           notebooks=$(find aeromaps -name "*.ipynb" \
             ! -path "aeromaps/notebooks/publications/*" \
+            ! -path "aeromaps/notebooks/private/*" \
             ! -path "aeromaps/notebooks/tutorials/07_life_cycle_assessment/life_cycle_assessment_custom.ipynb" \
             ! -path "aeromaps/notebooks/tutorials/07_life_cycle_assessment/utils/export_lca_model.ipynb" \
             ! -path "aeromaps/notebooks/tutorials/09_optimise_a_scenario/example_optim_with_elasticity.ipynb")

@@ -28,103 +28,62 @@ class FleetCarbonAbatementCosts(AeroMAPSModel):
     """
 
     def __init__(self, name="fleet_abatement_cost", fleet_model=None, *args, **kwargs):
-        super().__init__(name=name, *args, **kwargs)
+        super().__init__(name=name, model_type="custom", *args, **kwargs)
         self.fleet_model = fleet_model
+        self.markets = None
 
-    def compute(
-        self,
-        ask_aircraft_value_dict: dict,
-        rpk_aircraft_value_dict: dict,
-        load_factor: pd.Series,
-        doc_non_energy_per_ask_short_range_dropin_fuel_init: float,
-        doc_non_energy_per_ask_medium_range_dropin_fuel_init: float,
-        doc_non_energy_per_ask_long_range_dropin_fuel_init: float,
-        energy_per_ask_without_operations_short_range_dropin_fuel: pd.Series,
-        energy_per_ask_without_operations_medium_range_dropin_fuel: pd.Series,
-        energy_per_ask_without_operations_long_range_dropin_fuel: pd.Series,
-        cac_reference_mfsp: pd.Series,
-        cac_reference_co2_emission_factor: pd.Series,
-        exogenous_carbon_price_trajectory: pd.Series,
-        covid_energy_intensity_per_ask_increase_2020: float,
-        social_discount_rate: float,
-    ) -> Tuple[dict, dict, dict, dict]:
+    def custom_setup(self):
+        self.input_names = {
+            "ask_aircraft_value_dict": {},
+            "rpk_aircraft_value_dict": {},
+            "load_factor": pd.Series([0.0]),
+            "cac_reference_mfsp": pd.Series([0.0]),
+            "cac_reference_co2_emission_factor": pd.Series([0.0]),
+            "exogenous_carbon_price_trajectory": pd.Series([0.0]),
+            "covid_energy_intensity_per_ask_increase_2020": 0.0,
+            "social_discount_rate": 0.0,
+        }
+
+        # FIXME no feeding of this model output to other models ? dummy is used by nothing
+        # self.output_names = {
+        #    "dummy_carbon_abatement_cost_aircraft_value_dict": {},
+        #    "dummy_carbon_abatement_volume_aircraft_value_dict": {},
+        #    "dummy_specific_carbon_abatement_cost_aircraft_value_dict": {},
+        #   "dummy_generic_specific_carbon_abatement_cost_aircraft_value_dict": {},
+        # }
+
+        for market in self.markets.get(traffic_type="passenger"):
+            mid = market.id
+            self.input_names[f"{mid}_doc_non_energy_per_ask_dropin_fuel_init"] = 0.0
+            self.input_names[f"energy_per_ask_without_operations_{mid}_dropin_fuel"] = pd.Series(
+                [0.0]
+            )
+
+    def compute(self, input_data) -> dict:
         """
         Executes the computation of aircraft efficiency-related carbon abatement costs.
-        Parameters
-        ----------
-        ask_aircraft_value_dict
-            dummy output of fleet model TODO: check for necessity?
-        rpk_aircraft_value_dict
-            dummy output of fleet model TODO: check for necessity?
-        load_factor
-            Mean aircraft load factor [%]
-        doc_non_energy_per_ask_short_range_dropin_fuel_init
-            Initial non-energy DOC per ASK for short-range aircraft with drop-in fuel [€/ASK]
-        doc_non_energy_per_ask_medium_range_dropin_fuel_init
-            Initial non-energy DOC per ASK for medium-range aircraft with drop-in fuel [€/ASK]
-        doc_non_energy_per_ask_long_range_dropin_fuel_init
-            Initial non-energy DOC per ASK for long-range aircraft with drop-in fuel [€/ASK]
-        energy_per_ask_without_operations_short_range_dropin_fuel
-            Energy consumption per ASK for passenger short-range market aircraft using drop-in fuel without considering operation improvements [MJ/ASK]
-        energy_per_ask_without_operations_medium_range_dropin_fuel
-            Energy consumption per ASK for passenger medium-range market aircraft using drop-in fuel without considering operation improvements [MJ/ASK]
-        energy_per_ask_without_operations_long_range_dropin_fuel
-            Energy consumption per ASK for passenger long-range market aircraft using drop-in fuel without considering operation improvements [MJ/ASK]
-        cac_reference_mfsp
-            CAC Reference fuel's MFSP [€/MJ]
-        cac_reference_co2_emission_factor
-            CAC Reference fuel's CO2 emission factor [gCO2/MJ]
-        exogenous_carbon_price_trajectory
-            Exogenous carbon price trajectory [€/tCO2]
-        covid_energy_intensity_per_ask_increase_2020
-            Increase in energy intensity per ASK due to Covid-19 for the start year [%]
-        social_discount_rate
-            Social discount rate [-]
-
-        Returns
-        ---------
-        dummy_carbon_abatement_cost_aircraft_value_dict
-            Dictionary with aircraft names as keys and their carbon abatement cost series as values [€/tCO2]
-        dummy_carbon_abatement_volume_aircraft_value_dict
-            Dictionary with aircraft names as keys and their carbon abatement volume series as values [tCO2]
-        dummy_specific_carbon_abatement_cost_aircraft_value_dict
-            Dictionary with aircraft names as keys and their specific carbon abatement cost series as values [€/tCO2]
-        dummy_generic_specific_carbon_abatement_cost_aircraft_value_dict
-            Dictionary with aircraft names as keys and their generic specific carbon abatement cost series as values [€/tCO2]
 
         Warning
         -------
         This model stores its outputs in fleet df. # TODO: as it is now possible to use dicts in gemseo, make non-dummy outputs?
         """
+        output_data = {}
         dummy_carbon_abatement_cost_aircraft_value_dict = {}
         dummy_specific_carbon_abatement_cost_aircraft_value_dict = {}
         dummy_generic_specific_carbon_abatement_cost_aircraft_value_dict = {}
         dummy_carbon_abatement_volume_aircraft_value_dict = {}
+        market_name_to_id = {m.name: m.id for m in self.markets.get(traffic_type="passenger")}
         for category, sets in self.fleet_model.fleet.all_aircraft_elements.items():
             category_recent_reference = self.fleet_model.fleet.all_aircraft_elements[category][1]
 
-            if category == "Short Range":
-                category_reference_doc_ne = doc_non_energy_per_ask_short_range_dropin_fuel_init
-                # Assumes 100% drop in at reference year. Sum with non drop in necessary otherwise.
-                category_reference_energy = (
-                    energy_per_ask_without_operations_short_range_dropin_fuel[
-                        self.prospection_start_year - 1
-                    ]
-                )
-            elif category == "Medium Range":
-                category_reference_doc_ne = doc_non_energy_per_ask_medium_range_dropin_fuel_init
-                category_reference_energy = (
-                    energy_per_ask_without_operations_medium_range_dropin_fuel[
-                        self.prospection_start_year - 1
-                    ]
-                )
-            else:
-                category_reference_doc_ne = doc_non_energy_per_ask_long_range_dropin_fuel_init
-                category_reference_energy = (
-                    energy_per_ask_without_operations_long_range_dropin_fuel[
-                        self.prospection_start_year - 1
-                    ]
-                )
+            if category not in market_name_to_id:
+                continue
+            mid = market_name_to_id[category]
+            category_reference_doc_ne = input_data[f"{mid}_doc_non_energy_per_ask_dropin_fuel_init"]
+            # Assumes 100% drop in at reference year. Sum with non drop in necessary otherwise.
+            category_reference_energy = input_data[
+                f"energy_per_ask_without_operations_{mid}_dropin_fuel"
+            ][self.prospection_start_year - 1]
 
             # Calculating values of interest for each aircraft
             for aircraft_var in sets:
@@ -160,18 +119,20 @@ class FleetCarbonAbatementCosts(AeroMAPSModel):
 
                 aircraft_energy_delta[2020] = (
                     aircraft_energy_delta[2019]
-                    * (1 + covid_energy_intensity_per_ask_increase_2020 / 100)
-                    + category_reference_energy * covid_energy_intensity_per_ask_increase_2020 / 100
+                    * (1 + input_data["covid_energy_intensity_per_ask_increase_2020"] / 100)
+                    + category_reference_energy
+                    * input_data["covid_energy_intensity_per_ask_increase_2020"]
+                    / 100
                 )
 
                 # Assumption: 100% kerosene for cost calculation. Effect of SAFs/Hydrogen is accounted for downwards in
                 # the calculation process. For instance a Hydrogen aircraft, that would consume more energy in this step
                 # would result in negative abatement; even though the total lifecycle could actually reduce emissions.
 
-                extra_cost_fuel = aircraft_energy_delta * cac_reference_mfsp
+                extra_cost_fuel = aircraft_energy_delta * input_data["cac_reference_mfsp"]
 
                 extra_emissions = (
-                    -aircraft_energy_delta * cac_reference_co2_emission_factor
+                    -aircraft_energy_delta * input_data["cac_reference_co2_emission_factor"]
                 ) / 1000000
 
                 aircraft_carbon_abatement_cost = (
@@ -191,14 +152,14 @@ class FleetCarbonAbatementCosts(AeroMAPSModel):
                 for k in range(self.prospection_start_year, self.end_year + 1):
                     scac, scac_prime = self._get_discounted_vals(
                         k,
-                        social_discount_rate,
+                        input_data["social_discount_rate"],
                         self.fleet_model.fleet.categories[category].parameters.life,
                         aircraft_doc_ne_delta,
                         extra_cost_fuel,
-                        cac_reference_mfsp,
-                        cac_reference_co2_emission_factor,
+                        input_data["cac_reference_mfsp"],
+                        input_data["cac_reference_co2_emission_factor"],
                         extra_emissions,
-                        exogenous_carbon_price_trajectory,
+                        input_data["exogenous_carbon_price_trajectory"],
                     )
                     scac_vals.append(scac)
                     scac_vals_prime.append(scac_prime)
@@ -219,14 +180,14 @@ class FleetCarbonAbatementCosts(AeroMAPSModel):
                 # TODO use input dictionary if possible once implemented instead of looking in fleet model df + dummy output
                 aircraft_pseudo_ask = (
                     self.fleet_model.df.loc[:, (aircraft_var_name + ":aircraft_rpk")]
-                    / load_factor[self.prospection_start_year - 1]
+                    / input_data["load_factor"][self.prospection_start_year - 1]
                     * 100
                 )
 
                 aircraft_carbon_abatement_volume = -(
                     aircraft_pseudo_ask
                     * aircraft_energy_delta
-                    * cac_reference_co2_emission_factor
+                    * input_data["cac_reference_co2_emission_factor"]
                     / 1000000
                 )  # in tons
 
@@ -267,12 +228,21 @@ class FleetCarbonAbatementCosts(AeroMAPSModel):
                     aircraft_var_name
                 ] = scac_prime_column
 
-        return (
-            dummy_carbon_abatement_cost_aircraft_value_dict,
-            dummy_carbon_abatement_volume_aircraft_value_dict,
-            dummy_specific_carbon_abatement_cost_aircraft_value_dict,
-            dummy_generic_specific_carbon_abatement_cost_aircraft_value_dict,
-        )
+        # output_data["dummy_carbon_abatement_cost_aircraft_value_dict"] = (
+        #    dummy_carbon_abatement_cost_aircraft_value_dict
+        # )
+        # output_data["dummy_carbon_abatement_volume_aircraft_value_dict"] = (
+        #    dummy_carbon_abatement_volume_aircraft_value_dict
+        # )
+        # output_data["dummy_specific_carbon_abatement_cost_aircraft_value_dict"] = (
+        #   dummy_specific_carbon_abatement_cost_aircraft_value_dict
+        # )
+        # output_data["dummy_generic_specific_carbon_abatement_cost_aircraft_value_dict"] = (
+        #    dummy_generic_specific_carbon_abatement_cost_aircraft_value_dict
+        # )
+
+        self._store_outputs(output_data)
+        return output_data
 
     def _get_discounted_vals(
         self,

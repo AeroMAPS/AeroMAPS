@@ -169,228 +169,152 @@ class CO2Emissions(AeroMAPSModel):
     --------------
     name : str
         Name of the model instance ('co2_emissions' by default).
+
+    Documentation
+    --------------
+    Inputs
+        - load_factor: Load factor [%].
+        - rpk_<market>: Passenger RPK [RPK].
+        - rtk_<market>: Freight RTK [RTK].
+        - energy_per_ask_<market>_<energy>: Passenger MJ/ASK.
+        - ask_<market>_<energy>_share: Passenger energy shares [%].
+        - energy_per_rtk_<market>_<energy>: Freight MJ/RTK.
+        - rtk_<market>_<energy>_share: Freight energy shares [%].
+        - <energy>_mean_co2_emission_factor: Mean CO2 factor [gCO2/MJ].
+    Outputs
+        - co2_emissions_<market>: Per-market CO2 [MtCO2].
+        - co2_emissions_passenger: Passenger total [MtCO2].
+        - co2_emissions_freight: Freight total [MtCO2].
+        - co2_emissions: Passenger + freight [MtCO2].
+    Notes
+        - <market> is the MarketManager id (passenger and freight markets).
+        - <energy> is one of: dropin_fuel, hydrogen, electric.
+        - I/O names are generated from configuration and passed to GEMSEO via
+          self.input_names and self.output_names grammars.
     """
 
     def __init__(self, name="co2_emissions", *args, **kwargs):
-        super().__init__(name=name, *args, **kwargs)
+        super().__init__(name=name, model_type="custom", *args, **kwargs)
         self.climate_historical_data = None
+        self.markets = None
 
-    def compute(
-        self,
-        rpk_short_range: pd.Series,
-        rpk_medium_range: pd.Series,
-        rpk_long_range: pd.Series,
-        rtk: pd.Series,
-        load_factor: pd.Series,
-        energy_per_ask_short_range_dropin_fuel: pd.Series,
-        energy_per_ask_medium_range_dropin_fuel: pd.Series,
-        energy_per_ask_long_range_dropin_fuel: pd.Series,
-        energy_per_rtk_freight_dropin_fuel: pd.Series,
-        energy_per_ask_short_range_hydrogen: pd.Series,
-        energy_per_ask_medium_range_hydrogen: pd.Series,
-        energy_per_ask_long_range_hydrogen: pd.Series,
-        energy_per_rtk_freight_hydrogen: pd.Series,
-        energy_per_ask_short_range_electric: pd.Series,
-        energy_per_ask_medium_range_electric: pd.Series,
-        energy_per_ask_long_range_electric: pd.Series,
-        energy_per_rtk_freight_electric: pd.Series,
-        ask_short_range_dropin_fuel_share: pd.Series,
-        ask_medium_range_dropin_fuel_share: pd.Series,
-        ask_long_range_dropin_fuel_share: pd.Series,
-        rtk_dropin_fuel_share: pd.Series,
-        ask_short_range_hydrogen_share: pd.Series,
-        ask_medium_range_hydrogen_share: pd.Series,
-        ask_long_range_hydrogen_share: pd.Series,
-        rtk_hydrogen_share: pd.Series,
-        ask_short_range_electric_share: pd.Series,
-        ask_medium_range_electric_share: pd.Series,
-        ask_long_range_electric_share: pd.Series,
-        rtk_electric_share: pd.Series,
-        dropin_fuel_mean_co2_emission_factor: pd.Series,
-        hydrogen_mean_co2_emission_factor: pd.Series,
-        electric_mean_co2_emission_factor: pd.Series,
-    ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series]:
+    def custom_setup(self):
         """
-        CO2 emissions calculation.
-
-        Parameters
-        ----------
-        rpk_short_range
-            Revenue passenger kilometers for short-range flights [RPK].
-        rpk_medium_range
-            Revenue passenger kilometers for medium-range flights [RPK].
-        rpk_long_range
-            Revenue passenger kilometers for long-range flights [RPK].
-        rtk
-            Revenue ton kilometers [RTK].
-        load_factor
-            Load factor [%].
-        energy_per_ask_short_range_dropin_fuel
-            Energy consumption per ASK for short-range flights using drop-in fuels [MJ/ASK].
-        energy_per_ask_medium_range_dropin_fuel
-            Energy consumption per ASK for medium-range flights using drop-in fuels [MJ/ASK].
-        energy_per_ask_long_range_dropin_fuel
-            Energy consumption per ASK for long-range flights using drop-in fuels [MJ/ASK].
-        energy_per_rtk_freight_dropin_fuel
-            Energy consumption per RTK for freight using drop-in fuels [MJ/RTK].
-        energy_per_ask_short_range_hydrogen
-            Energy consumption per ASK for short-range flights using hydrogen [MJ/ASK].
-        energy_per_ask_medium_range_hydrogen
-            Energy consumption per ASK for medium-range flights using hydrogen [MJ/ASK].
-        energy_per_ask_long_range_hydrogen
-            Energy consumption per ASK for long-range flights using hydrogen [MJ/ASK].
-        energy_per_rtk_freight_hydrogen
-            Energy consumption per RTK for freight using hydrogen [MJ/RTK].
-        energy_per_ask_short_range_electric
-            Energy consumption per ASK for short-range flights using electricity [MJ/ASK].
-        energy_per_ask_medium_range_electric
-            Energy consumption per ASK for medium-range flights using electricity [MJ/ASK].
-        energy_per_ask_long_range_electric
-            Energy consumption per ASK for long-range flights using electricity [MJ/ASK].
-        energy_per_rtk_freight_electric
-            Energy consumption per RTK for freight using electricity [MJ/RTK].
-        ask_short_range_dropin_fuel_share
-            Share of drop-in fuels in ASK for short-range flights [%].
-        ask_medium_range_dropin_fuel_share
-            Share of drop-in fuels in ASK for medium-range flights [%].
-        ask_long_range_dropin_fuel_share
-            Share of drop-in fuels in ASK for long-range flights [%].
-        rtk_dropin_fuel_share
-            Share of drop-in fuels in RTK for freight [%].
-        ask_short_range_hydrogen_share
-            Share of hydrogen in ASK for short-range flights [%].
-        ask_medium_range_hydrogen_share
-            Share of hydrogen in ASK for medium-range flights [%].
-        ask_long_range_hydrogen_share
-            Share of hydrogen in ASK for long-range flights [%].
-        rtk_hydrogen_share
-            Share of hydrogen in RTK for freight [%].
-        ask_short_range_electric_share
-            Share of electricity in ASK for short-range flights [%].
-        ask_medium_range_electric_share
-            Share of electricity in ASK for medium-range flights [%].
-        ask_long_range_electric_share
-            Share of electricity in ASK for long-range flights [%].
-        rtk_electric_share
-            Share of electricity in RTK for freight [%].
-        dropin_fuel_mean_co2_emission_factor
-            Mean CO2 emission factor for drop-in fuels [gCO2/MJ].
-        hydrogen_mean_co2_emission_factor
-            Mean CO2 emission factor for hydrogen [gCO2/MJ].
-        electric_mean_co2_emission_factor
-            Mean CO2 emission factor for electricity [gCO2/MJ].
-
-        Returns
-        -------
-        co2_emissions_short_range
-            CO2 emissions from short-range flights [MtCO2].
-        co2_emissions_medium_range
-            CO2 emissions from medium-range flights [MtCO2].
-        co2_emissions_long_range
-            CO2 emissions from long-range flights [MtCO2].
-        co2_emissions_passenger
-            CO2 emissions from passenger transport [MtCO2].
-        co2_emissions_freight
-            CO2 emissions from freight transport [MtCO2].
-        co2_emissions
-            Total CO2 emissions [MtCO2].
+        Dynamically build input_names and output_names based on the markets manager.
+        Specific function for custom AeroMAPSModel instances.
         """
-        # Locally filling incomplete emission factors with zeros so that sums are not nan if one is undefined
-        dropin_fuel_mean_co2_emission_factor = dropin_fuel_mean_co2_emission_factor.fillna(0)
-        hydrogen_mean_co2_emission_factor = hydrogen_mean_co2_emission_factor.fillna(0)
-        electric_mean_co2_emission_factor = electric_mean_co2_emission_factor.fillna(0)
+        energy_types = ["dropin_fuel", "hydrogen", "electric"]
+        self.input_names = {
+            "load_factor": pd.Series([0.0]),
+        }
+        self.output_names = {}
 
-        # Locally filling void energy per ask/rtk with zeros so that sums are not nan if one is undefined
-        energy_per_ask_short_range_dropin_fuel = energy_per_ask_short_range_dropin_fuel.fillna(0)
-        energy_per_ask_medium_range_dropin_fuel = energy_per_ask_medium_range_dropin_fuel.fillna(0)
-        energy_per_ask_long_range_dropin_fuel = energy_per_ask_long_range_dropin_fuel.fillna(0)
-        energy_per_rtk_freight_dropin_fuel = energy_per_rtk_freight_dropin_fuel.fillna(0)
-        energy_per_ask_short_range_hydrogen = energy_per_ask_short_range_hydrogen.fillna(0)
-        energy_per_ask_medium_range_hydrogen = energy_per_ask_medium_range_hydrogen.fillna(0)
-        energy_per_ask_long_range_hydrogen = energy_per_ask_long_range_hydrogen.fillna(0)
-        energy_per_rtk_freight_hydrogen = energy_per_rtk_freight_hydrogen.fillna(0)
-        energy_per_ask_short_range_electric = energy_per_ask_short_range_electric.fillna(0)
-        energy_per_ask_medium_range_electric = energy_per_ask_medium_range_electric.fillna(0)
-        energy_per_ask_long_range_electric = energy_per_ask_long_range_electric.fillna(0)
-        energy_per_rtk_freight_electric = energy_per_rtk_freight_electric.fillna(0)
+        # Per-passenger-market inputs and per-market output.
+        for market in self.markets.get(traffic_type="passenger"):
+            mid = market.id
+            self.input_names[f"rpk_{mid}"] = pd.Series([0.0])
+            for et in energy_types:
+                self.input_names[f"energy_per_ask_{mid}_{et}"] = pd.Series([0.0])
+                self.input_names[f"ask_{mid}_{et}_share"] = pd.Series([0.0])
+            self.output_names[f"co2_emissions_{mid}"] = pd.Series([0.0])
 
-        # Short range
-        co2_emissions_short_range = (
-            rpk_short_range
-            / (load_factor / 100)
-            * (
-                ask_short_range_dropin_fuel_share
-                / 100
-                * (dropin_fuel_mean_co2_emission_factor * energy_per_ask_short_range_dropin_fuel)
-                + ask_short_range_hydrogen_share
-                / 100
-                * (energy_per_ask_short_range_hydrogen * hydrogen_mean_co2_emission_factor)
-                + ask_short_range_electric_share
-                / 100
-                * (energy_per_ask_short_range_electric * electric_mean_co2_emission_factor)
+        # Per-freight-market inputs and per-market output.
+        for market in self.markets.get(traffic_type="freight"):
+            mid = market.id
+            self.input_names[f"rtk_{mid}"] = pd.Series([0.0])
+            for et in energy_types:
+                self.input_names[f"energy_per_rtk_{mid}_{et}"] = pd.Series([0.0])
+                self.input_names[f"rtk_{mid}_{et}_share"] = pd.Series([0.0])
+            self.output_names[f"co2_emissions_{mid}"] = pd.Series([0.0])
+
+        # Mean CO2 emission factors (per energy type, global).
+        for et in energy_types:
+            self.input_names[f"{et}_mean_co2_emission_factor"] = pd.Series([0.0])
+
+        # Aggregate outputs.
+        self.output_names["co2_emissions_passenger"] = pd.Series([0.0])
+        self.output_names["co2_emissions_freight"] = pd.Series([0.0])
+        self.output_names["co2_emissions"] = pd.Series([0.0])
+
+    def compute(self, input_data) -> dict:
+        """
+        CO2 emissions per market and aggregates.
+        """
+        energy_types = ["dropin_fuel", "hydrogen", "electric"]
+
+        # Locally fill incomplete emission factors with zeros so that sums are not nan.
+        co2_emission_factor_by_energy_type = {}
+        for energy_type in energy_types:
+            co2_emission_factor = input_data[f"{energy_type}_mean_co2_emission_factor"]
+            co2_emission_factor.fillna(0, inplace=True)
+            co2_emission_factor_by_energy_type[energy_type] = co2_emission_factor
+
+        load_factor = input_data["load_factor"]
+        output_data = {}
+
+        # Per-passenger-market CO2 emissions.
+        co2_emissions_passenger = None
+        for market in self.markets.get(traffic_type="passenger"):
+            mid = market.id
+            rpk_market = input_data[f"rpk_{mid}"]
+            co2_weighted_energy_intensity_sum = None
+            for energy_type in energy_types:
+                energy_per_ask = input_data[f"energy_per_ask_{mid}_{energy_type}"].fillna(0)
+                ask_share = input_data[f"ask_{mid}_{energy_type}_share"]
+                co2_weighted_energy_intensity = (
+                    ask_share
+                    / 100
+                    * (energy_per_ask * co2_emission_factor_by_energy_type[energy_type])
+                )
+                co2_weighted_energy_intensity_sum = (
+                    co2_weighted_energy_intensity
+                    if co2_weighted_energy_intensity_sum is None
+                    else co2_weighted_energy_intensity_sum + co2_weighted_energy_intensity
+                )
+            co2_emissions_market = (
+                rpk_market / (load_factor / 100) * co2_weighted_energy_intensity_sum * 10 ** (-12)
             )
-            * 10 ** (-12)
-        )
-
-        # Medium range
-        co2_emissions_medium_range = (
-            rpk_medium_range
-            / (load_factor / 100)
-            * (
-                ask_medium_range_dropin_fuel_share
-                / 100
-                * (dropin_fuel_mean_co2_emission_factor * energy_per_ask_medium_range_dropin_fuel)
-                + ask_medium_range_hydrogen_share
-                / 100
-                * (energy_per_ask_medium_range_hydrogen * hydrogen_mean_co2_emission_factor)
-                + ask_medium_range_electric_share
-                / 100
-                * (energy_per_ask_medium_range_electric * electric_mean_co2_emission_factor)
+            output_data[f"co2_emissions_{mid}"] = co2_emissions_market
+            co2_emissions_passenger = (
+                co2_emissions_market
+                if co2_emissions_passenger is None
+                else co2_emissions_passenger + co2_emissions_market
             )
-            * 10 ** (-12)
-        )
 
-        # Long range
-        co2_emissions_long_range = (
-            rpk_long_range
-            / (load_factor / 100)
-            * (
-                ask_long_range_dropin_fuel_share
-                / 100
-                * (dropin_fuel_mean_co2_emission_factor * energy_per_ask_long_range_dropin_fuel)
-                + ask_long_range_hydrogen_share
-                / 100
-                * (energy_per_ask_long_range_hydrogen * hydrogen_mean_co2_emission_factor)
-                + ask_long_range_electric_share
-                / 100
-                * (energy_per_ask_long_range_electric * electric_mean_co2_emission_factor)
+        # Per-freight-market CO2 emissions.
+        co2_emissions_freight = None
+        for market in self.markets.get(traffic_type="freight"):
+            mid = market.id
+            rtk_market = input_data[f"rtk_{mid}"]
+            co2_weighted_energy_intensity_sum = None
+            for energy_type in energy_types:
+                energy_per_rtk = input_data[f"energy_per_rtk_{mid}_{energy_type}"].fillna(0)
+                rtk_share = input_data[f"rtk_{mid}_{energy_type}_share"]
+                co2_weighted_energy_intensity = (
+                    rtk_share
+                    / 100
+                    * (energy_per_rtk * co2_emission_factor_by_energy_type[energy_type])
+                )
+                co2_weighted_energy_intensity_sum = (
+                    co2_weighted_energy_intensity
+                    if co2_weighted_energy_intensity_sum is None
+                    else co2_weighted_energy_intensity_sum + co2_weighted_energy_intensity
+                )
+            co2_emissions_market = rtk_market * co2_weighted_energy_intensity_sum * 10 ** (-12)
+            output_data[f"co2_emissions_{mid}"] = co2_emissions_market
+            co2_emissions_freight = (
+                co2_emissions_market
+                if co2_emissions_freight is None
+                else co2_emissions_freight + co2_emissions_market
             )
-            * 10 ** (-12)
-        )
 
-        # Freight
-        co2_emissions_freight = (
-            rtk
-            * (
-                rtk_dropin_fuel_share
-                / 100
-                * (dropin_fuel_mean_co2_emission_factor * energy_per_rtk_freight_dropin_fuel)
-                + rtk_hydrogen_share
-                / 100
-                * (energy_per_rtk_freight_hydrogen * hydrogen_mean_co2_emission_factor)
-                + rtk_electric_share
-                / 100
-                * (energy_per_rtk_freight_electric * electric_mean_co2_emission_factor)
-            )
-            * 10 ** (-12)
-        )
+        # Defensive defaults if no markets.
+        if co2_emissions_passenger is None:
+            co2_emissions_passenger = pd.Series(0.0, index=self.df.index)
+        if co2_emissions_freight is None:
+            co2_emissions_freight = pd.Series(0.0, index=self.df.index)
 
-        # Passenger
-        co2_emissions_passenger = (
-            co2_emissions_short_range + co2_emissions_medium_range + co2_emissions_long_range
-        )
-
-        # Total: new way to affect without for loops
+        # Update climate DataFrame side-effect (matches legacy behaviour).
         historical_co2_emissions_for_temperature = self.climate_historical_data[:, 1]
         self.df_climate.loc[
             self.climate_historic_start_year : self.historic_start_year - 1, "co2_emissions"
@@ -401,21 +325,14 @@ class CO2Emissions(AeroMAPSModel):
             co2_emissions_passenger + co2_emissions_freight
         )
 
-        self.df["co2_emissions_short_range"] = co2_emissions_short_range
-        self.df["co2_emissions_medium_range"] = co2_emissions_medium_range
-        self.df["co2_emissions_long_range"] = co2_emissions_long_range
-        self.df["co2_emissions_freight"] = co2_emissions_freight
-        self.df["co2_emissions_passenger"] = co2_emissions_passenger
-        co2_emissions = self.df_climate["co2_emissions"]
+        co2_emissions_total = self.df_climate["co2_emissions"]
 
-        return (
-            co2_emissions_short_range,
-            co2_emissions_medium_range,
-            co2_emissions_long_range,
-            co2_emissions_passenger,
-            co2_emissions_freight,
-            co2_emissions,
-        )
+        output_data["co2_emissions_passenger"] = co2_emissions_passenger
+        output_data["co2_emissions_freight"] = co2_emissions_freight
+        output_data["co2_emissions"] = co2_emissions_total
+
+        self._store_outputs(output_data, climate_outputs_keys=["co2_emissions"])
+        return output_data
 
 
 class CumulativeCO2Emissions(AeroMAPSModel):

@@ -14,6 +14,22 @@ from aeromaps.plots.single_scenario_plot import plot_3_x
 from aeromaps.plots.single_scenario_plot import plot_3_y
 
 
+# Hard-coded MACC bar colors for the default passenger markets. Custom market
+# IDs fall back to ``_DEFAULT_AIRCRAFT_COLOR``.
+_MARKET_AIRCRAFT_COLORS = {
+    "short_range": "gold",
+    "medium_range": "goldenrod",
+    "long_range": "darkgoldenrod",
+}
+_DEFAULT_AIRCRAFT_COLOR = "tab:gray"
+
+
+def _aircraft_color(fleet, category_name: str) -> str:
+    """Resolve the MACC bar color for an aircraft from its fleet category name."""
+    market_id = fleet.categories[category_name].market_id
+    return _MARKET_AIRCRAFT_COLORS.get(market_id, _DEFAULT_AIRCRAFT_COLOR)
+
+
 class AnnualMACC(SingleScenarioPlot):
     def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
@@ -115,12 +131,7 @@ class AnnualMACC(SingleScenarioPlot):
                             aircraft_var_name + ":aircraft_generic_specific_carbon_abatement_cost",
                         ]
                     )
-                    if category == "Short Range":
-                        colors.append("gold")
-                    elif category == "Medium Range":
-                        colors.append("goldenrod")
-                    else:
-                        colors.append("darkgoldenrod")
+                    colors.append(_aircraft_color(self.fleet_model.fleet, category))
                     name.append(aircraft_var_name.split(":")[-1])
 
             # continue with generic energy production pathways
@@ -207,8 +218,12 @@ class AnnualMACC(SingleScenarioPlot):
                     el
                     for el in [
                         self.df.loc[year, "aircraft_specific_carbon_abatement_cost_freight_dropin"],
-                        self.df.loc[year, "aircraft_specific_carbon_abatement_cost_freight_hydrogen"],
-                        self.df.loc[year, "aircraft_specific_carbon_abatement_cost_freight_electric"],
+                        self.df.loc[
+                            year, "aircraft_specific_carbon_abatement_cost_freight_hydrogen"
+                        ],
+                        self.df.loc[
+                            year, "aircraft_specific_carbon_abatement_cost_freight_electric"
+                        ],
                         self.df.loc[year, "operations_specific_abatement_cost"],
                         self.df.loc[year, "operations_specific_abatement_cost_freight"],
                         self.df.loc[year, "load_factor_specific_abatement_cost"],
@@ -220,9 +235,15 @@ class AnnualMACC(SingleScenarioPlot):
                 [
                     el
                     for el in [
-                        self.df.loc[year, "aircraft_generic_specific_carbon_abatement_cost_freight_dropin"],
-                        self.df.loc[year, "aircraft_generic_specific_carbon_abatement_cost_freight_hydrogen"],
-                        self.df.loc[year, "aircraft_generic_specific_carbon_abatement_cost_freight_electric"],
+                        self.df.loc[
+                            year, "aircraft_generic_specific_carbon_abatement_cost_freight_dropin"
+                        ],
+                        self.df.loc[
+                            year, "aircraft_generic_specific_carbon_abatement_cost_freight_hydrogen"
+                        ],
+                        self.df.loc[
+                            year, "aircraft_generic_specific_carbon_abatement_cost_freight_electric"
+                        ],
                         self.df.loc[year, "operations_generic_specific_abatement_cost"],
                         self.df.loc[year, "operations_generic_specific_abatement_cost_freight"],
                         self.df.loc[year, "load_factor_generic_specific_abatement_cost"],
@@ -292,8 +313,7 @@ class AnnualMACC(SingleScenarioPlot):
         scc_year = None
         if metric == "specific_carbon_abatement_cost":
             scc_year = scc_start * (
-                (1 + self.parameters["social_discount_rate"])
-                ** (year - self.prospective_years[0])
+                (1 + self.parameters["social_discount_rate"]) ** (year - self.prospective_years[0])
             )
         elif metric == "generic_specific_carbon_abatement_cost":
             scc_year = self.df.loc[year, "exogenous_carbon_price_trajectory"]
@@ -642,12 +662,7 @@ class CumulativeMACC(SingleScenarioPlot):
                 cumcost_list.append(cumcost)
                 discounted_cumcost_list.append(discountedcumcost)
 
-                if category == "Short Range":
-                    colors_list.append("gold")
-                elif category == "Medium Range":
-                    colors_list.append("goldenrod")
-                else:
-                    colors_list.append("darkgoldenrod")
+                colors_list.append(_aircraft_color(self.fleet_model.fleet, category))
                 name_list.append(aircraft_var_name.split(":")[-1])
 
         name_list.extend(
@@ -669,11 +684,19 @@ class CumulativeMACC(SingleScenarioPlot):
             [
                 elt / 1000000
                 for elt in [
-                    self.df.loc[start_year:end_year, "aircraft_carbon_abatement_volume_freight_dropin"].sum(),
-                    self.df.loc[start_year:end_year, "aircraft_carbon_abatement_volume_freight_hydrogen"].sum(),
-                    self.df.loc[start_year:end_year, "aircraft_carbon_abatement_volume_freight_electric"].sum(),
+                    self.df.loc[
+                        start_year:end_year, "aircraft_carbon_abatement_volume_freight_dropin"
+                    ].sum(),
+                    self.df.loc[
+                        start_year:end_year, "aircraft_carbon_abatement_volume_freight_hydrogen"
+                    ].sum(),
+                    self.df.loc[
+                        start_year:end_year, "aircraft_carbon_abatement_volume_freight_electric"
+                    ].sum(),
                     self.df.loc[start_year:end_year, "operations_abatement_effective"].sum(),
-                    self.df.loc[start_year:end_year, "operations_abatement_effective_freight"].sum(),
+                    self.df.loc[
+                        start_year:end_year, "operations_abatement_effective_freight"
+                    ].sum(),
                     self.df.loc[start_year:end_year, "load_factor_abatement_effective"].sum(),
                 ]
             ]
@@ -685,16 +708,28 @@ class CumulativeMACC(SingleScenarioPlot):
                 el
                 for el in [
                     (
-                        self.df.loc[start_year:end_year, "aircraft_carbon_abatement_cost_freight_dropin"]
-                        * self.df.loc[start_year:end_year, "aircraft_carbon_abatement_volume_freight_dropin"]
+                        self.df.loc[
+                            start_year:end_year, "aircraft_carbon_abatement_cost_freight_dropin"
+                        ]
+                        * self.df.loc[
+                            start_year:end_year, "aircraft_carbon_abatement_volume_freight_dropin"
+                        ]
                     ).sum(),
                     (
-                        self.df.loc[start_year:end_year, "aircraft_carbon_abatement_cost_freight_hydrogen"]
-                        * self.df.loc[start_year:end_year, "aircraft_carbon_abatement_volume_freight_hydrogen"]
+                        self.df.loc[
+                            start_year:end_year, "aircraft_carbon_abatement_cost_freight_hydrogen"
+                        ]
+                        * self.df.loc[
+                            start_year:end_year, "aircraft_carbon_abatement_volume_freight_hydrogen"
+                        ]
                     ).sum(),
                     (
-                        self.df.loc[start_year:end_year, "aircraft_carbon_abatement_cost_freight_electric"]
-                        * self.df.loc[start_year:end_year, "aircraft_carbon_abatement_volume_freight_electric"]
+                        self.df.loc[
+                            start_year:end_year, "aircraft_carbon_abatement_cost_freight_electric"
+                        ]
+                        * self.df.loc[
+                            start_year:end_year, "aircraft_carbon_abatement_volume_freight_electric"
+                        ]
                     ).sum(),
                     (
                         self.df.loc[start_year:end_year, "operations_abatement_cost"]
@@ -725,18 +760,30 @@ class CumulativeMACC(SingleScenarioPlot):
                 el
                 for el in [
                     (
-                        self.df.loc[start_year:end_year, "aircraft_carbon_abatement_cost_freight_dropin"]
-                        * self.df.loc[start_year:end_year, "aircraft_carbon_abatement_volume_freight_dropin"]
+                        self.df.loc[
+                            start_year:end_year, "aircraft_carbon_abatement_cost_freight_dropin"
+                        ]
+                        * self.df.loc[
+                            start_year:end_year, "aircraft_carbon_abatement_volume_freight_dropin"
+                        ]
                         / power_series
                     ).sum(),
                     (
-                        self.df.loc[start_year:end_year, "aircraft_carbon_abatement_cost_freight_hydrogen"]
-                        * self.df.loc[start_year:end_year, "aircraft_carbon_abatement_volume_freight_hydrogen"]
+                        self.df.loc[
+                            start_year:end_year, "aircraft_carbon_abatement_cost_freight_hydrogen"
+                        ]
+                        * self.df.loc[
+                            start_year:end_year, "aircraft_carbon_abatement_volume_freight_hydrogen"
+                        ]
                         / power_series
                     ).sum(),
                     (
-                        self.df.loc[start_year:end_year, "aircraft_carbon_abatement_cost_freight_electric"]
-                        * self.df.loc[start_year:end_year, "aircraft_carbon_abatement_volume_freight_electric"]
+                        self.df.loc[
+                            start_year:end_year, "aircraft_carbon_abatement_cost_freight_electric"
+                        ]
+                        * self.df.loc[
+                            start_year:end_year, "aircraft_carbon_abatement_volume_freight_electric"
+                        ]
                         / power_series
                     ).sum(),
                     (
@@ -1090,10 +1137,12 @@ class CumulativeMACC(SingleScenarioPlot):
         self.ax2.xaxis.set_ticks_position("bottom")
 
         self.ax2.set_xlim(
-            self.df.loc[self.prospective_years[-1], "cumulative_co2_emissions_2019technology"] * 1000
+            self.df.loc[self.prospective_years[-1], "cumulative_co2_emissions_2019technology"]
+            * 1000
             - self.ax.get_xlim()[0]
             - cumwidths_effective_neg[-1],
-            self.df.loc[self.prospective_years[-1], "cumulative_co2_emissions_2019technology"] * 1000
+            self.df.loc[self.prospective_years[-1], "cumulative_co2_emissions_2019technology"]
+            * 1000
             - self.ax.get_xlim()[1]
             - cumwidths_effective_neg[-1],
         )
@@ -1107,7 +1156,10 @@ class ScenarioMACC(SingleScenarioPlot):
         figsize = figsize or self._get_default_figsize()
         if fig is None or ax is None:
             fig, (ax, ax_scc) = plt.subplots(
-                2, 1, figsize=figsize, sharex=True,
+                2,
+                1,
+                figsize=figsize,
+                sharex=True,
                 gridspec_kw={"height_ratios": [20, 1]},
             )
         else:
@@ -1207,12 +1259,7 @@ class ScenarioMACC(SingleScenarioPlot):
                             aircraft_var_name + ":aircraft_generic_specific_carbon_abatement_cost",
                         ]
                     )
-                    if category == "Short Range":
-                        colors.append("gold")
-                    elif category == "Medium Range":
-                        colors.append("goldenrod")
-                    else:
-                        colors.append("darkgoldenrod")
+                    colors.append(_aircraft_color(self.fleet_model.fleet, category))
                     name.append(aircraft_var_name.split(":")[-1])
 
             # continue with generic energy production pathways
@@ -1299,8 +1346,12 @@ class ScenarioMACC(SingleScenarioPlot):
                     el
                     for el in [
                         self.df.loc[year, "aircraft_specific_carbon_abatement_cost_freight_dropin"],
-                        self.df.loc[year, "aircraft_specific_carbon_abatement_cost_freight_hydrogen"],
-                        self.df.loc[year, "aircraft_specific_carbon_abatement_cost_freight_electric"],
+                        self.df.loc[
+                            year, "aircraft_specific_carbon_abatement_cost_freight_hydrogen"
+                        ],
+                        self.df.loc[
+                            year, "aircraft_specific_carbon_abatement_cost_freight_electric"
+                        ],
                         self.df.loc[year, "operations_specific_abatement_cost"],
                         self.df.loc[year, "operations_specific_abatement_cost_freight"],
                         self.df.loc[year, "load_factor_specific_abatement_cost"],
@@ -1312,9 +1363,15 @@ class ScenarioMACC(SingleScenarioPlot):
                 [
                     el
                     for el in [
-                        self.df.loc[year, "aircraft_generic_specific_carbon_abatement_cost_freight_dropin"],
-                        self.df.loc[year, "aircraft_generic_specific_carbon_abatement_cost_freight_hydrogen"],
-                        self.df.loc[year, "aircraft_generic_specific_carbon_abatement_cost_freight_electric"],
+                        self.df.loc[
+                            year, "aircraft_generic_specific_carbon_abatement_cost_freight_dropin"
+                        ],
+                        self.df.loc[
+                            year, "aircraft_generic_specific_carbon_abatement_cost_freight_hydrogen"
+                        ],
+                        self.df.loc[
+                            year, "aircraft_generic_specific_carbon_abatement_cost_freight_electric"
+                        ],
                         self.df.loc[year, "operations_generic_specific_abatement_cost"],
                         self.df.loc[year, "operations_generic_specific_abatement_cost_freight"],
                         self.df.loc[year, "load_factor_generic_specific_abatement_cost"],
@@ -1354,23 +1411,26 @@ class ScenarioMACC(SingleScenarioPlot):
 
     def update(self, metric, scc_start):
         self.ax.cla()
+        self.ax_scc.cla()
+        self.ax2.cla()
+        self.dummy_ax.cla()
         scc_list = []
-        years = range(self.prospective_years[0], self.prospective_years[-1] + 1)
 
-        for year in years:
+        for year in range(self.prospective_years[0], self.prospective_years[-1] + 1):
             macc_df = self.macc_dict[year]
 
             macc_df = macc_df.sort_values(by=metric)
 
             macc_df = macc_df.dropna(subset=metric)
 
-            # Plot only made for positive abatements
+            maccneg_df = macc_df[macc_df["abatement_effective"] < 0]
             maccpos_df = macc_df[macc_df["abatement_effective"] > 0]
 
             ##### POS ######
 
             heights_pos = maccpos_df[metric].to_numpy()
             widths_effective_pos = maccpos_df["abatement_effective"].to_numpy()
+
             cumwidths_pos = np.cumsum(widths_effective_pos)
 
             if metric == "specific_carbon_abatement_cost":
@@ -1414,6 +1474,23 @@ class ScenarioMACC(SingleScenarioPlot):
                     width=1,
                 )
 
+            ##### NEG ######
+            heights_neg = maccneg_df[metric].to_numpy()
+            widths_effective_neg = maccneg_df["abatement_effective"].to_numpy()
+
+            cumwidths_neg = np.cumsum(widths_effective_neg)
+
+            for i in range(len(heights_neg)):
+                self.ax.bar(
+                    year,
+                    -widths_effective_neg[i],
+                    color=plt.cm.RdBu_r(norm(heights_neg[i])),
+                    bottom=cumwidths_neg[-1] - cumwidths_neg[i] + widths_effective_neg[i],
+                    edgecolor="black",
+                    hatch="xx",
+                    width=1,
+                )
+
             # colorbar ssc
             if metric != "carbon_abatement_cost":
                 self.ax_scc.set_visible(True)
@@ -1430,12 +1507,18 @@ class ScenarioMACC(SingleScenarioPlot):
                     handles=[
                         mpatches.Patch(facecolor="none", edgecolor="black", hatch=".."),
                         mpatches.Patch(facecolor="none", edgecolor="black"),
+                        mpatches.Patch(facecolor="none", edgecolor="black", hatch="xx"),
                     ],
-                    labels=["Above SCC", "Below or Equal to SCC"],
+                    labels=["Above SCC", "Below or Equal to SCC", "Extra Emissions"],
                 )
             else:
                 self.ax_scc.set_visible(False)
-                self.ax.legend().set_visible(False)
+                self.ax.legend(
+                    handles=[
+                        mpatches.Patch(facecolor="none", edgecolor="black", hatch="xx"),
+                    ],
+                    labels=["Extra Emissions"],
+                )
 
         # Create a ScalarMappable to display the colormap as a legend
 
@@ -1556,12 +1639,7 @@ class ShadowCarbonPrice(SingleScenarioPlot):
                             aircraft_var_name + ":aircraft_generic_specific_carbon_abatement_cost",
                         ]
                     )
-                    if category == "Short Range":
-                        colors.append("gold")
-                    elif category == "Medium Range":
-                        colors.append("goldenrod")
-                    else:
-                        colors.append("darkgoldenrod")
+                    colors.append(_aircraft_color(self.fleet_model.fleet, category))
                     name.append(aircraft_var_name.split(":")[-1])
 
             # continue with generic energy production pathways
@@ -1648,8 +1726,12 @@ class ShadowCarbonPrice(SingleScenarioPlot):
                     el
                     for el in [
                         self.df.loc[year, "aircraft_specific_carbon_abatement_cost_freight_dropin"],
-                        self.df.loc[year, "aircraft_specific_carbon_abatement_cost_freight_hydrogen"],
-                        self.df.loc[year, "aircraft_specific_carbon_abatement_cost_freight_electric"],
+                        self.df.loc[
+                            year, "aircraft_specific_carbon_abatement_cost_freight_hydrogen"
+                        ],
+                        self.df.loc[
+                            year, "aircraft_specific_carbon_abatement_cost_freight_electric"
+                        ],
                         self.df.loc[year, "operations_specific_abatement_cost"],
                         self.df.loc[year, "operations_specific_abatement_cost_freight"],
                         self.df.loc[year, "load_factor_specific_abatement_cost"],
@@ -1661,9 +1743,15 @@ class ShadowCarbonPrice(SingleScenarioPlot):
                 [
                     el
                     for el in [
-                        self.df.loc[year, "aircraft_generic_specific_carbon_abatement_cost_freight_dropin"],
-                        self.df.loc[year, "aircraft_generic_specific_carbon_abatement_cost_freight_hydrogen"],
-                        self.df.loc[year, "aircraft_generic_specific_carbon_abatement_cost_freight_electric"],
+                        self.df.loc[
+                            year, "aircraft_generic_specific_carbon_abatement_cost_freight_dropin"
+                        ],
+                        self.df.loc[
+                            year, "aircraft_generic_specific_carbon_abatement_cost_freight_hydrogen"
+                        ],
+                        self.df.loc[
+                            year, "aircraft_generic_specific_carbon_abatement_cost_freight_electric"
+                        ],
                         self.df.loc[year, "operations_generic_specific_abatement_cost"],
                         self.df.loc[year, "operations_generic_specific_abatement_cost_freight"],
                         self.df.loc[year, "load_factor_generic_specific_abatement_cost"],
@@ -1913,8 +2001,12 @@ class AnnualMACCSimple(SingleScenarioPlot):
                     for el in [
                         self.df.loc[year, "aircraft_specific_carbon_abatement_cost_passenger_mean"],
                         self.df.loc[year, "aircraft_specific_carbon_abatement_cost_freight_dropin"],
-                        self.df.loc[year, "aircraft_specific_carbon_abatement_cost_freight_hydrogen"],
-                        self.df.loc[year, "aircraft_specific_carbon_abatement_cost_freight_electric"],
+                        self.df.loc[
+                            year, "aircraft_specific_carbon_abatement_cost_freight_hydrogen"
+                        ],
+                        self.df.loc[
+                            year, "aircraft_specific_carbon_abatement_cost_freight_electric"
+                        ],
                         self.df.loc[year, "operations_specific_abatement_cost"],
                         self.df.loc[year, "operations_specific_abatement_cost_freight"],
                         self.df.loc[year, "load_factor_specific_abatement_cost"],
@@ -1926,10 +2018,18 @@ class AnnualMACCSimple(SingleScenarioPlot):
                 [
                     el
                     for el in [
-                        self.df.loc[year, "aircraft_generic_specific_carbon_abatement_cost_passenger_mean"],
-                        self.df.loc[year, "aircraft_generic_specific_carbon_abatement_cost_freight_dropin"],
-                        self.df.loc[year, "aircraft_generic_specific_carbon_abatement_cost_freight_hydrogen"],
-                        self.df.loc[year, "aircraft_generic_specific_carbon_abatement_cost_freight_electric"],
+                        self.df.loc[
+                            year, "aircraft_generic_specific_carbon_abatement_cost_passenger_mean"
+                        ],
+                        self.df.loc[
+                            year, "aircraft_generic_specific_carbon_abatement_cost_freight_dropin"
+                        ],
+                        self.df.loc[
+                            year, "aircraft_generic_specific_carbon_abatement_cost_freight_hydrogen"
+                        ],
+                        self.df.loc[
+                            year, "aircraft_generic_specific_carbon_abatement_cost_freight_electric"
+                        ],
                         self.df.loc[year, "operations_generic_specific_abatement_cost"],
                         self.df.loc[year, "operations_generic_specific_abatement_cost_freight"],
                         self.df.loc[year, "load_factor_generic_specific_abatement_cost"],
@@ -2033,8 +2133,7 @@ class AnnualMACCSimple(SingleScenarioPlot):
         scc_year = None
         if metric == "specific_carbon_abatement_cost":
             scc_year = scc_start * (
-                (1 + self.parameters["social_discount_rate"])
-                ** (year - self.prospective_years[0])
+                (1 + self.parameters["social_discount_rate"]) ** (year - self.prospective_years[0])
             )
         elif metric == "generic_specific_carbon_abatement_cost":
             scc_year = self.df.loc[year, "exogenous_carbon_price_trajectory"]
@@ -2404,8 +2503,12 @@ class ShadowCarbonPriceSimple(SingleScenarioPlot):
                     for el in [
                         self.df.loc[year, "aircraft_specific_carbon_abatement_cost_passenger_mean"],
                         self.df.loc[year, "aircraft_specific_carbon_abatement_cost_freight_dropin"],
-                        self.df.loc[year, "aircraft_specific_carbon_abatement_cost_freight_hydrogen"],
-                        self.df.loc[year, "aircraft_specific_carbon_abatement_cost_freight_electric"],
+                        self.df.loc[
+                            year, "aircraft_specific_carbon_abatement_cost_freight_hydrogen"
+                        ],
+                        self.df.loc[
+                            year, "aircraft_specific_carbon_abatement_cost_freight_electric"
+                        ],
                         self.df.loc[year, "operations_specific_abatement_cost"],
                         self.df.loc[year, "operations_specific_abatement_cost_freight"],
                         self.df.loc[year, "load_factor_specific_abatement_cost"],
@@ -2417,10 +2520,18 @@ class ShadowCarbonPriceSimple(SingleScenarioPlot):
                 [
                     el
                     for el in [
-                        self.df.loc[year, "aircraft_generic_specific_carbon_abatement_cost_passenger_mean"],
-                        self.df.loc[year, "aircraft_generic_specific_carbon_abatement_cost_freight_dropin"],
-                        self.df.loc[year, "aircraft_generic_specific_carbon_abatement_cost_freight_hydrogen"],
-                        self.df.loc[year, "aircraft_generic_specific_carbon_abatement_cost_freight_electric"],
+                        self.df.loc[
+                            year, "aircraft_generic_specific_carbon_abatement_cost_passenger_mean"
+                        ],
+                        self.df.loc[
+                            year, "aircraft_generic_specific_carbon_abatement_cost_freight_dropin"
+                        ],
+                        self.df.loc[
+                            year, "aircraft_generic_specific_carbon_abatement_cost_freight_hydrogen"
+                        ],
+                        self.df.loc[
+                            year, "aircraft_generic_specific_carbon_abatement_cost_freight_electric"
+                        ],
                         self.df.loc[year, "operations_generic_specific_abatement_cost"],
                         self.df.loc[year, "operations_generic_specific_abatement_cost_freight"],
                         self.df.loc[year, "load_factor_generic_specific_abatement_cost"],
