@@ -116,6 +116,8 @@ class AeroMAPSModel(object):
         self.climate_historic_start_year = self.parameters.climate_historic_start_year
         self.historic_start_year = self.parameters.historic_start_year
         self.prospection_start_year = self.parameters.prospection_start_year
+        # Initialisation of last_historical_year is based on the assumption that the year before the prospection start year is the last historical year.
+        self.last_historical_year = self.parameters.prospection_start_year - 1
         self.end_year = self.parameters.end_year
         self.df: pd.DataFrame = pd.DataFrame(
             index=range(self.historic_start_year, self.end_year + 1)
