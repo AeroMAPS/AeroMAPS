@@ -111,8 +111,11 @@ class LoadFactorMarket(AeroMAPSModel):
         for k in range(self.prospection_start_year, self.end_year + 1):
             self.df.loc[k, col] = a * (k - lhy) ** 2 + b * (k - lhy) + load_factor_lhy
 
-        # Covid-19 : à refaire proprement
-        self.df.loc[2020, col] = covid_2020
+        # Covid-19 : à refaire proprement. Only applied when 2020 is in the
+        # prospective window; for prospection_start_year > 2020 the observed
+        # 2020 drop is expected to be already baked into the historic init data.
+        if self.prospection_start_year <= 2020:
+            self.df.loc[2020, col] = covid_2020
 
         output_data = {col: self.df[col]}
         self._store_outputs(output_data)

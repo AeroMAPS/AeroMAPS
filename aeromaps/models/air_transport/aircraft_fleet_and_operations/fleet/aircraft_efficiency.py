@@ -160,9 +160,10 @@ class PassengerAircraftEfficiencySimpleShares(AeroMAPSModel):
                     1 - gain.loc[k] / 100
                 )
 
-            self.df.loc[2020, dropin_col] = self.df.loc[self.last_historical_year, dropin_col] * (
-                1 + covid_increase / 100
-            )
+            if self.prospection_start_year <= 2020:
+                self.df.loc[2020, dropin_col] = self.df.loc[
+                    self.last_historical_year, dropin_col
+                ] * (1 + covid_increase / 100)
 
             dropin_series = self.df[dropin_col]
 
@@ -514,9 +515,10 @@ class PassengerAircraftEfficiencyComplex(AeroMAPSModel):
                 fleet_energy_per_ask_without_operations_electric.loc[idx_proj]
             )
 
-            self.df.loc[2020, energy_per_ask_without_operations_dropin_fuel_col] = self.df.loc[
-                self.last_historical_year, energy_per_ask_without_operations_dropin_fuel_col
-            ] * (1 + covid_increase / 100)
+            if self.prospection_start_year <= 2020:
+                self.df.loc[2020, energy_per_ask_without_operations_dropin_fuel_col] = self.df.loc[
+                    self.last_historical_year, energy_per_ask_without_operations_dropin_fuel_col
+                ] * (1 + covid_increase / 100)
 
             self.df.loc[idx_proj, f"ask_{mid}_dropin_fuel_share"] = fleet_ask_dropin_fuel_share
             self.df.loc[idx_proj, f"ask_{mid}_hydrogen_share"] = fleet_ask_hydrogen_share
@@ -915,13 +917,13 @@ class FreightAircraftEfficiency(AeroMAPSModel):
                     ] = init_energy_per_rtk_without_operations_dropin_fuel
 
             # Covid: reset 2020 value
-            self.df.loc[2020, f"energy_per_rtk_without_operations_{freight_mid}_dropin_fuel"] = (
+            if self.prospection_start_year <= 2020:
                 self.df.loc[
+                    2020, f"energy_per_rtk_without_operations_{freight_mid}_dropin_fuel"
+                ] = self.df.loc[
                     self.last_historical_year,
                     f"energy_per_rtk_without_operations_{freight_mid}_dropin_fuel",
-                ]
-                * (1 + covid_energy_intensity_per_ask_increase_2020 / 100)
-            )
+                ] * (1 + covid_energy_intensity_per_ask_increase_2020 / 100)
 
             energy_per_rtk_without_operations_dropin_fuel = self.df[
                 f"energy_per_rtk_without_operations_{freight_mid}_dropin_fuel"
@@ -1156,9 +1158,10 @@ class FreightAircraftEfficiencySimple(AeroMAPSModel):
                 )
 
             # COVID: reset 2020 value.
-            self.df.loc[2020, dropin_col] = self.df.loc[self.last_historical_year, dropin_col] * (
-                1 + covid_increase / 100
-            )
+            if self.prospection_start_year <= 2020:
+                self.df.loc[2020, dropin_col] = self.df.loc[
+                    self.last_historical_year, dropin_col
+                ] * (1 + covid_increase / 100)
 
             energy_per_rtk_dropin = self.df[dropin_col]
 
