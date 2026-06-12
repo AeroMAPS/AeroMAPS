@@ -1,12 +1,12 @@
 {
     "other_float_data": {
-        "short_range_energy_share_2019": 8.696701354861474,
-        "medium_range_energy_share_2019": 33.71076508592048,
-        "long_range_energy_share_2019": 42.59253355921805,
-        "short_range_rpk_share_2019": 8.815049371339589,
-        "medium_range_rpk_share_2019": 43.03137398989196,
-        "long_range_rpk_share_2019": 48.15357663876846,
-        "freight_energy_share_2019": 15.0,
+        "short_range_energy_share_last_historical_year": 8.696701354861474,
+        "medium_range_energy_share_last_historical_year": 33.71076508592048,
+        "long_range_energy_share_last_historical_year": 42.59253355921805,
+        "short_range_rpk_share_last_historical_year": 8.815049371339589,
+        "medium_range_rpk_share_last_historical_year": 43.03137398989196,
+        "long_range_rpk_share_last_historical_year": 48.15357663876846,
+        "freight_energy_share_last_historical_year": 15.0,
         "commercial_aviation_coefficient": 1
     },
     "other_vector_data": {
