@@ -68,7 +68,7 @@ The parameter names `covid_load_factor_2020`, `covid_energy_intensity_per_ask_in
 
 ### Phase D — Rename `*_2019` parameters
 
-Rename parameters whose `_2019` suffix encodes "last historical year" (not a real-world 2019 event). Keep backward-compat aliases so existing user configs still load.
+Rename parameters whose `_2019` suffix encodes "last historical year" (not a real-world 2019 event). **No backward-compat aliases** — old configs are made to fail loudly via the rename guard (Phase E), not silently copied onto the new name.
 
 Renames:
 
@@ -81,9 +81,10 @@ Renames:
 | `<mid>_rpk_share_2019` (markets.yaml) | `<mid>_rpk_share_last_historical_year` |
 | `<mid>_energy_share_2019` (markets.yaml) | `<mid>_energy_share_last_historical_year` |
 | `freight_energy_share_2019` | `freight_energy_share_last_historical_year` |
+| `gdp_per_capita_2019` (elasticity models) | `gdp_per_capita_last_historical_year` |
 | `total_seats_2019` (partitioning helper arg) | `total_seats_last_historical_year` |
 
-Compatibility shim: in [aeromaps/core/process.py](aeromaps/core/process.py) `_initialize_inputs`, after the JSON load, walk a small `LEGACY_NAME_ALIASES` dict and copy any old-named attribute onto the new name (logging a one-time deprecation warning per alias). This keeps every existing tutorial / user JSON / `markets.yaml` working unchanged.
+> **Why no alias shim.** The input loader ([parameters.py:38](aeromaps/models/parameters.py#L38) `from_dict`) blindly `setattr`s every JSON/YAML key with no unknown-key validation, and models read these names with hard accesses against a default-populated `input_names`. So a bare rename would make a stale `_2019` key resolve silently to its default (e.g. share → 0%, or a NaN cascade) — wrong numbers, no crash. The Phase E guard converts that into a loud, self-documenting error instead. (Decision: Tier 1 raise-guard over a perpetual alias dict — same line count, no false-positive surface, no allowlist to maintain.)
 
 Files touched by the rename (consumer side):
 - [aeromaps/resources/data/parameters.json](aeromaps/resources/data/parameters.json) — rename keys.
@@ -94,7 +95,42 @@ Files touched by the rename (consumer side):
 
 **COVID names are NOT renamed.** `covid_load_factor_2020`, `covid_energy_intensity_per_ask_increase_2020`, `covid_energy_intensity_per_rtk_increase_2020` describe a fixed historical event.
 
-### Phase E — Input-length validation
+### Phase E — Input validation (rename guard + length check)
+
+#### E1 — Renamed-input guard (replaces the alias shim)
+
+Make stale `_2019` configs fail loudly instead of resolving to silent defaults. In [aeromaps/core/process.py](aeromaps/core/process.py), define two small tables near the top of the module:
+
+```python
+# TODO(flex-start-year): delete this guard once downstream configs are migrated
+# and a release cycle has passed (target: remove after 2026-12, or once no
+# in-repo config and no known external scenario still carries a `_2019` key).
+RENAMED_INPUTS = {
+    "world_co2_emissions_2019": "world_co2_emissions_last_historical_year",
+    "carbon_offset_baseline_level_vs_2019_reference_periods":
+        "carbon_offset_baseline_level_vs_last_historical_year_reference_periods",
+    "carbon_offset_baseline_level_vs_2019_reference_periods_values":
+        "carbon_offset_baseline_level_vs_last_historical_year_reference_periods_values",
+    "freight_energy_share_2019": "freight_energy_share_last_historical_year",
+    "gdp_per_capita_2019": "gdp_per_capita_last_historical_year",
+}
+RENAMED_INPUT_SUFFIXES = {  # matched against any `<mid>_…` flattened key
+    "_rpk_share_2019": "_rpk_share_last_historical_year",
+    "_energy_share_2019": "_energy_share_last_historical_year",
+}
+```
+
+In `_initialize_inputs`, after each user surface is loaded but **before** it is applied, scan the *raw user-supplied keys* (the `merged_data` dict at [process.py:1700](aeromaps/core/process.py#L1700), the single-file path at [:1716](aeromaps/core/process.py#L1716), and the flattened `markets.yaml` leaves). For any key matching `RENAMED_INPUTS` or ending in a `RENAMED_INPUT_SUFFIXES` entry, raise a `ValueError` naming the old key and its replacement, e.g.:
+
+```
+ValueError: input 'short_range_rpk_share_2019' was renamed to
+'short_range_rpk_share_last_historical_year' (prospection_start_year is now flexible).
+Update your config — no backward-compat alias is provided.
+```
+
+Scan only the keys the user actually supplied (not `parameters.__dict__`), so derived/intermediate attributes can't false-positive. This catches exactly the rename breakage; it is **not** a general unknown-key validator (that was the rejected Tier 2 — revisit separately if config-typo safety is ever wanted).
+
+#### E2 — Input-length validation
 
 Add a clear error when `*_init` vector lengths don't match `prospection_start_year - historic_start_year`.
 
@@ -116,11 +152,11 @@ Same check on the vector inputs path in [process.py:1716-1733](aeromaps/core/pro
    - No exceptions at load time (Phase E gate passes).
    - `load_factor.loc[2020]` is taken from the user's historic `rpk_init/ask_init`, not from `covid_load_factor_2020` (Phase C guard).
    - `carbon_offset_baseline_level_vs_last_historical_year.loc[2024]` is the offset baseline (Phase B/D).
-4. **Legacy-config smoke test.** Run the `01_basic` tutorial after Phase D with an unmodified `parameters.json` (the old `_2019` names) to confirm the alias shim fires and produces identical outputs.
+4. **Rename-guard smoke test.** Feed a config carrying an old `_2019` key (e.g. `short_range_rpk_share_2019`) and confirm `AeroMAPSProcess` raises the Phase E1 `ValueError` naming the new key — i.e. the failure is loud, not silent. Then confirm the migrated config (new names) produces outputs identical to the pre-rename baseline.
 
 ## Critical files (modify list)
 
-- [aeromaps/core/process.py](aeromaps/core/process.py) — `last_historical_year` derivation + legacy-name alias shim.
+- [aeromaps/core/process.py](aeromaps/core/process.py) — `last_historical_year` derivation + renamed-input guard (Phase E1, marked for removal once configs migrate).
 - [aeromaps/models/base.py](aeromaps/models/base.py) — propagate `self.last_historical_year` to all models.
 - [aeromaps/models/air_transport/aircraft_fleet_and_operations/load_factor/load_factor.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/load_factor/load_factor.py) — pivot generalization + COVID guard.
 - [aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/aircraft_efficiency.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/aircraft_efficiency.py) — heaviest file (Phase B + C combined).
