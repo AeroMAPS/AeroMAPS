@@ -1,0 +1,124 @@
+# =============================================================================
+# AeroMAPS — Annotated example entry configuration
+# =============================================================================
+# Copy this file into your study folder, rename it (e.g. config.yaml) and keep
+# only the keys you actually want to change.
+#
+# Usage:
+#   from aeromaps import create_process
+#   process = create_process(configuration_file="config.yaml")
+#   process.compute()
+#
+# Loading rules (see docs/books/configuration.md for the full reference):
+#   * DEEP MERGE  — this file is merged ON TOP of the packaged default config,
+#                   so omitted keys keep their default values.
+#   * RELATIVE PATHS are resolved against THIS file's directory (not the CWD).
+#   * The literal value `default` resolves a model data file from the installed
+#     package instead of relative to this file (handy for pip installs).
+#   * LISTS REPLACE, they do not extend: a `models.standards:` block here fully
+#     replaces the default list — name every bundle you want.
+# =============================================================================
+
+data:
+  inputs:
+    # Scenario parameters: scalars and year-indexed vectors.
+    json_inputs_file: "./parameters.json"
+
+    # Optional: metadata (units/descriptions) for the inputs, used for display.
+    csv_data_information_file: "./data_information.csv"
+
+    # Optional: year-indexed inputs to partition a global scenario into a
+    # sub-scope (region, segment...). Omit for a plain global run.
+    partitioning_data_file: "./partitioning_inputs.json"
+
+    # Optional: historical temperature CSV. Falls back to the packaged dataset.
+    # partitioning_climate_data_file: "./temperature_historical_dataset.csv"
+
+  outputs:
+    json_outputs_file: "./outputs.json"   # written by process.write_json()
+    excel_outputs_file: "./data.xlsx"      # written by process.write_excel()
+
+models:
+  # ---------------------------------------------------------------------------
+  # Model bundles to load. Each name must be a `models_*` dict defined in
+  # aeromaps/core/models.py. An unknown name raises a ValueError listing the
+  # available bundles. NOTE: this list REPLACES the default — list all you need.
+  #
+  # Keep efficiency / operation-cost bundles consistent with the `fleet` block:
+  #   * top-down  → trend-based efficiency, no explicit fleet needed
+  #   * bottom-up → requires the `fleet` block below
+  # ---------------------------------------------------------------------------
+  standards:
+    - models_traffic                       # air-traffic demand (RPK/RTK/ASK)
+    - models_efficiency_top_down           # or models_efficiency_bottom_up
+    - models_energy_without_fuel_effect    # or models_energy_with_fuel_effect
+    - models_offset                        # carbon offsetting
+    - models_emissions                     # CO2 and non-CO2 emissions
+    # - models_sustainability              # carbon-budget assessment
+    - models_energy_cost
+    - models_operation_cost_top_down       # or models_operation_cost_bottom_up
+    # - models_production_cost
+    # - models_abatements_cost
+
+  # ---------------------------------------------------------------------------
+  # Per-model data files. A model is initialised ONLY if its block is present
+  # here — remove a block to switch that model off. Each path may be:
+  #   "./relative/path.yaml"  |  "/absolute/path.yaml"  |  default
+  # ---------------------------------------------------------------------------
+  climate:
+    # FaIR (default), GWP*, IPCC or LWE — see default_climate_models/.
+    climate_model_data_file: "./default_climate_models/climate_model_fair.yaml"
+
+  # Bottom-up fleet — only needed with a bottom-up efficiency bundle above.
+  # fleet:
+  #   aircraft_inventory_model_data_file: "./default_fleet/aircraft_inventory.yaml"
+  #   fleet_model_data_file: "./default_fleet/fleet.yaml"
+
+  # Generic energy model (fuel pathways / resources / processes). Each file
+  # ships with a fully annotated example block at its top.
+  energy:
+    energy_carriers_model_data_file: "./default_energy_carriers/energy_carriers_data.yaml"
+    resources_model_data_file: "./default_energy_carriers/resources_data.yaml"
+    processes_model_data_file: "./default_energy_carriers/processes_data.yaml"
+
+  # Life Cycle Assessment — optional.
+  #   .json  → built-in default LCA model
+  #   .yaml  → custom LCA model (needs: pip install aeromaps[lca])
+  #   "#tmp" → reuse the model compiled earlier in the same session (faster)
+  # life_cycle_assessment:
+  #   lca_model_data_file: "./default_lca/default_lca_model.json"
+  #   split_by: phase          # optional grouping of results
+  #   # methods: [ ... ]       # optional LCIA methods (default model only)
+
+  # ---------------------------------------------------------------------------
+  # Custom models loaded from external Python files. Path is relative to this
+  # file; "::ClassName" is optional (defaults to CamelCase of the key).
+  # ---------------------------------------------------------------------------
+  # customs:
+  #   my_custom_model: "./models/my_model.py::MyModelClass"
+  #   another_model: "./models/another.py"   # class inferred as AnotherModel
+
+# =============================================================================
+# Multi-region studies (use create_process / MultiRegionalProcess)
+# -----------------------------------------------------------------------------
+# Add a top-level `regionalisation` block. Each region points to its own
+# standalone entry config (same structure as this file). See tutorial 11.
+# =============================================================================
+# regionalisation:
+#   execution_mode: "separate_processes"   # or "unified_mda" (coupled regions)
+#   global_namespace: "overall"            # prefix for aggregated outputs
+#   regions:
+#     EU_DOM:
+#       config_file: "data/region_eu_dom/config.yaml"
+#     EU_INT:
+#       config_file: "data/region_eu_int/config.yaml"
+#   aggregation:
+#     sum:                                 # outputs summed across regions
+#       - co2_emissions_including_energy
+#       - rpk
+#       - ask
+#     weighted_average:                    # outputs averaged across regions
+#       - variable: load_factor
+#         weight_by: ask
+#   # top_level_models:                    # optional models on aggregated data
+#   #   standards: [ ... ]
