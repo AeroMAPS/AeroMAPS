@@ -50,7 +50,11 @@ config.yaml  (entry config)
 
 ## 2. Loading semantics (read this first)
 
-These three behaviours are the source of most confusion. They are implemented in
+These three behaviours are not obvious from a config file alone, yet they
+determine where every value ultimately comes from: your file is merged onto a
+packaged default, relative paths resolve against the config file (not the
+working directory), and the literal `default` keyword switches resolution to
+the installed package. They are implemented in
 [`AeroMAPSProcess`](../api/aeromaps.core.process.md).
 
 ### 2.1 Deep merge onto the packaged default
