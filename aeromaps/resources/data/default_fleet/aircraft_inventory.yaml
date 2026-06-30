@@ -1,9 +1,41 @@
+# =============================================================================
+# AeroMAPS — Aircraft inventory (bottom-up fleet model)
+# =============================================================================
+# Referenced from the entry config as:
+#   models.fleet.aircraft_inventory_model_data_file
+# Defines every aircraft ID used by fleet.yaml. Two top-level lists:
+#
+#   reference_aircraft : in-service baselines (the "old"/"recent" refs that each
+#                        subcategory benchmarks against). Their performance is
+#                        given in ABSOLUTE terms (e.g. energy_per_ask in MJ/ASK).
+#   aircraft           : future aircraft. Their performance is given RELATIVE to
+#                        a reference aircraft, as *_evolution percentages.
+#
+# Absolute fields (reference_aircraft):
+#   energy_per_ask        energy consumption per seat-km [MJ/ASK]
+#   emission_index_nox    NOx emission index [kg/ASK]
+#   emission_index_soot   soot emission index [kg/ASK]
+#   doc_non_energy_base   base non-energy direct operating cost [€/ASK]
+#   entry_into_service_year [yr]   cruise_altitude [m]   ask_year [ASK/yr]
+#   rc_cost  recurring (per-unit) cost [€]   nrc_cost  development cost [€]
+#   oew      operational empty weight [t]
+#
+# Relative fields (aircraft) — % change vs the linked reference_aircraft:
+#   consumption_evolution, nox_evolution, soot_evolution, doc_non_energy_evolution
+#   hybridization_factor  0 (conventional) .. 1 (fully electric) [-]
+#   energy_type           DROP_IN_FUEL | HYDROGEN | ELECTRIC | HYBRID_ELECTRIC
+#   (entry_into_service_year, cruise_altitude, ask_year, rc_cost, nrc_cost, oew
+#    keep the same meaning/units as above)
+#
+# See docs/books/configuration.md for the full reference.
+# =============================================================================
+
 reference_aircraft:
-  - id: sr_conventional_nb_old
+  - id: sr_conventional_nb_old        # referenced as old_ref/recent_ref in fleet.yaml
     name: "SR conventional narrow-body old"
     parameters:
       entry_into_service_year: 1970.0
-      energy_per_ask: 1.2472568306010927
+      energy_per_ask: 1.2472568306010927  # MJ/ASK (absolute)
       emission_index_nox: 0.01514
       emission_index_soot: 0.00003
       doc_non_energy_base: 0.048375
@@ -106,13 +138,13 @@ reference_aircraft:
       oew: 129.0
 
 aircraft:
-  - id: sr_nb_2035
+  - id: sr_nb_2035                    # referenced from a subcategory's `aircraft` list in fleet.yaml
     name: "New Short-range Narrow-body 1"
-    energy_type: DROP_IN_FUEL
-    reference_aircraft: sr_conventional_nb_recent
+    energy_type: DROP_IN_FUEL         # DROP_IN_FUEL | HYDROGEN | ELECTRIC | HYBRID_ELECTRIC
+    reference_aircraft: sr_conventional_nb_recent  # baseline for the *_evolution % below (optional)
     parameters:
       entry_into_service_year: 2035
-      consumption_evolution: -15.0
+      consumption_evolution: -15.0    # % change vs reference (negative = improvement)
       nox_evolution: 0.0
       soot_evolution: 0.0
       doc_non_energy_evolution: 0.0
