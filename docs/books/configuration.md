@@ -146,7 +146,7 @@ Commonly used bundles:
 |---|---|
 | `models_traffic` | Air-traffic demand (RPK/RTK/ASK). |
 | `models_traffic_constant_elasticities` / `models_traffic_cost_feedback` | Variants with price-elastic demand. |
-| `models_efficiency_top_down` / `models_efficiency_bottom_up` | Aircraft efficiency, top-down (trend) vs bottom-up (explicit fleet). |
+| `models_efficiency_top_down` / `models_efficiency_bottom_up` | Aircraft efficiency, top-down (aggregated fleet-wise figures) vs bottom-up (explicit per-aircraft fleet with market shares). |
 | `models_energy_without_fuel_effect` / `models_energy_with_fuel_effect` | Energy consumption models. |
 | `models_emissions` | CO₂ and non-CO₂ emissions. |
 | `models_offset` | Carbon offsetting. |
