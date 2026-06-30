@@ -151,7 +151,8 @@ Commonly used bundles:
 | `models_emissions` | CO₂ and non-CO₂ emissions. |
 | `models_offset` | Carbon offsetting. |
 | `models_sustainability` | Sustainability / carbon-budget assessment. |
-| `models_energy_cost`, `models_operation_cost_top_down` / `_bottom_up`, `models_production_cost`, `models_abatements_cost` | Cost models. |
+| `models_operation_cost_top_down` / `models_operation_cost_bottom_up` | Operation cost, top-down (aggregated cost interpolated from data) vs bottom-up (plant-specific cost estimated based on CAPEX and OPEX). |
+| `models_energy_cost`, `models_production_cost`, `models_abatements_cost` | Other cost models. |
 
 Convenience aggregates `default_models_top_down` and `default_models_bottom_up`
 bundle a coherent full set. Choosing the *top-down* vs *bottom-up* efficiency and
