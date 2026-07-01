@@ -358,12 +358,14 @@ def market_process(
     delivery_params = future_ac_carac[
         ["intro_year", "production_duration", "renewal_rate", "time_to_market", "seats"]
     ].values
+    n_mod = yearly_traffic.shape[0] #parameter to fix the limit of the reference traffic year when applying a renewal rate.
     for ac in range(n_new_ac):
         eis = (delivery_params[ac, 0] - 2025).astype(int)
         duration = delivery_params[ac, 1].astype(int)
         time_to_market = delivery_params[ac, 3]
+
         prod_volume = (
-            yearly_traffic[eis]
+            yearly_traffic[min(eis+duration, n_mod-1)]
             * delivery_params[ac, 2]
             / distance_per_aircraft
             / delivery_params[ac, 4]

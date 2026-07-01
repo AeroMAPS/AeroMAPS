@@ -6,7 +6,7 @@ markets:
         production_duration: 20
         energy_efficiency: 1.0
         seats: 80
-        renewal_rate: 0.6
+        renewal_rate: 1
         time_to_market: 8
         ret_year_delay: 0
       - name: "final_gen_TP"
@@ -77,31 +77,31 @@ markets:
         production_duration: 20
         energy_efficiency: 0.8
         seats: 280
-        renewal_rate: 0.4
-        time_to_market: 8
+        renewal_rate: 0.6
+        time_to_market: 12
         ret_year_delay: 0
       - name: "new_gen_WB_LR"
         intro_year: 2030
         production_duration: 20
         energy_efficiency: 0.8
         seats: 400
-        renewal_rate: 0.3
-        time_to_market: 8
+        renewal_rate: 0.4
+        time_to_market: 12
         ret_year_delay: 0
       - name: "final_gen_WB_MR"
         intro_year: 2050
         production_duration: 30
         energy_efficiency: 0.4
         seats: 280
-        renewal_rate: 0.4
-        time_to_market: 10
+        renewal_rate: 0.6
+        time_to_market: 12
         ret_year_delay: 0
       - name: "final_gen_WB_LR"
         intro_year: 2045
         production_duration: 30
         energy_efficiency: 0.6
         seats: 400
-        renewal_rate: 0.3
-        time_to_market: 10
+        renewal_rate: 0.4
+        time_to_market: 12
         ret_year_delay: 0
       

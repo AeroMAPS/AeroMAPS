@@ -47,11 +47,13 @@ markets:
     reference_growth:
     - year: 2035
       rate : 0.01
-    - year: 2037
-      rate : -0.15
-    - year: 2040
-      rate : 0.1
-    - year : 2050
-      rate: 0.01
+    - year : 2038
+      rate: 0.02
+    - year : 2039
+      rate: -0.2
+    - year: 2044
+      rate : 0.071
+    - year: 2050
+      rate: 0.02
     - year : 2071
       rate: 0
