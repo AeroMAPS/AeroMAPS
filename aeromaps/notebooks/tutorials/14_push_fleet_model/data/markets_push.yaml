@@ -131,7 +131,7 @@ defaults:
 # costs.doc_non_energy_per_ask_dropin_fuel_init values are PLACEHOLDERS reused
 # from the default per-range markets (not yet calibrated per push segment).
 
-turboprop:  # TP — Paco push segment 'TP'
+TP:  # Paco push segment 'TP' — id == engine segment label
   name: "Turboprop"
   traffic_type: passenger
   traffic_unit: RPK
@@ -149,7 +149,7 @@ turboprop:  # TP — Paco push segment 'TP'
     costs:
       doc_non_energy_per_ask_dropin_fuel_init: 0.048375  # placeholder
 
-regional_jet:  # RJ — Paco push segment 'RJ'
+RJ:  # Paco push segment 'RJ' — id == engine segment label
   name: "Regional Jet"
   traffic_type: passenger
   traffic_unit: RPK
@@ -164,7 +164,7 @@ regional_jet:  # RJ — Paco push segment 'RJ'
     costs:
       doc_non_energy_per_ask_dropin_fuel_init: 0.048375  # placeholder
 
-narrow_body:  # NB — Paco push segment 'NB'
+NB:  # Paco push segment 'NB' — id == engine segment label
   name: "Narrow Body"
   traffic_type: passenger
   traffic_unit: RPK
@@ -179,7 +179,7 @@ narrow_body:  # NB — Paco push segment 'NB'
     costs:
       doc_non_energy_per_ask_dropin_fuel_init: 0.0301  # placeholder
 
-wide_body:  # WB — Paco push segment 'WB'
+WB:  # Paco push segment 'WB' — id == engine segment label
   name: "Wide Body"
   traffic_type: passenger
   traffic_unit: RPK

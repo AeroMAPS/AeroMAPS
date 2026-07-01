@@ -85,13 +85,12 @@ PUSH_FLEET_INPUT_FILE_KEYS = (
     "fleet_snapshot_file",
 )
 
-# AeroMAPS market id -> Paco engine segment label.
-_MARKET_ID_TO_ENGINE_LABEL = {
-    "turboprop": "TP",
-    "regional_jet": "RJ",
-    "narrow_body": "NB",
-    "wide_body": "WB",
-}
+# Naming convention (no mapping table): a passenger market's AeroMAPS id IS the push
+# engine's segment label — the ``market:`` value in the classification YAML, e.g. TP/RJ/
+# NB/WB. ``engine_inputs`` is keyed by those same labels, so a market whose id matches a
+# segment is driven by the engine and any other passenger market is held flat (see
+# compute()). To add a segment: add it to the fleet-push YAMLs and declare a market with
+# the *same id* — no code change here.
 
 # The push engine is calibrated to the end-2024 fleet (``agg_fleet_end_2024.xlsx``)
 # and the 2024 per-type ASK / MJ-per-ASK. Its pivot is therefore fixed at 2024, so a
@@ -323,10 +322,9 @@ class PassengerAircraftEfficiencyFleetPush(AeroMAPSModel):
             # Mirror SimpleFleetCount's per-segment name so existing consumers/plots
             # pick it up. Per-type columns use the engine's assembled ac_names.
             self.output_names[f"{m.name}: Aircraft In Fleet"] = pd.Series([0.0])
-            engine_label = _MARKET_ID_TO_ENGINE_LABEL.get(mid)
-            if engine_label is None:
+            if mid not in engine_inputs:
                 continue
-            for raw_name in engine_inputs[engine_label]["ac_names"]:
+            for raw_name in engine_inputs[mid]["ac_names"]:
                 ac = _sanitize_type_name(raw_name)
                 self.output_names[f"{mid}:{ac}:aircraft_in_fleet"] = pd.Series([0.0])
                 self.output_names[f"{mid}:{ac}:aircraft_deliveries"] = pd.Series([0.0])
@@ -376,7 +374,6 @@ class PassengerAircraftEfficiencyFleetPush(AeroMAPSModel):
 
         for m in passenger_markets:
             mid = m.id
-            engine_label = _MARKET_ID_TO_ENGINE_LABEL.get(mid)
             energy_share = float(input_data[f"{mid}_energy_share_last_historical_year"])
             rpk_share = float(input_data[f"{mid}_rpk_share_last_historical_year"])
 
@@ -392,13 +389,14 @@ class PassengerAircraftEfficiencyFleetPush(AeroMAPSModel):
                 np.nan,
             )
 
-            if engine_label is None:
-                # Passenger market not mapped to a push segment: cannot run the
+            if mid not in engine_inputs:
+                # Passenger market with no matching push segment: cannot run the
                 # engine. Carry the last-historical value flat over the projection
                 # so downstream reads stay finite.
                 logger.warning(
-                    "Market '%s' has no push engine segment mapping; "
-                    "holding last-historical energy/ASK flat over the projection.",
+                    "Market '%s' has no matching push engine segment (no segment with "
+                    "this id in the classification YAML); holding last-historical "
+                    "energy/ASK flat over the projection.",
                     mid,
                 )
                 self.df.loc[self.prospection_start_year :, dropin_col] = self.df.loc[
@@ -408,7 +406,7 @@ class PassengerAircraftEfficiencyFleetPush(AeroMAPSModel):
                 # per-segment total at NaN over the full index.
                 self.df.loc[full_years, fleet_total_col] = np.nan
             else:
-                cfg = engine_inputs[engine_label]
+                cfg = engine_inputs[mid]
                 ask_proj = input_data[f"ask_{mid}"].reindex(ask_sample_years).to_numpy(dtype=float)
                 # Append the horizon-year (end_year + 1) entry, held flat at end_year,
                 # so the engine has modeled_periods + 1 finite traffic targets.
@@ -557,8 +555,8 @@ class PassengerAircraftEfficiencyFleetPush(AeroMAPSModel):
             # Fleet bridge (Phase 5) outputs declared in custom_setup. The per-segment
             # total always exists; per-type columns only for mapped segments.
             output_data[fleet_total_col] = self.df[fleet_total_col]
-            if engine_label is not None:
-                for raw_name in engine_inputs[engine_label]["ac_names"]:
+            if mid in engine_inputs:
+                for raw_name in engine_inputs[mid]["ac_names"]:
                     ac = _sanitize_type_name(raw_name)
                     fleet_col = f"{mid}:{ac}:aircraft_in_fleet"
                     deliv_col = f"{mid}:{ac}:aircraft_deliveries"
