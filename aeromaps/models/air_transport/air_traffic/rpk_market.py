@@ -523,10 +523,12 @@ class RPKElasticity(AeroMAPSModel):
         price_elasticity = float(input_data["price_elasticity"])
         airfare_init = float(input_data["initial_airfare_per_rpk"])
 
-        # Elasticity kicks in the year after the latest COVID-end across markets.
-        elasticity_start = (
+        # Elasticity kicks in the year after the latest COVID-end across markets,
+        # but never before the first projected year.
+        elasticity_start = max(
             int(max(int(input_data[f"{mid}_covid_end_year"]) for mid in self.passenger_market_ids))
-            + 1
+            + 1,
+            self.prospection_start_year,
         )
 
         # Multiplier: 1 before elasticity_start, (airfare/airfare_init)**elasticity after.
