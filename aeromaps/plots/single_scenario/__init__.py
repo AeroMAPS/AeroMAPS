@@ -1,4 +1,7 @@
-from aeromaps.plots.single_scenario.main import AirTransportCO2EmissionsPlot, AirTransportClimateImpactsPlot
+from aeromaps.plots.single_scenario.main import (
+    AirTransportCO2EmissionsPlot,
+    AirTransportClimateImpactsPlot,
+)
 from aeromaps.plots.single_scenario.sustainability_assessment import (
     CarbonBudgetAssessmentPlot,
     TemperatureTargetAssessmentPlot,
@@ -25,6 +28,11 @@ from aeromaps.plots.single_scenario.aircraft_fleet_and_operations import (
     MeanEnergyPerASKPlot,
     MeanEnergyPerRTKPlot,
 )
+from aeromaps.plots.single_scenario.fleet_push import (
+    FleetCountBySegmentPlot,
+    FleetDeliveriesByTypePlot,
+    EnergyIntensityBySegmentPlot,
+)
 from aeromaps.plots.single_scenario.aircraft_energy import (
     MeanFuelEmissionFactorPlot,
     EmissionFactorPerFuelCategory,
@@ -47,7 +55,10 @@ from aeromaps.plots.single_scenario.climate import (
     TemperatureIncreaseFromAirTransportPlot,
     DetailedTemperatureIncreaseFromAirTransportPlot,
 )
-from aeromaps.plots.single_scenario.energy_resources import BiomassConsumptionPlot, ElectricityConsumptionPlot
+from aeromaps.plots.single_scenario.energy_resources import (
+    BiomassConsumptionPlot,
+    ElectricityConsumptionPlot,
+)
 
 from aeromaps.plots.single_scenario.energy_mix import (
     EnergyMixPlot,
@@ -137,6 +148,10 @@ available_plots = {
     "drop_in_shares_breakdown": DropInSharesBreakdownPlot,
     "annual_MACC_simple_fleet": AnnualMACCSimple,
     "shadow_carbon_pricing_simple_fleet": ShadowCarbonPriceSimple,
+    # Push fleet model (delivery-driven engine)
+    "push_fleet_count_by_segment": FleetCountBySegmentPlot,
+    "push_fleet_deliveries_by_type": FleetDeliveriesByTypePlot,
+    "push_energy_intensity_by_segment": EnergyIntensityBySegmentPlot,
 }
 
 available_plots_fleet = {

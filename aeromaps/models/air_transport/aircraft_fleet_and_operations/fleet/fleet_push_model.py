@@ -12,10 +12,11 @@ like any other AeroMAPS efficiency model: it emits the per-passenger-market
 ``EnergyIntensity`` …) read, mirroring
 :class:`PassengerAircraftEfficiencySimpleShares`.
 
-Scope (this phase): efficiency bridge only — drop-in fuel carries 100 % of the
-ASK; the hydrogen/electric columns mirror the drop-in series so downstream
-relative-intensity reads stay finite. Fleet-count / deliveries outputs and the
-plot migration are a later phase.
+Scope: the per-passenger-market efficiency bridge (drop-in fuel carries 100 % of
+the ASK; the hydrogen/electric columns mirror the drop-in series so downstream
+relative-intensity reads stay finite) **plus** (Phase 5) the push model's native
+fleet state — per-segment & per-type fleet counts and per-type deliveries —
+emitted as plain ``pd.Series`` columns mirroring :class:`SimpleFleetCount`'s naming.
 
 I/O grammar (per passenger market ``mid``)
     Inputs
@@ -26,6 +27,23 @@ I/O grammar (per passenger market ``mid``)
     Outputs (per ``mid`` and ``et`` in dropin_fuel/hydrogen/electric)
         - energy_per_ask_without_operations_<mid>_<et> : energy per ASK [MJ/ASK]
         - ask_<mid>_<et>_share                         : ASK share per energy [%]
+    Fleet outputs (Phase 5)
+        - "<market.name>: Aircraft In Fleet"           : per-segment total fleet
+          count [count] (mirrors :class:`SimpleFleetCount`).
+        - <mid>:<aircraft_type>:aircraft_in_fleet      : per-type fleet count [count].
+        - <mid>:<aircraft_type>:aircraft_deliveries    : per-type new deliveries
+          per year [count].
+
+Fleet-output year alignment (verified empirically against the engine)
+    The engine returns ``aircraft_seats_volumes`` of shape ``(periods, F, T)`` with
+    period ``t`` <-> year ``last_historical_year + t`` (``t = 0`` is the pivot), and
+    ``deliveries`` of shape ``(periods - 1, T)`` with row ``k`` <-> year
+    ``first_projection_year + k = last_historical_year + 1 + k``. The returned
+    ``years`` axis is off-by-one and is **not** used. Per-type aircraft count at a
+    period is ``aircraft_seats_volumes[t].sum(axis=0) / seats_array``; the per-segment
+    total is the sum over types. Pre-pivot history years are left at NaN for fleet
+    counts and deliveries (the engine has no fleet state there — the calibrated
+    fleet is the end-of-pivot-year snapshot).
 """
 
 import logging
@@ -164,16 +182,44 @@ def _load_push_engine_inputs():
     for i in range(markets.shape[0]):
         engine_label = markets.iloc[i, 0]
         keys_market = market_to_types.get(engine_label, [])
+        old_ac_carac = params_df[params_df["Aircraft Type"].isin(keys_market)]
+        in_prod = in_prod_ac_carac[in_prod_ac_carac["market"] == engine_label]
+        future = new_ac_carac[new_ac_carac["market"] == engine_label]
+        # Assembled per-type NAMES and SEATS in the engine's column order
+        # (old types, then in-production, then future) -- identical to
+        # market_process's internal ``seats_array`` / ``ac_names`` construction.
+        ac_names = (
+            list(old_ac_carac["Aircraft Type"]) + list(in_prod["name"]) + list(future["name"])
+        )
+        seats_array = np.concatenate(
+            [
+                old_ac_carac["average_seats"].to_numpy(dtype=float),
+                in_prod["seats"].to_numpy(dtype=float),
+                future["seats"].to_numpy(dtype=float),
+            ]
+        )
         engine_inputs[engine_label] = {
             "total_asks": markets.iloc[i, 1],
             "distance_per_aircraft": markets.iloc[i, 2],
             "fleet_market": fleet_df[fleet_df["Aircraft Type"].isin(keys_market)],
-            "old_ac_carac": params_df[params_df["Aircraft Type"].isin(keys_market)],
-            "future_ac_carac": new_ac_carac[new_ac_carac["market"] == engine_label],
-            "in_prod_ac_carac": in_prod_ac_carac[in_prod_ac_carac["market"] == engine_label],
+            "old_ac_carac": old_ac_carac,
+            "future_ac_carac": future,
+            "in_prod_ac_carac": in_prod,
             "market_data": markets_data.loc[engine_label],
+            "ac_names": ac_names,
+            "seats_array": seats_array,
         }
     return engine_inputs
+
+
+def _sanitize_type_name(name: str) -> str:
+    """Make an aircraft type name safe to use inside a DataFrame column key.
+
+    The output names are ``<mid>:<aircraft_type>:aircraft_in_fleet`` / ``...
+    :aircraft_deliveries``; ``:`` is the field separator so any colon (or
+    surrounding whitespace) in a raw type name is collapsed to ``_``.
+    """
+    return "_".join(str(name).split()).replace(":", "_")
 
 
 class PassengerAircraftEfficiencyFleetPush(AeroMAPSModel):
@@ -221,6 +267,8 @@ class PassengerAircraftEfficiencyFleetPush(AeroMAPSModel):
             self.input_names[f"{mid}_energy_share_last_historical_year"] = 0.0
             self.input_names[f"{mid}_rpk_share_last_historical_year"] = 0.0
 
+        engine_inputs = _load_push_engine_inputs()
+
         self.output_names = {}
         for m in passenger_markets:
             mid = m.id
@@ -229,6 +277,18 @@ class PassengerAircraftEfficiencyFleetPush(AeroMAPSModel):
                     [0.0]
                 )
                 self.output_names[f"ask_{mid}_{et}_share"] = pd.Series([0.0])
+
+            # Fleet bridge (Phase 5): per-segment total + per-type counts/deliveries.
+            # Mirror SimpleFleetCount's per-segment name so existing consumers/plots
+            # pick it up. Per-type columns use the engine's assembled ac_names.
+            self.output_names[f"{m.name}: Aircraft In Fleet"] = pd.Series([0.0])
+            engine_label = _MARKET_ID_TO_ENGINE_LABEL.get(mid)
+            if engine_label is None:
+                continue
+            for raw_name in engine_inputs[engine_label]["ac_names"]:
+                ac = _sanitize_type_name(raw_name)
+                self.output_names[f"{mid}:{ac}:aircraft_in_fleet"] = pd.Series([0.0])
+                self.output_names[f"{mid}:{ac}:aircraft_deliveries"] = pd.Series([0.0])
 
     def compute(self, input_data: dict) -> dict:
         """Run the push engine per passenger market and emit the drop-in bridge.
@@ -265,6 +325,9 @@ class PassengerAircraftEfficiencyFleetPush(AeroMAPSModel):
 
         engine_inputs = _load_push_engine_inputs()
 
+        # Full year index for the fleet-state columns (NaN pre-pivot history).
+        full_years = np.arange(self.historic_start_year, self.end_year + 1)
+
         output_data = {}
 
         for m in passenger_markets:
@@ -273,6 +336,7 @@ class PassengerAircraftEfficiencyFleetPush(AeroMAPSModel):
             energy_share = float(input_data[f"{mid}_energy_share_last_historical_year"])
             rpk_share = float(input_data[f"{mid}_rpk_share_last_historical_year"])
 
+            fleet_total_col = f"{m.name}: Aircraft In Fleet"
             dropin_col = f"energy_per_ask_without_operations_{mid}_dropin_fuel"
             h2_col = f"energy_per_ask_without_operations_{mid}_hydrogen"
             el_col = f"energy_per_ask_without_operations_{mid}_electric"
@@ -296,6 +360,9 @@ class PassengerAircraftEfficiencyFleetPush(AeroMAPSModel):
                 self.df.loc[self.prospection_start_year :, dropin_col] = self.df.loc[
                     self.last_historical_year, dropin_col
                 ]
+                # No fleet state available for an unmapped market: leave the
+                # per-segment total at NaN over the full index.
+                self.df.loc[full_years, fleet_total_col] = np.nan
             else:
                 cfg = engine_inputs[engine_label]
                 ask_proj = input_data[f"ask_{mid}"].reindex(ask_sample_years).to_numpy(dtype=float)
@@ -312,18 +379,23 @@ class PassengerAircraftEfficiencyFleetPush(AeroMAPSModel):
                     [pp[1][0], pp[1][-1]],
                 ]
 
-                (_years, _deliveries, ask_volumes, _seats, energy_consumption, feasible) = (
-                    market_process(
-                        cfg["total_asks"],
-                        market_data,
-                        cfg["distance_per_aircraft"],
-                        cfg["fleet_market"],
-                        cfg["old_ac_carac"],
-                        cfg["in_prod_ac_carac"],
-                        cfg["future_ac_carac"],
-                        ask_series=ask_series,
-                        last_historical_year=self.last_historical_year,
-                    )
+                (
+                    _years,
+                    deliveries,
+                    ask_volumes,
+                    aircraft_seats_volumes,
+                    energy_consumption,
+                    feasible,
+                ) = market_process(
+                    cfg["total_asks"],
+                    market_data,
+                    cfg["distance_per_aircraft"],
+                    cfg["fleet_market"],
+                    cfg["old_ac_carac"],
+                    cfg["in_prod_ac_carac"],
+                    cfg["future_ac_carac"],
+                    ask_series=ask_series,
+                    last_historical_year=self.last_historical_year,
                 )
                 if not feasible:
                     logger.warning(
@@ -348,6 +420,49 @@ class PassengerAircraftEfficiencyFleetPush(AeroMAPSModel):
                     energy_t = energy_consumption[t].sum()
                     self.df.loc[year, dropin_col] = energy_t / ask_t if ask_t != 0 else np.nan
 
+                # --- Fleet bridge (Phase 5): counts & deliveries -------------------
+                # Per-type aircraft count at period t = seats per type / seats_array,
+                # where seats per type = aircraft_seats_volumes[t].sum(axis=0). Counts
+                # are aligned aircraft_seats_volumes[t] <-> year (last_historical_year + t)
+                # (t = 0 is the pivot), so we write [last_historical_year .. end_year].
+                # Deliveries[k] <-> year (first_projection_year + k); written over the
+                # projection only. Pre-pivot history stays NaN (no engine fleet state).
+                seats_array = cfg["seats_array"]
+                ac_names = cfg["ac_names"]
+                n_deliv = deliveries.shape[0]
+
+                # Per-type counts: (periods, T) seats -> counts, then a per-year column.
+                per_type_seats = aircraft_seats_volumes.sum(axis=1)  # (periods, T)
+                with np.errstate(divide="ignore", invalid="ignore"):
+                    per_type_counts = np.where(
+                        seats_array[None, :] != 0,
+                        per_type_seats / seats_array[None, :],
+                        np.nan,
+                    )
+
+                count_years = np.arange(
+                    self.last_historical_year,
+                    self.last_historical_year + n_periods,
+                )
+                count_years = count_years[count_years <= self.end_year]
+                deliv_years = np.arange(
+                    self.prospection_start_year,
+                    self.prospection_start_year + n_deliv,
+                )
+                deliv_years = deliv_years[deliv_years <= self.end_year]
+
+                segment_total = np.zeros(len(count_years))
+                for j, raw_name in enumerate(ac_names):
+                    ac = _sanitize_type_name(raw_name)
+                    counts_j = per_type_counts[: len(count_years), j]
+                    self.df.loc[count_years, f"{mid}:{ac}:aircraft_in_fleet"] = counts_j
+                    segment_total = segment_total + np.nan_to_num(counts_j)
+
+                    deliv_col = f"{mid}:{ac}:aircraft_deliveries"
+                    self.df.loc[deliv_years, deliv_col] = deliveries[: len(deliv_years), j]
+
+                self.df.loc[count_years, fleet_total_col] = segment_total
+
             dropin_series = self.df[dropin_col]
 
             # --- Route 100 % to drop-in; mirror H2/electric energy columns -------
@@ -367,6 +482,17 @@ class PassengerAircraftEfficiencyFleetPush(AeroMAPSModel):
             output_data[dropin_share_col] = self.df[dropin_share_col]
             output_data[h2_share_col] = self.df[h2_share_col]
             output_data[el_share_col] = self.df[el_share_col]
+
+            # Fleet bridge (Phase 5) outputs declared in custom_setup. The per-segment
+            # total always exists; per-type columns only for mapped segments.
+            output_data[fleet_total_col] = self.df[fleet_total_col]
+            if engine_label is not None:
+                for raw_name in engine_inputs[engine_label]["ac_names"]:
+                    ac = _sanitize_type_name(raw_name)
+                    fleet_col = f"{mid}:{ac}:aircraft_in_fleet"
+                    deliv_col = f"{mid}:{ac}:aircraft_deliveries"
+                    output_data[fleet_col] = self.df[fleet_col]
+                    output_data[deliv_col] = self.df[deliv_col]
 
         self._store_outputs(output_data)
         return output_data
