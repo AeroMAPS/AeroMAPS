@@ -16,9 +16,6 @@ markets:
   RJ:
     age_utilisation_sensib: -0.01
     age_retirement_sensib: 0.19
-  RP:
-    age_utilisation_sensib: -0.01
-    age_retirement_sensib: 0.19
   NB:
     age_utilisation_sensib: -0.01
     age_retirement_sensib: 0.19

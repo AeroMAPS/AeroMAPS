@@ -253,6 +253,7 @@ class PassengerAircraftEfficiencyFleetPush(AeroMAPSModel):
     shares are 0 and their ``energy_per_ask`` columns mirror the drop-in series.
     """
 
+
     def __init__(self, name="passenger_aircraft_efficiency_fleet_push", *args, **kwargs):
         super().__init__(name=name, model_type="custom", *args, **kwargs)
         self.markets = None
@@ -566,7 +567,13 @@ class PassengerAircraftEfficiencyFleetPush(AeroMAPSModel):
         self._store_outputs(output_data)
         return output_data
 
-    def plot(self):
+    def list_available_plots(self):
+        print(["ASK evolution", "Aircraft seats evolution", "Aircraft production", "Aircraft seats production",
+               "Aircraft seats retirements", "Aircraft ASKs losses",
+               "Operating and retirement ages", "Energy consumption", "Energy efficiency"])
+
+
+    def plot(self, graph:str | None = None, segment_id: str | None = None):
         """Render the push fleet model's per-segment diagnostic charts.
 
         Standalone matplotlib (outside the ``SingleScenarioPlot`` registry),
@@ -582,25 +589,44 @@ class PassengerAircraftEfficiencyFleetPush(AeroMAPSModel):
             raise RuntimeError(
                 "No cached engine results to plot. Run the process (compute) before plot()."
             )
+        if segment_id is None :
+            for res in self._engine_results.values():
+                plot_u(res, graph)
+        else:
+            # res = dict({segment_id: self._engine_results[segment_id].values()})
+            res = self._engine_results[segment_id]
+            plot_u(res, graph)
 
-        for res in self._engine_results.values():
-            market_name = res["market_name"]
-            ac_names = res["ac_names"]
-            ask_content = res["ask_volumes"]
-            fleet_content = res["aircraft_seats_volumes"]
-            energy_content = res["energy_consumption"]
-            deliveries = res["deliveries"]
-            years = res["years"]
+def plot_u(res, graph):
+        market_name = res["market_name"]
+        ac_names = res["ac_names"]
+        ask_content = res["ask_volumes"]
+        fleet_content = res["aircraft_seats_volumes"]
+        energy_content = res["energy_consumption"]
+        deliveries = res["deliveries"]
+        seat_deliveries = fleet_content.copy()
+        i = np.arange(seat_deliveries.shape[0])[:, None, None]  # (47,1,1)
+        j = np.arange(seat_deliveries.shape[1])[None, :, None]  # (1,92,1)
+        mask = (i + 44 == j)  # (47,92,1)
+        seat_deliveries *= mask
+        seat_deliveries= seat_deliveries.sum(axis=1)
+        years = res["years"]
 
-            visu_fleet_array(ask_content[1:].sum(axis=1), ac_names, f"ASK ({market_name})")
-            visu_fleet_array(
-                fleet_content[1:].sum(axis=1), ac_names, f"Aircraft seats ({market_name})"
-            )
+        if (graph == "ASK evolution")|(graph is None):
+            visu_fleet_array(ask_content[1:].sum(axis=1), ac_names, f"Quantity of ASK ({market_name})")
+        if (graph == "Aircraft seats evolution")|(graph is None):
+            visu_fleet_array(fleet_content[1:].sum(axis=1), ac_names, f"Quantity of aircraft seats ({market_name})")
+        if (graph == "Aircraft production")|(graph is None):
             visu_fleet_array(deliveries, ac_names, f"# Aircraft produced ({market_name})")
-            visu_retirements_array(fleet_content, ac_names)  # aircraft-seats outflow
-            visu_retirements_array(ask_content, ac_names)  # ASK outflow
+        if (graph == "Aircraft seats production")|(graph is None):
+            visu_fleet_array(seat_deliveries, ac_names, f"# Aircraft seats produced ({market_name})")
+        if (graph == "Aircraft seats retirements")|(graph is None):
+            visu_retirements_array(fleet_content, ac_names, f"Retired seats ({market_name})")
+        if (graph == "Aircraft ASKs losses")|(graph is None):
+            visu_retirements_array(ask_content, ac_names, f"ASK decrease from aging and retirement ({market_name})")  # ASK outflow
+        if (graph == "Operating and retirement ages")|(graph is None):
             visu_retirement_age(fleet_content, ac_names)
-            visu_fleet_array(
-                energy_content[1:].sum(axis=1), ac_names, f"energy consumption (MJ) ({market_name})"
-            )
+        if (graph == "Energy consumption")|(graph is None):
+            visu_fleet_array(energy_content[1:].sum(axis=1), ac_names, f"energy consumption (MJ) ({market_name})")
+        if (graph == "Energy efficiency")|(graph is None):
             visu_energy_intensity(energy_content, ask_content, years, market_name)

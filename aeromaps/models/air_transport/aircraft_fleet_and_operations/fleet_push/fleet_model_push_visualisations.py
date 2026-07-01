@@ -47,6 +47,7 @@ colors_26 = [
 def visu_retirements_array(
     vol_obs,
     obs_names,
+    obs_name,
     color_mix=colors_26,
 ):
     """
@@ -232,7 +233,7 @@ def visu_retirements_array(
     ax.set_xlim(x.min(), x.max())
     ax.set_ylim(min(0, 1.05 * top_ini.min()), 1.05 * top.max())
     ax.set_xlabel("Years")
-    ax.set_ylabel("Retired aircraft seats")
+    ax.set_ylabel(obs_name)
     plt.tight_layout()
     plt.show()
     return None
@@ -318,7 +319,7 @@ def visu_fleet_array(vol_obs, obs_names, obs_name, color_mix=colors_26):
     plt.xlim(x.min(), x.max())
     plt.ylim(0, 1.1 * top.max())
     plt.xlabel("Years")
-    plt.ylabel("Quantity of " + obs_name)
+    plt.ylabel(obs_name)
     plt.tight_layout()
     plt.show()
     return None
