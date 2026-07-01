@@ -100,6 +100,11 @@ _MARKET_ID_TO_ENGINE_LABEL = {
 # fleet by (2024 - last_historical_year) years.
 _ENGINE_ANCHOR_YEAR = 2024
 
+# Relative gap (|bottom-up - top-down| / bottom-up) between the engine's calibrated
+# pivot-year ASK and the injected AeroMAPS pivot-year ASK above which compute() warns.
+# The two are never reconciled numerically; this surfaces a silent mismatch at the seam.
+_ASK_ANCHOR_REL_TOL = 0.01
+
 
 def _load_push_engine_inputs(
     classification_yaml,
@@ -212,6 +217,10 @@ def _load_push_engine_inputs(
         )
         engine_inputs[engine_label] = {
             "distance_per_aircraft": markets.iloc[i, 2],
+            # Bottom-up calibrated pivot-year ASK (Σ total_ask_produced_2024 over the
+            # segment's types). Independent of the injected AeroMAPS demand, so it is the
+            # only meaningful reference for the start-year consistency check in compute().
+            "calibrated_ask_anchor": float(markets.iloc[i, 1]),
             "fleet_market": fleet_df[fleet_df["Aircraft Type"].isin(keys_market)],
             "old_ac_carac": old_ac_carac,
             "future_ac_carac": future,
@@ -404,6 +413,29 @@ class PassengerAircraftEfficiencyFleetPush(AeroMAPSModel):
                 # Append the horizon-year (end_year + 1) entry, held flat at end_year,
                 # so the engine has modeled_periods + 1 finite traffic targets.
                 ask_series = np.concatenate([ask_proj, ask_proj[-1:]])
+
+                # Start-year consistency check. The injected AeroMAPS pivot-year ASK
+                # (ask_proj[0], top-down) and the engine's calibrated pivot-year ASK
+                # (cfg["calibrated_ask_anchor"], bottom-up Σ total_ask_produced_2024) are
+                # never reconciled numerically. Surface their relative gap so a silent
+                # mismatch at the 2024 seam doesn't go unnoticed.
+                top_down_ask = float(ask_proj[0])
+                bottom_up_ask = cfg["calibrated_ask_anchor"]
+                if bottom_up_ask > 0:
+                    rel_gap = (top_down_ask - bottom_up_ask) / bottom_up_ask
+                    if abs(rel_gap) > _ASK_ANCHOR_REL_TOL:
+                        logger.warning(
+                            "Market '%s': injected AeroMAPS %d ASK (%.3e) differs from the "
+                            "engine's calibrated fleet ASK (%.3e) by %+.1f%% (tol %.0f%%). The "
+                            "two are not reconciled; re-check rpk_share_last_historical_year "
+                            "and the historic ASK vectors for this segment.",
+                            mid,
+                            self.last_historical_year,
+                            top_down_ask,
+                            bottom_up_ask,
+                            rel_gap * 100.0,
+                            _ASK_ANCHOR_REL_TOL * 100.0,
+                        )
 
                 # The engine's production_profile is only used to size the year axis
                 # (its last year). Growth is injected as ASK, so build the axis straight

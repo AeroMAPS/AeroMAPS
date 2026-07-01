@@ -50,7 +50,7 @@ from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_mod
     Fleet,
     FleetModel,
 )
-from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.aircraft_efficiency_fleet_push import (
+from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet_push.aircraft_efficiency_fleet_push import (
     PassengerAircraftEfficiencyFleetPush,
     PUSH_FLEET_INPUT_FILE_KEYS,
 )

@@ -60,7 +60,7 @@ from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.aircraft_
     FreightAircraftEfficiencySimple,  # noqa: F401  re-exported for user-composed dicts
     PassengerAircraftEfficiencySimpleASK,
 )
-from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.aircraft_efficiency_fleet_push import (
+from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet_push.aircraft_efficiency_fleet_push import (
     PassengerAircraftEfficiencyFleetPush,
 )
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.aircraft_fleet_and_operations import (
