@@ -17,6 +17,8 @@ Then, a YAML configuration files to define in production and future aircraft mod
 Finally, a YAML file allows to configurate growth rates per year per market, and possibly adjust on these market retirement and utilisation age sensibilities.
 """
 
+import logging
+
 import yaml
 import pandas as pd
 import numpy as np
@@ -38,6 +40,8 @@ from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_mod
     solve_deliv,
     fleet_content,
 )
+
+logger = logging.getLogger(__name__)
 
 
 def _project_root() -> Path:
@@ -253,7 +257,7 @@ def fleet_process(
             + list(selec_new_ac["name"])
         )
 
-        years, deliveries, ask_content, fleet_content, energy_content = market_process(
+        years, deliveries, ask_content, fleet_content, energy_content, feasible = market_process(
             total_asks,
             market_data,
             distance_per_aircraft,
@@ -262,6 +266,11 @@ def fleet_process(
             selec_in_prod_ac,
             selec_new_ac,
         )
+        if not feasible:
+            print(
+                f"warning: not enough aircraft in the fleet to meet the demand "
+                f"in market segment {market_name}"
+            )
 
         visu_fleet_array(ask_content[1:].sum(axis=1), ac_names, "ASK")
         visu_fleet_array(fleet_content[1:].sum(axis=1), ac_names, "Aircraft seats")
@@ -283,20 +292,51 @@ def market_process(
     old_ac_carac,
     in_prod_ac_carac,
     future_ac_carac,
+    ask_series=None,
+    last_historical_year=2024,
 ):
+    """Pure, side-effect-free fleet-renewal engine for a single market segment.
+
+    Parameters
+    ----------
+    ask_series : array-like, optional
+        Per-year ASK volumes aligned to the engine's projection horizon, i.e. the
+        ``last_historical_year`` (pivot/base year) followed by every projection year
+        up to ``market_growth[0][-1]``. When provided it is used DIRECTLY as the
+        traffic target (``yearly_traffic``), bypassing the internal CAGR profile.
+        When ``None`` the legacy internal CAGR behaviour is used (standalone path).
+    last_historical_year : int, default 2024
+        Pivot / calibration base year. ``first_projection_year`` is derived as
+        ``last_historical_year + 1``. Defaults reproduce the legacy 2024/2025 calendar.
+
+    Returns
+    -------
+    tuple
+        ``(years, deliveries[:-1], ask_volumes, aircraft_seats_volumes,
+        energy_consumption, feasible)`` where ``feasible`` is a boolean flag that is
+        ``False`` when the delivered fleet activity cannot meet the demand for at
+        least one year (the engine no longer raises in that case; the caller decides).
+    """
+    first_projection_year = last_historical_year + 1
     market_growth = market_data["production_profile"]
     age_utilisation_sensibility = market_data["age_utilisation_sensib"]
     age_retirement_sensibility = market_data["age_retirement_sensib"]
-    # traffic evolution
-    growth_rates = (market_growth[0][0] - 2024) * [market_growth[1][0]]
-    for i in range(len(market_growth[0]) - 1):
-        growth_rates += (market_growth[0][i + 1] - market_growth[0][i]) * [market_growth[1][i + 1]]
-    growth_rates = np.log(1 + np.array(growth_rates))
-    growth_rates_cum = np.concatenate([np.array([0]), np.cumsum(growth_rates)])
-
-    yearly_traffic = total_asks * np.exp(growth_rates_cum)
-    years = np.arange(2025, market_growth[0][-1] + 1)
+    years = np.arange(first_projection_year, market_growth[0][-1] + 1)
     modeled_periods = years.shape[0]
+    if ask_series is not None:
+        # ASK injection: use the supplied per-year traffic directly. It is aligned to
+        # [last_historical_year, ..., market_growth[0][-1]] -> length modeled_periods + 1.
+        yearly_traffic = np.asarray(ask_series, dtype=float).ravel()
+    else:
+        # traffic evolution (legacy internal CAGR profile)
+        growth_rates = (market_growth[0][0] - last_historical_year) * [market_growth[1][0]]
+        for i in range(len(market_growth[0]) - 1):
+            growth_rates += (market_growth[0][i + 1] - market_growth[0][i]) * [
+                market_growth[1][i + 1]
+            ]
+        growth_rates = np.log(1 + np.array(growth_rates))
+        growth_rates_cum = np.concatenate([np.array([0]), np.cumsum(growth_rates)])
+        yearly_traffic = total_asks * np.exp(growth_rates_cum)
     n_old_ac = old_ac_carac.shape[0]
     n_prod_ac = in_prod_ac_carac.shape[0]
     n_new_ac = future_ac_carac.shape[0]
@@ -358,14 +398,16 @@ def market_process(
     delivery_params = future_ac_carac[
         ["intro_year", "production_duration", "renewal_rate", "time_to_market", "seats"]
     ].values
-    n_mod = yearly_traffic.shape[0] #parameter to fix the limit of the reference traffic year when applying a renewal rate.
+    n_mod = yearly_traffic.shape[
+        0
+    ]  # parameter to fix the limit of the reference traffic year when applying a renewal rate.
     for ac in range(n_new_ac):
-        eis = (delivery_params[ac, 0] - 2025).astype(int)
+        eis = (delivery_params[ac, 0] - first_projection_year).astype(int)
         duration = delivery_params[ac, 1].astype(int)
         time_to_market = delivery_params[ac, 3]
 
         prod_volume = (
-            yearly_traffic[min(eis+duration, n_mod-1)]
+            yearly_traffic[min(eis + duration, n_mod - 1)]
             * delivery_params[ac, 2]
             / distance_per_aircraft
             / delivery_params[ac, 4]
@@ -388,11 +430,20 @@ def market_process(
         np.cumsum(fleet_delivered_activity_y, axis=0)[-1 - modeled_periods :]
         * period_utilisation_array
     )
-    # plt.plot(np.concatenate([np.array([2024]),years]),fleet_delivered_activity)
-    # plt.plot(np.concatenate([np.array([2024]),years]),yearly_traffic)
+    # plt.plot(np.concatenate([np.array([last_historical_year]),years]),fleet_delivered_activity)
+    # plt.plot(np.concatenate([np.array([last_historical_year]),years]),yearly_traffic)
     # plt.show()
-    if np.any(fleet_delivered_activity < 0.999999 * yearly_traffic):
-        raise ValueError("not enough aircraft in the fleet to meet the demand in market segment")
+    # Capacity feasibility check: instead of raising (which aborts an MDA solve), return
+    # a feasibility flag and let the caller decide. No clamping/fallback here (Phase 7).
+    shortfall_mask = fleet_delivered_activity < 0.999999 * yearly_traffic
+    feasible = not bool(np.any(shortfall_mask))
+    if not feasible:
+        logger.debug(
+            "not enough aircraft in the fleet to meet the demand in market segment "
+            "(%d/%d projection years short)",
+            int(np.count_nonzero(shortfall_mask)),
+            shortfall_mask.shape[0],
+        )
 
     # retirement propensity array
     ret_year_delay_type = np.concatenate(
@@ -413,7 +464,7 @@ def market_process(
     aircraft_seats_volumes = []
     ask_volumes = []
     x_eq = 1
-    print("Computing fleet composition...")
+    logger.debug("Computing fleet composition...")
     for t in range(modeled_periods):
         fleet_delivered_activity_type_y_t = fleet_delivered_activity_type_y.copy()
         fleet_delivered_activity_type_y_t[-modeled_periods + t :, :] = 0
@@ -444,7 +495,7 @@ def market_process(
     ask_volumes = np.array(ask_volumes)
     aircraft_seats_volumes = np.array(aircraft_seats_volumes)
     energy_consumption = energy_intensity[None, None, :] * ask_volumes
-    return years, deliveries[:-1], ask_volumes, aircraft_seats_volumes, energy_consumption
+    return years, deliveries[:-1], ask_volumes, aircraft_seats_volumes, energy_consumption, feasible
 
 
 # Standalone demo entry point. Guarded by ``__main__`` so importing this module
