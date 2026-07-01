@@ -1,0 +1,27 @@
+# Push-fleet-model demo scenario. Pivots on 2024 (prospection_start_year = 2025),
+# which the push engine REQUIRES (it is calibrated to the end-2024 fleet). The
+# historic 2000-2024 *_init vectors come from inputs_2025.json (the same ad-hoc
+# 2020-2024 extension used by tutorials/13_change_the_prospection_start_year).
+data:
+  inputs:
+    json_inputs_file: "./inputs_2025.json"          # relative to this config's dir
+models:
+  markets:
+    # Paco's TP/RJ/NB/WB segments as passenger markets (relative to this dir ->
+    # the shipped resource). 4 '..' climbs notebooks/custom_workflow/push_fleet_model/data -> aeromaps/.
+    markets_data_file: "../../../../resources/data/default_markets/markets_push.yaml"
+  climate:
+    climate_model_data_file: default
+  energy:
+    energy_carriers_model_data_file: default
+    resources_model_data_file: default
+    processes_model_data_file: default
+  standards:
+    - models_traffic
+    - models_efficiency_push          # <- push fleet engine (drop-in efficiency bridge)
+    - models_energy_without_fuel_effect
+    - models_offset
+    - models_emissions
+    - models_sustainability
+    - models_energy_cost
+    - models_operation_cost_top_down

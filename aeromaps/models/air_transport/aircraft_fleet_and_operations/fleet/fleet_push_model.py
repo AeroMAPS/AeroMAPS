@@ -69,6 +69,13 @@ _MARKET_ID_TO_ENGINE_LABEL = {
     "wide_body": "WB",
 }
 
+# The push engine is calibrated to the end-2024 fleet (``agg_fleet_end_2024.xlsx``)
+# and the 2024 per-type ASK / MJ-per-ASK. Its pivot is therefore fixed at 2024, so a
+# scenario using this model MUST have ``last_historical_year == 2024`` (equivalently
+# ``prospection_start_year == 2025``). Running it on any other pivot would mis-date the
+# fleet by (2024 - last_historical_year) years.
+_ENGINE_ANCHOR_YEAR = 2024
+
 
 @lru_cache(maxsize=1)
 def _load_push_engine_inputs():
@@ -186,6 +193,23 @@ class PassengerAircraftEfficiencyFleetPush(AeroMAPSModel):
         self.markets = None
 
     def custom_setup(self):
+        # Hard pivot guard: the engine is anchored to the end-2024 fleet, so the
+        # scenario MUST pivot on 2024 (prospection_start_year == 2025). Fail fast at
+        # build time rather than silently mis-dating the fleet.
+        if self.last_historical_year != _ENGINE_ANCHOR_YEAR:
+            raise ValueError(
+                f"{type(self).__name__} requires the scenario to pivot on "
+                f"{_ENGINE_ANCHOR_YEAR}, i.e. prospection_start_year == "
+                f"{_ENGINE_ANCHOR_YEAR + 1} (last_historical_year == {_ENGINE_ANCHOR_YEAR}). "
+                f"The push engine is calibrated to the end-{_ENGINE_ANCHOR_YEAR} fleet "
+                f"(agg_fleet_end_{_ENGINE_ANCHOR_YEAR}.xlsx) and the {_ENGINE_ANCHOR_YEAR} "
+                f"per-type ASK/MJ. Got prospection_start_year="
+                f"{self.prospection_start_year} (last_historical_year="
+                f"{self.last_historical_year}). Provide a {_ENGINE_ANCHOR_YEAR + 1}-pivot "
+                f"scenario whose historic *_init vectors run 2000-{_ENGINE_ANCHOR_YEAR} "
+                f"(see tutorials/13_change_the_prospection_start_year/data/inputs_2025.json)."
+            )
+
         passenger_markets = self.markets.get(traffic_type="passenger")
         self.input_names = {
             "energy_consumption_init": pd.Series([0.0]),
