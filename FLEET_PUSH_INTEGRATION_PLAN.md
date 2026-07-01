@@ -1,6 +1,6 @@
 # Plan — Finalize the integration of Paco's "push" fleet model
 
-**Status :** Active — Phases 1–5 done; Phase 7 awaiting a decision | **Updated :** 2026-06-29 | **Branch cible :** `fleet_paco_models`
+**Status :** Active — Phases 1–6 done; review-driven simplification applied; Phase 7 dropped by decision; Phase 8 (validation) + demo refresh remaining | **Updated :** 2026-06-29 | **Branch cible :** `fleet_paco_models`
 
 ---
 
@@ -22,6 +22,49 @@ classes; the shared engine refactor preserves the standalone path's numerics).
 | Calib. | `740aa3b8` | **2024-pivot guard + demo.** `custom_setup` **raises** unless `last_historical_year == 2024` (i.e. `prospection_start_year == 2025`) — the engine is calibrated to the end-2024 fleet. Self-contained demo at `aeromaps/notebooks/custom_workflow/push_fleet_model/` (config + reused tutorial-13 `inputs_2025.json` ad-hoc 2000–2024 vectors). The 2024→2025 seam is now smooth (~−6 %; was a 5-year-shifted discontinuity on the old 2019 pivot). |
 | **5** | `d3ddc836` | **Fleet outputs + plots.** Wrapper also emits the **fleet bridge** (single engine run): per-segment `"{name}: Aircraft In Fleet"` (mirrors `SimpleFleetCount`) + per-type `{mid}:{type}:aircraft_in_fleet` and `:aircraft_deliveries`. Bespoke matplotlib migrated to 3 `SingleScenarioPlot` classes in `aeromaps/plots/single_scenario/fleet_push.py` (registered in `single_scenario/__init__.py`) that read process outputs, not the engine. |
 
+### Review-driven simplification (2026-06-29, after Phases 1–6)
+A code review raised four points; all applied:
+
+1. **No standalone capability.** The model only ever runs as an `AeroMAPSModel`
+   with ASK injected, so the engine's dual path is gone: `market_process` dropped the
+   `ask_series=None` / internal-CAGR branch and the now-unused `total_asks` argument
+   (ASK is **always** injected). `fleet_process()`, the `__main__` demo, and the
+   `time`/visualisation imports were removed. Decision #6 (keep a standalone demo) is
+   **reversed**; Decision #3 (ASK injected, drop CAGR) is now fully realized — single path.
+2. **File naming.** The confusing pair `fleet_model_push.py` (engine) vs
+   `fleet_push_model.py` (wrapper) is resolved: the wrapper is now
+   **`aircraft_efficiency_fleet_push.py`** (parallels `aircraft_efficiency.py`); the
+   engine stays `fleet_model_push.py`. Import in `core/models.py` updated.
+3. **Keep the aggregated bridge (no FleetModel delegation).** We considered reusing the
+   bottom-up `FleetModel` instance and only bypassing its share computation (the
+   custom_workflow share-decoupling pattern). **Rejected:** the push inventory has far
+   too many per-type aircraft to map cleanly onto a fleet.yaml structure. The wrapper
+   keeps emitting the per-market **aggregated** efficiency + fleet bridge itself.
+4. **Legacy `raise` restored.** `market_process` again does
+   `raise ValueError("not enough aircraft in the fleet to meet the demand…")` instead of
+   returning a `feasible` flag (6-tuple → 5-tuple; wrapper warning removed). A failed
+   simulation is acceptable. This **drops Phase 7** (no softening of the guard).
+
+**Plots → model method (mirrors `FleetModel.plot()`).** Per a follow-up decision, all
+push plots are consolidated onto the model rather than the `SingleScenarioPlot` registry:
+- The three Phase-5 registry classes and `plots/single_scenario/fleet_push.py` were
+  **removed** (with their `single_scenario/__init__.py` registration; parametrized tests
+  dropped those cases automatically).
+- `fleet_model_push_visualisations.py` is **restored** as a pure matplotlib helper module
+  (`visu_fleet_array`, `visu_retirements_array`, `visu_retirement_age`,
+  `visu_energy_intensity`; the unused Excel diagnostic dropped).
+- `compute()` caches the per-segment **age-resolved** engine arrays in
+  `self._engine_results`; new **`PassengerAircraftEfficiencyFleetPush.plot()`** renders
+  every push chart per segment from that cache — including the retirement / retirement-age
+  diagnostics that a registry plot can't produce (they need the engine's internal
+  `(periods, age, type)` arrays the flat output columns sum away).
+
+**Open consequence — the demo no longer runs end-to-end.** With the `raise` restored,
+`process.compute()` now **errors on the turboprop 2029 transient** (the case that
+previously only warned). This is the accepted cost of point 4; the demo needs the TP
+input calibrated (colleague) before it runs. The demo notebook also still imports the
+removed registry plot classes and must be switched to `model.plot()`.
+
 ### How to run / inspect
 - Demo: `aeromaps/notebooks/custom_workflow/push_fleet_model/push_fleet_model.ipynb`
   (uses `data/config_push_2025.yaml` → `markets_push.yaml` + `models_efficiency_push`,
@@ -40,23 +83,12 @@ classes; the shared engine refactor preserves the standalone path's numerics).
 - **Why the 2024-pivot is mandatory.** The fleet Excel columns are literally 1980→2024,
   so the engine's historical fleet axis only aligns when the pivot = 2024. Other pivots
   would mis-date the fleet — hence the hard guard.
-- **Feasibility / the TP "demand not fully met" flag.** In the demo it fires for
-  **turboprop in exactly one year (2029)** — a transient gap just before `new_gen_TP`'s
-  2030 introduction; the demand is still fully produced (0 % shortfall) because the
-  *legacy* `fleet_content` compensation (temporary aircraft parking / aircraft retention)
-  runs. In the legacy engine the pre-loop `raise` aborted before that compensation, so
-  "raise on the flag" ≈ restoring legacy behaviour. **This is the open Phase-7 decision
-  (see below).**
-
-### Open decision (Phase 7) — not yet applied
-You asked that "demand not fully met by deliveries" **raise an error**. The only thing it
-currently trips on is the TP 2029 transient. Pending your pick:
-1. **Raise on the flag + close the 2029 gap** (nudge the placeholder TP input so the demo
-   stays feasible) — recommended; fail-loud + demo runs.
-2. **Raise on the flag, leave TP** to colleague calibration (demo errors at 2029 until
-   then; Phase 8 = pytest only).
-3. **Raise only on a *true* ASK shortfall** (`produced < demand`); the over-utilisation
-   transient stays a warning (demo runs unchanged).
+- **Feasibility / the TP capacity raise.** The legacy `raise` (restored — see point 4
+  above) fires for **turboprop in exactly one year (2029)** — a transient gap just before
+  `new_gen_TP`'s 2030 introduction. The demand would still be fully produced if the loop
+  ran (the *legacy* `fleet_content` temporary-parking compensation handles it), but the
+  pre-loop `raise` aborts first. This is now intended behaviour (fail-loud); closing it is
+  a TP-input calibration task for the colleague, not a code change.
 
 ### Dev note (this sandbox)
 Committing `.ipynb` here needs a filter override — the local `filter.nbstripout.clean`
@@ -65,8 +97,13 @@ and commit with `git -c filter.nbstripout.clean="$POETRY_PY -m nbstripout" …`.
 lints notebook cells.
 
 ### Remaining
-- **Phase 7** — make infeasibility raise (per the decision above) + mask any zero-ASK NaN.
-- **Phase 8** — full `pytest` + confirm zero regression on the default paths.
+- **Phase 7 — dropped.** The capacity guard stays a `raise` (review point 4); no softening.
+- **Demo refresh** — switch `push_fleet_model.ipynb` to `model.plot()` (the registry plot
+  classes are gone) and either calibrate the TP input so `compute()` no longer raises at
+  2029, or document that the demo errors there until the colleague's TP calibration lands.
+- **Phase 8** — full `pytest` + confirm zero regression on the default paths. (Latest run:
+  `pytest aeromaps/` 126 passed before the plot consolidation; `test_single_scenario_plots.py`
+  63 passed after it. A full re-run is still owed.)
 
 ---
 
@@ -144,8 +181,11 @@ on `fleet_paco_models`.
    energy/ASK bridge (drop-in only) **and** the push model's native per-type/per-segment
    **fleet counts + deliveries** as AeroMAPS outputs (mirroring `SimpleFleetCount`'s
    naming). H2/electric and the bottom-up cost tier stay out of v1.
-6. **Keep the standalone demo** (`python fleet_model_push.py`) working behind a flag, so
-   the colleague can still exercise the engine with its own CAGR + Excel + matplotlib.
+6. ~~**Keep the standalone demo** (`python fleet_model_push.py`) working behind a flag.~~
+   **Reversed (2026-06-29 review, point 1).** No standalone path — the engine only runs as
+   an `AeroMAPSModel` with ASK injected. `market_process`'s internal CAGR, `fleet_process`,
+   and `__main__` were removed. The colleague exercises the engine via the AeroMAPS process
+   + `model.plot()`.
 
 ### Bridge contract — what the wrapper must emit
 
@@ -252,14 +292,15 @@ year-agnostic.
   arrays only. Move the demo's plotting + the standalone CAGR projection into the
   `fleet_process` / `__main__` path (kept behind the standalone flag, Decision #6).
 - **Inject ASK:** accept a full per-year ASK series (indexed by year) and use it directly
-  as `yearly_traffic` instead of `total_asks * np.exp(growth_rates_cum)`. Keep the CAGR
-  path behind a flag for standalone use.
+  as `yearly_traffic` instead of `total_asks * np.exp(growth_rates_cum)`. ✅ Done — and per
+  the review (point 1) ASK is **always** injected: the CAGR path and `total_asks` arg were
+  removed entirely (no standalone flag).
 - **Un-hardcode the calendar:** replace literal `2024`/`2025` with the engine's pivot
   (`last_historical_year`) and projection bounds (`[prospection_start_year, end_year]`),
   passed in by the wrapper; relabel Excel `*_2024` reads as the last-historical-year
-  calibration.
-- Soften the capacity guard here (full robustness in Phase 7): return a feasibility
-  signal instead of raising.
+  calibration. ✅ Done.
+- ~~Soften the capacity guard here (return a feasibility signal instead of raising).~~
+  **Superseded (review point 4):** the legacy `raise ValueError` is kept.
 - **Acceptance:** feeding a known ASK series reproduces it inside `ask_volumes`;
   energy/ASK is invariant to the (now unused) growth profile; no stdout, no plots when
   called as a library.
@@ -316,18 +357,20 @@ AeroMAPS plotting system.
   `aircraft_in_fleet_value_dict`, and per-type deliveries — mirroring `SimpleFleetCount`
   output naming ([fleet_numeric.py:326-329](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/fleet_numeric.py#L326))
   so existing fleet-count plots/consumers pick them up.
-- **Migrate `fleet_model_push_visualisations.py`** (today bespoke matplotlib:
-  `visu_fleet_array`, `visu_retirements_array`, `visu_retirement_age`,
-  `visu_energy_intensity`) into the AeroMAPS plot system as `SingleScenarioPlot`
-  subclasses in [aeromaps/plots/single_scenario_plot.py](aeromaps/plots/single_scenario_plot.py),
-  each declaring `required_outputs` (the Phase-5 fleet outputs + the efficiency bridge)
-  and a `create_plot()` — so the push fleet/energy-intensity charts render from process
-  outputs like every other AeroMAPS plot, not from in-engine `plt` calls. This is also
-  what lets Phase 2 strip plotting out of the engine cleanly (the demo `__main__` path
-  can call these new plot classes too).
+- **Plots → model method (revised; supersedes the earlier `SingleScenarioPlot` migration).**
+  An interim Phase-5 migration created three registry plots
+  (`FleetCountBySegmentPlot` / `FleetDeliveriesByTypePlot` / `EnergyIntensityBySegmentPlot`);
+  these were **removed** in the review follow-up. Final design mirrors `FleetModel.plot()`:
+  `fleet_model_push_visualisations.py` is a pure matplotlib helper module
+  (`visu_fleet_array`, `visu_retirements_array`, `visu_retirement_age`,
+  `visu_energy_intensity`), `compute()` caches the per-segment age-resolved engine arrays
+  in `self._engine_results`, and `PassengerAircraftEfficiencyFleetPush.plot()` renders all
+  push charts from that cache. The age-resolved retirement charts cannot be registry plots
+  (they need the engine's internal `(periods, age, type)` arrays, not flat `df` columns) —
+  which is the reason for the model-method approach.
 - **Acceptance:** per-segment fleet totals are positive and continuous across the pivot;
-  sum of per-type counts == segment total; the migrated plots render from a finished
-  process with no matplotlib calls inside the engine.
+  sum of per-type counts == segment total; `model.plot()` renders every chart from a
+  finished process with no matplotlib calls inside the engine.
 
 ### Phase 6 — Model selection (`models_efficiency_push`)
 
@@ -341,15 +384,18 @@ models. Wire a top-level process group that references it.
 - **Acceptance:** selecting the push group builds a valid process; the other groups are
   byte-for-byte unchanged (regression on `models_efficiency_bottom_up`).
 
-### Phase 7 — Robustness for the MDA
+### Phase 7 — Robustness for the MDA — **DROPPED (review point 4)**
 
-- Convert the `fleet_content` capacity guard from `raise ValueError` / unconditional
-  prints into a bounded, logged fallback (cap deliveries / clamp) so a transient
-  infeasible ASK during MDA iterations doesn't abort the solve.
-- Guard the empty-market / zero-ASK case (NaN intensity) — reuse the `traffic == 0`
-  masking from [[empty-market-nan-robustness]].
-- Replace remaining prints with `logging` at debug level.
-- **Acceptance:** an MDA run with feedback converges; no NaN propagation; no console spam.
+The capacity guard intentionally stays a `raise ValueError` ("we do not care if it fails
+the simulation"). The original softening goal is therefore not pursued.
+
+- ~~Convert the `fleet_content` capacity guard into a bounded, logged fallback.~~ Dropped —
+  the legacy `raise` is kept. ⚠️ Consequence to keep in mind: under a true MDA with
+  feedback, a transient infeasible ASK during iterations would abort the whole solve (the
+  demo currently runs feed-forward, so this is latent, not active).
+- Remaining prints were already replaced with `logging` at debug level.
+- The empty-market / zero-ASK NaN masking ([[empty-market-nan-robustness]]) is still a
+  reasonable hardening if the push model is ever used with null markets — left as optional.
 
 ### Phase 8 — Validation
 
@@ -373,15 +419,16 @@ models. Wire a top-level process group that references it.
 
 ## Critical files
 
-- `aeromaps/models/.../fleet/fleet_model_push.py` — `market_process` refactor: pure
-  engine, ASK injection, un-hardcode pivot/horizon (Phases 2-3).
-- `aeromaps/models/.../fleet/fleet_model_push_calculations.py` — `fleet_content`
-  capacity-guard robustness (Phase 7).
-- `aeromaps/models/.../fleet/fleet_model_push_visualisations.py` →
-  [aeromaps/plots/single_scenario_plot.py](aeromaps/plots/single_scenario_plot.py) —
-  migrate bespoke matplotlib plots to `SingleScenarioPlot` subclasses (Phase 5).
-- `aeromaps/models/.../fleet/aircraft_efficiency.py` (or new `fleet_push_model.py`) — the
-  `PassengerAircraftEfficiencyFleetPush` wrapper (Phases 4-5).
+- `aeromaps/models/.../fleet/fleet_model_push.py` — the pure engine (`market_process`):
+  ASK always injected, calendar un-hardcoded, legacy `raise` on infeasible demand. No
+  standalone path (no CAGR / `fleet_process` / `__main__`).
+- `aeromaps/models/.../fleet/fleet_model_push_calculations.py` — `fleet_content` / solver
+  helpers (unchanged; the capacity guard lives in `market_process` and stays a `raise`).
+- `aeromaps/models/.../fleet/fleet_model_push_visualisations.py` — pure matplotlib helper
+  functions (`visu_*`) called by the wrapper's `plot()` method.
+- `aeromaps/models/.../fleet/aircraft_efficiency_fleet_push.py` *(renamed from
+  `fleet_push_model.py`)* — the `PassengerAircraftEfficiencyFleetPush` wrapper: bridge +
+  fleet outputs, engine-array cache, and the `plot()` method (Phases 4-5 + review).
 - [aeromaps/core/models.py](aeromaps/core/models.py) — `models_efficiency_push` (Phase 6).
 - [aeromaps/core/process.py](aeromaps/core/process.py#L1614) — custom wiring already
   supports the `markets` + `custom_setup` contract; no change expected.
