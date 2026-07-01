@@ -25,6 +25,8 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
+from aeromaps.models.base import aeromaps_interpolation_function
+
 
 class FleetAssignmentMixin:
     """Mixin providing aircraft market share computation for FleetModel.
@@ -246,19 +248,29 @@ class FleetAssignmentMixin:
     def _share_series(self, params, *, required_for):
         """Interpolate a user-provided ``share`` series onto the model year index [%].
 
-        ``params.share`` is an ``AeroMapsCustomDataType`` (years/values). Values
-        are linearly interpolated onto ``self.df.index`` and clamped to the
-        endpoint values outside the declared range. Raises if absent — in
-        share-decoupling mode every aircraft must carry its own share.
+        ``params.share`` is an ``AeroMapsCustomDataType`` (years/values). It is
+        interpolated with the shared ``aeromaps_interpolation_function`` (honouring
+        its declared ``method`` and ``positive_constraint``, with the last value
+        held constant beyond the final reference year), exactly like every other
+        custom data type in AeroMAPS. The series spans
+        ``prospection_start_year..end_year``; historical years (and any gap before
+        the first reference year) are back-filled with the first prospective value
+        — the left-clamp the previous ``np.interp`` produced — which preserves the
+        per-category sum-to-100%% invariant. Raises if absent — in share-decoupling
+        mode every aircraft must carry its own share.
         """
         cdt = getattr(params, "share", None)
         if cdt is None:
             raise ValueError(f"Share-decoupling mode: missing `share` series for {required_for}.")
-        return np.interp(
-            np.asarray(self.df.index, dtype=float),
-            np.asarray(cdt.years, dtype=float),
-            np.asarray(cdt.values, dtype=float),
+        series = aeromaps_interpolation_function(
+            self,
+            reference_years=cdt.years,
+            reference_years_values=cdt.values,
+            method=cdt.method,
+            positive_constraint=cdt.positive_constraint,
+            model_name=f"share[{required_for}]",
         )
+        return series.reindex(self.df.index).bfill().values
 
     def _compute_decoupled_aircraft_share(self):
         """Populate ``aircraft_share`` columns directly from user share series.

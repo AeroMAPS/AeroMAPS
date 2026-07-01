@@ -2,27 +2,37 @@
 # @Author : a.salgas
 # @File : aircrfat_numbe.py
 # @Software: PyCharm
-from aeromaps.models.base import AeroMAPSModel
+from aeromaps.models.base import AeroMAPSModel, aeromaps_interpolation_function
 import pandas as pd
 import numpy as np
 
 
-def _ask_year_aligned(ask_year, index):
+def _ask_year_aligned(model, ask_year, index):
     """Return per-aircraft productivity (``ask_year``) aligned to ``index`` [ASK/yr].
 
     Accepts either a scalar (constant productivity, broadcast over the index) or
     an ``AeroMapsCustomDataType`` (years/values) — used when productivity evolves
-    over time (e.g. fleet_productivity 2025 → 2045). The custom type is linearly
-    interpolated onto ``index`` and clamped to the endpoint values outside the
-    declared range. Returns a numpy array so element-wise division by the
-    aircraft ASK series yields a per-year fleet count.
+    over time (e.g. fleet_productivity 2025 → 2045). The custom type is interpolated
+    with the shared ``aeromaps_interpolation_function`` (honouring its declared
+    ``method`` and ``positive_constraint``, with the last value held constant beyond
+    the final reference year), exactly like every other custom data type in AeroMAPS.
+    ``model`` is the ``FleetEvolution`` instance supplying ``prospection_start_year``,
+    ``end_year`` and a scratch ``df``; ``index`` is the prospection range
+    (``prospection_start_year..end_year``). Any gap before the first reference year is
+    back-filled with the first value (the left-clamp the previous ``np.interp``
+    produced). Returns a numpy array so element-wise division by the aircraft ASK
+    series yields a per-year fleet count.
     """
     if hasattr(ask_year, "years") and hasattr(ask_year, "values"):
-        return np.interp(
-            np.asarray(index, dtype=float),
-            np.asarray(ask_year.years, dtype=float),
-            np.asarray(ask_year.values, dtype=float),
+        series = aeromaps_interpolation_function(
+            model,
+            reference_years=ask_year.years,
+            reference_years_values=ask_year.values,
+            method=ask_year.method,
+            positive_constraint=ask_year.positive_constraint,
+            model_name="fleet_productivity_ask_year",
         )
+        return series.reindex(index).bfill().values
     return float(ask_year)
 
 
@@ -194,7 +204,7 @@ class FleetEvolution(AeroMAPSModel):
                 )
 
                 # Productivity may be a scalar or a per-year series (AeroMapsCustomDataType).
-                ask_year_aligned = _ask_year_aligned(ask_year, ask_aircraft_value.index)
+                ask_year_aligned = _ask_year_aligned(self, ask_year, ask_aircraft_value.index)
                 aircraft_in_fleet_value = np.ceil(ask_aircraft_value / ask_year_aligned)
                 aircraft_in_fleet_value_covid_levelling = np.ceil(
                     ask_aircraft_value_covid_levelling / ask_year_aligned
@@ -277,3 +287,150 @@ def sum_negative(row):
     Calculates the absolute sum of negative values in a row of a dataframe
     """
     return abs(row[row < 0].sum())
+
+
+class SimpleFleetCount(AeroMAPSModel):
+    """Minimal fleet-count model: number of aircraft in fleet, per type and per market.
+
+    A deliberately stripped-down alternative to :class:`FleetEvolution`. For each
+    passenger market and each aircraft in the bottom-up fleet it computes only::
+
+        aircraft_in_fleet = ceil(aircraft_ask / productivity)
+
+    with ``aircraft_ask = aircraft_share / 100 * market_ask`` and ``productivity``
+    the aircraft's ``ask_year`` (a scalar, or a per-year ``AeroMapsCustomDataType``
+    interpolated via :func:`_ask_year_aligned`) — exactly the productivity notion
+    ``FleetEvolution`` uses.
+
+    Everything ``FleetEvolution`` layers on top is intentionally omitted: COVID
+    levelling, RPK, aircraft production/disposal flows, and the extra per-aircraft
+    dictionaries the manufacturing-cost models consume. Use this when a scenario
+    only needs fleet sizes (e.g. the custom multi-region workflow). Because it
+    skips production/disposal it is *not* a drop-in replacement for
+    ``FleetEvolution`` upstream of the recurring/non-recurring cost models.
+
+    Like ``FleetEvolution`` it reads the per-aircraft ``aircraft_share`` columns
+    from ``fleet_model.df`` (so ``FleetModel.compute`` must have run first) and
+    writes ``{aircraft_full_name}:aircraft_in_fleet`` back onto it.
+
+    Parameters
+    ----------
+    name : str
+        Model instance name ('passenger_aircraft_fleet_count' by default).
+
+    Documentation
+    --------------
+    Inputs
+        - dummy_fleet_model_output: Fleet-model trigger placeholder.
+        - ask_<market>: ASK series for each passenger market [ASK].
+    Outputs
+        - aircraft_in_fleet_value_dict: Per-aircraft fleet counts, keyed by full
+          aircraft name [count].
+        - "<market.name>: Aircraft In Fleet": Per-market total fleet count [count].
+    Notes
+        - <market> is the MarketManager id (passenger markets).
+        - I/O names are built dynamically from the fleet's market registry once
+          ``fleet_model`` is injected by ``AeroMAPSProcess._initialize_disciplines``.
+
+    Attributes
+    ----------
+    fleet_model : FleetModel
+        Bottom-up fleet model supplying the aircraft inventory and share columns.
+    """
+
+    def __init__(self, name="passenger_aircraft_fleet_count", fleet_model=None, *args, **kwargs):
+        super().__init__(name=name, model_type="custom", *args, **kwargs)
+        self.fleet_model = fleet_model
+        self._skip_data_type_validation = True
+
+        # Minimal placeholder grammar; overwritten by custom_setup() once
+        # fleet_model is available.
+        self.input_names = {"dummy_fleet_model_output": np.array([1.0])}
+        self.output_names = {"aircraft_in_fleet_value_dict": {}}
+
+    def custom_setup(self):
+        """Build dynamic input/output names from the fleet's passenger markets.
+
+        Called by ``AeroMAPSProcess._initialize_disciplines`` immediately after
+        ``fleet_model`` has been set and before the discipline is wrapped.
+        """
+        if self.fleet_model is None:
+            return
+        markets = self.fleet_model.fleet.markets
+        if markets is None:
+            return
+
+        passenger_markets = markets.get(traffic_type="passenger")
+        if not passenger_markets:
+            return
+
+        self.input_names = {"dummy_fleet_model_output": np.array([1.0])}
+        for market in passenger_markets:
+            self.input_names[f"ask_{market.id}"] = pd.Series([0.0])
+
+        self.output_names = {"aircraft_in_fleet_value_dict": {}}
+        for market in passenger_markets:
+            cat_name = market.name  # display name used as DataFrame column prefix
+            self.output_names[f"{cat_name}: Aircraft In Fleet"] = pd.Series([0.0])
+
+    def compute(self, input_data: dict) -> dict:
+        """Compute the number of aircraft in fleet for each aircraft and market.
+
+        Parameters
+        ----------
+        input_data : dict
+            Inputs containing the per-market ASK series.
+
+        Returns
+        -------
+        dict
+            ``aircraft_in_fleet_value_dict`` plus one per-market total series.
+        """
+        aircraft_in_fleet_value_dict = {}
+        output_data = {}
+
+        for category_name, sets in self.fleet_model.fleet.all_aircraft_elements.items():
+            category = self.fleet_model.fleet.categories[category_name]
+            category_ask = input_data[f"ask_{category.market_id}"]
+            market_total = None
+
+            for aircraft_var in sets:
+                # Reference aircraft expose their fields directly; new aircraft via .parameters.
+                if hasattr(aircraft_var, "parameters"):
+                    aircraft_var_name = aircraft_var.parameters.full_name
+                    ask_year = aircraft_var.parameters.ask_year
+                else:
+                    aircraft_var_name = aircraft_var.full_name
+                    ask_year = aircraft_var.ask_year
+
+                aircraft_ask = (
+                    self.fleet_model.df.loc[
+                        self.prospection_start_year : self.end_year,
+                        f"{aircraft_var_name}:aircraft_share",
+                    ]
+                    / 100
+                    * category_ask
+                )
+
+                # Productivity may be a scalar or a per-year series (AeroMapsCustomDataType).
+                ask_year_aligned = _ask_year_aligned(self, ask_year, aircraft_ask.index)
+                aircraft_in_fleet_value = np.ceil(aircraft_ask / ask_year_aligned)
+
+                # Direct assignment (idempotent: overwrites if already present) rather than
+                # concat, so re-running the model never produces duplicate columns. The
+                # prospection-indexed series leaves historical years NaN on fleet_model.df.
+                aircraft_in_fleet_var_name = f"{aircraft_var_name}:aircraft_in_fleet"
+                self.fleet_model.df[aircraft_in_fleet_var_name] = aircraft_in_fleet_value
+                aircraft_in_fleet_value_dict[aircraft_var_name] = aircraft_in_fleet_value
+                market_total = (
+                    aircraft_in_fleet_value
+                    if market_total is None
+                    else market_total + aircraft_in_fleet_value
+                )
+
+            output_data[f"{category.name}: Aircraft In Fleet"] = market_total
+
+        # Like FleetEvolution, outputs (Series + the per-aircraft dict) are returned
+        # directly for GEMSEO to route; _store_outputs is not used as it rejects dicts.
+        output_data["aircraft_in_fleet_value_dict"] = aircraft_in_fleet_value_dict
+        return output_data

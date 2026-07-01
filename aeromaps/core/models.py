@@ -17,6 +17,7 @@ from aeromaps.models.impacts.costs.airlines.direct_operating_costs import (
 )
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_numeric import (
     FleetEvolution,
+    SimpleFleetCount,
 )
 from aeromaps.models.impacts.costs.efficiency_abatement_cost.fleet_abatement_cost import (
     FleetCarbonAbatementCosts,
@@ -215,20 +216,13 @@ models_efficiency_bottom_up = {
 
 
 models_efficiency_bottom_up_simple_freight = {
-    # Bottom-up passenger fleet efficiency with the *simple* (drop-in only,
-    # per-freight-market gain curve) freight efficiency model in place of the
-    # complex one. Used by the custom-markets multi-region demo, where freight is
-    # a single global market modelled top-down.
     **models_efficiency_bottom_up,
     "freight_aircraft_efficiency": FreightAircraftEfficiencySimple("freight_aircraft_efficiency"),
 }
 
-models_fleet_numeric = {
-    # Productivity-driven per-aircraft fleet counts (aircraft_in_fleet =
-    # ceil(aircraft_ask / ask_year)). Standalone slice of the production-cost
-    # group so a scenario can publish fleet sizes without the recurring /
-    # non-recurring manufacturer cost models.
-    "fleet_numeric": FleetEvolution("fleet_numeric"),
+
+models_fleet_count_simple = {
+    "passenger_aircraft_fleet_count": SimpleFleetCount("passenger_aircraft_fleet_count"),
 }
 
 

@@ -26,6 +26,8 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
+from aeromaps.models.base import aeromaps_interpolation_function
+
 
 # Despite the generic energy module, we do not plan yet to reach that levl of genericity
 # for the available aircraft energy types in the fleet model.
@@ -62,20 +64,31 @@ class FleetPerformanceMixin:
         """Per-year multiplicative energy factor for an aircraft (default 1.0).
 
         ``params.continuous_improvement_factor_energy`` is an optional
-        ``AeroMapsCustomDataType`` (years/values). When present, its values are
-        linearly interpolated onto ``self.df.index`` and clamped to the endpoint
-        values outside the declared range; when absent, returns an all-ones array
-        so the base ``energy_per_ask`` is used unchanged. Applied on top of the
-        resolved (absolute or relative) base energy intensity.
+        ``AeroMapsCustomDataType`` (years/values). When present, it is interpolated
+        with the shared ``aeromaps_interpolation_function`` (honouring its declared
+        ``method`` and ``positive_constraint``, with the last value held constant
+        beyond the final reference year), exactly like every other custom data type
+        in AeroMAPS. The resulting series spans ``prospection_start_year..end_year``;
+        any historical years in ``self.df.index`` are filled with 1.0 (no
+        improvement). When the field is absent, returns an all-ones array so the
+        base ``energy_per_ask`` is used unchanged. Applied on top of the resolved
+        (absolute or relative) base energy intensity.
         """
         cdt = getattr(params, "continuous_improvement_factor_energy", None)
         if cdt is None:
             return np.ones(len(self.df.index))
-        return np.interp(
-            np.asarray(self.df.index, dtype=float),
-            np.asarray(cdt.years, dtype=float),
-            np.asarray(cdt.values, dtype=float),
+        series = aeromaps_interpolation_function(
+            self,
+            reference_years=cdt.years,
+            reference_years_values=cdt.values,
+            method=cdt.method,
+            positive_constraint=cdt.positive_constraint,
+            model_name="continuous_improvement_factor_energy",
         )
+        # The shared interpolator only assigns prospection_start_year..end_year,
+        # leaving historical years as NaN on the model index; fill them with 1.0
+        # (no improvement) so the factor is neutral over the historical period.
+        return series.reindex(self.df.index).fillna(1.0).values
 
     def _compute_energy_consumption_and_share_wrt_energy_type(self):
         """Compute energy consumption and fleet share by energy type.
