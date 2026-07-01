@@ -112,6 +112,12 @@ class AircraftParameters:
         Relative change in energy consumption compared to reference aircraft [%].
     energy_per_ask
         Absolute energy consumption per ASK [MJ/ASK]. Alternative to ``consumption_evolution``.
+    continuous_improvement_factor_energy
+        Optional per-year multiplicative factor applied to the resolved
+        ``energy_per_ask`` (base × factor(year)). Declared as an
+        ``!AeroMapsCustomDataType`` (years/values); absent → no improvement
+        (factor 1.0). Models a generation whose energy intensity improves over
+        time on top of its base performance.
     nox_evolution
         Relative change in NOx emissions compared to reference aircraft [%].
     emission_index_nox
@@ -143,6 +149,7 @@ class AircraftParameters:
     entry_into_service_year: Optional[float] = None
     consumption_evolution: Optional[float] = None
     energy_per_ask: Optional[float] = None
+    continuous_improvement_factor_energy: Optional[object] = None
     nox_evolution: Optional[float] = None
     emission_index_nox: Optional[float] = None
     soot_evolution: Optional[float] = None

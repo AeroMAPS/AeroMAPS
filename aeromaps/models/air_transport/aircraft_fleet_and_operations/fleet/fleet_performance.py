@@ -58,6 +58,25 @@ class FleetPerformanceMixin:
     in ``self.df``).
     """
 
+    def _continuous_improvement_factor(self, params):
+        """Per-year multiplicative energy factor for an aircraft (default 1.0).
+
+        ``params.continuous_improvement_factor_energy`` is an optional
+        ``AeroMapsCustomDataType`` (years/values). When present, its values are
+        linearly interpolated onto ``self.df.index`` and clamped to the endpoint
+        values outside the declared range; when absent, returns an all-ones array
+        so the base ``energy_per_ask`` is used unchanged. Applied on top of the
+        resolved (absolute or relative) base energy intensity.
+        """
+        cdt = getattr(params, "continuous_improvement_factor_energy", None)
+        if cdt is None:
+            return np.ones(len(self.df.index))
+        return np.interp(
+            np.asarray(self.df.index, dtype=float),
+            np.asarray(cdt.years, dtype=float),
+            np.asarray(cdt.values, dtype=float),
+        )
+
     def _compute_energy_consumption_and_share_wrt_energy_type(self):
         """Compute energy consumption and fleet share by energy type.
 
@@ -131,6 +150,7 @@ class FleetPerformanceMixin:
 
                     energy_consumption = (
                         aircraft.resolved("energy_per_ask", recent_reference_aircraft)
+                        * self._continuous_improvement_factor(aircraft.parameters)
                         * aircraft_share
                         / 100
                     )
