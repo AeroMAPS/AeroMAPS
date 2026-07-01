@@ -1207,10 +1207,20 @@ class AeroMAPSProcess(object):
                 f"Unknown global.demand.model '{demand_model}'. Expected one of: "
                 "cagr, cagr_elasticity, constant_elasticity, logistic_income."
             )
+        # ``load_factor.model`` selects the per-market load factor model:
+        #   ``quadratic``            — LoadFactorMarket (quadratic curve, default);
+        #   ``simple_interpolation`` — LoadFactorMarketSimpleInterpolation
+        #                              (piece-wise linear via aeromaps_interpolation_function).
+        # Dropped before flattening so the string is not pushed into parameters.
+        load_factor_block = globals_block.pop("load_factor", {}) or {}
+        load_factor_model = load_factor_block.get("model", "quadratic")
+
         self.models.update(create_market_rtk_models(self.markets, self.markets_data))
         self.models.update(create_market_rtk_aggregator(self.markets))
         self.models.update(create_market_ask_models(self.markets))
-        self.models.update(create_market_load_factor_models(self.markets))
+        self.models.update(
+            create_market_load_factor_models(self.markets, load_factor_model=load_factor_model)
+        )
 
     def _initialize_generic_energy(self):
         """Initialize generic energy resources, processes, and carriers.
