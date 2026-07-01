@@ -365,7 +365,7 @@
     ],
     "operations_gain_reference_years_values": [
         0,
-        3
+        6
     ],
     "covid_end_year_passenger": 2023,
     "covid_end_year_reference_rpk_ratio": 93.0,
@@ -409,8 +409,6 @@
         1.3
     ],
     "dropin_fuel_mean_lhv": 44,
-    "electric_final_market_share_short_range": 70.0,
-    "electric_introduction_year_short_range": 2035,
     "carbon_offset_baseline_level_vs_2019_reference_periods": [
         2020,
         2050

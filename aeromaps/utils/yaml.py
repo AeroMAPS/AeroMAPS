@@ -21,6 +21,28 @@ def aeromaps_custom_data_type_constructor(loader, node):
 yaml.add_constructor("!AeroMapsCustomDataType", aeromaps_custom_data_type_constructor)
 
 
+def aeromaps_custom_data_type_representer(dumper, data):
+    """
+    Custom representer to serialise an AeroMapsCustomDataType back to YAML with
+    its ``!AeroMapsCustomDataType`` tag, mirroring
+    :func:`aeromaps_custom_data_type_constructor`.
+
+    Parameters
+    ----------
+    dumper : yaml.Dumper
+        The YAML dumper instance.
+    data : AeroMapsCustomDataType
+        The object to be represented.
+    """
+    mapping = {"years": list(data.years), "values": list(data.values), "method": data.method}
+    if getattr(data, "positive_constraint", False):
+        mapping["positive_constraint"] = data.positive_constraint
+    return dumper.represent_mapping("!AeroMapsCustomDataType", mapping)
+
+
+yaml.add_representer(AeroMapsCustomDataType, aeromaps_custom_data_type_representer)
+
+
 def read_yaml_file(file_name="parameters.yaml"):
     """
     Read a YAML file and return its contents as a dictionary.
@@ -58,3 +80,19 @@ def read_yaml_file(file_name="parameters.yaml"):
             f"Expected a YAML mapping in '{file_name}', got {type(data).__name__}"
         )
     return data
+
+
+def write_yaml_file(data, file_name="parameters.yaml"):
+    """
+    Write a dictionary to a YAML file, preserving ``!AeroMapsCustomDataType``
+    blocks via their registered representer.
+
+    Parameters
+    ----------
+    data : dict
+        The contents to serialise.
+    file_name : str
+        The path to the YAML file to write.
+    """
+    with open(file_name, "w", encoding="utf-8") as file:
+        yaml.dump(data, file, sort_keys=False, default_flow_style=False, allow_unicode=True)
