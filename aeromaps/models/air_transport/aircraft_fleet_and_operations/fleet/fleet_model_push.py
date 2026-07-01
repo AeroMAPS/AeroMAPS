@@ -24,17 +24,6 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 
-# import matplotlib.pyplot as plt
-import time as tm
-
-from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_model_push_visualisations import (
-    # visualise_10y_seats_deliveries_by_market,
-    # visu_deliveries_array,
-    visu_retirements_array,
-    visu_fleet_array,
-    visu_retirement_age,
-    visu_energy_intensity,
-)
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_model_push_calculations import (
     i_d,
     solve_deliv,
@@ -141,181 +130,43 @@ def calculate_stats_by_market(
     ]
 
 
-def fleet_process(
-    classification_yaml_path: str,
-    market_param_yaml_path: str,
-    in_production_yaml_path: str,
-    new_aircraft_yaml_path: str,
-    aircraft_parameters_excel_path: str,
-    fleet_excel_path: str,
-    aircraft_parameters_sheet_name=0,
-    fleet_sheet_name=0,
-):
-    a = tm.time()
-
-    classification_data = _load_yaml(classification_yaml_path)
-    market_data_config = _load_yaml(market_param_yaml_path)
-    in_production_fleet_data = _load_yaml(in_production_yaml_path)
-    new_fleet_data = _load_yaml(new_aircraft_yaml_path)
-
-    classification_yaml_path = _resolve_project_path(classification_yaml_path)
-    market_param_yaml_path = _resolve_project_path(market_param_yaml_path)
-    in_production_yaml_path = _resolve_project_path(in_production_yaml_path)
-    new_aircraft_yaml_path = _resolve_project_path(new_aircraft_yaml_path)
-    aircraft_parameters_excel_path = _resolve_project_path(aircraft_parameters_excel_path)
-    fleet_excel_path = _resolve_project_path(fleet_excel_path)
-
-    mapping_types = _build_aircraft_to_market_mapping(classification_data)
-    market_to_types = _build_market_to_types_mapping(mapping_types)
-
-    fleet_df = pd.read_excel(fleet_excel_path, sheet_name=fleet_sheet_name).copy()
-    params_df = pd.read_excel(
-        aircraft_parameters_excel_path, sheet_name=aircraft_parameters_sheet_name
-    ).copy()
-
-    fleet_df["Aircraft Type"] = fleet_df["Aircraft Type"].astype(str).str.strip()
-    params_df["Aircraft Type"] = params_df["Aircraft Type"].astype(str).str.strip()
-    fleet_df["market"] = fleet_df["Aircraft Type"].map(mapping_types)
-    params_df["market"] = params_df["Aircraft Type"].map(mapping_types)
-
-    rows = []
-    for market, content in new_fleet_data["markets"].items():
-        for aircraft in content.get("new_aircraft_types", []):
-            row = aircraft.copy()
-            row["market"] = market
-            rows.append(row)
-    new_ac_carac = pd.DataFrame(rows)
-    if not new_ac_carac.empty:
-        new_ac_carac["market"] = new_ac_carac["market"].astype(str).str.strip()
-
-    rows = []
-    for market, content in in_production_fleet_data["markets"].items():
-        for aircraft in content.get("current_aircraft_types", []):
-            ref_points = aircraft.get("reference_production_points", [])
-            years = [p["year"] for p in ref_points]
-            values = [p["value"] for p in ref_points]
-            rows.append(
-                {
-                    "name": aircraft["name"],
-                    "market": market,
-                    "energy_efficiency": aircraft["energy_efficiency"],
-                    "seats": aircraft["seats"],
-                    "ret_year_delay": aircraft["ret_year_delay"],
-                    "production_profile": [years, values],
-                }
-            )
-    in_prod_ac_carac = pd.DataFrame(rows)
-    if not in_prod_ac_carac.empty:
-        in_prod_ac_carac["market"] = in_prod_ac_carac["market"].astype(str).str.strip()
-
-    rows = []
-    for market, content in market_data_config["markets"].items():
-        ref_points = content.get("reference_growth", [])
-        years = [p["year"] for p in ref_points]
-        rate = [p["rate"] for p in ref_points]
-        rows.append(
-            {
-                "market": market,
-                "age_utilisation_sensib": content["age_utilisation_sensib"],
-                "age_retirement_sensib": content["age_retirement_sensib"],
-                "production_profile": [years, rate],
-            }
-        )
-    markets_data = pd.DataFrame(rows)
-    if not in_prod_ac_carac.empty:
-        markets_data["market"] = markets_data["market"].astype(str).str.strip()
-    markets_data.index = markets_data["market"]
-    print(f"Time to load the settings: {tm.time() - a:.2f}s")
-
-    markets = calculate_stats_by_market(
-        classification_yaml_path=classification_yaml_path,
-        aircraft_parameters_excel_path=aircraft_parameters_excel_path,
-    )
-    pd.set_option("display.max_rows", None)
-    pd.set_option("display.max_columns", None)
-    pd.set_option("display.width", None)
-    print(markets)
-    pd.reset_option("display.max_rows")
-    pd.reset_option("display.max_columns")
-    pd.reset_option("display.width")
-
-    for i in range(markets.shape[0]):
-        market_name = markets.iloc[i, 0]
-        print(f"market: {market_name}")
-        total_asks = markets.iloc[i, 1]
-        distance_per_aircraft = markets.iloc[i, 2]
-        keys_market = market_to_types.get(market_name, [])
-
-        selec_fleet = fleet_df[fleet_df["Aircraft Type"].isin(keys_market)]
-        old_ac_carac = params_df[params_df["Aircraft Type"].isin(keys_market)]
-        selec_new_ac = new_ac_carac[new_ac_carac["market"] == market_name]
-        selec_in_prod_ac = in_prod_ac_carac[in_prod_ac_carac["market"] == market_name]
-        market_data = markets_data.loc[market_name]
-        ac_names = (
-            list(old_ac_carac["Aircraft Type"])
-            + list(selec_in_prod_ac["name"])
-            + list(selec_new_ac["name"])
-        )
-
-        years, deliveries, ask_content, fleet_content, energy_content, feasible = market_process(
-            total_asks,
-            market_data,
-            distance_per_aircraft,
-            selec_fleet,
-            old_ac_carac,
-            selec_in_prod_ac,
-            selec_new_ac,
-        )
-        if not feasible:
-            print(
-                f"warning: not enough aircraft in the fleet to meet the demand "
-                f"in market segment {market_name}"
-            )
-
-        visu_fleet_array(ask_content[1:].sum(axis=1), ac_names, "ASK")
-        visu_fleet_array(fleet_content[1:].sum(axis=1), ac_names, "Aircraft seats")
-        visu_fleet_array(deliveries, ac_names, "# Aircraft produced")
-        visu_retirements_array(fleet_content, ac_names)  # to see the aircraft seats outflow
-        visu_retirements_array(ask_content, ac_names)  # to see the ask outflow
-        visu_retirement_age(fleet_content, ac_names)
-        visu_fleet_array(energy_content[1:].sum(axis=1), ac_names, "energy consumption (MJ)")
-        visu_energy_intensity(energy_content, ask_content, years, market_name)
-
-    return None
-
-
 def market_process(
-    total_asks,
     market_data,
     distance_per_aircraft,
     fleet_market,
     old_ac_carac,
     in_prod_ac_carac,
     future_ac_carac,
-    ask_series=None,
-    last_historical_year=2024,
+    ask_series,
+    last_historical_year,
 ):
     """Pure, side-effect-free fleet-renewal engine for a single market segment.
 
+    The AeroMAPS ASK series is always injected; the engine has no internal
+    traffic-growth profile.
+
     Parameters
     ----------
-    ask_series : array-like, optional
-        Per-year ASK volumes aligned to the engine's projection horizon, i.e. the
+    ask_series : array-like
+        Per-year ASK volumes used DIRECTLY as the traffic target
+        (``yearly_traffic``), aligned to the engine's projection horizon: the
         ``last_historical_year`` (pivot/base year) followed by every projection year
-        up to ``market_growth[0][-1]``. When provided it is used DIRECTLY as the
-        traffic target (``yearly_traffic``), bypassing the internal CAGR profile.
-        When ``None`` the legacy internal CAGR behaviour is used (standalone path).
-    last_historical_year : int, default 2024
+        up to ``market_growth[0][-1]`` (length ``modeled_periods + 1``).
+    last_historical_year : int
         Pivot / calibration base year. ``first_projection_year`` is derived as
-        ``last_historical_year + 1``. Defaults reproduce the legacy 2024/2025 calendar.
+        ``last_historical_year + 1``.
 
     Returns
     -------
     tuple
         ``(years, deliveries[:-1], ask_volumes, aircraft_seats_volumes,
-        energy_consumption, feasible)`` where ``feasible`` is a boolean flag that is
-        ``False`` when the delivered fleet activity cannot meet the demand for at
-        least one year (the engine no longer raises in that case; the caller decides).
+        energy_consumption)``.
+
+    Raises
+    ------
+    ValueError
+        When the delivered fleet activity cannot meet the demand for at least one
+        year. A failed simulation in that case is acceptable (legacy behaviour).
     """
     first_projection_year = last_historical_year + 1
     market_growth = market_data["production_profile"]
@@ -323,20 +174,9 @@ def market_process(
     age_retirement_sensibility = market_data["age_retirement_sensib"]
     years = np.arange(first_projection_year, market_growth[0][-1] + 1)
     modeled_periods = years.shape[0]
-    if ask_series is not None:
-        # ASK injection: use the supplied per-year traffic directly. It is aligned to
-        # [last_historical_year, ..., market_growth[0][-1]] -> length modeled_periods + 1.
-        yearly_traffic = np.asarray(ask_series, dtype=float).ravel()
-    else:
-        # traffic evolution (legacy internal CAGR profile)
-        growth_rates = (market_growth[0][0] - last_historical_year) * [market_growth[1][0]]
-        for i in range(len(market_growth[0]) - 1):
-            growth_rates += (market_growth[0][i + 1] - market_growth[0][i]) * [
-                market_growth[1][i + 1]
-            ]
-        growth_rates = np.log(1 + np.array(growth_rates))
-        growth_rates_cum = np.concatenate([np.array([0]), np.cumsum(growth_rates)])
-        yearly_traffic = total_asks * np.exp(growth_rates_cum)
+    # ASK injection: use the supplied per-year traffic directly. It is aligned to
+    # [last_historical_year, ..., market_growth[0][-1]] -> length modeled_periods + 1.
+    yearly_traffic = np.asarray(ask_series, dtype=float).ravel()
     n_old_ac = old_ac_carac.shape[0]
     n_prod_ac = in_prod_ac_carac.shape[0]
     n_new_ac = future_ac_carac.shape[0]
@@ -430,20 +270,15 @@ def market_process(
         np.cumsum(fleet_delivered_activity_y, axis=0)[-1 - modeled_periods :]
         * period_utilisation_array
     )
-    # plt.plot(np.concatenate([np.array([last_historical_year]),years]),fleet_delivered_activity)
-    # plt.plot(np.concatenate([np.array([last_historical_year]),years]),yearly_traffic)
-    # plt.show()
-    # Capacity feasibility check: instead of raising (which aborts an MDA solve), return
-    # a feasibility flag and let the caller decide. No clamping/fallback here (Phase 7).
-    shortfall_mask = fleet_delivered_activity < 0.999999 * yearly_traffic
-    feasible = not bool(np.any(shortfall_mask))
-    if not feasible:
-        logger.debug(
-            "not enough aircraft in the fleet to meet the demand in market segment "
-            "(%d/%d projection years short)",
-            int(np.count_nonzero(shortfall_mask)),
-            shortfall_mask.shape[0],
-        )
+    # Capacity check (legacy behaviour): raise when the delivered fleet activity
+    # cannot meet the demand. A failed simulation in that case is acceptable.
+    print(
+        "Fleet delivered activity vs yearly traffic: ",
+        fleet_delivered_activity - 0.999999 * yearly_traffic,
+    )
+
+    if np.any(fleet_delivered_activity < 0.999999 * yearly_traffic):
+        raise ValueError("not enough aircraft in the fleet to meet the demand in market segment")
 
     # retirement propensity array
     ret_year_delay_type = np.concatenate(
@@ -495,24 +330,4 @@ def market_process(
     ask_volumes = np.array(ask_volumes)
     aircraft_seats_volumes = np.array(aircraft_seats_volumes)
     energy_consumption = energy_intensity[None, None, :] * ask_volumes
-    return years, deliveries[:-1], ask_volumes, aircraft_seats_volumes, energy_consumption, feasible
-
-
-# Standalone demo entry point. Guarded by ``__main__`` so importing this module
-# (e.g. when wiring it as an AeroMAPSModel) does NOT trigger Excel I/O, the fleet
-# convergence or matplotlib. Run ``python fleet_model_push.py`` to exercise it.
-if __name__ == "__main__":
-    # production_volumes = visualise_10y_seats_deliveries_by_market(
-    #     classification_yaml_path="aeromaps/resources/data/default_fleet_push/default_aircraft_classification.yaml",
-    #     aircraft_parameters_excel_path="aeromaps/utils/calibration_notebooks/fleet_calibrated_inputs_processed_here/aircraft_type_key_parameters.xlsx",
-    #     fleet_excel_path="aeromaps/utils/calibration_notebooks/fleet_calibrated_inputs_processed_here/agg_fleet_2024.xlsx",
-    # )
-
-    fleet_process(
-        classification_yaml_path="aeromaps/resources/data/default_fleet_push/default_aircraft_classification.yaml",
-        market_param_yaml_path="aeromaps/resources/data/default_fleet_push/default_market_param.yaml",
-        in_production_yaml_path="aeromaps/resources/data/default_fleet_push/default_in_production_aircraft_inventory.yaml",
-        new_aircraft_yaml_path="aeromaps/resources/data/default_fleet_push/default_new_aircraft_inventory.yaml",
-        aircraft_parameters_excel_path="aeromaps/utils/calibration_notebooks/fleet_calibrated_inputs_processed_here/aircraft_type_key_parameters.xlsx",
-        fleet_excel_path="aeromaps/utils/calibration_notebooks/fleet_calibrated_inputs_processed_here/agg_fleet_end_2024.xlsx",
-    )
+    return years, deliveries[:-1], ask_volumes, aircraft_seats_volumes, energy_consumption

@@ -1,6 +1,6 @@
 """
-fleet_push_model
-================
+aircraft_efficiency_fleet_push
+==============================
 
 AeroMAPS-model wrapper around Paco's delivery-driven ("push") fleet-renewal
 engine (:func:`market_process` in ``fleet_model_push``).
@@ -61,6 +61,12 @@ from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_mod
     calculate_stats_by_market,
     market_process,
 )
+from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_model_push_visualisations import (
+    visu_fleet_array,
+    visu_retirements_array,
+    visu_retirement_age,
+    visu_energy_intensity,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -100,15 +106,14 @@ def _load_push_engine_inputs():
     """Load the four scenario YAMLs + the calibration Excel **once** and build the
     per-engine-segment input structures consumed by :func:`market_process`.
 
-    This replicates ``fleet_process``'s loading (without its prints / plots /
-    matplotlib) and returns, keyed by engine label (TP/RJ/NB/WB), the per-market
-    engine arguments. Cached so the static Excel is read exactly once per process
-    (and reused across the four segments).
+    Returns, keyed by engine label (TP/RJ/NB/WB), the per-market engine arguments.
+    Cached so the static Excel is read exactly once per process (and reused across
+    the four segments).
 
     Returns
     -------
     dict[str, dict]
-        ``{engine_label: {total_asks, distance_per_aircraft, fleet_market,
+        ``{engine_label: {distance_per_aircraft, fleet_market,
         old_ac_carac, in_prod_ac_carac, future_ac_carac, market_data}}``.
     """
     classification_data = _load_yaml(_CLASSIFICATION_YAML)
@@ -199,7 +204,6 @@ def _load_push_engine_inputs():
             ]
         )
         engine_inputs[engine_label] = {
-            "total_asks": markets.iloc[i, 1],
             "distance_per_aircraft": markets.iloc[i, 2],
             "fleet_market": fleet_df[fleet_df["Aircraft Type"].isin(keys_market)],
             "old_ac_carac": old_ac_carac,
@@ -237,6 +241,10 @@ class PassengerAircraftEfficiencyFleetPush(AeroMAPSModel):
     def __init__(self, name="passenger_aircraft_efficiency_fleet_push", *args, **kwargs):
         super().__init__(name=name, model_type="custom", *args, **kwargs)
         self.markets = None
+        # Per-segment engine arrays cached on the last compute() for plot().
+        # Keyed by market id; each value holds the raw (age-resolved) engine
+        # returns that the flat output columns sum away.
+        self._engine_results = {}
 
     def custom_setup(self):
         # Hard pivot guard: the engine is anchored to the end-2024 fleet, so the
@@ -304,6 +312,8 @@ class PassengerAircraftEfficiencyFleetPush(AeroMAPSModel):
             Energy-per-ASK series and ASK shares by energy type per market.
         """
         passenger_markets = self.markets.get(traffic_type="passenger")
+        # Reset the per-segment engine cache (rebuilt below for plot()).
+        self._engine_results = {}
 
         energy_consumption_init = input_data["energy_consumption_init"]
         ask_init = input_data["ask_init"]
@@ -385,9 +395,7 @@ class PassengerAircraftEfficiencyFleetPush(AeroMAPSModel):
                     ask_volumes,
                     aircraft_seats_volumes,
                     energy_consumption,
-                    feasible,
                 ) = market_process(
-                    cfg["total_asks"],
                     market_data,
                     cfg["distance_per_aircraft"],
                     cfg["fleet_market"],
@@ -397,13 +405,19 @@ class PassengerAircraftEfficiencyFleetPush(AeroMAPSModel):
                     ask_series=ask_series,
                     last_historical_year=self.last_historical_year,
                 )
-                if not feasible:
-                    logger.warning(
-                        "push engine: demand not fully met by deliveries in segment '%s' "
-                        "(market id '%s'); proceeding (robustness/clamping is a later phase).",
-                        engine_label,
-                        mid,
-                    )
+
+                # Cache the raw (age-resolved) engine arrays for plot(). The flat
+                # output columns below sum these over the age axis; the retirement /
+                # retirement-age charts need the full 3D arrays.
+                self._engine_results[mid] = {
+                    "market_name": m.name,
+                    "years": _years,
+                    "deliveries": deliveries,
+                    "ask_volumes": ask_volumes,
+                    "aircraft_seats_volumes": aircraft_seats_volumes,
+                    "energy_consumption": energy_consumption,
+                    "ac_names": cfg["ac_names"],
+                }
 
                 # YEAR ALIGNMENT: ask_volumes[t] <-> year (last_historical_year + t).
                 # Do NOT use the returned `years` axis (off by one). Write the projection
@@ -496,3 +510,42 @@ class PassengerAircraftEfficiencyFleetPush(AeroMAPSModel):
 
         self._store_outputs(output_data)
         return output_data
+
+    def plot(self):
+        """Render the push fleet model's per-segment diagnostic charts.
+
+        Standalone matplotlib (outside the ``SingleScenarioPlot`` registry),
+        mirroring :meth:`FleetModel.plot`: it reads the engine arrays cached by the
+        last :meth:`compute` and draws, per mapped passenger segment, the fleet /
+        ASK / deliveries / energy stacks, the retirement and retirement-age
+        diagnostics (which need the engine's internal age-resolved arrays), and the
+        energy-intensity curve.
+
+        Must be called after the process has run (``compute`` populates the cache).
+        """
+        if not self._engine_results:
+            raise RuntimeError(
+                "No cached engine results to plot. Run the process (compute) before plot()."
+            )
+
+        for res in self._engine_results.values():
+            market_name = res["market_name"]
+            ac_names = res["ac_names"]
+            ask_content = res["ask_volumes"]
+            fleet_content = res["aircraft_seats_volumes"]
+            energy_content = res["energy_consumption"]
+            deliveries = res["deliveries"]
+            years = res["years"]
+
+            visu_fleet_array(ask_content[1:].sum(axis=1), ac_names, f"ASK ({market_name})")
+            visu_fleet_array(
+                fleet_content[1:].sum(axis=1), ac_names, f"Aircraft seats ({market_name})"
+            )
+            visu_fleet_array(deliveries, ac_names, f"# Aircraft produced ({market_name})")
+            visu_retirements_array(fleet_content, ac_names)  # aircraft-seats outflow
+            visu_retirements_array(ask_content, ac_names)  # ASK outflow
+            visu_retirement_age(fleet_content, ac_names)
+            visu_fleet_array(
+                energy_content[1:].sum(axis=1), ac_names, f"energy consumption (MJ) ({market_name})"
+            )
+            visu_energy_intensity(energy_content, ask_content, years, market_name)
