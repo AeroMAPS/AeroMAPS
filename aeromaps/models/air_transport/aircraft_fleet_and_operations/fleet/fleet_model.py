@@ -222,6 +222,10 @@ class ReferenceAircraftParameters:
     # Optional per-year fleet share series (!AeroMapsCustomDataType, [%]) used in
     # share-decoupling mode to drive old/recent reference aircraft_share directly.
     share: Optional[object] = None
+    # Optional per-year multiplicative energy factor (!AeroMapsCustomDataType) applied
+    # on top of the base ``energy_per_ask`` — same mechanism as new aircraft, so old/
+    # recent reference aircraft can also improve over time. Absent → constant base.
+    continuous_improvement_factor_energy: Optional[object] = None
 
 
 @dataclass

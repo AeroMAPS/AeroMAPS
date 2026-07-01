@@ -52,7 +52,9 @@ after each step):
 
 - **Generator** ([`generate_regional_markets.py`](aeromaps/notebooks/custom_workflow/11_custom_markets_multi_regions/generate_regional_markets.py))
   reads the workbook and writes per region `markets.yaml`, `fleet.yaml`, `aircraft_inventory.yaml`,
-  `config.yaml`, `inputs_2025.json`, plus the top-level `regionalisation.yaml`.
+  `config.yaml`, `inputs_2025.json`, plus the top-level `regionalisation.yaml`. The workbook path is an
+  argument (`python generate_regional_markets.py [path/to/workbook.xlsx]`, default = bundled workbook;
+  also `main(excel_path=…)`). Scalar lists are emitted inline (`[2025, 2026, …]`) for readable YAML.
 - **Multi-regional process.** The scenario runs as one `MultiRegionalProcess` via
   `create_multi_regional_process("regionalisation.yaml")` (`separate_processes` mode): it executes every
   region's config and exposes per-region (`<region>:<var>`) and aggregated (`overall:<var>`) outputs.
@@ -107,8 +109,10 @@ decomposition columns present.
 
 - **Placeholder data.** The committed workbook holds dummy values (e.g. `cagr_rtk_freight = 1234`), so
   absolute magnitudes — freight especially — are not meaningful. The structure and code paths are correct.
-- **GEN1/GEN2 do not improve over time** — reference aircraft keep a constant base `e_ask_ref`; only
-  GEN3/GEN4 carry the per-year improvement factor. Extending it to references is a small follow-up.
+- **All four generations improve over time** — `continuous_improvement_factor_energy` is now also a
+  field on `ReferenceAircraftParameters` and is applied to the old/recent reference energy at the same
+  compute site, so GEN1/GEN2 carry their own per-year `delta_e_ask_genX` factor just like GEN3/GEN4
+  (absent → constant base, so default scenarios are unchanged).
 - **Freight is per region, not "once".** Distributed by ASK share because the impacts pipeline requires a
   freight market per process (it needs `rtk`) and a zero-RTK placeholder hits the empty-market NaN issue.
   Numerically identical to one global market (uniform efficiency curve).

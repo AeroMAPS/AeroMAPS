@@ -126,11 +126,16 @@ class FleetPerformanceMixin:
                 subcategory_key = f"{category.name}:{subcategory.name}"
 
                 if i == 0:
+                    # Reference aircraft may also carry a per-year improvement factor
+                    # (absent → all-ones), so old/recent references can improve over
+                    # time exactly like new aircraft.
                     initial_energy_consumption = (
                         subcategory.old_reference_aircraft.energy_per_ask
+                        * self._continuous_improvement_factor(subcategory.old_reference_aircraft)
                         * ref_old_aircraft_share
                         / 100
                         + subcategory.recent_reference_aircraft.energy_per_ask
+                        * self._continuous_improvement_factor(subcategory.recent_reference_aircraft)
                         * ref_recent_aircraft_share
                         / 100
                     )
