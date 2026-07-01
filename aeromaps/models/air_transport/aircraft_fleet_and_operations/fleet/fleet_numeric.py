@@ -7,6 +7,25 @@ import pandas as pd
 import numpy as np
 
 
+def _ask_year_aligned(ask_year, index):
+    """Return per-aircraft productivity (``ask_year``) aligned to ``index`` [ASK/yr].
+
+    Accepts either a scalar (constant productivity, broadcast over the index) or
+    an ``AeroMapsCustomDataType`` (years/values) — used when productivity evolves
+    over time (e.g. fleet_productivity 2025 → 2045). The custom type is linearly
+    interpolated onto ``index`` and clamped to the endpoint values outside the
+    declared range. Returns a numpy array so element-wise division by the
+    aircraft ASK series yields a per-year fleet count.
+    """
+    if hasattr(ask_year, "years") and hasattr(ask_year, "values"):
+        return np.interp(
+            np.asarray(index, dtype=float),
+            np.asarray(ask_year.years, dtype=float),
+            np.asarray(ask_year.values, dtype=float),
+        )
+    return float(ask_year)
+
+
 class FleetEvolution(AeroMAPSModel):
     """Compute per-aircraft fleet counts, production and disposal for all passenger markets.
 
@@ -174,9 +193,11 @@ class FleetEvolution(AeroMAPSModel):
                     * category_ask_covid_levelling
                 )
 
-                aircraft_in_fleet_value = np.ceil(ask_aircraft_value / float(ask_year))
+                # Productivity may be a scalar or a per-year series (AeroMapsCustomDataType).
+                ask_year_aligned = _ask_year_aligned(ask_year, ask_aircraft_value.index)
+                aircraft_in_fleet_value = np.ceil(ask_aircraft_value / ask_year_aligned)
                 aircraft_in_fleet_value_covid_levelling = np.ceil(
-                    ask_aircraft_value_covid_levelling / float(ask_year)
+                    ask_aircraft_value_covid_levelling / ask_year_aligned
                 )
                 aircraft_in_out_value = aircraft_in_fleet_value_covid_levelling.diff()
 
