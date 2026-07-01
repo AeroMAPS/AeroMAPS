@@ -272,11 +272,6 @@ def market_process(
     )
     # Capacity check (legacy behaviour): raise when the delivered fleet activity
     # cannot meet the demand. A failed simulation in that case is acceptable.
-    print(
-        "Fleet delivered activity vs yearly traffic: ",
-        fleet_delivered_activity - 0.999999 * yearly_traffic,
-    )
-
     if np.any(fleet_delivered_activity < 0.999999 * yearly_traffic):
         raise ValueError("not enough aircraft in the fleet to meet the demand in market segment")
 
