@@ -240,7 +240,7 @@ def fleet_process(classification_yaml_path: str,
         visu_fleet_array(deliveries, ac_names, '# Aircraft produced')
         visu_retirements_array(fleet_content, ac_names)  # to see the aircraft seats outflow
         # visu_retirements_array(ask_content, ac_names) # to see the ask outflow
-        # visu_retirement_age(fleet_content, ac_names)
+        visu_retirement_age(fleet_content, ac_names)
         visu_fleet_array(energy_content[1:].sum(axis=1), ac_names, 'energy consumption (MJ)')
         visu_energy_intensity(energy_content, ask_content, years, market_name)
 
@@ -359,13 +359,22 @@ def market_process(total_asks, market_data, distance_per_aircraft, fleet_market,
 # fleet_excel_path = "aeromaps/utils/calibration_notebooks/fleet_calibrated_inputs_processed_here/agg_fleet_2024.xlsx",
 # )
 
+# fleet_process(
+#     classification_yaml_path="aeromaps/resources/data/default_fleet_push/default_aircraft_classification.yaml",
+#     market_param_yaml_path="aeromaps/resources/data/default_fleet_push/default_market_param.yaml",
+#     in_production_yaml_path="aeromaps/resources/data/default_fleet_push/default_in_production_aircraft_inventory.yaml",
+#     new_aircraft_yaml_path="aeromaps/resources/data/default_fleet_push/default_new_aircraft_inventory.yaml",
+#     aircraft_parameters_excel_path="aeromaps/utils/calibration_notebooks/fleet_calibrated_inputs_processed_here/aircraft_type_key_parameters.xlsx",
+#     fleet_excel_path="aeromaps/utils/calibration_notebooks/fleet_calibrated_inputs_processed_here/agg_fleet_end_2024.xlsx",
+# )
+
 fleet_process(
     classification_yaml_path="aeromaps/resources/data/default_fleet_push/default_aircraft_classification.yaml",
     market_param_yaml_path="aeromaps/resources/data/default_fleet_push/default_market_param.yaml",
     in_production_yaml_path="aeromaps/resources/data/default_fleet_push/default_in_production_aircraft_inventory.yaml",
     new_aircraft_yaml_path="aeromaps/resources/data/default_fleet_push/default_new_aircraft_inventory.yaml",
     aircraft_parameters_excel_path="aeromaps/utils/calibration_notebooks/fleet_calibrated_inputs_processed_here/aircraft_type_key_parameters.xlsx",
-    fleet_excel_path="aeromaps/utils/calibration_notebooks/fleet_calibrated_inputs_processed_here/agg_fleet_2024.xlsx",
+    fleet_excel_path="aeromaps/utils/calibration_notebooks/fleet_calibrated_inputs_processed_here/agg_fleet_end_2024.xlsx",
 )
 
 
