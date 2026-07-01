@@ -24,7 +24,7 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 
-from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_model_push_calculations import (
+from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet_push.fleet_model_push_calculations import (
     i_d,
     solve_deliv,
     fleet_content,

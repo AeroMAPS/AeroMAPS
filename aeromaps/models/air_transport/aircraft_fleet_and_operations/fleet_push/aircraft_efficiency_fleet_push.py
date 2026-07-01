@@ -52,7 +52,7 @@ import numpy as np
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
-from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_model_push import (
+from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet_push.fleet_model_push import (
     _load_yaml,
     _resolve_project_path,
     _build_aircraft_to_market_mapping,
@@ -60,7 +60,7 @@ from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_mod
     calculate_stats_by_market,
     market_process,
 )
-from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_model_push_visualisations import (
+from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet_push.fleet_model_push_visualisations import (
     visu_fleet_array,
     visu_retirements_array,
     visu_retirement_age,
