@@ -25,7 +25,7 @@ import matplotlib.pyplot as plt
 import time as tm
 
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_model_push_visualisations import (
-    visualise_10y_seats_deliveries_by_submarket, visu_deliveries_array, visu_retirements_array,visu_fleet_array,
+    visualise_10y_seats_deliveries_by_market, visu_deliveries_array, visu_retirements_array,visu_fleet_array,
     visu_retirement_age, visu_energy_intensity)
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_model_push_calculations import i_d, solve_deliv, fleet_content
 
@@ -46,43 +46,43 @@ def _load_yaml(path_like: str | Path) -> dict:
         return yaml.safe_load(f) or {}
 
 
-def _build_aircraft_to_submarket_mapping(classification_data: dict) -> dict[str, str]:
+def _build_aircraft_to_market_mapping(classification_data: dict) -> dict[str, str]:
     return {
-        str(aircraft_type).strip(): str(submarket).strip()
+        str(aircraft_type).strip(): str(market).strip()
         for item in classification_data.get("aircraft_types", [])
         if isinstance(item, dict)
-        for aircraft_type, submarket in item.items()
+        for aircraft_type, market in item.items()
     }
 
 
-def _build_submarket_to_types_mapping(aircraft_to_submarket: dict[str, str]) -> dict[str, list[str]]:
-    submarket_to_types = {}
-    for aircraft_type, submarket in aircraft_to_submarket.items():
-        submarket_to_types.setdefault(submarket, []).append(aircraft_type)
-    return submarket_to_types
+def _build_market_to_types_mapping(aircraft_to_market: dict[str, str]) -> dict[str, list[str]]:
+    market_to_types = {}
+    for aircraft_type, market in aircraft_to_market.items():
+        market_to_types.setdefault(market, []).append(aircraft_type)
+    return market_to_types
 
 
-def calculate_stats_by_submarket(
+def calculate_stats_by_market(
     classification_yaml_path: str,
     aircraft_parameters_excel_path: str,
     excel_sheet_name=0,
 ) -> pd.DataFrame:
     """
-    Compute aggregated statistics by submarket from:
-    - a YAML file mapping aircraft types to submarkets
+    Compute aggregated statistics by market from:
+    - a YAML file mapping aircraft types to markets
     - an Excel file containing aircraft parameters by type
 
     Returns
     -------
     pd.DataFrame
-        DataFrame containing aggregated totals by submarket.
+        DataFrame containing aggregated totals by market.
     """
     classification_data = _load_yaml(classification_yaml_path)
-    mapping = _build_aircraft_to_submarket_mapping(classification_data)
+    mapping = _build_aircraft_to_market_mapping(classification_data)
 
     df = pd.read_excel(_resolve_project_path(aircraft_parameters_excel_path), sheet_name=excel_sheet_name)
     df = df.copy()
-    df["submarket"] = df["Aircraft Type"].astype(str).str.strip().map(mapping)
+    df["market"] = df["Aircraft Type"].astype(str).str.strip().map(mapping)
     df["total_ask_produced_2024"] = pd.to_numeric(df["total_ask_produced_2024"], errors="coerce")
     df["adj_distance_aircraft_year(km)"] = pd.to_numeric(
         df["adj_distance_aircraft_year(km)"], errors="coerce"
@@ -90,7 +90,7 @@ def calculate_stats_by_submarket(
     df["MJ_fuel_ask"] = pd.to_numeric(df["MJ_fuel_ask"], errors="coerce")
 
     df = df[
-        df["submarket"].notna()
+        df["market"].notna()
         & df["total_ask_produced_2024"].notna()
         & df["adj_distance_aircraft_year(km)"].notna()
         & (df["adj_distance_aircraft_year(km)"] != 0)
@@ -103,7 +103,7 @@ def calculate_stats_by_submarket(
     df["ask_over_distance"] = df["total_ask_produced_2024"] / df["adj_distance_aircraft_year(km)"]
     df["MJ_fuel_ask_weighted"] = df["MJ_fuel_ask"] * df["total_ask_produced_2024"]
 
-    grouped = df.groupby("submarket", as_index=False).agg(
+    grouped = df.groupby("market", as_index=False).agg(
         total_adjusted_asks=("total_ask_produced_2024", "sum"),
         ask_over_distance_sum=("ask_over_distance", "sum"),
         MJ_fuel_ask_weighted_sum=("MJ_fuel_ask_weighted", "sum"),
@@ -117,7 +117,7 @@ def calculate_stats_by_submarket(
     )
     return grouped[
         [
-            "submarket",
+            "market",
             "total_adjusted_asks",
             "distance_aircraft_year_segment",
             "MJ_fuel_ask_segment",
@@ -148,28 +148,16 @@ def fleet_process(classification_yaml_path: str,
     aircraft_parameters_excel_path = _resolve_project_path(aircraft_parameters_excel_path)
     fleet_excel_path = _resolve_project_path(fleet_excel_path)
 
-    markets = calculate_stats_by_submarket(
-        classification_yaml_path=classification_yaml_path,
-        aircraft_parameters_excel_path=aircraft_parameters_excel_path,
-    )
-    pd.set_option("display.max_rows", None)
-    pd.set_option("display.max_columns", None)
-    pd.set_option("display.width", None)
-    print(markets)
-    pd.reset_option("display.max_rows")
-    pd.reset_option("display.max_columns")
-    pd.reset_option("display.width")
-
-    mapping_types = _build_aircraft_to_submarket_mapping(classification_data)
-    submarket_to_types = _build_submarket_to_types_mapping(mapping_types)
+    mapping_types = _build_aircraft_to_market_mapping(classification_data)
+    market_to_types = _build_market_to_types_mapping(mapping_types)
 
     fleet_df = pd.read_excel(fleet_excel_path, sheet_name=fleet_sheet_name).copy()
     params_df = pd.read_excel(aircraft_parameters_excel_path, sheet_name=aircraft_parameters_sheet_name).copy()
 
     fleet_df["Aircraft Type"] = fleet_df["Aircraft Type"].astype(str).str.strip()
     params_df["Aircraft Type"] = params_df["Aircraft Type"].astype(str).str.strip()
-    fleet_df["submarket"] = fleet_df["Aircraft Type"].map(mapping_types)
-    params_df["submarket"] = params_df["Aircraft Type"].map(mapping_types)
+    fleet_df["market"] = fleet_df["Aircraft Type"].map(mapping_types)
+    params_df["market"] = params_df["Aircraft Type"].map(mapping_types)
 
     rows = []
     for market, content in new_fleet_data["markets"].items():
@@ -218,14 +206,26 @@ def fleet_process(classification_yaml_path: str,
     if not in_prod_ac_carac.empty:
         markets_data["market"] = markets_data["market"].astype(str).str.strip()
     markets_data.index = markets_data["market"]
-
     print(f"Time to load the settings: {tm.time() - a:.2f}s")
+
+    markets = calculate_stats_by_market(
+        classification_yaml_path=classification_yaml_path,
+        aircraft_parameters_excel_path=aircraft_parameters_excel_path,
+    )
+    pd.set_option("display.max_rows", None)
+    pd.set_option("display.max_columns", None)
+    pd.set_option("display.width", None)
+    print(markets)
+    pd.reset_option("display.max_rows")
+    pd.reset_option("display.max_columns")
+    pd.reset_option("display.width")
+
     for i in range(markets.shape[0]):
         market_name = markets.iloc[i, 0]
+        print(f"market: {market_name}")
         total_asks = markets.iloc[i, 1]
         distance_per_aircraft = markets.iloc[i, 2]
-        print(f"Submarket: {market_name}")
-        keys_market = submarket_to_types.get(market_name, [])
+        keys_market = market_to_types.get(market_name, [])
 
         selec_fleet = fleet_df[fleet_df["Aircraft Type"].isin(keys_market)]
         old_ac_carac = params_df[params_df["Aircraft Type"].isin(keys_market)]
@@ -233,13 +233,15 @@ def fleet_process(classification_yaml_path: str,
         selec_in_prod_ac = in_prod_ac_carac[in_prod_ac_carac["market"] == market_name]
         market_data = markets_data.loc[market_name]
         ac_names = list(old_ac_carac["Aircraft Type"]) + list(selec_in_prod_ac["name"]) + list(selec_new_ac["name"])
+
         years, deliveries, ask_content, fleet_content, energy_content = market_process(total_asks, market_data, distance_per_aircraft, selec_fleet, old_ac_carac,
                                               selec_in_prod_ac, selec_new_ac)
+
         visu_fleet_array(ask_content[1:].sum(axis=1), ac_names,'ASK')
-        # visu_fleet_array(fleet_content[1:].sum(axis=1), ac_names, 'Aircraft seats')
+        visu_fleet_array(fleet_content[1:].sum(axis=1), ac_names, 'Aircraft seats')
         visu_fleet_array(deliveries, ac_names, '# Aircraft produced')
         visu_retirements_array(fleet_content, ac_names)  # to see the aircraft seats outflow
-        # visu_retirements_array(ask_content, ac_names) # to see the ask outflow
+        visu_retirements_array(ask_content, ac_names) # to see the ask outflow
         visu_retirement_age(fleet_content, ac_names)
         visu_fleet_array(energy_content[1:].sum(axis=1), ac_names, 'energy consumption (MJ)')
         visu_energy_intensity(energy_content, ask_content, years, market_name)
@@ -353,7 +355,7 @@ def market_process(total_asks, market_data, distance_per_aircraft, fleet_market,
 
 
 
-# production_volumes = visualise_10y_seats_deliveries_by_submarket(
+# production_volumes = visualise_10y_seats_deliveries_by_market(
 # classification_yaml_path="aeromaps/resources/data/default_fleet_push/default_aircraft_classification.yaml",
 # aircraft_parameters_excel_path="aeromaps/utils/calibration_notebooks/fleet_calibrated_inputs_processed_here/aircraft_type_key_parameters.xlsx",
 # fleet_excel_path = "aeromaps/utils/calibration_notebooks/fleet_calibrated_inputs_processed_here/agg_fleet_2024.xlsx",
