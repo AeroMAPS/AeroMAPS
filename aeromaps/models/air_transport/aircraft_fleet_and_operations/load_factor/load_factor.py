@@ -9,9 +9,18 @@ Module for computing aircraft load factor evolution.
                            (CO2 emissions, airline costs, etc.).
 """
 
+import warnings
+
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
+
+# Horizon (years) at which the arrival-slope constraint was calibrated from
+# historical load-factor data: 2050 - 2019 = 31.  The fitted linear trend
+# for the slope crosses zero at x ≈ 32, so evaluating it beyond that point
+# would impose a physically wrong (negative) slope.  This constant must NOT
+# be changed to end_year - last_historical_year.
+_LF_DERIV_CALIB_HORIZON = 31
 
 
 def _parameters_load_factor_model(
@@ -37,9 +46,8 @@ def _parameters_load_factor_model(
     b
         First order parameter of the quadratic model
     """
-    # Calculate via derivative : 2ax+b, evaluated at the end_year offset
     horizon = end_year - last_historical_year
-    derivative = 2 * (-5.62003082e-05) * horizon + 3.59670410e-03
+    derivative = 2 * (-5.62003082e-05) * _LF_DERIV_CALIB_HORIZON + 3.59670410e-03
     a = -(load_factor_end_year - load_factor_lhy - derivative * horizon) / horizon**2
     b = derivative - 2 * a * horizon
     return [a, b]
@@ -95,6 +103,21 @@ class LoadFactorMarket(AeroMAPSModel):
         ask_init = input_data["ask_init"]
 
         col = f"load_factor_{mid}"
+
+        horizon = self.end_year - self.last_historical_year
+        if horizon != _LF_DERIV_CALIB_HORIZON:
+            warnings.warn(
+                f"[LoadFactorMarket - {mid}] The quadratic load-factor model was calibrated "
+                f"for a horizon of {_LF_DERIV_CALIB_HORIZON} years (end_year=2050, "
+                f"last_historical_year=2019). The current scenario has a horizon of "
+                f"{horizon} years (end_year={self.end_year}, "
+                f"last_historical_year={self.last_historical_year}). The arrival-slope "
+                f"constraint (≈ 0 %/yr at end_year) is applied unchanged. "
+                f"For a model without this limitation, use LoadFactorMarketSimpleInterpolation "
+                f"(set global.load_factor.model: simple_interpolation in markets.yaml).",
+                UserWarning,
+                stacklevel=2,
+            )
 
         for k in range(self.historic_start_year, self.prospection_start_year):
             self.df.loc[k, col] = rpk_init.loc[k] / ask_init.loc[k] * 100
