@@ -203,4 +203,4 @@ freight:
   inputs:
     initial:
       rtk_share_last_historical_year: 100.0
-      energy_share_last_historical_year: 15.0
+      energy_share_last_historical_year: 0.00001
