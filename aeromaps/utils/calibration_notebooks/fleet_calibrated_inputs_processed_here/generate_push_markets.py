@@ -1,4 +1,4 @@
-"""Generate the push-fleet markets profile ``default_markets/markets_push.yaml``.
+"""Generate the push-fleet markets profile ``markets_push.yaml`` (next to the demo notebook).
 
 Phase 1 of the push-fleet-model integration (see ``FLEET_PUSH_INTEGRATION_PLAN.md``).
 
@@ -51,7 +51,9 @@ AIRCRAFT_PARAMETERS_XLSX = (
     / "aircraft_type_key_parameters.xlsx"
 )
 DEFAULT_MARKETS_YAML = ROOT / "aeromaps/resources/data/default_markets/markets.yaml"
-OUTPUT_YAML = ROOT / "aeromaps/resources/data/default_markets/markets_push.yaml"
+# markets_push.yaml is push-scenario data, not a shipped default: it lives next to the
+# demo notebook (like tutorials/05's fleet.yaml), so regenerate it there.
+OUTPUT_YAML = ROOT / "aeromaps/notebooks/custom_workflow/push_fleet_model/data/markets_push.yaml"
 
 # Engine segment label (Excel/classification) -> AeroMAPS market id.
 SEGMENT_TO_MARKET_ID = {

@@ -47,7 +47,6 @@ Fleet-output year alignment (verified empirically against the engine)
 """
 
 import logging
-from functools import lru_cache
 
 import numpy as np
 import pandas as pd
@@ -70,20 +69,21 @@ from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_mod
 
 logger = logging.getLogger(__name__)
 
-# --------------------------------------------------------------------------- #
-# Static resource paths (Hybrid input layer — Decision #2).
-# The four scenario YAMLs ship as resources; the calibration Excel currently
-# still lives under utils/calibration_notebooks/ (moving it is out of scope).
-# --------------------------------------------------------------------------- #
-_FLEET_PUSH_RES = "aeromaps/resources/data/default_fleet_push"
-_FLEET_PUSH_XLS = "aeromaps/utils/calibration_notebooks/fleet_calibrated_inputs_processed_here"
-
-_CLASSIFICATION_YAML = f"{_FLEET_PUSH_RES}/default_aircraft_classification.yaml"
-_MARKET_PARAM_YAML = f"{_FLEET_PUSH_RES}/default_market_param.yaml"
-_IN_PRODUCTION_YAML = f"{_FLEET_PUSH_RES}/default_in_production_aircraft_inventory.yaml"
-_NEW_AIRCRAFT_YAML = f"{_FLEET_PUSH_RES}/default_new_aircraft_inventory.yaml"
-_AIRCRAFT_PARAMS_XLS = f"{_FLEET_PUSH_XLS}/aircraft_type_key_parameters.xlsx"
-_FLEET_XLS = f"{_FLEET_PUSH_XLS}/agg_fleet_end_2024.xlsx"
+# Input-file grammar (Hybrid input layer — Decision #2). These are the field names
+# accepted under the ``models.fleet_push`` config block, in the order
+# :func:`_load_push_engine_inputs` consumes them. The model owns no default *paths*:
+# like every other AeroMAPS model, ``process.py`` resolves the paths from config (the
+# package default config.yaml supplies the shipped defaults; the ``default`` keyword and
+# per-key overrides both work) and injects them as ``self.input_files`` before setup.
+# Imported by process.py as the single source of truth for the accepted field names.
+PUSH_FLEET_INPUT_FILE_KEYS = (
+    "classification_data_file",
+    "market_param_data_file",
+    "in_production_inventory_file",
+    "new_aircraft_inventory_file",
+    "aircraft_parameters_file",
+    "fleet_snapshot_file",
+)
 
 # AeroMAPS market id -> Paco engine segment label.
 _MARKET_ID_TO_ENGINE_LABEL = {
@@ -101,14 +101,21 @@ _MARKET_ID_TO_ENGINE_LABEL = {
 _ENGINE_ANCHOR_YEAR = 2024
 
 
-@lru_cache(maxsize=1)
-def _load_push_engine_inputs():
-    """Load the four scenario YAMLs + the calibration Excel **once** and build the
+def _load_push_engine_inputs(
+    classification_yaml,
+    market_param_yaml,
+    in_production_yaml,
+    new_aircraft_yaml,
+    aircraft_params_xls,
+    fleet_xls,
+):
+    """Load the four scenario YAMLs + the calibration Excel and build the
     per-engine-segment input structures consumed by :func:`market_process`.
 
-    Returns, keyed by engine label (TP/RJ/NB/WB), the per-market engine arguments.
-    Cached so the static Excel is read exactly once per process (and reused across
-    the four segments).
+    The six paths come from the model's ``self.input_files`` (resolved from config by
+    ``process.py``). Called **once** from :meth:`custom_setup`, which caches the result
+    on the instance (``self._engine_inputs``) for reuse across segments and across
+    every ``compute()`` — mirroring how ``Fleet`` loads its YAMLs once at build time.
 
     Returns
     -------
@@ -116,16 +123,16 @@ def _load_push_engine_inputs():
         ``{engine_label: {distance_per_aircraft, fleet_market,
         old_ac_carac, in_prod_ac_carac, future_ac_carac, market_data}}``.
     """
-    classification_data = _load_yaml(_CLASSIFICATION_YAML)
-    market_data_config = _load_yaml(_MARKET_PARAM_YAML)
-    in_production_fleet_data = _load_yaml(_IN_PRODUCTION_YAML)
-    new_fleet_data = _load_yaml(_NEW_AIRCRAFT_YAML)
+    classification_data = _load_yaml(classification_yaml)
+    market_data_config = _load_yaml(market_param_yaml)
+    in_production_fleet_data = _load_yaml(in_production_yaml)
+    new_fleet_data = _load_yaml(new_aircraft_yaml)
 
     mapping_types = _build_aircraft_to_market_mapping(classification_data)
     market_to_types = _build_market_to_types_mapping(mapping_types)
 
-    fleet_df = pd.read_excel(_resolve_project_path(_FLEET_XLS)).copy()
-    params_df = pd.read_excel(_resolve_project_path(_AIRCRAFT_PARAMS_XLS)).copy()
+    fleet_df = pd.read_excel(_resolve_project_path(fleet_xls)).copy()
+    params_df = pd.read_excel(_resolve_project_path(aircraft_params_xls)).copy()
     fleet_df["Aircraft Type"] = fleet_df["Aircraft Type"].astype(str).str.strip()
     params_df["Aircraft Type"] = params_df["Aircraft Type"].astype(str).str.strip()
     fleet_df["market"] = fleet_df["Aircraft Type"].map(mapping_types)
@@ -179,8 +186,8 @@ def _load_push_engine_inputs():
     markets_data.index = markets_data["market"]
 
     markets = calculate_stats_by_market(
-        classification_yaml_path=_resolve_project_path(_CLASSIFICATION_YAML),
-        aircraft_parameters_excel_path=_resolve_project_path(_AIRCRAFT_PARAMS_XLS),
+        classification_yaml_path=_resolve_project_path(classification_yaml),
+        aircraft_parameters_excel_path=_resolve_project_path(aircraft_params_xls),
     )
 
     engine_inputs = {}
@@ -241,6 +248,13 @@ class PassengerAircraftEfficiencyFleetPush(AeroMAPSModel):
     def __init__(self, name="passenger_aircraft_efficiency_fleet_push", *args, **kwargs):
         super().__init__(name=name, model_type="custom", *args, **kwargs)
         self.markets = None
+        # Engine input files: a dict keyed by PUSH_FLEET_INPUT_FILE_KEYS, injected by
+        # process.py (resolved from the models.fleet_push config block) before
+        # custom_setup(). The model owns no default paths of its own.
+        self.input_files = None
+        # Engine inputs loaded once in custom_setup() (mirrors Fleet loading its YAMLs
+        # at build time); reused across segments and every compute().
+        self._engine_inputs = None
         # Per-segment engine arrays cached on the last compute() for plot().
         # Keyed by market id; each value holds the raw (age-resolved) engine
         # returns that the flat output columns sum away.
@@ -275,7 +289,17 @@ class PassengerAircraftEfficiencyFleetPush(AeroMAPSModel):
             self.input_names[f"{mid}_energy_share_last_historical_year"] = 0.0
             self.input_names[f"{mid}_rpk_share_last_historical_year"] = 0.0
 
-        engine_inputs = _load_push_engine_inputs()
+        if not self.input_files:
+            raise RuntimeError(
+                f"{type(self).__name__}.input_files was not injected. It is set by "
+                "process.py from the models.fleet_push config block before custom_setup()."
+            )
+        # Load the static engine inputs once and cache on the instance (reused across
+        # segments and every compute()).
+        self._engine_inputs = _load_push_engine_inputs(
+            *(self.input_files[k] for k in PUSH_FLEET_INPUT_FILE_KEYS)
+        )
+        engine_inputs = self._engine_inputs
 
         self.output_names = {}
         for m in passenger_markets:
@@ -333,7 +357,8 @@ class PassengerAircraftEfficiencyFleetPush(AeroMAPSModel):
         # end_year value (a NaN there would poison the engine's capacity guard).
         ask_sample_years = np.arange(self.last_historical_year, self.end_year + 1)
 
-        engine_inputs = _load_push_engine_inputs()
+        # Reuse the engine inputs loaded once in custom_setup().
+        engine_inputs = self._engine_inputs
 
         # Full year index for the fleet-state columns (NaN pre-pivot history).
         full_years = np.arange(self.historic_start_year, self.end_year + 1)

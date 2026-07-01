@@ -50,6 +50,10 @@ from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_mod
     Fleet,
     FleetModel,
 )
+from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.aircraft_efficiency_fleet_push import (
+    PassengerAircraftEfficiencyFleetPush,
+    PUSH_FLEET_INPUT_FILE_KEYS,
+)
 
 # Generic energy models imports
 from aeromaps.models.impacts.generic_energy_model.common.energy_carriers_manager import (
@@ -1570,6 +1574,26 @@ class AeroMAPSProcess(object):
                 data[key] = pd.Series([0.0])  # initialize to future interpolation type.
         return data
 
+    def _get_model_instance(self, model_cls):
+        """Return the first selected model instance of ``model_cls`` (or None).
+
+        Searches the nested ``self.models`` standards/customs structure (same shape
+        ``check_instance_in_dict`` walks). Used to expose a named handle to a model that
+        is selected via ``models.standards`` rather than constructed here.
+        """
+
+        def search(d):
+            for value in d.values():
+                if isinstance(value, model_cls):
+                    return value
+                if isinstance(value, dict):
+                    found = search(value)
+                    if found is not None:
+                        return found
+            return None
+
+        return search(self.models)
+
     def _initialize_disciplines(self):
         """Wrap models as GEMSEO disciplines and configure coupling.
 
@@ -1610,6 +1634,19 @@ class AeroMAPSProcess(object):
             self.fleet_model._initialize_df()
         else:
             self.fleet = None
+
+        # Push fleet efficiency model: mirror self.fleet_model above — expose a named
+        # handle and resolve+inject its input files. The instance lives in the selected
+        # models_efficiency_push standard; it is None when that standard is not used.
+        # Each fleet_push file resolves like any AeroMAPS data file (user override / the
+        # ``default`` keyword / package default config). Injected before custom_setup()
+        # (run inside check_instance_in_dict) reads it.
+        self.push_fleet_model = self._get_model_instance(PassengerAircraftEfficiencyFleetPush)
+        if self.push_fleet_model is not None:
+            self.push_fleet_model.input_files = {
+                fkey: str(self._resolve_config_path("models", "fleet_push", fkey))
+                for fkey in PUSH_FLEET_INPUT_FILE_KEYS
+            }
 
         def check_instance_in_dict(d):
             # todo rename that function as it is now clearly much more than just checking instance in dict... ;)

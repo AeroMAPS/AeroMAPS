@@ -18,6 +18,18 @@ models:
     aircraft_inventory_model_data_file: "./default_fleet/aircraft_inventory.yaml"
     fleet_model_data_file: "./default_fleet/fleet.yaml"
 
+  # Input files for the delivery-driven ("push") fleet engine. Only read when
+  # models_efficiency_push is selected in `standards`; inert otherwise. The four
+  # scenario YAMLs ship under default_fleet_push/; the two calibration workbooks are
+  # regenerated in place by the calibration notebook, hence the ../utils/ paths.
+  fleet_push:
+    classification_data_file: "./default_fleet_push/default_aircraft_classification.yaml"
+    market_param_data_file: "./default_fleet_push/default_market_param.yaml"
+    in_production_inventory_file: "./default_fleet_push/default_in_production_aircraft_inventory.yaml"
+    new_aircraft_inventory_file: "./default_fleet_push/default_new_aircraft_inventory.yaml"
+    aircraft_parameters_file: "../../utils/calibration_notebooks/fleet_calibrated_inputs_processed_here/aircraft_type_key_parameters.xlsx"
+    fleet_snapshot_file: "../../utils/calibration_notebooks/fleet_calibrated_inputs_processed_here/agg_fleet_end_2024.xlsx"
+
   energy:
     energy_carriers_model_data_file: "./default_energy_carriers/energy_carriers_data.yaml"
     resources_model_data_file: "./default_energy_carriers/resources_data.yaml"

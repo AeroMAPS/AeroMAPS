@@ -8,7 +8,7 @@
 # The legacy `reference_growth` blocks were REMOVED: traffic growth is no longer
 # produced by the engine (ASK is injected from the AeroMAPS demand chain). The
 # per-segment growth profiles now live in the markets config
-# (default_markets/markets_push.yaml -> inputs.growth.cagr_reference_periods[_values]).
+# (markets_push.yaml -> inputs.growth.cagr_reference_periods[_values]).
 markets:
   TP:
     age_utilisation_sensib: -0.01

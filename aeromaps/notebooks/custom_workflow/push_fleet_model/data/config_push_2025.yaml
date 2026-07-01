@@ -7,9 +7,22 @@ data:
     json_inputs_file: "./inputs_2025.json"          # relative to this config's dir
 models:
   markets:
-    # Paco's TP/RJ/NB/WB segments as passenger markets (relative to this dir ->
-    # the shipped resource). 4 '..' climbs notebooks/custom_workflow/push_fleet_model/data -> aeromaps/.
-    markets_data_file: "../../../../resources/data/default_markets/markets_push.yaml"
+    # Paco's TP/RJ/NB/WB segments as passenger markets — this scenario's markets file
+    # lives next to the notebook (like tutorials/05's fleet.yaml), resolved relative
+    # to this config's dir.
+    markets_data_file: "./markets_push.yaml"
+  # Push engine input files (parallel to models.fleet for the bottom-up FleetModel).
+  # `default` resolves to the shipped resource; or give a path relative to this dir to
+  # override a file. Selecting the push engine itself is done via models.standards
+  # (models_efficiency_push) below; omitting this whole block also falls back to the
+  # shipped defaults.
+  fleet_push:
+    classification_data_file: default
+    market_param_data_file: default
+    in_production_inventory_file: default
+    new_aircraft_inventory_file: default
+    aircraft_parameters_file: default
+    fleet_snapshot_file: default
   climate:
     climate_model_data_file: default
   energy:
