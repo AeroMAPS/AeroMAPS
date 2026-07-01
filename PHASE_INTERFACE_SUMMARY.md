@@ -107,8 +107,14 @@ decomposition columns present.
 
 ## Known limitations / deferred
 
-- **Placeholder data.** The committed workbook holds dummy values (e.g. `cagr_rtk_freight = 1234`), so
-  absolute magnitudes — freight especially — are not meaningful. The structure and code paths are correct.
+- **Workbook now holds realistic, AeroMAPS-anchored data** (not the original `1234.x`/`12.x` stubs),
+  built reproducibly by
+  [`custom_data_excel/build_workbook.py`](aeromaps/notebooks/custom_workflow/11_custom_markets_multi_regions/custom_data_excel/build_workbook.py):
+  energy intensity ≈ 0.34–1.25 MJ/ASK, productivity ≈ 0.9–9.5 ×10⁸ ASK/ac/yr, growth ≈ 2–4.5 %/yr,
+  LF 83→89 %, traffic in absolute ASK/RTK (global ≈ 1.15×10¹³ ASK). End-to-end magnitudes are now
+  realistic: global RPK 10→19 ×10¹² (2026→2050), energy ≈ 11.5 EJ, CO₂ ≈ 1.0 Gt — matching real
+  aviation. Region/market split and gen-share trajectories are plausible but illustrative (shares are
+  region-uniform; energy type is per gen×market, identical across regions per the workbook layout).
 - **All four generations improve over time** — `continuous_improvement_factor_energy` is now also a
   field on `ReferenceAircraftParameters` and is applied to the old/recent reference energy at the same
   compute site, so GEN1/GEN2 carry their own per-year `delta_e_ask_genX` factor just like GEN3/GEN4
@@ -116,10 +122,11 @@ decomposition columns present.
 - **Freight is per region, not "once".** Distributed by ASK share because the impacts pipeline requires a
   freight market per process (it needs `rtk`) and a zero-RTK placeholder hits the empty-market NaN issue.
   Numerically identical to one global market (uniform efficiency curve).
-- **CO2 waterfall.** The per-region waterfall in the notebook uses the decomposition columns AeroMAPS
-  emits (`co2_emissions_including_{aircraft_efficiency,operations,load_factor,energy}`, `carbon_offset`).
-  The BAU "2019 technology" baseline and the `no_ng` (fleet-renewal-only) counterfactual from the
-  multi-regional app are *custom* outputs not present in base AeroMAPS, so the "Fleet Renewal" / "Future
-  Aircraft" wedges are not shown.
+- **CO2 waterfall.** The per-region waterfall uses the decomposition columns AeroMAPS emits
+  (`co2_emissions_including_{aircraft_efficiency,operations,load_factor,energy}`, `carbon_offset`). The
+  BAU frozen-technology baseline **is** available as `co2_emissions_last_historical_year_technology`
+  (flexible-start rename of the old `…_2019technology`), so the top "frozen 2025 tech" wedge can be drawn;
+  only the `no_ng` fleet-renewal-only counterfactual remains a custom output (the `*_renewal_only`
+  fleet-level series exist but are not yet aggregated to a CO₂ column).
 - **`nbstripout` git filter** points at a stale conda env (`AeroMAPS_V1`), which fails on `.ipynb`
   staging; fix the path in `.git/config` for clean notebook commits.
