@@ -52,10 +52,18 @@ after each step):
 
 - **Generator** ([`generate_regional_markets.py`](aeromaps/notebooks/custom_workflow/11_custom_markets_multi_regions/generate_regional_markets.py))
   reads the workbook and writes per region `markets.yaml`, `fleet.yaml`, `aircraft_inventory.yaml`,
-  `config.yaml`, `inputs_2025.json`.
+  `config.yaml`, `inputs_2025.json`, plus the top-level `regionalisation.yaml`.
+- **Multi-regional process.** The scenario runs as one `MultiRegionalProcess` via
+  `create_multi_regional_process("regionalisation.yaml")` (`separate_processes` mode): it executes every
+  region's config and exposes per-region (`<region>:<var>`) and aggregated (`overall:<var>`) outputs.
+  `regionalisation.yaml` lists the regions and the `aggregation:` rules (sum + load-factor weighted by
+  ASK). Per-region detail beyond the aggregated variables is read from
+  `process.regional_processes[<region>]`.
 - **Notebook** ([`example_notebook.ipynb`](aeromaps/notebooks/custom_workflow/11_custom_markets_multi_regions/example_notebook.ipynb))
-  generates inputs, builds + computes one process per region, aggregates, and plots. Runs end-to-end
-  (nbconvert, 0 errors).
+  generates inputs, runs the multi-regional process, and plots global/per-region RPK, per-market energy
+  intensity, per-generation fleet counts, and a continent-grouped per-region CO₂ mitigation waterfall
+  (using `<region>:co2_emissions_including_*` / `<region>:carbon_offset`). Runs end-to-end (nbconvert,
+  0 errors).
 
 ## Key mechanics
 
@@ -76,9 +84,16 @@ after each step):
 
 ```bash
 cd aeromaps/notebooks/custom_workflow/11_custom_markets_multi_regions
-python generate_regional_markets.py          # regenerate per-region inputs from the workbook
+python generate_regional_markets.py          # per-region inputs + regionalisation.yaml from the workbook
 # then open example_notebook.ipynb and run all cells (or):
 jupyter nbconvert --to notebook --execute --inplace example_notebook.ipynb
+```
+
+```python
+from aeromaps import create_multi_regional_process
+process = create_multi_regional_process("regionalisation.yaml")
+process.compute()
+vo = process.data["vector_outputs"]      # has <region>:<var> and overall:<var> columns
 ```
 
 ## Verified
