@@ -243,6 +243,57 @@ class FleetAssignmentMixin:
         final_df = pd.DataFrame(final_dict, index=self.df.index)
         self.df = pd.concat([self.df, final_df], axis=1)
 
+    def _share_series(self, params, *, required_for):
+        """Interpolate a user-provided ``share`` series onto the model year index [%].
+
+        ``params.share`` is an ``AeroMapsCustomDataType`` (years/values). Values
+        are linearly interpolated onto ``self.df.index`` and clamped to the
+        endpoint values outside the declared range. Raises if absent — in
+        share-decoupling mode every aircraft must carry its own share.
+        """
+        cdt = getattr(params, "share", None)
+        if cdt is None:
+            raise ValueError(f"Share-decoupling mode: missing `share` series for {required_for}.")
+        return np.interp(
+            np.asarray(self.df.index, dtype=float),
+            np.asarray(cdt.years, dtype=float),
+            np.asarray(cdt.values, dtype=float),
+        )
+
+    def _compute_decoupled_aircraft_share(self):
+        """Populate ``aircraft_share`` columns directly from user share series.
+
+        Share-decoupling mode: bypasses the S-curve. Each aircraft/reference card
+        carries a per-year ``share`` series; this writes the same
+        ``{category}:{subcategory}:{aircraft|old_reference|recent_reference}:aircraft_share``
+        columns that ``_compute_aircraft_share`` would, so every downstream
+        performance step is unchanged. Reference aircraft are read from the first
+        subcategory (matching ``_compute_*`` consumers). Shares are expected to
+        sum to ~100% per category per year (enforced by the data generator).
+        """
+        temp_dict = {}
+        for category in self.fleet.categories.values():
+            first_subcategory = category.subcategories[0]
+            ref_prefix = f"{category.name}:{first_subcategory.name}"
+            temp_dict[f"{ref_prefix}:old_reference:aircraft_share"] = self._share_series(
+                first_subcategory.old_reference_aircraft,
+                required_for=f"{ref_prefix}:old_reference",
+            )
+            temp_dict[f"{ref_prefix}:recent_reference:aircraft_share"] = self._share_series(
+                first_subcategory.recent_reference_aircraft,
+                required_for=f"{ref_prefix}:recent_reference",
+            )
+            for subcategory in category.subcategories.values():
+                subcat_key = f"{category.name}:{subcategory.name}"
+                for aircraft in subcategory.aircraft.values():
+                    temp_dict[f"{subcat_key}:{aircraft.name}:aircraft_share"] = self._share_series(
+                        aircraft.parameters,
+                        required_for=f"{subcat_key}:{aircraft.name}",
+                    )
+
+        final_df = pd.DataFrame(temp_dict, index=self.df.index)
+        self.df = pd.concat([self.df, final_df], axis=1)
+
     def _compute_aircraft_share(self):
         """Compute individual aircraft share in the fleet.
 

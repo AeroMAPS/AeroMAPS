@@ -118,6 +118,12 @@ class AircraftParameters:
         ``!AeroMapsCustomDataType`` (years/values); absent → no improvement
         (factor 1.0). Models a generation whose energy intensity improves over
         time on top of its base performance.
+    share
+        Optional per-year fleet share series (``!AeroMapsCustomDataType``, [%]).
+        When set, the fleet runs in *share-decoupling* mode: the S-curve
+        assignment is bypassed and this series populates the aircraft's
+        ``aircraft_share`` column directly. See
+        ``FleetAssignmentMixin._compute_decoupled_aircraft_share``.
     nox_evolution
         Relative change in NOx emissions compared to reference aircraft [%].
     emission_index_nox
@@ -150,6 +156,7 @@ class AircraftParameters:
     consumption_evolution: Optional[float] = None
     energy_per_ask: Optional[float] = None
     continuous_improvement_factor_energy: Optional[object] = None
+    share: Optional[object] = None
     nox_evolution: Optional[float] = None
     emission_index_nox: Optional[float] = None
     soot_evolution: Optional[float] = None
@@ -212,6 +219,9 @@ class ReferenceAircraftParameters:
     rc_cost: Optional[float] = None
     oew: Optional[float] = None
     full_name: Optional[str] = None
+    # Optional per-year fleet share series (!AeroMapsCustomDataType, [%]) used in
+    # share-decoupling mode to drive old/recent reference aircraft_share directly.
+    share: Optional[object] = None
 
 
 @dataclass
@@ -544,6 +554,9 @@ class Fleet(object):
         self._categories: Dict[str, Category] = {}
         self.parameters = parameters
         self.markets = markets
+        # True when aircraft cards carry a `share` series: the S-curve assignment
+        # and reference-aircraft calibration are bypassed (set in _build_fleet_from_yaml).
+        self.share_decoupled = False
         # Populated during _build_fleet_from_yaml: subcategory id → display name.
         self._subcategory_name_by_id: Dict[str, str] = {}
         self.aircraft_inventory_path = (
@@ -927,7 +940,30 @@ class Fleet(object):
             category._check_shares()
 
         self.categories = categories
-        self._calibrate_reference_aircraft()
+        self.share_decoupled = self._detect_share_decoupling()
+        # In share-decoupling mode reference energy_per_ask is given directly
+        # (absolute) and must not be overwritten by base-year calibration.
+        if not self.share_decoupled:
+            self._calibrate_reference_aircraft()
+
+    def _detect_share_decoupling(self) -> bool:
+        """Return True if any aircraft/reference card carries a `share` series.
+
+        Presence of a per-year ``share`` series switches the fleet to
+        share-decoupling mode (user-driven shares, S-curve and calibration
+        bypassed). Default scenarios carry no ``share`` field and stay on the
+        S-curve path.
+        """
+        for category in self.categories.values():
+            for subcategory in category.subcategories.values():
+                if getattr(subcategory.old_reference_aircraft, "share", None) is not None:
+                    return True
+                if getattr(subcategory.recent_reference_aircraft, "share", None) is not None:
+                    return True
+                for aircraft in subcategory.aircraft.values():
+                    if getattr(aircraft.parameters, "share", None) is not None:
+                        return True
+        return False
 
     @staticmethod
     def _build_subcategory_inventory(entries):
@@ -1212,11 +1248,14 @@ class FleetModel(FleetAssignmentMixin, FleetPerformanceMixin, AeroMAPSModel):
         # Start from empty dataframe (necessary for multiple runs of the model)
         self.df = pd.DataFrame(index=self.df.index)
 
-        # Compute single aircraft shares
-        self._compute_single_aircraft_share()
-
-        # Compute aircraft shares
-        self._compute_aircraft_share()
+        # Aircraft shares: either user-driven (share-decoupling) or S-curve derived.
+        if getattr(self.fleet, "share_decoupled", False):
+            # Populate aircraft_share columns directly from the per-aircraft share series.
+            self._compute_decoupled_aircraft_share()
+        else:
+            # Compute single aircraft shares (cumulative S-curve), then differential shares.
+            self._compute_single_aircraft_share()
+            self._compute_aircraft_share()
 
         # Compute energy consumption and share per subcategory with respect to energy type
         self._compute_energy_consumption_and_share_wrt_energy_type()
