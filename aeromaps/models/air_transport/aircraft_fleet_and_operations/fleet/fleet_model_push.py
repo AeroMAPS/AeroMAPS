@@ -23,7 +23,10 @@ import numpy as np
 from pathlib import Path
 import matplotlib.pyplot as plt
 import time as tm
-from scipy import integrate, optimize
+
+from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_model_push_visualisations import (
+    visualise_5y_seats_deliveries_by_submarket, visu_deliveries_array, visu_retirements_array,visu_fleet_array, visu_retirement_age)
+from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_model_push_calculations import i_d, solve_deliv, fleet_content
 
 
 
@@ -106,135 +109,6 @@ def calculate_stats_by_submarket(
             "MJ_fuel_ask_segment",
         ]
     ]
-
-
-def visualise_5y_seats_deliveries_by_submarket(
-    classification_yaml_path: str,
-    aircraft_parameters_excel_path: str,
-    fleet_excel_path: str,
-    aircraft_parameters_sheet_name=0,
-    fleet_sheet_name=0,
-) -> pd.DataFrame:
-    """
-    Compute and visualise weighted aircraft production volumes by submarket over 2020-2024.
-
-    The weighted volume for each aircraft type is:
-        production_volume * average_seats
-
-    Then values are aggregated by submarket for each year.
-
-    Parameters
-    ----------
-    classification_yaml_path : str
-        Path to the YAML file mapping aircraft types to submarkets.
-    aircraft_parameters_excel_path : str
-        Path to the Excel file containing at least:
-        - 'Aircraft Type'
-        - 'average_seats'
-    fleet_excel_path : str
-        Path to the Excel file containing aircraft production volumes:
-        - aircraft types in index or first column
-        - years as columns
-    aircraft_parameters_sheet_name : int or str, default=0
-        Sheet name/index for the aircraft parameters Excel file.
-    production_sheet_name : int or str, default=0
-        Sheet name/index for the production Excel file.
-
-    Returns
-    -------
-    pd.DataFrame
-        Aggregated weighted production volumes by submarket and year.
-    """
-    module_dir = Path(__file__).resolve().parent
-    project_root = module_dir.parents[4]
-
-    classification_yaml_path = Path(classification_yaml_path)
-    if not classification_yaml_path.is_absolute():
-        classification_yaml_path = (project_root / classification_yaml_path).resolve()
-
-    aircraft_parameters_excel_path = Path(aircraft_parameters_excel_path)
-    if not aircraft_parameters_excel_path.is_absolute():
-        aircraft_parameters_excel_path = (project_root / aircraft_parameters_excel_path).resolve()
-
-    fleet_excel_path = Path(fleet_excel_path)
-    if not fleet_excel_path.is_absolute():
-        fleet_excel_path = (project_root / fleet_excel_path).resolve()
-
-
-    with classification_yaml_path.open("r", encoding="utf-8") as f:
-        classification_data = yaml.safe_load(f) or {}
-
-    mapping = {
-        str(aircraft_type).strip(): str(submarket).strip()
-        for item in classification_data.get("aircraft_types", [])
-        if isinstance(item, dict)
-        for aircraft_type, submarket in item.items()
-    }
-
-    params_df = pd.read_excel(aircraft_parameters_excel_path, sheet_name=aircraft_parameters_sheet_name)
-    params_df = params_df.copy()
-    params_df["Aircraft Type"] = params_df["Aircraft Type"].astype(str).str.strip()
-    params_df["submarket"] = params_df["Aircraft Type"].map(mapping)
-    params_df["average_seats"] = pd.to_numeric(params_df["average_seats"], errors="coerce")
-
-    params_df = params_df[params_df["submarket"].notna() & params_df["average_seats"].notna()].copy()
-
-    production_df = pd.read_excel(
-        fleet_excel_path,
-        sheet_name=fleet_sheet_name,
-        index_col=0,
-    )
-
-    production_df = production_df.copy()
-    production_df.index = production_df.index.astype(str).str.strip()
-    production_df.columns = [str(col).strip() for col in production_df.columns]
-
-    years = [2020, 2021, 2022, 2023, 2024]
-    result_rows = []
-
-    for year in years:
-        year_col = str(year)
-
-        merged = params_df[["Aircraft Type", "submarket", "average_seats"]].merge(
-            production_df[[year_col]],
-            left_on="Aircraft Type",
-            right_index=True,
-            how="inner",
-        )
-
-        merged[year_col] = pd.to_numeric(merged[year_col], errors="coerce")
-        merged = merged[merged[year_col].notna()].copy()
-
-        merged["weighted_seats_deliveries"] = merged[year_col] * merged["average_seats"]
-
-        grouped = (
-            merged.groupby("submarket", as_index=False)["weighted_seats_deliveries"]
-            .sum()
-            .assign(year=year)
-        )
-
-        result_rows.append(grouped)
-
-    result_df = pd.concat(result_rows, ignore_index=True)
-
-    pivot_df = result_df.pivot(index="submarket", columns="year", values="weighted_seats_deliveries").fillna(0.0)
-    pivot_df = pivot_df[years]
-
-    ax = pivot_df.T.plot(
-        kind="bar",
-        figsize=(12, 6),
-        width=0.85,
-    )
-    ax.set_xlabel("Year")
-    ax.set_ylabel("Seats production volumes")
-    ax.legend(title="Submarket", bbox_to_anchor=(1.02, 1), loc="upper left")
-    ax.grid(axis="y", alpha=0.3)
-    plt.yscale('log')
-    plt.tight_layout()
-    plt.show()
-
-    return result_df
-
 
 
 def fleet_process(classification_yaml_path: str,
@@ -345,11 +219,25 @@ def fleet_process(classification_yaml_path: str,
         in_prod_ac_carac["market"] = in_prod_ac_carac["market"].astype(str).str.strip()
 
     with market_param_yaml_path.open("r", encoding="utf-8") as f:
-        growth_data = yaml.safe_load(f) or {}
-    growth_rates = {
-        str(market).strip(): ([v["year"] for v in values], [v["rate"] for v in values])
-        for market, values in growth_data.get("markets_growths", {}).items()
-    }
+        market_data = yaml.safe_load(f) or {}
+    rows = []
+    for market, content in market_data["markets"].items():
+        ref_points = content.get("reference_growth", [])
+        years = [p["year"] for p in ref_points]
+        rate = [p["rate"] for p in ref_points]
+        rows.append(
+            {
+                "market": market,
+                "age_utilisation_sensib": content["age_utilisation_sensib"],
+                "age_retirement_sensib": content["age_retirement_sensib"],
+                "production_profile": [years, rate],
+            }
+        )
+    markets_data = pd.DataFrame(rows)
+    if not in_prod_ac_carac.empty:
+        markets_data["market"] = markets_data["market"].astype(str).str.strip()
+    markets_data.index = markets_data["market"]
+
     print(f"Time to load the settings: {tm.time() - a:.2f}s")
     for i in range(markets.shape[0]):
         market_name = markets.iloc[i, 0]
@@ -362,120 +250,140 @@ def fleet_process(classification_yaml_path: str,
         old_ac_carac = params_df[params_df["Aircraft Type"].isin(keys_market)]
         selec_new_ac = new_ac_carac[new_ac_carac["market"] == market_name]
         selec_in_prod_ac = in_prod_ac_carac[in_prod_ac_carac["market"] == market_name]
-        market_growth = growth_rates.get(market_name)
+        market_data = markets_data.loc[market_name]
+        ac_names = list(old_ac_carac["Aircraft Type"]) + list(selec_in_prod_ac["name"]) + list(selec_new_ac["name"])
+        years, deliveries, ask_content, fleet_content, energy_content = market_process(total_asks, market_data, distance_per_aircraft, selec_fleet, old_ac_carac,
+                                              selec_in_prod_ac, selec_new_ac)
+        # visu_fleet_array(ask_content[1:].sum(axis=1), ac_names,'ASK')
+        visu_fleet_array(fleet_content[1:].sum(axis=1), ac_names, 'aircraft seats')
+        # visu_fleet_array(energy_content[1:].sum(axis=1), ac_names, 'energy consumption (MJ)')
+        # visu_fleet_array(deliveries, ac_names, '# aircraft produced')
+        # visu_retirements_array(fleet_content, ac_names)  # to see the aircraft seats outflow
+        # visu_retirements_array(ask_content, ac_names) # to see the ask outflow
 
-        fleet_content_market = market_process(total_asks, market_growth, distance_per_aircraft, selec_fleet, old_ac_carac, selec_in_prod_ac, selec_new_ac)
-            # suite du traitement...
+        visu_retirement_age(fleet_content, ac_names)
+        plt.grid(axis='y', color='grey', linestyle='--')
+        plt.plot(years, energy_content.sum(axis=(1,2))/ask_content.sum(axis=(1,2)))
+        plt.title('energy efficiency '+market_name)
+        plt.ylim(ymin=0)
+        plt.xlim(xmin=years[0], xmax=years[-1])
+        plt.show()
+
     return None
 
 
-def market_process(total_asks, market_growth, distance_per_aircraft, fleet_market, old_ac_carac, in_prod_ac_carac, future_ac_carac):
+def market_process(total_asks, market_data, distance_per_aircraft, fleet_market, old_ac_carac, in_prod_ac_carac, future_ac_carac):
+    market_growth = market_data["production_profile"]
+    age_utilisation_sensibility = market_data['age_utilisation_sensib']
+    age_retirement_sensibility = market_data['age_retirement_sensib']
     #traffic evolution
-    growth_rates = (market_growth[0][0]-2025)*[market_growth[1][0]]
+    growth_rates = (market_growth[0][0]-2024)*[market_growth[1][0]]
     for i in range(len(market_growth[0])-1):
         growth_rates+=(market_growth[0][i+1]-market_growth[0][i])*[market_growth[1][i+1]]
     growth_rates = np.log(1+np.array(growth_rates))
-    growth_rates_cum = np.cumsum(growth_rates)
+    growth_rates_cum = np.concatenate([np.array([0]),np.cumsum(growth_rates)])
+
     yearly_traffic = total_asks*np.exp(growth_rates_cum)
-    years = np.arange(2025,market_growth[0][-1])
+    years = np.arange(2025,market_growth[0][-1]+1)
     modeled_periods = years.shape[0]
     n_old_ac = old_ac_carac.shape[0]
     n_prod_ac = in_prod_ac_carac.shape[0]
     n_new_ac = future_ac_carac.shape[0]
-
     #fleet array
-    ac_names = list(old_ac_carac["Aircraft Type"]) + list(in_prod_ac_carac["name"]) + list(future_ac_carac["name"])
-    fleet_ini = fleet_market.values[:,1:]
-    fleet_ini = np.hstack((fleet_ini, np.zeros((n_old_ac, n_prod_ac+n_new_ac))))
-    fleet_ini = np.vstack((fleet_ini, np.zeros((modeled_periods, fleet_ini.shape[1]))))
+    fleet_ini = (fleet_market.values[:,1:-1].T).astype(float)
+    fleet_ini = np.hstack((fleet_ini, np.zeros((fleet_ini.shape[0],n_prod_ac+n_new_ac))))
+    fleet_ini = np.vstack((fleet_ini, np.zeros((modeled_periods,fleet_ini.shape[1]))))
+    # fuel intensity array
+    energy_intensity = np.concatenate([old_ac_carac["MJ_fuel_ask"].values, in_prod_ac_carac["energy_efficiency"].values, future_ac_carac["energy_efficiency"].values])
     #seats array
-    seats_array = np.concatenate([old_ac_carac["avg_seats"].values, in_prod_ac_carac["seats"].values, future_ac_carac["seats"].values])
+    seats_array = np.concatenate([old_ac_carac["average_seats"].values, in_prod_ac_carac["seats"].values, future_ac_carac["seats"].values])
     #productivity array
     kms_array = np.concatenate([old_ac_carac["adj_distance_aircraft_year(km)"].values, np.array((in_prod_ac_carac.shape[0]+future_ac_carac.shape[0])*[distance_per_aircraft])])
     prod_array = kms_array * seats_array
+    period_utilisation_array = np.exp(age_utilisation_sensibility * np.arange(modeled_periods+1))
+    age_utilisation_array = np.exp(-age_utilisation_sensibility * (np.arange(fleet_ini.shape[0])-fleet_ini.shape[0]+modeled_periods+1))
     #deliveries array
     deliveries_ini = np.zeros(fleet_ini.shape[1])
-    deliveries = np.array([deliveries_ini] * modeled_periods)
-
+    deliveries = np.array([deliveries_ini] *modeled_periods )
     production_profiles = in_prod_ac_carac["production_profile"].values
+    # in production aircraft volumes
     for ac in range(n_prod_ac):
         production_profile = production_profiles[ac]
         production_volumes = np.array([])
+        tot_production_y = production_profile[0][-1]-production_profile[0][0]
         for i in range(len(production_profile[0]) - 1):
             n_y = production_profile[0][i+1] - production_profile[0][i]
             prod_ref = production_profile[1][i]
             prod_ev = production_profile[1][i+1]-prod_ref
             production_volumes = np.concatenate([production_volumes,np.arange(n_y)/(n_y-1) * prod_ev + prod_ref])
-        deliveries[n_old_ac+ac,-modeled_periods:] = production_volumes
-
+        deliveries[-modeled_periods:-modeled_periods+tot_production_y,n_old_ac+ac] = production_volumes
+    # future aircraft volumes
     delivery_params = future_ac_carac[['intro_year', 'production_duration','renewal_rate', 'time_to_market','seats']].values
     for ac in range(n_new_ac):
-        eis = delivery_params[ac, 0]-2025
-        duration = delivery_params[ac, 1]
-        time_to_market = delivery_params[ac, 2]
-        prod_volume = yearly_traffic[eis] * delivery_params[ac, 3]/distance_per_aircraft/delivery_params[ac, 4]
+        eis = (delivery_params[ac, 0]-2025).astype(int)
+        duration = delivery_params[ac, 1].astype(int)
+        time_to_market = delivery_params[ac, 3]
+        prod_volume = yearly_traffic[eis] * delivery_params[ac, 2]/distance_per_aircraft/delivery_params[ac, 4]
         mu, gamma = solve_deliv(time_to_market, duration)
         for t in range(duration):
             if eis + t + 1 < modeled_periods:
-                deliveries_ac_t = prod_volume * mu * I_d(gamma, duration, t,(t + 1))
-                deliveries[n_old_ac + n_new_ac + ac, -modeled_periods+eis +t] = deliveries_ac_t  # +1->empty_delivery first
+                deliveries_ac_t = prod_volume * mu * i_d(gamma, duration, t,(t + 1))
+                deliveries[-modeled_periods+eis +t,n_old_ac + n_prod_ac + ac] = deliveries_ac_t  # +1->empty_delivery first
+    # fleet activity check
+    fleet_delivered = fleet_ini.copy()
+    fleet_delivered[-modeled_periods:,:] = deliveries
+    fleet_delivered_activity_type_y = (fleet_delivered*age_utilisation_array[:,None]*prod_array[None,:])
+    fleet_delivered_activity_y = fleet_delivered_activity_type_y.sum(axis = 1)
+    fleet_delivered_activity = np.cumsum(fleet_delivered_activity_y, axis=0)[-1-modeled_periods:]*period_utilisation_array
+    # plt.plot(np.concatenate([np.array([2024]),years]),fleet_delivered_activity)
+    # plt.plot(np.concatenate([np.array([2024]),years]),yearly_traffic)
+    # plt.show()
+    if np.any(fleet_delivered_activity < 0.999999*yearly_traffic):
+        raise ValueError("not enough aircraft in the fleet to meet the demand in market segment")
 
-
-    if cum_fleet.sum(axis =(1,2))<yearly_traffic:
-        print("Not enough aircraft in the fleet to meet the demand")
-    #retirement array
-
-    return None
-
-
-
-
-def I1(gamma, m):
-    """∫₀ᵐ t(m-t) exp(γt) dt"""
-    val, _ = integrate.quad(lambda t: t * (m - t) * np.exp(gamma * t), 0, m)
-    return val
-
-def I_d(gamma, m, a, b):
-    """∫₀ᵐ t(m-t) exp(γt) dt"""
-    val, _ = integrate.quad(lambda t: t * (m - t) * np.exp(gamma * t), a, b)
-    return val
-
-def I2(gamma, m):
-    """∫₀ᵐ t²(m-t) exp(γt) dt"""
-    val, _ = integrate.quad(lambda t: t**2 * (m - t) * np.exp(gamma * t), 0, m)
-    return val
-
-def solve_deliv(B, m, gamma_bounds=(-10, 10)):
-
-    if not (0 < B / 1 < m):
-        raise ValueError(
-            f"B/A = {B:.4f} doit être strictement dans (0, {m}) "
-            "(la moyenne de t sous f doit rester dans l'intervalle)."
+    #retirement propensity array
+    ret_prop_type = np.concatenate([old_ac_carac["retirement_propensions"].values, in_prod_ac_carac["ret_prop"].values, future_ac_carac["ret_prop"].values])
+    ret_prop_type_y = ret_prop_type[None,:]+(age_retirement_sensibility*np.arange(fleet_ini.shape[0]))[:, None]
+    ret_prop_type_y+= (0.1338-age_retirement_sensibility)*(fleet_ini.shape[0]-modeled_periods)
+    # fleet composition convergence
+    aircraft_seats_volumes = []
+    ask_volumes = []
+    x_eq = 1
+    print('Computing fleet composition...')
+    for t in range(modeled_periods):
+        fleet_delivered_activity_type_y_t = fleet_delivered_activity_type_y.copy()
+        fleet_delivered_activity_type_y_t[-modeled_periods+t:,:] = 0
+        fleet_delivered_activity_type_y_t = fleet_delivered_activity_type_y_t*period_utilisation_array[t]
+        ask_volumes_type_y_t, x_eq = fleet_content(
+            0, x_eq, fleet_delivered_activity_type_y_t, ret_prop_type_y,
+            yearly_traffic[t], epsilon=1e-6, first=True
         )
+        if x_eq < 1e-30:
+            x_eq = x_eq ** (1 / 8)
+            ret_prop_type_y = ret_prop_type_y - 3 * np.log(2)
 
-    ratio = B
-    def g(gamma):
-        i1 = I1(gamma, m)
-        if abs(i1) < 1e-14:
-            return np.inf
-        return I2(gamma, m) / i1 - ratio
-    # Vérification que g change de signe sur l'intervalle
-    ga, gb = gamma_bounds
-    fa, fb = g(ga), g(gb)
-    if fa * fb > 0:
-        raise ValueError(
-            f"Impossible de trouver gamma dans [{ga}, {gb}] : "
-            f"g({ga})={fa:.3f}, g({gb})={fb:.3f}. "
-            "Essayez d'élargir gamma_bounds."
-        )
-
-    gamma_sol = optimize.brentq(g, ga, gb, xtol=1e-12, rtol=1e-12)
-    mu_sol    = 1 / I1(gamma_sol, m)
-
-    return mu_sol, gamma_sol
+        aircraft_seats_volumes_t = ask_volumes_type_y_t/period_utilisation_array[t]/age_utilisation_array[:,None]/kms_array[None,:]
+        aircraft_seats_volumes.append(aircraft_seats_volumes_t)
+        ask_volumes.append(ask_volumes_type_y_t)
+    ask_volumes = np.array(ask_volumes)
+    aircraft_seats_volumes = np.array(aircraft_seats_volumes)
+    energy_consumption = energy_intensity[None, None, :] * ask_volumes
+    return years, deliveries, ask_volumes, aircraft_seats_volumes, energy_consumption
 
 
 
+
+
+
+
+
+
+
+# production_volumes = visualise_5y_seats_deliveries_by_submarket(
+# classification_yaml_path="aeromaps/resources/data/default_fleet_push/default_aircraft_classification.yaml",
+# aircraft_parameters_excel_path="aeromaps/utils/calibration_notebooks/fleet_calibrated_inputs_processed_here/aircraft_type_key_parameters.xlsx",
+# fleet_excel_path = "aeromaps/utils/calibration_notebooks/fleet_calibrated_inputs_processed_here/agg_fleet_2024.xlsx",
+# )
 
 fleet_process(
     classification_yaml_path="aeromaps/resources/data/default_fleet_push/default_aircraft_classification.yaml",
@@ -486,15 +394,4 @@ fleet_process(
     fleet_excel_path="aeromaps/utils/calibration_notebooks/fleet_calibrated_inputs_processed_here/agg_fleet_2024.xlsx",
 )
 
-# markets = calculate_stats_by_submarket(
-#     classification_yaml_path="aeromaps/resources/data/default_fleet_push/default_aircraft_classification.yaml",
-#     aircraft_parameters_excel_path="aeromaps/utils/calibration_notebooks/fleet_calibrated_inputs_processed_here/aircraft_type_key_parameters.xlsx",
-# )
 
-
-
-# production_volumes = visualise_5y_seats_deliveries_by_submarket(
-# classification_yaml_path="aeromaps/resources/data/default_fleet_push/default_aircraft_classification.yaml",
-# aircraft_parameters_excel_path="aeromaps/utils/calibration_notebooks/fleet_calibrated_inputs_processed_here/aircraft_type_key_parameters.xlsx",
-# fleet_excel_path = "aeromaps/utils/calibration_notebooks/fleet_calibrated_inputs_processed_here/agg_fleet_2024.xlsx",
-# )
