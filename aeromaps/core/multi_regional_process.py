@@ -979,7 +979,7 @@ class MultiRegionalProcess(AeroMAPSProcess):
         fig
             The matplotlib figure object.
         """
-        # TODO: Implement regional comparison plotting
+        # TODO: Implement regional comparison plotting. Maybe use something related toi multiscenario?
         raise NotImplementedError("Regional comparison plotting not yet implemented.")
 
     # =========================================================================
