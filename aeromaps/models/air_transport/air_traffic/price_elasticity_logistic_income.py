@@ -1,8 +1,10 @@
 from typing import Tuple
+from numbers import Number
 
 import pandas as pd
 from numpy import divide
 from numpy import exp
+from scipy.interpolate import interp1d
 
 from aeromaps.models.base import AeroMAPSModel
 
@@ -84,6 +86,10 @@ class RPKLogisticIncomePriceElasticity(AeroMAPSModel):
         rpk_short_range_measures_impact: pd.Series,
         rpk_medium_range_measures_impact: pd.Series,
         rpk_long_range_measures_impact: pd.Series,
+        covid_start_year: Number,
+        covid_rpk_drop_start_year: float,
+        covid_end_year_passenger: Number,
+        covid_end_year_reference_rpk_ratio: float,
     ) -> Tuple[
         pd.Series,
         pd.Series,
@@ -141,6 +147,14 @@ class RPKLogisticIncomePriceElasticity(AeroMAPSModel):
             Traffic reduction impact of specific measures for passenger medium-range market [-].
         rpk_long_range_measures_impact
             Traffic reduction impact of specific measures for passenger long-range market [-].
+        covid_start_year
+            Start year of the COVID period for override [year].
+        covid_rpk_drop_start_year
+            RPK reduction at the start of the COVID period for override [%].
+        covid_end_year_passenger
+            End year of the COVID period for passenger RPK recovery override [year].
+        covid_end_year_reference_rpk_ratio
+            RPK ratio at the end of the COVID period for override (relative to 2019) [%].
 
         Returns
         -------
@@ -277,6 +291,41 @@ class RPKLogisticIncomePriceElasticity(AeroMAPSModel):
         rpk_wc_medium = rpk_model_without_covid_raw * medium_range_rpk_share_2019 / 100 * rpk_medium_range_measures_impact
         rpk_wc_long = rpk_model_without_covid_raw * long_range_rpk_share_2019 / 100 * rpk_long_range_measures_impact
         rpk_model_without_covid = rpk_wc_short + rpk_wc_medium + rpk_wc_long
+
+        # --- Override covid period with actual observed values (ATAG S1 preset) ---
+        # TODO: find a better way to do this value reset after change of start_year
+        _cov_s = int(covid_start_year)
+        _cov_e = int(covid_end_year_passenger)
+        _ref_rpk = rpk_init.loc[self.prospection_start_year - 1]
+        _ov_years = list(range(_cov_s, _cov_e + 1))
+        _cov_fn = interp1d(
+            [_cov_s, _cov_e],
+            [1.0 - covid_rpk_drop_start_year / 100.0, covid_end_year_reference_rpk_ratio / 100.0],
+            kind="linear",
+        )
+        _covid_factors = pd.Series(
+            [float(_cov_fn(k)) for k in _ov_years], index=_ov_years, dtype=float
+        )
+        rpk_short_range.loc[_ov_years] = (
+            _ref_rpk * short_range_rpk_share_2019 / 100
+            * _covid_factors
+            * rpk_short_range_measures_impact.loc[_ov_years]
+        )
+        rpk_medium_range.loc[_ov_years] = (
+            _ref_rpk * medium_range_rpk_share_2019 / 100
+            * _covid_factors
+            * rpk_medium_range_measures_impact.loc[_ov_years]
+        )
+        rpk_long_range.loc[_ov_years] = (
+            _ref_rpk * long_range_rpk_share_2019 / 100
+            * _covid_factors
+            * rpk_long_range_measures_impact.loc[_ov_years]
+        )
+        rpk.loc[_ov_years] = (
+            rpk_short_range.loc[_ov_years]
+            + rpk_medium_range.loc[_ov_years]
+            + rpk_long_range.loc[_ov_years]
+        )
 
         # --- Annual growth rates ---
         annual_growth_rate_passenger_short_range = rpk_short_range.pct_change() * 100

@@ -1,0 +1,22 @@
+# S0 model-chain template (not run directly).
+# `aggregate_regions_to_single_process` reads this `models` block to give S0 the same
+# top-down 3rd-edition chain as S1/S2, then injects the aggregated generic-SAF energy file.
+# Resources/processes stay "default" because the generic SAF consumes the default
+# `ft_others_biomass` resource.
+models:
+  climate:
+    climate_model_data_file: default
+
+  energy:
+    resources_model_data_file: default
+    processes_model_data_file: default
+
+  standards:
+    - models_traffic
+    - models_efficiency_top_down_interp
+    - models_energy_with_fuel_effect
+    - models_energy_cost
+    - models_emissions
+    - models_offset
+    - models_sustainability
+    - models_operation_cost_top_down

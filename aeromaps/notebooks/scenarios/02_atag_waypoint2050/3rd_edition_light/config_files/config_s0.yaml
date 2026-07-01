@@ -1,0 +1,21 @@
+data:
+  inputs:
+    json_inputs_file: C:\Users\i.costa-alves\Documents\Kodigus\aeromaps\AeroMAPS\aeromaps\notebooks\scenarios\02_atag_waypoint2050\3rd_edition_light\data_inputs\s0_inputs.json
+  outputs:
+    json_outputs_file: C:\Users\i.costa-alves\Documents\Kodigus\aeromaps\AeroMAPS\aeromaps\notebooks\scenarios\02_atag_waypoint2050\3rd_edition_light\data_outputs\s0.json
+models:
+  climate:
+    climate_model_data_file: default
+  energy:
+    resources_model_data_file: default
+    processes_model_data_file: default
+    energy_carriers_model_data_file: C:\Users\i.costa-alves\Documents\Kodigus\aeromaps\AeroMAPS\aeromaps\notebooks\scenarios\02_atag_waypoint2050\3rd_edition_light\data_inputs\s0_energy.yaml
+  standards:
+  - models_traffic
+  - models_efficiency_top_down_interp
+  - models_energy_with_fuel_effect
+  - models_energy_cost
+  - models_emissions
+  - models_offset
+  - models_sustainability
+  - models_operation_cost_top_down
