@@ -36,6 +36,24 @@ markets:
         renewal_rate: 0.8
         time_to_market: 10
         ret_year_delay: 0
+  RP:
+    new_aircraft_types:
+      - name: "new_gen_RP"
+        intro_year: 2035
+        production_duration: 20
+        energy_efficiency: 1.15
+        seats: 100
+        renewal_rate: 0.1
+        time_to_market: 8
+        ret_year_delay: 0
+      - name: "final_gen_RP"
+        intro_year: 2050
+        production_duration: 30
+        energy_efficiency: 1
+        seats: 100
+        renewal_rate: 0.1
+        time_to_market: 10
+        ret_year_delay: 0
   NB:
     new_aircraft_types:
       - name: "new_gen_NB_SR"

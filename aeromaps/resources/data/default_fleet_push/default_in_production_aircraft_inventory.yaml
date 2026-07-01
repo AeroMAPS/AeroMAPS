@@ -25,6 +25,19 @@ markets:
           value: 100
         - year: 2040
           value: 0
+  RP:
+    current_aircraft_types:
+      - name: "current_gen_RP"
+        energy_efficiency: 1.3
+        seats: 100
+        ret_year_delay: 0
+        reference_production_points:
+        - year: 2025
+          value: 1
+        - year: 2033
+          value: 2
+        - year: 2040
+          value: 0
   NB:
     current_aircraft_types:
       - name: "current_gen_NB_SR"
