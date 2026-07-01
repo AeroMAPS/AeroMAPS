@@ -1,6 +1,74 @@
 # Plan — Finalize the integration of Paco's "push" fleet model
 
-**Status :** Active | **Updated :** 2026-06-29 | **Branch cible :** `fleet_paco_models`
+**Status :** Active — Phases 1–5 done; Phase 7 awaiting a decision | **Updated :** 2026-06-29 | **Branch cible :** `fleet_paco_models`
+
+---
+
+## ⏱ Implementation progress (2026-06-29) — read this first
+
+Baseline marked by the annotated tag **`push-integration-start`**; every integration
+commit is prefixed **`push-integ:`** (list them with
+`git log push-integration-start..HEAD --oneline`). **pytest was green (26 passed)**
+after Phases 1–4; default top-down / bottom-up / LCA paths are untouched (all changes
+are additive — a new model class, a new model dict, a new markets profile, new plot
+classes; the shared engine refactor preserves the standalone path's numerics).
+
+| # | Commit | What it did |
+|---|---|---|
+| Baseline | `b4f1a167` (tag) | Refreshed this plan; placed the tag. |
+| **1** | `1efbc824` | **Markets profile + generator.** New `resources/data/default_markets/markets_push.yaml` — Paco's four segments as passenger markets (`turboprop`/`regional_jet`/`narrow_body`/`wide_body`) + `freight`. RPK/energy shares for the 2024 pivot are **derived from the calibration Excel** by `aeromaps/utils/calibration_notebooks/fleet_calibrated_inputs_processed_here/generate_push_markets.py` (reuses `calculate_stats_by_market`). Default `markets.yaml` untouched. |
+| **2** | `47cd19a2` | **Pure engine.** `market_process` refactored: new params `ask_series=None` (inject the AeroMAPS ASK series directly as `yearly_traffic`, bypassing the internal CAGR) and `last_historical_year=2024` (derives `first_projection_year`, replacing hard-coded 2024/2025). The capacity `raise ValueError` became a returned **`feasible` flag** (6-tuple return); `print(...)` → `logging.debug`. The standalone `python fleet_model_push.py` path is numerically unchanged (defaults reproduce the old behaviour). |
+| **3+4** | `725924a3` | **Wrapper + selection.** New `fleet_push_model.py::PassengerAircraftEfficiencyFleetPush` (`model_type="custom"`): loads the 4 push YAMLs + calibration Excel **once** (`_load_push_engine_inputs`, `lru_cache`), maps market id→engine label (TP/RJ/NB/WB), runs `market_process` per segment with `ask_{mid}` injected, and emits the **drop-in efficiency bridge** (`energy_per_ask_without_operations_{mid}_{et}` + `ask_{mid}_{et}_share`, 100 % drop-in; H2/electric mirror). History (≤ pivot) is spliced exactly like `SimpleShares`. New `models_efficiency_push` dict in `core/models.py` (mirrors `models_efficiency_top_down`, swaps the passenger-efficiency entry). |
+| Calib. | `740aa3b8` | **2024-pivot guard + demo.** `custom_setup` **raises** unless `last_historical_year == 2024` (i.e. `prospection_start_year == 2025`) — the engine is calibrated to the end-2024 fleet. Self-contained demo at `aeromaps/notebooks/custom_workflow/push_fleet_model/` (config + reused tutorial-13 `inputs_2025.json` ad-hoc 2000–2024 vectors). The 2024→2025 seam is now smooth (~−6 %; was a 5-year-shifted discontinuity on the old 2019 pivot). |
+| **5** | `d3ddc836` | **Fleet outputs + plots.** Wrapper also emits the **fleet bridge** (single engine run): per-segment `"{name}: Aircraft In Fleet"` (mirrors `SimpleFleetCount`) + per-type `{mid}:{type}:aircraft_in_fleet` and `:aircraft_deliveries`. Bespoke matplotlib migrated to 3 `SingleScenarioPlot` classes in `aeromaps/plots/single_scenario/fleet_push.py` (registered in `single_scenario/__init__.py`) that read process outputs, not the engine. |
+
+### How to run / inspect
+- Demo: `aeromaps/notebooks/custom_workflow/push_fleet_model/push_fleet_model.ipynb`
+  (uses `data/config_push_2025.yaml` → `markets_push.yaml` + `models_efficiency_push`,
+  pivot 2025). It prints a per-segment energy/ASK + fleet-count table and renders the
+  three push plots, and demonstrates the 2024-pivot guard firing on a 2020 pivot.
+- Select the model in any config via `models.standards: [..., models_efficiency_push]`
+  and `models.markets.markets_data_file: default_markets/markets_push.yaml`, with a
+  **2025-pivot** scenario (e.g. tutorial-13's `inputs_2025.json`).
+
+### Key technical notes (the non-obvious bits)
+- **Engine year-alignment trap.** With `ask_series` (length `modeled_periods+1`, indexed
+  `[pivot … horizon]`), `ask_volumes[t]`/`aircraft_seats_volumes[t]` ↔ year `pivot + t`
+  (t=0 is the pivot), while `deliveries[k]` ↔ year `pivot + 1 + k`. The engine's returned
+  `years` axis is **off-by-one** and is *not* used. The wrapper sets the engine horizon =
+  `end_year + 1`. Per-type count = `aircraft_seats_volumes[t].sum(axis=0) / seats_array`.
+- **Why the 2024-pivot is mandatory.** The fleet Excel columns are literally 1980→2024,
+  so the engine's historical fleet axis only aligns when the pivot = 2024. Other pivots
+  would mis-date the fleet — hence the hard guard.
+- **Feasibility / the TP "demand not fully met" flag.** In the demo it fires for
+  **turboprop in exactly one year (2029)** — a transient gap just before `new_gen_TP`'s
+  2030 introduction; the demand is still fully produced (0 % shortfall) because the
+  *legacy* `fleet_content` compensation (temporary aircraft parking / aircraft retention)
+  runs. In the legacy engine the pre-loop `raise` aborted before that compensation, so
+  "raise on the flag" ≈ restoring legacy behaviour. **This is the open Phase-7 decision
+  (see below).**
+
+### Open decision (Phase 7) — not yet applied
+You asked that "demand not fully met by deliveries" **raise an error**. The only thing it
+currently trips on is the TP 2029 transient. Pending your pick:
+1. **Raise on the flag + close the 2029 gap** (nudge the placeholder TP input so the demo
+   stays feasible) — recommended; fail-loud + demo runs.
+2. **Raise on the flag, leave TP** to colleague calibration (demo errors at 2029 until
+   then; Phase 8 = pytest only).
+3. **Raise only on a *true* ASK shortfall** (`produced < demand`); the over-utilisation
+   transient stays a warning (demo runs unchanged).
+
+### Dev note (this sandbox)
+Committing `.ipynb` here needs a filter override — the local `filter.nbstripout.clean`
+points to a missing conda python. Strip first (`poetry run python -m nbstripout <nb>`)
+and commit with `git -c filter.nbstripout.clean="$POETRY_PY -m nbstripout" …`. Ruff also
+lints notebook cells.
+
+### Remaining
+- **Phase 7** — make infeasibility raise (per the decision above) + mask any zero-ASK NaN.
+- **Phase 8** — full `pytest` + confirm zero regression on the default paths.
+
+---
 
 ## Context
 
