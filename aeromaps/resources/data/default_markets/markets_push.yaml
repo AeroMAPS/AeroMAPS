@@ -139,6 +139,13 @@ turboprop:  # TP — Paco push segment 'TP'
     initial:
       rpk_share_last_historical_year: 1.0461
       energy_share_last_historical_year: 1.6694
+    # Ported from the legacy push-engine reference_growth (default_market_param.yaml).
+    # AeroMAPS leveling anchors a value FROM its breakpoint; Paco anchored it UP TO the
+    # breakpoint, so the periods are shifted +1y and the last must land on end_year (2070).
+    # TP: 0%/yr to 2035, -15% 2036-37, +10% 2038-40, +2% 2041-50, 0% thereafter.
+    growth:
+      cagr_reference_periods:        [2025, 2036, 2038, 2041, 2051, 2070]
+      cagr_reference_periods_values: [0.0, -15.0, 10.0, 2.0, 0.0, 0.0]
     costs:
       doc_non_energy_per_ask_dropin_fuel_init: 0.048375  # placeholder
 
@@ -150,6 +157,10 @@ regional_jet:  # RJ — Paco push segment 'RJ'
     initial:
       rpk_share_last_historical_year: 2.726
       energy_share_last_historical_year: 5.278
+    # RJ: +1%/yr to 2035, -15% 2036-37, +10% 2038-40, +2% 2041-50, 0% thereafter.
+    growth:
+      cagr_reference_periods:        [2025, 2036, 2038, 2041, 2051, 2070]
+      cagr_reference_periods_values: [1.0, -15.0, 10.0, 2.0, 0.0, 0.0]
     costs:
       doc_non_energy_per_ask_dropin_fuel_init: 0.048375  # placeholder
 
@@ -161,6 +172,10 @@ narrow_body:  # NB — Paco push segment 'NB'
     initial:
       rpk_share_last_historical_year: 55.4922
       energy_share_last_historical_year: 52.7338
+    # NB: +2%/yr to 2035, -15% 2036-37, +10% 2038-40, +1% 2041-50, 0% thereafter.
+    growth:
+      cagr_reference_periods:        [2025, 2036, 2038, 2041, 2051, 2070]
+      cagr_reference_periods_values: [2.0, -15.0, 10.0, 1.0, 0.0, 0.0]
     costs:
       doc_non_energy_per_ask_dropin_fuel_init: 0.0301  # placeholder
 
@@ -172,6 +187,10 @@ wide_body:  # WB — Paco push segment 'WB'
     initial:
       rpk_share_last_historical_year: 40.7357
       energy_share_last_historical_year: 40.3188
+    # WB: +1%/yr to 2035, +2% 2036-38, -20% 2039, +7.1% 2040-44, +2% 2045-50, 0% thereafter.
+    growth:
+      cagr_reference_periods:        [2025, 2036, 2039, 2040, 2045, 2051, 2070]
+      cagr_reference_periods_values: [1.0, 2.0, -20.0, 7.1, 2.0, 0.0, 0.0]
     costs:
       doc_non_energy_per_ask_dropin_fuel_init: 0.024725  # placeholder
 

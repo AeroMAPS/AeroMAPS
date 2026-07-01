@@ -163,15 +163,15 @@ def _load_push_engine_inputs():
 
     rows = []
     for market, content in market_data_config["markets"].items():
-        ref_points = content.get("reference_growth", [])
-        years = [p["year"] for p in ref_points]
-        rate = [p["rate"] for p in ref_points]
+        # Only the age sensibilities are read from default_market_param.yaml. The
+        # legacy per-segment growth profile lives in the markets config now (it drives
+        # the injected ASK via the AeroMAPS demand chain); the engine's production-
+        # profile axis is set from the calendar in compute().
         rows.append(
             {
                 "market": market,
                 "age_utilisation_sensib": content["age_utilisation_sensib"],
                 "age_retirement_sensib": content["age_retirement_sensib"],
-                "production_profile": [years, rate],
             }
         )
     markets_data = pd.DataFrame(rows)
@@ -380,13 +380,13 @@ class PassengerAircraftEfficiencyFleetPush(AeroMAPSModel):
                 # so the engine has modeled_periods + 1 finite traffic targets.
                 ask_series = np.concatenate([ask_proj, ask_proj[-1:]])
 
-                # Override the engine horizon (growth rates unused under ASK injection;
-                # only the last production-profile year matters for the axis).
+                # The engine's production_profile is only used to size the year axis
+                # (its last year). Growth is injected as ASK, so build the axis straight
+                # from the calendar [first_projection_year .. horizon]; the rates are inert.
                 market_data = cfg["market_data"].copy()
-                pp = market_data["production_profile"]
                 market_data["production_profile"] = [
-                    [pp[0][0], horizon],
-                    [pp[1][0], pp[1][-1]],
+                    [self.last_historical_year + 1, horizon],
+                    [0.0, 0.0],
                 ]
 
                 (
