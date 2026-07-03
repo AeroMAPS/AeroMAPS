@@ -1,5 +1,14 @@
 # Changelog
 
+## Branch units
+
+Changed:
+- New unit system (`aeromaps/utils/units.py`): controlled vocabulary of unit symbols, parsing of compound expressions, validation, and conversions (`convert`, `convert_factor`) with dimensional checks.
+- Variable metadata (unit, description, source) moved from `data_information.csv` to `data_information.yaml`, with exact entries plus ordered glob patterns for dynamically named variables (energy pathways, processes, climate species, LCA). All units are validated against the vocabulary at load time.
+- Full metadata coverage: every variable of the tested configurations is now documented (previously ~1350 variables had no unit/description), enforced by the test suite.
+- New config key `data.inputs.data_information_file`; `csv_data_information_file` is deprecated but still read.
+- New API: `process.get_variable_information(name)` to query the unit/description of a variable.
+
 ## Branch scenario_comparison
 
 Changed:
