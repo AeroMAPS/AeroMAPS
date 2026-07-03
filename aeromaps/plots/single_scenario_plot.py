@@ -17,19 +17,28 @@ class SingleScenarioPlot(ABC):
 
     This class handles common initialization and update patterns for plots
     that visualize data from a single process/scenario.
-    
+
     Attributes
     ----------
     required_outputs : list of str
         List of output field names required for this plot. Subclasses should
         override this to specify their data requirements.
     """
-    
+
     # Default: no required outputs (subclasses should override)
     required_outputs = []
 
-    def __init__(self, process, figsize=None, check_outputs=True, required_outputs=None,
-                 fig=None, ax=None, legend=True, **kwargs):
+    def __init__(
+        self,
+        process,
+        figsize=None,
+        check_outputs=True,
+        required_outputs=None,
+        fig=None,
+        ax=None,
+        legend=True,
+        **kwargs,
+    ):
         """
         Initialize the plot with data from a process.
 
@@ -66,12 +75,14 @@ class SingleScenarioPlot(ABC):
             self.required_outputs = required_outputs
         else:
             # Use class attribute - create instance copy to avoid mutation
-            self.required_outputs = self.__class__.required_outputs.copy() if self.__class__.required_outputs else []
-        
+            self.required_outputs = (
+                self.__class__.required_outputs.copy() if self.__class__.required_outputs else []
+            )
+
         # Validate required outputs if requested
         if check_outputs and self.required_outputs:
             self._validate_required_outputs(process.data)
-        
+
         # Extract data from process
         self._extract_data(process.data)
         self.pathways_manager = process.pathways_manager
@@ -85,9 +96,7 @@ class SingleScenarioPlot(ABC):
             figsize = figsize or self._get_default_figsize()
             is_polar = kwargs.get("subplot_kw", {}).get("projection") == "polar"
             layout = None if is_polar else "constrained"
-            self.fig, self.ax = plt.subplots(
-                figsize=figsize, layout=layout, **kwargs
-            )
+            self.fig, self.ax = plt.subplots(figsize=figsize, layout=layout, **kwargs)
 
         # Configure canvas
         self._configure_canvas()
@@ -128,38 +137,38 @@ class SingleScenarioPlot(ABC):
                 f"{self.__class__.__name__} requires outputs {self.required_outputs} "
                 f"but the following are missing: {missing_outputs}. "
                 f"The plot may not render correctly.",
-                UserWarning
+                UserWarning,
             )
-    
+
     @classmethod
     def get_required_outputs(cls):
         """
         Get the list of required outputs for this plot class.
-        
+
         This returns the class-level default. Individual instances may override
         this via the required_outputs parameter in __init__().
-        
+
         Returns
         -------
         list of str
             List of output field names required by this plot class
         """
         return cls.required_outputs
-    
+
     def get_instance_required_outputs(self):
         """
         Get the list of required outputs for this plot instance.
-        
+
         This returns the instance-level required outputs, which may differ
         from the class default if overridden at initialization.
-        
+
         Returns
         -------
         list of str
             List of output field names required by this plot instance
         """
         return self.required_outputs
-    
+
     def _extract_data(self, data):
         """
         Extract and store data attributes from the process data dictionary.

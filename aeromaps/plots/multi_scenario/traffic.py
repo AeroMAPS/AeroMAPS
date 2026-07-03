@@ -15,7 +15,7 @@ class RPKComparisonPlot(MultiScenarioPlot):
         self.ax.set_xlabel("Year", fontsize=12)
         self.ax.set_ylabel("Revenue Passenger Kilometers [trillion pkm]", fontsize=12)
         self.ax.set_title("RPK Comparison Across Scenarios", fontsize=14)
-        self.ax.legend(loc='best')
+        self.ax.legend(loc="best")
         self.ax.grid(True, alpha=0.3)
 
 
@@ -30,6 +30,6 @@ class LoadFactorComparisonPlot(MultiScenarioPlot):
         self.ax.set_xlabel("Year", fontsize=12)
         self.ax.set_ylabel("Load Factor [%]", fontsize=12)
         self.ax.set_title("Load Factor Comparison Across Scenarios", fontsize=14)
-        self.ax.legend(loc='best')
+        self.ax.legend(loc="best")
         self.ax.grid(True, alpha=0.3)
         self.ax.set_ylim(0, 100)

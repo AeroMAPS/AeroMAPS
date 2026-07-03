@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 import numpy as np
 from aeromaps.plots.single_scenario_plot import SingleScenarioPlot, plot_3_x, plot_3_y
 
@@ -230,7 +229,7 @@ class DirectSootEmissionsPlot(SingleScenarioPlot):
         self._setup_grid_and_labels(
             "Evolution of direct soot emissions\nfrom air transport",
             "Year",
-            "Direct soot emissions [MtBC]"
+            "Direct soot emissions [MtBC]",
         )
         self._set_x_limits()
 
@@ -272,9 +271,7 @@ class CarbonOffsetPlot(SingleScenarioPlot):
         )
 
         self._setup_grid_and_labels(
-            "Evolution of carbon offset\nfrom air transport",
-            "Year",
-            "Carbon offset [MtCO₂]"
+            "Evolution of carbon offset\nfrom air transport", "Year", "Carbon offset [MtCO₂]"
         )
         self._set_x_limits()
 
@@ -307,7 +304,7 @@ class CumulativeCarbonOffsetPlot(SingleScenarioPlot):
         self._setup_grid_and_labels(
             "Cumulative carbon offset from air transport",
             "Year",
-            "Cumulative carbon offset [GtCO₂]"
+            "Cumulative carbon offset [GtCO₂]",
         )
         self.ax.legend()
 

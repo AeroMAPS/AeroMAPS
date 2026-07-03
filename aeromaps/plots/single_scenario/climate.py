@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 import numpy as np
 
 from aeromaps.plots.single_scenario_plot import SingleScenarioPlot
@@ -258,7 +257,7 @@ class TemperatureIncreaseFromAirTransportPlot(SingleScenarioPlot):
         self.ax.set_title("Evolution of temperature increase\nfrom air transport")
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Temperature increase [mK]")
-        
+
         self.ax.legend()
         self.ax.set_xlim(self.years[0], self.years[-1])
         # self.ax.set_ylim(0,)
@@ -445,7 +444,7 @@ class DetailedTemperatureIncreaseFromAirTransportPlot(SingleScenarioPlot):
         self.ax.set_title("Evolution of temperature increase\nfrom air transport")
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Temperature increase [mK]")
-        
+
         self.ax.legend()
         self.ax.set_xlim(self.years[0], self.years[-1])
         # self.ax.set_ylim(0,)

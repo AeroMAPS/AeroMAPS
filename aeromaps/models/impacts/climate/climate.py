@@ -44,13 +44,13 @@ class ClimateModel(AeroMAPSModel):
     """
 
     def __init__(
-            self,
-            climate_model: str,
-            name: str = "climate",
-            species_settings: dict | None = None,
-            model_settings: dict | None = None,
-            *args,
-            **kwargs
+        self,
+        climate_model: str,
+        name: str = "climate",
+        species_settings: dict | None = None,
+        model_settings: dict | None = None,
+        *args,
+        **kwargs,
     ):
         super().__init__(name=name, model_type="custom", *args, **kwargs)
 
@@ -114,14 +114,14 @@ class ClimateModel(AeroMAPSModel):
         # --- Prepare species inventory (and converting to ndarray) ---
         # Preprocess contrails
         idx1 = slice(self.climate_historic_start_year, self.end_year)
-        self.df_climate.loc[idx1, "contrails_distance_corrected"] = (
-                input_data["total_aircraft_distance"].loc[idx1]
-        )
+        self.df_climate.loc[idx1, "contrails_distance_corrected"] = input_data[
+            "total_aircraft_distance"
+        ].loc[idx1]
         idx2 = slice(self.historic_start_year, self.end_year)
         self.df_climate.loc[idx2, "contrails_distance_corrected"] = (
-                input_data["total_aircraft_distance"].loc[idx2]
-                * (1 - input_data["operations_contrails_gain"].loc[idx2] / 100)
-                * input_data["fuel_effect_correction_contrails"].loc[idx2]
+            input_data["total_aircraft_distance"].loc[idx2]
+            * (1 - input_data["operations_contrails_gain"].loc[idx2] / 100)
+            * input_data["fuel_effect_correction_contrails"].loc[idx2]
         )
         contrails_distance_corrected = self.df_climate["contrails_distance_corrected"]
 
@@ -143,7 +143,7 @@ class ClimateModel(AeroMAPSModel):
             end_year=self.end_year,
             species_inventory=species_inventory,
             species_settings=self.species_settings,
-            model_settings=self.model_settings
+            model_settings=self.model_settings,
         ).run()
 
         # --- Convert back results from np.ndarray (list) to pd.Series ---
@@ -178,30 +178,44 @@ class ClimateModel(AeroMAPSModel):
             self.df_climate[var_rf] = rf
             output_data[var_rf] = rf
 
-        self.df_climate["temperature_increase_from_nox_from_aviation"] = self.df_climate[
-                                                                             "temperature_increase_from_nox_short_term_o3_increase_from_aviation"] + \
-                                                                         self.df_climate[
-                                                                             "temperature_increase_from_nox_long_term_o3_decrease_from_aviation"] + \
-                                                                         self.df_climate[
-                                                                             "temperature_increase_from_nox_ch4_decrease_from_aviation"] + \
-                                                                         self.df_climate[
-                                                                             "temperature_increase_from_nox_stratospheric_water_vapor_decrease_from_aviation"]
+        self.df_climate["temperature_increase_from_nox_from_aviation"] = (
+            self.df_climate["temperature_increase_from_nox_short_term_o3_increase_from_aviation"]
+            + self.df_climate["temperature_increase_from_nox_long_term_o3_decrease_from_aviation"]
+            + self.df_climate["temperature_increase_from_nox_ch4_decrease_from_aviation"]
+            + self.df_climate[
+                "temperature_increase_from_nox_stratospheric_water_vapor_decrease_from_aviation"
+            ]
+        )
         output_data["temperature_increase_from_nox_from_aviation"] = self.df_climate[
-            "temperature_increase_from_nox_from_aviation"]
-        self.df_climate["nox_erf"] = self.df_climate["nox_short_term_o3_increase_erf"] + self.df_climate[
-            "nox_long_term_o3_decrease_erf"] + self.df_climate["nox_ch4_decrease_erf"] + self.df_climate[
-                                         "nox_stratospheric_water_vapor_decrease_erf"]
+            "temperature_increase_from_nox_from_aviation"
+        ]
+        self.df_climate["nox_erf"] = (
+            self.df_climate["nox_short_term_o3_increase_erf"]
+            + self.df_climate["nox_long_term_o3_decrease_erf"]
+            + self.df_climate["nox_ch4_decrease_erf"]
+            + self.df_climate["nox_stratospheric_water_vapor_decrease_erf"]
+        )
         output_data["nox_erf"] = self.df_climate["nox_erf"]
-        self.df_climate["nox_rf"] = self.df_climate["nox_short_term_o3_increase_rf"] + self.df_climate[
-            "nox_long_term_o3_decrease_rf"] + self.df_climate["nox_ch4_decrease_rf"] + self.df_climate[
-                                        "nox_stratospheric_water_vapor_decrease_rf"]
+        self.df_climate["nox_rf"] = (
+            self.df_climate["nox_short_term_o3_increase_rf"]
+            + self.df_climate["nox_long_term_o3_decrease_rf"]
+            + self.df_climate["nox_ch4_decrease_rf"]
+            + self.df_climate["nox_stratospheric_water_vapor_decrease_rf"]
+        )
         output_data["nox_rf"] = self.df_climate["nox_rf"]
 
         ## ERF calculation for helping plot display
         # TODO: remove in the future
         self.df_climate["co2_h2o_erf"] = self.df_climate["co2_erf"] + self.df_climate["h2o_erf"]
-        self.df_climate["co2_h2o_nox_erf"] = self.df_climate["co2_erf"] + self.df_climate["h2o_erf"] + self.df_climate["nox_erf"]
-        self.df_climate["co2_h2o_nox_contrails_erf"] = self.df_climate["co2_erf"] + self.df_climate["h2o_erf"] + self.df_climate["nox_erf"] + self.df_climate["contrails_erf"]
+        self.df_climate["co2_h2o_nox_erf"] = (
+            self.df_climate["co2_erf"] + self.df_climate["h2o_erf"] + self.df_climate["nox_erf"]
+        )
+        self.df_climate["co2_h2o_nox_contrails_erf"] = (
+            self.df_climate["co2_erf"]
+            + self.df_climate["h2o_erf"]
+            + self.df_climate["nox_erf"]
+            + self.df_climate["contrails_erf"]
+        )
         output_data["co2_h2o_erf"] = self.df_climate["co2_h2o_erf"]
         output_data["co2_h2o_nox_erf"] = self.df_climate["co2_h2o_nox_erf"]
         output_data["co2_h2o_nox_contrails_erf"] = self.df_climate["co2_h2o_nox_contrails_erf"]

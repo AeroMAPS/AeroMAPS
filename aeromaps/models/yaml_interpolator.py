@@ -109,9 +109,7 @@ class YAMLInterpolator(AeroMAPSModel):
         interpolation_function_values = []
 
         if len(reference_years_values) == 0:
-            raise ValueError(
-                f"[{model_name}] reference_years_values must not be empty."
-            )
+            raise ValueError(f"[{model_name}] reference_years_values must not be empty.")
         if len(reference_years) > 0 and len(reference_years) != len(reference_years_values):
             raise ValueError(
                 f"[{model_name}] reference_years and reference_years_values must have the same length "
@@ -134,8 +132,9 @@ class YAMLInterpolator(AeroMAPSModel):
             # If first reference year is lower than prospection start year, we start interpolating before
             # TODO: improve the condition for the warning?
             if reference_years[0] != prospection_start_year:
-                if (model_name != 'fossil_kerosene_mean_co2_emission_factor_without_resource'
-                        and model_name != 'fossil_kerosene_mean_mfsp_without_resource'
+                if (
+                    model_name != "fossil_kerosene_mean_co2_emission_factor_without_resource"
+                    and model_name != "fossil_kerosene_mean_mfsp_without_resource"
                 ):
                     warnings.warn(
                         f"\n[Interpolation Model: {model_name} Warning]\n"

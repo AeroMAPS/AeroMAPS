@@ -24,7 +24,7 @@ from aeromaps.models.base import AeroMAPSModel, aeromaps_interpolation_function
 from aeromaps.models.impacts.life_cycle_assessment.utils.functions import (
     tuple_to_varname,
     is_not_nan,
-    compute_param_length
+    compute_param_length,
 )
 
 # Constants
@@ -36,43 +36,44 @@ warnings.filterwarnings("ignore", category=SyntaxWarning)
 
 
 class LifeCycleAssessmentCustom(AeroMAPSModel):
-    """ Life Cycle Assessment (LCA) model to compute multiple environmental impacts beyond climate change.
+    """Life Cycle Assessment (LCA) model to compute multiple environmental impacts beyond climate change.
 
-        This model requires a valid ecoinvent license stored in a private '.env' file (that you will not share /commit)
-        in the notebooks or project root folder, containing the following variables:
-            ECOINVENT_LOGIN=<your_login>
-            ECOINVENT_PASSWORD=<your_password>
+    This model requires a valid ecoinvent license stored in a private '.env' file (that you will not share /commit)
+    in the notebooks or project root folder, containing the following variables:
+        ECOINVENT_LOGIN=<your_login>
+        ECOINVENT_PASSWORD=<your_password>
 
-        This model uses the lca_modeller library to build a parametric LCA model from a user-provided configuration file,
-        and the lca_algebraic library (a layer on top of brightway) to compute LCA results efficiently for multiple years.
-        The life cycle inventory relies on the ecoinvent database, projected to future years using the premise library.
+    This model uses the lca_modeller library to build a parametric LCA model from a user-provided configuration file,
+    and the lca_algebraic library (a layer on top of brightway) to compute LCA results efficiently for multiple years.
+    The life cycle inventory relies on the ecoinvent database, projected to future years using the premise library.
 
-        Parameters
-        ----------
-        name : str
-            Name of the model instance.
-        configuration_file : str
-            Path to the LCA configuration file defining the model and LCIA methods.
-        split_by : str, optional
-            Axis to split impacts by (typically, "phase").
-            Should match an axis defined in the configuration file through the "attribute" field.
+    Parameters
+    ----------
+    name : str
+        Name of the model instance.
+    configuration_file : str
+        Path to the LCA configuration file defining the model and LCIA methods.
+    split_by : str, optional
+        Axis to split impacts by (typically, "phase").
+        Should match an axis defined in the configuration file through the "attribute" field.
 
-        Attributes
-        ----------
-        model : agb.Activity
-            The parametric LCA model representative of air transport, generated from the configuration file.
-        methods : list
-            List of LCIA methods to compute.
-        axis : str
-            Optional axis to get contributors to impacts (typically, "phase").
-        params_names : list
-            List of LCA parameter names used in the model, generated automatically from the LCA model definition.
-        xarray_lca : xr.DataArray
-            The full LCA results stored as an xarray DataArray after computation.
-        lambdas : list
-            List of symbolic expressions for LCIA impacts, precomputed for efficiency.
+    Attributes
+    ----------
+    model : agb.Activity
+        The parametric LCA model representative of air transport, generated from the configuration file.
+    methods : list
+        List of LCIA methods to compute.
+    axis : str
+        Optional axis to get contributors to impacts (typically, "phase").
+    params_names : list
+        List of LCA parameter names used in the model, generated automatically from the LCA model definition.
+    xarray_lca : xr.DataArray
+        The full LCA results stored as an xarray DataArray after computation.
+    lambdas : list
+        List of symbolic expressions for LCIA impacts, precomputed for efficiency.
 
-        """
+    """
+
     deepcopy_at_init = (
         False  # --> do not re-instantiate model at each process run since LCA model is heavy
     )
@@ -204,7 +205,7 @@ class LifeCycleAssessmentCustom(AeroMAPSModel):
                 if is_not_nan(input_data[name]):
                     warnings.warn(
                         f'Parameter "{name}" is defined through a formula and should not be provided directly. '
-                        f'The provided value will be ignored and computed automatically.'
+                        f"The provided value will be ignored and computed automatically."
                     )
                 continue
 
@@ -278,7 +279,7 @@ class LifeCycleAssessmentCustom(AeroMAPSModel):
             ):
                 warnings.warn(
                     f'Both direct value and reference years/values provided for parameter "{name}". '
-                    f'Direct value will be used.'
+                    f"Direct value will be used."
                 )
 
         return params_dict
@@ -375,7 +376,7 @@ class LifeCycleAssessmentCustom(AeroMAPSModel):
         # Add units in metadata
         units_attr = res.coords["impacts"].attrs.get("units", {})
         for imethod, method in enumerate(methods):
-            units_attr[method] = unit = bw.Method(method).metadata.get("unit", None)
+            units_attr[method] = bw.Method(method).metadata.get("unit", None)
         res.coords["impacts"].attrs["units"] = units_attr
 
         return res
@@ -489,10 +490,7 @@ class LifeCycleAssessmentCustom(AeroMAPSModel):
                     value = value.reindex(range(self.historic_start_year, self.end_year + 1))
                     output_data[tuple_to_varname(method_with_axis)] = value
                 # Also add total over all axes
-                value = res.sel(
-                            systems=self.model.key,
-                            impacts=method
-                        ).sum(dim="axis").to_series()
+                value = res.sel(systems=self.model.key, impacts=method).sum(dim="axis").to_series()
                 value = value.reindex(range(self.historic_start_year, self.end_year + 1))
                 output_data[tuple_to_varname(method)] = value
         else:

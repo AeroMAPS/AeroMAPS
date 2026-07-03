@@ -214,7 +214,8 @@ class EnergyUseChoice(AeroMAPSModel):
                                 ).fillna(0)
 
                                 modified_years = pathway_consumption.loc[original.index][
-                                    pathway_consumption.loc[original.index] != original.loc[original.index]
+                                    pathway_consumption.loc[original.index]
+                                    != original.loc[original.index]
                                 ]
 
                                 if not modified_years.empty:

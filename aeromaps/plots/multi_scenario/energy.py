@@ -79,13 +79,20 @@ class EnergyMixComparisonPlot(MultiScenarioPlot):
                     fallback_idx += 1
 
             if stack_data:
-                ax.stackplot(years, *stack_data, labels=stack_labels,
-                             colors=stack_colors, alpha=0.8)
+                ax.stackplot(
+                    years, *stack_data, labels=stack_labels, colors=stack_colors, alpha=0.8
+                )
                 ax.legend(loc="upper left", fontsize=9)
                 ax.grid(True, alpha=0.3)
             else:
-                ax.text(0.5, 0.5, "No energy data available",
-                        ha="center", va="center", transform=ax.transAxes)
+                ax.text(
+                    0.5,
+                    0.5,
+                    "No energy data available",
+                    ha="center",
+                    va="center",
+                    transform=ax.transAxes,
+                )
 
             ax.set_ylabel("Energy [EJ]", fontsize=10)
             ax.set_title(scenario_name, fontsize=11, fontweight="bold")

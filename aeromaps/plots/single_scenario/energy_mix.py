@@ -34,6 +34,7 @@ def _aggregate_pathways_energy(df, years, pathways):
 # Energy mix by origin (stacked area)
 # ---------------------------------------------------------------------------
 
+
 class EnergyMixPlot(SingleScenarioPlot):
     """
     Stacked area of total energy consumption by energy origin.
@@ -72,8 +73,11 @@ class EnergyMixPlot(SingleScenarioPlot):
 
         if stack_data:
             self.ax.stackplot(
-                years, *stack_data,
-                labels=stack_labels, colors=stack_colors, alpha=0.8,
+                years,
+                *stack_data,
+                labels=stack_labels,
+                colors=stack_colors,
+                alpha=0.8,
             )
             self.ax.legend(loc="upper left", fontsize=9)
 
@@ -91,6 +95,7 @@ class EnergyMixPlot(SingleScenarioPlot):
 # ---------------------------------------------------------------------------
 # Drop-in fuel supply breakdown by origin (stacked area)
 # ---------------------------------------------------------------------------
+
 
 class DropInSupplyBreakdownPlot(SingleScenarioPlot):
     """
@@ -120,7 +125,8 @@ class DropInSupplyBreakdownPlot(SingleScenarioPlot):
 
         for origin in energy_origins:
             pathways = self.pathways_manager.get(
-                aircraft_type="dropin_fuel", energy_origin=origin,
+                aircraft_type="dropin_fuel",
+                energy_origin=origin,
             )
             origin_energy = _aggregate_pathways_energy(self.df, years, pathways)
             if origin_energy is not None and origin_energy.sum() > 0:
@@ -131,8 +137,11 @@ class DropInSupplyBreakdownPlot(SingleScenarioPlot):
 
         if stack_data:
             self.ax.stackplot(
-                years, *stack_data,
-                labels=stack_labels, colors=stack_colors, alpha=0.8,
+                years,
+                *stack_data,
+                labels=stack_labels,
+                colors=stack_colors,
+                alpha=0.8,
             )
             self.ax.legend(loc="upper left", fontsize=9)
 
@@ -152,14 +161,23 @@ class DropInSupplyBreakdownPlot(SingleScenarioPlot):
 # ---------------------------------------------------------------------------
 
 _PATHWAY_COLORS = [
-    "#2ca02c", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22",
-    "#17becf", "#9467bd", "#d62728", "#ff7f0e", "#1f77b4",
+    "#2ca02c",
+    "#8c564b",
+    "#e377c2",
+    "#7f7f7f",
+    "#bcbd22",
+    "#17becf",
+    "#9467bd",
+    "#d62728",
+    "#ff7f0e",
+    "#1f77b4",
 ]
 
 
 # ---------------------------------------------------------------------------
 # Blending mandates — relative share of drop-in fuel by energy origin (%)
 # ---------------------------------------------------------------------------
+
 
 class DropInSharesBreakdownPlot(SingleScenarioPlot):
     """
@@ -192,7 +210,8 @@ class DropInSharesBreakdownPlot(SingleScenarioPlot):
 
         for origin in energy_origins:
             pathways = self.pathways_manager.get(
-                aircraft_type="dropin_fuel", energy_origin=origin,
+                aircraft_type="dropin_fuel",
+                energy_origin=origin,
             )
             # Sum individual pathway shares for this origin
             total_share = None
@@ -210,8 +229,11 @@ class DropInSharesBreakdownPlot(SingleScenarioPlot):
 
         if stack_data:
             self.ax.stackplot(
-                years, *stack_data,
-                labels=stack_labels, colors=stack_colors, alpha=0.8,
+                years,
+                *stack_data,
+                labels=stack_labels,
+                colors=stack_colors,
+                alpha=0.8,
             )
             self.ax.legend(loc="upper left", fontsize=9)
             self.ax.set_ylim(0, 100)
@@ -246,7 +268,8 @@ class BiofuelMixPlot(SingleScenarioPlot):
             return
 
         bio_pathways = self.pathways_manager.get(
-            aircraft_type="dropin_fuel", energy_origin="biomass",
+            aircraft_type="dropin_fuel",
+            energy_origin="biomass",
         )
         years = self.years
 
@@ -259,14 +282,15 @@ class BiofuelMixPlot(SingleScenarioPlot):
                 if values.sum() > 0:
                     stack_data.append(values)
                     stack_labels.append(_readable_label(pathway.name))
-                    stack_colors.append(
-                        _PATHWAY_COLORS[p_idx % len(_PATHWAY_COLORS)]
-                    )
+                    stack_colors.append(_PATHWAY_COLORS[p_idx % len(_PATHWAY_COLORS)])
 
         if stack_data:
             self.ax.stackplot(
-                years, *stack_data,
-                labels=stack_labels, colors=stack_colors, alpha=0.8,
+                years,
+                *stack_data,
+                labels=stack_labels,
+                colors=stack_colors,
+                alpha=0.8,
             )
             self.ax.legend(loc="upper left", fontsize=9, ncol=2)
 
@@ -279,4 +303,3 @@ class BiofuelMixPlot(SingleScenarioPlot):
     def _update_plot_elements(self):
         self.ax.clear()
         self.create_plot()
-

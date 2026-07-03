@@ -3,6 +3,7 @@ comparison
 ==========
 This module contains classes to compute the share of carbon budget and temperature target consumed by aviation.
 """
+
 import pandas as pd
 import warnings
 from aeromaps.models.base import AeroMAPSModel
@@ -17,6 +18,7 @@ class CarbonBudgetConsumedShare(AeroMAPSModel):
     name : str
         Name of the model instance ('carbon_budget_consumed_share' by default).
     """
+
     def __init__(self, name="carbon_budget_consumed_share", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -43,7 +45,9 @@ class CarbonBudgetConsumedShare(AeroMAPSModel):
 
         year = 2050
         if self.end_year < 2050:
-            warnings.warn("End year is before 2050, carbon budget consumed share may be underestimated.")
+            warnings.warn(
+                "End year is before 2050, carbon budget consumed share may be underestimated."
+            )
             year = self.end_year
         # TODO: handle case where prospection_start_year used in cumulative_co2_emissions differs from 2020.
 
@@ -65,6 +69,7 @@ class TemperatureTargetConsumedShare(AeroMAPSModel):
     name : str
         Name of the model instance ('temperature_target_consumed_share' by default).
     """
+
     def __init__(self, name="temperature_target_consumed_share", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -93,10 +98,13 @@ class TemperatureTargetConsumedShare(AeroMAPSModel):
         """
 
         temperature_target_consumed_share = (
-            (temperature_increase_from_aviation.loc[self.end_year] -
-            temperature_increase_from_aviation.loc[self.prospection_start_year]) / (
-                         temperature_target - historical_temperature_increase) * 100
-             )
+            (
+                temperature_increase_from_aviation.loc[self.end_year]
+                - temperature_increase_from_aviation.loc[self.prospection_start_year]
+            )
+            / (temperature_target - historical_temperature_increase)
+            * 100
+        )
 
         self.float_outputs["temperature_target_consumed_share"] = temperature_target_consumed_share
 

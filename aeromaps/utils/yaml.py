@@ -1,5 +1,4 @@
 import yaml
-import warnings
 from aeromaps.models.base import AeroMapsCustomDataType
 
 
@@ -54,7 +53,5 @@ def read_yaml_file(file_name="parameters.yaml"):
     except yaml.YAMLError as e:
         raise yaml.YAMLError(f"Invalid YAML in '{file_name}': {e}") from e
     if not isinstance(data, dict):
-        raise ValueError(
-            f"Expected a YAML mapping in '{file_name}', got {type(data).__name__}"
-        )
+        raise ValueError(f"Expected a YAML mapping in '{file_name}', got {type(data).__name__}")
     return data

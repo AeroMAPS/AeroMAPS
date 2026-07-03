@@ -18,8 +18,7 @@ def _is_simple_fleet(name: str) -> bool:
 
 
 _STANDARD_PLOTS = sorted(
-    [n for n in available_plots if not _is_simple_fleet(n)]
-    + list(available_plots_fleet.keys())
+    [n for n in available_plots if not _is_simple_fleet(n)] + list(available_plots_fleet.keys())
 )
 _SIMPLE_FLEET_PLOTS = sorted(n for n in available_plots if _is_simple_fleet(n))
 
@@ -48,21 +47,19 @@ class TestPlot(SingleScenarioPlot):
 def process():
     """
     Create and run an AeroMAPS process with test configuration.
-    
+
     This fixture is module-scoped to avoid running the computation multiple times.
     Uses the full test configuration which includes all necessary models.
     """
     # Create process with full test configuration
     import os
-    config_path = os.path.join(
-        os.path.dirname(__file__),
-        "../tested_configs/config_advanced.yaml"
-    )
+
+    config_path = os.path.join(os.path.dirname(__file__), "../tested_configs/config_advanced.yaml")
     proc = create_process(configuration_file=config_path)
-    
+
     # Run the scenario
     proc.compute()
-    
+
     return proc
 
 
@@ -76,9 +73,9 @@ def process_simple():
     """
     # Create process with full test configuration
     import os
+
     config_path = os.path.join(
-        os.path.dirname(__file__),
-        "../tested_configs/config_advanced_simplified.yaml"
+        os.path.dirname(__file__), "../tested_configs/config_advanced_simplified.yaml"
     )
     proc = create_process(configuration_file=config_path)
 
@@ -110,6 +107,7 @@ def test_simple_fleet_plot(process_simple, plot_name):
 # TestPlot-based tests for check_outputs / required_outputs behaviour
 # ---------------------------------------------------------------------------
 
+
 def test_required_outputs_warns_on_missing(process):
     """Test that a warning is issued when required outputs are missing."""
     with warnings.catch_warnings(record=True) as w:
@@ -137,9 +135,7 @@ def test_required_outputs_no_warning_when_present(process):
             required_outputs=["rpk"],
         )
 
-        output_warnings = [
-            x for x in w if "missing" in str(x.message).lower()
-        ]
+        output_warnings = [x for x in w if "missing" in str(x.message).lower()]
         assert len(output_warnings) == 0
 
     assert plot is not None
@@ -155,9 +151,7 @@ def test_check_outputs_false_skips_validation(process):
             required_outputs=["nonexistent_output"],
         )
 
-        output_warnings = [
-            x for x in w if "missing" in str(x.message).lower()
-        ]
+        output_warnings = [x for x in w if "missing" in str(x.message).lower()]
         assert len(output_warnings) == 0
 
     assert plot is not None
@@ -173,10 +167,7 @@ def test_no_required_outputs_no_warning(process):
             required_outputs=[],
         )
 
-        output_warnings = [
-            x for x in w if "missing" in str(x.message).lower()
-        ]
+        output_warnings = [x for x in w if "missing" in str(x.message).lower()]
         assert len(output_warnings) == 0
 
     assert plot is not None
-

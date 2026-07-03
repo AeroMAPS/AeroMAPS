@@ -253,9 +253,9 @@ class TestFleetPerformanceFiveMarkets:
     def test_five_categories_present(self, five_market_fleet_df):
         """Fleet must contain exactly 5 categories."""
         fleet, df = five_market_fleet_df
-        assert len(fleet.categories) == 5, (
-            f"Expected 5 categories, got {len(fleet.categories)}: {list(fleet.categories.keys())}"
-        )
+        assert (
+            len(fleet.categories) == 5
+        ), f"Expected 5 categories, got {len(fleet.categories)}: {list(fleet.categories.keys())}"
 
     # ---- 2. market_id plumbed on every category ---------------------------------
 

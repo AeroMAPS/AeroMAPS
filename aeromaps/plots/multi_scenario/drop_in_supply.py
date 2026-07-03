@@ -12,6 +12,7 @@ from aeromaps.plots.multi_scenario_plot import MultiScenarioPlot
 # Drop-in fuel supply breakdown (one subplot per scenario, stacked by origin)
 # ---------------------------------------------------------------------------
 
+
 class DropInSupplyBreakdownPlot(MultiScenarioPlot):
     """
     Compare drop-in fuel supply breakdown across scenarios.
@@ -59,13 +60,20 @@ class DropInSupplyBreakdownPlot(MultiScenarioPlot):
                     fallback_idx += 1
 
             if stack_data:
-                ax.stackplot(years, *stack_data, labels=stack_labels,
-                             colors=stack_colors, alpha=0.8)
+                ax.stackplot(
+                    years, *stack_data, labels=stack_labels, colors=stack_colors, alpha=0.8
+                )
                 ax.legend(loc="upper left", fontsize=9)
                 ax.grid(True, alpha=0.3)
             else:
-                ax.text(0.5, 0.5, "No drop-in fuel data available",
-                        ha="center", va="center", transform=ax.transAxes)
+                ax.text(
+                    0.5,
+                    0.5,
+                    "No drop-in fuel data available",
+                    ha="center",
+                    va="center",
+                    transform=ax.transAxes,
+                )
 
             ax.set_ylabel("Energy [EJ]", fontsize=10)
             ax.set_title(scenario_name, fontsize=11, fontweight="bold")
@@ -84,6 +92,7 @@ class DropInSupplyBreakdownPlot(MultiScenarioPlot):
 # Single-line comparison plots (per aircraft type / energy origin)
 # ---------------------------------------------------------------------------
 
+
 class _PathwayAggregateComparisonPlot(MultiScenarioPlot):
     """Shared base for plots that sum a pathway-filtered energy column.
 
@@ -97,8 +106,11 @@ class _PathwayAggregateComparisonPlot(MultiScenarioPlot):
     pathway_filter = {}
 
     def _scenario_xy(self, scenario_name, data):
-        pathways = (self.pathways_manager.get(**self.pathway_filter)
-                    if self.pathways_manager is not None else [])
+        pathways = (
+            self.pathways_manager.get(**self.pathway_filter)
+            if self.pathways_manager is not None
+            else []
+        )
         energy = self._aggregate_pathways_energy(data["df"], data["years"], pathways)
         return data["years"], energy * 1e-12
 
@@ -167,6 +179,7 @@ class ElectrofuelProductionComparisonPlot(_PathwayAggregateComparisonPlot):
 # Biofuel mix (per-pathway breakdown, one subplot per scenario)
 # ---------------------------------------------------------------------------
 
+
 class BiofuelMixComparisonPlot(MultiScenarioPlot):
     """
     Compare biofuel pathway mix across scenarios.
@@ -179,8 +192,16 @@ class BiofuelMixComparisonPlot(MultiScenarioPlot):
 
     # Palette cycled across individual biofuel pathways
     _PATHWAY_COLORS = [
-        '#2ca02c', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22',
-        '#17becf', '#9467bd', '#d62728', '#ff7f0e', '#1f77b4',
+        "#2ca02c",
+        "#8c564b",
+        "#e377c2",
+        "#7f7f7f",
+        "#bcbd22",
+        "#17becf",
+        "#9467bd",
+        "#d62728",
+        "#ff7f0e",
+        "#1f77b4",
     ]
 
     def _get_default_figsize(self):
@@ -215,18 +236,23 @@ class BiofuelMixComparisonPlot(MultiScenarioPlot):
                     if values.sum() > 0:
                         stack_data.append(values)
                         stack_labels.append(self._readable_label(pathway.name))
-                        stack_colors.append(
-                            self._PATHWAY_COLORS[p_idx % len(self._PATHWAY_COLORS)]
-                        )
+                        stack_colors.append(self._PATHWAY_COLORS[p_idx % len(self._PATHWAY_COLORS)])
 
             if stack_data:
-                ax.stackplot(years, *stack_data, labels=stack_labels,
-                             colors=stack_colors, alpha=0.8)
+                ax.stackplot(
+                    years, *stack_data, labels=stack_labels, colors=stack_colors, alpha=0.8
+                )
                 ax.legend(loc="upper left", fontsize=9, ncol=2)
                 ax.grid(True, alpha=0.3)
             else:
-                ax.text(0.5, 0.5, "No biofuel pathway data available",
-                        ha="center", va="center", transform=ax.transAxes)
+                ax.text(
+                    0.5,
+                    0.5,
+                    "No biofuel pathway data available",
+                    ha="center",
+                    va="center",
+                    transform=ax.transAxes,
+                )
 
             ax.set_ylabel("Biofuel Production [EJ]", fontsize=10)
             ax.set_title(scenario_name, fontsize=11, fontweight="bold")

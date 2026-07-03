@@ -292,17 +292,13 @@ class TemperatureTargetAssessmentPlot(SingleScenarioPlot):
 
     def create_plot(self):
         # Data to plot
-        aviation_temperature_target = float(
-            self.float_outputs["aviation_temperature_target"]
-        )
+        aviation_temperature_target = float(self.float_outputs["aviation_temperature_target"])
         aviation_temperature_change = float(
             self.df_climate.loc[self.prospective_years[-1], "temperature_increase_from_aviation"]
         ) - float(
             self.df_climate.loc[self.prospective_years[0], "temperature_increase_from_aviation"]
         )
-        world_temperature_target = float(
-            self.float_outputs["world_temperature_target"]
-        )
+        world_temperature_target = float(self.float_outputs["world_temperature_target"])
         aviation_temperature_target_allocated_share = float(
             self.parameters["aviation_temperature_target_allocated_share"]
         )
@@ -321,8 +317,7 @@ class TemperatureTargetAssessmentPlot(SingleScenarioPlot):
             ]
         inner_vals = [
             aviation_temperature_target,
-            world_temperature_target
-            - aviation_temperature_target
+            world_temperature_target - aviation_temperature_target,
         ]
 
         color = "skyblue"
@@ -363,20 +358,18 @@ class TemperatureTargetAssessmentPlot(SingleScenarioPlot):
 
         wedges = [self.wedges_out[0], self.wedges_in[0]]
         texts = [
-            str(round(1000*aviation_temperature_change, 0))
+            str(round(1000 * aviation_temperature_change, 0))
             + " m°C\ncorresponding to\n "
             + str(
                 round(
-                    aviation_temperature_change
-                    / world_temperature_target
-                    * 100,
+                    aviation_temperature_change / world_temperature_target * 100,
                     1,
                 )
             )
             + "% of RTT",
             str(round(aviation_temperature_target_allocated_share, 1))
             + "% of RTT\ni.e.\n"
-            + str(round(1000*aviation_temperature_target, 0))
+            + str(round(1000 * aviation_temperature_target, 0))
             + " m°C",
         ]
 
@@ -447,17 +440,13 @@ class TemperatureTargetAssessmentPlot(SingleScenarioPlot):
         self.ax.clear()
 
         # Data to plot
-        aviation_temperature_target = float(
-            self.float_outputs["aviation_temperature_target"]
-        )
+        aviation_temperature_target = float(self.float_outputs["aviation_temperature_target"])
         aviation_temperature_change = float(
             self.df_climate.loc[self.prospective_years[-1], "temperature_increase_from_aviation"]
         ) - float(
             self.df_climate.loc[self.prospective_years[0], "temperature_increase_from_aviation"]
         )
-        world_temperature_target = float(
-            self.float_outputs["world_temperature_target"]
-        )
+        world_temperature_target = float(self.float_outputs["world_temperature_target"])
         aviation_temperature_target_allocated_share = float(
             self.parameters["aviation_temperature_target_allocated_share"]
         )
@@ -476,8 +465,7 @@ class TemperatureTargetAssessmentPlot(SingleScenarioPlot):
             ]
         inner_vals = [
             aviation_temperature_target,
-            world_temperature_target
-            - aviation_temperature_target
+            world_temperature_target - aviation_temperature_target,
         ]
 
         color = "skyblue"
@@ -518,20 +506,18 @@ class TemperatureTargetAssessmentPlot(SingleScenarioPlot):
 
         wedges = [self.wedges_out[0], self.wedges_in[0]]
         texts = [
-            str(round(1000*aviation_temperature_change, 0))
+            str(round(1000 * aviation_temperature_change, 0))
             + " m°C\ncorresponding to\n "
             + str(
                 round(
-                    aviation_temperature_change
-                    / world_temperature_target
-                    * 100,
+                    aviation_temperature_change / world_temperature_target * 100,
                     1,
                 )
             )
             + "% of RTT",
             str(round(aviation_temperature_target_allocated_share, 1))
             + "% of RTT\ni.e.\n"
-            + str(round(1000*aviation_temperature_target, 0))
+            + str(round(1000 * aviation_temperature_target, 0))
             + " m°C",
         ]
 
@@ -1154,12 +1140,8 @@ class MultidisciplinaryAssessmentPlot(SingleScenarioPlot):
         )
 
         # Temperature
-        world_temperature_target = float(
-            self.float_outputs["world_temperature_target"]
-        )
-        aviation_temperature_target = float(
-            self.float_outputs["aviation_temperature_target"]
-        )
+        world_temperature_target = float(self.float_outputs["world_temperature_target"])
+        aviation_temperature_target = float(self.float_outputs["aviation_temperature_target"])
         aviation_temperature_change = float(
             self.df_climate.loc[self.prospective_years[-1], "temperature_increase_from_aviation"]
         ) - float(
@@ -1181,9 +1163,7 @@ class MultidisciplinaryAssessmentPlot(SingleScenarioPlot):
         ]
 
         consumptions = [
-            np.max(
-                [aviation_temperature_change / world_temperature_target * 100, 0]
-            ),
+            np.max([aviation_temperature_change / world_temperature_target * 100, 0]),
             cumulative_co2_emissions / gross_carbon_budget * 100,
             biomass_consumption_end_year / available_biomass_total * 100,
             electricity_consumption_end_year / available_electricity_total * 100,
@@ -1321,12 +1301,8 @@ class MultidisciplinaryAssessmentPlot(SingleScenarioPlot):
         )
 
         # Temperature
-        world_temperature_target = float(
-            self.float_outputs["world_temperature_target"]
-        )
-        aviation_temperature_target = float(
-            self.float_outputs["aviation_temperature_target"]
-        )
+        world_temperature_target = float(self.float_outputs["world_temperature_target"])
+        aviation_temperature_target = float(self.float_outputs["aviation_temperature_target"])
         aviation_temperature_change = float(
             self.df_climate.loc[self.prospective_years[-1], "temperature_increase_from_aviation"]
         ) - float(
@@ -1348,9 +1324,7 @@ class MultidisciplinaryAssessmentPlot(SingleScenarioPlot):
         ]
 
         consumptions = [
-            np.max(
-                [aviation_temperature_change / world_temperature_target * 100, 0]
-            ),
+            np.max([aviation_temperature_change / world_temperature_target * 100, 0]),
             cumulative_co2_emissions / gross_carbon_budget * 100,
             biomass_consumption_end_year / available_biomass_total * 100,
             electricity_consumption_end_year / available_electricity_total * 100,

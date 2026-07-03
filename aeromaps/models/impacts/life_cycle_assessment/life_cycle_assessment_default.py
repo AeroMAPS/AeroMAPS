@@ -7,7 +7,6 @@ import warnings
 import pandas as pd
 import numpy as np
 import ast
-from typing import Dict
 import xarray as xr
 
 # AeroMAPS imports
@@ -16,7 +15,7 @@ from aeromaps.models.impacts.life_cycle_assessment.io.common import Model, TOTAL
 from aeromaps.models.impacts.life_cycle_assessment.utils.functions import (
     tuple_to_varname,
     is_not_nan,
-    compute_param_length
+    compute_param_length,
 )
 
 # Constants
@@ -192,7 +191,7 @@ class LifeCycleAssessmentDefault(AeroMAPSModel):
                             input_value = input_value.reindex(self.years)
                         else:
                             # If not a Series, fall back to slicing and warn user
-                            input_value = input_value[-len(self.years):]
+                            input_value = input_value[-len(self.years) :]
                             warnings.warn(
                                 f"Too many values for parameter {name}: first {n} values will be dropped."
                             )
@@ -210,7 +209,7 @@ class LifeCycleAssessmentDefault(AeroMAPSModel):
 
             # --- Parameter value not provided directly, try to interpolate from parameters.json ---
             elif is_not_nan(input_data[name + "_reference_years"]) and is_not_nan(
-                    input_data[name + "_reference_years_values"]
+                input_data[name + "_reference_years_values"]
             ):
                 param_values = aeromaps_interpolation_function(
                     self,
@@ -231,9 +230,9 @@ class LifeCycleAssessmentDefault(AeroMAPSModel):
 
             # --- Warn if both direct value and reference years/values were provided ---
             if (
-                    is_not_nan(input_data[name])
-                    and is_not_nan(input_data[name + "_reference_years"])
-                    and is_not_nan(input_data[name + "_reference_years_values"])
+                is_not_nan(input_data[name])
+                and is_not_nan(input_data[name + "_reference_years"])
+                and is_not_nan(input_data[name + "_reference_years_values"])
             ):
                 warnings.warn(
                     f'Both direct value and reference years/values provided for parameter "{name}". Direct value will be used.'
@@ -274,7 +273,9 @@ class LifeCycleAssessmentDefault(AeroMAPSModel):
                 if isinstance(result_dict, dict):
                     # result_dict = normalize_result_dict(result_dict, param_length)
                     for iaxis, ax in enumerate(axis_keys):
-                        out[imodel, imethod, iaxis, :] = result_dict[ax]  # np.array(list(result_dict.values()), dtype=float)
+                        out[imodel, imethod, iaxis, :] = result_dict[
+                            ax
+                        ]  # np.array(list(result_dict.values()), dtype=float)
                 else:
                     out[imodel, imethod, :] = result_dict
 
@@ -332,10 +333,7 @@ class LifeCycleAssessmentDefault(AeroMAPSModel):
                     value = value.reindex(range(self.historic_start_year, self.end_year + 1))
                     output_data[tuple_to_varname(method_with_axis)] = value
                 # Also add total over all axes
-                value = res.sel(
-                    systems=KEY_MODEL,
-                    impacts=method
-                ).sum(dim="axis").to_series()
+                value = res.sel(systems=KEY_MODEL, impacts=method).sum(dim="axis").to_series()
                 value = value.reindex(range(self.historic_start_year, self.end_year + 1))
                 output_data[tuple_to_varname(method)] = value
         else:

@@ -135,9 +135,9 @@ class TestFleetAircraftOrdering:
         diff = (df_ordered[single_cols] - df_reversed[single_cols]).abs()
         max_diff = diff.max().max()
 
-        assert max_diff < 1e-10, (
-            f"Single aircraft shares differ by up to {max_diff:.4f} pp between orderings."
-        )
+        assert (
+            max_diff < 1e-10
+        ), f"Single aircraft shares differ by up to {max_diff:.4f} pp between orderings."
 
     # ------------------------------------------------------------------
     # 3. Energy consumption columns
@@ -154,9 +154,9 @@ class TestFleetAircraftOrdering:
         diff = (df_ordered[energy_cols] - df_reversed[energy_cols]).abs()
         max_diff = diff.max().max()
 
-        assert max_diff < 1e-12, (
-            f"Energy consumption differs by up to {max_diff:.2e} MJ/ASK between orderings."
-        )
+        assert (
+            max_diff < 1e-12
+        ), f"Energy consumption differs by up to {max_diff:.2e} MJ/ASK between orderings."
 
     def test_ordering_bug_magnitude(self):
         """Document and bound the error that existed before the EIS-sort fix.

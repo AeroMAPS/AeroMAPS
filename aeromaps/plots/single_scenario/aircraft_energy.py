@@ -50,7 +50,7 @@ class MeanFuelEmissionFactorPlot(SingleScenarioPlot):
         )
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Fuel emission factor [gCO2-eq/MJ]")
-        
+
         self.ax.legend()
         self.ax.set_xlim(self.years[0], self.years[-1])
 
@@ -126,7 +126,7 @@ class EmissionFactorPerFuelCategory(SingleScenarioPlot):
         self.ax.set_title("Evolution of the CO2 emission factor\nof aviation fuels")
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Fuel emission factor [gCO2-eq/MJ]")
-        
+
         self.ax.legend()
         self.ax.set_xlim(self.prospective_years[0] + 1, self.prospective_years[-1])
 
@@ -302,7 +302,11 @@ class ShareFuelPlot(SingleScenarioPlot):
             options=["All types"] + self.pathways_manager.get_all_types("energy_origin"),
             description="Energy origin:",
         )
-        interact(self._on_interact_change, aircraft_type=ac_type_widget, energy_origin=energy_origin_widget)
+        interact(
+            self._on_interact_change,
+            aircraft_type=ac_type_widget,
+            energy_origin=energy_origin_widget,
+        )
 
     def create_plot(self):
         pass
@@ -363,7 +367,7 @@ class ShareFuelPlot(SingleScenarioPlot):
             self.ax.set_ylabel(
                 f"Share of production pathways in {aircraft_type}-aircraft fuel blend [%]"
             )
-            # 
+            #
             self.ax.legend(title="Pathway shares")
 
         # Focus on an energy origin
@@ -404,7 +408,7 @@ class ShareFuelPlot(SingleScenarioPlot):
             self.ax.set_title(f"Evolution of the {energy_origin}-based fuel blend")
             self.ax.set_xlabel("Year")
             self.ax.set_ylabel(f"Share of pathways in {energy_origin}-based fuel blend [%]")
-            # 
+            #
             self.ax.legend(title="Pathway shares")
 
         # Detailed view of a specific aircraft type and energy origin
@@ -436,7 +440,7 @@ class ShareFuelPlot(SingleScenarioPlot):
             self.ax.set_ylabel(
                 f"Share of pathways in {aircraft_type}-aircraft type, {energy_origin}-based energy use [%]"
             )
-            # 
+            #
             self.ax.legend(title="Pathway shares")
 
         # Overall view of all aircraft types and energy origins
@@ -470,7 +474,7 @@ class ShareFuelPlot(SingleScenarioPlot):
             self.ax.set_title("Evolution of the overall fuel blend")
             self.ax.set_xlabel("Year")
             self.ax.set_ylabel("Share of aircraft/energy categories in total energy use [%]")
-            # 
+            #
             self.ax.legend(title="Aircraft/energy categories shares")
 
         self.ax.set_xlim(self.prospective_years[0], self.prospective_years[-1])
@@ -512,7 +516,7 @@ class EnergyConsumptionPlot(SingleScenarioPlot):
         self.ax.set_title("Evolution of the air transport\nenergy consumption")
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Energy consumption [EJ]")
-        
+
         self.ax.legend()
         self.ax.set_xlim(self.years[0], self.years[-1])
 

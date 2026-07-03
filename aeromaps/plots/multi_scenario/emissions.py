@@ -15,7 +15,7 @@ class CO2EmissionsComparisonPlot(MultiScenarioPlot):
         self.ax.set_xlabel("Year", fontsize=12)
         self.ax.set_ylabel("CO2 Emissions [Mt CO2]", fontsize=12)
         self.ax.set_title("CO2 Emissions Comparison Across Scenarios", fontsize=14)
-        self.ax.legend(loc='best')
+        self.ax.legend(loc="best")
         self.ax.grid(True, alpha=0.3)
 
 
@@ -30,9 +30,11 @@ class CumulativeCO2EmissionsComparisonPlot(MultiScenarioPlot):
         # required_outputs already guarantees cumulative_co2_emissions; the
         # only conditional left is the optional `aviation_carbon_budget`
         # float output.
-        scenario_items = (self.scenario_data.items()
-                          if isinstance(self.scenario_data, dict)
-                          else [(f"Scenario {i+1}", d) for i, d in enumerate(self.scenario_data)])
+        scenario_items = (
+            self.scenario_data.items()
+            if isinstance(self.scenario_data, dict)
+            else [(f"Scenario {i+1}", d) for i, d in enumerate(self.scenario_data)]
+        )
         budgets_by_scenario = [
             (name, (data["float_outputs"] or {}).get("aviation_carbon_budget"))
             for name, data in scenario_items
@@ -45,8 +47,12 @@ class CumulativeCO2EmissionsComparisonPlot(MultiScenarioPlot):
                 plotted_budgets[budget].append((scenario_name, None))
             else:
                 line = self.ax.axhline(
-                    y=budget, color="k", linestyle='-',
-                    linewidth=1, alpha=0.7, label="Budget",
+                    y=budget,
+                    color="k",
+                    linestyle="-",
+                    linewidth=1,
+                    alpha=0.7,
+                    label="Budget",
                 )
                 plotted_budgets[budget] = [(scenario_name, line)]
 
@@ -68,5 +74,5 @@ class CumulativeCO2EmissionsComparisonPlot(MultiScenarioPlot):
         self.ax.set_xlabel("Year", fontsize=12)
         self.ax.set_ylabel("Cumulative CO2 Emissions [Gt CO2]", fontsize=12)
         self.ax.set_title("Cumulative CO2 vs Carbon Budget Comparison", fontsize=14)
-        self.ax.legend(loc='best', fontsize=9)
+        self.ax.legend(loc="best", fontsize=9)
         self.ax.grid(True, alpha=0.3)

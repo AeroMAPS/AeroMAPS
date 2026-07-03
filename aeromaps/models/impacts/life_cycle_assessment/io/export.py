@@ -19,18 +19,34 @@ except ImportError as e:
         "Required libraries for Custom Life Cycle Assessment module are not installed. "
         "Please run 'pip install --upgrade aeromaps[lca]' to install them."
     ) from e
-from aeromaps.models.impacts.life_cycle_assessment.io.common import FunctionalUnit, Lambda, Impact, Model, Param, is_expr, ParamType
-from aeromaps.models.impacts.life_cycle_assessment.io.common import FUNCTIONAL_UNIT_KEY, TOTAL_AXIS_KEY
+from aeromaps.models.impacts.life_cycle_assessment.io.common import (
+    FunctionalUnit,
+    Lambda,
+    Impact,
+    Model,
+    Param,
+    is_expr,
+    ParamType,
+)
+from aeromaps.models.impacts.life_cycle_assessment.io.common import (
+    FUNCTIONAL_UNIT_KEY,
+    TOTAL_AXIS_KEY,
+)
 
 
 def round_expr(exp_or_dict, num_digits):
-    if isinstance(exp_or_dict, dict) :
-        return dict({key: (val if not is_expr(val) else _round_expr(val, num_digits)) for key, val in exp_or_dict.items()})
+    if isinstance(exp_or_dict, dict):
+        return dict(
+            {
+                key: (val if not is_expr(val) else _round_expr(val, num_digits))
+                for key, val in exp_or_dict.items()
+            }
+        )
     else:
         return _round_expr(exp_or_dict, num_digits)
 
 
-def paramDef_to_param(paramDef:ParamDef):
+def paramDef_to_param(paramDef: ParamDef):
     print(f"Param : {paramDef.name} : {paramDef.type}")
     if paramDef.type == ParamType.FLOAT and (paramDef.min is None or paramDef.max is None):
         raise Exception(f"Param of type float '{paramDef.name} 'should have both min and max")
@@ -45,15 +61,17 @@ def paramDef_to_param(paramDef:ParamDef):
         group=paramDef.group,
         min=paramDef.min,
         max=paramDef.max,
-        description=paramDef.description)
+        description=paramDef.description,
+    )
 
 
 def export_lca(
-        system,
-        functional_units: Dict[str, Dict] = {FUNCTIONAL_UNIT_KEY: {"quantity": 1.0, "unit": None}},
-        methods_dict: Dict[str, tuple] = {},
-        axes=None,
-        num_digits=3):
+    system,
+    functional_units: Dict[str, Dict] = {FUNCTIONAL_UNIT_KEY: {"quantity": 1.0, "unit": None}},
+    methods_dict: Dict[str, tuple] = {},
+    axes=None,
+    num_digits=3,
+):
     """
     :param system: Root inventory
     :param functional_units : Dict of Dict{unit, quantity}
@@ -71,20 +89,16 @@ def export_lca(
 
     impacts_by_axis = dict()
 
-    for axis in axes :
+    for axis in axes:
         print("Processing axis %s" % axis)
 
-        lambdas = _preMultiLCAAlgebric(
-            system,
-            list(methods_dict.values()),
-            axis=axis)
+        lambdas = _preMultiLCAAlgebric(system, list(methods_dict.values()), axis=axis)
 
         if axis is None:
             axis = TOTAL_AXIS_KEY
 
         # Simplify
         for lambd, method_name in zip(lambdas, methods_dict.keys()):
-
             if isinstance(lambd.expr, AxisDict):
                 lambd.expr = lambd.expr._dict
             lambd.expr = round_expr(lambd.expr, num_digits=num_digits)
@@ -92,23 +106,24 @@ def export_lca(
         # Save
         impacts_by_axis[axis] = {
             method: Lambda(lambd.expr, all_params)
-            for method, lambd in zip(methods_dict.keys(), lambdas)}
+            for method, lambd in zip(methods_dict.keys(), lambdas)
+        }
 
     # Dict of functional units
     functional_units = {
-        name: FunctionalUnit(
-            quantity=Lambda(fu["quantity"], all_params),
-            unit=fu["unit"])
-        for name, fu in functional_units.items()}
+        name: FunctionalUnit(quantity=Lambda(fu["quantity"], all_params), unit=fu["unit"])
+        for name, fu in functional_units.items()
+    }
 
     # Build list of impacts
-    impacts = {key: Impact(
-        name=str(method),
-        unit=bw.Method(method).metadata.get("unit", "")
-    ) for key, method in methods_dict.items()}
+    impacts = {
+        key: Impact(name=str(method), unit=bw.Method(method).metadata.get("unit", ""))
+        for key, method in methods_dict.items()
+    }
 
     return Model(
         params=all_params,
         functional_units=functional_units,
         expressions=impacts_by_axis,
-        impacts=impacts)
+        impacts=impacts,
+    )

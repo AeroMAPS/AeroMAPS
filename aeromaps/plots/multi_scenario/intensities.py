@@ -14,7 +14,7 @@ class CO2PerRPKComparisonPlot(MultiScenarioPlot):
         self.ax.set_xlabel("Year", fontsize=12)
         self.ax.set_ylabel("CO2 per RPK [gCO2/RPK]", fontsize=12)
         self.ax.set_title("Carbon Intensity per Passenger Kilometer", fontsize=14)
-        self.ax.legend(loc='best')
+        self.ax.legend(loc="best")
         self.ax.grid(True, alpha=0.3)
         self.ax.set_ylim(bottom=0)
 
@@ -30,7 +30,7 @@ class CO2PerRTKComparisonPlot(MultiScenarioPlot):
         self.ax.set_xlabel("Year", fontsize=12)
         self.ax.set_ylabel("CO2 per RTK [gCO2/RTK]", fontsize=12)
         self.ax.set_title("Carbon Intensity per Revenue Tonne Kilometer", fontsize=14)
-        self.ax.legend(loc='best')
+        self.ax.legend(loc="best")
         self.ax.grid(True, alpha=0.3)
         self.ax.set_ylim(bottom=0)
 
@@ -46,7 +46,7 @@ class EnergyPerASKComparisonPlot(MultiScenarioPlot):
         self.ax.set_xlabel("Year", fontsize=12)
         self.ax.set_ylabel("Energy per ASK [MJ/ASK]", fontsize=12)
         self.ax.set_title("Energy Intensity per Available Seat Kilometer", fontsize=14)
-        self.ax.legend(loc='best')
+        self.ax.legend(loc="best")
         self.ax.grid(True, alpha=0.3)
         self.ax.set_ylim(bottom=0)
 
@@ -62,6 +62,6 @@ class EnergyPerRTKComparisonPlot(MultiScenarioPlot):
         self.ax.set_xlabel("Year", fontsize=12)
         self.ax.set_ylabel("Energy per RTK [MJ/RTK]", fontsize=12)
         self.ax.set_title("Energy Intensity per Revenue Tonne Kilometer", fontsize=14)
-        self.ax.legend(loc='best')
+        self.ax.legend(loc="best")
         self.ax.grid(True, alpha=0.3)
         self.ax.set_ylim(bottom=0)

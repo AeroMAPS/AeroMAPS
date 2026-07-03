@@ -85,5 +85,7 @@ def compute_param_length(params):
             if param_length == 1:
                 param_length = len(val)
             elif param_length != len(val):
-                raise Exception("Parameters should be a single value or a list of same number of values")
+                raise Exception(
+                    "Parameters should be a single value or a list of same number of values"
+                )
     return param_length

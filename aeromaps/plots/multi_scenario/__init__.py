@@ -49,21 +49,17 @@ available_multi_plots = {
     # Emissions
     "co2_emissions_comparison": CO2EmissionsComparisonPlot,
     "cumulative_co2_emissions_comparison": CumulativeCO2EmissionsComparisonPlot,
-    
     # Energy
     "energy_consumption_comparison": EnergyConsumptionComparisonPlot,
     "energy_mix_comparison": EnergyMixComparisonPlot,
-    
     # Traffic
     "rpk_comparison": RPKComparisonPlot,
     "load_factor_comparison": LoadFactorComparisonPlot,
-    
     # Intensities
     "co2_per_rpk_comparison": CO2PerRPKComparisonPlot,
     "co2_per_rtk_comparison": CO2PerRTKComparisonPlot,
     "energy_per_ask_comparison": EnergyPerASKComparisonPlot,
     "energy_per_rtk_comparison": EnergyPerRTKComparisonPlot,
-    
     # Fuel Supply
     "drop_in_supply_breakdown": DropInSupplyBreakdownPlot,
     "hydrogen_supply_comparison": HydrogenSupplyComparisonPlot,
@@ -71,13 +67,11 @@ available_multi_plots = {
     "biofuel_production_comparison": BiofuelProductionComparisonPlot,
     "electrofuel_production_comparison": ElectrofuelProductionComparisonPlot,
     "biofuel_mix_comparison": BiofuelMixComparisonPlot,
-
     # Climate
     "total_erf_comparison": TotalERFComparisonPlot,
     "temperature_increase_comparison": TemperatureIncreaseComparisonPlot,
     "co2_erf_comparison": CO2ERFComparisonPlot,
     "non_co2_erf_comparison": NonCO2ERFComparisonPlot,
-
     # Costs
     "energy_expenses_comparison": EnergyExpensesComparisonPlot,
     "net_energy_expenses_comparison": NetEnergyExpensesComparisonPlot,

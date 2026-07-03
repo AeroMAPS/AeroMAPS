@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 import numpy as np
 
 from aeromaps.plots.single_scenario_plot import SingleScenarioPlot
@@ -32,7 +31,7 @@ class BiomassConsumptionPlot(SingleScenarioPlot):
         self.ax.set_title("Evolution of biomass consumption\nfrom air transport")
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Biomass consumption [EJ]")
-        
+
         self.ax.legend()
         self.ax.set_xlim(2020, self.years[-1])
 
@@ -77,7 +76,7 @@ class ElectricityConsumptionPlot(SingleScenarioPlot):
         self.ax.set_title("Evolution of electricity consumption\nfrom air transport")
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Electricity consumption [EJ]")
-        
+
         self.ax.legend()
         self.ax.set_xlim(2020, self.years[-1])
 

@@ -58,7 +58,7 @@ def plot_stacked_evolution_subplots(xarray_data):
 
         # Plot stacked area chart with custom colors
         colors = [palette_dict[key][0] for key in df_method.index]
-        stacks = axes[i].stackplot(
+        axes[i].stackplot(
             years, df_method, labels=df_method.index, alpha=0.8, colors=colors, linewidth=0.2
         )
 
@@ -262,6 +262,7 @@ def plot_stacked_sensitivity_subplots(df, kerosene_scenario_values):
 
     # show plot
     plt.show()
+
 
 def plot_evolution_subplots_iams(df):
     iams = df.index.get_level_values("IAM Model - Scenario").unique()

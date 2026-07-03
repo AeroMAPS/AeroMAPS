@@ -39,7 +39,7 @@ class RevenuePassengerKilometerPlot(SingleScenarioPlot):
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Revenue Passenger Kilometer [RPK]")
         self.ax.legend()
-        
+
         self.ax.set_xlim(self.years[0], self.years[-1])
 
     def _update_plot_elements(self):
@@ -82,7 +82,7 @@ class RevenueTonneKilometerPlot(SingleScenarioPlot):
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Revenue Tonne Kilometer [RTK]")
         self.ax.legend()
-        
+
         self.ax.set_xlim(self.years[0], self.years[-1])
 
     def _update_plot_elements(self):
@@ -125,7 +125,7 @@ class AvailableSeatKilometerPlot(SingleScenarioPlot):
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Available Seat Kilometer [ASK]")
         self.ax.legend()
-        
+
         self.ax.set_xlim(self.years[0], self.years[-1])
 
     def _update_plot_elements(self):
@@ -168,7 +168,7 @@ class TotalAircraftDistancePlot(SingleScenarioPlot):
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Total distance travelled by aircraft [in billions of km]")
         self.ax.legend()
-        
+
         self.ax.set_xlim(self.years[0], self.years[-1])
 
     def _update_plot_elements(self):

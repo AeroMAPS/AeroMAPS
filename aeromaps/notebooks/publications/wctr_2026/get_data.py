@@ -4,7 +4,7 @@ from numpy import ndarray
 from numpy import nanmin, nanmax, nanmedian, column_stack, asarray
 from pandas import read_csv
 
-from aeromaps.plots.multi_scenario_plot import DEFAULT_LINESTYLES, DEFAULT_COLORS
+from aeromaps.plots.multi_scenario_plot import DEFAULT_LINESTYLES
 
 scenario_to_model = {
     "SSP2-19": "REMIND-MAgPIE 1.5",
@@ -31,18 +31,22 @@ def _draw_envelope(ax, x, series_by_label, color, linewidth=2, envelope_alpha=EN
     labels = list(series_by_label.keys())
     # Stable linestyle per label: index → DEFAULT_LINESTYLES[index]
     label_linestyle = {
-        label: DEFAULT_LINESTYLES[i % len(DEFAULT_LINESTYLES)]
-        for i, label in enumerate(labels)
+        label: DEFAULT_LINESTYLES[i % len(DEFAULT_LINESTYLES)] for i, label in enumerate(labels)
     }
 
     if len(labels) == 1:
         display = labels[0].split(" (")[0] if " (" in labels[0] else labels[0]
-        ax.plot(x, series_by_label[labels[0]], color=color,
-                linestyle=label_linestyle[labels[0]],
-                linewidth=linewidth, label=display)
+        ax.plot(
+            x,
+            series_by_label[labels[0]],
+            color=color,
+            linestyle=label_linestyle[labels[0]],
+            linewidth=linewidth,
+            label=display,
+        )
         return
 
-    arr = column_stack([asarray(series_by_label[l], dtype=float) for l in labels])
+    arr = column_stack([asarray(series_by_label[label], dtype=float) for label in labels])
     y_min = nanmin(arr, axis=1)
     y_max = nanmax(arr, axis=1)
     y_mid = nanmedian(arr, axis=1)
@@ -52,21 +56,39 @@ def _draw_envelope(ax, x, series_by_label, color, linewidth=2, envelope_alpha=EN
     mid_idx = int(min(range(len(diffs)), key=lambda i: diffs[i]))
     mid_label = labels[mid_idx]
 
-    ax.fill_between(x, y_min, y_max, color=color, alpha=envelope_alpha, linewidth=0,
-                    label=f"{labels[0]} to {labels[-1]} range")
+    ax.fill_between(
+        x,
+        y_min,
+        y_max,
+        color=color,
+        alpha=envelope_alpha,
+        linewidth=0,
+        label=f"{labels[0]} to {labels[-1]} range",
+    )
 
     # Background lines: all except the last and the mid, each with its index linestyle
     for label in labels[:-1]:
         if label == mid_label:
             continue
-        ax.plot(x, series_by_label[label], color=color,
-                linestyle=label_linestyle[label],
-                linewidth=linewidth, label=label)
+        ax.plot(
+            x,
+            series_by_label[label],
+            color=color,
+            linestyle=label_linestyle[label],
+            linewidth=linewidth,
+            label=label,
+        )
 
     # Middle line: uses its own index linestyle, labelled with the median scenario name
     mid_display_label = mid_label.split(" (")[0] if " (" in mid_label else mid_label
-    ax.plot(x, y_mid, color=color, linestyle=label_linestyle[mid_label],
-            linewidth=linewidth, label=mid_display_label)
+    ax.plot(
+        x,
+        y_mid,
+        color=color,
+        linestyle=label_linestyle[mid_label],
+        linewidth=linewidth,
+        label=mid_display_label,
+    )
 
 
 def get_scenario_color(scenario_name: str):
@@ -100,9 +122,7 @@ def get_ar6_input_data(start_year=2010, end_year=2100, plot_data=True):
     )
 
     all_years = [
-        int(year)
-        for year in list(co2tax_data.keys())[5:]
-        if start_year <= int(year) <= end_year
+        int(year) for year in list(co2tax_data.keys())[5:] if start_year <= int(year) <= end_year
     ]
     var_units_name_convert = {
         "population": ("million hab.", "Population", 1e6),
@@ -127,26 +147,19 @@ def get_ar6_input_data(start_year=2010, end_year=2100, plot_data=True):
                 pop = population_data[str(year)][scenario][
                     population_data["Model"][scenario] == model
                 ]
-                gdp = gdp_data[str(year)][scenario][
-                    gdp_data["Model"][scenario] == model
-                ]
-                co2_tax = co2tax_data[str(year)][scenario][
-                    co2tax_data["Model"][scenario] == model
-                ]
+                gdp = gdp_data[str(year)][scenario][gdp_data["Model"][scenario] == model]
+                co2_tax = co2tax_data[str(year)][scenario][co2tax_data["Model"][scenario] == model]
             else:
                 pop = population_data[str(year)][scenario][
                     population_data["Model"][scenario] == model
                 ].to_numpy()
-                gdp = gdp_data[str(year)][scenario][
-                    gdp_data["Model"][scenario] == model
-                ].to_numpy()
+                gdp = gdp_data[str(year)][scenario][gdp_data["Model"][scenario] == model].to_numpy()
                 co2_tax = co2tax_data[str(year)][scenario][
                     co2tax_data["Model"][scenario] == model
                 ].to_numpy()
 
             if not any(
-                isnan(data_array) or data_array.size == 0
-                for data_array in [pop, gdp, co2_tax]
+                isnan(data_array) or data_array.size == 0 for data_array in [pop, gdp, co2_tax]
             ):
                 if year not in years:
                     years.append(year)
@@ -218,9 +231,7 @@ def get_ar6_rpk_data(start_year=2005, end_year=2100, plot_data=True):
     )
 
     all_years = [
-        int(year)
-        for year in list(rpk_data.keys())[4:]
-        if start_year <= int(year) <= end_year
+        int(year) for year in list(rpk_data.keys())[4:] if start_year <= int(year) <= end_year
     ]
 
     all_scenarios = rpk_data.index.unique().tolist()
@@ -256,8 +267,7 @@ def get_ar6_rpk_data(start_year=2005, end_year=2100, plot_data=True):
             color = get_scenario_color(scenario)
             years_s = years_per_scenario[scenario]
             series_by_label = {
-                f"{scenario} ({model})": values
-                for model, values in ar6_rpk[scenario].items()
+                f"{scenario} ({model})": values for model, values in ar6_rpk[scenario].items()
             }
             _draw_envelope(ax, years_s, series_by_label, color=color, linewidth=1.5)
         ax.set_title("Aviation RPK — AR6 Scenarios")

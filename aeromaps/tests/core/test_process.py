@@ -113,6 +113,6 @@ def test_process_models_are_independent():
 
     # Check that at least one model is a different instance
     for model_name in list(common_models)[:3]:  # Test first 3 common models
-        assert proc1.models[model_name] is not proc2.models[model_name], (
-            f"Model {model_name} should be independent between processes"
-        )
+        assert (
+            proc1.models[model_name] is not proc2.models[model_name]
+        ), f"Model {model_name} should be independent between processes"
