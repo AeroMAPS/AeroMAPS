@@ -62,6 +62,15 @@ def test_compute(config_file):
     assert isinstance(plots, list)
     assert len(plots) > 0
 
+    # Every variable of the process must be documented (unit + description) in
+    # data_information.yaml, either by an exact entry or by a pattern rule.
+    data_information_df = proc._get_data_information_df()
+    assert not data_information_df.empty
+    unresolved = proc._data_information.unresolved_names(proc.data)
+    assert unresolved == [], (
+        f"{len(unresolved)} variables are missing from data_information.yaml: " f"{unresolved[:10]}"
+    )
+
     float_inputs = proc.list_float_inputs()
     assert float_inputs is not None
     assert isinstance(float_inputs, dict)
