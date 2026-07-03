@@ -1,5 +1,6 @@
 from aeromaps.plots.single_scenario.main import (
     AirTransportCO2EmissionsPlot,
+    AirTransportCO2EmissionsDetailedPlot,
     AirTransportClimateImpactsPlot,
 )
 from aeromaps.plots.single_scenario.sustainability_assessment import (
@@ -146,6 +147,7 @@ available_plots = {
 }
 
 available_plots_fleet = {
+    "air_transport_co2_emissions_detailed": AirTransportCO2EmissionsDetailedPlot,
     "annual_MACC": AnnualMACC,
     "scenario_MACC": ScenarioMACC,
     "cumulative_MACC": CumulativeMACC,
