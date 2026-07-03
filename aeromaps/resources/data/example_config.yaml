@@ -24,8 +24,9 @@ data:
     # Scenario parameters: scalars and year-indexed vectors.
     json_inputs_file: "./parameters.json"
 
-    # Optional: metadata (units/descriptions) for the inputs, used for display.
-    csv_data_information_file: "./data_information.csv"
+    # Optional: metadata (units/descriptions/sources) of the variables, used for
+    # display and export. YAML format with "variables" and "patterns" sections.
+    data_information_file: "./data_information.yaml"
 
     # Optional: year-indexed inputs to partition a global scenario into a
     # sub-scope (region, segment...). Omit for a plain global run.
