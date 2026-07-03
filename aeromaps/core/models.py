@@ -83,6 +83,8 @@ from aeromaps.models.impacts.emissions.co2_emissions import (
     CumulativeCO2Emissions,
     DetailedCo2Emissions,
     DetailedCumulativeCO2Emissions,
+    DetailedCo2EmissionsPerAircraft,
+    DetailedCo2EmissionsPerPathway,
 )
 from aeromaps.models.impacts.emissions.non_co2_emissions import (
     NOxEmissionIndex,
@@ -211,6 +213,9 @@ models_efficiency_bottom_up = {
     "soot_emission_index_complex": SootEmissionIndexComplex("soot_emission_index_complex"),
     "h2o_emission_index": H2OEmissionIndex("h2o_emission_index"),
     "sulfur_emission_index": SulfurEmissionIndex("sulfur_emission_index"),
+    "detailed_co2_emissions_per_aircraft": DetailedCo2EmissionsPerAircraft(
+        "detailed_co2_emissions_per_aircraft"
+    ),
 }
 
 
@@ -229,6 +234,9 @@ models_energy_without_fuel_effect = {
         "without_fuel_effect_correction_contrails"
     ),
     "energy_carriers_massic_shares": EnergyCarriersMassicShares("energy_carriers_massic_shares"),
+    "detailed_co2_emissions_per_pathway": DetailedCo2EmissionsPerPathway(
+        "detailed_co2_emissions_per_pathway"
+    ),
 }
 
 models_energy_with_fuel_effect = {
@@ -246,6 +254,9 @@ models_energy_with_fuel_effect = {
         "fuel_effect_correction_contrails"
     ),
     "energy_carriers_massic_shares": EnergyCarriersMassicShares("energy_carriers_massic_shares"),
+    "detailed_co2_emissions_per_pathway": DetailedCo2EmissionsPerPathway(
+        "detailed_co2_emissions_per_pathway"
+    ),
 }
 
 models_offset = {

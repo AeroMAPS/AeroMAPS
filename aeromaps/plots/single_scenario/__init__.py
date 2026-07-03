@@ -1,4 +1,8 @@
-from aeromaps.plots.single_scenario.main import AirTransportCO2EmissionsPlot, AirTransportClimateImpactsPlot
+from aeromaps.plots.single_scenario.main import (
+    AirTransportCO2EmissionsPlot,
+    AirTransportCO2EmissionsDetailedPlot,
+    AirTransportClimateImpactsPlot,
+)
 from aeromaps.plots.single_scenario.sustainability_assessment import (
     CarbonBudgetAssessmentPlot,
     TemperatureTargetAssessmentPlot,
@@ -47,7 +51,10 @@ from aeromaps.plots.single_scenario.climate import (
     TemperatureIncreaseFromAirTransportPlot,
     DetailedTemperatureIncreaseFromAirTransportPlot,
 )
-from aeromaps.plots.single_scenario.energy_resources import BiomassConsumptionPlot, ElectricityConsumptionPlot
+from aeromaps.plots.single_scenario.energy_resources import (
+    BiomassConsumptionPlot,
+    ElectricityConsumptionPlot,
+)
 
 from aeromaps.plots.single_scenario.energy_mix import (
     EnergyMixPlot,
@@ -140,6 +147,7 @@ available_plots = {
 }
 
 available_plots_fleet = {
+    "air_transport_co2_emissions_detailed": AirTransportCO2EmissionsDetailedPlot,
     "annual_MACC": AnnualMACC,
     "scenario_MACC": ScenarioMACC,
     "cumulative_MACC": CumulativeMACC,

@@ -1,5 +1,11 @@
 # Changelog
 
+## Branch decomposition
+
+Changed:
+- Added decomposition of the main levers of action into sub-levers: aircraft efficiency per sub-lever (fleet renewal, each new aircraft, freight fleet) and aircraft energy per energy pathway, through the new DetailedCo2EmissionsPerAircraft and DetailedCo2EmissionsPerPathway models
+- Added the air_transport_co2_emissions_detailed plot displaying the sub-lever decomposition
+
 ## Branch scenario_comparison
 
 Changed:
