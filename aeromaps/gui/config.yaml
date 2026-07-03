@@ -1,6 +1,6 @@
 data:
   inputs:
-    csv_data_information_file: "../resources/data/data_information.csv"
+    data_information_file: "../resources/data/data_information.yaml"
     json_inputs_file: "../resources/data/parameters.json"
   outputs:
     json_outputs_file: "../resources/data/outputs.json"

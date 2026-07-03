@@ -9,6 +9,7 @@ AeroMAPS framework.
 import json
 import logging
 import os
+import warnings
 from json import load, dump
 from pathlib import Path
 from typing import Union
@@ -42,6 +43,7 @@ from aeromaps.utils.functions import (
     _flatten_dict,
 )
 from aeromaps.utils.yaml import read_yaml_file
+from aeromaps.utils.data_information import DataInformation
 from aeromaps.plots.single_scenario import available_plots, available_plots_fleet
 
 # Fleet model imports
@@ -189,6 +191,9 @@ class AeroMAPSProcess(object):
         """
         # Initialize pathways_manager to None - will be populated if energy models are used
         self.pathways_manager = None
+
+        # Variable metadata registry, lazily loaded by _read_data_information
+        self._data_information = None
 
         self.configuration_file = (
             os.path.abspath(os.fspath(configuration_file))
@@ -657,8 +662,28 @@ class AeroMAPSProcess(object):
         """
         return self.data["str_inputs"]
 
-    def plot(self, name, save=False, size_inches=None, remove_title=False,
-             fig=None, ax=None, legend=True):
+    def get_variable_information(self, name):
+        """Return the metadata (unit, description, source) of a variable.
+
+        Parameters
+        ----------
+        name
+            Variable name, e.g. 'co2_emissions'.
+
+        Returns
+        -------
+        information
+            Dictionary with keys 'Unit', 'Description' and 'Source', or
+            None if the variable is not documented in the data
+            information file.
+        """
+        if self._data_information is None:
+            self._read_data_information()
+        return self._data_information.lookup(name)
+
+    def plot(
+        self, name, save=False, size_inches=None, remove_title=False, fig=None, ax=None, legend=True
+    ):
         """Generate a predefined AeroMAPS plot.
 
         Depending on the plot name, this method uses either generic or
@@ -1952,18 +1977,19 @@ class AeroMAPSProcess(object):
         return json_data
 
     def _read_data_information(self, file_name=None):
-        """Read and merge data descriptions from the information CSV file.
+        """Read and merge variable metadata from the data information file.
 
         This method scans the current inputs and outputs, looks up their
-        metadata in the data information CSV file, and builds a
-        consolidated table including type, unit, and description for each
-        variable.
+        metadata (unit, description, source) in the data information
+        registry, and builds a consolidated table. The registry is a YAML
+        file (see ``aeromaps/utils/data_information.py``); the legacy CSV
+        format is still supported for backward compatibility.
 
         Parameters
         ----------
         file_name
-            Path to the data information CSV file. If None, the path
-            from the configuration is used.
+            Path to the data information file. If None, the path from the
+            configuration is used.
 
         Returns
         -------
@@ -1972,45 +1998,34 @@ class AeroMAPSProcess(object):
             outputs.
         """
         if file_name is None:
-            file_name = self._resolve_config_path(
-                "data",
-                "inputs",
-                "csv_data_information_file",
-                default_filename="data_information.csv",
+            # Legacy config key, kept for backward compatibility with old user configs
+            legacy_value = self._get_user_config_value(
+                "data", "inputs", "csv_data_information_file"
             )
+            new_value = self._get_user_config_value("data", "inputs", "data_information_file")
+            if legacy_value is not None and new_value is None:
+                warnings.warn(
+                    "The 'csv_data_information_file' configuration key is deprecated. "
+                    "Use 'data_information_file' with a YAML file instead.",
+                    DeprecationWarning,
+                )
+                file_name = self._resolve_config_path("data", "inputs", "csv_data_information_file")
+            else:
+                file_name = self._resolve_config_path(
+                    "data",
+                    "inputs",
+                    "data_information_file",
+                    default_filename="data_information.yaml",
+                )
         if file_name is None:
-            raise ValueError(
-                "Cannot resolve data information CSV file path. Check your configuration."
+            raise ValueError("Cannot resolve data information file path. Check your configuration.")
+        data_information = DataInformation.from_file(file_name)
+        self._data_information = data_information
+        unresolved = data_information.unresolved_names(self.data)
+        if unresolved:
+            logging.warning(
+                f"{len(unresolved)} variables have no entry in the data information file "
+                f"'{file_name}' (first ones: {unresolved[:5]}). "
+                "Add exact entries or pattern rules to document their unit."
             )
-        try:
-            df = pd.read_csv(file_name, encoding="utf-8", sep=";")
-        except FileNotFoundError:
-            raise FileNotFoundError(f"Data information file not found: '{file_name}'")
-        except Exception as e:
-            raise ValueError(f"Failed to parse data information file '{file_name}': {e}") from e
-
-        var_infos_df = pd.DataFrame()
-        for data_type, variables in self.data.items():
-            # FIXME: xarray no supported yet for excel data information
-            if type(variables) is xr.DataArray:
-                continue
-
-            for variable in variables:
-                # If the variable exists in the csv we extract the information
-                if variable in df["Name"].values:
-                    data = df.loc[df["Name"] == variable]
-                    data["Type"] = data_type
-                    var_infos_df = pd.concat([var_infos_df, data], ignore_index=True)
-
-                # If not we create a new one with just the type as information
-                else:
-                    data = {
-                        "Name": [variable],
-                        "Type": [data_type],
-                        "Unit": ["N/A"],
-                        "Description": ["N/A"],
-                    }
-                    new_row = pd.DataFrame(data=data)
-                    var_infos_df = pd.concat([var_infos_df, new_row], ignore_index=True)
-
-        return var_infos_df
+        return data_information.build_dataframe(self.data)

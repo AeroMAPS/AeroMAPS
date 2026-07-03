@@ -4,10 +4,10 @@ Test module for AeroMAPS process.
 This module tests the AeroMAPSProcess class functionality and that all model
 groups can be instantiated and run without errors.
 """
+
 from pathlib import Path
 
 import pytest
-import os
 from aeromaps import create_process
 
 CONFIG_DIR = Path(__file__).parent.parent / "tested_configs"
@@ -19,6 +19,7 @@ def get_tested_config_files():
     # config_paths.append(None)
     return config_paths
 
+
 # TODO: expand tests for None and relative path cases
 # The case for None is particular because the default config in resources is
 # broken (missing inputs), so skipping for now.
@@ -26,6 +27,7 @@ def get_tested_config_files():
 # removed from the basic analysis to run faster.
 
 CONFIGS_TO_TEST = get_tested_config_files()
+
 
 @pytest.mark.parametrize("config_file", CONFIGS_TO_TEST)
 def test_initialization(config_file):
@@ -36,6 +38,7 @@ def test_initialization(config_file):
     assert proc.models is not None
     assert proc.data is not None
     # assert os.path.exists(proc.configuration_file)
+
 
 @pytest.mark.parametrize("config_file", CONFIGS_TO_TEST)
 def test_compute(config_file):
@@ -59,6 +62,15 @@ def test_compute(config_file):
     assert isinstance(plots, list)
     assert len(plots) > 0
 
+    # Every variable of the process must be documented (unit + description) in
+    # data_information.yaml, either by an exact entry or by a pattern rule.
+    data_information_df = proc._get_data_information_df()
+    assert not data_information_df.empty
+    unresolved = proc._data_information.unresolved_names(proc.data)
+    assert unresolved == [], (
+        f"{len(unresolved)} variables are missing from data_information.yaml: " f"{unresolved[:10]}"
+    )
+
     float_inputs = proc.list_float_inputs()
     assert float_inputs is not None
     assert isinstance(float_inputs, dict)
@@ -67,22 +79,22 @@ def test_compute(config_file):
     str_inputs = proc.list_str_inputs()
     assert str_inputs is not None
     assert isinstance(str_inputs, dict)
-    assert hasattr(proc, 'data')
+    assert hasattr(proc, "data")
 
-    assert 'float_inputs' in proc.data
-    assert 'vector_outputs' in proc.data
-    assert 'years' in proc.data
+    assert "float_inputs" in proc.data
+    assert "vector_outputs" in proc.data
+    assert "years" in proc.data
 
-    years = proc.data['years']
-    assert 'full_years' in years
-    assert 'historic_years' in years
-    assert 'prospective_years' in years
-    assert hasattr(proc, 'parameters')
+    years = proc.data["years"]
+    assert "full_years" in years
+    assert "historic_years" in years
+    assert "prospective_years" in years
+    assert hasattr(proc, "parameters")
 
     data = proc.data
-    assert 'vector_outputs' in data
+    assert "vector_outputs" in data
 
-    vector_outputs = data['vector_outputs']
+    vector_outputs = data["vector_outputs"]
     assert vector_outputs is not None
     assert len(vector_outputs) > 0
 
@@ -94,9 +106,10 @@ def test_process_models_are_independent():
     proc2 = create_process()
 
     proc1.parameters.cagr_freight_reference_periods_values = [0.0]
-    assert (proc1.parameters.cagr_freight_reference_periods_values !=
-            proc2.parameters.cagr_freight_reference_periods_values), \
-        "Changing parameters in one process should not affect the other process"
+    assert (
+        proc1.parameters.cagr_freight_reference_periods_values
+        != proc2.parameters.cagr_freight_reference_periods_values
+    ), "Changing parameters in one process should not affect the other process"
 
     # Models should be different instances
     # Test with a common model that should exist in both
@@ -105,5 +118,6 @@ def test_process_models_are_independent():
 
     # Check that at least one model is a different instance
     for model_name in list(common_models)[:3]:  # Test first 3 common models
-        assert proc1.models[model_name] is not proc2.models[model_name], \
-            f"Model {model_name} should be independent between processes"
+        assert (
+            proc1.models[model_name] is not proc2.models[model_name]
+        ), f"Model {model_name} should be independent between processes"
