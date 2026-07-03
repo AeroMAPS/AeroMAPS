@@ -228,14 +228,17 @@ class AirTransportCO2EmissionsPlot(SingleScenarioPlot):
 
 class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
     """
-    Variant of AirTransportCO2EmissionsPlot where the "Aircraft efficiency" and
+    Variant of AirTransportCO2EmissionsPlot where the "Aircraft efficiency" and/or
     "Aircraft energy" levers of action are decomposed into sub-levers: fleet
     renewal and each new aircraft of the fleet for the efficiency lever, and each
     energy pathway for the energy lever.
 
-    Requires the bottom-up fleet model and the generic energy models, together
-    with the DetailedCo2EmissionsPerAircraft and DetailedCo2EmissionsPerPathway
-    models.
+    Each decomposition is independent and optional: the efficiency lever is only
+    decomposed when the bottom-up fleet model and DetailedCo2EmissionsPerAircraft
+    are used, and the energy lever only when the generic energy models and
+    DetailedCo2EmissionsPerPathway are used. Any lever whose sub-levers are not
+    available (e.g. a top-down fleet model, or non-generic energy models) simply
+    falls back to a single aggregated band, exactly like AirTransportCO2EmissionsPlot.
     """
 
     required_outputs = [
@@ -246,10 +249,6 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
         "co2_emissions_2019technology_baseline3",
         "carbon_offset",
         "co2_emissions",
-        "co2_emissions_lever_efficiency_fleet_renewal",
-        "co2_emissions_lever_efficiency_freight",
-        "co2_emissions_lever_efficiency_other",
-        "co2_emissions_lever_energy_other",
     ]
 
     # Colormap used per energy origin for the energy pathway sub-levers
@@ -272,9 +271,19 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
         return (plot_1_x, plot_1_y)
 
     def _efficiency_bands(self):
-        """Return the (label, column, color) list of the aircraft efficiency sub-levers."""
-        fleet = self.process.fleet_model.fleet
-        lever_names = aircraft_efficiency_lever_names(fleet)
+        """Return the (label, column, color) list of the aircraft efficiency sub-levers.
+
+        Returns None when the decomposition is not available (e.g. a top-down
+        fleet model is used instead of the bottom-up one), so that the caller
+        falls back to a single aggregated band.
+        """
+        fleet_model = getattr(self.process, "fleet_model", None)
+        if fleet_model is None or "co2_emissions_lever_efficiency_fleet_renewal" not in (
+            self.df.columns
+        ):
+            return None
+
+        lever_names = aircraft_efficiency_lever_names(fleet_model.fleet)
 
         aircraft_columns = []
         for (category_name, _, aircraft_name), column in lever_names.items():
@@ -291,7 +300,17 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
         return bands
 
     def _energy_bands(self):
-        """Return the (label, column, color) list of the energy pathway sub-levers."""
+        """Return the (label, column, color) list of the energy pathway sub-levers.
+
+        Returns None when the decomposition is not available (e.g. non-generic,
+        top-down energy models are used), so that the caller falls back to a
+        single aggregated band.
+        """
+        if self.pathways_manager is None or "co2_emissions_lever_energy_other" not in (
+            self.df.columns
+        ):
+            return None
+
         pathways_by_origin = {}
         for pathway in self.pathways_manager.get_all():
             column = f"co2_emissions_lever_energy_{pathway.name}"
@@ -389,9 +408,20 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
             label="Demand/supply side management",
         )
 
-        # Aircraft efficiency sub-levers
-        upper = self.df.loc[self.years, "co2_emissions_2019technology"]
-        self._plot_sub_lever_bands(upper, self._efficiency_bands())
+        # Aircraft efficiency: decomposed into sub-levers when available, otherwise
+        # a single aggregated band (same as AirTransportCO2EmissionsPlot)
+        efficiency_bands = self._efficiency_bands()
+        if efficiency_bands is not None:
+            upper = self.df.loc[self.years, "co2_emissions_2019technology"]
+            self._plot_sub_lever_bands(upper, efficiency_bands)
+        else:
+            self.ax.fill_between(
+                self.years,
+                self.df["co2_emissions_2019technology"],
+                self.df["co2_emissions_including_aircraft_efficiency"],
+                color="gold",
+                label="Aircraft efficiency",
+            )
 
         # Fleet operations and load factor
         self.ax.fill_between(
@@ -402,9 +432,20 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
             label="Fleet operations and load factor",
         )
 
-        # Aircraft energy sub-levers
-        upper = self.df.loc[self.years, "co2_emissions_including_load_factor"]
-        self._plot_sub_lever_bands(upper, self._energy_bands())
+        # Aircraft energy: decomposed into sub-levers when available, otherwise
+        # a single aggregated band (same as AirTransportCO2EmissionsPlot)
+        energy_bands = self._energy_bands()
+        if energy_bands is not None:
+            upper = self.df.loc[self.years, "co2_emissions_including_load_factor"]
+            self._plot_sub_lever_bands(upper, energy_bands)
+        else:
+            self.ax.fill_between(
+                self.years,
+                self.df["co2_emissions_including_load_factor"],
+                self.df_climate.loc[self.years, "co2_emissions"],
+                color="yellowgreen",
+                label="Aircraft energy",
+            )
 
         # Carbon offset
         plt.rc("hatch", linewidth=4)
