@@ -93,6 +93,7 @@ from aeromaps.plots.single_scenario.costs_generic import (
 
 available_plots = {
     "air_transport_co2_emissions": AirTransportCO2EmissionsPlot,
+    "air_transport_co2_emissions_detailed": AirTransportCO2EmissionsDetailedPlot,
     "air_transport_climate_impacts": AirTransportClimateImpactsPlot,
     "carbon_budget_assessment": CarbonBudgetAssessmentPlot,
     "temperature_target_assessment": TemperatureTargetAssessmentPlot,
@@ -151,7 +152,6 @@ available_plots = {
 }
 
 available_plots_fleet = {
-    "air_transport_co2_emissions_detailed": AirTransportCO2EmissionsDetailedPlot,
     "annual_MACC": AnnualMACC,
     "scenario_MACC": ScenarioMACC,
     "cumulative_MACC": CumulativeMACC,
