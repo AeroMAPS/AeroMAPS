@@ -6,6 +6,11 @@ Changed:
 - Energy carriers, processes and resources yaml files are validated at load time: a key no energy model reads is now rejected instead of silently resolving to zero. The accepted vocabulary is collected from the energy models themselves, each key belonging to exactly one `inputs` block. (#158)
 - Moved `fossil_kerosene`'s emission factor from `technical:` to `environmental:` in the three `icas_2024` energy carriers files. It was read from either block, so no result changes. (#158)
 - Documented `mandate_type: "quantity"` and `mandate_quantity`, and corrected the subsidy keys, in the shipped energy templates. (#158)
+- New unit system (`aeromaps/utils/units.py`): controlled vocabulary of unit symbols, parsing of compound expressions, validation, and conversions (`convert`, `convert_factor`) with dimensional checks.
+- Variable metadata (unit, description, source) moved from `data_information.csv` to `data_information.yaml`, with exact entries plus ordered glob patterns for dynamically named variables (energy pathways, processes, climate species, LCA). All units are validated against the vocabulary at load time.
+- Full metadata coverage: every variable of the tested configurations is now documented (previously ~1350 variables had no unit/description), enforced by the test suite.
+- New config key `data.inputs.data_information_file`; `csv_data_information_file` is deprecated but still read.
+- New API: `process.get_variable_information(name)` to query the unit/description of a variable.
 
 Fixed:
 - Fixed kerosene selectivity being ignored, and inverted, in the bottom-up model. (#158)
