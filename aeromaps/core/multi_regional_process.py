@@ -38,10 +38,47 @@ from aeromaps.core.gemseo import (
 )
 from aeromaps.core import models as aeromaps_models
 from aeromaps.models.multi_regional.regional_aggregator import RegionalAggregator
+from aeromaps.plots.single_scenario import (
+    aggregation_safe_plots,
+    available_plots,
+    available_plots_fleet,
+)
 
 
 # Type alias for execution modes
 ExecutionMode = Literal["unified_mda", "separate_processes"]
+
+
+class _GlobalOutputsView:
+    """Single-scenario-process facade over a MultiRegionalProcess' aggregated outputs.
+
+    Exposes exactly what ``SingleScenarioPlot`` reads from a process: a ``data``
+    dict whose frames hold the global-namespace series with the prefix stripped
+    (``vector_outputs``, ``climate_outputs``, ``float_outputs``, ``float_inputs``,
+    ``years``), plus a ``pathways_manager`` attribute.
+
+    ``pathways_manager`` is None: there is no global pathways aggregate, which is
+    one reason pathway-driven plots are not aggregation-safe (see
+    ``aggregation_safe_plots``). ``float_inputs`` come from the first region:
+    aggregation-safe plots do not read scenario floats, but the plot base class
+    extracts the key unconditionally.
+    """
+
+    def __init__(self, process: "MultiRegionalProcess"):
+        global_prefix = f"{process.global_namespace}:"
+        first_region = process.regional_processes[process.list_regions()[0]]
+        self.data = {
+            "years": process.data["years"],
+            "float_inputs": first_region.data.get("float_inputs", {}),
+            "vector_outputs": process.get_global_outputs(),
+            "climate_outputs": process.get_global_climate_outputs(),
+            "float_outputs": {
+                key[len(global_prefix) :]: value
+                for key, value in process.data["float_outputs"].items()
+                if key.startswith(global_prefix)
+            },
+        }
+        self.pathways_manager = None
 
 
 class MultiRegionalProcess(AeroMAPSProcess):
@@ -959,43 +996,162 @@ class MultiRegionalProcess(AeroMAPSProcess):
         save: bool = False,
         size_inches: Optional[tuple] = None,
         remove_title: bool = False,
+        fig=None,
+        ax=None,
+        legend=True,
     ):
-        """Generate a plot for a specific region or raise an error for global plots.
+        """Generate a plot for a specific region, or at the aggregated (global) level.
 
-        For regional plots, delegates to the regional process's plot method.
-        Global (aggregated) plots require explicit implementation.
+        With ``region``, delegates to that regional process's plot method (full
+        plot catalogue available). Without ``region``, draws the plot on the
+        aggregated global-namespace outputs — only the aggregation-safe subset
+        of the catalogue is accepted (see ``list_available_global_plots``), and
+        every variable the plot requires must be listed in the regionalisation
+        file's ``aggregation`` block so the aggregator produces it.
 
         Parameters
         ----------
         name
             Identifier of the plot to generate.
         region
-            Region ID for regional plots. If None, attempts global plot.
+            Region ID for regional plots. If None, plots the global aggregate.
         save
             Whether to save the generated plot as a PDF file.
         size_inches
             Optional figure size in inches as a tuple.
         remove_title
             Whether to remove the plot title.
+        fig
+            Existing matplotlib figure to draw into (together with ``ax``).
+        ax
+            Existing matplotlib axes to draw into (together with ``fig``).
+        legend
+            Legend control forwarded to the plot class (True/False/location).
 
         Returns
         -------
         fig
-            The matplotlib figure object.
+            The plot object holding the created figure.
         """
         if region is not None:
             # Delegate to regional process
             regional_process = self.get_regional_process(region)
             return regional_process.plot(
-                name, save=save, size_inches=size_inches, remove_title=remove_title
+                name,
+                save=save,
+                size_inches=size_inches,
+                remove_title=remove_title,
+                fig=fig,
+                ax=ax,
+                legend=legend,
             )
-        else:
-            # Global plot - needs specific implementation
-            # TODO: Implement global plotting using aggregated data
+        return self._plot_global(
+            name,
+            save=save,
+            size_inches=size_inches,
+            remove_title=remove_title,
+            fig=fig,
+            ax=ax,
+            legend=legend,
+        )
+
+    def _plot_global(
+        self,
+        name: str,
+        save: bool = False,
+        size_inches: Optional[tuple] = None,
+        remove_title: bool = False,
+        fig=None,
+        ax=None,
+        legend=True,
+    ):
+        """Draw a single-scenario plot on the aggregated (global-namespace) outputs.
+
+        Only plots listed in ``aggregation_safe_plots`` are accepted: their
+        required outputs stay meaningful when summed / weighted-averaged across
+        regions. The plot's ``required_outputs`` are checked against the
+        aggregated columns before rendering, so a missing variable fails with
+        the exact list to add to the regionalisation ``aggregation`` block
+        instead of a KeyError inside matplotlib code.
+
+        Parameters
+        ----------
+        name
+            Identifier of the plot to generate.
+        save
+            Whether to save the generated plot as a PDF file.
+        size_inches
+            Optional figure size in inches as a tuple.
+        remove_title
+            Whether to remove the plot title.
+        fig
+            Existing matplotlib figure to draw into (together with ``ax``).
+        ax
+            Existing matplotlib axes to draw into (together with ``fig``).
+        legend
+            Legend control forwarded to the plot class.
+
+        Returns
+        -------
+        fig
+            The plot object holding the created figure.
+        """
+        if name in available_plots_fleet:
+            raise NameError(
+                f"Plot '{name}' is a fleet plot: it reads a region's fleet_model, which "
+                f"has no global aggregate. Draw it per region: plot('{name}', region=<id>)."
+            )
+        if name not in available_plots:
+            raise NameError(
+                f"Plot '{name}' is not available. Available plots: "
+                f"{list(available_plots)} (plus fleet plots "
+                f"{list(available_plots_fleet)}, regional only)."
+            )
+        if name not in aggregation_safe_plots:
             raise NotImplementedError(
-                "Global (aggregated) plotting not yet implemented. "
-                "Specify a region using region='FR' to plot regional data."
+                f"Plot '{name}' is not aggregation-safe: it relies on data with no "
+                f"meaningful per-region aggregate (climate response, energy pathways, "
+                f"scenario floats or cost structures). Draw it on a single region "
+                f"instead: plot('{name}', region=<id>). Globally plottable: "
+                f"{list(aggregation_safe_plots)}."
             )
+
+        if self.data["vector_outputs"].empty:
+            raise RuntimeError("No aggregated outputs available yet — run compute() first.")
+
+        plot_class = aggregation_safe_plots[name]
+        view = _GlobalOutputsView(self)
+        available_columns = set(view.data["vector_outputs"].columns) | set(
+            view.data["climate_outputs"].columns
+        )
+        missing = [v for v in plot_class.get_required_outputs() if v not in available_columns]
+        if missing:
+            raise ValueError(
+                f"Plot '{name}' needs global variables that are not aggregated: {missing}. "
+                f"Add them to the 'aggregation' block of the regionalisation file "
+                f"('sum' for additive series, 'weighted_average' for intensities), "
+                f"rebuild the process and re-run compute(). Every region must produce them."
+            )
+
+        # Availability was hard-checked above; skip the base class's soft check.
+        fig_obj = plot_class(view, check_outputs=False, fig=fig, ax=ax, legend=legend)
+        if save:
+            if size_inches is not None:
+                fig_obj.fig.set_size_inches(size_inches)
+            if remove_title:
+                fig_obj.fig.gca().set_title("")
+            fig_obj.fig.savefig(f"{name}.pdf", bbox_inches="tight")
+        return fig_obj
+
+    def list_available_global_plots(self) -> List[str]:
+        """List the plot names accepted by ``plot(name)`` without a ``region``.
+
+        Returns
+        -------
+        List[str]
+            Names of the aggregation-safe plots (subset of ``list_available_plots``).
+        """
+        return list(aggregation_safe_plots)
 
     def plot_regional_comparison(
         self,
