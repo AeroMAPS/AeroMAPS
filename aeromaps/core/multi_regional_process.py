@@ -859,6 +859,28 @@ class MultiRegionalProcess(AeroMAPSProcess):
             )
         return self._regional_processes[region_id]
 
+    @staticmethod
+    def _strip_namespace(df: pd.DataFrame, namespace: str) -> pd.DataFrame:
+        """Return the columns of ``df`` belonging to ``namespace``, prefix stripped.
+
+        Parameters
+        ----------
+        df
+            DataFrame whose columns are namespaced ("<namespace>:<variable>").
+        namespace
+            The namespace to select (region ID or global namespace).
+
+        Returns
+        -------
+        pd.DataFrame
+            DataFrame with only that namespace's columns, prefix removed.
+        """
+        prefix = f"{namespace}:"
+        cols = [c for c in df.columns if c.startswith(prefix)]
+        result = df[cols].copy()
+        result.columns = [c[len(prefix) :] for c in cols]
+        return result
+
     def get_regional_outputs(self, region_id: str) -> pd.DataFrame:
         """Get outputs for a specific region from vector_outputs.
 
@@ -875,13 +897,7 @@ class MultiRegionalProcess(AeroMAPSProcess):
         if region_id not in self._region_ids:
             raise KeyError(f"Region '{region_id}' not found. Available: {self._region_ids}")
 
-        # Filter columns for this region and remove namespace prefix
-        prefix = f"{region_id}:"
-        region_cols = [c for c in self.data["vector_outputs"].columns if c.startswith(prefix)]
-
-        result = self.data["vector_outputs"][region_cols].copy()
-        result.columns = [c[len(prefix) :] for c in region_cols]
-        return result
+        return self._strip_namespace(self.data["vector_outputs"], region_id)
 
     def get_global_outputs(self) -> pd.DataFrame:
         """Get aggregated global outputs from vector_outputs.
@@ -891,12 +907,36 @@ class MultiRegionalProcess(AeroMAPSProcess):
         pd.DataFrame
             DataFrame with global outputs (namespace removed from columns).
         """
-        prefix = f"{self._global_namespace}:"
-        global_cols = [c for c in self.data["vector_outputs"].columns if c.startswith(prefix)]
+        return self._strip_namespace(self.data["vector_outputs"], self._global_namespace)
 
-        result = self.data["vector_outputs"][global_cols].copy()
-        result.columns = [c[len(prefix) :] for c in global_cols]
-        return result
+    def get_regional_climate_outputs(self, region_id: str) -> pd.DataFrame:
+        """Get climate outputs for a specific region from climate_outputs.
+
+        Parameters
+        ----------
+        region_id
+            The region identifier (e.g., "FR", "DE").
+
+        Returns
+        -------
+        pd.DataFrame
+            DataFrame with climate outputs for the specified region (namespace
+            removed from columns).
+        """
+        if region_id not in self._region_ids:
+            raise KeyError(f"Region '{region_id}' not found. Available: {self._region_ids}")
+
+        return self._strip_namespace(self.data["climate_outputs"], region_id)
+
+    def get_global_climate_outputs(self) -> pd.DataFrame:
+        """Get aggregated global climate outputs from climate_outputs.
+
+        Returns
+        -------
+        pd.DataFrame
+            DataFrame with global climate outputs (namespace removed from columns).
+        """
+        return self._strip_namespace(self.data["climate_outputs"], self._global_namespace)
 
     def list_regions(self) -> List[str]:
         """List all region identifiers.
@@ -1057,8 +1097,44 @@ class MultiRegionalProcess(AeroMAPSProcess):
         with open(file_name, "w", encoding="utf-8") as f:
             json.dump(json_data, f, indent=2)
 
+    def _get_float_outputs_matrix(self) -> pd.DataFrame:
+        """Return float outputs as a variable x namespace matrix.
+
+        One row per float variable, one column per namespace (the global
+        namespace first, then each region), so per-region scalars can be read
+        side by side. Namespaces without a value for a variable hold NaN.
+
+        Returns
+        -------
+        pd.DataFrame
+            Matrix of float outputs (empty if there are none).
+        """
+        matrix: Dict[str, Dict[str, float]] = {}
+        for key, value in self.data["float_outputs"].items():
+            if ":" not in key:
+                continue
+            namespace, var_name = key.split(":", 1)
+            matrix.setdefault(var_name, {})[namespace] = value
+
+        result = pd.DataFrame.from_dict(matrix, orient="index")
+        if result.empty:
+            return result
+        ordered = [ns for ns in [self._global_namespace, *self._region_ids] if ns in result.columns]
+        result = result[ordered]
+        result.index.name = "Name"
+        return result
+
     def write_excel(self, file_name: str):
-        """Write aggregated outputs to an Excel file.
+        """Write all outputs to an Excel file.
+
+        Sheet layout:
+
+        - ``Overall Outputs`` / ``Overall Climate``: the aggregated
+          (global-namespace) vector and climate series, prefix stripped.
+        - ``Float Outputs``: one row per float variable, one column per
+          namespace (overall first, then each region).
+        - ``Region_<id>`` / ``Climate_<id>``: each region's vector and climate
+          outputs, prefix stripped.
 
         Parameters
         ----------
@@ -1066,27 +1142,26 @@ class MultiRegionalProcess(AeroMAPSProcess):
             Path to the output Excel file.
         """
         with pd.ExcelWriter(file_name) as writer:
-            # Global outputs sheet
+            # Overall (aggregated) vector and climate outputs
             global_df = self.get_global_outputs()
             if not global_df.empty:
-                global_df.to_excel(writer, sheet_name="Global Outputs")
+                global_df.to_excel(writer, sheet_name="Overall Outputs")
 
-            # Climate outputs sheet (all namespaced)
-            if not self.data["climate_outputs"].empty:
-                self.data["climate_outputs"].to_excel(writer, sheet_name="Climate Outputs")
+            global_climate_df = self.get_global_climate_outputs()
+            if not global_climate_df.empty:
+                global_climate_df.to_excel(writer, sheet_name="Overall Climate")
 
-            # Float outputs sheet
-            if self.data["float_outputs"]:
-                float_df = pd.DataFrame(
-                    {
-                        "Name": list(self.data["float_outputs"].keys()),
-                        "Value": list(self.data["float_outputs"].values()),
-                    }
-                )
-                float_df.to_excel(writer, sheet_name="Float Outputs", index=False)
+            # Float outputs (variable x namespace matrix: overall + regions)
+            float_df = self._get_float_outputs_matrix()
+            if not float_df.empty:
+                float_df.to_excel(writer, sheet_name="Float Outputs")
 
-            # Regional outputs (one sheet per region, limited to avoid Excel limits)
+            # Regional outputs (two sheets per region, limited to avoid Excel limits)
             for region_id in self._region_ids[:20]:  # Excel has sheet limits
                 regional_df = self.get_regional_outputs(region_id)
                 if not regional_df.empty:
                     regional_df.to_excel(writer, sheet_name=f"Region_{region_id}")
+
+                regional_climate_df = self.get_regional_climate_outputs(region_id)
+                if not regional_climate_df.empty:
+                    regional_climate_df.to_excel(writer, sheet_name=f"Climate_{region_id}")
