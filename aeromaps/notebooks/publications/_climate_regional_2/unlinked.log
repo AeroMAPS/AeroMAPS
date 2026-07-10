@@ -1,0 +1,1751 @@
+2026-04-27 18:15:37 - DEBUG - kaleido - Successfully registered PlotlyJSONEncoder.
+2026-04-27 18:19:11 - DEBUG - kaleido - Successfully registered PlotlyJSONEncoder.
+2026-04-27 18:19:11 - DEBUG - kaleido - Timeout: 90
+2026-04-27 18:19:11 - DEBUG - browser_async - Attempting to open new browser.
+2026-04-27 18:19:11 - INFO - chromium - Chromium init'ed with kwargs {}
+2026-04-27 18:19:11 - DEBUG - chromium - Looking for a chrome browser.
+2026-04-27 18:19:11 - DEBUG - _which - Looking for browser, skipping local? False
+2026-04-27 18:19:11 - DEBUG - _which - Looking for at local chrome download path: C:\Users\t.planes\AppData\Local\miniconda3\envs\AeroMAPS_Test\Lib\site-packages\choreographer\cli\browser_exe\chrome-win64\chrome.exe
+2026-04-27 18:19:11 - DEBUG - _which - Local chrome not found at path: C:\Users\t.planes\AppData\Local\miniconda3\envs\AeroMAPS_Test\Lib\site-packages\choreographer\cli\browser_exe\chrome-win64\chrome.exe.
+2026-04-27 18:19:11 - INFO - chromium - Found chromium path: C:\Program Files\Google\Chrome\Application\chrome.exe
+2026-04-27 18:19:11 - INFO - _tmpfile - Temp directory created: C:\Users\T06E7~1.PLA\AppData\Local\Temp\tmp9u43wc9u.
+2026-04-27 18:19:11 - DEBUG - _page_generator - Plotly script: ('file:///C:/Users/t.planes/AppData/Local/miniconda3/envs/AeroMAPS_Test/lib/site-packages/plotly/package_data/plotly.min.js', 'utf-8')
+2026-04-27 18:19:11 - INFO - browser_async - Opening browser.
+2026-04-27 18:19:11 - DEBUG - browser_async - Trying to open browser.
+2026-04-27 18:19:11 - INFO - _tmpfile - Temp directory created: C:\Users\T06E7~1.PLA\AppData\Local\Temp\tmpbcura31d.
+2026-04-27 18:19:11 - DEBUG - chromium - Checking for libs needed.
+2026-04-27 18:19:11 - DEBUG - chromium - We're not in linux, so no need for check.
+2026-04-27 18:19:11 - INFO - chromium - Temporary directory at: C:\Users\T06E7~1.PLA\AppData\Local\Temp\tmpbcura31d
+2026-04-27 18:19:11 - DEBUG - chromium - Returning cli: ['C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe', '--disable-gpu', '--headless', '--no-sandbox', '--disable-breakpad', '--allow-file-access-from-files', '--enable-logging=stderr', '--user-data-dir=C:\\Users\\T06E7~1.PLA\\AppData\\Local\\Temp\\tmpbcura31d', '--no-first-run', '--enable-unsafe-swiftshader', '--disable-dev-shm-usage', '--disable-background-media-suspend', '--disable-lazy-loading', '--disable-background-timer-throttling', '--disable-backgrounding-occluded-windows', '--disable-renderer-backgrounding', '--disable-component-update', '--disable-hang-monitor', '--disable-popup-blocking', '--disable-prompt-on-repost', '--disable-ipc-flooding-protection', '--disable-sync', '--metrics-recording-only', '--password-store=basic', '--use-mock-keychain', '--no-default-browser-check', '--no-process-per-site', '--disable-web-security', '--remote-debugging-pipe', '--remote-debugging-io-pipes=3552,1488']
+2026-04-27 18:19:11 - DEBUG - chromium - Returning args: {'creationflags': 512, 'close_fds': False}
+2026-04-27 18:19:11 - DEBUG - devtools_async - Created new target 0.
+2026-04-27 18:19:11 - DEBUG - devtools_async - New session: 
+2026-04-27 18:19:11 - DEBUG - browser_async - Starting watchdog
+2026-04-27 18:19:11 - DEBUG - browser_async - Opening channel.
+2026-04-27 18:19:11 - DEBUG - browser_async - Running read loop
+2026-04-27 18:19:11 - DEBUG - browser_async - Populating Targets
+2026-04-27 18:19:11 - DEBUG - browser_async - In watchdog
+2026-04-27 18:19:11 - DEBUG - devtools_async - Cmd 'Target.getTargets', param keys '', sessionId ''
+2026-04-27 18:19:11 - DEBUG - _async - Broker writing Target.getTargets with key ('', 0)
+2026-04-27 18:19:11 - DEBUG - _async - Created future: ('', 0) <Future pending>
+2026-04-27 18:19:11 - DEBUG - _wire - Serialized: {"id": 0, "meth...et.getTargets"}, size: 40
+2026-04-27 18:19:11 - DEBUG - pipe - Writing message b'{"id": 0, "meth'...b't.getTargets"}\x00', size: 41.
+2026-04-27 18:19:11 - DEBUG - pipe - ***Wrote 41/41***
+2026-04-27 18:19:11 - DEBUG - _api - [INFO:components\enterprise\browser\controller\chrome_browser_cloud_management_controller.cc:238] No machine level policy manager exists.
+2026-04-27 18:19:11 - DEBUG - _api - [WARNING:chrome\browser\extensions\external_pref_loader.cc:295] You are using an old-style extension deployment method (external_extensions.json), which will soon be deprecated. (see http://developer.chrome.com/docs/extensions/how-to/distribute/install-extensions)
+2026-04-27 18:19:11 - DEBUG - pipe - First read in loop: b'{"id":0,"result'...b'3184176113"}]}}'. size: 711.
+2026-04-27 18:19:11 - DEBUG - pipe - Partial message from browser received.
+2026-04-27 18:19:11 - DEBUG - pipe - Total loops: 2, Final size: 712.
+2026-04-27 18:19:11 - DEBUG - pipe - Received 2 raw_messages.
+2026-04-27 18:19:11 - DEBUG - _async - Channel read found 1 json objects.
+2026-04-27 18:19:11 - DEBUG - _async - Have a response with key ('', 0)
+2026-04-27 18:19:11 - DEBUG - _async - Found future for key ('', 0)
+2026-04-27 18:19:11 - DEBUG - devtools_async - Created new target A85C5B73F18F93C9B4A65AEC333F77FF.
+2026-04-27 18:19:11 - DEBUG - devtools_async - Cmd 'Target.attachToTarget', param keys 'dict_keys(['targetId', 'flatten'])', sessionId ''
+2026-04-27 18:19:11 - DEBUG - _async - Broker writing Target.attachToTarget with key ('', 1)
+2026-04-27 18:19:11 - DEBUG - _async - Created future: ('', 1) <Future pending>
+2026-04-27 18:19:11 - DEBUG - _wire - Serialized: {"id": 1, "meth...latten": true}}, size: 121
+2026-04-27 18:19:11 - DEBUG - pipe - Writing message b'{"id": 1, "meth'...b'atten": true}}\x00', size: 122.
+2026-04-27 18:19:11 - DEBUG - pipe - ***Wrote 122/122***
+2026-04-27 18:19:11 - DEBUG - pipe - First read in loop: b'{"method":"Targ'...b'bugger":false}}'. size: 333.
+2026-04-27 18:19:11 - DEBUG - pipe - Partial message from browser received.
+2026-04-27 18:19:11 - DEBUG - pipe - Total loops: 2, Final size: 401.
+2026-04-27 18:19:11 - DEBUG - pipe - Received 3 raw_messages.
+2026-04-27 18:19:11 - DEBUG - _async - Channel read found 2 json objects.
+2026-04-27 18:19:11 - DEBUG - _async - Received event Target.attachedToTarget for  targeting <choreographer.protocol.devtools_async.Session object at 0x000002B23B8E81C0>.
+2026-04-27 18:19:11 - DEBUG - _async - Have a response with key ('', 1)
+2026-04-27 18:19:11 - DEBUG - _async - Found future for key ('', 1)
+2026-04-27 18:19:11 - DEBUG - devtools_async - New session: 25485E810471BD1CDE5A712ECDB19C9E
+2026-04-27 18:19:11 - DEBUG - browser_async - The target A85C5B73F18F93C9B4A65AEC333F77FF was added
+2026-04-27 18:19:11 - DEBUG - devtools_async - Created new target 7470BF4BD37CC73CC421321FF567ABDA.
+2026-04-27 18:19:11 - DEBUG - devtools_async - Cmd 'Target.attachToTarget', param keys 'dict_keys(['targetId', 'flatten'])', sessionId ''
+2026-04-27 18:19:11 - DEBUG - _async - Broker writing Target.attachToTarget with key ('', 2)
+2026-04-27 18:19:11 - DEBUG - _async - Created future: ('', 2) <Future pending>
+2026-04-27 18:19:11 - DEBUG - _wire - Serialized: {"id": 2, "meth...latten": true}}, size: 121
+2026-04-27 18:19:11 - DEBUG - pipe - Writing message b'{"id": 2, "meth'...b'atten": true}}\x00', size: 122.
+2026-04-27 18:19:11 - DEBUG - pipe - ***Wrote 122/122***
+2026-04-27 18:19:11 - DEBUG - pipe - First read in loop: b'{"method":"Targ'...b'bugger":false}}'. size: 339.
+2026-04-27 18:19:11 - DEBUG - pipe - Partial message from browser received.
+2026-04-27 18:19:11 - DEBUG - pipe - Total loops: 2, Final size: 407.
+2026-04-27 18:19:11 - DEBUG - pipe - Received 3 raw_messages.
+2026-04-27 18:19:11 - DEBUG - _async - Channel read found 2 json objects.
+2026-04-27 18:19:11 - DEBUG - _async - Received event Target.attachedToTarget for  targeting <choreographer.protocol.devtools_async.Session object at 0x000002B23B8E81C0>.
+2026-04-27 18:19:11 - DEBUG - _async - Have a response with key ('', 2)
+2026-04-27 18:19:11 - DEBUG - _async - Found future for key ('', 2)
+2026-04-27 18:19:11 - DEBUG - devtools_async - New session: 9B99F7D7AB51EAF73DA2B45F0F436650
+2026-04-27 18:19:11 - DEBUG - browser_async - The target 7470BF4BD37CC73CC421321FF567ABDA was added
+2026-04-27 18:19:11 - INFO - kaleido - Conforming 2 to file:///C:/Users/T06E7~1.PLA/AppData/Local/Temp/tmp9u43wc9u/index.html
+2026-04-27 18:19:11 - DEBUG - kaleido - Navigating all tabs
+2026-04-27 18:19:11 - INFO - kaleido - Waiting on all navigates
+2026-04-27 18:19:11 - DEBUG - _async - Session 25485E810471BD1CDE5A712ECDB19C9E is subscribing to Runtime.executionContextCreated one time.
+2026-04-27 18:19:11 - DEBUG - _async - Session 25485E810471BD1CDE5A712ECDB19C9E is subscribing to Page.loadEventFired one time.
+2026-04-27 18:19:11 - DEBUG - devtools_async - Cmd 'Page.navigate', param keys 'dict_keys(['url'])', sessionId '25485E810471BD1CDE5A712ECDB19C9E'
+2026-04-27 18:19:11 - DEBUG - _async - Broker writing Page.navigate with key ('25485E810471BD1CDE5A712ECDB19C9E', 0)
+2026-04-27 18:19:11 - DEBUG - _async - Created future: ('25485E810471BD1CDE5A712ECDB19C9E', 0) <Future pending>
+2026-04-27 18:19:11 - DEBUG - _async - Session 9B99F7D7AB51EAF73DA2B45F0F436650 is subscribing to Runtime.executionContextCreated one time.
+2026-04-27 18:19:11 - DEBUG - _async - Session 9B99F7D7AB51EAF73DA2B45F0F436650 is subscribing to Page.loadEventFired one time.
+2026-04-27 18:19:11 - DEBUG - _wire - Serialized: {"id": 0, "meth...u/index.html"}}, size: 178
+2026-04-27 18:19:11 - DEBUG - devtools_async - Cmd 'Page.navigate', param keys 'dict_keys(['url'])', sessionId '9B99F7D7AB51EAF73DA2B45F0F436650'
+2026-04-27 18:19:11 - DEBUG - pipe - Writing message b'{"id": 0, "meth'...b'/index.html"}}\x00', size: 179.
+2026-04-27 18:19:11 - DEBUG - _async - Broker writing Page.navigate with key ('9B99F7D7AB51EAF73DA2B45F0F436650', 0)
+2026-04-27 18:19:11 - DEBUG - pipe - ***Wrote 179/179***
+2026-04-27 18:19:11 - DEBUG - _async - Created future: ('9B99F7D7AB51EAF73DA2B45F0F436650', 0) <Future pending>
+2026-04-27 18:19:11 - DEBUG - _wire - Serialized: {"id": 0, "meth...u/index.html"}}, size: 178
+2026-04-27 18:19:11 - DEBUG - pipe - Writing message b'{"id": 0, "meth'...b'/index.html"}}\x00', size: 179.
+2026-04-27 18:19:11 - DEBUG - pipe - ***Wrote 179/179***
+2026-04-27 18:19:11 - DEBUG - pipe - First read in loop: b'{"id":0,"result'...b'A712ECDB19C9E"}'. size: 176.
+2026-04-27 18:19:11 - DEBUG - pipe - Partial message from browser received.
+2026-04-27 18:19:11 - DEBUG - pipe - Total loops: 2, Final size: 177.
+2026-04-27 18:19:11 - DEBUG - pipe - Received 2 raw_messages.
+2026-04-27 18:19:11 - DEBUG - _async - Channel read found 1 json objects.
+2026-04-27 18:19:11 - DEBUG - _async - Have a response with key ('25485E810471BD1CDE5A712ECDB19C9E', 0)
+2026-04-27 18:19:11 - DEBUG - _async - Found future for key ('25485E810471BD1CDE5A712ECDB19C9E', 0)
+2026-04-27 18:19:11 - DEBUG - devtools_async - Cmd 'Page.enable', param keys '', sessionId '25485E810471BD1CDE5A712ECDB19C9E'
+2026-04-27 18:19:11 - DEBUG - _async - Broker writing Page.enable with key ('25485E810471BD1CDE5A712ECDB19C9E', 1)
+2026-04-27 18:19:11 - DEBUG - _async - Created future: ('25485E810471BD1CDE5A712ECDB19C9E', 1) <Future pending>
+2026-04-27 18:19:11 - DEBUG - _wire - Serialized: {"id": 1, "meth...A712ECDB19C9E"}, size: 83
+2026-04-27 18:19:11 - DEBUG - pipe - Writing message b'{"id": 1, "meth'...b'712ECDB19C9E"}\x00', size: 84.
+2026-04-27 18:19:11 - DEBUG - pipe - First read in loop: b'{"id":0,"result'...b'B45F0F436650"}\x00'. size: 177.
+2026-04-27 18:19:11 - DEBUG - pipe - ***Wrote 84/84***
+2026-04-27 18:19:11 - DEBUG - pipe - Total loops: 1, Final size: 177.
+2026-04-27 18:19:11 - DEBUG - pipe - Received 2 raw_messages.
+2026-04-27 18:19:11 - DEBUG - _async - Channel read found 1 json objects.
+2026-04-27 18:19:11 - DEBUG - _async - Have a response with key ('9B99F7D7AB51EAF73DA2B45F0F436650', 0)
+2026-04-27 18:19:11 - DEBUG - _async - Found future for key ('9B99F7D7AB51EAF73DA2B45F0F436650', 0)
+2026-04-27 18:19:11 - DEBUG - devtools_async - Cmd 'Page.enable', param keys '', sessionId '9B99F7D7AB51EAF73DA2B45F0F436650'
+2026-04-27 18:19:11 - DEBUG - _async - Broker writing Page.enable with key ('9B99F7D7AB51EAF73DA2B45F0F436650', 1)
+2026-04-27 18:19:11 - DEBUG - _async - Created future: ('9B99F7D7AB51EAF73DA2B45F0F436650', 1) <Future pending>
+2026-04-27 18:19:11 - DEBUG - _wire - Serialized: {"id": 1, "meth...2B45F0F436650"}, size: 83
+2026-04-27 18:19:11 - DEBUG - pipe - Writing message b'{"id": 1, "meth'...b'B45F0F436650"}\x00', size: 84.
+2026-04-27 18:19:11 - DEBUG - pipe - ***Wrote 84/84***
+2026-04-27 18:19:11 - DEBUG - pipe - First read in loop: b'{"method":"Page'...b'A712ECDB19C9E"}'. size: 140.
+2026-04-27 18:19:11 - DEBUG - pipe - Partial message from browser received.
+2026-04-27 18:19:11 - DEBUG - pipe - Total loops: 2, Final size: 141.
+2026-04-27 18:19:11 - DEBUG - pipe - Received 2 raw_messages.
+2026-04-27 18:19:11 - DEBUG - _async - Channel read found 1 json objects.
+2026-04-27 18:19:11 - DEBUG - _async - Received event Page.frameStartedLoading for 25485E810471BD1CDE5A712ECDB19C9E targeting <choreographer.protocol.devtools_async.Session object at 0x000002B23B8E8CA0>.
+2026-04-27 18:19:11 - DEBUG - pipe - First read in loop: b'{"id":1,"result'...b'A712ECDB19C9E"}'. size: 67.
+2026-04-27 18:19:11 - DEBUG - pipe - Partial message from browser received.
+2026-04-27 18:19:11 - DEBUG - pipe - Total loops: 2, Final size: 68.
+2026-04-27 18:19:11 - DEBUG - pipe - Received 2 raw_messages.
+2026-04-27 18:19:11 - DEBUG - _async - Channel read found 1 json objects.
+2026-04-27 18:19:11 - DEBUG - _async - Have a response with key ('25485E810471BD1CDE5A712ECDB19C9E', 1)
+2026-04-27 18:19:11 - DEBUG - _async - Found future for key ('25485E810471BD1CDE5A712ECDB19C9E', 1)
+2026-04-27 18:19:11 - DEBUG - devtools_async - Cmd 'Runtime.enable', param keys '', sessionId '25485E810471BD1CDE5A712ECDB19C9E'
+2026-04-27 18:19:11 - DEBUG - _async - Broker writing Runtime.enable with key ('25485E810471BD1CDE5A712ECDB19C9E', 2)
+2026-04-27 18:19:11 - DEBUG - _async - Created future: ('25485E810471BD1CDE5A712ECDB19C9E', 2) <Future pending>
+2026-04-27 18:19:11 - DEBUG - _wire - Serialized: {"id": 2, "meth...A712ECDB19C9E"}, size: 86
+2026-04-27 18:19:11 - DEBUG - pipe - Writing message b'{"id": 2, "meth'...b'712ECDB19C9E"}\x00', size: 87.
+2026-04-27 18:19:11 - DEBUG - pipe - ***Wrote 87/87***
+2026-04-27 18:19:11 - DEBUG - pipe - First read in loop: b'{"method":"Runt'...b'A712ECDB19C9E"}'. size: 294.
+2026-04-27 18:19:11 - DEBUG - pipe - Partial message from browser received.
+2026-04-27 18:19:11 - DEBUG - pipe - Total loops: 2, Final size: 363.
+2026-04-27 18:19:11 - DEBUG - pipe - Received 3 raw_messages.
+2026-04-27 18:19:11 - DEBUG - _async - Channel read found 2 json objects.
+2026-04-27 18:19:11 - DEBUG - _async - Received event Runtime.executionContextCreated for 25485E810471BD1CDE5A712ECDB19C9E targeting <choreographer.protocol.devtools_async.Session object at 0x000002B23B8E8CA0>.
+2026-04-27 18:19:11 - DEBUG - _async - Have a response with key ('25485E810471BD1CDE5A712ECDB19C9E', 2)
+2026-04-27 18:19:11 - DEBUG - _async - Found future for key ('25485E810471BD1CDE5A712ECDB19C9E', 2)
+2026-04-27 18:19:11 - DEBUG - pipe - First read in loop: b'{"method":"Page'...b'2B45F0F436650"}'. size: 140.
+2026-04-27 18:19:11 - DEBUG - pipe - Partial message from browser received.
+2026-04-27 18:19:11 - DEBUG - pipe - Total loops: 2, Final size: 141.
+2026-04-27 18:19:11 - DEBUG - pipe - Received 2 raw_messages.
+2026-04-27 18:19:11 - DEBUG - _async - Channel read found 1 json objects.
+2026-04-27 18:19:11 - DEBUG - _async - Received event Page.frameStartedLoading for 9B99F7D7AB51EAF73DA2B45F0F436650 targeting <choreographer.protocol.devtools_async.Session object at 0x000002B23B8E8D00>.
+2026-04-27 18:19:11 - DEBUG - pipe - First read in loop: b'{"id":1,"result'...b'2B45F0F436650"}'. size: 67.
+2026-04-27 18:19:11 - DEBUG - pipe - Partial message from browser received.
+2026-04-27 18:19:11 - DEBUG - pipe - Total loops: 2, Final size: 68.
+2026-04-27 18:19:11 - DEBUG - pipe - Received 2 raw_messages.
+2026-04-27 18:19:11 - DEBUG - _async - Channel read found 1 json objects.
+2026-04-27 18:19:11 - DEBUG - _async - Have a response with key ('9B99F7D7AB51EAF73DA2B45F0F436650', 1)
+2026-04-27 18:19:11 - DEBUG - _async - Found future for key ('9B99F7D7AB51EAF73DA2B45F0F436650', 1)
+2026-04-27 18:19:11 - DEBUG - devtools_async - Cmd 'Runtime.enable', param keys '', sessionId '9B99F7D7AB51EAF73DA2B45F0F436650'
+2026-04-27 18:19:11 - DEBUG - _async - Broker writing Runtime.enable with key ('9B99F7D7AB51EAF73DA2B45F0F436650', 2)
+2026-04-27 18:19:11 - DEBUG - _async - Created future: ('9B99F7D7AB51EAF73DA2B45F0F436650', 2) <Future pending>
+2026-04-27 18:19:11 - DEBUG - _wire - Serialized: {"id": 2, "meth...2B45F0F436650"}, size: 86
+2026-04-27 18:19:11 - DEBUG - pipe - Writing message b'{"id": 2, "meth'...b'B45F0F436650"}\x00', size: 87.
+2026-04-27 18:19:11 - DEBUG - pipe - ***Wrote 87/87***
+2026-04-27 18:19:11 - DEBUG - pipe - First read in loop: b'{"method":"Runt'...b'2B45F0F436650"}'. size: 294.
+2026-04-27 18:19:11 - DEBUG - pipe - Partial message from browser received.
+2026-04-27 18:19:11 - DEBUG - pipe - Total loops: 2, Final size: 363.
+2026-04-27 18:19:11 - DEBUG - pipe - Received 3 raw_messages.
+2026-04-27 18:19:11 - DEBUG - _async - Channel read found 2 json objects.
+2026-04-27 18:19:11 - DEBUG - _async - Received event Runtime.executionContextCreated for 9B99F7D7AB51EAF73DA2B45F0F436650 targeting <choreographer.protocol.devtools_async.Session object at 0x000002B23B8E8D00>.
+2026-04-27 18:19:11 - DEBUG - _async - Have a response with key ('9B99F7D7AB51EAF73DA2B45F0F436650', 2)
+2026-04-27 18:19:11 - DEBUG - _async - Found future for key ('9B99F7D7AB51EAF73DA2B45F0F436650', 2)
+2026-04-27 18:19:12 - DEBUG - pipe - First read in loop: b'{"method":"Page'...b'2B45F0F436650"}'. size: 121.
+2026-04-27 18:19:12 - DEBUG - pipe - Partial message from browser received.
+2026-04-27 18:19:12 - DEBUG - pipe - Total loops: 2, Final size: 122.
+2026-04-27 18:19:12 - DEBUG - pipe - Received 2 raw_messages.
+2026-04-27 18:19:12 - DEBUG - _async - Channel read found 1 json objects.
+2026-04-27 18:19:12 - DEBUG - _async - Received event Page.domContentEventFired for 9B99F7D7AB51EAF73DA2B45F0F436650 targeting <choreographer.protocol.devtools_async.Session object at 0x000002B23B8E8D00>.
+2026-04-27 18:19:12 - DEBUG - pipe - First read in loop: b'{"method":"Page'...b'2B45F0F436650"}'. size: 115.
+2026-04-27 18:19:12 - DEBUG - pipe - Partial message from browser received.
+2026-04-27 18:19:12 - DEBUG - pipe - Total loops: 2, Final size: 257.
+2026-04-27 18:19:12 - DEBUG - pipe - Received 3 raw_messages.
+2026-04-27 18:19:12 - DEBUG - _async - Channel read found 2 json objects.
+2026-04-27 18:19:12 - DEBUG - _async - Received event Page.loadEventFired for 9B99F7D7AB51EAF73DA2B45F0F436650 targeting <choreographer.protocol.devtools_async.Session object at 0x000002B23B8E8D00>.
+2026-04-27 18:19:12 - DEBUG - _async - Received event Page.frameStoppedLoading for 9B99F7D7AB51EAF73DA2B45F0F436650 targeting <choreographer.protocol.devtools_async.Session object at 0x000002B23B8E8D00>.
+2026-04-27 18:19:12 - DEBUG - pipe - First read in loop: b'{"method":"Page'...b'2B45F0F436650"}'. size: 89.
+2026-04-27 18:19:12 - DEBUG - pipe - Partial message from browser received.
+2026-04-27 18:19:12 - DEBUG - pipe - Total loops: 2, Final size: 90.
+2026-04-27 18:19:12 - DEBUG - pipe - Received 2 raw_messages.
+2026-04-27 18:19:12 - DEBUG - _async - Channel read found 1 json objects.
+2026-04-27 18:19:12 - DEBUG - _async - Received event Page.frameResized for 9B99F7D7AB51EAF73DA2B45F0F436650 targeting <choreographer.protocol.devtools_async.Session object at 0x000002B23B8E8D00>.
+2026-04-27 18:19:13 - DEBUG - pipe - First read in loop: b'{"method":"Page'...b'A712ECDB19C9E"}'. size: 121.
+2026-04-27 18:19:13 - DEBUG - pipe - Partial message from browser received.
+2026-04-27 18:19:13 - DEBUG - pipe - Total loops: 2, Final size: 122.
+2026-04-27 18:19:13 - DEBUG - pipe - Received 2 raw_messages.
+2026-04-27 18:19:13 - DEBUG - _async - Channel read found 1 json objects.
+2026-04-27 18:19:13 - DEBUG - _async - Received event Page.domContentEventFired for 25485E810471BD1CDE5A712ECDB19C9E targeting <choreographer.protocol.devtools_async.Session object at 0x000002B23B8E8CA0>.
+2026-04-27 18:19:14 - DEBUG - pipe - First read in loop: b'{"method":"Page'...b'A712ECDB19C9E"}'. size: 115.
+2026-04-27 18:19:14 - DEBUG - pipe - Partial message from browser received.
+2026-04-27 18:19:14 - DEBUG - pipe - Total loops: 2, Final size: 257.
+2026-04-27 18:19:14 - DEBUG - pipe - Received 3 raw_messages.
+2026-04-27 18:19:14 - DEBUG - _async - Channel read found 2 json objects.
+2026-04-27 18:19:14 - DEBUG - _async - Received event Page.loadEventFired for 25485E810471BD1CDE5A712ECDB19C9E targeting <choreographer.protocol.devtools_async.Session object at 0x000002B23B8E8CA0>.
+2026-04-27 18:19:14 - DEBUG - _async - Received event Page.frameStoppedLoading for 25485E810471BD1CDE5A712ECDB19C9E targeting <choreographer.protocol.devtools_async.Session object at 0x000002B23B8E8CA0>.
+2026-04-27 18:19:14 - INFO - kaleido - All navigates done, putting them all in queue.
+2026-04-27 18:19:14 - DEBUG - kaleido - Tabs fully navigated/enabled/ready
+2026-04-27 18:19:14 - DEBUG - browser_async - Watchdog full shutdown (in finally:)
+2026-04-27 18:19:14 - DEBUG - _async - Readloop cancelled
+2026-04-27 18:19:14 - DEBUG - _api - [ERROR:google_apis\gcm\engine\connection_factory_impl.cc:434] Failed to connect to MCS endpoint with error -111
+2026-04-27 18:19:14 - DEBUG - _api - [ERROR:google_apis\gcm\engine\registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT
+2026-04-27 18:19:24 - DEBUG - _api - Created TensorFlow Lite XNNPACK delegate for CPU.
+2026-04-27 18:19:35 - DEBUG - _api - [ERROR:google_apis\gcm\engine\registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT
+2026-04-27 18:19:41 - DEBUG - _api - [INFO:chrome\browser\extensions\extension_garbage_collector.cc:188] Garbage collection for extensions on file thread is complete.
+2026-04-27 18:19:57 - WARNING - functions - No traffic is assumed for long range.
+2026-04-27 18:19:57 - WARNING - functions - No traffic is assumed for long range.
+2026-04-27 18:19:57 - WARNING - functions - No traffic is assumed for long range.
+2026-04-27 18:19:57 - WARNING - functions - No traffic is assumed for long range.
+2026-04-27 18:19:59 - INFO - multi_regional_process - Multi-regional configuration: 20 regions, execution_mode='separate_processes'
+2026-04-27 18:19:59 - INFO - multi_regional_process - Disabled GEMSEO execution statistics
+2026-04-27 18:20:06 - INFO - multi_regional_process - Aggregator created: 320 inputs, 16 outputs
+2026-04-27 18:20:06 - INFO - multi_regional_process - MultiRegionalProcess initialized with 20 regions in 'separate_processes' mode
+2026-04-27 18:20:06 - INFO - multi_regional_process - Starting multi-regional computation (separate_processes mode)...
+2026-04-27 18:20:06 - INFO - process - Running MDA
+2026-04-27 18:20:08 - INFO - process - Running MDA
+2026-04-27 18:20:09 - INFO - process - Running MDA
+2026-04-27 18:20:10 - INFO - process - Running MDA
+2026-04-27 18:20:12 - INFO - process - Running MDA
+2026-04-27 18:20:14 - INFO - process - Running MDA
+2026-04-27 18:20:15 - INFO - process - Running MDA
+2026-04-27 18:20:15 - DEBUG - _api - [ERROR:google_apis\gcm\engine\registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT
+2026-04-27 18:20:16 - INFO - process - Running MDA
+2026-04-27 18:20:18 - INFO - process - Running MDA
+2026-04-27 18:20:19 - INFO - process - Running MDA
+2026-04-27 18:20:21 - INFO - process - Running MDA
+2026-04-27 18:20:22 - INFO - process - Running MDA
+2026-04-27 18:20:24 - INFO - process - Running MDA
+2026-04-27 18:20:25 - INFO - process - Running MDA
+2026-04-27 18:20:26 - INFO - process - Running MDA
+2026-04-27 18:20:28 - INFO - process - Running MDA
+2026-04-27 18:20:29 - INFO - process - Running MDA
+2026-04-27 18:20:31 - INFO - process - Running MDA
+2026-04-27 18:20:32 - INFO - process - Running MDA
+2026-04-27 18:20:34 - INFO - process - Running MDA
+2026-04-27 18:20:36 - INFO - multi_regional_process - Multi-regional computation completed.
+2026-04-27 18:21:02 - INFO - multi_regional_process - Multi-regional configuration: 20 regions, execution_mode='separate_processes'
+2026-04-27 18:21:02 - INFO - multi_regional_process - Disabled GEMSEO execution statistics
+2026-04-27 18:21:08 - INFO - multi_regional_process - Aggregator created: 320 inputs, 16 outputs
+2026-04-27 18:21:08 - INFO - multi_regional_process - MultiRegionalProcess initialized with 20 regions in 'separate_processes' mode
+2026-04-27 18:21:08 - INFO - multi_regional_process - Starting multi-regional computation (separate_processes mode)...
+2026-04-27 18:21:09 - INFO - process - Running MDA
+2026-04-27 18:21:10 - INFO - process - Running MDA
+2026-04-27 18:21:11 - INFO - process - Running MDA
+2026-04-27 18:21:13 - INFO - process - Running MDA
+2026-04-27 18:21:14 - INFO - process - Running MDA
+2026-04-27 18:21:16 - INFO - process - Running MDA
+2026-04-27 18:21:17 - INFO - process - Running MDA
+2026-04-27 18:21:19 - INFO - process - Running MDA
+2026-04-27 18:21:20 - INFO - process - Running MDA
+2026-04-27 18:21:22 - INFO - process - Running MDA
+2026-04-27 18:21:23 - INFO - process - Running MDA
+2026-04-27 18:21:24 - INFO - process - Running MDA
+2026-04-27 18:21:26 - INFO - process - Running MDA
+2026-04-27 18:21:27 - INFO - process - Running MDA
+2026-04-27 18:21:28 - INFO - process - Running MDA
+2026-04-27 18:21:30 - INFO - process - Running MDA
+2026-04-27 18:21:31 - INFO - process - Running MDA
+2026-04-27 18:21:32 - INFO - process - Running MDA
+2026-04-27 18:21:34 - INFO - process - Running MDA
+2026-04-27 18:21:36 - INFO - process - Running MDA
+2026-04-27 18:21:38 - INFO - multi_regional_process - Multi-regional computation completed.
+2026-04-27 18:21:53 - DEBUG - _api - [ERROR:google_apis\gcm\engine\registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT
+2026-04-27 18:22:48 - DEBUG - backend_pdf - Assigning font /F1 = 'C:\\Users\\t.planes\\AppData\\Local\\miniconda3\\envs\\AeroMAPS_Test\\Lib\\site-packages\\matplotlib\\mpl-data\\fonts\\ttf\\DejaVuSans.ttf'
+2026-04-27 18:22:48 - DEBUG - backend_pdf - Assigning font /F2 = 'C:\\Users\\t.planes\\AppData\\Local\\miniconda3\\envs\\AeroMAPS_Test\\Lib\\site-packages\\matplotlib\\mpl-data\\fonts\\ttf\\DejaVuSans-Bold.ttf'
+2026-04-27 18:22:48 - DEBUG - backend_pdf - Embedding font C:\Users\t.planes\AppData\Local\miniconda3\envs\AeroMAPS_Test\Lib\site-packages\matplotlib\mpl-data\fonts\ttf\DejaVuSans-Bold.ttf.
+2026-04-27 18:22:48 - DEBUG - backend_pdf - Writing TrueType font.
+2026-04-27 18:22:48 - DEBUG - backend_pdf - Embedding font C:\Users\t.planes\AppData\Local\miniconda3\envs\AeroMAPS_Test\Lib\site-packages\matplotlib\mpl-data\fonts\ttf\DejaVuSans.ttf.
+2026-04-27 18:22:48 - DEBUG - backend_pdf - Writing TrueType font.
+2026-04-27 18:22:52 - DEBUG - backend_pdf - Assigning font /F1 = 'C:\\Users\\t.planes\\AppData\\Local\\miniconda3\\envs\\AeroMAPS_Test\\Lib\\site-packages\\matplotlib\\mpl-data\\fonts\\ttf\\DejaVuSans.ttf'
+2026-04-27 18:22:52 - DEBUG - backend_pdf - Embedding font C:\Users\t.planes\AppData\Local\miniconda3\envs\AeroMAPS_Test\Lib\site-packages\matplotlib\mpl-data\fonts\ttf\DejaVuSans.ttf.
+2026-04-27 18:22:52 - DEBUG - backend_pdf - Writing TrueType font.
+2026-04-27 18:22:56 - DEBUG - kaleido - Timeout: 90
+2026-04-27 18:22:56 - DEBUG - browser_async - Attempting to open new browser.
+2026-04-27 18:22:56 - INFO - chromium - Chromium init'ed with kwargs {}
+2026-04-27 18:22:56 - DEBUG - chromium - Looking for a chrome browser.
+2026-04-27 18:22:56 - DEBUG - _which - Looking for browser, skipping local? False
+2026-04-27 18:22:56 - DEBUG - _which - Looking for at local chrome download path: C:\Users\t.planes\AppData\Local\miniconda3\envs\AeroMAPS_Test\Lib\site-packages\choreographer\cli\browser_exe\chrome-win64\chrome.exe
+2026-04-27 18:22:56 - DEBUG - _which - Local chrome not found at path: C:\Users\t.planes\AppData\Local\miniconda3\envs\AeroMAPS_Test\Lib\site-packages\choreographer\cli\browser_exe\chrome-win64\chrome.exe.
+2026-04-27 18:22:56 - INFO - chromium - Found chromium path: C:\Program Files\Google\Chrome\Application\chrome.exe
+2026-04-27 18:22:56 - INFO - _tmpfile - Temp directory created: C:\Users\T06E7~1.PLA\AppData\Local\Temp\tmp8s2u7n9s.
+2026-04-27 18:22:56 - DEBUG - _page_generator - Plotly script: ('file:///C:/Users/t.planes/AppData/Local/miniconda3/envs/AeroMAPS_Test/lib/site-packages/plotly/package_data/plotly.min.js', 'utf-8')
+2026-04-27 18:22:56 - INFO - browser_async - Opening browser.
+2026-04-27 18:22:56 - DEBUG - browser_async - Trying to open browser.
+2026-04-27 18:22:56 - INFO - _tmpfile - Temp directory created: C:\Users\T06E7~1.PLA\AppData\Local\Temp\tmpfr6ftdyx.
+2026-04-27 18:22:56 - DEBUG - chromium - Checking for libs needed.
+2026-04-27 18:22:56 - DEBUG - chromium - We're not in linux, so no need for check.
+2026-04-27 18:22:56 - INFO - chromium - Temporary directory at: C:\Users\T06E7~1.PLA\AppData\Local\Temp\tmpfr6ftdyx
+2026-04-27 18:22:56 - DEBUG - chromium - Returning cli: ['C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe', '--disable-gpu', '--headless', '--no-sandbox', '--disable-breakpad', '--allow-file-access-from-files', '--enable-logging=stderr', '--user-data-dir=C:\\Users\\T06E7~1.PLA\\AppData\\Local\\Temp\\tmpfr6ftdyx', '--no-first-run', '--enable-unsafe-swiftshader', '--disable-dev-shm-usage', '--disable-background-media-suspend', '--disable-lazy-loading', '--disable-background-timer-throttling', '--disable-backgrounding-occluded-windows', '--disable-renderer-backgrounding', '--disable-component-update', '--disable-hang-monitor', '--disable-popup-blocking', '--disable-prompt-on-repost', '--disable-ipc-flooding-protection', '--disable-sync', '--metrics-recording-only', '--password-store=basic', '--use-mock-keychain', '--no-default-browser-check', '--no-process-per-site', '--disable-web-security', '--remote-debugging-pipe', '--remote-debugging-io-pipes=5576,5572']
+2026-04-27 18:22:56 - DEBUG - chromium - Returning args: {'creationflags': 512, 'close_fds': False}
+2026-04-27 18:22:56 - DEBUG - devtools_async - Created new target 0.
+2026-04-27 18:22:56 - DEBUG - devtools_async - New session: 
+2026-04-27 18:22:56 - DEBUG - browser_async - Starting watchdog
+2026-04-27 18:22:56 - DEBUG - browser_async - Opening channel.
+2026-04-27 18:22:56 - DEBUG - browser_async - Running read loop
+2026-04-27 18:22:56 - DEBUG - browser_async - Populating Targets
+2026-04-27 18:22:56 - DEBUG - browser_async - In watchdog
+2026-04-27 18:22:56 - DEBUG - devtools_async - Cmd 'Target.getTargets', param keys '', sessionId ''
+2026-04-27 18:22:56 - DEBUG - _async - Broker writing Target.getTargets with key ('', 0)
+2026-04-27 18:22:56 - DEBUG - _async - Created future: ('', 0) <Future pending>
+2026-04-27 18:22:56 - DEBUG - _wire - Serialized: {"id": 0, "meth...et.getTargets"}, size: 40
+2026-04-27 18:22:56 - DEBUG - pipe - Writing message b'{"id": 0, "meth'...b't.getTargets"}\x00', size: 41.
+2026-04-27 18:22:56 - DEBUG - pipe - ***Wrote 41/41***
+2026-04-27 18:22:56 - DEBUG - _api - [INFO:components\enterprise\browser\controller\chrome_browser_cloud_management_controller.cc:238] No machine level policy manager exists.
+2026-04-27 18:22:56 - DEBUG - _api - [WARNING:chrome\browser\extensions\external_pref_loader.cc:295] You are using an old-style extension deployment method (external_extensions.json), which will soon be deprecated. (see http://developer.chrome.com/docs/extensions/how-to/distribute/install-extensions)
+2026-04-27 18:22:56 - DEBUG - pipe - First read in loop: b'{"id":0,"result'...b'4418AED05E"}]}}'. size: 711.
+2026-04-27 18:22:56 - DEBUG - pipe - Partial message from browser received.
+2026-04-27 18:22:56 - DEBUG - pipe - Total loops: 2, Final size: 712.
+2026-04-27 18:22:56 - DEBUG - pipe - Received 2 raw_messages.
+2026-04-27 18:22:56 - DEBUG - _async - Channel read found 1 json objects.
+2026-04-27 18:22:56 - DEBUG - _async - Have a response with key ('', 0)
+2026-04-27 18:22:56 - DEBUG - _async - Found future for key ('', 0)
+2026-04-27 18:22:56 - DEBUG - devtools_async - Created new target 77D726A4D45153D58A87F7CC7A1A2CC4.
+2026-04-27 18:22:56 - DEBUG - devtools_async - Cmd 'Target.attachToTarget', param keys 'dict_keys(['targetId', 'flatten'])', sessionId ''
+2026-04-27 18:22:56 - DEBUG - _async - Broker writing Target.attachToTarget with key ('', 1)
+2026-04-27 18:22:56 - DEBUG - _async - Created future: ('', 1) <Future pending>
+2026-04-27 18:22:56 - DEBUG - _wire - Serialized: {"id": 1, "meth...latten": true}}, size: 121
+2026-04-27 18:22:56 - DEBUG - pipe - Writing message b'{"id": 1, "meth'...b'atten": true}}\x00', size: 122.
+2026-04-27 18:22:56 - DEBUG - pipe - ***Wrote 122/122***
+2026-04-27 18:22:56 - DEBUG - pipe - First read in loop: b'{"method":"Targ'...b'bugger":false}}'. size: 339.
+2026-04-27 18:22:56 - DEBUG - pipe - Partial message from browser received.
+2026-04-27 18:22:56 - DEBUG - pipe - Total loops: 2, Final size: 407.
+2026-04-27 18:22:56 - DEBUG - pipe - Received 3 raw_messages.
+2026-04-27 18:22:56 - DEBUG - _async - Channel read found 2 json objects.
+2026-04-27 18:22:56 - DEBUG - _async - Received event Target.attachedToTarget for  targeting <choreographer.protocol.devtools_async.Session object at 0x000002B254917D60>.
+2026-04-27 18:22:56 - DEBUG - _async - Have a response with key ('', 1)
+2026-04-27 18:22:56 - DEBUG - _async - Found future for key ('', 1)
+2026-04-27 18:22:56 - DEBUG - devtools_async - New session: A68574F5474BC06692353AB625FE574D
+2026-04-27 18:22:56 - DEBUG - browser_async - The target 77D726A4D45153D58A87F7CC7A1A2CC4 was added
+2026-04-27 18:22:56 - DEBUG - devtools_async - Created new target FA225B5ABEB71EDC444B10AE252F01CC.
+2026-04-27 18:22:56 - DEBUG - devtools_async - Cmd 'Target.attachToTarget', param keys 'dict_keys(['targetId', 'flatten'])', sessionId ''
+2026-04-27 18:22:56 - DEBUG - _async - Broker writing Target.attachToTarget with key ('', 2)
+2026-04-27 18:22:56 - DEBUG - _async - Created future: ('', 2) <Future pending>
+2026-04-27 18:22:56 - DEBUG - _wire - Serialized: {"id": 2, "meth...latten": true}}, size: 121
+2026-04-27 18:22:56 - DEBUG - pipe - Writing message b'{"id": 2, "meth'...b'atten": true}}\x00', size: 122.
+2026-04-27 18:22:56 - DEBUG - pipe - ***Wrote 122/122***
+2026-04-27 18:22:56 - DEBUG - pipe - First read in loop: b'{"method":"Targ'...b'bugger":false}}'. size: 333.
+2026-04-27 18:22:56 - DEBUG - pipe - Partial message from browser received.
+2026-04-27 18:22:56 - DEBUG - pipe - Total loops: 2, Final size: 401.
+2026-04-27 18:22:56 - DEBUG - pipe - Received 3 raw_messages.
+2026-04-27 18:22:56 - DEBUG - _async - Channel read found 2 json objects.
+2026-04-27 18:22:56 - DEBUG - _async - Received event Target.attachedToTarget for  targeting <choreographer.protocol.devtools_async.Session object at 0x000002B254917D60>.
+2026-04-27 18:22:56 - DEBUG - _async - Have a response with key ('', 2)
+2026-04-27 18:22:56 - DEBUG - _async - Found future for key ('', 2)
+2026-04-27 18:22:56 - DEBUG - devtools_async - New session: 8BD8F2A6D1D77B327839B76C3E5E7144
+2026-04-27 18:22:56 - DEBUG - browser_async - The target FA225B5ABEB71EDC444B10AE252F01CC was added
+2026-04-27 18:22:56 - INFO - kaleido - Conforming 2 to file:///C:/Users/T06E7~1.PLA/AppData/Local/Temp/tmp8s2u7n9s/index.html
+2026-04-27 18:22:56 - DEBUG - kaleido - Navigating all tabs
+2026-04-27 18:22:56 - INFO - kaleido - Waiting on all navigates
+2026-04-27 18:22:56 - DEBUG - _async - Session A68574F5474BC06692353AB625FE574D is subscribing to Runtime.executionContextCreated one time.
+2026-04-27 18:22:56 - DEBUG - _async - Session A68574F5474BC06692353AB625FE574D is subscribing to Page.loadEventFired one time.
+2026-04-27 18:22:56 - DEBUG - devtools_async - Cmd 'Page.navigate', param keys 'dict_keys(['url'])', sessionId 'A68574F5474BC06692353AB625FE574D'
+2026-04-27 18:22:56 - DEBUG - _async - Broker writing Page.navigate with key ('A68574F5474BC06692353AB625FE574D', 0)
+2026-04-27 18:22:56 - DEBUG - _async - Created future: ('A68574F5474BC06692353AB625FE574D', 0) <Future pending>
+2026-04-27 18:22:56 - DEBUG - _async - Session 8BD8F2A6D1D77B327839B76C3E5E7144 is subscribing to Runtime.executionContextCreated one time.
+2026-04-27 18:22:56 - DEBUG - _wire - Serialized: {"id": 0, "meth...s/index.html"}}, size: 178
+2026-04-27 18:22:56 - DEBUG - _async - Session 8BD8F2A6D1D77B327839B76C3E5E7144 is subscribing to Page.loadEventFired one time.
+2026-04-27 18:22:56 - DEBUG - pipe - Writing message b'{"id": 0, "meth'...b'/index.html"}}\x00', size: 179.
+2026-04-27 18:22:56 - DEBUG - devtools_async - Cmd 'Page.navigate', param keys 'dict_keys(['url'])', sessionId '8BD8F2A6D1D77B327839B76C3E5E7144'
+2026-04-27 18:22:56 - DEBUG - pipe - ***Wrote 179/179***
+2026-04-27 18:22:56 - DEBUG - _async - Broker writing Page.navigate with key ('8BD8F2A6D1D77B327839B76C3E5E7144', 0)
+2026-04-27 18:22:56 - DEBUG - _async - Created future: ('8BD8F2A6D1D77B327839B76C3E5E7144', 0) <Future pending>
+2026-04-27 18:22:56 - DEBUG - _wire - Serialized: {"id": 0, "meth...s/index.html"}}, size: 178
+2026-04-27 18:22:56 - DEBUG - pipe - Writing message b'{"id": 0, "meth'...b'/index.html"}}\x00', size: 179.
+2026-04-27 18:22:56 - DEBUG - pipe - ***Wrote 179/179***
+2026-04-27 18:22:57 - DEBUG - pipe - First read in loop: b'{"id":0,"result'...b'53AB625FE574D"}'. size: 176.
+2026-04-27 18:22:57 - DEBUG - pipe - Partial message from browser received.
+2026-04-27 18:22:57 - DEBUG - pipe - Total loops: 2, Final size: 177.
+2026-04-27 18:22:57 - DEBUG - pipe - Received 2 raw_messages.
+2026-04-27 18:22:57 - DEBUG - _async - Channel read found 1 json objects.
+2026-04-27 18:22:57 - DEBUG - _async - Have a response with key ('A68574F5474BC06692353AB625FE574D', 0)
+2026-04-27 18:22:57 - DEBUG - _async - Found future for key ('A68574F5474BC06692353AB625FE574D', 0)
+2026-04-27 18:22:57 - DEBUG - devtools_async - Cmd 'Page.enable', param keys '', sessionId 'A68574F5474BC06692353AB625FE574D'
+2026-04-27 18:22:57 - DEBUG - _async - Broker writing Page.enable with key ('A68574F5474BC06692353AB625FE574D', 1)
+2026-04-27 18:22:57 - DEBUG - _async - Created future: ('A68574F5474BC06692353AB625FE574D', 1) <Future pending>
+2026-04-27 18:22:57 - DEBUG - _wire - Serialized: {"id": 1, "meth...53AB625FE574D"}, size: 83
+2026-04-27 18:22:57 - DEBUG - pipe - First read in loop: b'{"id":0,"result'...b'B76C3E5E7144"}\x00'. size: 177.
+2026-04-27 18:22:57 - DEBUG - pipe - Writing message b'{"id": 1, "meth'...b'3AB625FE574D"}\x00', size: 84.
+2026-04-27 18:22:57 - DEBUG - pipe - Total loops: 1, Final size: 177.
+2026-04-27 18:22:57 - DEBUG - pipe - ***Wrote 84/84***
+2026-04-27 18:22:57 - DEBUG - pipe - Received 2 raw_messages.
+2026-04-27 18:22:57 - DEBUG - _async - Channel read found 1 json objects.
+2026-04-27 18:22:57 - DEBUG - _async - Have a response with key ('8BD8F2A6D1D77B327839B76C3E5E7144', 0)
+2026-04-27 18:22:57 - DEBUG - _async - Found future for key ('8BD8F2A6D1D77B327839B76C3E5E7144', 0)
+2026-04-27 18:22:57 - DEBUG - devtools_async - Cmd 'Page.enable', param keys '', sessionId '8BD8F2A6D1D77B327839B76C3E5E7144'
+2026-04-27 18:22:57 - DEBUG - _async - Broker writing Page.enable with key ('8BD8F2A6D1D77B327839B76C3E5E7144', 1)
+2026-04-27 18:22:57 - DEBUG - _async - Created future: ('8BD8F2A6D1D77B327839B76C3E5E7144', 1) <Future pending>
+2026-04-27 18:22:57 - DEBUG - _wire - Serialized: {"id": 1, "meth...9B76C3E5E7144"}, size: 83
+2026-04-27 18:22:57 - DEBUG - pipe - Writing message b'{"id": 1, "meth'...b'B76C3E5E7144"}\x00', size: 84.
+2026-04-27 18:22:57 - DEBUG - pipe - ***Wrote 84/84***
+2026-04-27 18:22:57 - DEBUG - pipe - First read in loop: b'{"method":"Page'...b'9B76C3E5E7144"}'. size: 140.
+2026-04-27 18:22:57 - DEBUG - pipe - Partial message from browser received.
+2026-04-27 18:22:57 - DEBUG - pipe - Total loops: 2, Final size: 141.
+2026-04-27 18:22:57 - DEBUG - pipe - Received 2 raw_messages.
+2026-04-27 18:22:57 - DEBUG - _async - Channel read found 1 json objects.
+2026-04-27 18:22:57 - DEBUG - _async - Received event Page.frameStartedLoading for 8BD8F2A6D1D77B327839B76C3E5E7144 targeting <choreographer.protocol.devtools_async.Session object at 0x000002B254924D00>.
+2026-04-27 18:22:57 - DEBUG - pipe - First read in loop: b'{"id":1,"result'...b'53AB625FE574D"}'. size: 67.
+2026-04-27 18:22:57 - DEBUG - pipe - Partial message from browser received.
+2026-04-27 18:22:57 - DEBUG - pipe - Total loops: 2, Final size: 68.
+2026-04-27 18:22:57 - DEBUG - pipe - Received 2 raw_messages.
+2026-04-27 18:22:57 - DEBUG - _async - Channel read found 1 json objects.
+2026-04-27 18:22:57 - DEBUG - _async - Have a response with key ('A68574F5474BC06692353AB625FE574D', 1)
+2026-04-27 18:22:57 - DEBUG - _async - Found future for key ('A68574F5474BC06692353AB625FE574D', 1)
+2026-04-27 18:22:57 - DEBUG - devtools_async - Cmd 'Runtime.enable', param keys '', sessionId 'A68574F5474BC06692353AB625FE574D'
+2026-04-27 18:22:57 - DEBUG - _async - Broker writing Runtime.enable with key ('A68574F5474BC06692353AB625FE574D', 2)
+2026-04-27 18:22:57 - DEBUG - _async - Created future: ('A68574F5474BC06692353AB625FE574D', 2) <Future pending>
+2026-04-27 18:22:57 - DEBUG - _wire - Serialized: {"id": 2, "meth...53AB625FE574D"}, size: 86
+2026-04-27 18:22:57 - DEBUG - pipe - Writing message b'{"id": 2, "meth'...b'3AB625FE574D"}\x00', size: 87.
+2026-04-27 18:22:57 - DEBUG - pipe - ***Wrote 87/87***
+2026-04-27 18:22:57 - DEBUG - pipe - First read in loop: b'{"method":"Runt'...b'53AB625FE574D"}'. size: 295.
+2026-04-27 18:22:57 - DEBUG - pipe - Partial message from browser received.
+2026-04-27 18:22:57 - DEBUG - pipe - Total loops: 2, Final size: 364.
+2026-04-27 18:22:57 - DEBUG - pipe - Received 3 raw_messages.
+2026-04-27 18:22:57 - DEBUG - _async - Channel read found 2 json objects.
+2026-04-27 18:22:57 - DEBUG - _async - Received event Runtime.executionContextCreated for A68574F5474BC06692353AB625FE574D targeting <choreographer.protocol.devtools_async.Session object at 0x000002B254917E80>.
+2026-04-27 18:22:57 - DEBUG - _async - Have a response with key ('A68574F5474BC06692353AB625FE574D', 2)
+2026-04-27 18:22:57 - DEBUG - _async - Found future for key ('A68574F5474BC06692353AB625FE574D', 2)
+2026-04-27 18:22:57 - DEBUG - pipe - First read in loop: b'{"id":1,"result'...b'9B76C3E5E7144"}'. size: 67.
+2026-04-27 18:22:57 - DEBUG - pipe - Partial message from browser received.
+2026-04-27 18:22:57 - DEBUG - pipe - Total loops: 2, Final size: 68.
+2026-04-27 18:22:57 - DEBUG - pipe - Received 2 raw_messages.
+2026-04-27 18:22:57 - DEBUG - _async - Channel read found 1 json objects.
+2026-04-27 18:22:57 - DEBUG - _async - Have a response with key ('8BD8F2A6D1D77B327839B76C3E5E7144', 1)
+2026-04-27 18:22:57 - DEBUG - _async - Found future for key ('8BD8F2A6D1D77B327839B76C3E5E7144', 1)
+2026-04-27 18:22:57 - DEBUG - devtools_async - Cmd 'Runtime.enable', param keys '', sessionId '8BD8F2A6D1D77B327839B76C3E5E7144'
+2026-04-27 18:22:57 - DEBUG - _async - Broker writing Runtime.enable with key ('8BD8F2A6D1D77B327839B76C3E5E7144', 2)
+2026-04-27 18:22:57 - DEBUG - _async - Created future: ('8BD8F2A6D1D77B327839B76C3E5E7144', 2) <Future pending>
+2026-04-27 18:22:57 - DEBUG - _wire - Serialized: {"id": 2, "meth...9B76C3E5E7144"}, size: 86
+2026-04-27 18:22:57 - DEBUG - pipe - Writing message b'{"id": 2, "meth'...b'B76C3E5E7144"}\x00', size: 87.
+2026-04-27 18:22:57 - DEBUG - pipe - ***Wrote 87/87***
+2026-04-27 18:22:57 - DEBUG - pipe - First read in loop: b'{"method":"Runt'...b'9B76C3E5E7144"}'. size: 295.
+2026-04-27 18:22:57 - DEBUG - pipe - Partial message from browser received.
+2026-04-27 18:22:57 - DEBUG - pipe - Total loops: 2, Final size: 364.
+2026-04-27 18:22:57 - DEBUG - pipe - Received 3 raw_messages.
+2026-04-27 18:22:57 - DEBUG - _async - Channel read found 2 json objects.
+2026-04-27 18:22:57 - DEBUG - _async - Received event Runtime.executionContextCreated for 8BD8F2A6D1D77B327839B76C3E5E7144 targeting <choreographer.protocol.devtools_async.Session object at 0x000002B254924D00>.
+2026-04-27 18:22:57 - DEBUG - _async - Have a response with key ('8BD8F2A6D1D77B327839B76C3E5E7144', 2)
+2026-04-27 18:22:57 - DEBUG - _async - Found future for key ('8BD8F2A6D1D77B327839B76C3E5E7144', 2)
+2026-04-27 18:22:57 - DEBUG - pipe - First read in loop: b'{"method":"Page'...b'53AB625FE574D"}'. size: 121.
+2026-04-27 18:22:57 - DEBUG - pipe - Partial message from browser received.
+2026-04-27 18:22:57 - DEBUG - pipe - Total loops: 2, Final size: 122.
+2026-04-27 18:22:57 - DEBUG - pipe - Received 2 raw_messages.
+2026-04-27 18:22:57 - DEBUG - _async - Channel read found 1 json objects.
+2026-04-27 18:22:57 - DEBUG - _async - Received event Page.domContentEventFired for A68574F5474BC06692353AB625FE574D targeting <choreographer.protocol.devtools_async.Session object at 0x000002B254917E80>.
+2026-04-27 18:22:57 - DEBUG - pipe - First read in loop: b'{"method":"Page'...b'53AB625FE574D"}'. size: 115.
+2026-04-27 18:22:57 - DEBUG - pipe - Partial message from browser received.
+2026-04-27 18:22:57 - DEBUG - pipe - Total loops: 2, Final size: 257.
+2026-04-27 18:22:57 - DEBUG - pipe - Received 3 raw_messages.
+2026-04-27 18:22:57 - DEBUG - _async - Channel read found 2 json objects.
+2026-04-27 18:22:57 - DEBUG - _async - Received event Page.loadEventFired for A68574F5474BC06692353AB625FE574D targeting <choreographer.protocol.devtools_async.Session object at 0x000002B254917E80>.
+2026-04-27 18:22:57 - DEBUG - _async - Received event Page.frameStoppedLoading for A68574F5474BC06692353AB625FE574D targeting <choreographer.protocol.devtools_async.Session object at 0x000002B254917E80>.
+2026-04-27 18:22:58 - DEBUG - pipe - First read in loop: b'{"method":"Page'...b'53AB625FE574D"}'. size: 89.
+2026-04-27 18:22:58 - DEBUG - pipe - Partial message from browser received.
+2026-04-27 18:22:58 - DEBUG - pipe - Total loops: 2, Final size: 90.
+2026-04-27 18:22:58 - DEBUG - pipe - Received 2 raw_messages.
+2026-04-27 18:22:58 - DEBUG - _async - Channel read found 1 json objects.
+2026-04-27 18:22:58 - DEBUG - _async - Received event Page.frameResized for A68574F5474BC06692353AB625FE574D targeting <choreographer.protocol.devtools_async.Session object at 0x000002B254917E80>.
+2026-04-27 18:22:59 - DEBUG - pipe - First read in loop: b'{"method":"Page'...b'9B76C3E5E7144"}'. size: 121.
+2026-04-27 18:22:59 - DEBUG - pipe - Partial message from browser received.
+2026-04-27 18:22:59 - DEBUG - pipe - Total loops: 2, Final size: 379.
+2026-04-27 18:22:59 - DEBUG - pipe - Received 4 raw_messages.
+2026-04-27 18:22:59 - DEBUG - _async - Channel read found 3 json objects.
+2026-04-27 18:22:59 - DEBUG - _async - Received event Page.domContentEventFired for 8BD8F2A6D1D77B327839B76C3E5E7144 targeting <choreographer.protocol.devtools_async.Session object at 0x000002B254924D00>.
+2026-04-27 18:22:59 - DEBUG - _async - Received event Page.loadEventFired for 8BD8F2A6D1D77B327839B76C3E5E7144 targeting <choreographer.protocol.devtools_async.Session object at 0x000002B254924D00>.
+2026-04-27 18:22:59 - DEBUG - _async - Received event Page.frameStoppedLoading for 8BD8F2A6D1D77B327839B76C3E5E7144 targeting <choreographer.protocol.devtools_async.Session object at 0x000002B254924D00>.
+2026-04-27 18:22:59 - INFO - kaleido - All navigates done, putting them all in queue.
+2026-04-27 18:22:59 - DEBUG - kaleido - Tabs fully navigated/enabled/ready
+2026-04-27 18:22:59 - DEBUG - browser_async - Watchdog full shutdown (in finally:)
+2026-04-27 18:22:59 - DEBUG - _async - Readloop cancelled
+2026-04-27 18:22:59 - DEBUG - _api - [ERROR:google_apis\gcm\engine\connection_factory_impl.cc:434] Failed to connect to MCS endpoint with error -111
+2026-04-27 18:22:59 - DEBUG - _api - [ERROR:google_apis\gcm\engine\registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT
+2026-04-27 18:23:07 - DEBUG - kaleido - Timeout: 90
+2026-04-27 18:23:07 - DEBUG - browser_async - Attempting to open new browser.
+2026-04-27 18:23:07 - INFO - chromium - Chromium init'ed with kwargs {}
+2026-04-27 18:23:07 - DEBUG - chromium - Looking for a chrome browser.
+2026-04-27 18:23:07 - DEBUG - _which - Looking for browser, skipping local? False
+2026-04-27 18:23:07 - DEBUG - _which - Looking for at local chrome download path: C:\Users\t.planes\AppData\Local\miniconda3\envs\AeroMAPS_Test\Lib\site-packages\choreographer\cli\browser_exe\chrome-win64\chrome.exe
+2026-04-27 18:23:07 - DEBUG - _which - Local chrome not found at path: C:\Users\t.planes\AppData\Local\miniconda3\envs\AeroMAPS_Test\Lib\site-packages\choreographer\cli\browser_exe\chrome-win64\chrome.exe.
+2026-04-27 18:23:07 - INFO - chromium - Found chromium path: C:\Program Files\Google\Chrome\Application\chrome.exe
+2026-04-27 18:23:07 - INFO - _tmpfile - Temp directory created: C:\Users\T06E7~1.PLA\AppData\Local\Temp\tmp_ndjw9zz.
+2026-04-27 18:23:07 - DEBUG - _page_generator - Plotly script: ('file:///C:/Users/t.planes/AppData/Local/miniconda3/envs/AeroMAPS_Test/lib/site-packages/plotly/package_data/plotly.min.js', 'utf-8')
+2026-04-27 18:23:07 - INFO - browser_async - Opening browser.
+2026-04-27 18:23:07 - DEBUG - browser_async - Trying to open browser.
+2026-04-27 18:23:07 - INFO - _tmpfile - Temp directory created: C:\Users\T06E7~1.PLA\AppData\Local\Temp\tmp49iy7wmv.
+2026-04-27 18:23:07 - DEBUG - chromium - Checking for libs needed.
+2026-04-27 18:23:07 - DEBUG - chromium - We're not in linux, so no need for check.
+2026-04-27 18:23:07 - INFO - chromium - Temporary directory at: C:\Users\T06E7~1.PLA\AppData\Local\Temp\tmp49iy7wmv
+2026-04-27 18:23:07 - DEBUG - chromium - Returning cli: ['C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe', '--disable-gpu', '--headless', '--no-sandbox', '--disable-breakpad', '--allow-file-access-from-files', '--enable-logging=stderr', '--user-data-dir=C:\\Users\\T06E7~1.PLA\\AppData\\Local\\Temp\\tmp49iy7wmv', '--no-first-run', '--enable-unsafe-swiftshader', '--disable-dev-shm-usage', '--disable-background-media-suspend', '--disable-lazy-loading', '--disable-background-timer-throttling', '--disable-backgrounding-occluded-windows', '--disable-renderer-backgrounding', '--disable-component-update', '--disable-hang-monitor', '--disable-popup-blocking', '--disable-prompt-on-repost', '--disable-ipc-flooding-protection', '--disable-sync', '--metrics-recording-only', '--password-store=basic', '--use-mock-keychain', '--no-default-browser-check', '--no-process-per-site', '--disable-web-security', '--remote-debugging-pipe', '--remote-debugging-io-pipes=5560,5552']
+2026-04-27 18:23:07 - DEBUG - chromium - Returning args: {'creationflags': 512, 'close_fds': False}
+2026-04-27 18:23:07 - DEBUG - devtools_async - Created new target 0.
+2026-04-27 18:23:07 - DEBUG - devtools_async - New session: 
+2026-04-27 18:23:07 - DEBUG - browser_async - Starting watchdog
+2026-04-27 18:23:07 - DEBUG - browser_async - Opening channel.
+2026-04-27 18:23:07 - DEBUG - browser_async - Running read loop
+2026-04-27 18:23:07 - DEBUG - browser_async - Populating Targets
+2026-04-27 18:23:07 - DEBUG - browser_async - In watchdog
+2026-04-27 18:23:07 - DEBUG - devtools_async - Cmd 'Target.getTargets', param keys '', sessionId ''
+2026-04-27 18:23:07 - DEBUG - _async - Broker writing Target.getTargets with key ('', 0)
+2026-04-27 18:23:07 - DEBUG - _async - Created future: ('', 0) <Future pending>
+2026-04-27 18:23:07 - DEBUG - _wire - Serialized: {"id": 0, "meth...et.getTargets"}, size: 40
+2026-04-27 18:23:07 - DEBUG - pipe - Writing message b'{"id": 0, "meth'...b't.getTargets"}\x00', size: 41.
+2026-04-27 18:23:07 - DEBUG - pipe - ***Wrote 41/41***
+2026-04-27 18:23:07 - DEBUG - _api - [INFO:components\enterprise\browser\controller\chrome_browser_cloud_management_controller.cc:238] No machine level policy manager exists.
+2026-04-27 18:23:07 - DEBUG - _api - [WARNING:chrome\browser\extensions\external_pref_loader.cc:295] You are using an old-style extension deployment method (external_extensions.json), which will soon be deprecated. (see http://developer.chrome.com/docs/extensions/how-to/distribute/install-extensions)
+2026-04-27 18:23:07 - DEBUG - pipe - First read in loop: b'{"id":0,"result'...b'7205F773E4"}]}}'. size: 711.
+2026-04-27 18:23:07 - DEBUG - pipe - Partial message from browser received.
+2026-04-27 18:23:07 - DEBUG - pipe - Total loops: 2, Final size: 712.
+2026-04-27 18:23:07 - DEBUG - pipe - Received 2 raw_messages.
+2026-04-27 18:23:07 - DEBUG - _async - Channel read found 1 json objects.
+2026-04-27 18:23:07 - DEBUG - _async - Have a response with key ('', 0)
+2026-04-27 18:23:07 - DEBUG - _async - Found future for key ('', 0)
+2026-04-27 18:23:07 - DEBUG - devtools_async - Created new target 37C27F2FBA0FD222A8B8F6A5A94BAA06.
+2026-04-27 18:23:07 - DEBUG - devtools_async - Cmd 'Target.attachToTarget', param keys 'dict_keys(['targetId', 'flatten'])', sessionId ''
+2026-04-27 18:23:07 - DEBUG - _async - Broker writing Target.attachToTarget with key ('', 1)
+2026-04-27 18:23:07 - DEBUG - _async - Created future: ('', 1) <Future pending>
+2026-04-27 18:23:07 - DEBUG - _wire - Serialized: {"id": 1, "meth...latten": true}}, size: 121
+2026-04-27 18:23:07 - DEBUG - pipe - Writing message b'{"id": 1, "meth'...b'atten": true}}\x00', size: 122.
+2026-04-27 18:23:07 - DEBUG - pipe - ***Wrote 122/122***
+2026-04-27 18:23:07 - DEBUG - pipe - First read in loop: b'{"method":"Targ'...b'bugger":false}}'. size: 339.
+2026-04-27 18:23:07 - DEBUG - pipe - Partial message from browser received.
+2026-04-27 18:23:07 - DEBUG - pipe - Total loops: 2, Final size: 407.
+2026-04-27 18:23:07 - DEBUG - pipe - Received 3 raw_messages.
+2026-04-27 18:23:07 - DEBUG - _async - Channel read found 2 json objects.
+2026-04-27 18:23:07 - DEBUG - _async - Received event Target.attachedToTarget for  targeting <choreographer.protocol.devtools_async.Session object at 0x000002B253E8E0B0>.
+2026-04-27 18:23:07 - DEBUG - _async - Have a response with key ('', 1)
+2026-04-27 18:23:07 - DEBUG - _async - Found future for key ('', 1)
+2026-04-27 18:23:07 - DEBUG - devtools_async - New session: 89554D6F57285A2FD10D56363D080093
+2026-04-27 18:23:07 - DEBUG - browser_async - The target 37C27F2FBA0FD222A8B8F6A5A94BAA06 was added
+2026-04-27 18:23:07 - DEBUG - devtools_async - Created new target 02B7B41454F31D4BF381916ADED4D377.
+2026-04-27 18:23:07 - DEBUG - devtools_async - Cmd 'Target.attachToTarget', param keys 'dict_keys(['targetId', 'flatten'])', sessionId ''
+2026-04-27 18:23:07 - DEBUG - _async - Broker writing Target.attachToTarget with key ('', 2)
+2026-04-27 18:23:07 - DEBUG - _async - Created future: ('', 2) <Future pending>
+2026-04-27 18:23:07 - DEBUG - _wire - Serialized: {"id": 2, "meth...latten": true}}, size: 121
+2026-04-27 18:23:07 - DEBUG - pipe - Writing message b'{"id": 2, "meth'...b'atten": true}}\x00', size: 122.
+2026-04-27 18:23:07 - DEBUG - pipe - ***Wrote 122/122***
+2026-04-27 18:23:07 - DEBUG - pipe - First read in loop: b'{"method":"Targ'...b'bugger":false}}'. size: 333.
+2026-04-27 18:23:07 - DEBUG - pipe - Partial message from browser received.
+2026-04-27 18:23:07 - DEBUG - pipe - Total loops: 2, Final size: 401.
+2026-04-27 18:23:07 - DEBUG - pipe - Received 3 raw_messages.
+2026-04-27 18:23:07 - DEBUG - _async - Channel read found 2 json objects.
+2026-04-27 18:23:07 - DEBUG - _async - Received event Target.attachedToTarget for  targeting <choreographer.protocol.devtools_async.Session object at 0x000002B253E8E0B0>.
+2026-04-27 18:23:07 - DEBUG - _async - Have a response with key ('', 2)
+2026-04-27 18:23:07 - DEBUG - _async - Found future for key ('', 2)
+2026-04-27 18:23:07 - DEBUG - devtools_async - New session: 78599389C3C4A7B263A210F224E2E96F
+2026-04-27 18:23:07 - DEBUG - browser_async - The target 02B7B41454F31D4BF381916ADED4D377 was added
+2026-04-27 18:23:07 - INFO - kaleido - Conforming 2 to file:///C:/Users/T06E7~1.PLA/AppData/Local/Temp/tmp_ndjw9zz/index.html
+2026-04-27 18:23:07 - DEBUG - kaleido - Navigating all tabs
+2026-04-27 18:23:07 - INFO - kaleido - Waiting on all navigates
+2026-04-27 18:23:07 - DEBUG - _async - Session 89554D6F57285A2FD10D56363D080093 is subscribing to Runtime.executionContextCreated one time.
+2026-04-27 18:23:07 - DEBUG - _async - Session 89554D6F57285A2FD10D56363D080093 is subscribing to Page.loadEventFired one time.
+2026-04-27 18:23:07 - DEBUG - devtools_async - Cmd 'Page.navigate', param keys 'dict_keys(['url'])', sessionId '89554D6F57285A2FD10D56363D080093'
+2026-04-27 18:23:07 - DEBUG - _async - Broker writing Page.navigate with key ('89554D6F57285A2FD10D56363D080093', 0)
+2026-04-27 18:23:07 - DEBUG - _async - Created future: ('89554D6F57285A2FD10D56363D080093', 0) <Future pending>
+2026-04-27 18:23:07 - DEBUG - _async - Session 78599389C3C4A7B263A210F224E2E96F is subscribing to Runtime.executionContextCreated one time.
+2026-04-27 18:23:07 - DEBUG - _async - Session 78599389C3C4A7B263A210F224E2E96F is subscribing to Page.loadEventFired one time.
+2026-04-27 18:23:07 - DEBUG - _wire - Serialized: {"id": 0, "meth...z/index.html"}}, size: 178
+2026-04-27 18:23:07 - DEBUG - devtools_async - Cmd 'Page.navigate', param keys 'dict_keys(['url'])', sessionId '78599389C3C4A7B263A210F224E2E96F'
+2026-04-27 18:23:07 - DEBUG - pipe - Writing message b'{"id": 0, "meth'...b'/index.html"}}\x00', size: 179.
+2026-04-27 18:23:07 - DEBUG - _async - Broker writing Page.navigate with key ('78599389C3C4A7B263A210F224E2E96F', 0)
+2026-04-27 18:23:07 - DEBUG - _async - Created future: ('78599389C3C4A7B263A210F224E2E96F', 0) <Future pending>
+2026-04-27 18:23:07 - DEBUG - pipe - ***Wrote 179/179***
+2026-04-27 18:23:07 - DEBUG - _wire - Serialized: {"id": 0, "meth...z/index.html"}}, size: 178
+2026-04-27 18:23:07 - DEBUG - pipe - Writing message b'{"id": 0, "meth'...b'/index.html"}}\x00', size: 179.
+2026-04-27 18:23:07 - DEBUG - pipe - ***Wrote 179/179***
+2026-04-27 18:23:07 - DEBUG - pipe - First read in loop: b'{"id":0,"result'...b'D56363D080093"}'. size: 176.
+2026-04-27 18:23:07 - DEBUG - pipe - Partial message from browser received.
+2026-04-27 18:23:07 - DEBUG - pipe - Total loops: 2, Final size: 177.
+2026-04-27 18:23:07 - DEBUG - pipe - Received 2 raw_messages.
+2026-04-27 18:23:07 - DEBUG - _async - Channel read found 1 json objects.
+2026-04-27 18:23:07 - DEBUG - _async - Have a response with key ('89554D6F57285A2FD10D56363D080093', 0)
+2026-04-27 18:23:07 - DEBUG - _async - Found future for key ('89554D6F57285A2FD10D56363D080093', 0)
+2026-04-27 18:23:07 - DEBUG - devtools_async - Cmd 'Page.enable', param keys '', sessionId '89554D6F57285A2FD10D56363D080093'
+2026-04-27 18:23:07 - DEBUG - _async - Broker writing Page.enable with key ('89554D6F57285A2FD10D56363D080093', 1)
+2026-04-27 18:23:07 - DEBUG - _async - Created future: ('89554D6F57285A2FD10D56363D080093', 1) <Future pending>
+2026-04-27 18:23:07 - DEBUG - _wire - Serialized: {"id": 1, "meth...D56363D080093"}, size: 83
+2026-04-27 18:23:07 - DEBUG - pipe - Writing message b'{"id": 1, "meth'...b'56363D080093"}\x00', size: 84.
+2026-04-27 18:23:07 - DEBUG - pipe - ***Wrote 84/84***
+2026-04-27 18:23:07 - DEBUG - pipe - First read in loop: b'{"id":0,"result'...b'210F224E2E96F"}'. size: 176.
+2026-04-27 18:23:07 - DEBUG - pipe - Partial message from browser received.
+2026-04-27 18:23:07 - DEBUG - pipe - Total loops: 2, Final size: 177.
+2026-04-27 18:23:07 - DEBUG - pipe - Received 2 raw_messages.
+2026-04-27 18:23:07 - DEBUG - _async - Channel read found 1 json objects.
+2026-04-27 18:23:07 - DEBUG - _async - Have a response with key ('78599389C3C4A7B263A210F224E2E96F', 0)
+2026-04-27 18:23:07 - DEBUG - _async - Found future for key ('78599389C3C4A7B263A210F224E2E96F', 0)
+2026-04-27 18:23:07 - DEBUG - devtools_async - Cmd 'Page.enable', param keys '', sessionId '78599389C3C4A7B263A210F224E2E96F'
+2026-04-27 18:23:07 - DEBUG - _async - Broker writing Page.enable with key ('78599389C3C4A7B263A210F224E2E96F', 1)
+2026-04-27 18:23:07 - DEBUG - _async - Created future: ('78599389C3C4A7B263A210F224E2E96F', 1) <Future pending>
+2026-04-27 18:23:07 - DEBUG - _wire - Serialized: {"id": 1, "meth...210F224E2E96F"}, size: 83
+2026-04-27 18:23:07 - DEBUG - pipe - Writing message b'{"id": 1, "meth'...b'10F224E2E96F"}\x00', size: 84.
+2026-04-27 18:23:07 - DEBUG - pipe - ***Wrote 84/84***
+2026-04-27 18:23:07 - DEBUG - pipe - First read in loop: b'{"method":"Page'...b'D56363D080093"}'. size: 140.
+2026-04-27 18:23:07 - DEBUG - pipe - Partial message from browser received.
+2026-04-27 18:23:07 - DEBUG - pipe - Total loops: 2, Final size: 141.
+2026-04-27 18:23:07 - DEBUG - pipe - Received 2 raw_messages.
+2026-04-27 18:23:07 - DEBUG - _async - Channel read found 1 json objects.
+2026-04-27 18:23:07 - DEBUG - _async - Received event Page.frameStartedLoading for 89554D6F57285A2FD10D56363D080093 targeting <choreographer.protocol.devtools_async.Session object at 0x000002B253E8D660>.
+2026-04-27 18:23:07 - DEBUG - pipe - First read in loop: b'{"method":"Page'...b'D56363D080093"}'. size: 140.
+2026-04-27 18:23:07 - DEBUG - pipe - Partial message from browser received.
+2026-04-27 18:23:07 - DEBUG - pipe - Total loops: 2, Final size: 141.
+2026-04-27 18:23:07 - DEBUG - pipe - Received 2 raw_messages.
+2026-04-27 18:23:07 - DEBUG - _async - Channel read found 1 json objects.
+2026-04-27 18:23:07 - DEBUG - _async - Received event Page.frameStoppedLoading for 89554D6F57285A2FD10D56363D080093 targeting <choreographer.protocol.devtools_async.Session object at 0x000002B253E8D660>.
+2026-04-27 18:23:07 - DEBUG - pipe - First read in loop: b'{"method":"Page'...b'210F224E2E96F"}'. size: 140.
+2026-04-27 18:23:07 - DEBUG - pipe - Partial message from browser received.
+2026-04-27 18:23:07 - DEBUG - pipe - Total loops: 2, Final size: 141.
+2026-04-27 18:23:07 - DEBUG - pipe - Received 2 raw_messages.
+2026-04-27 18:23:07 - DEBUG - _async - Channel read found 1 json objects.
+2026-04-27 18:23:07 - DEBUG - _async - Received event Page.frameStartedLoading for 78599389C3C4A7B263A210F224E2E96F targeting <choreographer.protocol.devtools_async.Session object at 0x000002B253E8D810>.
+2026-04-27 18:23:07 - DEBUG - pipe - First read in loop: b'{"id":1,"result'...b'D56363D080093"}'. size: 67.
+2026-04-27 18:23:07 - DEBUG - pipe - Partial message from browser received.
+2026-04-27 18:23:07 - DEBUG - pipe - Total loops: 2, Final size: 68.
+2026-04-27 18:23:07 - DEBUG - pipe - Received 2 raw_messages.
+2026-04-27 18:23:07 - DEBUG - _async - Channel read found 1 json objects.
+2026-04-27 18:23:07 - DEBUG - _async - Have a response with key ('89554D6F57285A2FD10D56363D080093', 1)
+2026-04-27 18:23:07 - DEBUG - _async - Found future for key ('89554D6F57285A2FD10D56363D080093', 1)
+2026-04-27 18:23:07 - DEBUG - devtools_async - Cmd 'Runtime.enable', param keys '', sessionId '89554D6F57285A2FD10D56363D080093'
+2026-04-27 18:23:07 - DEBUG - _async - Broker writing Runtime.enable with key ('89554D6F57285A2FD10D56363D080093', 2)
+2026-04-27 18:23:07 - DEBUG - _async - Created future: ('89554D6F57285A2FD10D56363D080093', 2) <Future pending>
+2026-04-27 18:23:07 - DEBUG - _wire - Serialized: {"id": 2, "meth...D56363D080093"}, size: 86
+2026-04-27 18:23:07 - DEBUG - pipe - Writing message b'{"id": 2, "meth'...b'56363D080093"}\x00', size: 87.
+2026-04-27 18:23:07 - DEBUG - pipe - ***Wrote 87/87***
+2026-04-27 18:23:07 - DEBUG - pipe - First read in loop: b'{"method":"Runt'...b'D56363D080093"}'. size: 295.
+2026-04-27 18:23:07 - DEBUG - pipe - Partial message from browser received.
+2026-04-27 18:23:07 - DEBUG - pipe - Total loops: 2, Final size: 364.
+2026-04-27 18:23:07 - DEBUG - pipe - Received 3 raw_messages.
+2026-04-27 18:23:07 - DEBUG - _async - Channel read found 2 json objects.
+2026-04-27 18:23:07 - DEBUG - _async - Received event Runtime.executionContextCreated for 89554D6F57285A2FD10D56363D080093 targeting <choreographer.protocol.devtools_async.Session object at 0x000002B253E8D660>.
+2026-04-27 18:23:07 - DEBUG - _async - Have a response with key ('89554D6F57285A2FD10D56363D080093', 2)
+2026-04-27 18:23:07 - DEBUG - _async - Found future for key ('89554D6F57285A2FD10D56363D080093', 2)
+2026-04-27 18:23:08 - DEBUG - pipe - First read in loop: b'{"id":1,"result'...b'210F224E2E96F"}'. size: 67.
+2026-04-27 18:23:08 - DEBUG - pipe - Partial message from browser received.
+2026-04-27 18:23:08 - DEBUG - pipe - Total loops: 2, Final size: 68.
+2026-04-27 18:23:08 - DEBUG - pipe - Received 2 raw_messages.
+2026-04-27 18:23:08 - DEBUG - _async - Channel read found 1 json objects.
+2026-04-27 18:23:08 - DEBUG - _async - Have a response with key ('78599389C3C4A7B263A210F224E2E96F', 1)
+2026-04-27 18:23:08 - DEBUG - _async - Found future for key ('78599389C3C4A7B263A210F224E2E96F', 1)
+2026-04-27 18:23:08 - DEBUG - devtools_async - Cmd 'Runtime.enable', param keys '', sessionId '78599389C3C4A7B263A210F224E2E96F'
+2026-04-27 18:23:08 - DEBUG - _async - Broker writing Runtime.enable with key ('78599389C3C4A7B263A210F224E2E96F', 2)
+2026-04-27 18:23:08 - DEBUG - _async - Created future: ('78599389C3C4A7B263A210F224E2E96F', 2) <Future pending>
+2026-04-27 18:23:08 - DEBUG - _wire - Serialized: {"id": 2, "meth...210F224E2E96F"}, size: 86
+2026-04-27 18:23:08 - DEBUG - pipe - Writing message b'{"id": 2, "meth'...b'10F224E2E96F"}\x00', size: 87.
+2026-04-27 18:23:08 - DEBUG - pipe - ***Wrote 87/87***
+2026-04-27 18:23:08 - DEBUG - pipe - First read in loop: b'{"method":"Runt'...b'210F224E2E96F"}'. size: 295.
+2026-04-27 18:23:08 - DEBUG - pipe - Partial message from browser received.
+2026-04-27 18:23:08 - DEBUG - pipe - Total loops: 2, Final size: 364.
+2026-04-27 18:23:08 - DEBUG - pipe - Received 3 raw_messages.
+2026-04-27 18:23:08 - DEBUG - _async - Channel read found 2 json objects.
+2026-04-27 18:23:08 - DEBUG - _async - Received event Runtime.executionContextCreated for 78599389C3C4A7B263A210F224E2E96F targeting <choreographer.protocol.devtools_async.Session object at 0x000002B253E8D810>.
+2026-04-27 18:23:08 - DEBUG - _async - Have a response with key ('78599389C3C4A7B263A210F224E2E96F', 2)
+2026-04-27 18:23:08 - DEBUG - _async - Found future for key ('78599389C3C4A7B263A210F224E2E96F', 2)
+2026-04-27 18:23:08 - DEBUG - pipe - First read in loop: b'{"method":"Page'...b'D56363D080093"}'. size: 121.
+2026-04-27 18:23:08 - DEBUG - pipe - Partial message from browser received.
+2026-04-27 18:23:08 - DEBUG - pipe - Total loops: 2, Final size: 122.
+2026-04-27 18:23:08 - DEBUG - pipe - Received 2 raw_messages.
+2026-04-27 18:23:08 - DEBUG - _async - Channel read found 1 json objects.
+2026-04-27 18:23:08 - DEBUG - _async - Received event Page.domContentEventFired for 89554D6F57285A2FD10D56363D080093 targeting <choreographer.protocol.devtools_async.Session object at 0x000002B253E8D660>.
+2026-04-27 18:23:08 - DEBUG - pipe - First read in loop: b'{"method":"Page'...b'D56363D080093"}'. size: 115.
+2026-04-27 18:23:08 - DEBUG - pipe - Partial message from browser received.
+2026-04-27 18:23:08 - DEBUG - pipe - Total loops: 2, Final size: 257.
+2026-04-27 18:23:08 - DEBUG - pipe - Received 3 raw_messages.
+2026-04-27 18:23:08 - DEBUG - _async - Channel read found 2 json objects.
+2026-04-27 18:23:08 - DEBUG - _async - Received event Page.loadEventFired for 89554D6F57285A2FD10D56363D080093 targeting <choreographer.protocol.devtools_async.Session object at 0x000002B253E8D660>.
+2026-04-27 18:23:08 - DEBUG - _async - Received event Page.frameStoppedLoading for 89554D6F57285A2FD10D56363D080093 targeting <choreographer.protocol.devtools_async.Session object at 0x000002B253E8D660>.
+2026-04-27 18:23:09 - DEBUG - pipe - First read in loop: b'{"method":"Page'...b'D56363D080093"}'. size: 89.
+2026-04-27 18:23:09 - DEBUG - pipe - Partial message from browser received.
+2026-04-27 18:23:09 - DEBUG - pipe - Total loops: 2, Final size: 90.
+2026-04-27 18:23:09 - DEBUG - pipe - Received 2 raw_messages.
+2026-04-27 18:23:09 - DEBUG - _async - Channel read found 1 json objects.
+2026-04-27 18:23:09 - DEBUG - _async - Received event Page.frameResized for 89554D6F57285A2FD10D56363D080093 targeting <choreographer.protocol.devtools_async.Session object at 0x000002B253E8D660>.
+2026-04-27 18:23:09 - DEBUG - pipe - First read in loop: b'{"method":"Page'...b'210F224E2E96F"}'. size: 121.
+2026-04-27 18:23:09 - DEBUG - pipe - Partial message from browser received.
+2026-04-27 18:23:09 - DEBUG - pipe - Total loops: 2, Final size: 379.
+2026-04-27 18:23:09 - DEBUG - pipe - Received 4 raw_messages.
+2026-04-27 18:23:09 - DEBUG - _async - Channel read found 3 json objects.
+2026-04-27 18:23:09 - DEBUG - _async - Received event Page.domContentEventFired for 78599389C3C4A7B263A210F224E2E96F targeting <choreographer.protocol.devtools_async.Session object at 0x000002B253E8D810>.
+2026-04-27 18:23:09 - DEBUG - _async - Received event Page.loadEventFired for 78599389C3C4A7B263A210F224E2E96F targeting <choreographer.protocol.devtools_async.Session object at 0x000002B253E8D810>.
+2026-04-27 18:23:09 - DEBUG - _async - Received event Page.frameStoppedLoading for 78599389C3C4A7B263A210F224E2E96F targeting <choreographer.protocol.devtools_async.Session object at 0x000002B253E8D810>.
+2026-04-27 18:23:09 - INFO - kaleido - All navigates done, putting them all in queue.
+2026-04-27 18:23:09 - DEBUG - kaleido - Tabs fully navigated/enabled/ready
+2026-04-27 18:23:09 - DEBUG - browser_async - Watchdog full shutdown (in finally:)
+2026-04-27 18:23:09 - DEBUG - _async - Readloop cancelled
+2026-04-27 18:23:09 - DEBUG - _api - Created TensorFlow Lite XNNPACK delegate for CPU.
+2026-04-27 18:23:10 - DEBUG - _api - [ERROR:google_apis\gcm\engine\connection_factory_impl.cc:434] Failed to connect to MCS endpoint with error -111
+2026-04-27 18:23:10 - DEBUG - _api - [ERROR:google_apis\gcm\engine\registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT
+2026-04-27 18:23:21 - DEBUG - _api - Created TensorFlow Lite XNNPACK delegate for CPU.
+2026-04-27 18:23:26 - DEBUG - _api - [INFO:chrome\browser\extensions\extension_garbage_collector.cc:188] Garbage collection for extensions on file thread is complete.
+2026-04-27 18:23:27 - DEBUG - _api - [ERROR:google_apis\gcm\engine\registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT
+2026-04-27 18:23:35 - DEBUG - _api - [ERROR:google_apis\gcm\engine\registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT
+2026-04-27 18:23:37 - DEBUG - _api - [INFO:chrome\browser\extensions\extension_garbage_collector.cc:188] Garbage collection for extensions on file thread is complete.
+2026-04-27 18:24:17 - DEBUG - _api - [ERROR:google_apis\gcm\engine\registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT
+2026-04-27 18:24:17 - DEBUG - _api - [ERROR:google_apis\gcm\engine\registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT
+2026-04-27 18:24:54 - DEBUG - _api - [ERROR:google_apis\gcm\engine\registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT
+2026-07-02 18:02:29 - DEBUG - kaleido - Successfully registered PlotlyJSONEncoder.
+2026-07-02 18:02:30 - WARNING - functions - No traffic is assumed for long_range.
+2026-07-02 18:02:30 - WARNING - functions - No traffic is assumed for long_range.
+2026-07-02 18:02:30 - WARNING - functions - No traffic is assumed for long_range.
+2026-07-02 18:02:30 - WARNING - functions - No traffic is assumed for long_range.
+2026-07-02 18:02:30 - INFO - multi_regional_process - Multi-regional configuration: 20 regions, execution_mode='separate_processes'
+2026-07-02 18:02:30 - INFO - multi_regional_process - Disabled GEMSEO execution statistics
+2026-07-02 18:02:37 - INFO - multi_regional_process - Aggregator created: 340 inputs, 17 outputs
+2026-07-02 18:02:37 - INFO - multi_regional_process - Top-level MDAChain created with 1 discipline(s) (aggregator + 0 top-level model(s))
+2026-07-02 18:02:37 - INFO - multi_regional_process - MultiRegionalProcess initialized with 20 regions in 'separate_processes' mode
+2026-07-02 18:02:37 - INFO - multi_regional_process - Starting multi-regional computation (separate_processes mode)...
+2026-07-02 18:02:37 - INFO - process - Running MDA
+2026-07-02 18:02:38 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:39 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:39 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:39 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:39 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:39 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:39 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:40 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:40 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:40 - INFO - process - Running MDA
+2026-07-02 18:02:41 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:42 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:42 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:42 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:42 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:42 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:43 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:43 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:43 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:43 - INFO - process - Running MDA
+2026-07-02 18:02:45 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:45 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:45 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:45 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:46 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:46 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:46 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:46 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:46 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:47 - INFO - process - Running MDA
+2026-07-02 18:02:48 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:48 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:49 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:49 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:49 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:49 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:49 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:50 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:50 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:50 - INFO - process - Running MDA
+2026-07-02 18:02:52 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:52 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:52 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:52 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:53 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:53 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:53 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:53 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:53 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:54 - INFO - process - Running MDA
+2026-07-02 18:02:55 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:56 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:56 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:56 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:56 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:56 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:57 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:57 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:57 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:57 - INFO - process - Running MDA
+2026-07-02 18:02:58 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:58 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:59 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:59 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:59 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:59 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:59 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:59 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:02:59 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:00 - INFO - process - Running MDA
+2026-07-02 18:03:01 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:01 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:01 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:01 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:01 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:01 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:01 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:02 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:02 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:02 - INFO - process - Running MDA
+2026-07-02 18:03:03 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:03 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:03 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:03 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:04 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:04 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:04 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:04 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:04 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:04 - INFO - process - Running MDA
+2026-07-02 18:03:05 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:05 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:06 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:06 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:06 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:06 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:06 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:06 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:07 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:07 - INFO - process - Running MDA
+2026-07-02 18:03:08 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:08 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:08 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:08 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:08 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:08 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:09 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:09 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:09 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:09 - INFO - process - Running MDA
+2026-07-02 18:03:10 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:10 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:10 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:11 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:11 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:11 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:11 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:11 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:11 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:12 - INFO - process - Running MDA
+2026-07-02 18:03:13 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:13 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:13 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:13 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:13 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:14 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:14 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:14 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:14 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:14 - INFO - process - Running MDA
+2026-07-02 18:03:15 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:15 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:15 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:16 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:16 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:16 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:16 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:16 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:16 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:17 - INFO - process - Running MDA
+2026-07-02 18:03:18 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:18 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:18 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:18 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:18 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:18 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:18 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:19 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:19 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:19 - INFO - process - Running MDA
+2026-07-02 18:03:20 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:20 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:20 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:21 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:21 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:21 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:21 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:21 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:21 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:22 - INFO - process - Running MDA
+2026-07-02 18:03:23 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:23 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:23 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:23 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:23 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:23 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:24 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:24 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:24 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:24 - INFO - process - Running MDA
+2026-07-02 18:03:25 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:25 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:25 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:26 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:26 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:26 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:26 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:26 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:26 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:27 - INFO - process - Running MDA
+2026-07-02 18:03:28 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:28 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:28 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:28 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:28 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:28 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:28 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:29 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:29 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:29 - INFO - process - Running MDA
+2026-07-02 18:03:30 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:30 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:30 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:30 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:30 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:31 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:31 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:31 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:03:31 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:38 - DEBUG - kaleido - Successfully registered PlotlyJSONEncoder.
+2026-07-02 18:04:39 - WARNING - functions - No traffic is assumed for long_range.
+2026-07-02 18:04:39 - WARNING - functions - No traffic is assumed for long_range.
+2026-07-02 18:04:39 - WARNING - functions - No traffic is assumed for long_range.
+2026-07-02 18:04:39 - WARNING - functions - No traffic is assumed for long_range.
+2026-07-02 18:04:39 - INFO - multi_regional_process - Multi-regional configuration: 20 regions, execution_mode='separate_processes'
+2026-07-02 18:04:39 - INFO - multi_regional_process - Disabled GEMSEO execution statistics
+2026-07-02 18:04:43 - INFO - multi_regional_process - Aggregator created: 340 inputs, 17 outputs
+2026-07-02 18:04:43 - INFO - multi_regional_process - Top-level MDAChain created with 1 discipline(s) (aggregator + 0 top-level model(s))
+2026-07-02 18:04:43 - INFO - multi_regional_process - MultiRegionalProcess initialized with 20 regions in 'separate_processes' mode
+2026-07-02 18:04:43 - INFO - multi_regional_process - Starting multi-regional computation (separate_processes mode)...
+2026-07-02 18:04:43 - INFO - process - Running MDA
+2026-07-02 18:04:44 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:44 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:44 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:44 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:44 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:44 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:44 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:44 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:45 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:45 - INFO - process - Running MDA
+2026-07-02 18:04:45 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:45 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:45 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:45 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:45 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:46 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:46 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:46 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:46 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:46 - INFO - process - Running MDA
+2026-07-02 18:04:46 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:47 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:47 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:47 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:47 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:47 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:47 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:47 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:47 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:47 - INFO - process - Running MDA
+2026-07-02 18:04:48 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:48 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:48 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:48 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:48 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:48 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:48 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:48 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:48 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:49 - INFO - process - Running MDA
+2026-07-02 18:04:49 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:49 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:49 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:49 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:49 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:50 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:50 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:50 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:50 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:50 - INFO - process - Running MDA
+2026-07-02 18:04:51 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:51 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:51 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:51 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:51 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:51 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:51 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:51 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:51 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:51 - INFO - process - Running MDA
+2026-07-02 18:04:52 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:52 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:52 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:52 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:52 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:52 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:52 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:52 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:52 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:53 - INFO - process - Running MDA
+2026-07-02 18:04:53 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:53 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:53 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:53 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:53 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:53 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:53 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:54 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:54 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:54 - INFO - process - Running MDA
+2026-07-02 18:04:55 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:55 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:55 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:55 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:55 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:55 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:55 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:55 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:55 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:56 - INFO - process - Running MDA
+2026-07-02 18:04:56 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:56 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:56 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:56 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:56 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:57 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:57 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:57 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:57 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:57 - INFO - process - Running MDA
+2026-07-02 18:04:57 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:57 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:58 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:58 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:58 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:58 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:58 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:58 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:58 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:58 - INFO - process - Running MDA
+2026-07-02 18:04:59 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:59 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:59 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:59 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:59 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:59 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:59 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:59 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:59 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:04:59 - INFO - process - Running MDA
+2026-07-02 18:05:00 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:00 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:00 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:00 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:00 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:00 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:00 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:01 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:01 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:01 - INFO - process - Running MDA
+2026-07-02 18:05:01 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:01 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:01 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:01 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:01 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:02 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:02 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:02 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:02 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:02 - INFO - process - Running MDA
+2026-07-02 18:05:02 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:02 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:03 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:03 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:03 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:03 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:03 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:03 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:03 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:03 - INFO - process - Running MDA
+2026-07-02 18:05:04 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:04 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:04 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:04 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:04 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:04 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:04 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:04 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:04 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:04 - INFO - process - Running MDA
+2026-07-02 18:05:05 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:05 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:05 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:05 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:05 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:05 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:05 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:05 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:05 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:06 - INFO - process - Running MDA
+2026-07-02 18:05:06 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:06 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:06 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:06 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:06 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:06 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:07 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:07 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:07 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:07 - INFO - process - Running MDA
+2026-07-02 18:05:07 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:07 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:08 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:08 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:08 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:08 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:08 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:08 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:08 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:08 - INFO - process - Running MDA
+2026-07-02 18:05:09 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:09 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:09 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:09 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:09 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:09 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:09 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:09 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:09 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:10 - INFO - multi_regional_process - Multi-regional computation completed.
+2026-07-02 18:05:11 - INFO - multi_regional_process - Multi-regional configuration: 20 regions, execution_mode='separate_processes'
+2026-07-02 18:05:11 - INFO - multi_regional_process - Disabled GEMSEO execution statistics
+2026-07-02 18:05:15 - INFO - multi_regional_process - Aggregator created: 340 inputs, 17 outputs
+2026-07-02 18:05:15 - INFO - multi_regional_process - Top-level MDAChain created with 1 discipline(s) (aggregator + 0 top-level model(s))
+2026-07-02 18:05:15 - INFO - multi_regional_process - MultiRegionalProcess initialized with 20 regions in 'separate_processes' mode
+2026-07-02 18:05:15 - INFO - multi_regional_process - Starting multi-regional computation (separate_processes mode)...
+2026-07-02 18:05:15 - INFO - process - Running MDA
+2026-07-02 18:05:15 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:15 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:15 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:15 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:15 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:15 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:15 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:16 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:16 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:16 - INFO - process - Running MDA
+2026-07-02 18:05:16 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:16 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:16 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:17 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:17 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:17 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:17 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:17 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:17 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:17 - INFO - process - Running MDA
+2026-07-02 18:05:17 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:18 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:18 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:18 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:18 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:18 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:18 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:18 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:18 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:19 - INFO - process - Running MDA
+2026-07-02 18:05:19 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:19 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:19 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:19 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:19 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:19 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:19 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:20 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:20 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:20 - INFO - process - Running MDA
+2026-07-02 18:05:20 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:20 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:20 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:21 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:21 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:21 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:21 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:21 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:21 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:21 - INFO - process - Running MDA
+2026-07-02 18:05:22 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:22 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:22 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:22 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:22 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:22 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:22 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:22 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:22 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:22 - INFO - process - Running MDA
+2026-07-02 18:05:23 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:23 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:23 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:23 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:23 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:23 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:23 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:23 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:23 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:23 - INFO - process - Running MDA
+2026-07-02 18:05:24 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:24 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:24 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:24 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:24 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:24 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:24 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:24 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:24 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:25 - INFO - process - Running MDA
+2026-07-02 18:05:25 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:25 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:25 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:25 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:25 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:26 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:26 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:26 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:26 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:26 - INFO - process - Running MDA
+2026-07-02 18:05:26 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:26 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:26 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:27 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:27 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:27 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:27 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:27 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:27 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:27 - INFO - process - Running MDA
+2026-07-02 18:05:28 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:28 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:28 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:28 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:28 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:28 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:28 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:28 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:28 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:28 - INFO - process - Running MDA
+2026-07-02 18:05:29 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:29 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:29 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:29 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:29 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:29 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:29 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:29 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:29 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:29 - INFO - process - Running MDA
+2026-07-02 18:05:30 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:30 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:30 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:30 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:30 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:30 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:30 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:30 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:30 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:31 - INFO - process - Running MDA
+2026-07-02 18:05:31 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:31 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:31 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:31 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:31 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:31 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:31 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:31 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:32 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:32 - INFO - process - Running MDA
+2026-07-02 18:05:32 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:32 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:32 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:32 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:33 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:33 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:33 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:33 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:33 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:33 - INFO - process - Running MDA
+2026-07-02 18:05:33 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:34 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:34 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:34 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:34 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:34 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:34 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:34 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:34 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:34 - INFO - process - Running MDA
+2026-07-02 18:05:35 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:35 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:35 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:35 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:35 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:35 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:35 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:35 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:35 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:35 - INFO - process - Running MDA
+2026-07-02 18:05:36 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:36 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:37 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:37 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:37 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:37 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:37 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:37 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:37 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:37 - INFO - process - Running MDA
+2026-07-02 18:05:38 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:38 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:38 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:38 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:38 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:38 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:38 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:38 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:38 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:38 - INFO - process - Running MDA
+2026-07-02 18:05:39 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:39 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:39 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:39 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:39 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:39 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:39 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:39 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:40 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:05:40 - INFO - multi_regional_process - Multi-regional computation completed.
+2026-07-02 18:36:40 - DEBUG - kaleido - Successfully registered PlotlyJSONEncoder.
+2026-07-02 18:36:40 - WARNING - functions - No traffic is assumed for long_range.
+2026-07-02 18:36:40 - WARNING - functions - No traffic is assumed for long_range.
+2026-07-02 18:36:40 - WARNING - functions - No traffic is assumed for long_range.
+2026-07-02 18:36:40 - WARNING - functions - No traffic is assumed for long_range.
+2026-07-02 18:36:40 - INFO - multi_regional_process - Multi-regional configuration: 20 regions, execution_mode='separate_processes'
+2026-07-02 18:36:40 - INFO - multi_regional_process - Disabled GEMSEO execution statistics
+2026-07-02 18:36:45 - INFO - multi_regional_process - Aggregator created: 340 inputs, 17 outputs
+2026-07-02 18:36:45 - INFO - multi_regional_process - Top-level MDAChain created with 1 discipline(s) (aggregator + 0 top-level model(s))
+2026-07-02 18:36:45 - INFO - multi_regional_process - MultiRegionalProcess initialized with 20 regions in 'separate_processes' mode
+2026-07-02 18:36:45 - INFO - multi_regional_process - Starting multi-regional computation (separate_processes mode)...
+2026-07-02 18:36:45 - INFO - process - Running MDA
+2026-07-02 18:36:45 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:45 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:45 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:46 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:46 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:46 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:46 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:46 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:46 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:46 - INFO - process - Running MDA
+2026-07-02 18:36:47 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:47 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:47 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:47 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:47 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:47 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:47 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:47 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:47 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:47 - INFO - process - Running MDA
+2026-07-02 18:36:48 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:48 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:48 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:48 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:48 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:49 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:49 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:49 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:49 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:49 - INFO - process - Running MDA
+2026-07-02 18:36:50 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:51 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:51 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:51 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:51 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:51 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:51 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:52 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:52 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:52 - INFO - process - Running MDA
+2026-07-02 18:36:53 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:53 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:54 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:54 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:54 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:54 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:54 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:54 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:54 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:55 - INFO - process - Running MDA
+2026-07-02 18:36:56 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:56 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:56 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:56 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:57 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:57 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:57 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:57 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:57 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:58 - INFO - process - Running MDA
+2026-07-02 18:36:59 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:59 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:59 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:59 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:59 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:59 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:36:59 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:00 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:00 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:00 - INFO - process - Running MDA
+2026-07-02 18:37:01 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:01 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:01 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:01 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:01 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:02 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:02 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:02 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:02 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:02 - INFO - process - Running MDA
+2026-07-02 18:37:03 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:04 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:04 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:04 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:04 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:04 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:04 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:04 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:05 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:05 - INFO - process - Running MDA
+2026-07-02 18:37:06 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:06 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:06 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:06 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:06 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:07 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:07 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:07 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:07 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:07 - INFO - process - Running MDA
+2026-07-02 18:37:08 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:08 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:09 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:09 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:09 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:09 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:09 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:09 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:10 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:10 - INFO - process - Running MDA
+2026-07-02 18:37:11 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:11 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:11 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:11 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:11 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:12 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:12 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:12 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:12 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:12 - INFO - process - Running MDA
+2026-07-02 18:37:14 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:14 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:14 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:14 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:14 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:14 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:14 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:15 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:15 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:15 - INFO - process - Running MDA
+2026-07-02 18:37:16 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:16 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:16 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:16 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:17 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:17 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:17 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:17 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:17 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:17 - INFO - process - Running MDA
+2026-07-02 18:37:18 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:19 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:19 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:19 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:19 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:19 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:19 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:20 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:20 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:20 - INFO - process - Running MDA
+2026-07-02 18:37:21 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:21 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:21 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:21 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:22 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:22 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:22 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:22 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:22 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:23 - INFO - process - Running MDA
+2026-07-02 18:37:23 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:24 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:24 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:24 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:24 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:24 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:24 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:24 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:25 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:25 - INFO - process - Running MDA
+2026-07-02 18:37:26 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:26 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:26 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:26 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:27 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:27 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:27 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:27 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:27 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:27 - INFO - process - Running MDA
+2026-07-02 18:37:29 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:29 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:29 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:29 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:29 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:29 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:30 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:30 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:30 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:30 - INFO - process - Running MDA
+2026-07-02 18:37:31 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:31 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:31 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:31 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:32 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:32 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:32 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:32 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:32 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:34 - INFO - multi_regional_process - Multi-regional computation completed.
+2026-07-02 18:37:35 - INFO - multi_regional_process - Multi-regional configuration: 20 regions, execution_mode='separate_processes'
+2026-07-02 18:37:35 - INFO - multi_regional_process - Disabled GEMSEO execution statistics
+2026-07-02 18:37:41 - INFO - multi_regional_process - Aggregator created: 340 inputs, 17 outputs
+2026-07-02 18:37:41 - INFO - multi_regional_process - Top-level MDAChain created with 1 discipline(s) (aggregator + 0 top-level model(s))
+2026-07-02 18:37:41 - INFO - multi_regional_process - MultiRegionalProcess initialized with 20 regions in 'separate_processes' mode
+2026-07-02 18:37:41 - INFO - multi_regional_process - Starting multi-regional computation (separate_processes mode)...
+2026-07-02 18:37:41 - INFO - process - Running MDA
+2026-07-02 18:37:42 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:42 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:42 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:42 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:42 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:43 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:43 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:43 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:43 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:43 - INFO - process - Running MDA
+2026-07-02 18:37:44 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:44 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:45 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:45 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:45 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:45 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:45 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:45 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:45 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:46 - INFO - process - Running MDA
+2026-07-02 18:37:47 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:47 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:47 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:47 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:47 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:47 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:47 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:48 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:48 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:49 - INFO - process - Running MDA
+2026-07-02 18:37:49 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:50 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:50 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:50 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:50 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:50 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:50 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:51 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:51 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:51 - INFO - process - Running MDA
+2026-07-02 18:37:52 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:52 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:52 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:52 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:53 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:53 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:53 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:53 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:53 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:53 - INFO - process - Running MDA
+2026-07-02 18:37:54 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:54 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:55 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:55 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:55 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:55 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:55 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:55 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:55 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:56 - INFO - process - Running MDA
+2026-07-02 18:37:57 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:57 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:57 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:57 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:57 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:57 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:57 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:58 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:58 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:58 - INFO - process - Running MDA
+2026-07-02 18:37:59 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:59 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:59 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:37:59 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:00 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:00 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:00 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:00 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:00 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:01 - INFO - process - Running MDA
+2026-07-02 18:38:01 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:02 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:02 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:02 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:02 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:02 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:02 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:02 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:03 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:03 - INFO - process - Running MDA
+2026-07-02 18:38:04 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:04 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:04 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:04 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:04 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:04 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:05 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:05 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:05 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:05 - INFO - process - Running MDA
+2026-07-02 18:38:06 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:06 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:06 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:07 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:07 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:07 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:07 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:07 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:07 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:08 - INFO - process - Running MDA
+2026-07-02 18:38:08 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:09 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:09 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:09 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:09 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:09 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:09 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:09 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:10 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:10 - INFO - process - Running MDA
+2026-07-02 18:38:11 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:11 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:11 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:11 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:11 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:12 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:12 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:12 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:12 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:12 - INFO - process - Running MDA
+2026-07-02 18:38:13 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:13 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:14 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:14 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:14 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:14 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:14 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:14 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:14 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:15 - INFO - process - Running MDA
+2026-07-02 18:38:16 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:16 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:16 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:16 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:16 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:16 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:17 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:17 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:17 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:17 - INFO - process - Running MDA
+2026-07-02 18:38:18 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:18 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:18 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:18 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:19 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:19 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:19 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:19 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:19 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:20 - INFO - process - Running MDA
+2026-07-02 18:38:20 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:21 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:21 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:21 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:21 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:21 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:21 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:21 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:22 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:22 - INFO - process - Running MDA
+2026-07-02 18:38:23 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:24 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:24 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:24 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:24 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:24 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:24 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:24 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:25 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:25 - INFO - process - Running MDA
+2026-07-02 18:38:26 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:26 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:26 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:26 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:27 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:27 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:27 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:27 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:27 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:27 - INFO - process - Running MDA
+2026-07-02 18:38:28 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:29 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:29 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:29 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:29 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:29 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:29 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:30 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:30 - INFO - classes - Unknown model setting: rcp. Will be ignored.
+2026-07-02 18:38:31 - INFO - multi_regional_process - Multi-regional computation completed.

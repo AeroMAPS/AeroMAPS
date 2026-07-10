@@ -1,0 +1,23 @@
+data:
+  inputs:
+    json_inputs_file: ../region_usa_int/inputs.json
+    partitioning_data_file: ../region_usa_int/partitioning_updated_inputs.json
+  outputs:
+    json_outputs_file: ./usa_int_outputs.json
+models:
+  markets:
+    markets_data_file: ../region_usa_int/markets.yaml
+  fleet:
+    fleet_model_data_file: ../fleet/fleet.yaml
+    aircraft_inventory_model_data_file: ../fleet/aircraft_inventory.yaml
+  energy:
+    energy_carriers_model_data_file: ./energy_carriers_refueleu.yaml
+    resources_model_data_file: default
+    processes_model_data_file: default
+  standards:
+  - models_traffic
+  - models_efficiency_bottom_up
+  - models_energy_without_fuel_effect
+  - models_energy_cost
+  - models_offset
+  - models_emissions

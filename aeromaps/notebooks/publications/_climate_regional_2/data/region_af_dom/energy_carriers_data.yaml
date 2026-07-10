@@ -1,0 +1,29 @@
+fossil_kerosene:
+  # Metadata
+  name: "fossil_kerosene"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "fossil"
+  default: True
+  inputs:
+    # Technical:
+    technical:
+      lhv: 44
+      plant_load_factor: 0.95
+      plant_lifespan: 25
+    # Environmental:
+    environmental:
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: [ 2000, 2050 ]
+        values: [ 88.7, 88.7 ]
+        method: linear
+      emission_index:
+        h2o: 1.231 #
+        nox: 0.01514
+        sulfur: 0.0012
+        soot: 3.0e-05
+        particles_number: 2.0e+14
+    # Economics:
+    economics:
+  outputs:

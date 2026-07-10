@@ -1,0 +1,71 @@
+# Auto-generated from inputs.json (see generate_market_yamls.py).
+# Structure mirrors aeromaps/resources/data/default_markets/markets.yaml.
+# 2019 shares are the default placeholders; the partitioning file
+# overrides them with regional values at load time.
+global:
+  demand:
+    model: cagr
+defaults:
+  passenger:
+    inputs:
+      growth:
+        cagr_reference_periods: [2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035, 2036, 2037, 2038, 2039, 2040, 2041, 2042, 2043, 2044, 2045, 2046, 2047, 2048, 2049, 2050]
+        cagr_reference_periods_values: [11.15, 11.15, 6.18, 6.63, 4.27, 4.71, 4.69, 3.58, 4.15, 3.25, 2.95, 3.07, 2.78, 2.83, 2.63, 2.62, 2.61, 2.59, 3.12, 3.13, 2.42, 2.94, 2.91, 2.7, 2.27, 3.2, 2.64, 2.64]
+      covid:
+        covid_drop_start_year: 66.0
+        covid_end_year: 2023
+        covid_end_year_reference_ratio: 93.0
+      load_factor:
+        load_factor_end_year: 88.5
+        covid_load_factor_2020: 65.2
+      measures:
+        measures_final_impact: 0.0
+        measures_start_year: 2051
+        measures_duration: 5.0
+      reference:
+        reference_cagr_reference_periods: [2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035, 2036, 2037, 2038, 2039, 2040, 2041, 2042, 2043, 2044, 2045, 2046, 2047, 2048, 2049, 2050]
+        reference_cagr_reference_periods_values: [11.15, 11.15, 6.18, 6.63, 4.27, 4.71, 4.69, 3.58, 4.15, 3.25, 2.95, 3.07, 2.78, 2.83, 2.63, 2.62, 2.61, 2.59, 3.12, 3.13, 2.42, 2.94, 2.91, 2.7, 2.27, 3.2, 2.64, 2.64]
+  freight:
+    inputs:
+      growth:
+        cagr_reference_periods: [2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035, 2036, 2037, 2038, 2039, 2040, 2041, 2042, 2043, 2044, 2045, 2046, 2047, 2048, 2049, 2050]
+        cagr_reference_periods_values: [11.15, 11.15, 6.18, 6.63, 4.27, 4.71, 4.69, 3.58, 4.15, 3.25, 2.95, 3.07, 2.78, 2.83, 2.63, 2.62, 2.61, 2.59, 3.12, 3.13, 2.42, 2.94, 2.91, 2.7, 2.27, 3.2, 2.64, 2.64]
+      covid:
+        covid_drop_start_year: 66.0
+        covid_end_year: 2023
+        covid_end_year_reference_ratio: 100.0
+      reference:
+        reference_cagr_reference_periods: [2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035, 2036, 2037, 2038, 2039, 2040, 2041, 2042, 2043, 2044, 2045, 2046, 2047, 2048, 2049, 2050]
+        reference_cagr_reference_periods_values: [11.15, 11.15, 6.18, 6.63, 4.27, 4.71, 4.69, 3.58, 4.15, 3.25, 2.95, 3.07, 2.78, 2.83, 2.63, 2.62, 2.61, 2.59, 3.12, 3.13, 2.42, 2.94, 2.91, 2.7, 2.27, 3.2, 2.64, 2.64]
+short_range:
+  name: Short Range
+  traffic_type: passenger
+  traffic_unit: RPK
+  inputs:
+    initial:
+      rpk_share_last_historical_year: 27.2
+      energy_share_last_historical_year: 26.01
+medium_range:
+  name: Medium Range
+  traffic_type: passenger
+  traffic_unit: RPK
+  inputs:
+    initial:
+      rpk_share_last_historical_year: 35.1
+      energy_share_last_historical_year: 26.18
+long_range:
+  name: Long Range
+  traffic_type: passenger
+  traffic_unit: RPK
+  inputs:
+    initial:
+      rpk_share_last_historical_year: 37.7
+      energy_share_last_historical_year: 32.81
+freight:
+  name: Freight
+  traffic_type: freight
+  traffic_unit: RTK
+  inputs:
+    initial:
+      rtk_share_last_historical_year: 100.0
+      energy_share_last_historical_year: 15.0

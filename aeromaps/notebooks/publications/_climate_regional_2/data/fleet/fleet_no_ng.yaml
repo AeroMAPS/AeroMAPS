@@ -1,0 +1,50 @@
+subcategories:
+  - id: sr_conventional_nb
+    name: "SR conventional narrow-body"
+    share: 100.0
+    reference_aircraft:
+      old_ref: sr_conventional_nb_old
+      recent_ref: sr_conventional_nb_recent
+
+  - id: mr_conventional_nb
+    name: "MR conventional narrow-body"
+    share: 100.0
+    reference_aircraft:
+      old_ref: mr_conventional_nb_old
+      recent_ref: mr_conventional_nb_recent
+
+  - id: lr_conventional_wb
+    name: "LR conventional wide-body"
+    share: 100.0
+    reference_aircraft:
+      old_ref: lr_conventional_wb_old
+      recent_ref: lr_conventional_wb_recent
+
+
+categories:
+  - market_served: short_range
+    name: "Short Range"
+    calibration_subcategory: sr_conventional_nb
+    parameters:
+      life: 25
+      limit: 2
+    subcategories:
+      - sr_conventional_nb
+
+  - market_served: medium_range
+    name: "Medium Range"
+    calibration_subcategory: mr_conventional_nb
+    parameters:
+      life: 25
+      limit: 2
+    subcategories:
+      - mr_conventional_nb
+
+  - market_served: long_range
+    name: "Long Range"
+    calibration_subcategory: lr_conventional_wb
+    parameters:
+      life: 25
+      limit: 2
+    subcategories:
+      - lr_conventional_wb

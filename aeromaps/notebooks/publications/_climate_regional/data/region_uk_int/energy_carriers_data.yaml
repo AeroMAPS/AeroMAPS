@@ -1,0 +1,97 @@
+fossil_kerosene:
+  # Metadata
+  name: "fossil_kerosene"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "fossil"
+  default: True
+  inputs:
+    # Technical:
+    technical:
+      lhv: 44
+      plant_load_factor: 0.95
+      plant_lifespan: 25
+    # Environmental:
+    environmental:
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: [ 2000, 2050 ]
+        values: [ 88.7, 88.7 ]
+        method: linear
+      emission_index:
+        h2o: 1.231 #
+        nox: 0.01514
+        sulfur: 0.0012
+        soot: 3.0e-05
+        particles_number: 2.0e+14
+    # Economics:
+    economics:
+      mean_mfsp_without_resource: !AeroMapsCustomDataType
+        years: [2000, 2001, 2002, 2003, 2004, 2005,
+                2006, 2007, 2008, 2009, 2010, 2011,
+                2012, 2013, 2014, 2015, 2016, 2017,
+                2018, 2019, 2020, 2021, 2022, 2023,
+                2024, 2050]
+        values: [0.008364654, 0.006916631, 0.006340188, 0.007424531, 0.010158403,
+        0.014797798, 0.016189765, 0.017474982, 0.023710593, 0.01277897,
+        0.016366254, 0.022487714, 0.022192747, 0.020655099, 0.018819777,
+        0.010615193, 0.008737464, 0.01085308, 0.013921201, 0.012684225,
+        0.007299796, 0.01202598, 0.019909217, 0.014922935, 0.012596014, 0.012]
+        method: linear
+  outputs:
+
+
+generic_saf:
+  # Metadata
+  name: "generic_saf"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "biomass and electricity" 
+  default: False
+  abatement_cost: False
+  # Until level two used to separate inputs. Then concatenated in variable name.
+  inputs:
+    # Policy
+    mandate:
+      mandate_type: "share"
+      mandate_share: !AeroMapsCustomDataType
+        years:  [2020, 2024, 2025, 2030, 2040, 2050]
+        values: [0.0, 0.0, 2.0, 10.0, 22.0, 22.0] 
+        method: linear
+    # Technical:
+    technical:
+      resource_names: [ "ft_others_biomass" ]
+      resource_specific_consumption:
+        ft_others_biomass: 2.17
+      kerosene_selectivity: 0.15
+      lhv: 44
+    # Environmental:
+    environmental:
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: [
+          2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031,
+          2032, 2033, 2034, 2035, 2036, 2037, 2038, 2039, 2040, 2041, 2042, 2043,
+          2044, 2045, 2046, 2047, 2048, 2049, 2050
+          ]
+        values: [
+            24.267005524861545, 24.26700552486191, 24.2670055248619, 24.267142103744668,
+            24.16614099413649, 27.864087519631674, 31.819315380573123, 32.66174053411477,
+            31.8900364157777, 31.028612715531864, 29.28178607317237, 29.371449136146243,
+            29.113814854115997, 28.748947148073093, 28.07505817005432, 27.39737508949321,
+            26.785966430887072, 26.16211596585066, 25.478770963477913, 24.78924580597098,
+            23.92145989047674, 23.140453236703088, 22.365212439283894, 21.465395017808454,
+            20.28024571328244, 19.252665941846146, 18.234239659160426, 17.29182111121787,
+            16.213702538553072, 15.085942562425188, 14.060201601482026
+        ]
+        method: linear
+      emission_index:
+        h2o: 1.231 #
+        nox: 0.01514
+        sulfur: 0.0
+        soot: 6.0e-06
+        particles_number: 8.0e+13
+    # Economics:
+    economics:
+    # Not defined for this application
+  outputs:

@@ -1,0 +1,65 @@
+models:
+  standards:
+  - default_models_top_down
+regionalisation:
+  execution_mode: separate_processes
+  global_namespace: overall
+  regions:
+    AF_DOM:
+      config_file: ./config_af_dom.yaml
+    AF_INT:
+      config_file: ./config_af_int.yaml
+    AS_DOM:
+      config_file: ./config_as_dom.yaml
+    BRAS_DOM:
+      config_file: ./config_bras_dom.yaml
+    EU_DOM:
+      config_file: ./config_eu_dom.yaml
+    EU_INT:
+      config_file: ./config_eu_int.yaml
+    OC_DOM:
+      config_file: ./config_oc_dom.yaml
+    OC_INT:
+      config_file: ./config_oc_int.yaml
+    OTHER_AS_INT:
+      config_file: ./config_other_as_int.yaml
+    OTHER_EUR_DOM:
+      config_file: ./config_other_eur_dom.yaml
+    OTHER_EUR_INT:
+      config_file: ./config_other_eur_int.yaml
+    OTHER_NAM_DOM:
+      config_file: ./config_other_nam_dom.yaml
+    OTHER_NAM_INT:
+      config_file: ./config_other_nam_int.yaml
+    OTHER_SAM_DOM:
+      config_file: ./config_other_sam_dom.yaml
+    SIN_INT:
+      config_file: ./config_sin_int.yaml
+    UK_DOM:
+      config_file: ./config_uk_dom.yaml
+    UK_INT:
+      config_file: ./config_uk_int.yaml
+    USA_DOM:
+      config_file: ./config_usa_dom.yaml
+    USA_INT:
+      config_file: ./config_usa_int.yaml
+    SAM_INT:
+      config_file: ./config_sam_int.yaml
+  aggregation:
+    sum:
+    - co2_emissions_including_energy
+    - co2_emissions_including_aircraft_efficiency
+    - co2_emissions_including_operations
+    - co2_emissions_including_load_factor
+    - co2_emissions_2019technology
+    - cumulative_co2_emissions
+    - cumulative_co2_emissions_including_load_factor
+    - cumulative_co2_emissions_2019technology
+    - cumulative_carbon_offset
+    - carbon_offset
+    - biomass_total_consumption
+    - rpk
+    - ask
+    weighted_average:
+    - variable: load_factor
+      weight_by: ask
