@@ -97,6 +97,7 @@ from aeromaps.models.impacts.emissions.non_co2_emissions import (
     NonCO2Emissions,
     H2OEmissionIndex,
     SulfurEmissionIndex,
+    H2Leakage
 )
 from aeromaps.models.impacts.energy_resources.energy_consumption import (
     DropInFuelConsumption,
@@ -279,6 +280,7 @@ models_emissions = {
         "detailed_cumulative_co2_emissions"
     ),
     "non_co2_emissions": NonCO2Emissions("non_co2_emissions"),
+    "h2_leakage": H2Leakage("h2_leakage"),
     "emissions_per_rpk": EmissionsPerRPK("emissions_per_rpk"),
     "emissions_per_rtk": EmissionsPerRTK("emissions_per_rtk"),
 }

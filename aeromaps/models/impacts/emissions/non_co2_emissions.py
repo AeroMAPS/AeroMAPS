@@ -1070,3 +1070,50 @@ class NonCO2Emissions(AeroMAPSModel):
         self.df_climate.loc[:, "sulfur_emissions"] = sulfur_emissions
 
         return output_data
+
+
+class H2Leakage(AeroMAPSModel):
+    """
+    Class to compute H2 leakage, based on a simple leakage rate.
+
+    Parameters
+    ----------
+    name : str
+        Name of the model instance ('h2_leakage' by default).
+    """
+
+    def __init__(self, name="h2_leakage", *args, **kwargs):
+        super().__init__(name=name, *args, **kwargs)
+
+    def compute(
+        self,
+        h2_leakage_rate: float,
+        energy_consumption_hydrogen: pd.Series,
+    ) -> pd.Series:
+        """
+        Execute the computation of Available Seat Kilometers (ASK) and its breakdown by range.
+
+        Parameters
+        ----------
+        h2_leakage_rate
+            H2 leakage rate [%].
+        energy_consumption_hydrogen
+            Annual hydrogen consumption [MJ].
+
+        Returns
+        -------
+        h2_leakage
+            H2 leakage [MtH2].
+        """
+
+        hydrogen_lhv = 120 # [MJ/kg] TODO: generic value
+        hydrogen_mass = energy_consumption_hydrogen / hydrogen_lhv * 10**9 # [MtH2]
+        self.df_climate.loc[self.climate_historic_start_year:self.prospection_start_year - 1, "h2_leakage"] = 0.0
+        self.df_climate.loc[self.prospection_start_year:self.end_year, "h2_leakage"] = (
+                hydrogen_mass.loc[self.prospection_start_year:self.end_year]
+                * h2_leakage_rate
+                / 100
+        )
+        h2_leakage = self.df_climate["h2_leakage"]
+
+        return h2_leakage

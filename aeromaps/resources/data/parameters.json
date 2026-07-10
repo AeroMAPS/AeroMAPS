@@ -287,5 +287,6 @@
     "pathway": "SSP2_Base",
     "elec_solar_share": 1.0,
     "load_factor_photovoltaic": 1.0,
-    "karcher_curve_case": "No vPM"
+    "karcher_curve_case": "No vPM",
+    "h2_leakage_rate": 0.0
 }
