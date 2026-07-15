@@ -93,8 +93,11 @@ model:
 
 # --- Select LCIA methods for assessment ---
 methods:
-    - "('ReCiPe 2016 v1.03, endpoint (H)', 'total: human health', 'human health')"
-
+    #- "('ReCiPe 2016 v1.03, endpoint (H)', 'total: human health', 'human health')"
+    #- "('ReCiPe 2016 v1.03, endpoint (H)', 'human health', 'climate change: human health')"
+    - "('ReCiPe 2016 v1.03, endpoint (H)', 'human health', 'particulate matter formation')"
+    - "('ReCiPe 2016 v1.03, endpoint (H)', 'human health', 'photochemical oxidant formation: human health')"
+    
 
 # --- Additional/custom LCIA methods provided by the user ---
 custom_methods:
@@ -114,3 +117,17 @@ custom_methods:
     - name: "('LCIA Aviation', 'human health', 'o3: human health')"
       filepath: './data/lca_data/LCIA/CFs_human_health_ozone_average.csv'
       unit: 'DALY'
+      
+    # Standard LCIA methods for comparison
+    - name: "('ReCiPe 2016 v1.03, endpoint (H) - Lee', 'human health', 'climate change: human health')"
+      filepath: './data/lca_data/LCIA/CFs_human_health_climate_change_Lee_ReCiPe.csv'
+      unit: 'DALY'
+      
+    - name: "('IWP - Lee', 'human health', 'climate change: human health')"
+      filepath: './data/lca_data/LCIA/CFs_human_health_climate_change_Lee_IWP.csv'
+      unit: 'DALY'
+      
+    - name: "('IWP', 'human health', 'particulate matter formation')"
+      filepath: './data/lca_data/LCIA/CFs_human_health_particulate_matter_IWP.csv'
+      unit: 'DALY'
+      

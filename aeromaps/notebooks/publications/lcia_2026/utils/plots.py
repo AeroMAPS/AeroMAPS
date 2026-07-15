@@ -299,7 +299,18 @@ def plot_stacked_evolution_subplots(xarray_data, start_year: int = 2019, end_yea
     plt.show()
     
 
-def stacked_cascade_impacts(da, year, ax, palette_dict):
+def stacked_cascade_impacts(
+    da, 
+    year, 
+    ax, 
+    palette_dict, 
+    lcia_method: str = 'LCIA Aviation',
+    targets=[
+        "climate change: human health",
+        "pm25: human health",
+        "o3: human health",
+    ], 
+):
 
     # --- Compute non-NOx contribution (fuel_burn_air_quality - NOx excl. LH2)
     da = prepare_non_nox(da)
@@ -307,16 +318,10 @@ def stacked_cascade_impacts(da, year, ax, palette_dict):
     # --- Merge NOx contributions (all fuels incl. LH2)
     da = merge_nox_axes(da)
 
-    targets = [
-        "climate change: human health",
-        "pm25: human health",
-        "o3: human health",
-    ]
-
     da_year = da.sel(year=year)
 
     df = da_year.to_dataframe().reset_index()
-    df = df[df["impacts"].apply(lambda x: x[2] in targets)]
+    df = df[df["impacts"].apply(lambda x: lcia_method in x[0] and x[2] in targets)]
 
     df_pivot = df.pivot_table(
         values="lca",
@@ -325,7 +330,14 @@ def stacked_cascade_impacts(da, year, ax, palette_dict):
         aggfunc="sum"
     ).fillna(0)
 
+    # List impacts, and reorder by priority order
     impacts = list(df_pivot.columns)
+    priority = ["climate change", "pm25", "particulate matter", "o3", "ozone", "photochemical oxidant"]
+    ordered = []
+    for p in priority:
+        ordered.extend([x for x in impacts if p.lower() in x[2].lower()])
+    ordered.extend([x for x in impacts if x not in ordered])
+    impacts = ordered
 
     # sort pollutants by magnitude
     #pollutant_order = df_pivot.sum(axis=1).abs().sort_values(ascending=False).index
@@ -399,6 +411,8 @@ def stacked_cascade_impacts(da, year, ax, palette_dict):
         .replace("pm25","PM$_{2.5}$")
         .replace("o3","O$_3$")
         .replace("climate change","climate\nchange")
+        .replace('particulate matter formation', "PM$_{2.5}$")
+        .replace('photochemical oxidant formation', "O$_{3}$")
         #.title()
         for imp in impacts
     ]
@@ -417,7 +431,16 @@ def stacked_cascade_impacts(da, year, ax, palette_dict):
     
     
 
-def stacked_cascade_scenarios(scenarios, ylim=None):
+def stacked_cascade_scenarios(
+    scenarios, 
+    ylim=None, 
+    lcia_method: str = 'LCIA Aviation',
+    targets=[
+        "climate change: human health",
+        "pm25: human health",
+        "o3: human health",
+    ], 
+):
     
     n = len(scenarios)
     n_cols = 4
@@ -439,7 +462,9 @@ def stacked_cascade_scenarios(scenarios, ylim=None):
             da,
             year=year,
             ax=ax,
-            palette_dict=palette_dict
+            palette_dict=palette_dict,
+            lcia_method=lcia_method,
+            targets=targets
         )
 
         ax.set_title(name, fontsize=11)

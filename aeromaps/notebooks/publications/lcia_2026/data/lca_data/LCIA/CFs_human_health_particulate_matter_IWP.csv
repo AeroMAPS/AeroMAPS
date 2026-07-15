@@ -1,0 +1,4 @@
+name,categories,amount,unit
+nitrogen oxides,air::lower stratosphere + upper troposphere,1.8783E-05,kilogram
+"Particulate Matter, < 2.5 um",air::lower stratosphere + upper troposphere,0.001367599,kilogram
+sulfur dioxide,air::lower stratosphere + upper troposphere,9.28717E-05,kilogram
