@@ -50,6 +50,10 @@ from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_mod
     Fleet,
     FleetModel,
 )
+from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet_push.aircraft_efficiency_fleet_push import (
+    PassengerAircraftEfficiencyFleetPush,
+    PUSH_FLEET_INPUT_FILE_KEYS,
+)
 
 # Generic energy models imports
 from aeromaps.models.impacts.generic_energy_model.common.energy_carriers_manager import (
@@ -1182,6 +1186,10 @@ class AeroMAPSProcess(object):
             market_data["inputs"] = inputs
             self.markets_data[market_id] = market_data
 
+        # Shares feed the last-historical-year traffic/energy split, so a set that
+        # does not sum to 100% silently rescales the whole scenario. Hard-error.
+        self._validate_market_shares()
+
         if demand_model in ("cagr", "cagr_elasticity"):
             with_elast = demand_model == "cagr_elasticity"
             self.models.update(
@@ -1207,10 +1215,76 @@ class AeroMAPSProcess(object):
                 f"Unknown global.demand.model '{demand_model}'. Expected one of: "
                 "cagr, cagr_elasticity, constant_elasticity, logistic_income."
             )
+        # ``load_factor.model`` selects the per-market load factor model:
+        #   ``quadratic``            — LoadFactorMarket (quadratic curve, default);
+        #   ``simple_interpolation`` — LoadFactorMarketSimpleInterpolation
+        #                              (piece-wise linear via aeromaps_interpolation_function).
+        # Dropped before flattening so the string is not pushed into parameters.
+        load_factor_block = globals_block.pop("load_factor", {}) or {}
+        load_factor_model = load_factor_block.get("model", "quadratic")
+
         self.models.update(create_market_rtk_models(self.markets, self.markets_data))
         self.models.update(create_market_rtk_aggregator(self.markets))
         self.models.update(create_market_ask_models(self.markets))
-        self.models.update(create_market_load_factor_models(self.markets))
+        self.models.update(
+            create_market_load_factor_models(self.markets, load_factor_model=load_factor_model)
+        )
+
+    # Tolerance [%] on each last-historical-year share sum vs 100%.
+    _SHARE_SUM_TOLERANCE = 0.2
+
+    def _validate_market_shares(self):
+        """Error if the declared market shares are not internally consistent.
+
+        Three sums must each reach 100% within ``_SHARE_SUM_TOLERANCE``:
+
+        - ``rpk_share_last_historical_year`` over all passenger markets,
+        - ``rtk_share_last_historical_year`` over all freight markets,
+        - ``energy_share_last_historical_year`` over all markets (passenger + freight).
+
+        The flattened ``<market_id>_<leaf>`` values are read from
+        ``self.parameters``. These shares split the last-historical-year traffic
+        and energy across markets, so a sum off 100% silently rescales the whole
+        scenario; a deviation beyond the tolerance is a hard error rather than a
+        warning.
+        """
+        tol = self._SHARE_SUM_TOLERANCE
+        passenger_ids = [m.id for m in self.markets.get(traffic_type="passenger")]
+        freight_ids = [m.id for m in self.markets.get(traffic_type="freight")]
+        all_ids = self.markets.get_ids()
+
+        def _share_sum(ids, leaf):
+            return sum(float(getattr(self.parameters, f"{mid}_{leaf}", 0.0) or 0.0) for mid in ids)
+
+        checks = (
+            (
+                "rpk_share_last_historical_year (passenger markets)",
+                passenger_ids,
+                "rpk_share_last_historical_year",
+            ),
+            (
+                "rtk_share_last_historical_year (freight markets)",
+                freight_ids,
+                "rtk_share_last_historical_year",
+            ),
+            (
+                "energy_share_last_historical_year (all markets)",
+                all_ids,
+                "energy_share_last_historical_year",
+            ),
+        )
+        errors = []
+        for label, ids, leaf in checks:
+            if not ids:
+                continue
+            total = _share_sum(ids, leaf)
+            if abs(total - 100.0) > tol:
+                errors.append(f"  - {label}: sums to {total:.4f}% (expected 100% ± {tol}%)")
+        if errors:
+            raise ValueError(
+                "Inconsistent market shares in the markets data file "
+                f"(must each sum to 100% ± {tol}%):\n" + "\n".join(errors)
+            )
 
     def _initialize_generic_energy(self):
         """Initialize generic energy resources, processes, and carriers.
@@ -1560,6 +1634,26 @@ class AeroMAPSProcess(object):
                 data[key] = pd.Series([0.0])  # initialize to future interpolation type.
         return data
 
+    def _get_model_instance(self, model_cls):
+        """Return the first selected model instance of ``model_cls`` (or None).
+
+        Searches the nested ``self.models`` standards/customs structure (same shape
+        ``check_instance_in_dict`` walks). Used to expose a named handle to a model that
+        is selected via ``models.standards`` rather than constructed here.
+        """
+
+        def search(d):
+            for value in d.values():
+                if isinstance(value, model_cls):
+                    return value
+                if isinstance(value, dict):
+                    found = search(value)
+                    if found is not None:
+                        return found
+            return None
+
+        return search(self.models)
+
     def _initialize_disciplines(self):
         """Wrap models as GEMSEO disciplines and configure coupling.
 
@@ -1600,6 +1694,19 @@ class AeroMAPSProcess(object):
             self.fleet_model._initialize_df()
         else:
             self.fleet = None
+
+        # Push fleet efficiency model: mirror self.fleet_model above — expose a named
+        # handle and resolve+inject its input files. The instance lives in the selected
+        # models_efficiency_push standard; it is None when that standard is not used.
+        # Each fleet_push file resolves like any AeroMAPS data file (user override / the
+        # ``default`` keyword / package default config). Injected before custom_setup()
+        # (run inside check_instance_in_dict) reads it.
+        self.push_fleet_model = self._get_model_instance(PassengerAircraftEfficiencyFleetPush)
+        if self.push_fleet_model is not None:
+            self.push_fleet_model.input_files = {
+                fkey: str(self._resolve_config_path("models", "fleet_push", fkey))
+                for fkey in PUSH_FLEET_INPUT_FILE_KEYS
+            }
 
         def check_instance_in_dict(d):
             # todo rename that function as it is now clearly much more than just checking instance in dict... ;)

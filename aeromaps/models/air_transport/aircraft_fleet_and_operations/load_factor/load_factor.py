@@ -13,7 +13,7 @@ import warnings
 
 import pandas as pd
 
-from aeromaps.models.base import AeroMAPSModel
+from aeromaps.models.base import AeroMAPSModel, aeromaps_interpolation_function
 
 # Horizon (years) at which the arrival-slope constraint was calibrated from
 # historical load-factor data: 2050 - 2019 = 31.  The fitted linear trend
@@ -137,6 +137,90 @@ class LoadFactorMarket(AeroMAPSModel):
         # Covid-19 : à refaire proprement. Only applied when 2020 is in the
         # prospective window; for prospection_start_year > 2020 the observed
         # 2020 drop is expected to be already baked into the historic init data.
+        if self.prospection_start_year <= 2020:
+            self.df.loc[2020, col] = covid_2020
+
+        output_data = {col: self.df[col]}
+        self._store_outputs(output_data)
+        return output_data
+
+
+class LoadFactorMarketSimpleInterpolation(AeroMAPSModel):
+    """Per-market aircraft load factor projection via linear interpolation.
+
+    Instead of fitting a quadratic curve anchored at the last historical year,
+    this model projects the load factor by linearly interpolating the workbook
+    reference waypoints (e.g. 2025 → 83 %, 2045 → 88 %, 2050 → 89 %) using
+    the shared :func:`aeromaps_interpolation_function`.  The result is a
+    piece-wise linear trajectory that hits every waypoint exactly, as opposed
+    to the smoothed ``LoadFactorMarket`` quadratic which only honours the
+    single ``load_factor_end_year`` target.
+
+    Select this model via ``global.load_factor.model: simple_interpolation``
+    in ``markets.yaml``; the default is ``quadratic`` (``LoadFactorMarket``).
+
+    Reads per-market parameters flattened from ``markets.yaml``:
+
+    * ``<mid>_load_factor_reference_years``        — list of reference years
+    * ``<mid>_load_factor_reference_years_values`` — LF values at those years [%]
+    * ``<mid>_covid_load_factor_2020``             — LF override for 2020 [%]
+
+    Historical years are filled from ``rpk_init`` / ``ask_init``, identical to
+    ``LoadFactorMarket``.
+
+    Parameters
+    ----------
+    name : str
+        Discipline name.
+    market_id : str
+        Market identifier.
+    """
+
+    def __init__(self, name: str, market_id: str, *args, **kwargs):
+        super().__init__(name=name, model_type="custom", *args, **kwargs)
+        mid = market_id
+        self.market_id = mid
+        self.input_names = {
+            f"{mid}_load_factor_reference_years": [],
+            f"{mid}_load_factor_reference_years_values": [0.0],
+            f"{mid}_covid_load_factor_2020": 0.0,
+            "rpk_init": pd.Series([0.0]),
+            "ask_init": pd.Series([0.0]),
+        }
+        self.output_names = {
+            f"load_factor_{mid}": pd.Series([0.0]),
+        }
+
+    def compute(self, input_data: dict) -> dict:
+        """Execute the computation of per-market aircraft load factor via linear interpolation.
+
+        Historical load factor values are computed from provided RPK and ASK.
+        Prospective years are filled by linearly interpolating the reference
+        waypoints supplied in the workbook, using the shared
+        ``aeromaps_interpolation_function``.  The 2020 value is overwritten
+        with the Covid-19-specific value when 2020 falls in the prospective
+        window.
+        """
+        mid = self.market_id
+        reference_years = list(input_data[f"{mid}_load_factor_reference_years"])
+        reference_years_values = list(input_data[f"{mid}_load_factor_reference_years_values"])
+        covid_2020 = float(input_data[f"{mid}_covid_load_factor_2020"])
+        rpk_init = input_data["rpk_init"]
+        ask_init = input_data["ask_init"]
+
+        col = f"load_factor_{mid}"
+
+        for k in range(self.historic_start_year, self.prospection_start_year):
+            self.df.loc[k, col] = rpk_init.loc[k] / ask_init.loc[k] * 100
+
+        # Prospective years: linear interpolation across the workbook waypoints.
+        series = aeromaps_interpolation_function(
+            self, reference_years, reference_years_values, model_name=self.name
+        )
+        for k in range(self.prospection_start_year, self.end_year + 1):
+            self.df.loc[k, col] = series.loc[k]
+
+        # Covid-19 override: only applied when 2020 is in the prospective window.
         if self.prospection_start_year <= 2020:
             self.df.loc[2020, col] = covid_2020
 

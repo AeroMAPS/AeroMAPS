@@ -112,6 +112,18 @@ class AircraftParameters:
         Relative change in energy consumption compared to reference aircraft [%].
     energy_per_ask
         Absolute energy consumption per ASK [MJ/ASK]. Alternative to ``consumption_evolution``.
+    continuous_improvement_factor_energy
+        Optional per-year multiplicative factor applied to the resolved
+        ``energy_per_ask`` (base × factor(year)). Declared as an
+        ``!AeroMapsCustomDataType`` (years/values); absent → no improvement
+        (factor 1.0). Models a generation whose energy intensity improves over
+        time on top of its base performance.
+    share
+        Optional per-year fleet share series (``!AeroMapsCustomDataType``, [%]).
+        When set, the fleet runs in *share-decoupling* mode: the S-curve
+        assignment is bypassed and this series populates the aircraft's
+        ``aircraft_share`` column directly. See
+        ``FleetAssignmentMixin._compute_decoupled_aircraft_share``.
     nox_evolution
         Relative change in NOx emissions compared to reference aircraft [%].
     emission_index_nox
@@ -143,6 +155,8 @@ class AircraftParameters:
     entry_into_service_year: Optional[float] = None
     consumption_evolution: Optional[float] = None
     energy_per_ask: Optional[float] = None
+    continuous_improvement_factor_energy: Optional[object] = None
+    share: Optional[object] = None
     nox_evolution: Optional[float] = None
     emission_index_nox: Optional[float] = None
     soot_evolution: Optional[float] = None
@@ -205,6 +219,13 @@ class ReferenceAircraftParameters:
     rc_cost: Optional[float] = None
     oew: Optional[float] = None
     full_name: Optional[str] = None
+    # Optional per-year fleet share series (!AeroMapsCustomDataType, [%]) used in
+    # share-decoupling mode to drive old/recent reference aircraft_share directly.
+    share: Optional[object] = None
+    # Optional per-year multiplicative energy factor (!AeroMapsCustomDataType) applied
+    # on top of the base ``energy_per_ask`` — same mechanism as new aircraft, so old/
+    # recent reference aircraft can also improve over time. Absent → constant base.
+    continuous_improvement_factor_energy: Optional[object] = None
 
 
 @dataclass
@@ -315,6 +336,20 @@ class Aircraft(object):
         For an aircraft serving multiple markets, relative mode yields different
         absolute values per market (each has its own recent reference); absolute
         mode yields the user-provided value as-is in every market.
+
+        Relative mode anchors to the reference's **static** baseline
+        (``recent_ref.energy_per_ask`` as written on the card), *not* its
+        continuous-improvement-adjusted "moving" value. Any per-year continuous
+        improvement factor is applied **separately and per aircraft** on top of
+        this resolved value (see
+        ``FleetPerformanceModel._compute_energy_consumption_and_share_wrt_energy_type``
+        and ``_compute_aircraft_performance_contributions``). Consequences:
+
+        * A relatively-defined aircraft does **not** track the reference's own
+          improvement over time — only its own
+          ``continuous_improvement_factor_energy`` moves it after t0.
+        * To hold a constant *relative* gap to an improving reference, give the
+          aircraft the reference's improvement trajectory as its own CIF.
         """
         abs_value = getattr(self.parameters, metric)
         if abs_value is not None:
@@ -537,6 +572,9 @@ class Fleet(object):
         self._categories: Dict[str, Category] = {}
         self.parameters = parameters
         self.markets = markets
+        # True when aircraft cards carry a `share` series: the S-curve assignment
+        # and reference-aircraft calibration are bypassed (set in _build_fleet_from_yaml).
+        self.share_decoupled = False
         # Populated during _build_fleet_from_yaml: subcategory id → display name.
         self._subcategory_name_by_id: Dict[str, str] = {}
         self.aircraft_inventory_path = (
@@ -920,7 +958,30 @@ class Fleet(object):
             category._check_shares()
 
         self.categories = categories
-        self._calibrate_reference_aircraft()
+        self.share_decoupled = self._detect_share_decoupling()
+        # In share-decoupling mode reference energy_per_ask is given directly
+        # (absolute) and must not be overwritten by base-year calibration.
+        if not self.share_decoupled:
+            self._calibrate_reference_aircraft()
+
+    def _detect_share_decoupling(self) -> bool:
+        """Return True if any aircraft/reference card carries a `share` series.
+
+        Presence of a per-year ``share`` series switches the fleet to
+        share-decoupling mode (user-driven shares, S-curve and calibration
+        bypassed). Default scenarios carry no ``share`` field and stay on the
+        S-curve path.
+        """
+        for category in self.categories.values():
+            for subcategory in category.subcategories.values():
+                if getattr(subcategory.old_reference_aircraft, "share", None) is not None:
+                    return True
+                if getattr(subcategory.recent_reference_aircraft, "share", None) is not None:
+                    return True
+                for aircraft in subcategory.aircraft.values():
+                    if getattr(aircraft.parameters, "share", None) is not None:
+                        return True
+        return False
 
     @staticmethod
     def _build_subcategory_inventory(entries):
@@ -1205,11 +1266,14 @@ class FleetModel(FleetAssignmentMixin, FleetPerformanceMixin, AeroMAPSModel):
         # Start from empty dataframe (necessary for multiple runs of the model)
         self.df = pd.DataFrame(index=self.df.index)
 
-        # Compute single aircraft shares
-        self._compute_single_aircraft_share()
-
-        # Compute aircraft shares
-        self._compute_aircraft_share()
+        # Aircraft shares: either user-driven (share-decoupling) or S-curve derived.
+        if getattr(self.fleet, "share_decoupled", False):
+            # Populate aircraft_share columns directly from the per-aircraft share series.
+            self._compute_decoupled_aircraft_share()
+        else:
+            # Compute single aircraft shares (cumulative S-curve), then differential shares.
+            self._compute_single_aircraft_share()
+            self._compute_aircraft_share()
 
         # Compute energy consumption and share per subcategory with respect to energy type
         self._compute_energy_consumption_and_share_wrt_energy_type()
@@ -1238,14 +1302,18 @@ class FleetModel(FleetAssignmentMixin, FleetPerformanceMixin, AeroMAPSModel):
     def plot(self):
         """Generate fleet renewal visualization plots.
 
-        Creates a 2-row matplotlib figure with one column per category.
-        The top row shows stacked area plots of aircraft shares over time,
-        including old reference, recent reference, and new aircraft types.
-        The bottom row shows the evolution of mean fleet energy consumption.
+        Creates a 2-row matplotlib figure with one column per category. The top
+        row shows stacked area plots of aircraft shares over time (old reference,
+        recent reference, and new aircraft types); the bottom row shows the
+        evolution of mean fleet energy consumption. Data spans
+        ``prospection_start_year`` to ``end_year``.
 
-        The plot displays data from prospection_start_year to end_year.
-        Aircraft shares are shown as cumulative (stacked) areas, while
-        energy consumption is shown as a line plot.
+        Shares are read from the canonical non-cumulative ``*:aircraft_share``
+        columns and drawn with ``stackplot``. Those columns are written in *both*
+        the S-curve path (``_compute_aircraft_share``) and the share-decoupling
+        path (``_compute_decoupled_aircraft_share``), so this works in either mode
+        — including the custom workflow, where the cumulative
+        ``*:single_aircraft_share`` columns do not exist.
         """
         x = np.linspace(
             self.prospection_start_year,
@@ -1255,63 +1323,63 @@ class FleetModel(FleetAssignmentMixin, FleetPerformanceMixin, AeroMAPSModel):
 
         categories = list(self.fleet.categories.values())
 
-        f, axs = plt.subplots(2, len(categories), figsize=(20, 10))
+        f, axs = plt.subplots(2, len(categories), figsize=(20, 10), squeeze=False)
 
         for i, category in enumerate(categories):
-            # Top plot
+            # Top plot: stacked non-cumulative shares (bottom -> top).
             ax = axs[0, i]
+            labels = []
+            series = []
 
-            # Initial subcategory
+            # Reference aircraft live on the first subcategory (matches the
+            # _compute_* consumers).
             subcategory = category.subcategories[0]
-            # Old reference aircraft
-            var_name = (
-                category.name + ":" + subcategory.name + ":" + "old_reference:single_aircraft_share"
-            )
-            ax.fill_between(
-                x,
-                self.df.loc[self.prospection_start_year : self.end_year, var_name],
-                label=subcategory.name + " - Old reference aircraft",
-            )
+            for ref_key, ref_label in (
+                ("old_reference", "Old reference aircraft"),
+                ("recent_reference", "Recent reference aircraft"),
+            ):
+                var_name = f"{category.name}:{subcategory.name}:{ref_key}:aircraft_share"
+                if var_name in self.df:
+                    labels.append(f"{subcategory.name} - {ref_label}")
+                    series.append(
+                        self.df.loc[self.prospection_start_year : self.end_year, var_name].values
+                    )
 
-            # Recent reference aircraft
-            var_name = (
-                category.name
-                + ":"
-                + subcategory.name
-                + ":"
-                + "recent_reference:single_aircraft_share"
-            )
-            ax.fill_between(
-                x,
-                self.df.loc[self.prospection_start_year : self.end_year, var_name],
-                label=subcategory.name + " - Recent reference aircraft",
-            )
-
+            # New aircraft, in subcategory then insertion order.
             for j, subcategory in category.subcategories.items():
-                # New aircraft
                 for aircraft in subcategory.aircraft.values():
-                    var_name = (
-                        category.name
-                        + ":"
-                        + subcategory.name
-                        + ":"
-                        + aircraft.name
-                        + ":single_aircraft_share"
-                    )
-                    ax.fill_between(
-                        x,
-                        self.df.loc[self.prospection_start_year : self.end_year, var_name],
-                        label=subcategory.name + " - " + aircraft.name,
-                    )
+                    var_name = f"{category.name}:{subcategory.name}:{aircraft.name}:aircraft_share"
+                    if var_name in self.df:
+                        labels.append(f"{subcategory.name} - {aircraft.name}")
+                        series.append(
+                            self.df.loc[
+                                self.prospection_start_year : self.end_year, var_name
+                            ].values
+                        )
+
+            # Stack from the top: the old reference sits on top of the stack and
+            # the newest aircraft at the bottom. stackplot draws the first series
+            # at the bottom, so reverse the natural (old -> new) order for
+            # stacking, then restore it for the legend. Colors are assigned in the
+            # natural order first (old_reference -> C0) and reversed alongside the
+            # series, so every band keeps a stable color regardless of stacking
+            # order.
+            prop_colors = plt.rcParams["axes.prop_cycle"].by_key().get("color", [])
+            if prop_colors:
+                colors = [prop_colors[k % len(prop_colors)] for k in range(len(series))]
+                ax.stackplot(x, np.vstack(series[::-1]), labels=labels[::-1], colors=colors[::-1])
+            else:
+                ax.stackplot(x, np.vstack(series[::-1]), labels=labels[::-1])
 
             ax.set_xlim(self.prospection_start_year, self.end_year)
             ax.set_ylim(0, 100)
-            ax.legend(loc="upper left", prop={"size": 8})
+            handles, leg_labels = ax.get_legend_handles_labels()
+            ax.legend(handles[::-1], leg_labels[::-1], loc="upper left", prop={"size": 8})
             ax.set_xlabel("Year")
             ax.set_ylabel("Share in fleet [%]")
-            ax.set_title(categories[i].name)
+            ax.set_title(category.name)
 
-            # Bottom plot
+            # Bottom plot: mean fleet energy consumption.
             ax = axs[1, i]
             ax.plot(
                 x,
@@ -1324,10 +1392,8 @@ class FleetModel(FleetAssignmentMixin, FleetPerformanceMixin, AeroMAPSModel):
             ax.set_xlim(self.prospection_start_year, self.end_year)
             ax.set_xlabel("Year")
             ax.set_ylabel("Fleet mean energy consumption [MJ/ASK]")
-            # ax.set_title(categories[i].name)
 
         plt.plot()
-        # plt.savefig("fleet_renewal.pdf")
 
     def plot_performance_contributions(self, metric="energy"):
         """Plot individual aircraft contributions to a fleet performance metric.
@@ -1360,7 +1426,8 @@ class FleetModel(FleetAssignmentMixin, FleetPerformanceMixin, AeroMAPSModel):
                 ac: f"{cat}:{sub}:{ac}:energy_efficiency_contribution",
                 "old_col": lambda cat,
                 sub: f"{cat}:{sub}:old_reference:energy_efficiency_contribution",
-                "ref_val": lambda ref: float(ref.energy_per_ask),
+                "baseline_col": lambda cat,
+                sub: f"{cat}:{sub}:recent_reference:energy_efficiency_contribution_baseline",
                 "ylabel": "Energy per ASK [MJ/ASK]",
             },
             "doc": {
@@ -1368,7 +1435,8 @@ class FleetModel(FleetAssignmentMixin, FleetPerformanceMixin, AeroMAPSModel):
                 "renewal_col": lambda cat: f"{cat}:doc_renewal_only",
                 "contrib_col": lambda cat, sub, ac: f"{cat}:{sub}:{ac}:doc_contribution",
                 "old_col": lambda cat, sub: f"{cat}:{sub}:old_reference:doc_contribution",
-                "ref_val": lambda ref: float(ref.doc_non_energy_base),
+                "baseline_col": lambda cat,
+                sub: f"{cat}:{sub}:recent_reference:doc_contribution_baseline",
                 "ylabel": "Non-energy DOC [€/ASK]",
             },
             "nox": {
@@ -1376,7 +1444,8 @@ class FleetModel(FleetAssignmentMixin, FleetPerformanceMixin, AeroMAPSModel):
                 "renewal_col": lambda cat: f"{cat}:nox_renewal_only",
                 "contrib_col": lambda cat, sub, ac: f"{cat}:{sub}:{ac}:nox_contribution",
                 "old_col": lambda cat, sub: f"{cat}:{sub}:old_reference:nox_contribution",
-                "ref_val": lambda ref: float(ref.emission_index_nox),
+                "baseline_col": lambda cat,
+                sub: f"{cat}:{sub}:recent_reference:nox_contribution_baseline",
                 "ylabel": "NOx emission index [kg/ASK]",
             },
             "soot": {
@@ -1384,7 +1453,8 @@ class FleetModel(FleetAssignmentMixin, FleetPerformanceMixin, AeroMAPSModel):
                 "renewal_col": lambda cat: f"{cat}:soot_renewal_only",
                 "contrib_col": lambda cat, sub, ac: f"{cat}:{sub}:{ac}:soot_contribution",
                 "old_col": lambda cat, sub: f"{cat}:{sub}:old_reference:soot_contribution",
-                "ref_val": lambda ref: float(ref.emission_index_soot),
+                "baseline_col": lambda cat,
+                sub: f"{cat}:{sub}:recent_reference:soot_contribution_baseline",
                 "ylabel": "Soot emission index [kg/ASK]",
             },
         }
@@ -1400,8 +1470,13 @@ class FleetModel(FleetAssignmentMixin, FleetPerformanceMixin, AeroMAPSModel):
         for col_idx, category in enumerate(categories):
             ax = axs[0, col_idx]
             first_subcategory = category.subcategories[0]
-            ref_recent_val = cfg["ref_val"](first_subcategory.recent_reference_aircraft)
-            # prefix = f"{category.name}:{first_subcategory.name}"
+            # Recent-reference baseline, as used by the mean/decomposition. For
+            # energy this is time-varying (continuous improvement factor); for the
+            # other metrics it is constant. Reading the stored series keeps the plot
+            # consistent with _compute_aircraft_performance_contributions.
+            ref_recent_val = self.df.loc[
+                years, cfg["baseline_col"](category.name, first_subcategory.name)
+            ].values
 
             # Old-reference penalty (above baseline)
             old_penalty = -self.df.loc[
@@ -1417,7 +1492,7 @@ class FleetModel(FleetAssignmentMixin, FleetPerformanceMixin, AeroMAPSModel):
             )
 
             # New aircraft gains (below baseline, stacked oldest → newest EIS)
-            y_top = np.full(len(years), ref_recent_val)
+            y_top = ref_recent_val.copy()
             color_idx = 0
             for subcategory in category.subcategories.values():
                 for aircraft in self._sorted_aircraft(subcategory):
@@ -1436,8 +1511,9 @@ class FleetModel(FleetAssignmentMixin, FleetPerformanceMixin, AeroMAPSModel):
                     y_top = y_top - gain
                     color_idx += 1
 
-            # Recent reference baseline
-            ax.axhline(
+            # Recent reference baseline (time-varying for energy, flat otherwise)
+            ax.plot(
+                years,
                 ref_recent_val,
                 color="grey",
                 linestyle="--",

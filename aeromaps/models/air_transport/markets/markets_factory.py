@@ -22,6 +22,7 @@ from aeromaps.models.air_transport.air_traffic.rtk_market import (
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.load_factor.load_factor import (
     LoadFactorAggregator,
     LoadFactorMarket,
+    LoadFactorMarketSimpleInterpolation,
 )
 
 
@@ -186,25 +187,57 @@ def create_market_ask_models(markets) -> dict:
     return models
 
 
-def create_market_load_factor_models(markets) -> dict:
-    """Create per-market LoadFactorMarket models and one LoadFactorAggregator.
+def create_market_load_factor_models(markets, load_factor_model: str = "quadratic") -> dict:
+    """Create per-market load factor models and one LoadFactorAggregator.
 
-    Always creates one ``LoadFactorMarket`` per passenger market (load_factor
+    Always creates one load factor model per passenger market (load_factor
     inputs are guaranteed by the ``defaults.passenger`` block in markets.yaml).
     The aggregator recombines per-market load factors into the global
     ``load_factor`` consumed by downstream disciplines.
 
+    Parameters
+    ----------
+    markets :
+        Market registry.
+    load_factor_model : str
+        Selects the per-market load factor model.  Valid values:
+
+        * ``"quadratic"`` *(default)* — :class:`LoadFactorMarket`, a quadratic
+          curve anchored at the last historical year and targeting a single
+          ``load_factor_end_year``.  Unchanged behaviour for existing configs.
+        * ``"simple_interpolation"`` — :class:`LoadFactorMarketSimpleInterpolation`,
+          piece-wise linear interpolation across workbook reference waypoints
+          (``load_factor_reference_years`` / ``..._values``) via the shared
+          ``aeromaps_interpolation_function``.
+
     Returns an empty mapping when no passenger markets are configured.
+
+    Raises
+    ------
+    ValueError
+        When ``load_factor_model`` is not one of the valid options.
     """
     if markets is None:
         return {}
     passenger_ids = [m.id for m in markets.get(traffic_type="passenger")]
     if not passenger_ids:
         return {}
+
+    _LF_CLASSES = {
+        "quadratic": LoadFactorMarket,
+        "simple_interpolation": LoadFactorMarketSimpleInterpolation,
+    }
+    if load_factor_model not in _LF_CLASSES:
+        raise ValueError(
+            f"Unknown load_factor model '{load_factor_model}'. "
+            f"Expected one of: {', '.join(_LF_CLASSES)}."
+        )
+    lf_class = _LF_CLASSES[load_factor_model]
+
     models = {}
     for mid in passenger_ids:
         lf_name = f"load_factor_{mid}"
-        models[lf_name] = LoadFactorMarket(name=lf_name, market_id=mid)
+        models[lf_name] = lf_class(name=lf_name, market_id=mid)
     models["load_factor_aggregator"] = LoadFactorAggregator(name="load_factor_aggregator")
     return models
 

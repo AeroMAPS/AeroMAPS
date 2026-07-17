@@ -1,0 +1,430 @@
+Code;Description_x;ICAO_Code;acft_class;seymour_proxy
+7;Aero Commander 200;M200;PP;zzz
+8;Aero Macchi AL-60;LA60;PP;zzz
+9;Aeronca 7-AC;CH7A;PP;zzz
+10;Beech Bonanza 35A/C/D/E/G/H/J/K/S/V/  36A;BE35;PP;zzz
+20;Bellanca CH-300;;PP;zzz
+24;Beech B-23 Musketeer;BE23;PP;BE20
+26;Gipps Aero Ga8 Airvan;GA8;PP;zzz
+29;Cessna 150/152;C150;PP;C172
+30;Cessna 180;C180;PP;C172
+31;Cessna 180A/B;C180;PP;C172
+32;Cessna 180C/D/E/F;C180;PP;C172
+33;Cessna 185A/B/C Skywagon;T37;PJ;C172
+34;Helio H-250/295/395;;OTHER;zzz
+35;Cessna C206/207/209/210 Stationair;C172;PP;C172
+36;Cessna 172 Skyhawk;C172;PP;C172
+37;Cessna 195;C150;PP;C172
+38;Cessna 177 Cardinal;C177;PP;C172
+39;Cessna 182 Skylane;C182;PP;C172
+40;De Havilland DHC2 Beaver;DHC2;PP;DHC2
+41;Cessna 205;C06T;TP;zzz
+42;De Havilland DHC3 Otter;DHC3;PP;DHC3
+44;Lake LA-4;LA4;OTHER;zzz
+50;Howard DGA-15P;;OTHER;zzz
+51;Mooney M-21;M10;PP;zzz
+52;Mooney M-20C/E/G;M20P;PP;zzz
+65;Noorduyn UC-64AS;NORS;OTHER;zzz
+70;Pilatus Porter PC6;PC6P;TP;PC12
+71;Pilatus Porter PC6/350;PC6P;TP;PC12
+79;Piper PA-32 (Cherokee 6);PA32;PP;P28B
+80;Piper PA-18 (Super-Cub);PA18;PP;P28B
+81;Piper PA-14 (Family-Cruiser);PA14;PP;P28B
+82;Piper PA-22 (Tri-Pacer);PA22;PP;P28B
+83;Piper PA-24 (Comanche);PA24;PP;P28B
+84;Piper PA-28 (Cherokee);PA32;PP;P28B
+85;Stinson SR-9;RELI;PP;zzz
+86;Piper PA-12 (Supercruiser);PA12;PP;PA31
+87;Stinson V-77;L5;OTHER;zzz
+88;Stinson SR-10E Bushman;S10;OTHER;zzz
+91;Float/Amphib Turbine;;OTHER;zzz
+92;Float/Amphib Piston-Lt 450 Hp;;OTHER;zzz
+93;Float/Amphib Piston-450+ Hp;;OTHER;zzz
+94;Land-Turbine;B36T;TP;zzz
+95;Land-Piston-Lt 450 Hp;;OTHER;zzz
+96;Land-Piston-450+ Hp;;OTHER;zzz
+97;Stinson F.W. 300-450 Hp;;PP;zzz
+98;Stinson 0-299 Hp;;PP;zzz
+103;Aero Commander (500/600 Series Excpt 680FL);;OTHER;zzz
+104;Grand Commander 680FL;AC68;PP;zzz
+105;Beech C-50 (Twin Bonanza);BE50;PP;zzz
+110;Beechcraft Beech 18 C-185 (Federal Express has waiver to report all its small aircraft under code 110, regardless of actual aircraft type);;OTHER;zzz
+111;Beech King Air 90;BE9L;TP;zzz
+113;Beech B-95 (Travelair);BE95;PP;zzz
+115;Beech AT-11;BE18;PP;zzz
+117;Beech Baron (55 Series);BE55;PP;BE55
+120;Cessna T-50 (Bobcat);T50;PP;C310
+121;Cessna C-421;C21T;PP;C310
+122;Cessna C-310 Series;C310;PP;C310
+123;Cessna C-340/335;C340;PP;C310
+125;Cessna C-402/402A/402B;C402;PP;C310
+128;Cessna 404;C02T;PP;zzz
+130;C-28 5ACF PBY;;PP;zzz
+131;Pilatus Britten-Norman BN2/A Islander;BN2P;PP;BN2P
+132;C-28 5ACF-PBY-EMQ;;PP;zzz
+133;Beech 65/65A-80/65B-80 (Queen Air);;OTHER;zzz
+140;Convair CV-240;CVLP;PP;CVLT
+143;Convair CV-340/440;CVLT;TP;CVLT
+148;Cessna C-337 (Super Sky Master);C337;PP;zzz
+149;Cessna C-401;C402;PP;zzz
+150;Curtiss C46/20t/A/D/F/R Commando;;OTHER;zzz
+152;Cessna C-411;C411;OTHER;zzz
+153;De Havilland DHC4 Caribou;DHC1;PP;zzz
+158;McDonnell Douglas DC-2;DC2;PP;zzz
+159;Hamilton B-18s Little Liner (Converted);BE18;PP;zzz
+160;McDonnell Douglas DC-3/A/C,C-47/B;DC3;PP;DHC3
+161;Dornier Do-28 Skyservant;D28D;PP;zzz
+166;Cessna C-336;C336;OTHER;zzz
+167;Fairchild C-82A;;OTHER;zzz
+170;Grumman G-21A (Goose);G21;OTHER;zzz
+171;Grumman SA-16A-GR (Albatross);U16;OTHER;zzz
+172;Grumman G-44/44A (Widgeon);;OTHER;zzz
+173;Grumman G-73 (Mallard);G73;OTHER;zzz
+174;De Havilland Dove DH-104;DOVE;OTHER;zzz
+175;Lockheed L-12A/L-10/10A;U2;OTHER;zzz
+180;Martin 202/202A;WB57;OTHER;zzz
+185;Martin 404;M404;OTHER;zzz
+190;Piper PA-23-250 (Aztec/Apache);PA27;PP;AJ27
+193;Piper T-1020;PA31;PP;PA31
+194;Piper PA-31 (Navajo)/T-1020;PA31;PP;PA31
+195;Piper PA-34/39 (Twin Commanche);PA30;PP;zzz
+200;Boeing 377 Stratocruiser;;NB;zzz
+201;Pilatus Britten-Norman BN2A Trislander;BN2P;PP;BN2P
+205;De Havilland DH-114 Heron;HERN;TP;zzz
+210;McDonnell Douglas DC-4(C54/C54A/C54B/C54E);DC4;PP;zzz
+216;McDonnell Douglas DC-6;DC6;PP;zzz
+218;McDonnell Douglas DC-6A;DC6;PP;zzz
+220;McDonnell Douglas DC-6B;DC6;PP;zzz
+225;McDonnell Douglas DC-7A/B;DC7;PP;zzz
+228;McDonnell Douglas DC-7C;DC7;PP;zzz
+240;Lockheed L-049;CONI;PP;zzz
+242;Lockheed L-649;CONI;PP;zzz
+244;Lockheed L-749/749A;CONI;PP;zzz
+247;Lockheed L-1049;CONI;PP;zzz
+248;Lockheed L-1049C/D/E;CONI;PP;zzz
+252;Lockheed L-1049G/H;CONI;PP;zzz
+258;Lockheed L-1649A;CONI;PP;zzz
+280;Sikorsky VS-44A (Amphibian);S434;HE;zzz
+303;Sud Alouette;ALO2;HE;zzz
+311;Bell B-47D;B47G;HE;zzz
+312;Bell B-47G;B47G;HE;zzz
+313;Bell B-47G2;B47G;HE;zzz
+314;Bell B-47J2;B47T;HE;zzz
+315;Bell B-206A;B06;HE;zzz
+317;Hu-1h 204B;;HE;zzz
+320;Boeing Vertol BV-107;H46;OTHER;zzz
+321;Boeing Vertol BV-44;H47;HE;zzz
+322;Brantley B-2;BRB2;HE;zzz
+323;Fairchild-Hiller FH-1100;FH11;OTHER;zzz
+325;Agusta A-119 Koala;A119;HE;zzz
+330;Boelkow Bo-105c;B105;HE;zzz
+339;Airbus Industrie A330-900;A339;WB;A339
+340;Eurocompter AS350 B2 AStar;AS50;HE;zzz
+343;Airbus Industrie A330-223/234;A332;WB;A332
+345;Bell 212 Twin Two Twelve;B212;HE;zzz
+350;Hughes 300;H269;HE;zzz
+355;Hughes-500/530;H500;HE;zzz
+359;Airbus Industrie A350-900;A359;WB;A359
+360;Robinson R44;R44;HE;zzz
+362;Bht 206 Lt Long Ranger;;HE;zzz
+364;Bht 206 L4 Long Ranger;;HE;zzz
+366;Bell Bht 407;;HE;zzz
+368;Bell Bht 412;;HE;zzz
+370;Air Bus Euro Bo-105;;HE;zzz
+380;Sikorsky S-51;S51;HE;zzz
+381;Sikorsky S-55;S51;HE;zzz
+385;Sikorsky S-58A/B/C;S58P;HE;zzz
+386;Sikorsky S-61N;S61;HE;zzz
+387;Sikorsky S-61;H53;HE;zzz
+388;Sikorsky S-61L;S61;HE;zzz
+389;Sikorsky S-62/A;S62;HE;zzz
+390;Sikorsky S-76;H53;HE;zzz
+393;Agustawestland AW139;A139;HE;zzz
+395;DHC-6-400 Twin Otter;DHC6;TP;DHC6
+396;Westland SR-N5 (Acv);;OTHER;zzz
+401;Beech 1300;B350;TP;B735
+402;Beech Model 18 Turbo-Prop Conversions;;OTHER;zzz
+403;Beech 99 Airliner;BE99;TP;zzz
+404;Beech C99;BE99;TP;zzz
+405;Beech 1900 A/B/C/D;B190;TP;B190
+406;Beech 200 Super Kingair;BE20;TP;BE20
+407;British Aerospace (Hawker-Siddeley) BAe-748;HAWK;OTHER;zzz
+408;British Aerospace BAe-ATP;A748;TP;zzz
+409;Beechcraft King Air B100;BE20;TP;BE20
+410;Rockwell Turbo-Commander 680-W/690;AC90;TP;zzz
+411;Beech King Air 65-A90 Queen Air;BE9T;TP;zzz
+412;Casa/Nurtanio C212 Aviocar;C212;TP;zzz
+413;Casa 235;JU52;PP;zzz
+415;Cessna C208B/Grand Caravan;C208;TP;C208
+416;Cessna 208 Caravan;C208;TP;C208
+417;Cessna 406 Caravan II;F406;TP;F406
+418;Cessna C-441;C441;TP;zzz
+420;Convair CV-540;CVLP;PP;CVLT
+422;Quest Kodiak 100;KODI;TP;zzz
+425;Piaggio P180 Avanti;P180;TP;zzz
+430;Convair CV-580;CVLT;TP;CVLT
+431;Socata TBM850;TBM8;TP;zzz
+432;Saab 2000;SB20;TP;SB20
+433;Socata TBM-700;TBM7;TP;PC12
+434;Raytheon King Air A100;BE9L;TP;zzz
+435;Convair CV-600;CVLT;TP;CVLT
+437;Raytheon Beechcraft Baron B-58;BE58;PP;zzz
+440;Convair CV-640;CVLT;TP;CVLT
+441;Aerospatiale/Aeritalia ATR-42;AT43;TP;AT43
+442;Aerospatiale/Aeritalia ATR-72;AT72;TP;AT72
+443;Air Tractor AT-802;AT8T;TP;zzz
+444;Antonov 24/26/32;AN26;TP;zzz
+445;Convair CV-660;CVLT;TP;CVLT
+448;Dornier 228;D228;TP;D228
+449;Dornier 328;J328;RJ;J328
+450;Fokker Friendship F-27/Fairchild F-27/A/B/F/J;F27;TP;zzz
+452;Fokker 50;F50;TP;F50
+454;Fairchild-Hiller FH-227;F27;TP;zzz
+455;Fairchild Metro 23;;OTHER;zzz
+456;Saab-Fairchild 340/B;SF34;TP;SF34
+457;Beech King Air C-90;BE9L;TP;zzz
+458;Beechcraft Super King Air;B190;TP;B190
+459;Saab-Fairchild 340/A;SF34;TP;SF34
+460;Grumman G-21G (Turbo-Goose);;OTHER;zzz
+461;Embraer EMB-120 Brasilia;E120;TP;E120
+462;Swearingen Metro Merlin;SW4;TP;SW4
+463;Mitsubishi MU-2/B;MU2;TP;zzz
+464;Embraer EMB-110 Bandeirante;E110;TP;E110
+465;Nihon YS-11;;OTHER;zzz
+466;Swearingen Metro II;SW4;TP;SW4
+467;Swearingen Metro III;SW4;TP;SW4
+468;Handley Page Jetstream;JS1;TP;zzz
+469;British Aerospace Jetstream 31;JS31;TP;JS31
+470;Gulfstream I;AA1;PJ;zzz
+471;British Aerospace Jetstream 41;JS41;TP;JS41
+473;Gulfstream I-Commander;;PJ;zzz
+474;Hawker Siddeley 748;A748;TP;zzz
+475;Nord 262;N260;PP;zzz
+476;Piper PA-30/31T Cheyenne II XL;PAY2;TP;zzz
+477;Mohawk 298;N262;OTHER;zzz
+478;Piper T-1040;PAT4;TP;zzz
+479;Pilatus PC-12;PC12;TP;PC12
+480;Pilatus Turbo Porter PC-6A;PC6T;TP;zzz
+481;Pilatus Turbo Porter PC-6B;PC6T;TP;zzz
+482;De Havilland DHC8-400 Dash-8;DH8D;TP;DH8D
+483;De Havilland DHC8-100 Dash-8;DH8A;TP;DH8A
+484;De Havilland DHC8-300 Dash 8;DH8C;TP;DH8C
+485;De Havilland Twin Otter DHC-6;DHC6;TP;DHC6
+486;Shorts Harland SC-7 Skyvan;;TP;zzz
+487;Shorts 330;SH33;TP;zzz
+488;Carstedt CJ-600A;;OTHER;zzz
+489;Shorts 360;SH36;TP;zzz
+490;Volpar Turbo 18;B18T;OTHER;zzz
+491;De Havilland DHC8-200Q Dash-8;DH8B;TP;DH8B
+495;Hawker Beechcraft Hawker 4000;BE40;PJ;BE40
+507;Antonov 12;A124;OTHER;A140
+508;Antonov An-22 Freighter;AN2;PP;zzz
+510;AW-650;B609;OTHER;zzz
+515;Bomardier Challenger 350;CL30;PJ;C310
+520;Canadair CL-44D;CL4G;TP;zzz
+530;Bombardier CRJ550;CRJ7;RJ;CRJ7
+541;Ilyushin Il-18;I103;OTHER;zzz
+550;Lockheed L-188A/C Electra;L188;TP;zzz
+552;Lockheed L-382B;C130;TP;zzz
+553;Lockheed L100-10 Hercules;C130;TP;zzz
+555;Lockheed L100-20 Hercules;C130;TP;zzz
+556;Lockheed L100-30/L-382E;;TP;zzz
+560;Shorts Belfast Freighter-Sh5;BELF;OTHER;zzz
+570;De Havilland DHC7 Dash-7;DHC7;TP;DHC7
+575;Bombardier Learjet 75;LJ75;PJ;C680
+580;Vickers Viscount 700/744/745/745D;VISC;TP;zzz
+584;Vickers Viscount V800/810/812;VISC;TP;zzz
+601;Fokker F28-1000 Fellowship;F28;RJ;zzz
+602;Fokker F28-4000/6000 Fellowship;F28;RJ;zzz
+603;Fokker 100;F100;RJ;F100
+604;Fokker 70;F70;RJ;F70
+605;British Aerospace BAC-111-200;BA11;RJ;zzz
+606;Raytheon Beechraft 390 Premier I;BE40;PJ;BE40
+607;Antonov An-72/74;AN2;PP;zzz
+608;Boeing 717-200;B712;NB;B712
+609;Bombardier BD-100-1A10 Challenger 300;CL30;PJ;C310
+610;British Aerospace BAC-111-400;BA11;RJ;zzz
+611;Aero Commander 1121;JCOM;TP;zzz
+612;Boeing 737-700/700LR/Max 7;B737;NB;B737
+613;Aerospatiale Corvette;S601;RJ;zzz
+614;Boeing 737-800;B738;NB;B738
+615;Boeing 737-5/600LR;B735;NB;B735
+616;Boeing 737-500;B735;NB;B735
+617;Boeing 737-400;B734;NB;B734
+618;Boeing 737-300LR;B733;NB;B733
+619;Boeing 737-300;B733;NB;B733
+620;Boeing 737-100/200;B732;NB;B732
+621;Boeing 737-200C;B732;NB;B732
+622;Boeing 757-200;B752;NB;B752
+623;Boeing 757-300;B753;NB;B753
+624;Boeing 767-400/ER;B764;WB;B764
+625;Boeing 767-200/ER/EM;B762;WB;B762
+626;Boeing 767-300/300ER;B763;WB;B763
+627;Boeing 777-200ER/200LR/233LR;B772;WB;B772
+628;Canadair RJ-100/RJ-100ER;CRJ1;RJ;CRJ1
+629;Canadair RJ-200ER /RJ-440;CRJ2;RJ;CRJ2
+630;McDonnell Douglas DC-9-10;DC10;WB;A343
+631;Canadair RJ-700;CRJ7;RJ;CRJ7
+632;Dornier 328 Jet;J328;RJ;J328
+633;Boeing 737-600;B736;NB;B736
+634;Boeing 737-900;B739;NB;B739
+635;McDonnell Douglas DC-9-15F;DC91;NB;DC94
+636;Cessna Citation II/ Bravo;C500;PJ;zzz
+637;Boeing 777-300/300ER/333ER;B77W;WB;B77W
+638;Canadair CRJ 900;CRJ9;RJ;CRJ9
+639;Cessna Citationjet/CJ1/CJ2/CJ3;C500;PJ;zzz
+640;McDonnell Douglas DC-9-30;DC93;NB;DC94
+641;Gulfstream Aerospace G-III/G-IV;GA5C;PJ;zzz
+642;Raytheon Beechcraft Hawker 400XP;BE40;PJ;BE40
+643;1124A Westwind II;WW24;PJ;zzz
+644;Airbus Industrie A-318;A318;NB;A318
+645;McDonnell Douglas DC-9-40;DC94;NB;zzz
+646;Cessna Citation X Model 650/550B/550XL;C500;PJ;zzz
+647;Cessna Citation X Model CE750 X;C500;PJ;zzz
+648;Gulfstream G200;GALX;PJ;CRJ7
+649;Tupolev TU-204-300;T204;NB;T204
+650;McDonnell Douglas DC-9-50;DC95;NB;zzz
+651;Gulfstream G150;G150;PJ;C680
+652;Canadair CL-600 Challenger;CL60;PJ;C680
+653;Cessna CE-680 Citation Sovereign;C680;PJ;C680
+654;McDonnell Douglas DC9 Super 87;DC93;NB;DC94
+655;McDonnell Douglas DC9 Super 80/MD81/82/83/88;MD87;NB;MD87
+656;McDonnell Douglas MD-90;MD90;NB;MD90
+657;Bombardier CRJ 705;CRJ7;RJ;CRJ7
+658;Bombardier BD-700 Global Express;GLEX;PJ;CRJ7
+659;Bombardier (Gates) Learjet 60;LJ60;PJ;C680
+660;Gates Learjet Lear-23;LJ35;PJ;C680
+661;Gates Learjet Lear-24;LJ35;PJ;C680
+662;Gates Learjet Lear-25;LJ35;PJ;C680
+663;Gates Learjet Lear-31/35/36;LJ35;PJ;C680
+664;HFB-320 Hansa;HF20;PJ;zzz
+665;Hawker Siddeley 125;A748;TP;zzz
+666;Lear 55;GLF5;PJ;GLF5
+667;Gulfstream III/V/ G-V Exec/ G-5/550;CL60;PJ;C680
+668;Canadair (Bombardier) Challlenger 601;CL60;PJ;C680
+669;Bombardier Challenger 604/605;CL60;PJ;C680
+670;Rockwell Sabreliner;SBR1;PJ;zzz
+671;Gulfstream G450;GLF4;PJ;GLF4
+673;Embraer ERJ-175;E75L;RJ;E75L
+674;Embraer-135;E135;RJ;E135
+675;Embraer-145;E145;RJ;E145
+676;Embraer-140;E145;RJ;E145
+677;Embraer-Emb-170;E170;RJ;E170
+678;Embraer 190;E190;RJ;E190
+679;Grumman G-1159 Gulfstream II/III;GLF2;PJ;zzz
+680;Aerospatiale Caravelle SE-210;S210;NB;zzz
+681;Dassault-Breguet Mystere-Falcon;;PJ;zzz
+682;Dassault Falcon 2000EX/2000lxs;F2TH;PJ;C680
+683;Boeing B777-F;B772;WB;B77L
+684;Raytheon Beechcraft Hawker 800XP;H25B;PJ;zzz
+685;Cessna 510 Mustang/560XL Citation Excel;C56X;PJ;C680
+686;Learjet45;LJ45;PJ;C680
+687;Airbus Industrie A330-300;A333;WB;A333
+688;Bombardier Global 5000;GL5T;PJ;GLF5
+689;Airbus Industrie A330-600ST (Beluga);A337;WB;zzz
+690;Airbus Industrie A300B/C/F-100/200;A306;WB;A30B
+691;Airbus Industrie A300-600/R/CF/RCF;A306;WB;A306
+692;Airbus Industrie A310-200C/F;A310;PJ;A310
+693;Airbus Industrie A310-300;A310;PJ;A310
+694;Airbus Industrie A320-100/200;A320;NB;A320
+695;Airbus Industrie A300-B2;A306;WB;A30B
+696;Airbus Industrie A330-200;A332;WB;A332
+697;Airbus Industrie A340;A342;WB;A342
+698;Airbus Industrie A319;A319;NB;A319
+699;Airbus Industrie A321/Lr;A321;NB;A321
+710;Boeing 727-100;B721;NB;B712
+711;Boeing 727-100C/QC;B721;NB;B712
+714;Sukhoi Superjet 100;SU95;RJ;SU95
+715;Boeing 727-200/231A;B722;WB;B722
+717;Mrj-70/Std/ER/Lr;;RJ;zzz
+718;Mrj-90/Std/Sr/Lr;;RJ;zzz
+719;Airbus Industrie A319-200n;A19N;NB;A20N
+720;Bombardier C Series Cs100;GLEX;PJ;CRJ7
+721;Airbus Industrie A321-200n;A21N;NB;A21N
+722;Airbus Industrie A320-200n;A20N;NB;A20N
+723;A200-100 BD-500-1A10;;NB;zzz
+724;A220-300 BD-500-1A11;;NB;zzz
+725;Dassault Falcon 8x;FA8X;PJ;CRJ7
+730;McDonnell Douglas DC-10-10;DC10;WB;A343
+731;McDonnell Douglas DC-10-20;DC10;WB;A343
+732;McDonnell Douglas DC-10-30;DC10;WB;A343
+733;McDonnell Douglas DC-10-40;DC10;WB;A343
+735;McDonnell Douglas DC-10-30CF;DC10;WB;A343
+737;Boeing 737 Max 7;B37M;NB;zzz
+740;McDonnell Douglas MD-11;DC10;WB;A343
+745;Embraer Legacy 500;E35L;PJ;E135
+746;Emb500 Phenom 100/300;E50P;PJ;E55P
+748;Embraer EMB195;E190;RJ;E190
+750;Gulfstream G650;GLF6;PJ;GLF4
+751;Bombardier Global 7500 BD-7500;GL5T;PJ;GLF5
+755;Embraer Legacy 600;E35L;PJ;E135
+760;Lockheed L-1011-1/100/200;L101;WB;L410
+765;Lockheed L-1011-500 Tristar;L101;WB;L410
+770;Dassault Falcon 900/900EX;F900;PJ;F100
+771;Dassault Falcon 50;FA5X;PJ;CRJ7
+774;Dassault Falcon 2000;F2TH;PJ;C680
+775;Dassault Falcon 7X;FA7X;PJ;CRJ7
+780;Tupolev TU-154;T144;NB;zzz
+788;Bombardier Global 6000/Global Xrs;GL5T;PJ;GLF5
+792;Yakolev Yak-42;Y18T;PP;zzz
+800;Boeing 707-100;B701;NB;zzz
+802;Boeing 707-100B;B701;NB;zzz
+804;Boeing 707-200;B702;NB;zzz
+806;Boeing 707-300;B703;NB;B722
+808;Boeing 707-300B;B703;NB;B722
+809;Boeing 707-300C;B703;NB;B722
+810;Boeing 707-400;B74D;WB;zzz
+812;Boeing 720-000;B720;NB;zzz
+814;Boeing 720-000B;B720;NB;zzz
+816;Boeing 747-100;B741;WB;B744
+817;Boeing 747-200/300;B742;WB;B462
+818;Boeing 747C;B74D;WB;B744
+819;Boeing 747-400;B744;WB;B744
+820;Boeing 747-400F;B74D;WB;B744
+821;Boeing B747-8;B748;WB;B748
+822;Boeing 747SP;B74R;WB;B744
+823;Boeing 747-200F;B742;WB;B462
+824;Airbus A330-900neo;A339;WB;A339
+825;Convair 880 (CV-22/22m);;NB;zzz
+830;Convair 990 Coronado (CV-30);;NB;zzz
+833;Embraer Legacy 650;E35L;PJ;E135
+835;Avroliner RJ85;RJ85;RJ;RJ85
+836;Airbus 350-1000;A35K;WB;A35K
+837;Boeing 787-10 Dreamliner;B78X;WB;B78X
+838;Boeing B737 Max 800;B38M;NB;B38M
+839;Boeing B737 Max 900;B39M;NB;B39M
+840;McDonnell Douglas DC-8-10;DC85;NB;zzz
+842;McDonnell Douglas DC-8-20;DC85;NB;zzz
+844;McDonnell Douglas DC-8-30;DC85;NB;zzz
+846;McDonnell Douglas DC-8-40;DC85;NB;zzz
+848;McDonnell Douglas DC-8-50;DC85;NB;zzz
+850;McDonnell Douglas DC-8-50F;DC85;NB;zzz
+851;McDonnell Douglas DC-8-61;DC86;NB;zzz
+852;McDonnell Douglas DC-8-63F;DC86;NB;zzz
+854;McDonnell Douglas DC-8-62;DC86;NB;zzz
+856;McDonnell Douglas DC-8-63;DC86;NB;zzz
+860;McDonnell Douglas DC-8-71;DC87;NB;MD87
+862;McDonnell Douglas DC-8-72;DC87;NB;MD87
+864;McDonnell Douglas DC-8-73;DC87;NB;MD87
+865;McDonnell Douglas DC-8-73F;DC7;NB;zzz
+866;British Aerospace BAe-146-100/RJ70;B461;RJ;B461
+867;British Aerospace BAe-146-200;B462;RJ;B462
+868;British Aerospace BAe-146-300;B463;RJ;B463
+870;Lockheed Jetstar;L29A;PJ;zzz
+871;Airbus Industrie A340-300;A343;WB;A343
+872;Airbus Industrie A340-500;A345;WB;A345
+873;Airbus Industrie A340-200;A342;WB;A342
+874;Airbus Industrie A340-600;A346;WB;A346
+875;Aerospatiale/British Aerospace Concorde;;OTHER;zzz
+876;Ilyushin 62;;NB;zzz
+877;Ilyushin 76/TD;;OTHER;zzz
+878;Ilyushin 86;;WB;zzz
+879;Ilyushin 96;;WB;zzz
+880;Antonov 124;;OTHER;zzz
+881;Ilyushiin Il-96-400t;IL96;WB;IL96
+882;Airbus Industrie A380-800;A388;WB;A388
+887;B787-800 Dreamliner;B788;WB;B788
+888;Boeing 737-900ER;B739;NB;B739
+889;B787-900 Dreamliner;B789;WB;B789
+890;Antonov 225 (6 Engine);;OTHER;zzz
+999;Used for capturing expenses not attributed to specific aircraft types;;OTHER;zzz
