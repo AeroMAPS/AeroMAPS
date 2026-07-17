@@ -1186,6 +1186,10 @@ class AeroMAPSProcess(object):
             market_data["inputs"] = inputs
             self.markets_data[market_id] = market_data
 
+        # Shares feed the last-historical-year traffic/energy split, so a set that
+        # does not sum to 100% silently rescales the whole scenario. Hard-error.
+        self._validate_market_shares()
+
         if demand_model in ("cagr", "cagr_elasticity"):
             with_elast = demand_model == "cagr_elasticity"
             self.models.update(
@@ -1225,6 +1229,62 @@ class AeroMAPSProcess(object):
         self.models.update(
             create_market_load_factor_models(self.markets, load_factor_model=load_factor_model)
         )
+
+    # Tolerance [%] on each last-historical-year share sum vs 100%.
+    _SHARE_SUM_TOLERANCE = 0.2
+
+    def _validate_market_shares(self):
+        """Error if the declared market shares are not internally consistent.
+
+        Three sums must each reach 100% within ``_SHARE_SUM_TOLERANCE``:
+
+        - ``rpk_share_last_historical_year`` over all passenger markets,
+        - ``rtk_share_last_historical_year`` over all freight markets,
+        - ``energy_share_last_historical_year`` over all markets (passenger + freight).
+
+        The flattened ``<market_id>_<leaf>`` values are read from
+        ``self.parameters``. These shares split the last-historical-year traffic
+        and energy across markets, so a sum off 100% silently rescales the whole
+        scenario; a deviation beyond the tolerance is a hard error rather than a
+        warning.
+        """
+        tol = self._SHARE_SUM_TOLERANCE
+        passenger_ids = [m.id for m in self.markets.get(traffic_type="passenger")]
+        freight_ids = [m.id for m in self.markets.get(traffic_type="freight")]
+        all_ids = self.markets.get_ids()
+
+        def _share_sum(ids, leaf):
+            return sum(float(getattr(self.parameters, f"{mid}_{leaf}", 0.0) or 0.0) for mid in ids)
+
+        checks = (
+            (
+                "rpk_share_last_historical_year (passenger markets)",
+                passenger_ids,
+                "rpk_share_last_historical_year",
+            ),
+            (
+                "rtk_share_last_historical_year (freight markets)",
+                freight_ids,
+                "rtk_share_last_historical_year",
+            ),
+            (
+                "energy_share_last_historical_year (all markets)",
+                all_ids,
+                "energy_share_last_historical_year",
+            ),
+        )
+        errors = []
+        for label, ids, leaf in checks:
+            if not ids:
+                continue
+            total = _share_sum(ids, leaf)
+            if abs(total - 100.0) > tol:
+                errors.append(f"  - {label}: sums to {total:.4f}% (expected 100% ± {tol}%)")
+        if errors:
+            raise ValueError(
+                "Inconsistent market shares in the markets data file "
+                f"(must each sum to 100% ± {tol}%):\n" + "\n".join(errors)
+            )
 
     def _initialize_generic_energy(self):
         """Initialize generic energy resources, processes, and carriers.
