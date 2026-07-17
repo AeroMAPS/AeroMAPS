@@ -614,9 +614,26 @@ class FleetPerformanceMixin:
             prefix = f"{category.name}:{first_subcategory.name}"
             old_ref_share = self.df[f"{prefix}:old_reference:aircraft_share"].values
 
+            # Energy per ASK carries a per-year continuous improvement factor in the
+            # fleet mean — applied to every aircraft *including the references* (see
+            # _compute_energy_consumption_and_share_wrt_energy_type). To keep the
+            # contribution decomposition closing exactly onto the mean, the recent-
+            # reference baseline and the old-reference value must carry the same
+            # factor. The other metrics (DOC/NOx/soot) have no such factor.
+            cif_recent = self._continuous_improvement_factor(ref_recent)
+            cif_old = self._continuous_improvement_factor(ref_old)
+
             for col_suffix, ref_attr in metric_specs:
-                val_recent = float(getattr(ref_recent, ref_attr))
-                val_old = float(getattr(ref_old, ref_attr))
+                is_energy = col_suffix == "energy_efficiency_contribution"
+                val_recent = float(getattr(ref_recent, ref_attr)) * (
+                    cif_recent if is_energy else 1.0
+                )
+                val_old = float(getattr(ref_old, ref_attr)) * (cif_old if is_energy else 1.0)
+                # Store the (possibly time-varying) recent-reference baseline so the
+                # plot stacks the contributions from the same line the mean uses.
+                temp_dict[f"{prefix}:recent_reference:{col_suffix}_baseline"] = np.broadcast_to(
+                    val_recent, old_ref_share.shape
+                ).copy()
                 # Old reference: negative contribution (less efficient than recent ref)
                 temp_dict[f"{prefix}:old_reference:{col_suffix}"] = (
                     old_ref_share / 100 * (val_recent - val_old)
@@ -628,9 +645,15 @@ class FleetPerformanceMixin:
                 subcat_key = f"{category.name}:{subcategory.name}"
                 for aircraft in self._sorted_aircraft(subcategory):
                     aircraft_share = self.df[f"{subcat_key}:{aircraft.name}:aircraft_share"].values
+                    cif_aircraft = self._continuous_improvement_factor(aircraft.parameters)
                     for col_suffix, ref_attr in metric_specs:
-                        val_recent = float(getattr(ref_recent, ref_attr))
-                        aircraft_val = aircraft.resolved(ref_attr, ref_recent)
+                        is_energy = col_suffix == "energy_efficiency_contribution"
+                        val_recent = float(getattr(ref_recent, ref_attr)) * (
+                            cif_recent if is_energy else 1.0
+                        )
+                        aircraft_val = aircraft.resolved(ref_attr, ref_recent) * (
+                            cif_aircraft if is_energy else 1.0
+                        )
                         temp_dict[f"{subcat_key}:{aircraft.name}:{col_suffix}"] = (
                             aircraft_share / 100 * (val_recent - aircraft_val)
                         )
@@ -668,10 +691,16 @@ class FleetPerformanceMixin:
             prefix = f"{category.name}:{first_subcategory.name}"
             old_share = self.df[f"{prefix}:old_reference:aircraft_share"].values  # 0–100
 
+            # Energy references improve over time via the continuous improvement
+            # factor in the fleet mean; mirror that here so the renewal-only line is
+            # consistent. Other metrics have no such factor.
+            cif_recent = self._continuous_improvement_factor(ref_recent)
+            cif_old = self._continuous_improvement_factor(ref_old)
+
             metrics = {
                 "energy_renewal_only": (
-                    float(ref_old.energy_per_ask),
-                    float(ref_recent.energy_per_ask),
+                    float(ref_old.energy_per_ask) * cif_old,
+                    float(ref_recent.energy_per_ask) * cif_recent,
                 ),
                 "doc_renewal_only": (
                     float(ref_old.doc_non_energy_base),
