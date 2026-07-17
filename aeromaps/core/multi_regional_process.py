@@ -38,10 +38,42 @@ from aeromaps.core.gemseo import (
 )
 from aeromaps.core import models as aeromaps_models
 from aeromaps.models.multi_regional.regional_aggregator import RegionalAggregator
+from aeromaps.plots.single_scenario import (
+    aggregation_safe_plots,
+    available_plots,
+    available_plots_fleet,
+)
 
 
 # Type alias for execution modes
 ExecutionMode = Literal["unified_mda", "separate_processes"]
+
+
+class _GlobalOutputsView:
+    """Single-scenario-process facade over a MultiRegionalProcess' aggregated outputs.
+
+    Exposes exactly what ``SingleScenarioPlot`` reads from a process: a ``data``
+    dict whose frames hold the global-namespace series with the prefix stripped
+    (``vector_outputs``, ``climate_outputs``, ``float_outputs``, ``float_inputs``,
+    ``years``), plus a ``pathways_manager`` attribute.
+
+    ``pathways_manager`` is None: there is no global pathways aggregate, which is
+    one reason pathway-driven plots are not aggregation-safe (see
+    ``aggregation_safe_plots``). ``float_inputs`` come from the first region:
+    aggregation-safe plots do not read scenario floats, but the plot base class
+    extracts the key unconditionally.
+    """
+
+    def __init__(self, process: "MultiRegionalProcess"):
+        first_region = process.regional_processes[process.list_regions()[0]]
+        self.data = {
+            "years": process.data["years"],
+            "float_inputs": first_region.data.get("float_inputs", {}),
+            "vector_outputs": process.get_global_vector_outputs(),
+            "climate_outputs": process.get_global_climate_outputs(),
+            "float_outputs": process.get_global_float_outputs(),
+        }
+        self.pathways_manager = None
 
 
 class MultiRegionalProcess(AeroMAPSProcess):
@@ -739,6 +771,18 @@ class MultiRegionalProcess(AeroMAPSProcess):
                     top_level_input[namespaced_key] = regional_climate[col]
                     climate_series[namespaced_key] = regional_climate[col]
 
+        # Fail with an explicit message when an aggregation variable is missing from
+        # the regional outputs, instead of GEMSEO's grammar error at execution.
+        missing = [
+            key for key in self.models["aggregator"].input_names if key not in top_level_input
+        ]
+        if missing:
+            raise ValueError(
+                f"Aggregation variables missing from the regional outputs: {missing}. "
+                f"Every region must produce (as a vector, climate or float output) every "
+                f"variable listed in the 'aggregation' block of the regionalisation file."
+            )
+
         # Execute the top-level disciplines (aggregator + optional top-level models)
         # as a standard MDA, fed with the regional outputs.
         self._top_level_mda_chain.execute(top_level_input)
@@ -754,8 +798,8 @@ class MultiRegionalProcess(AeroMAPSProcess):
                     climate_series[key] = value
                 else:
                     vector_series[key] = value
-            elif isinstance(value, (int, float)):
-                self.data["float_outputs"][key] = value
+            elif isinstance(value, (int, float, np.floating, np.integer)):
+                self.data["float_outputs"][key] = float(value)
 
         # Build DataFrames efficiently using concat to avoid fragmentation
         if vector_series:
@@ -814,8 +858,8 @@ class MultiRegionalProcess(AeroMAPSProcess):
                         climate_series[key] = value
                     else:
                         vector_series[key] = value
-                elif isinstance(value, (int, float)):
-                    self.data["float_outputs"][key] = value
+                elif isinstance(value, (int, float, np.floating, np.integer)):
+                    self.data["float_outputs"][key] = float(value)
 
         # Build DataFrames efficiently using concat to avoid fragmentation
         if vector_series:
@@ -859,8 +903,30 @@ class MultiRegionalProcess(AeroMAPSProcess):
             )
         return self._regional_processes[region_id]
 
-    def get_regional_outputs(self, region_id: str) -> pd.DataFrame:
-        """Get outputs for a specific region from vector_outputs.
+    @staticmethod
+    def _strip_namespace(df: pd.DataFrame, namespace: str) -> pd.DataFrame:
+        """Return the columns of ``df`` belonging to ``namespace``, prefix stripped.
+
+        Parameters
+        ----------
+        df
+            DataFrame whose columns are namespaced ("<namespace>:<variable>").
+        namespace
+            The namespace to select (region ID or global namespace).
+
+        Returns
+        -------
+        pd.DataFrame
+            DataFrame with only that namespace's columns, prefix removed.
+        """
+        prefix = f"{namespace}:"
+        cols = [c for c in df.columns if c.startswith(prefix)]
+        result = df[cols].copy()
+        result.columns = [c[len(prefix) :] for c in cols]
+        return result
+
+    def get_regional_vector_outputs(self, region_id: str) -> pd.DataFrame:
+        """Get vector outputs for a specific region from vector_outputs.
 
         Parameters
         ----------
@@ -875,28 +941,86 @@ class MultiRegionalProcess(AeroMAPSProcess):
         if region_id not in self._region_ids:
             raise KeyError(f"Region '{region_id}' not found. Available: {self._region_ids}")
 
-        # Filter columns for this region and remove namespace prefix
-        prefix = f"{region_id}:"
-        region_cols = [c for c in self.data["vector_outputs"].columns if c.startswith(prefix)]
+        return self._strip_namespace(self.data["vector_outputs"], region_id)
 
-        result = self.data["vector_outputs"][region_cols].copy()
-        result.columns = [c[len(prefix) :] for c in region_cols]
-        return result
-
-    def get_global_outputs(self) -> pd.DataFrame:
-        """Get aggregated global outputs from vector_outputs.
+    def get_global_vector_outputs(self) -> pd.DataFrame:
+        """Get aggregated global vector outputs from vector_outputs.
 
         Returns
         -------
         pd.DataFrame
-            DataFrame with global outputs (namespace removed from columns).
+            DataFrame with global vector outputs (namespace removed from columns).
         """
-        prefix = f"{self._global_namespace}:"
-        global_cols = [c for c in self.data["vector_outputs"].columns if c.startswith(prefix)]
+        return self._strip_namespace(self.data["vector_outputs"], self._global_namespace)
 
-        result = self.data["vector_outputs"][global_cols].copy()
-        result.columns = [c[len(prefix) :] for c in global_cols]
-        return result
+    def get_regional_climate_outputs(self, region_id: str) -> pd.DataFrame:
+        """Get climate outputs for a specific region from climate_outputs.
+
+        Parameters
+        ----------
+        region_id
+            The region identifier (e.g., "FR", "DE").
+
+        Returns
+        -------
+        pd.DataFrame
+            DataFrame with climate outputs for the specified region (namespace
+            removed from columns).
+        """
+        if region_id not in self._region_ids:
+            raise KeyError(f"Region '{region_id}' not found. Available: {self._region_ids}")
+
+        return self._strip_namespace(self.data["climate_outputs"], region_id)
+
+    def get_global_climate_outputs(self) -> pd.DataFrame:
+        """Get aggregated global climate outputs from climate_outputs.
+
+        Returns
+        -------
+        pd.DataFrame
+            DataFrame with global climate outputs (namespace removed from columns).
+        """
+        return self._strip_namespace(self.data["climate_outputs"], self._global_namespace)
+
+    def _get_namespace_float_outputs(self, namespace: str) -> Dict[str, float]:
+        """Return the float outputs of one namespace, prefix stripped."""
+        prefix = f"{namespace}:"
+        return {
+            key[len(prefix) :]: value
+            for key, value in self.data["float_outputs"].items()
+            if key.startswith(prefix)
+        }
+
+    def get_regional_float_outputs(self, region_id: str) -> Dict[str, float]:
+        """Get float (scalar) outputs for a specific region from float_outputs.
+
+        Parameters
+        ----------
+        region_id
+            The region identifier (e.g., "FR", "DE").
+
+        Returns
+        -------
+        Dict[str, float]
+            Dictionary of the region's float outputs (namespace removed from keys).
+        """
+        if region_id not in self._region_ids:
+            raise KeyError(f"Region '{region_id}' not found. Available: {self._region_ids}")
+
+        return self._get_namespace_float_outputs(region_id)
+
+    def get_global_float_outputs(self) -> Dict[str, float]:
+        """Get aggregated global float (scalar) outputs from float_outputs.
+
+        Only float variables listed in the ``aggregation`` block of the
+        regionalisation file are aggregated.
+
+        Returns
+        -------
+        Dict[str, float]
+            Dictionary of global float outputs (namespace removed from keys).
+        """
+        return self._get_namespace_float_outputs(self._global_namespace)
 
     def list_regions(self) -> List[str]:
         """List all region identifiers.
@@ -919,43 +1043,162 @@ class MultiRegionalProcess(AeroMAPSProcess):
         save: bool = False,
         size_inches: Optional[tuple] = None,
         remove_title: bool = False,
+        fig=None,
+        ax=None,
+        legend=True,
     ):
-        """Generate a plot for a specific region or raise an error for global plots.
+        """Generate a plot for a specific region, or at the aggregated (global) level.
 
-        For regional plots, delegates to the regional process's plot method.
-        Global (aggregated) plots require explicit implementation.
+        With ``region``, delegates to that regional process's plot method (full
+        plot catalogue available). Without ``region``, draws the plot on the
+        aggregated global-namespace outputs — only the aggregation-safe subset
+        of the catalogue is accepted (see ``list_available_global_plots``), and
+        every variable the plot requires must be listed in the regionalisation
+        file's ``aggregation`` block so the aggregator produces it.
 
         Parameters
         ----------
         name
             Identifier of the plot to generate.
         region
-            Region ID for regional plots. If None, attempts global plot.
+            Region ID for regional plots. If None, plots the global aggregate.
         save
             Whether to save the generated plot as a PDF file.
         size_inches
             Optional figure size in inches as a tuple.
         remove_title
             Whether to remove the plot title.
+        fig
+            Existing matplotlib figure to draw into (together with ``ax``).
+        ax
+            Existing matplotlib axes to draw into (together with ``fig``).
+        legend
+            Legend control forwarded to the plot class (True/False/location).
 
         Returns
         -------
         fig
-            The matplotlib figure object.
+            The plot object holding the created figure.
         """
         if region is not None:
             # Delegate to regional process
             regional_process = self.get_regional_process(region)
             return regional_process.plot(
-                name, save=save, size_inches=size_inches, remove_title=remove_title
+                name,
+                save=save,
+                size_inches=size_inches,
+                remove_title=remove_title,
+                fig=fig,
+                ax=ax,
+                legend=legend,
             )
-        else:
-            # Global plot - needs specific implementation
-            # TODO: Implement global plotting using aggregated data
+        return self._plot_global(
+            name,
+            save=save,
+            size_inches=size_inches,
+            remove_title=remove_title,
+            fig=fig,
+            ax=ax,
+            legend=legend,
+        )
+
+    def _plot_global(
+        self,
+        name: str,
+        save: bool = False,
+        size_inches: Optional[tuple] = None,
+        remove_title: bool = False,
+        fig=None,
+        ax=None,
+        legend=True,
+    ):
+        """Draw a single-scenario plot on the aggregated (global-namespace) outputs.
+
+        Only plots listed in ``aggregation_safe_plots`` are accepted: their
+        required outputs stay meaningful when summed / weighted-averaged across
+        regions. The plot's ``required_outputs`` are checked against the
+        aggregated columns before rendering, so a missing variable fails with
+        the exact list to add to the regionalisation ``aggregation`` block
+        instead of a KeyError inside matplotlib code.
+
+        Parameters
+        ----------
+        name
+            Identifier of the plot to generate.
+        save
+            Whether to save the generated plot as a PDF file.
+        size_inches
+            Optional figure size in inches as a tuple.
+        remove_title
+            Whether to remove the plot title.
+        fig
+            Existing matplotlib figure to draw into (together with ``ax``).
+        ax
+            Existing matplotlib axes to draw into (together with ``fig``).
+        legend
+            Legend control forwarded to the plot class.
+
+        Returns
+        -------
+        fig
+            The plot object holding the created figure.
+        """
+        if name in available_plots_fleet:
+            raise NameError(
+                f"Plot '{name}' is a fleet plot: it reads a region's fleet_model, which "
+                f"has no global aggregate. Draw it per region: plot('{name}', region=<id>)."
+            )
+        if name not in available_plots:
+            raise NameError(
+                f"Plot '{name}' is not available. Available plots: "
+                f"{list(available_plots)} (plus fleet plots "
+                f"{list(available_plots_fleet)}, regional only)."
+            )
+        if name not in aggregation_safe_plots:
             raise NotImplementedError(
-                "Global (aggregated) plotting not yet implemented. "
-                "Specify a region using region='FR' to plot regional data."
+                f"Plot '{name}' is not aggregation-safe: it relies on data with no "
+                f"meaningful per-region aggregate (climate response, energy pathways, "
+                f"scenario floats or cost structures). Draw it on a single region "
+                f"instead: plot('{name}', region=<id>). Globally plottable: "
+                f"{list(aggregation_safe_plots)}."
             )
+
+        if self.data["vector_outputs"].empty:
+            raise RuntimeError("No aggregated outputs available yet — run compute() first.")
+
+        plot_class = aggregation_safe_plots[name]
+        view = _GlobalOutputsView(self)
+        available_columns = set(view.data["vector_outputs"].columns) | set(
+            view.data["climate_outputs"].columns
+        )
+        missing = [v for v in plot_class.get_required_outputs() if v not in available_columns]
+        if missing:
+            raise ValueError(
+                f"Plot '{name}' needs global variables that are not aggregated: {missing}. "
+                f"Add them to the 'aggregation' block of the regionalisation file "
+                f"('sum' for additive series, 'weighted_average' for intensities), "
+                f"rebuild the process and re-run compute(). Every region must produce them."
+            )
+
+        # Availability was hard-checked above; skip the base class's soft check.
+        fig_obj = plot_class(view, check_outputs=False, fig=fig, ax=ax, legend=legend)
+        if save:
+            if size_inches is not None:
+                fig_obj.fig.set_size_inches(size_inches)
+            if remove_title:
+                fig_obj.fig.gca().set_title("")
+            fig_obj.fig.savefig(f"{name}.pdf", bbox_inches="tight")
+        return fig_obj
+
+    def list_available_global_plots(self) -> List[str]:
+        """List the plot names accepted by ``plot(name)`` without a ``region``.
+
+        Returns
+        -------
+        List[str]
+            Names of the aggregation-safe plots (subset of ``list_available_plots``).
+        """
+        return list(aggregation_safe_plots)
 
     def plot_regional_comparison(
         self,
@@ -979,7 +1222,7 @@ class MultiRegionalProcess(AeroMAPSProcess):
         fig
             The matplotlib figure object.
         """
-        # TODO: Implement regional comparison plotting
+        # TODO: Implement regional comparison plotting. Maybe use something related toi multiscenario?
         raise NotImplementedError("Regional comparison plotting not yet implemented.")
 
     # =========================================================================
@@ -993,13 +1236,14 @@ class MultiRegionalProcess(AeroMAPSProcess):
         -------
         dict
             Dictionary mapping DataFrame names to pandas DataFrame instances.
-            Includes vector_outputs, climate_outputs, float_outputs, and global_outputs.
+            Includes vector_outputs, climate_outputs, float_outputs, and
+            global_vector_outputs.
         """
         return {
             "vector_outputs": self.data["vector_outputs"].copy(),
             "climate_outputs": self.data["climate_outputs"].copy(),
             "float_outputs": self._get_float_outputs_df(),
-            "global_outputs": self.get_global_outputs(),
+            "global_vector_outputs": self.get_global_vector_outputs(),
         }
 
     def write_json(self, file_name: str):
@@ -1057,8 +1301,44 @@ class MultiRegionalProcess(AeroMAPSProcess):
         with open(file_name, "w", encoding="utf-8") as f:
             json.dump(json_data, f, indent=2)
 
+    def _get_float_outputs_matrix(self) -> pd.DataFrame:
+        """Return float outputs as a variable x namespace matrix.
+
+        One row per float variable, one column per namespace (the global
+        namespace first, then each region), so per-region scalars can be read
+        side by side. Namespaces without a value for a variable hold NaN.
+
+        Returns
+        -------
+        pd.DataFrame
+            Matrix of float outputs (empty if there are none).
+        """
+        matrix: Dict[str, Dict[str, float]] = {}
+        for key, value in self.data["float_outputs"].items():
+            if ":" not in key:
+                continue
+            namespace, var_name = key.split(":", 1)
+            matrix.setdefault(var_name, {})[namespace] = value
+
+        result = pd.DataFrame.from_dict(matrix, orient="index")
+        if result.empty:
+            return result
+        ordered = [ns for ns in [self._global_namespace, *self._region_ids] if ns in result.columns]
+        result = result[ordered]
+        result.index.name = "Name"
+        return result
+
     def write_excel(self, file_name: str):
-        """Write aggregated outputs to an Excel file.
+        """Write all outputs to an Excel file.
+
+        Sheet layout:
+
+        - ``Overall Outputs`` / ``Overall Climate``: the aggregated
+          (global-namespace) vector and climate series, prefix stripped.
+        - ``Float Outputs``: one row per float variable, one column per
+          namespace (overall first, then each region).
+        - ``Region_<id>`` / ``Climate_<id>``: each region's vector and climate
+          outputs, prefix stripped.
 
         Parameters
         ----------
@@ -1066,27 +1346,26 @@ class MultiRegionalProcess(AeroMAPSProcess):
             Path to the output Excel file.
         """
         with pd.ExcelWriter(file_name) as writer:
-            # Global outputs sheet
-            global_df = self.get_global_outputs()
+            # Overall (aggregated) vector and climate outputs
+            global_df = self.get_global_vector_outputs()
             if not global_df.empty:
-                global_df.to_excel(writer, sheet_name="Global Outputs")
+                global_df.to_excel(writer, sheet_name="Overall Outputs")
 
-            # Climate outputs sheet (all namespaced)
-            if not self.data["climate_outputs"].empty:
-                self.data["climate_outputs"].to_excel(writer, sheet_name="Climate Outputs")
+            global_climate_df = self.get_global_climate_outputs()
+            if not global_climate_df.empty:
+                global_climate_df.to_excel(writer, sheet_name="Overall Climate")
 
-            # Float outputs sheet
-            if self.data["float_outputs"]:
-                float_df = pd.DataFrame(
-                    {
-                        "Name": list(self.data["float_outputs"].keys()),
-                        "Value": list(self.data["float_outputs"].values()),
-                    }
-                )
-                float_df.to_excel(writer, sheet_name="Float Outputs", index=False)
+            # Float outputs (variable x namespace matrix: overall + regions)
+            float_df = self._get_float_outputs_matrix()
+            if not float_df.empty:
+                float_df.to_excel(writer, sheet_name="Float Outputs")
 
-            # Regional outputs (one sheet per region, limited to avoid Excel limits)
+            # Regional outputs (two sheets per region, limited to avoid Excel limits)
             for region_id in self._region_ids[:20]:  # Excel has sheet limits
-                regional_df = self.get_regional_outputs(region_id)
+                regional_df = self.get_regional_vector_outputs(region_id)
                 if not regional_df.empty:
                     regional_df.to_excel(writer, sheet_name=f"Region_{region_id}")
+
+                regional_climate_df = self.get_regional_climate_outputs(region_id)
+                if not regional_climate_df.empty:
+                    regional_climate_df.to_excel(writer, sheet_name=f"Climate_{region_id}")

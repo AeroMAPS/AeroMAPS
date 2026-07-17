@@ -68,7 +68,7 @@ class NonDiscountedScenarioCost(AeroMAPSModel):
                     self.input_names["fossil_kerosene_mean_co2_emission_factor"] = pd.Series([0.0])
 
         # Add BAU computation
-        self.input_names["co2_emissions_2019technology"] = pd.Series([0.0])
+        self.input_names["co2_emissions_last_historical_year_technology"] = pd.Series([0.0])
         self.input_names["co2_emissions_including_load_factor"] = pd.Series([0.0])
         self.input_names["carbon_tax"] = pd.Series([0.0])
 
@@ -151,16 +151,20 @@ class NonDiscountedScenarioCost(AeroMAPSModel):
             co2_emissions_including_load_factor * carbon_tax
         )  # * 1e6 / 1e6 : to t co2 and to million euros
 
-        co2_emissions_2019technology = input_data["co2_emissions_2019technology"]
+        co2_emissions_last_historical_year_technology = input_data[
+            "co2_emissions_last_historical_year_technology"
+        ]
 
-        energy_consumption_bau = co2_emissions_2019technology * 1e12 / kerosene_emission_factor
+        energy_consumption_bau = (
+            co2_emissions_last_historical_year_technology * 1e12 / kerosene_emission_factor
+        )
 
         non_discounted_bau_energy_expenses = (
             energy_consumption_bau * kerosene_market_price / 1000000
         )  # in million euros
 
         carbon_tax_bau = (
-            co2_emissions_2019technology * carbon_tax
+            co2_emissions_last_historical_year_technology * carbon_tax
         )  # * 1e6 / 1e6 : to t co2 and to million euros
 
         output_data = {

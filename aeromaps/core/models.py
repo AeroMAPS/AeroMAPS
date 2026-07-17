@@ -17,6 +17,7 @@ from aeromaps.models.impacts.costs.airlines.direct_operating_costs import (
 )
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_numeric import (
     FleetEvolution,
+    SimpleFleetCount,
 )
 from aeromaps.models.impacts.costs.efficiency_abatement_cost.fleet_abatement_cost import (
     FleetCarbonAbatementCosts,
@@ -58,6 +59,9 @@ from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.aircraft_
     FreightAircraftEfficiency,
     FreightAircraftEfficiencySimple,  # noqa: F401  re-exported for user-composed dicts
     PassengerAircraftEfficiencySimpleASK,
+)
+from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet_push.aircraft_efficiency_fleet_push import (
+    PassengerAircraftEfficiencyFleetPush,
 )
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.aircraft_fleet_and_operations import (
     EnergyIntensity,
@@ -178,6 +182,27 @@ models_efficiency_top_down = {
     "sulfur_emission_index": SulfurEmissionIndex("sulfur_emission_index"),
 }
 
+models_efficiency_push = {
+    # Push-fleet variant of ``models_efficiency_top_down``: the passenger
+    # efficiency entry runs Paco's delivery-driven engine (drop-in bridge only).
+    # The ASK-splitting, freight, energy-intensity and emission-index models are
+    # unchanged, so downstream consumers see the same bridge as the top-down path.
+    "operations_logistic": OperationsLogistic("operations_logistic"),
+    "operations_contrails_simple": OperationsContrailsSimple("operations_contrails_simple"),
+    "passenger_aircraft_efficiency_fleet_push": PassengerAircraftEfficiencyFleetPush(
+        "passenger_aircraft_efficiency_fleet_push"
+    ),
+    "passenger_aircraft_efficiency_simple_ask": PassengerAircraftEfficiencySimpleASK(
+        "passenger_aircraft_efficiency_simple_ask"
+    ),
+    "freight_aircraft_efficiency": FreightAircraftEfficiency("freight_aircraft_efficiency"),
+    "energy_intensity": EnergyIntensity("energy_intensity"),
+    "nox_emission_index": NOxEmissionIndex("nox_emission_index"),
+    "soot_emission_index": SootEmissionIndex("soot_emission_index"),
+    "h2o_emission_index": H2OEmissionIndex("h2o_emission_index"),
+    "sulfur_emission_index": SulfurEmissionIndex("sulfur_emission_index"),
+}
+
 models_efficiency_top_down_interp = {
     "operations_interpolation": OperationsInterpolation("operations_interpolation"),
     "operations_contrails_simple": OperationsContrailsSimple("operations_contrails_simple"),
@@ -211,6 +236,17 @@ models_efficiency_bottom_up = {
     "soot_emission_index_complex": SootEmissionIndexComplex("soot_emission_index_complex"),
     "h2o_emission_index": H2OEmissionIndex("h2o_emission_index"),
     "sulfur_emission_index": SulfurEmissionIndex("sulfur_emission_index"),
+}
+
+
+models_efficiency_bottom_up_simple_freight = {
+    **models_efficiency_bottom_up,
+    "freight_aircraft_efficiency": FreightAircraftEfficiencySimple("freight_aircraft_efficiency"),
+}
+
+
+models_fleet_count_simple = {
+    "passenger_aircraft_fleet_count": SimpleFleetCount("passenger_aircraft_fleet_count"),
 }
 
 

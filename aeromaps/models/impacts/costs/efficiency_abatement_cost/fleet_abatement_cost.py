@@ -115,15 +115,16 @@ class FleetCarbonAbatementCosts(AeroMAPSModel):
 
                 # initialisation based on the same model transition than aircraft efficiency model, transitioning
 
-                aircraft_energy_delta[2019] = 0  # start from reference
+                aircraft_energy_delta[self.last_historical_year] = 0  # start from reference
 
-                aircraft_energy_delta[2020] = (
-                    aircraft_energy_delta[2019]
-                    * (1 + input_data["covid_energy_intensity_per_ask_increase_2020"] / 100)
-                    + category_reference_energy
-                    * input_data["covid_energy_intensity_per_ask_increase_2020"]
-                    / 100
-                )
+                if self.prospection_start_year <= 2020:
+                    aircraft_energy_delta[2020] = (
+                        aircraft_energy_delta[self.last_historical_year]
+                        * (1 + input_data["covid_energy_intensity_per_ask_increase_2020"] / 100)
+                        + category_reference_energy
+                        * input_data["covid_energy_intensity_per_ask_increase_2020"]
+                        / 100
+                    )
 
                 # Assumption: 100% kerosene for cost calculation. Effect of SAFs/Hydrogen is accounted for downwards in
                 # the calculation process. For instance a Hydrogen aircraft, that would consume more energy in this step

@@ -1,0 +1,24 @@
+# Per-segment push-engine parameters.
+#
+# Only the age sensibilities are read by the engine
+# (PassengerAircraftEfficiencyFleetPush._load_push_engine_inputs):
+#   age_utilisation_sensib  — utilisation-vs-age decay
+#   age_retirement_sensib   — retirement-propensity-vs-age slope
+#
+# The legacy `reference_growth` blocks were REMOVED: traffic growth is no longer
+# produced by the engine (ASK is injected from the AeroMAPS demand chain). The
+# per-segment growth profiles now live in the markets config
+# (markets_push.yaml -> inputs.growth.cagr_reference_periods[_values]).
+markets:
+  TP:
+    age_utilisation_sensib: -0.01
+    age_retirement_sensib: 0.19
+  RJ:
+    age_utilisation_sensib: -0.01
+    age_retirement_sensib: 0.19
+  NB:
+    age_utilisation_sensib: -0.01
+    age_retirement_sensib: 0.19
+  WB:
+    age_utilisation_sensib: -0.01
+    age_retirement_sensib: 0.19

@@ -27,8 +27,8 @@ class PassengerAircraftEfficiencySimpleShares(AeroMAPSModel):
         - ask_init: Historic total ASK [ASK].
         - fleet_renewal_duration: Fleet renewal duration [years].
         - covid_energy_intensity_per_ask_increase_2020: 2020 intensity increase [%].
-        - <market>_energy_share_2019: 2019 passenger energy share [%].
-        - <market>_rpk_share_2019: 2019 passenger RPK share [%].
+        - <market>_energy_share_last_historical_year: 2019 passenger energy share [%].
+        - <market>_rpk_share_last_historical_year: 2019 passenger RPK share [%].
         - <market>_energy_per_ask_dropin_fuel_gain_reference_years: Reference years.
         - <market>_energy_per_ask_dropin_fuel_gain_reference_years_values: Gains [%].
         - <market>_relative_energy_per_ask_hydrogen_wrt_dropin_reference_years: Reference years.
@@ -63,8 +63,8 @@ class PassengerAircraftEfficiencySimpleShares(AeroMAPSModel):
         }
         for m in passenger_markets:
             mid = m.id
-            self.input_names[f"{mid}_energy_share_2019"] = 0.0
-            self.input_names[f"{mid}_rpk_share_2019"] = 0.0
+            self.input_names[f"{mid}_energy_share_last_historical_year"] = 0.0
+            self.input_names[f"{mid}_rpk_share_last_historical_year"] = 0.0
             self.input_names[f"{mid}_energy_per_ask_dropin_fuel_gain_reference_years"] = []
             self.input_names[f"{mid}_energy_per_ask_dropin_fuel_gain_reference_years_values"] = [
                 0.0
@@ -133,8 +133,8 @@ class PassengerAircraftEfficiencySimpleShares(AeroMAPSModel):
 
         for m in passenger_markets:
             mid = m.id
-            energy_share = float(input_data[f"{mid}_energy_share_2019"])
-            rpk_share = float(input_data[f"{mid}_rpk_share_2019"])
+            energy_share = float(input_data[f"{mid}_energy_share_last_historical_year"])
+            rpk_share = float(input_data[f"{mid}_rpk_share_last_historical_year"])
 
             dropin_col = f"energy_per_ask_without_operations_{mid}_dropin_fuel"
 
@@ -160,9 +160,10 @@ class PassengerAircraftEfficiencySimpleShares(AeroMAPSModel):
                     1 - gain.loc[k] / 100
                 )
 
-            self.df.loc[2020, dropin_col] = self.df.loc[2019, dropin_col] * (
-                1 + covid_increase / 100
-            )
+            if self.prospection_start_year <= 2020:
+                self.df.loc[2020, dropin_col] = self.df.loc[
+                    self.last_historical_year, dropin_col
+                ] * (1 + covid_increase / 100)
 
             dropin_series = self.df[dropin_col]
 
@@ -373,8 +374,8 @@ class PassengerAircraftEfficiencyComplex(AeroMAPSModel):
         - energy_consumption_init: Historic total energy consumption [MJ].
         - ask: Global passenger ASK [ASK].
         - covid_energy_intensity_per_ask_increase_2020: 2020 intensity increase [%].
-        - <market>_energy_share_2019: 2019 passenger energy share [%].
-        - <market>_rpk_share_2019: 2019 passenger RPK share [%].
+        - <market>_energy_share_last_historical_year: 2019 passenger energy share [%].
+        - <market>_rpk_share_last_historical_year: 2019 passenger RPK share [%].
         - ask_<market>: Passenger ASK [ASK].
     Outputs
         - energy_per_ask_without_operations_<market>_<energy>: Energy per ASK [MJ/ASK].
@@ -413,8 +414,8 @@ class PassengerAircraftEfficiencyComplex(AeroMAPSModel):
         }
         for m in passenger_markets:
             mid = m.id
-            self.input_names[f"{mid}_energy_share_2019"] = 0.0
-            self.input_names[f"{mid}_rpk_share_2019"] = 0.0
+            self.input_names[f"{mid}_energy_share_last_historical_year"] = 0.0
+            self.input_names[f"{mid}_rpk_share_last_historical_year"] = 0.0
             self.input_names[f"ask_{mid}"] = pd.Series([0.0])
 
         self.output_names = {}
@@ -460,8 +461,8 @@ class PassengerAircraftEfficiencyComplex(AeroMAPSModel):
         for m in passenger_markets:
             mid = m.id
             market_name = m.name  # human-readable, matches fleet_model.df key
-            energy_share = float(input_data[f"{mid}_energy_share_2019"])
-            rpk_share = float(input_data[f"{mid}_rpk_share_2019"])
+            energy_share = float(input_data[f"{mid}_energy_share_last_historical_year"])
+            rpk_share = float(input_data[f"{mid}_rpk_share_last_historical_year"])
             ask_market = input_data[f"ask_{mid}"]
 
             energy_per_ask_without_operations_dropin_fuel_col = (
@@ -514,9 +515,10 @@ class PassengerAircraftEfficiencyComplex(AeroMAPSModel):
                 fleet_energy_per_ask_without_operations_electric.loc[idx_proj]
             )
 
-            self.df.loc[2020, energy_per_ask_without_operations_dropin_fuel_col] = self.df.loc[
-                2019, energy_per_ask_without_operations_dropin_fuel_col
-            ] * (1 + covid_increase / 100)
+            if self.prospection_start_year <= 2020:
+                self.df.loc[2020, energy_per_ask_without_operations_dropin_fuel_col] = self.df.loc[
+                    self.last_historical_year, energy_per_ask_without_operations_dropin_fuel_col
+                ] * (1 + covid_increase / 100)
 
             self.df.loc[idx_proj, f"ask_{mid}_dropin_fuel_share"] = fleet_ask_dropin_fuel_share
             self.df.loc[idx_proj, f"ask_{mid}_hydrogen_share"] = fleet_ask_hydrogen_share
@@ -578,7 +580,7 @@ class FreightAircraftEfficiency(AeroMAPSModel):
 
             energy_per_rtk_dropin[year] = energy_consumption_init[year]
                                           / rtk[year]
-                                          * freight_energy_share_2019 / 100
+                                          * freight_energy_share_last_historical_year / 100
 
     *Projection years* (prospection_start_year … end_year):
         Each passenger market m provides a year-on-year efficiency-improvement
@@ -657,7 +659,7 @@ class FreightAircraftEfficiency(AeroMAPSModel):
         - ask: Global total passenger ASK [ASK].
         - covid_energy_intensity_per_ask_increase_2020: 2020 intensity increase [%].
         - rtk_<freight>: Freight RTK per freight market [RTK].
-        - <freight>_energy_share_2019: 2019 freight energy share per freight market [%].
+        - <freight>_energy_share_last_historical_year: 2019 freight energy share per freight market [%].
         - ask_<market>: Passenger ASK per passenger market [ASK].
         - ask_<market>_dropin_fuel: Drop-in fuel passenger ASK per market [ASK].
         - ask_<market>_hydrogen_share: Hydrogen ASK share per market [%].
@@ -711,7 +713,7 @@ class FreightAircraftEfficiency(AeroMAPSModel):
         for m in freight_markets:
             mid = m.id
             self.input_names[f"rtk_{mid}"] = pd.Series([0.0])
-            self.input_names[f"{mid}_energy_share_2019"] = 0.0
+            self.input_names[f"{mid}_energy_share_last_historical_year"] = 0.0
 
         # Per-freight-market outputs
         self.output_names = {}
@@ -845,7 +847,9 @@ class FreightAircraftEfficiency(AeroMAPSModel):
         for freight_market in freight_markets:
             freight_mid = freight_market.id
             rtk = input_data[f"rtk_{freight_mid}"]
-            freight_energy_share_2019 = float(input_data[f"{freight_mid}_energy_share_2019"])
+            freight_energy_share_last_historical_year = float(
+                input_data[f"{freight_mid}_energy_share_last_historical_year"]
+            )
 
             # Initialization based on 2019 share
             self.df.loc[
@@ -853,14 +857,15 @@ class FreightAircraftEfficiency(AeroMAPSModel):
             ] = (
                 energy_consumption_init.loc[hist_years]
                 / rtk.loc[hist_years]
-                * freight_energy_share_2019
+                * freight_energy_share_last_historical_year
                 / 100
             )
 
             # Projections: freight dropin fuel efficiency follows a weighted average of passenger
             # market efficiencies, each evolving at the same year-on-year rate as its passenger proxy
             init_energy_per_rtk_without_operations_dropin_fuel = self.df.loc[
-                2019, f"energy_per_rtk_without_operations_{freight_mid}_dropin_fuel"
+                self.last_historical_year,
+                f"energy_per_rtk_without_operations_{freight_mid}_dropin_fuel",
             ]
             energy_per_rtk_without_operations_dropin_fuel_per_market_k = {
                 mid: init_energy_per_rtk_without_operations_dropin_fuel
@@ -914,10 +919,13 @@ class FreightAircraftEfficiency(AeroMAPSModel):
                     ] = init_energy_per_rtk_without_operations_dropin_fuel
 
             # Covid: reset 2020 value
-            self.df.loc[2020, f"energy_per_rtk_without_operations_{freight_mid}_dropin_fuel"] = (
-                self.df.loc[2019, f"energy_per_rtk_without_operations_{freight_mid}_dropin_fuel"]
-                * (1 + covid_energy_intensity_per_ask_increase_2020 / 100)
-            )
+            if self.prospection_start_year <= 2020:
+                self.df.loc[
+                    2020, f"energy_per_rtk_without_operations_{freight_mid}_dropin_fuel"
+                ] = self.df.loc[
+                    self.last_historical_year,
+                    f"energy_per_rtk_without_operations_{freight_mid}_dropin_fuel",
+                ] * (1 + covid_energy_intensity_per_ask_increase_2020 / 100)
 
             energy_per_rtk_without_operations_dropin_fuel = self.df[
                 f"energy_per_rtk_without_operations_{freight_mid}_dropin_fuel"
@@ -1033,7 +1041,7 @@ class FreightAircraftEfficiencySimple(AeroMAPSModel):
 
         energy_per_rtk_dropin[year] = energy_consumption_init[year]
                                       / rtk_<fmid>[year]
-                                      * <fmid>_energy_share_2019 / 100
+                                      * <fmid>_energy_share_last_historical_year / 100
 
     *Projection years*: per-market drop-in gain curve::
 
@@ -1056,7 +1064,7 @@ class FreightAircraftEfficiencySimple(AeroMAPSModel):
         - covid_energy_intensity_per_rtk_increase_2020: 2020 intensity increase [%].
         - rtk: Global freight RTK [RTK].
         - rtk_<freight>: Freight RTK per freight market [RTK].
-        - <freight>_energy_share_2019: 2019 freight energy share per freight market [%].
+        - <freight>_energy_share_last_historical_year: 2019 freight energy share per freight market [%].
         - <freight>_energy_per_rtk_dropin_fuel_gain_reference_years: Reference years.
         - <freight>_energy_per_rtk_dropin_fuel_gain_reference_years_values: Gains [%].
     Outputs
@@ -1087,7 +1095,7 @@ class FreightAircraftEfficiencySimple(AeroMAPSModel):
         for m in freight_markets:
             mid = m.id
             self.input_names[f"rtk_{mid}"] = pd.Series([0.0])
-            self.input_names[f"{mid}_energy_share_2019"] = 0.0
+            self.input_names[f"{mid}_energy_share_last_historical_year"] = 0.0
             self.input_names[f"{mid}_energy_per_rtk_dropin_fuel_gain_reference_years"] = []
             self.input_names[f"{mid}_energy_per_rtk_dropin_fuel_gain_reference_years_values"] = [
                 0.0
@@ -1122,7 +1130,9 @@ class FreightAircraftEfficiencySimple(AeroMAPSModel):
         for freight_market in freight_markets:
             freight_mid = freight_market.id
             rtk = input_data[f"rtk_{freight_mid}"]
-            freight_energy_share_2019 = float(input_data[f"{freight_mid}_energy_share_2019"])
+            freight_energy_share_last_historical_year = float(
+                input_data[f"{freight_mid}_energy_share_last_historical_year"]
+            )
 
             dropin_col = f"energy_per_rtk_without_operations_{freight_mid}_dropin_fuel"
 
@@ -1130,7 +1140,7 @@ class FreightAircraftEfficiencySimple(AeroMAPSModel):
             self.df.loc[hist_years, dropin_col] = (
                 energy_consumption_init.loc[hist_years]
                 / rtk.loc[hist_years]
-                * freight_energy_share_2019
+                * freight_energy_share_last_historical_year
                 / 100
             )
 
@@ -1152,9 +1162,10 @@ class FreightAircraftEfficiencySimple(AeroMAPSModel):
                 )
 
             # COVID: reset 2020 value.
-            self.df.loc[2020, dropin_col] = self.df.loc[2019, dropin_col] * (
-                1 + covid_increase / 100
-            )
+            if self.prospection_start_year <= 2020:
+                self.df.loc[2020, dropin_col] = self.df.loc[
+                    self.last_historical_year, dropin_col
+                ] * (1 + covid_increase / 100)
 
             energy_per_rtk_dropin = self.df[dropin_col]
 

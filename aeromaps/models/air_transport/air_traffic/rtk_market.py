@@ -35,7 +35,7 @@ class RTKMarket(AeroMAPSModel):
         self.market_id = mid
         self.input_names = {
             "rtk_init": pd.Series([0.0]),
-            f"{mid}_rtk_share_2019": 0.0,
+            f"{mid}_rtk_share_last_historical_year": 0.0,
             "covid_start_year": 0.0,
             f"{mid}_covid_drop_start_year": 0.0,
             f"{mid}_covid_end_year": 0.0,
@@ -65,7 +65,7 @@ class RTKMarket(AeroMAPSModel):
         """
         mid = self.market_id
         rtk_init = input_data["rtk_init"]
-        rtk_share_2019 = float(input_data[f"{mid}_rtk_share_2019"])
+        rtk_share_last_historical_year = float(input_data[f"{mid}_rtk_share_last_historical_year"])
         if not isinstance(rtk_init, pd.Series):
             rtk_init = pd.Series(
                 rtk_init,
@@ -83,7 +83,7 @@ class RTKMarket(AeroMAPSModel):
 
         # Historic initialisation: split total RTK by market share
         for k in range(self.historic_start_year, self.prospection_start_year):
-            self.df.loc[k, rtk_col] = rtk_share_2019 / 100 * rtk_init.loc[k]
+            self.df.loc[k, rtk_col] = rtk_share_last_historical_year / 100 * rtk_init.loc[k]
 
         # COVID interpolation
         covid_func = interp1d(
@@ -98,12 +98,16 @@ class RTKMarket(AeroMAPSModel):
         )
         self.df.loc[:, rate_col] = annual_gr
 
+        # COVID + post-COVID only shape the *prospective* window. When historic
+        # data already extends past COVID (prospection_start_year > covid_end_year)
+        # the COVID loop is empty and post-COVID compounds from the historic value
+        # at prospection_start_year-1, so the observed dip in rtk_init is preserved.
         # COVID years (direct interpolation from last pre-COVID value)
-        for k in range(covid_start_year, covid_end_year + 1):
+        for k in range(max(covid_start_year, self.prospection_start_year), covid_end_year + 1):
             self.df.loc[k, rtk_col] = self.df.loc[covid_start_year - 1, rtk_col] * covid_func(k)
 
         # Post-COVID compounding growth
-        for k in range(covid_end_year + 1, self.end_year + 1):
+        for k in range(max(covid_end_year + 1, self.prospection_start_year), self.end_year + 1):
             self.df.loc[k, rtk_col] = self.df.loc[k - 1, rtk_col] * (
                 1 + self.df.loc[k, rate_col] / 100
             )
@@ -212,9 +216,11 @@ class RTKReferenceMarket(AeroMAPSModel):
         )
         self.df.loc[:, rate_col] = reference_annual_growth_rate
 
-        for k in range(covid_start_year, covid_end_year + 1):
+        # Clamp to the prospective window so observed historic COVID data isn't
+        # overwritten when prospection_start_year > covid_end_year.
+        for k in range(max(covid_start_year, self.prospection_start_year), covid_end_year + 1):
             self.df.loc[k, col] = self.df.loc[covid_start_year - 1, col] * covid_function(k)
-        for k in range(covid_end_year + 1, self.end_year + 1):
+        for k in range(max(covid_end_year + 1, self.prospection_start_year), self.end_year + 1):
             self.df.loc[k, col] = self.df.loc[k - 1, col] * (1 + self.df.loc[k, rate_col] / 100)
 
         output_data = {

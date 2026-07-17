@@ -92,7 +92,7 @@ class RPKMarket(AeroMAPSModel):
     Reads per-market parameters flattened from ``markets.yaml`` by
     ``_initialize_markets()``:
 
-    * ``<mid>_rpk_share_2019``
+    * ``<mid>_rpk_share_last_historical_year``
     * ``<mid>_cagr_reference_periods`` / ``<mid>_cagr_reference_periods_values``
     * ``<mid>_covid_drop_start_year``, ``<mid>_covid_end_year``,
       ``<mid>_covid_end_year_reference_ratio``
@@ -121,7 +121,7 @@ class RPKMarket(AeroMAPSModel):
         sfx = output_suffix
         self.input_names = {
             "rpk_init": pd.Series([0.0]),
-            f"{mid}_rpk_share_2019": 0.0,
+            f"{mid}_rpk_share_last_historical_year": 0.0,
             f"{mid}_cagr_reference_periods": [],
             f"{mid}_cagr_reference_periods_values": [0.0],
             "covid_start_year": 0.0,
@@ -153,7 +153,7 @@ class RPKMarket(AeroMAPSModel):
         """
         mid = self.market_id
         rpk_init = input_data["rpk_init"]
-        rpk_share_2019 = float(input_data[f"{mid}_rpk_share_2019"])
+        rpk_share_last_historical_year = float(input_data[f"{mid}_rpk_share_last_historical_year"])
         cagr_ref_periods = list(input_data[f"{mid}_cagr_reference_periods"])
         cagr_ref_values = list(input_data[f"{mid}_cagr_reference_periods_values"])
         covid_start_year = int(input_data["covid_start_year"])
@@ -179,7 +179,7 @@ class RPKMarket(AeroMAPSModel):
 
         # Historic initialisation: split total RPK by market share
         for k in range(self.historic_start_year, self.prospection_start_year):
-            self.df.loc[k, rpk_col] = rpk_share_2019 / 100 * rpk_init.loc[k]
+            self.df.loc[k, rpk_col] = rpk_share_last_historical_year / 100 * rpk_init.loc[k]
 
         # COVID interpolation
         covid_func = interp1d(
@@ -194,12 +194,17 @@ class RPKMarket(AeroMAPSModel):
         )
         self.df.loc[:, rate_col] = annual_gr
 
+        # COVID + post-COVID only shape the *prospective* window. When the user's
+        # historic data already extends past COVID (prospection_start_year >
+        # covid_end_year), the COVID loop is empty and post-COVID compounds from
+        # the historic value at prospection_start_year-1 — so the observed COVID
+        # dip already in rpk_init is never overwritten (no double counting).
         # COVID years (direct interpolation from last pre-COVID value)
-        for k in range(covid_start_year, covid_end_year + 1):
+        for k in range(max(covid_start_year, self.prospection_start_year), covid_end_year + 1):
             self.df.loc[k, rpk_col] = self.df.loc[covid_start_year - 1, rpk_col] * covid_func(k)
 
         # Post-COVID compounding growth
-        for k in range(covid_end_year + 1, self.end_year + 1):
+        for k in range(max(covid_end_year + 1, self.prospection_start_year), self.end_year + 1):
             self.df.loc[k, rpk_col] = self.df.loc[k - 1, rpk_col] * (
                 1 + self.df.loc[k, rate_col] / 100
             )
@@ -353,7 +358,7 @@ class RPKReferenceMarket(AeroMAPSModel):
     """Reference RPK trajectory for one passenger market.
 
     Reads the historical RPK directly from the exogenous ``rpk_init`` series
-    (split by ``<mid>_rpk_share_2019``) rather than from the post-elasticity
+    (split by ``<mid>_rpk_share_last_historical_year``) rather than from the post-elasticity
     ``rpk_<mid>`` output. This keeps the counterfactual branch out of the MDA
     coupling graph in cost-feedback mode.
 
@@ -371,7 +376,7 @@ class RPKReferenceMarket(AeroMAPSModel):
         self.market_id = mid
         self.input_names = {
             "rpk_init": pd.Series([0.0]),
-            f"{mid}_rpk_share_2019": 0.0,
+            f"{mid}_rpk_share_last_historical_year": 0.0,
             f"{mid}_reference_cagr_reference_periods": [],
             f"{mid}_reference_cagr_reference_periods_values": [0.0],
             "covid_start_year": 0.0,
@@ -399,7 +404,7 @@ class RPKReferenceMarket(AeroMAPSModel):
         """
         mid = self.market_id
         rpk_init = input_data["rpk_init"]
-        rpk_share_2019 = float(input_data[f"{mid}_rpk_share_2019"])
+        rpk_share_last_historical_year = float(input_data[f"{mid}_rpk_share_last_historical_year"])
         reference_periods = list(input_data[f"{mid}_reference_cagr_reference_periods"])
         reference_values = list(input_data[f"{mid}_reference_cagr_reference_periods_values"])
         covid_start_year = int(input_data["covid_start_year"])
@@ -417,7 +422,7 @@ class RPKReferenceMarket(AeroMAPSModel):
         rate_col = f"reference_annual_growth_rate_rpk_{mid}"
 
         for k in range(self.historic_start_year, self.prospection_start_year):
-            self.df.loc[k, col] = rpk_share_2019 / 100 * rpk_init.loc[k]
+            self.df.loc[k, col] = rpk_share_last_historical_year / 100 * rpk_init.loc[k]
 
         reference_years = [covid_start_year, covid_end_year]
         reference_values_covid = [1 - covid_drop_start_year / 100, covid_end_ratio / 100]
@@ -431,9 +436,11 @@ class RPKReferenceMarket(AeroMAPSModel):
         )
         self.df.loc[:, rate_col] = reference_annual_growth_rate
 
-        for k in range(covid_start_year, covid_end_year + 1):
+        # Clamp to the prospective window so observed historic COVID data isn't
+        # overwritten when prospection_start_year > covid_end_year.
+        for k in range(max(covid_start_year, self.prospection_start_year), covid_end_year + 1):
             self.df.loc[k, col] = self.df.loc[covid_start_year - 1, col] * covid_function(k)
-        for k in range(covid_end_year + 1, self.end_year + 1):
+        for k in range(max(covid_end_year + 1, self.prospection_start_year), self.end_year + 1):
             self.df.loc[k, col] = self.df.loc[k - 1, col] * (1 + self.df.loc[k, rate_col] / 100)
 
         output_data = {col: self.df[col], rate_col: self.df[rate_col]}
@@ -516,10 +523,12 @@ class RPKElasticity(AeroMAPSModel):
         price_elasticity = float(input_data["price_elasticity"])
         airfare_init = float(input_data["initial_airfare_per_rpk"])
 
-        # Elasticity kicks in the year after the latest COVID-end across markets.
-        elasticity_start = (
+        # Elasticity kicks in the year after the latest COVID-end across markets,
+        # but never before the first projected year.
+        elasticity_start = max(
             int(max(int(input_data[f"{mid}_covid_end_year"]) for mid in self.passenger_market_ids))
-            + 1
+            + 1,
+            self.prospection_start_year,
         )
 
         # Multiplier: 1 before elasticity_start, (airfare/airfare_init)**elasticity after.

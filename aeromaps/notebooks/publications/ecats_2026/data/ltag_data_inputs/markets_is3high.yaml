@@ -59,8 +59,8 @@ short_range:
   traffic_unit: RPK
   inputs:
     initial:
-      rpk_share_2019: 27.2
-      energy_share_2019: 26.01
+      rpk_share_last_historical_year: 27.2
+      energy_share_last_historical_year: 26.01
     costs:
       doc_non_energy_per_ask_dropin_fuel_init: 0.048375
     efficiency_simple:
@@ -73,8 +73,8 @@ medium_range:
   traffic_unit: RPK
   inputs:
     initial:
-      rpk_share_2019: 35.1
-      energy_share_2019: 26.18
+      rpk_share_last_historical_year: 35.1
+      energy_share_last_historical_year: 26.18
     costs:
       doc_non_energy_per_ask_dropin_fuel_init: 0.0301
     efficiency_simple:
@@ -87,8 +87,8 @@ long_range:
   traffic_unit: RPK
   inputs:
     initial:
-      rpk_share_2019: 37.7
-      energy_share_2019: 32.81
+      rpk_share_last_historical_year: 37.7
+      energy_share_last_historical_year: 32.81
     costs:
       doc_non_energy_per_ask_dropin_fuel_init: 0.024725
     efficiency_simple:
@@ -101,8 +101,8 @@ freight:
   traffic_unit: RTK
   inputs:
     initial:
-      rtk_share_2019: 100.0
-      energy_share_2019: 15.0
+      rtk_share_last_historical_year: 100.0
+      energy_share_last_historical_year: 15.0
     growth:
       cagr_reference_periods: [2020, 2028, 2038, 2050, 2060, 2070]
       cagr_reference_periods_values: [10.273, 4.1, 4.3, 4.2, 3.6]

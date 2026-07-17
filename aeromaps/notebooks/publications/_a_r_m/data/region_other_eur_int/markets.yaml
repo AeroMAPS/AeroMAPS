@@ -43,29 +43,29 @@ short_range:
   traffic_unit: RPK
   inputs:
     initial:
-      rpk_share_2019: 27.2
-      energy_share_2019: 26.01
+      rpk_share_last_historical_year: 27.2
+      energy_share_last_historical_year: 26.01
 medium_range:
   name: Medium Range
   traffic_type: passenger
   traffic_unit: RPK
   inputs:
     initial:
-      rpk_share_2019: 35.1
-      energy_share_2019: 26.18
+      rpk_share_last_historical_year: 35.1
+      energy_share_last_historical_year: 26.18
 long_range:
   name: Long Range
   traffic_type: passenger
   traffic_unit: RPK
   inputs:
     initial:
-      rpk_share_2019: 37.7
-      energy_share_2019: 32.81
+      rpk_share_last_historical_year: 37.7
+      energy_share_last_historical_year: 32.81
 freight:
   name: Freight
   traffic_type: freight
   traffic_unit: RTK
   inputs:
     initial:
-      rtk_share_2019: 100.0
-      energy_share_2019: 15.0
+      rtk_share_last_historical_year: 100.0
+      energy_share_last_historical_year: 15.0

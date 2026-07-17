@@ -50,6 +50,10 @@ from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_mod
     Fleet,
     FleetModel,
 )
+from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet_push.aircraft_efficiency_fleet_push import (
+    PassengerAircraftEfficiencyFleetPush,
+    PUSH_FLEET_INPUT_FILE_KEYS,
+)
 
 # Generic energy models imports
 from aeromaps.models.impacts.generic_energy_model.common.energy_carriers_manager import (
@@ -105,6 +109,42 @@ DEFAULT_CONFIG_PATH = os.path.join(CURRENT_DIR, "..", "resources", "data", "conf
 
 # Base directory for resources/data (used to resolve relative paths in config.yaml)
 DEFAULT_RESOURCES_DATA_DIR = os.path.join(CURRENT_DIR, "..", "resources", "data")
+
+# TODO(flex-start-year): delete this guard once downstream configs are migrated
+# and a release cycle has passed (target: remove after 2026-12, or once no
+# in-repo config and no known external scenario still carries a `_2019` key).
+#
+# When prospection_start_year became flexible, parameters whose `_2019` suffix
+# encoded "last historical year" (or a fixed CORSIA / carbon-budget reference)
+# were renamed with NO backward-compat alias. The loader blindly setattrs any
+# key, so a stale `_2019` key would silently resolve to a default (share -> 0%,
+# NaN cascade) — wrong numbers, no crash. This guard turns that into a loud,
+# self-documenting error. It is NOT a general unknown-key validator: it matches
+# only the specific renamed patterns below, none of which any current internal
+# code emits, so scanning parameters.__dict__ cannot false-positive.
+RENAMED_INPUTS = {
+    "world_co2_emissions_2019": "world_co2_emissions_carbon_budget_reference_year",
+    "carbon_offset_baseline_level_vs_2019_reference_periods": "carbon_offset_baseline_level_vs_corsia_reference_year_reference_periods",
+    "carbon_offset_baseline_level_vs_2019_reference_periods_values": "carbon_offset_baseline_level_vs_corsia_reference_year_reference_periods_values",
+    "gdp_per_capita_2019": "gdp_per_capita_last_historical_year",
+}
+# Matched against the tail of any (possibly market-prefixed) flattened key. The
+# single `_share_2019` rule covers every share family: <mid>_rpk_share_2019,
+# <mid>_energy_share_2019, <mid>_rtk_share_2019, freight_energy_share_2019 and
+# the short_range_*_share_2019 interpolation anchors.
+RENAMED_INPUT_SUFFIXES = {
+    "_share_2019": "_share_last_historical_year",
+}
+
+
+def _renamed_input_replacement(key: str):
+    """Return the new name for a stale renamed input key, or None if not renamed."""
+    if key in RENAMED_INPUTS:
+        return RENAMED_INPUTS[key]
+    for old_suffix, new_suffix in RENAMED_INPUT_SUFFIXES.items():
+        if key.endswith(old_suffix):
+            return key[: -len(old_suffix)] + new_suffix
+    return None
 
 
 class AeroMAPSProcess(object):
@@ -408,6 +448,11 @@ class AeroMAPSProcess(object):
         self._initialize_lca_model()
         self._initialize_generic_energy()
         self._initialize_vector_inputs()
+
+        # Fail loudly on stale `_2019` config keys (renamed when prospection_start_year
+        # became flexible). Runs after every user surface (JSON inputs, market YAML
+        # leaves, vector/partitioning inputs) has been applied to self.parameters.
+        self._check_renamed_inputs()
 
         self.disciplines = []
         self.data = {}
@@ -1038,7 +1083,7 @@ class AeroMAPSProcess(object):
         Sub-grouping keys under ``inputs`` (e.g. ``initial``, ``growth``,
         ``covid``, ``measures``, ``efficiency_simple``, ``costs``) are treated
         as organisational groupings only: their names are *not* included in the
-        flattened variable names.  This makes names like ``short_range_rpk_share_2019``
+        flattened variable names.  This makes names like ``short_range_rpk_share_last_historical_year``
         coincide with legacy flat names in ``parameters.json``, so for default
         scenarios the push is a numerical no-op.  Names introduced under new
         sub-groupings are harmless extras until Phase 2 consumes them.
@@ -1141,6 +1186,10 @@ class AeroMAPSProcess(object):
             market_data["inputs"] = inputs
             self.markets_data[market_id] = market_data
 
+        # Shares feed the last-historical-year traffic/energy split, so a set that
+        # does not sum to 100% silently rescales the whole scenario. Hard-error.
+        self._validate_market_shares()
+
         if demand_model in ("cagr", "cagr_elasticity"):
             with_elast = demand_model == "cagr_elasticity"
             self.models.update(
@@ -1166,10 +1215,76 @@ class AeroMAPSProcess(object):
                 f"Unknown global.demand.model '{demand_model}'. Expected one of: "
                 "cagr, cagr_elasticity, constant_elasticity, logistic_income."
             )
+        # ``load_factor.model`` selects the per-market load factor model:
+        #   ``quadratic``            — LoadFactorMarket (quadratic curve, default);
+        #   ``simple_interpolation`` — LoadFactorMarketSimpleInterpolation
+        #                              (piece-wise linear via aeromaps_interpolation_function).
+        # Dropped before flattening so the string is not pushed into parameters.
+        load_factor_block = globals_block.pop("load_factor", {}) or {}
+        load_factor_model = load_factor_block.get("model", "quadratic")
+
         self.models.update(create_market_rtk_models(self.markets, self.markets_data))
         self.models.update(create_market_rtk_aggregator(self.markets))
         self.models.update(create_market_ask_models(self.markets))
-        self.models.update(create_market_load_factor_models(self.markets))
+        self.models.update(
+            create_market_load_factor_models(self.markets, load_factor_model=load_factor_model)
+        )
+
+    # Tolerance [%] on each last-historical-year share sum vs 100%.
+    _SHARE_SUM_TOLERANCE = 0.2
+
+    def _validate_market_shares(self):
+        """Error if the declared market shares are not internally consistent.
+
+        Three sums must each reach 100% within ``_SHARE_SUM_TOLERANCE``:
+
+        - ``rpk_share_last_historical_year`` over all passenger markets,
+        - ``rtk_share_last_historical_year`` over all freight markets,
+        - ``energy_share_last_historical_year`` over all markets (passenger + freight).
+
+        The flattened ``<market_id>_<leaf>`` values are read from
+        ``self.parameters``. These shares split the last-historical-year traffic
+        and energy across markets, so a sum off 100% silently rescales the whole
+        scenario; a deviation beyond the tolerance is a hard error rather than a
+        warning.
+        """
+        tol = self._SHARE_SUM_TOLERANCE
+        passenger_ids = [m.id for m in self.markets.get(traffic_type="passenger")]
+        freight_ids = [m.id for m in self.markets.get(traffic_type="freight")]
+        all_ids = self.markets.get_ids()
+
+        def _share_sum(ids, leaf):
+            return sum(float(getattr(self.parameters, f"{mid}_{leaf}", 0.0) or 0.0) for mid in ids)
+
+        checks = (
+            (
+                "rpk_share_last_historical_year (passenger markets)",
+                passenger_ids,
+                "rpk_share_last_historical_year",
+            ),
+            (
+                "rtk_share_last_historical_year (freight markets)",
+                freight_ids,
+                "rtk_share_last_historical_year",
+            ),
+            (
+                "energy_share_last_historical_year (all markets)",
+                all_ids,
+                "energy_share_last_historical_year",
+            ),
+        )
+        errors = []
+        for label, ids, leaf in checks:
+            if not ids:
+                continue
+            total = _share_sum(ids, leaf)
+            if abs(total - 100.0) > tol:
+                errors.append(f"  - {label}: sums to {total:.4f}% (expected 100% ± {tol}%)")
+        if errors:
+            raise ValueError(
+                "Inconsistent market shares in the markets data file "
+                f"(must each sum to 100% ± {tol}%):\n" + "\n".join(errors)
+            )
 
     def _initialize_generic_energy(self):
         """Initialize generic energy resources, processes, and carriers.
@@ -1519,6 +1634,26 @@ class AeroMAPSProcess(object):
                 data[key] = pd.Series([0.0])  # initialize to future interpolation type.
         return data
 
+    def _get_model_instance(self, model_cls):
+        """Return the first selected model instance of ``model_cls`` (or None).
+
+        Searches the nested ``self.models`` standards/customs structure (same shape
+        ``check_instance_in_dict`` walks). Used to expose a named handle to a model that
+        is selected via ``models.standards`` rather than constructed here.
+        """
+
+        def search(d):
+            for value in d.values():
+                if isinstance(value, model_cls):
+                    return value
+                if isinstance(value, dict):
+                    found = search(value)
+                    if found is not None:
+                        return found
+            return None
+
+        return search(self.models)
+
     def _initialize_disciplines(self):
         """Wrap models as GEMSEO disciplines and configure coupling.
 
@@ -1559,6 +1694,19 @@ class AeroMAPSProcess(object):
             self.fleet_model._initialize_df()
         else:
             self.fleet = None
+
+        # Push fleet efficiency model: mirror self.fleet_model above — expose a named
+        # handle and resolve+inject its input files. The instance lives in the selected
+        # models_efficiency_push standard; it is None when that standard is not used.
+        # Each fleet_push file resolves like any AeroMAPS data file (user override / the
+        # ``default`` keyword / package default config). Injected before custom_setup()
+        # (run inside check_instance_in_dict) reads it.
+        self.push_fleet_model = self._get_model_instance(PassengerAircraftEfficiencyFleetPush)
+        if self.push_fleet_model is not None:
+            self.push_fleet_model.input_files = {
+                fkey: str(self._resolve_config_path("models", "fleet_push", fkey))
+                for fkey in PUSH_FLEET_INPUT_FILE_KEYS
+            }
 
         def check_instance_in_dict(d):
             # todo rename that function as it is now clearly much more than just checking instance in dict... ;)
@@ -1655,6 +1803,23 @@ class AeroMAPSProcess(object):
             range(self.parameters.prospection_start_year - 1, self.parameters.end_year + 1)
         )
 
+    def _check_renamed_inputs(self):
+        """Raise a clear error if a user config carries a renamed ``_2019`` key.
+
+        See ``RENAMED_INPUTS`` / ``RENAMED_INPUT_SUFFIXES``. Scans the applied
+        parameter names (every user surface funnels into ``self.parameters``);
+        no internal code emits these old patterns, so this is rename-breakage
+        detection only, never a general typo validator.
+        """
+        for key in list(self.parameters.__dict__):
+            new_name = _renamed_input_replacement(key)
+            if new_name is not None:
+                raise ValueError(
+                    f"input '{key}' was renamed to '{new_name}' "
+                    "(prospection_start_year is now flexible). "
+                    "Update your config — no backward-compat alias is provided."
+                )
+
     def _initialize_inputs(self, use_defaults=True):
         """Initialize model parameters from JSON and vector inputs.
 
@@ -1743,7 +1908,7 @@ class AeroMAPSProcess(object):
         Example JSON format:
         {
             "other_float_data": {
-                "short_range_energy_share_2019": 10.5,
+                "short_range_energy_share_last_historical_year": 10.5,
                 ...
             },
             "other_vector_data": {
@@ -1786,6 +1951,13 @@ class AeroMAPSProcess(object):
 
             for param_name, value in other_vector_data.items():
                 if isinstance(value, list) and years_index is not None:
+                    if len(value) != len(years_index):
+                        raise ValueError(
+                            f"Vector input '{param_name}' has {len(value)} values but its "
+                            f"'years' index has {len(years_index)} entries. "
+                            f"The value list and the declared 'years' array must be the "
+                            f"same length."
+                        )
                     new_series = pd.Series(value, index=years_index)
                     existing = getattr(self.parameters, param_name, None)
                     if isinstance(existing, pd.Series):

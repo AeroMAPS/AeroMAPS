@@ -15,6 +15,17 @@ class Parameters:
 
     """
 
+    @property
+    def last_historical_year(self):
+        """Last observed/calibration year, derived from ``prospection_start_year``.
+
+        Behaves like the other year bounds (``prospection_start_year``,
+        ``end_year``) when read off a ``Parameters`` instance, but is computed
+        rather than stored so it can never drift out of sync with
+        ``prospection_start_year`` and is never persisted to JSON.
+        """
+        return self.prospection_start_year - 1
+
     def to_dict(self):
         """
         Return a dictionary representation of the parameters.

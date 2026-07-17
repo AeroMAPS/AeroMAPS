@@ -26,6 +26,8 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
+from aeromaps.models.base import aeromaps_interpolation_function
+
 
 # Despite the generic energy module, we do not plan yet to reach that levl of genericity
 # for the available aircraft energy types in the fleet model.
@@ -57,6 +59,36 @@ class FleetPerformanceMixin:
     has already been executed (i.e., ``aircraft_share`` columns are present
     in ``self.df``).
     """
+
+    def _continuous_improvement_factor(self, params):
+        """Per-year multiplicative energy factor for an aircraft (default 1.0).
+
+        ``params.continuous_improvement_factor_energy`` is an optional
+        ``AeroMapsCustomDataType`` (years/values). When present, it is interpolated
+        with the shared ``aeromaps_interpolation_function`` (honouring its declared
+        ``method`` and ``positive_constraint``, with the last value held constant
+        beyond the final reference year), exactly like every other custom data type
+        in AeroMAPS. The resulting series spans ``prospection_start_year..end_year``;
+        any historical years in ``self.df.index`` are filled with 1.0 (no
+        improvement). When the field is absent, returns an all-ones array so the
+        base ``energy_per_ask`` is used unchanged. Applied on top of the resolved
+        (absolute or relative) base energy intensity.
+        """
+        cdt = getattr(params, "continuous_improvement_factor_energy", None)
+        if cdt is None:
+            return np.ones(len(self.df.index))
+        series = aeromaps_interpolation_function(
+            self,
+            reference_years=cdt.years,
+            reference_years_values=cdt.values,
+            method=cdt.method,
+            positive_constraint=cdt.positive_constraint,
+            model_name="continuous_improvement_factor_energy",
+        )
+        # The shared interpolator only assigns prospection_start_year..end_year,
+        # leaving historical years as NaN on the model index; fill them with 1.0
+        # (no improvement) so the factor is neutral over the historical period.
+        return series.reindex(self.df.index).fillna(1.0).values
 
     def _compute_energy_consumption_and_share_wrt_energy_type(self):
         """Compute energy consumption and fleet share by energy type.
@@ -94,11 +126,16 @@ class FleetPerformanceMixin:
                 subcategory_key = f"{category.name}:{subcategory.name}"
 
                 if i == 0:
+                    # Reference aircraft may also carry a per-year improvement factor
+                    # (absent → all-ones), so old/recent references can improve over
+                    # time exactly like new aircraft.
                     initial_energy_consumption = (
                         subcategory.old_reference_aircraft.energy_per_ask
+                        * self._continuous_improvement_factor(subcategory.old_reference_aircraft)
                         * ref_old_aircraft_share
                         / 100
                         + subcategory.recent_reference_aircraft.energy_per_ask
+                        * self._continuous_improvement_factor(subcategory.recent_reference_aircraft)
                         * ref_recent_aircraft_share
                         / 100
                     )
@@ -131,6 +168,7 @@ class FleetPerformanceMixin:
 
                     energy_consumption = (
                         aircraft.resolved("energy_per_ask", recent_reference_aircraft)
+                        * self._continuous_improvement_factor(aircraft.parameters)
                         * aircraft_share
                         / 100
                     )
@@ -576,9 +614,26 @@ class FleetPerformanceMixin:
             prefix = f"{category.name}:{first_subcategory.name}"
             old_ref_share = self.df[f"{prefix}:old_reference:aircraft_share"].values
 
+            # Energy per ASK carries a per-year continuous improvement factor in the
+            # fleet mean — applied to every aircraft *including the references* (see
+            # _compute_energy_consumption_and_share_wrt_energy_type). To keep the
+            # contribution decomposition closing exactly onto the mean, the recent-
+            # reference baseline and the old-reference value must carry the same
+            # factor. The other metrics (DOC/NOx/soot) have no such factor.
+            cif_recent = self._continuous_improvement_factor(ref_recent)
+            cif_old = self._continuous_improvement_factor(ref_old)
+
             for col_suffix, ref_attr in metric_specs:
-                val_recent = float(getattr(ref_recent, ref_attr))
-                val_old = float(getattr(ref_old, ref_attr))
+                is_energy = col_suffix == "energy_efficiency_contribution"
+                val_recent = float(getattr(ref_recent, ref_attr)) * (
+                    cif_recent if is_energy else 1.0
+                )
+                val_old = float(getattr(ref_old, ref_attr)) * (cif_old if is_energy else 1.0)
+                # Store the (possibly time-varying) recent-reference baseline so the
+                # plot stacks the contributions from the same line the mean uses.
+                temp_dict[f"{prefix}:recent_reference:{col_suffix}_baseline"] = np.broadcast_to(
+                    val_recent, old_ref_share.shape
+                ).copy()
                 # Old reference: negative contribution (less efficient than recent ref)
                 temp_dict[f"{prefix}:old_reference:{col_suffix}"] = (
                     old_ref_share / 100 * (val_recent - val_old)
@@ -590,9 +645,15 @@ class FleetPerformanceMixin:
                 subcat_key = f"{category.name}:{subcategory.name}"
                 for aircraft in self._sorted_aircraft(subcategory):
                     aircraft_share = self.df[f"{subcat_key}:{aircraft.name}:aircraft_share"].values
+                    cif_aircraft = self._continuous_improvement_factor(aircraft.parameters)
                     for col_suffix, ref_attr in metric_specs:
-                        val_recent = float(getattr(ref_recent, ref_attr))
-                        aircraft_val = aircraft.resolved(ref_attr, ref_recent)
+                        is_energy = col_suffix == "energy_efficiency_contribution"
+                        val_recent = float(getattr(ref_recent, ref_attr)) * (
+                            cif_recent if is_energy else 1.0
+                        )
+                        aircraft_val = aircraft.resolved(ref_attr, ref_recent) * (
+                            cif_aircraft if is_energy else 1.0
+                        )
                         temp_dict[f"{subcat_key}:{aircraft.name}:{col_suffix}"] = (
                             aircraft_share / 100 * (val_recent - aircraft_val)
                         )
@@ -630,10 +691,16 @@ class FleetPerformanceMixin:
             prefix = f"{category.name}:{first_subcategory.name}"
             old_share = self.df[f"{prefix}:old_reference:aircraft_share"].values  # 0–100
 
+            # Energy references improve over time via the continuous improvement
+            # factor in the fleet mean; mirror that here so the renewal-only line is
+            # consistent. Other metrics have no such factor.
+            cif_recent = self._continuous_improvement_factor(ref_recent)
+            cif_old = self._continuous_improvement_factor(ref_old)
+
             metrics = {
                 "energy_renewal_only": (
-                    float(ref_old.energy_per_ask),
-                    float(ref_recent.energy_per_ask),
+                    float(ref_old.energy_per_ask) * cif_old,
+                    float(ref_recent.energy_per_ask) * cif_recent,
                 ),
                 "doc_renewal_only": (
                     float(ref_old.doc_non_energy_base),
