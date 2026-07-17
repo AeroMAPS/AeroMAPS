@@ -1,11 +1,31 @@
+# =============================================================================
+# AeroMAPS — Fleet definition (bottom-up fleet model)
+# =============================================================================
+# Referenced from the entry config as:
+#   models.fleet.fleet_model_data_file
+# Only used when a *bottom-up* efficiency bundle is selected in
+# models.standards (e.g. models_efficiency_bottom_up). The aircraft and
+# reference_aircraft IDs used below are defined in aircraft_inventory.yaml.
+#
+# Structure (two top-level lists):
+#   subcategories : the fleet renewal decompositions. Each holds a market `share`, the
+#                   two reference aircraft it is benchmarked against, and the
+#                   list of new aircraft that progressively replace it.
+#   categories    : one entry per market served (`market_served`), grouping
+#                   subcategories and carrying fleet-renewal parameters
+#                   (`life`, `limit`, `calibration_subcategory`).
+#
+# See docs/books/configuration.md for the full reference.
+# =============================================================================
+
 subcategories:
-  - id: sr_conventional_nb
+  - id: sr_conventional_nb            # unique ID, referenced from `categories` below
     name: "SR conventional narrow-body"
-    share: 20.0
-    reference_aircraft:
-      old_ref: sr_conventional_nb_old
-      recent_ref: sr_conventional_nb_recent
-    aircraft:
+    share: 20.0                       # market share within its parent category [%]
+    reference_aircraft:               # baselines for measuring improvements (defined in aircraft_inventory.yaml)
+      old_ref: sr_conventional_nb_old       # in-service "old" generation
+      recent_ref: sr_conventional_nb_recent # in-service "recent" generation
+    aircraft:                         # new aircraft replacing this subcategory, in entry-into-service order
       - sr_nb_2035
       - sr_nb_2045
 
@@ -49,13 +69,24 @@ subcategories:
       - lr_wb_2045
 
 
+# Categories group subcategories and carry fleet-renewal parameters:
+#   market_served : ID of the market this category serves (as defined in the
+#           markets configuration)
+#   life  : average operational lifetime of aircraft in the category [yr]
+#   limit : market-share floor below which a share is set to zero [%]
+#           (needed for the S-curve fleet-renewal parametrization)
+#   calibration_subcategory : subcategory whose reference aircraft are calibrated
+#           on the market's last-historical-year energy/RPK shares. Optional only
+#           when the category has a single subcategory (unambiguous fallback);
+#           with several subcategories, omitting it skips calibration with a
+#           warning and leaves the fleet wrongly efficient mid-term.
 categories:
   - market_served: short_range
     parameters:
       life: 25
       limit: 2
     calibration_subcategory: sr_conventional_nb
-    subcategories:
+    subcategories:                    # must reference subcategory IDs defined above
       - sr_conventional_nb
       - sr_regional_tp
       - sr_hydrogen_nb

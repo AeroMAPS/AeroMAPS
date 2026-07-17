@@ -9,6 +9,7 @@ nav:
       - books/index.md # Main documentation page
       - GUI:
           - books/documentation_gui.md
+      - Configuration files: books/configuration.md
       - Models documentation:
           - Air transport: books/documentation_airtransport.md
           - Impacts: books/documentation_impacts.md
