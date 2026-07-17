@@ -601,7 +601,7 @@ Landed:
 
 Landed:
 - **`RPKMarket`**, **`RPKMeasuresMarket`**, **`RPKReferenceMarket`**, **`RPKAggregator`** — per-passenger-market RPK with optional measures and reference trajectories; aggregator emits the legacy `rpk` / `annual_growth_rate_passenger` / `cagr_rpk` / `prospective_evolution_rpk` names so downstream models are unaffected. All use `model_type="custom"` (I/O names built at `__init__` time; no `custom_setup` hook needed).
-- **`RTKMarket`**, **`RTKReferenceMarket`** — per-freight-market RTK keeping legacy output names (`rtk`, `rtk_reference`, …) for full downstream compatibility. Only one freight market supported (raises if multiple are configured).
+- **`RTKMarket`**, **`RTKReferenceMarket`** — per-freight-market RTK. Multiple freight markets are supported: the factory creates one `RTKMarket` per freight market and `RTKAggregator` sums the per-market `rtk_<fmid>` into the total `rtk` (the original single-freight-market guard has been lifted).
 - **`ASKMarket`**, **`ASKAggregator`** — per-passenger-market ASK derived from `<mid>_rpk / (<mid>_load_factor / 100)`; aggregator emits legacy `ask`.
 - **`LoadFactorMarket`**, **`LoadFactorAggregator`** — per-passenger-market load factor (quadratic model); aggregator recombines into global `load_factor` consumed by downstream disciplines.
 - **`markets_factory.py`** — factory helpers (`create_market_rpk_models`, `create_market_rpk_aggregator`, `create_market_ask_models`, `create_market_load_factor_models`, `create_market_rtk_models`) that wire the `MarketManager` into discipline instantiation; optional sub-models (measures, reference) are only created when the corresponding YAML sub-group is present.

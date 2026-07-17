@@ -10,12 +10,48 @@ on:
     - cron: '0 4 * * 1'   # Monday 06:00 (UTC+2)
 
 jobs:
+  check-run:
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.check.outputs.should_run }}
+      is_light: ${{ steps.check.outputs.is_light }}
+    steps:
+      - name: Check if tests should run
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            # head_commit is unset for pull_request events; fetch the PR head commit message via the API instead.
+            COMMIT_MSG=$(gh api repos/${{ github.repository }}/commits/${{ github.event.pull_request.head.sha }} --jq .commit.message)
+          else
+            COMMIT_MSG=""
+          fi
+
+          # schedule, manual dispatches and reusable-workflow calls always run the full suite,
+          # regardless of any [skip-tests]/[tests-light] tag in the commit message.
+          if [[ "${{ github.event_name }}" != "pull_request" ]]; then
+            echo "should_run=true" >> $GITHUB_OUTPUT
+            echo "is_light=false" >> $GITHUB_OUTPUT
+          elif [[ "$COMMIT_MSG" == *"[skip-tests]"* ]]; then
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            echo "is_light=false" >> $GITHUB_OUTPUT
+          elif [[ "$COMMIT_MSG" == *"[tests-light]"* ]]; then
+            echo "should_run=true" >> $GITHUB_OUTPUT
+            echo "is_light=true" >> $GITHUB_OUTPUT
+          else
+            echo "should_run=true" >> $GITHUB_OUTPUT
+            echo "is_light=false" >> $GITHUB_OUTPUT
+          fi
+
   tests:
+    needs: check-run
+    if: needs.check-run.outputs.should_run == 'true'
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: [ '3.10', '3.11' ]
-        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        python-version: ${{ fromJson(needs.check-run.outputs.is_light == 'true' && '["3.10"]' || '["3.10", "3.11"]') }}
+        os: ${{ fromJson(needs.check-run.outputs.is_light == 'true' && '["ubuntu-latest"]' || '["ubuntu-latest","windows-latest","macos-latest"]') }}
 
     steps:
       - uses: actions/checkout@v3
