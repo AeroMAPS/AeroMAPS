@@ -65,18 +65,13 @@ class _GlobalOutputsView:
     """
 
     def __init__(self, process: "MultiRegionalProcess"):
-        global_prefix = f"{process.global_namespace}:"
         first_region = process.regional_processes[process.list_regions()[0]]
         self.data = {
             "years": process.data["years"],
             "float_inputs": first_region.data.get("float_inputs", {}),
-            "vector_outputs": process.get_global_outputs(),
+            "vector_outputs": process.get_global_vector_outputs(),
             "climate_outputs": process.get_global_climate_outputs(),
-            "float_outputs": {
-                key[len(global_prefix) :]: value
-                for key, value in process.data["float_outputs"].items()
-                if key.startswith(global_prefix)
-            },
+            "float_outputs": process.get_global_float_outputs(),
         }
         self.pathways_manager = None
 
@@ -776,6 +771,18 @@ class MultiRegionalProcess(AeroMAPSProcess):
                     top_level_input[namespaced_key] = regional_climate[col]
                     climate_series[namespaced_key] = regional_climate[col]
 
+        # Fail with an explicit message when an aggregation variable is missing from
+        # the regional outputs, instead of GEMSEO's grammar error at execution.
+        missing = [
+            key for key in self.models["aggregator"].input_names if key not in top_level_input
+        ]
+        if missing:
+            raise ValueError(
+                f"Aggregation variables missing from the regional outputs: {missing}. "
+                f"Every region must produce (as a vector, climate or float output) every "
+                f"variable listed in the 'aggregation' block of the regionalisation file."
+            )
+
         # Execute the top-level disciplines (aggregator + optional top-level models)
         # as a standard MDA, fed with the regional outputs.
         self._top_level_mda_chain.execute(top_level_input)
@@ -791,8 +798,8 @@ class MultiRegionalProcess(AeroMAPSProcess):
                     climate_series[key] = value
                 else:
                     vector_series[key] = value
-            elif isinstance(value, (int, float)):
-                self.data["float_outputs"][key] = value
+            elif isinstance(value, (int, float, np.floating, np.integer)):
+                self.data["float_outputs"][key] = float(value)
 
         # Build DataFrames efficiently using concat to avoid fragmentation
         if vector_series:
@@ -851,8 +858,8 @@ class MultiRegionalProcess(AeroMAPSProcess):
                         climate_series[key] = value
                     else:
                         vector_series[key] = value
-                elif isinstance(value, (int, float)):
-                    self.data["float_outputs"][key] = value
+                elif isinstance(value, (int, float, np.floating, np.integer)):
+                    self.data["float_outputs"][key] = float(value)
 
         # Build DataFrames efficiently using concat to avoid fragmentation
         if vector_series:
@@ -918,8 +925,8 @@ class MultiRegionalProcess(AeroMAPSProcess):
         result.columns = [c[len(prefix) :] for c in cols]
         return result
 
-    def get_regional_outputs(self, region_id: str) -> pd.DataFrame:
-        """Get outputs for a specific region from vector_outputs.
+    def get_regional_vector_outputs(self, region_id: str) -> pd.DataFrame:
+        """Get vector outputs for a specific region from vector_outputs.
 
         Parameters
         ----------
@@ -936,13 +943,13 @@ class MultiRegionalProcess(AeroMAPSProcess):
 
         return self._strip_namespace(self.data["vector_outputs"], region_id)
 
-    def get_global_outputs(self) -> pd.DataFrame:
-        """Get aggregated global outputs from vector_outputs.
+    def get_global_vector_outputs(self) -> pd.DataFrame:
+        """Get aggregated global vector outputs from vector_outputs.
 
         Returns
         -------
         pd.DataFrame
-            DataFrame with global outputs (namespace removed from columns).
+            DataFrame with global vector outputs (namespace removed from columns).
         """
         return self._strip_namespace(self.data["vector_outputs"], self._global_namespace)
 
@@ -974,6 +981,46 @@ class MultiRegionalProcess(AeroMAPSProcess):
             DataFrame with global climate outputs (namespace removed from columns).
         """
         return self._strip_namespace(self.data["climate_outputs"], self._global_namespace)
+
+    def _get_namespace_float_outputs(self, namespace: str) -> Dict[str, float]:
+        """Return the float outputs of one namespace, prefix stripped."""
+        prefix = f"{namespace}:"
+        return {
+            key[len(prefix) :]: value
+            for key, value in self.data["float_outputs"].items()
+            if key.startswith(prefix)
+        }
+
+    def get_regional_float_outputs(self, region_id: str) -> Dict[str, float]:
+        """Get float (scalar) outputs for a specific region from float_outputs.
+
+        Parameters
+        ----------
+        region_id
+            The region identifier (e.g., "FR", "DE").
+
+        Returns
+        -------
+        Dict[str, float]
+            Dictionary of the region's float outputs (namespace removed from keys).
+        """
+        if region_id not in self._region_ids:
+            raise KeyError(f"Region '{region_id}' not found. Available: {self._region_ids}")
+
+        return self._get_namespace_float_outputs(region_id)
+
+    def get_global_float_outputs(self) -> Dict[str, float]:
+        """Get aggregated global float (scalar) outputs from float_outputs.
+
+        Only float variables listed in the ``aggregation`` block of the
+        regionalisation file are aggregated.
+
+        Returns
+        -------
+        Dict[str, float]
+            Dictionary of global float outputs (namespace removed from keys).
+        """
+        return self._get_namespace_float_outputs(self._global_namespace)
 
     def list_regions(self) -> List[str]:
         """List all region identifiers.
@@ -1189,13 +1236,14 @@ class MultiRegionalProcess(AeroMAPSProcess):
         -------
         dict
             Dictionary mapping DataFrame names to pandas DataFrame instances.
-            Includes vector_outputs, climate_outputs, float_outputs, and global_outputs.
+            Includes vector_outputs, climate_outputs, float_outputs, and
+            global_vector_outputs.
         """
         return {
             "vector_outputs": self.data["vector_outputs"].copy(),
             "climate_outputs": self.data["climate_outputs"].copy(),
             "float_outputs": self._get_float_outputs_df(),
-            "global_outputs": self.get_global_outputs(),
+            "global_vector_outputs": self.get_global_vector_outputs(),
         }
 
     def write_json(self, file_name: str):
@@ -1299,7 +1347,7 @@ class MultiRegionalProcess(AeroMAPSProcess):
         """
         with pd.ExcelWriter(file_name) as writer:
             # Overall (aggregated) vector and climate outputs
-            global_df = self.get_global_outputs()
+            global_df = self.get_global_vector_outputs()
             if not global_df.empty:
                 global_df.to_excel(writer, sheet_name="Overall Outputs")
 
@@ -1314,7 +1362,7 @@ class MultiRegionalProcess(AeroMAPSProcess):
 
             # Regional outputs (two sheets per region, limited to avoid Excel limits)
             for region_id in self._region_ids[:20]:  # Excel has sheet limits
-                regional_df = self.get_regional_outputs(region_id)
+                regional_df = self.get_regional_vector_outputs(region_id)
                 if not regional_df.empty:
                     regional_df.to_excel(writer, sheet_name=f"Region_{region_id}")
 

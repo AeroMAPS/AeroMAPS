@@ -145,7 +145,7 @@ def create_multi_regional_process(
     ...     print(f"{region_id}: {regional_proc.data['vector_outputs']['co2_emissions'].iloc[-1]}")
     >>>
     >>> # Get aggregated global results
-    >>> global_outputs = process.get_global_outputs()
+    >>> global_outputs = process.get_global_vector_outputs()
     """
     return MultiRegionalProcess(
         configuration_file=configuration_file,
