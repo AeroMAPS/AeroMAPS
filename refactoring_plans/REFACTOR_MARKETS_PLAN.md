@@ -346,6 +346,12 @@ Each per-tutorial set is a subset of the §A–F union. **No tutorial reveals a 
 
 **One discipline instance per market** (approach A), consistent with the energy carriers pattern. Each instance has a generic compute signature; GEMSEO grammars stay flat. Cost: N disciplines instead of 1, negligible overhead.
 
+**Exception — cross-market (monolithic) disciplines.** The per-market pattern applies to the traffic chain (RPK/load factor/ASK) and per-market efficiency models. Models whose computation is inherently global remain a *single* discipline spanning all markets, iterating over market ids inside `compute()`:
+- the coupled demand models `RPKPriceIncomeElasticity` and `RPKLogisticIncomePriceElasticity` ([price_and_income_elasticity.py](aeromaps/models/air_transport/air_traffic/price_and_income_elasticity.py), [price_elasticity_logistic_income.py](aeromaps/models/air_transport/air_traffic/price_elasticity_logistic_income.py)): one global income trend and one price <-> demand MDA cycle — N per-market instances would duplicate the same global coupling;
+- aggregation models that sum per-market series into totals.
+
+When reading a model, the discipline granularity is stated in its class docstring.
+
 ### 3.7 Downstream model I/O: `AeroMAPSCustomModelWrapper` pattern
 
 A large part of the work is making **downstream models** (energy consumption, costs, emissions, etc.) wire correctly to dynamic market-named variables. GEMSEO connects disciplines by matching I/O names, so every downstream model must declare inputs/outputs that include market ids.
@@ -739,7 +745,7 @@ User upgrade path: default scenarios need no action; custom scenarios move marke
 | Aircraft in multiple markets via inventory duplication | Simpler than share-based binding; aircraft can have market-specific parameters (ASK/year, etc.) |
 | Subcategories stay fleet-internal | Downstream models only need market-level aggregates; subcategory share evolution is a fleet concern |
 | `AeroMAPSCustomModelWrapper` for downstream | Proven pattern (NOxEmissionIndexComplex); only viable approach for dynamic I/O names |
-| One discipline per market | Consistent with energy carriers pattern |
+| One discipline per market | Consistent with energy carriers pattern. Exception: globally-coupled models (demand elasticity, aggregators) stay monolithic across markets — see §3.6 |
 | Belly freight out of scope | Adds market-to-market coupling; follow-up once basic refactor stable |
 | Fleet prep before market phases | Reduces Phase 3 diff size and risk; lands independently; no wasted work even if market refactor is delayed |
 | Data-driven energy types in fleet | Orthogonal to market dimension but synergistic: simplifies Phase 4 `custom_setup()` implementations |

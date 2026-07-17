@@ -38,6 +38,11 @@ class RPKLogisticIncomePriceElasticity(AeroMAPSModel):
     It reads ``doc_net_energy_per_rpk_mean`` to close the cost <-> demand MDA cycle and
     aggregates the per-market reference trajectories into the total ``rpk_reference``.
 
+    Unlike the traffic/efficiency models (one discipline instance per market), this is a
+    single discipline spanning all passenger markets: the income trend and the
+    price <-> demand MDA coupling are global, so per-market instances would duplicate
+    the same global cycle N times.
+
     Parameters
     ----------
     name : str
@@ -138,9 +143,9 @@ class RPKLogisticIncomePriceElasticity(AeroMAPSModel):
         """Compute prospective RPK using a generalised logistic income trend adjusted for price.
 
         The global per-capita income trend is multiplied by the price index; the result is
-        split across passenger markets by their 2019 RPK share, multiplied by each market's
-        measures impact and summed into the total ``rpk``. Historic years are pinned to the
-        exogenous ``rpk_init`` split.
+        split across passenger markets by their last-historical-year RPK share, multiplied
+        by each market's measures impact and summed into the total ``rpk``. Historic years
+        are pinned to the exogenous ``rpk_init`` split.
         """
         rpk_init = input_data["rpk_init"]
         population = input_data["population"]
@@ -212,33 +217,23 @@ class RPKLogisticIncomePriceElasticity(AeroMAPSModel):
         n = self.end_year - self.prospection_start_year
         base_year = self.prospection_start_year - 1
         output_data = {}
-        rpk = rpk_no_elasticity = rpk_model_without_covid = rpk_reference = None
+        rpk = pd.Series(0.0, index=self.df.index)
+        rpk_reference = pd.Series(0.0, index=self.df.index)
+        # Sum of share_m * measures_m: aggregate-only outputs are rebuilt from this
+        # single weighting after the loop instead of being recomputed per market.
+        weighted_measures = pd.Series(0.0, index=self.df.index)
 
         for mid in self.passenger_market_ids:
             share = float(input_data[f"{mid}_rpk_share_last_historical_year"]) / 100
             measures_impact = self._full_series(input_data[f"rpk_{mid}_measures_impact"], 1.0)
+            weighted_measures += share * measures_impact
 
             rpk_m = rpk_model_total * share
             rpk_m.loc[hist_slice] = rpk_init.loc[hist_slice] * share
             rpk_m = rpk_m * measures_impact
 
-            rpk_m_no_elast = rpk_no_price_total * share
-            rpk_m_no_elast.loc[hist_slice] = rpk_init.loc[hist_slice] * share
-            rpk_m_no_elast = rpk_m_no_elast * measures_impact
-
-            rpk_m_wc = rpk_model_without_covid_raw * share * measures_impact
-
-            rpk = rpk_m if rpk is None else rpk + rpk_m
-            rpk_no_elasticity = (
-                rpk_m_no_elast if rpk_no_elasticity is None else rpk_no_elasticity + rpk_m_no_elast
-            )
-            rpk_model_without_covid = (
-                rpk_m_wc if rpk_model_without_covid is None else rpk_model_without_covid + rpk_m_wc
-            )
-            rpk_reference_m = self._full_series(input_data[f"rpk_reference_{mid}"], 0.0)
-            rpk_reference = (
-                rpk_reference_m if rpk_reference is None else rpk_reference + rpk_reference_m
-            )
+            rpk += rpk_m
+            rpk_reference += self._full_series(input_data[f"rpk_reference_{mid}"], 0.0)
 
             output_data[f"rpk_{mid}"] = rpk_m
             output_data[f"annual_growth_rate_rpk_{mid}"] = rpk_m.pct_change() * 100
@@ -248,6 +243,12 @@ class RPKLogisticIncomePriceElasticity(AeroMAPSModel):
             output_data[f"prospective_evolution_rpk_{mid}"] = 100 * (
                 rpk_m.loc[self.end_year] / rpk_m.loc[base_year] - 1
             )
+
+        # --- Aggregate-only series (no per-market output), built once from the weighting ---
+        rpk_no_elasticity = rpk_no_price_total.copy()
+        rpk_no_elasticity.loc[hist_slice] = rpk_init.loc[hist_slice]
+        rpk_no_elasticity = rpk_no_elasticity * weighted_measures
+        rpk_model_without_covid = rpk_model_without_covid_raw * weighted_measures
 
         # --- Totals ---
         reference_growth = pd.Series(float("nan"), index=self.df.index)
