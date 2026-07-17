@@ -43,6 +43,8 @@ jobs:
     steps:
       - name: Check deployment conditions
         id: check
+        env:
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
         run: |
           # Always deploy for workflow_dispatch
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
@@ -63,7 +65,7 @@ jobs:
           fi
           
           # For other branches, check commit message for [docs] keyword
-          COMMIT_MSG="${{ github.event.head_commit.message }}"
+          # (passed via env to avoid shell injection from commit messages)
           if [[ "$COMMIT_MSG" == *"[docs]"* ]]; then
             echo "should_deploy=true" >> $GITHUB_OUTPUT
           else

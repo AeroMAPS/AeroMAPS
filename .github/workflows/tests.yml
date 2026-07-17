@@ -21,6 +21,8 @@ jobs:
     steps:
       - name: Check if tests should run
         id: check
+        env:
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
         run: |
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             echo "should_run=true" >> $GITHUB_OUTPUT
@@ -34,10 +36,10 @@ jobs:
           elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
             echo "should_run=true" >> $GITHUB_OUTPUT
             echo "is_light=false" >> $GITHUB_OUTPUT
-          elif [[ "${{ github.event.head_commit.message }}" == *"[tests]"* ]]; then
+          elif [[ "$COMMIT_MSG" == *"[tests]"* ]]; then
             echo "should_run=true" >> $GITHUB_OUTPUT
             echo "is_light=false" >> $GITHUB_OUTPUT
-          elif [[ "${{ github.event.head_commit.message }}" == *"[tests-light]"* ]]; then
+          elif [[ "$COMMIT_MSG" == *"[tests-light]"* ]]; then
             echo "should_run=true" >> $GITHUB_OUTPUT
             echo "is_light=true" >> $GITHUB_OUTPUT
           else
