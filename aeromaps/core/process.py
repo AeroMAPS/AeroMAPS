@@ -64,6 +64,15 @@ from aeromaps.models.impacts.generic_energy_model.common.energy_carriers_factory
     AviationEnergyCarriersFactory,
 )
 
+# Generic offsettings models imports
+from aeromaps.models.impacts.generic_offsettings_model.common.offsettings_manager import (
+    OffsettingMechanismManager,
+    OffsettingMechanismMetadata,
+)
+from aeromaps.models.impacts.generic_offsettings_model.common.offsettings_factory import (
+    CarbonOffsettingsFactory,
+)
+
 # TODO: investigate if this should be handle in a model layer
 # Markets registry
 from aeromaps.models.air_transport.markets.market import Market
@@ -215,6 +224,11 @@ class AeroMAPSProcess(object):
     pathways_manager
         EnergyCarrierManager instance describing available energy
         pathways.
+    offsettings_data
+        Parsed configuration data for carbon offsetting mechanisms.
+    offsettings_manager
+        OffsettingMechanismManager instance describing available
+        offsetting mechanisms.
     climate_historical_data
         Historical climate dataset used by climate-related models.
     """
@@ -253,6 +267,9 @@ class AeroMAPSProcess(object):
         """
         # Initialize pathways_manager to None - will be populated if energy models are used
         self.pathways_manager = None
+
+        # Initialize offsettings_manager to None - will be populated if offsettings models are used
+        self.offsettings_manager = None
 
         custom_logger_config(logging.getLogger("gemseo.utils.source_parsing"))
 
@@ -456,6 +473,7 @@ class AeroMAPSProcess(object):
         self._initialize_climate_model()
         self._initialize_lca_model()
         self._initialize_generic_energy()
+        self._initialize_offsettings()
         self._initialize_vector_inputs()
 
         # Fail loudly on stale `_2019` config keys (renamed when prospection_start_year
@@ -1747,6 +1765,83 @@ class AeroMAPSProcess(object):
         self.models.update(
             AviationEnergyCarriersFactory.instantiate_energy_carriers_models(
                 self.energy_carriers_data, self.pathways_manager
+            )
+        )
+
+    def _initialize_offsettings(self):
+        """Initialize generic carbon offsetting mechanisms.
+
+        This method reads offsetting mechanisms configurations, builds
+        mechanism metadata, flattens and converts inputs, and uses the
+        ``CarbonOffsettingsFactory`` to create per-mechanism cost models
+        and common use choice and means models, which are added to the
+        models dictionary.
+        Skipped if models.offsettings key is not present in the user configuration.
+        """
+        # Check if offsettings models should be used (key must be present in user config)
+        offsettings_config = self._get_user_config_value("models", "offsettings", default=None)
+        if offsettings_config is None:
+            return
+
+        offsettings_data_file_path = self._resolve_config_path(
+            "models",
+            "offsettings",
+            "offsettings_model_data_file",
+            default_filename="default_offsettings/offsettings_data.yaml",
+        )
+
+        self.offsettings_data = read_yaml_file(str(offsettings_data_file_path))
+
+        # The first level of the yaml conf file contains all the mechanisms
+        mechanisms = list(self.offsettings_data.keys())
+
+        # create a metadata manager for the mechanisms to easily sort them later
+        self.offsettings_manager = OffsettingMechanismManager()
+
+        for mechanism in mechanisms:
+            mechanism_data = self.offsettings_data[mechanism]
+            if "name" not in mechanism_data:
+                raise ValueError(
+                    "The offsetting mechanism configuration file should contain its name"
+                )
+            if "inputs" not in mechanism_data:
+                raise ValueError(
+                    "The offsetting mechanism configuration file should contain inputs"
+                )
+            self.offsettings_manager.add(
+                OffsettingMechanismMetadata(
+                    name=mechanism,
+                    category=mechanism_data.get("category"),
+                    default=mechanism_data.get("default", False),
+                    usage_type=(mechanism_data.get("inputs").get("usage") or {}).get("usage_type"),
+                    cost_model=mechanism_data.get("cost_model"),
+                )
+            )
+
+            inputs = mechanism_data["inputs"]
+            # Flatten the inputs dictionary and interpolate the necessary values
+            for key, value in inputs.items():
+                flattened_yaml = _flatten_dict(value, mechanism_data["name"])
+                inputs[key] = self._convert_custom_data_types(flattened_yaml)
+                # set data to parameters
+                self.parameters.from_dict(inputs[key])
+
+            mechanism_data["inputs"] = inputs
+
+            self.offsettings_data[mechanism] = mechanism_data
+
+            # Use the offsettings_factory to instantiate the adequate models based on the conf file and add these to the models dictionary
+            self.models.update(
+                CarbonOffsettingsFactory.create_mechanism(
+                    mechanism,
+                    self.offsettings_data,
+                )
+            )
+
+        # Instantiate the offsettings use choice and means models
+        self.models.update(
+            CarbonOffsettingsFactory.instantiate_offsettings_models(
+                self.offsettings_data, self.offsettings_manager
             )
         )
 

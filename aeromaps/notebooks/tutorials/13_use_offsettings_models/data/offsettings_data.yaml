@@ -1,0 +1,70 @@
+### CUSTOM OFFSETTINGS DATA FOR THE TUTORIAL - TOP-DOWN MODEL ###
+# Three offsetting mechanisms are defined here to illustrate the decomposition of the
+# carbon offsetting demand between carbon dioxide removal (itself decomposed into
+# DACCS and BECCS) and emissions avoidance credits.
+
+daccs:
+  # Metadata
+  name: "daccs"
+  category: "carbon_dioxide_removal"
+  cost_model: "top-down"
+  default: False
+  inputs:
+    # Policy: quantity-based usage, directly a quantity of CO2 offset [MtCO2]
+    usage:
+      usage_type: "quantity"
+      usage_quantity: !AeroMapsCustomDataType
+        years: [2020, 2030, 2040, 2050]
+        values: [0.0, 5.0, 30.0, 100.0]
+        method: linear
+    # Economics
+    economics:
+      mean_unit_cost: !AeroMapsCustomDataType
+        years: [2020, 2050]
+        values: [800.0, 250.0] # [€/tCO2] indicative decreasing cost trajectory for DACCS
+        method: linear
+      mean_unit_subsidy: !AeroMapsCustomDataType
+        years: [2020, 2050]
+        values: [0.0, 100.0] # [€/tCO2] indicative increasing subsidy for DACCS
+        method: linear
+  outputs:
+
+
+beccs:
+  # Metadata
+  name: "beccs"
+  category: "carbon_dioxide_removal"
+  cost_model: "top-down"
+  default: False
+  inputs:
+    # Policy: share-based usage, share of the total carbon offsetting demand [%]
+    usage:
+      usage_type: "share"
+      usage_share: !AeroMapsCustomDataType
+        years: [2020, 2030, 2040, 2050]
+        values: [0.0, 5.0, 10.0, 20.0]
+        method: linear
+    # Economics
+    economics:
+      mean_unit_cost: !AeroMapsCustomDataType
+        years: [2020, 2050]
+        values: [250.0, 150.0] # [€/tCO2] indicative decreasing cost trajectory for BECCS
+        method: linear
+  outputs:
+
+
+avoidance_credits:
+  # Metadata
+  name: "avoidance_credits"
+  category: "emissions_avoidance"
+  cost_model: "top-down"
+  default: True # fulfills the offsetting demand not covered by the other mechanisms
+  inputs:
+    usage:
+    # Economics
+    economics:
+      mean_unit_cost: !AeroMapsCustomDataType
+        years: [2020, 2050]
+        values: [5.0, 40.0] # [€/tCO2] indicative increasing cost trajectory for avoidance credits
+        method: linear
+  outputs:

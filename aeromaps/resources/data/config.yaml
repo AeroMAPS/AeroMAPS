@@ -35,6 +35,9 @@ models:
     resources_model_data_file: "./default_energy_carriers/resources_data.yaml"
     processes_model_data_file: "./default_energy_carriers/processes_data.yaml"
 
+  offsettings:
+    offsettings_model_data_file: "./default_offsettings/offsettings_data.yaml"
+
   life_cycle_assessment:
     lca_model_data_file: "./default_lca/default_lca_model.json"
     split_by: phase  # May be moved to config file in future versions

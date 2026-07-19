@@ -90,6 +90,13 @@ from aeromaps.plots.single_scenario.costs_generic import (
     ScenarioEnergyCapitalPlot,
 )
 
+from aeromaps.plots.single_scenario.offsettings import (
+    CarbonOffsetMixPlot,
+    CarbonOffsetMechanismsBreakdownPlot,
+    CarbonOffsetCostBreakdownPlot,
+    CarbonOffsetPricesPlot,
+)
+
 available_plots = {
     "air_transport_co2_emissions": AirTransportCO2EmissionsPlot,
     "air_transport_co2_emissions_detailed": AirTransportCO2EmissionsDetailedPlot,
@@ -147,6 +154,11 @@ available_plots = {
     "drop_in_supply_breakdown": DropInSupplyBreakdownPlot,
     "biofuel_mix": BiofuelMixPlot,
     "drop_in_shares_breakdown": DropInSharesBreakdownPlot,
+    # Generic offsettings-manager-driven plots
+    "carbon_offset_mix": CarbonOffsetMixPlot,
+    "carbon_offset_mechanisms_breakdown": CarbonOffsetMechanismsBreakdownPlot,
+    "carbon_offset_cost_breakdown": CarbonOffsetCostBreakdownPlot,
+    "carbon_offset_prices": CarbonOffsetPricesPlot,
     "annual_MACC_simple_fleet": AnnualMACCSimple,
     "shadow_carbon_pricing_simple_fleet": ShadowCarbonPriceSimple,
 }
