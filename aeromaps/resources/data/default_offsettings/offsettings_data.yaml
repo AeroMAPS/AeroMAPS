@@ -1,0 +1,84 @@
+### DEFAULT OFFSETTINGS DATA - TOP-DOWN MODEL ###
+# This file contains the default carbon offsetting mechanisms data for the generic offsettings models.
+# The total carbon offsetting demand (carbon_offset variable) is computed upstream by the
+# level and residual carbon offset models, and split here between the different mechanisms.
+
+# -----------------------------------------------------------------------------
+# Example of a generic mechanism for the top-down model (all possible fields) and options
+# -----------------------------------------------------------------------------
+# generic_example:
+#   # Metadata
+#   name: "generic_example"
+#   category: "carbon_dioxide_removal"  # or "emissions_avoidance", free to add more or decompose further (e.g. "dac", "beccs", "afforestation")
+#   cost_model: "top-down"              # only top-down supported for now, bottom-up models (e.g. plants deployment) could be added later
+#   default: False                      # if True, this mechanism fulfills the offsetting demand not covered by the other mechanisms and the usage specified is not used
+#   inputs:
+#     # Policy
+#     usage:
+#       usage_type: "share"             # or "quantity". If "share", the usage is a share of the total carbon offsetting demand, if "quantity", it is directly a quantity of CO2 offset.
+#       usage_share: !AeroMapsCustomDataType   # [%] of the total carbon offsetting demand
+#         years: [2020, 2030, 2040, 2050]
+#         values: [0.0, 5.0, 20.0, 50.0]
+#         method: linear
+#       # usage_quantity: !AeroMapsCustomDataType   # [MtCO2] directly offset by the mechanism
+#       #   years: [2020, 2050]
+#       #   values: [0.0, 100.0]
+#       #   method: linear
+#     # Economics
+#     economics:
+#       mean_unit_cost: !AeroMapsCustomDataType    # [€/tCO2] unit cost of the mechanism
+#         years: [2020, 2050]
+#         values: [700.0, 200.0]
+#         method: linear
+#       mean_unit_subsidy: !AeroMapsCustomDataType # [€/tCO2] optional subsidy on the mechanism
+#         years: []
+#         values: [0.0]
+#         method: linear
+#       mean_unit_tax: !AeroMapsCustomDataType     # [€/tCO2] optional tax on the mechanism
+#         years: []
+#         values: [0.0]
+#         method: linear
+#   outputs:
+# -----------------------------------------------------------------------------
+
+
+carbon_removal_credits:
+  # Metadata
+  name: "carbon_removal_credits"
+  category: "carbon_dioxide_removal"
+  cost_model: "top-down"
+  default: False
+  # Until level two used to separate inputs. Then concatenated in variable name.
+  inputs:
+    # Policy
+    usage:
+      usage_type: "share"
+      usage_share: !AeroMapsCustomDataType
+        years: [2020, 2030, 2040, 2050]
+        values: [0.0, 5.0, 20.0, 50.0]
+        method: linear
+    # Economics
+    economics:
+      mean_unit_cost: !AeroMapsCustomDataType
+        years: [2020, 2050]
+        values: [700.0, 200.0] # Indicative decreasing cost trajectory for durable carbon dioxide removal (e.g. DACCS/BECCS)
+        method: linear
+  outputs:
+
+
+avoidance_credits:
+  # Metadata
+  name: "avoidance_credits"
+  category: "emissions_avoidance"
+  cost_model: "top-down"
+  default: True # fulfills the offsetting demand not covered by the other mechanisms
+  inputs:
+    # Policy
+    usage:
+    # Economics
+    economics:
+      mean_unit_cost: !AeroMapsCustomDataType
+        years: [2020, 2050]
+        values: [5.0, 40.0] # Indicative increasing cost trajectory for avoidance/reduction credits as supply tightens
+        method: linear
+  outputs:
