@@ -924,7 +924,7 @@ class DetailedCo2EmissionsPerAircraft(AeroMAPSModel):
     the recent reference aircraft. The evolution of these contributions with respect
     to the reference (start) year is converted into avoided CO2 emissions using the
     same factors as DetailedCo2Emissions. By construction, the sum of all sub-lever
-    contributions equals the difference between co2_emissions_2019technology and
+    contributions equals the difference between co2_emissions_last_historical_year_technology and
     co2_emissions_including_aircraft_efficiency.
 
     With this convention, the "fleet renewal" sub-lever measures the gain from
@@ -981,7 +981,7 @@ class DetailedCo2EmissionsPerAircraft(AeroMAPSModel):
             "energy_per_rtk_mean": pd.Series([0.0]),
             "energy_per_rtk_mean_without_operations": pd.Series([0.0]),
             "co2_per_energy_mean": pd.Series([0.0]),
-            "co2_emissions_2019technology": pd.Series([0.0]),
+            "co2_emissions_last_historical_year_technology": pd.Series([0.0]),
             "co2_emissions_including_aircraft_efficiency": pd.Series([0.0]),
         }
         self.output_names = {
@@ -1101,7 +1101,7 @@ class DetailedCo2EmissionsPerAircraft(AeroMAPSModel):
         # Residual term (mainly traffic mix effects between markets) so that the
         # sum of all sub-levers equals the total aircraft efficiency lever
         total_lever = (
-            input_data["co2_emissions_2019technology"]
+            input_data["co2_emissions_last_historical_year_technology"]
             - input_data["co2_emissions_including_aircraft_efficiency"]
         ).loc[years]
         other = total_lever.fillna(0) - cumulated_contributions
