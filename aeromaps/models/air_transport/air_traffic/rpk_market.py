@@ -33,6 +33,8 @@ class RPKMeasuresMarket(AeroMAPSModel):
         Market identifier (e.g. ``'short_range'``, ``'domestic'``).
     """
 
+    MARKET_SCOPE = "per_market"
+
     def __init__(self, name: str, market_id: str, *args, **kwargs):
         super().__init__(name=name, model_type="custom", *args, **kwargs)
         mid = market_id
@@ -112,6 +114,8 @@ class RPKMarket(AeroMAPSModel):
         elasticity discipline can own the unsuffixed ``rpk_<mid>`` name without
         a GEMSEO output collision.
     """
+
+    MARKET_SCOPE = "per_market"
 
     def __init__(self, name: str, market_id: str, output_suffix: str = "", *args, **kwargs):
         super().__init__(name=name, model_type="custom", *args, **kwargs)
@@ -262,6 +266,8 @@ class RPKAggregator(AeroMAPSModel):
         is a counterfactual, independent of elasticity.
     """
 
+    MARKET_SCOPE = "aggregator"
+
     def __init__(
         self,
         name: str,
@@ -370,6 +376,8 @@ class RPKReferenceMarket(AeroMAPSModel):
         Market identifier.
     """
 
+    MARKET_SCOPE = "per_market"
+
     def __init__(self, name: str, market_id: str, *args, **kwargs):
         super().__init__(name=name, model_type="custom", *args, **kwargs)
         mid = market_id
@@ -468,6 +476,8 @@ class RPKElasticity(AeroMAPSModel):
     passenger_market_ids : list of str
         Ordered list of passenger market ids.
     """
+
+    MARKET_SCOPE = "cross_market"
 
     def __init__(self, name: str, passenger_market_ids: list, *args, **kwargs):
         super().__init__(name=name, model_type="custom", *args, **kwargs)

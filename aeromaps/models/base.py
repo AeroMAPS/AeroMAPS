@@ -46,6 +46,27 @@ class AeroMapsCustomDataType:
             self.positive_constraint = False
 
 
+# Allowed values for AeroMAPSModel.MARKET_SCOPE (the market-axis granularity of a
+# discipline). The *region* axis is orthogonal and is applied uniformly by
+# namespacing regional disciplines (see aeromaps.core.gemseo.apply_namespace_to_disciplines),
+# so a discipline never needs to declare its region granularity — only its market one.
+#
+#   "per_market"      One discipline INSTANCE per market, parameterised by a
+#                     ``market_id``; every I/O name carries that market as a token
+#                     (``ask_<mid>``, ``<mid>_rpk``). Instantiated in a loop by the
+#                     ``create_market_*`` factories.
+#   "cross_market"    A SINGLE instance spanning all markets: it loops over the
+#                     market registry internally and emits market-templated I/O
+#                     (the price-coupled demand models and the top-down aircraft
+#                     efficiency models).
+#   "aggregator"      A single instance that sums per-market series into the bare
+#                     total consumed downstream (``ask``, ``rpk``, ``load_factor``).
+#   "market_agnostic" Operates on already-aggregated totals and never touches the
+#                     market dimension (the default: most downstream cost/emissions
+#                     /climate models).
+MARKET_SCOPES = frozenset({"per_market", "cross_market", "aggregator", "market_agnostic"})
+
+
 class AeroMAPSModel(object):
     """
     Base class for AeroMAPS model components that provides shared state and utilities.
@@ -61,6 +82,13 @@ class AeroMAPSModel(object):
 
     Attributes
     ----------
+    MARKET_SCOPE
+        Class attribute declaring how this discipline relates to the market
+        dimension — one of :data:`MARKET_SCOPES`. Single source of truth for the
+        per-market / cross-market / aggregator / market-agnostic distinction, so
+        callers (and the N2 topology) don't have to infer it from the class name
+        or the factory wiring. Defaults to ``"market_agnostic"``; market-family
+        disciplines override it at the class level.
     name
         Name of the model instance.
     parameters
@@ -94,6 +122,10 @@ class AeroMAPSModel(object):
     years
         Numpy array of years spanning the model horizon.
     """
+
+    # Market-axis granularity of this discipline (see MARKET_SCOPES above).
+    # Market-family disciplines override this at the class level.
+    MARKET_SCOPE: str = "market_agnostic"
 
     def __init__(self, name, parameters=None, model_type="auto"):
         self.name = name

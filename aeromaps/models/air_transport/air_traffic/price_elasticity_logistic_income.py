@@ -51,6 +51,8 @@ class RPKLogisticIncomePriceElasticity(AeroMAPSModel):
         Ordered list of passenger market ids.
     """
 
+    MARKET_SCOPE = "cross_market"
+
     def __init__(self, name: str, passenger_market_ids: list, *args, **kwargs):
         super().__init__(name=name, model_type="custom", *args, **kwargs)
         self.passenger_market_ids = list(passenger_market_ids)

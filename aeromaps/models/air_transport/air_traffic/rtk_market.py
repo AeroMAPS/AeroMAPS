@@ -29,6 +29,8 @@ class RTKMarket(AeroMAPSModel):
         Market identifier for the freight market (e.g. ``'freight'``).
     """
 
+    MARKET_SCOPE = "per_market"
+
     def __init__(self, name: str, market_id: str, *args, **kwargs):
         super().__init__(name=name, model_type="custom", *args, **kwargs)
         mid = market_id
@@ -157,6 +159,8 @@ class RTKReferenceMarket(AeroMAPSModel):
         Market identifier for the freight market (e.g. ``'freight'``).
     """
 
+    MARKET_SCOPE = "per_market"
+
     def __init__(self, name: str, market_id: str, *args, **kwargs):
         super().__init__(name=name, model_type="custom", *args, **kwargs)
         mid = market_id
@@ -241,6 +245,8 @@ class RTKAggregator(AeroMAPSModel):
     freight_market_ids : list of str
         Ordered list of freight market ids.
     """
+
+    MARKET_SCOPE = "aggregator"
 
     def __init__(self, name: str, freight_market_ids: list, *args, **kwargs):
         super().__init__(name=name, model_type="custom", *args, **kwargs)

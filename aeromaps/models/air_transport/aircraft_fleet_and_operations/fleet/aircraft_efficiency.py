@@ -49,6 +49,8 @@ class PassengerAircraftEfficiencySimpleShares(AeroMAPSModel):
           self.input_names and self.output_names grammars.
     """
 
+    MARKET_SCOPE = "cross_market"
+
     def __init__(self, name="passenger_aircraft_efficiency_simple_shares", *args, **kwargs):
         super().__init__(name=name, model_type="custom", *args, **kwargs)
         self.markets = None
@@ -275,6 +277,8 @@ class PassengerAircraftEfficiencySimpleASK(AeroMAPSModel):
           self.input_names and self.output_names grammars.
     """
 
+    MARKET_SCOPE = "cross_market"
+
     def __init__(self, name="passenger_aircraft_efficiency_simple_ask", *args, **kwargs):
         super().__init__(name=name, model_type="custom", *args, **kwargs)
         self.markets = None
@@ -398,6 +402,8 @@ class PassengerAircraftEfficiencyComplex(AeroMAPSModel):
     fleet_model : FleetModel(AeroMAPSModel)
         FleetModel instance to be used for complex efficiency computations.
     """
+
+    MARKET_SCOPE = "cross_market"
 
     def __init__(self, name="passenger_aircraft_efficiency_complex", *args, **kwargs):
         super().__init__(name=name, model_type="custom", *args, **kwargs)
@@ -680,6 +686,8 @@ class FreightAircraftEfficiency(AeroMAPSModel):
         - I/O names are generated from configuration and passed to GEMSEO via
           self.input_names and self.output_names grammars.
     """
+
+    MARKET_SCOPE = "cross_market"
 
     def __init__(self, name="freight_aircraft_efficiency", *args, **kwargs):
         super().__init__(name=name, model_type="custom", *args, **kwargs)
@@ -1078,6 +1086,8 @@ class FreightAircraftEfficiencySimple(AeroMAPSModel):
         - <energy> is one of: dropin_fuel, hydrogen, electric.
         - I/O names are built dynamically from the market registry.
     """
+
+    MARKET_SCOPE = "cross_market"
 
     def __init__(self, name="freight_aircraft_efficiency", *args, **kwargs):
         super().__init__(name=name, model_type="custom", *args, **kwargs)

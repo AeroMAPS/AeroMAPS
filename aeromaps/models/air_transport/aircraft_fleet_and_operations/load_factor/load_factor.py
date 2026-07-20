@@ -74,6 +74,8 @@ class LoadFactorMarket(AeroMAPSModel):
         Market identifier.
     """
 
+    MARKET_SCOPE = "per_market"
+
     def __init__(self, name: str, market_id: str, *args, **kwargs):
         super().__init__(name=name, model_type="custom", *args, **kwargs)
         mid = market_id
@@ -176,6 +178,8 @@ class LoadFactorMarketSimpleInterpolation(AeroMAPSModel):
         Market identifier.
     """
 
+    MARKET_SCOPE = "per_market"
+
     def __init__(self, name: str, market_id: str, *args, **kwargs):
         super().__init__(name=name, model_type="custom", *args, **kwargs)
         mid = market_id
@@ -241,6 +245,8 @@ class LoadFactorAggregator(AeroMAPSModel):
     name : str
         Discipline name.
     """
+
+    MARKET_SCOPE = "aggregator"
 
     def __init__(self, name: str = "load_factor_aggregator", *args, **kwargs):
         super().__init__(name=name, model_type="custom", *args, **kwargs)

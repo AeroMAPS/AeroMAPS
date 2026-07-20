@@ -1237,6 +1237,8 @@ class FleetModel(FleetAssignmentMixin, FleetPerformanceMixin, AeroMAPSModel):
     - **Category means**: Weighted averages across subcategories for each category
     """
 
+    MARKET_SCOPE = "cross_market"
+
     def __init__(self, name="fleet_model", fleet=None, markets=None, *args, **kwargs):
         super().__init__(name, *args, **kwargs)
         self.fleet = fleet
