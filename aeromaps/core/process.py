@@ -705,6 +705,150 @@ class AeroMAPSProcess(object):
         """
         generate_n2_plot(self.disciplines)
 
+    @staticmethod
+    def _region_of(discipline):
+        """Return the region namespace of a discipline, or None if unnamespaced.
+
+        Multi-regional disciplines have their I/O renamed ``<region>:<var>`` by
+        :func:`aeromaps.core.gemseo.apply_namespace_to_discipline`; single-region
+        disciplines have no ``:`` prefix.
+        """
+        try:
+            for name in discipline.input_grammar.names:
+                if ":" in name:
+                    return name.split(":", 1)[0]
+        except Exception:
+            pass
+        return None
+
+    def describe_models(self, include_agnostic=False, scope=None, display=True):
+        """Summarise the disciplines wired into this process, by market scope.
+
+        Surfaces each discipline's :attr:`~aeromaps.models.base.AeroMAPSModel.MARKET_SCOPE`
+        (per-market / cross-market / aggregator / market-agnostic) together with the
+        market it is bound to, its region namespace (multi-regional runs) and its
+        I/O counts — the topology view that is otherwise only recoverable by reading
+        the factory wiring and the N2 plot.
+
+        Parameters
+        ----------
+        include_agnostic : bool
+            Include ``market_agnostic`` disciplines in the per-discipline table.
+            They are hidden by default (usually the large majority) but always
+            counted in the summary.
+        scope : str or None
+            If set (one of :data:`~aeromaps.models.base.MARKET_SCOPES`), restrict
+            the table to that scope only.
+        display : bool
+            If True, print the summary; the string is returned in either case.
+
+        Returns
+        -------
+        str
+            The formatted multi-line summary.
+        """
+        from aeromaps.models.base import MARKET_SCOPES
+
+        _ORDER = ["per_market", "cross_market", "aggregator", "market_agnostic"]
+
+        rows = []
+        counts = {s: 0 for s in _ORDER}
+        for discipline in getattr(self, "disciplines", []) or []:
+            model = getattr(discipline, "model", None)
+            if model is None:
+                continue
+            model_scope = getattr(model, "MARKET_SCOPE", "market_agnostic")
+            counts[model_scope] = counts.get(model_scope, 0) + 1
+
+            # Market binding: the market_id for per-market disciplines, the market
+            # count for the spanning ones, "-" when the discipline ignores markets.
+            if model_scope == "per_market":
+                market = str(getattr(model, "market_id", "?"))
+            elif model_scope in ("cross_market", "aggregator"):
+                ids = getattr(model, "passenger_market_ids", None) or getattr(
+                    model, "freight_market_ids", None
+                )
+                market = f"(all: {len(ids)})" if ids else "(all)"
+            else:
+                market = "-"
+
+            try:
+                n_in = len(list(discipline.input_grammar.names))
+                n_out = len(list(discipline.output_grammar.names))
+            except Exception:
+                n_in = n_out = "?"
+
+            rows.append(
+                {
+                    "scope": model_scope,
+                    "model": type(model).__name__,
+                    "instance": getattr(model, "name", None) or getattr(discipline, "name", "?"),
+                    "region": self._region_of(discipline) or "",
+                    "market": market,
+                    "n_in": n_in,
+                    "n_out": n_out,
+                }
+            )
+
+        # Row filtering for the table (summary always counts everything).
+        shown = rows
+        if scope is not None:
+            if scope not in MARKET_SCOPES:
+                raise ValueError(f"scope must be one of {sorted(MARKET_SCOPES)}; got {scope!r}")
+            shown = [r for r in shown if r["scope"] == scope]
+        elif not include_agnostic:
+            shown = [r for r in shown if r["scope"] != "market_agnostic"]
+
+        rank = {s: i for i, s in enumerate(_ORDER)}
+        shown.sort(key=lambda r: (rank.get(r["scope"], 99), r["market"], r["instance"]))
+
+        has_region = any(r["region"] for r in rows)
+
+        lines = [f"{type(self).__name__}: {len(rows)} disciplines"]
+        lines.append("")
+        lines.append("Market scope summary:")
+        for s in _ORDER:
+            lines.append(f"  {s:<16}{counts.get(s, 0):>4}")
+        lines.append(f"  {'-' * 20}")
+        lines.append(f"  {'total':<16}{len(rows):>4}")
+        lines.append("")
+
+        hidden = len(rows) - len(shown)
+        if shown:
+            # (key, header, max_width) — column widths are fitted to the data up to
+            # max_width; longer cells are truncated with an ellipsis to keep alignment.
+            cols = [("scope", "SCOPE", 15), ("model", "MODEL", 40), ("instance", "INSTANCE", 30)]
+            if has_region:
+                cols.append(("region", "REGION", 12))
+            cols += [("market", "MARKET", 14), ("n_in", "#IN", 4), ("n_out", "#OUT", 4)]
+
+            def _cell(value, width):
+                text = str(value)
+                if len(text) > width:
+                    text = text[: width - 1] + "…"
+                return f"{text:<{width}}  "
+
+            widths = {
+                key: min(maxw, max(len(header), *(len(str(r[key])) for r in shown)))
+                for key, header, maxw in cols
+            }
+            header = "  " + "".join(_cell(title, widths[key]) for key, title, _ in cols)
+            lines.append(header)
+            lines.append("  " + "-" * (len(header) - 2))
+            for r in shown:
+                lines.append("  " + "".join(_cell(r[key], widths[key]) for key, _, _ in cols))
+        if hidden and scope is None and not include_agnostic:
+            lines.append("")
+            lines.append(
+                f"  ({hidden} market_agnostic disciplines hidden; "
+                f"pass include_agnostic=True to show)"
+            )
+
+        output = "\n".join(lines)
+        if display:
+            print(output)
+        return output
+
     def list_available_plots(self):
         """List the names of supported plots.
 

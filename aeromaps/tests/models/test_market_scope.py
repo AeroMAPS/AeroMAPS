@@ -145,3 +145,23 @@ def test_demand_process_exposes_all_market_scopes():
         assert (
             expected in seen
         ), f"no {expected!r} discipline found in the demand process; saw {seen}"
+
+
+def test_describe_models_summary_and_filter():
+    """describe_models renders the scope summary and honours the scope filter."""
+    proc = create_process(configuration_file=str(CONFIG_DIR / "config_elasticity_demand.yaml"))
+
+    out = proc.describe_models(display=False)
+    assert "Market scope summary" in out
+    for scope in ("per_market", "cross_market", "aggregator", "market_agnostic"):
+        assert scope in out
+    # market_agnostic disciplines are hidden from the table by default
+    assert "hidden" in out
+
+    cross = proc.describe_models(scope="cross_market", display=False)
+    assert "RPKPriceIncomeElasticity" in cross  # a cross_market discipline is listed
+    assert "ASKMarket" not in cross  # per_market disciplines are filtered out
+    assert "ASKAggregator" not in cross  # aggregator disciplines are filtered out
+
+    with pytest.raises(ValueError):
+        proc.describe_models(scope="not_a_scope", display=False)
