@@ -50,6 +50,7 @@ class PassengerAircraftEfficiencySimpleShares(AeroMAPSModel):
     """
 
     MARKET_SCOPE = "cross_market"
+    MODEL_APPROACH = "top_down"
 
     def __init__(self, name="passenger_aircraft_efficiency_simple_shares", *args, **kwargs):
         super().__init__(name=name, model_type="custom", *args, **kwargs)
@@ -404,6 +405,7 @@ class PassengerAircraftEfficiencyComplex(AeroMAPSModel):
     """
 
     MARKET_SCOPE = "cross_market"
+    MODEL_APPROACH = "bottom_up"
 
     def __init__(self, name="passenger_aircraft_efficiency_complex", *args, **kwargs):
         super().__init__(name=name, model_type="custom", *args, **kwargs)

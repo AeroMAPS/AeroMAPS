@@ -18,7 +18,7 @@ from pathlib import Path
 import pytest
 
 from aeromaps import create_process
-from aeromaps.models.base import AeroMAPSModel, MARKET_SCOPES
+from aeromaps.models.base import AeroMAPSModel, MARKET_SCOPES, MODEL_APPROACHES
 
 from aeromaps.models.air_transport.air_traffic.ask_market import ASKAggregator, ASKMarket
 from aeromaps.models.air_transport.air_traffic.rpk_market import (
@@ -53,6 +53,17 @@ from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.aircraft_
 )
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_model import (
     FleetModel,
+)
+from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet_push.aircraft_efficiency_fleet_push import (
+    PassengerAircraftEfficiencyFleetPush,
+)
+from aeromaps.models.impacts.costs.airlines.direct_operating_costs import (
+    PassengerAircraftDocNonEnergyComplex,
+    PassengerAircraftDocNonEnergySimple,
+)
+from aeromaps.models.impacts.emissions.non_co2_emissions import (
+    NOxEmissionIndexComplex,
+    SootEmissionIndexComplex,
 )
 
 CONFIG_DIR = Path(__file__).parent.parent / "tested_configs"
@@ -96,9 +107,57 @@ PER_MARKET_CTORS = [
 ]
 
 
+# Modelling approach per discipline — only classes *exclusive* to one side of a
+# top-down/bottom-up family declare it; approach-agnostic models stay None.
+EXPECTED_APPROACH = {
+    PassengerAircraftEfficiencySimpleShares: "top_down",
+    PassengerAircraftDocNonEnergySimple: "top_down",
+    PassengerAircraftEfficiencyComplex: "bottom_up",
+    PassengerAircraftEfficiencyFleetPush: "bottom_up",
+    PassengerAircraftDocNonEnergyComplex: "bottom_up",
+    NOxEmissionIndexComplex: "bottom_up",
+    SootEmissionIndexComplex: "bottom_up",
+    FleetModel: "bottom_up",
+}
+
+# Approach-agnostic disciplines: shared across both wirings, or outside the split
+# (demand, traffic, load factor). These must stay None.
+APPROACH_AGNOSTIC = [
+    FreightAircraftEfficiency,  # used in both top_down and bottom_up efficiency groups
+    PassengerAircraftEfficiencySimpleASK,  # shared (top_down + push)
+    RPKMarket,
+    RPKPriceIncomeElasticity,
+    LoadFactorMarket,
+]
+
+
 def test_base_default_scope_is_market_agnostic():
     assert AeroMAPSModel.MARKET_SCOPE == "market_agnostic"
     assert AeroMAPSModel.MARKET_SCOPE in MARKET_SCOPES
+
+
+def test_base_default_approach_is_none():
+    assert AeroMAPSModel.MODEL_APPROACH is None
+
+
+@pytest.mark.parametrize(
+    "cls,approach", list(EXPECTED_APPROACH.items()), ids=[c.__name__ for c in EXPECTED_APPROACH]
+)
+def test_declared_approach_matches_and_is_valid(cls, approach):
+    assert (
+        cls.MODEL_APPROACH in MODEL_APPROACHES
+    ), f"{cls.__name__} declares an unknown MODEL_APPROACH {cls.MODEL_APPROACH!r}"
+    assert (
+        cls.MODEL_APPROACH == approach
+    ), f"{cls.__name__} MODEL_APPROACH is {cls.MODEL_APPROACH!r}; expected {approach!r}"
+
+
+@pytest.mark.parametrize("cls", APPROACH_AGNOSTIC, ids=[c.__name__ for c in APPROACH_AGNOSTIC])
+def test_approach_agnostic_disciplines_declare_none(cls):
+    assert cls.MODEL_APPROACH is None, (
+        f"{cls.__name__} is shared/outside the top-down/bottom-up split and must stay "
+        f"MODEL_APPROACH=None, got {cls.MODEL_APPROACH!r}"
+    )
 
 
 @pytest.mark.parametrize(
@@ -157,6 +216,11 @@ def test_describe_models_summary_and_filter():
         assert scope in out
     # market_agnostic disciplines are hidden from the table by default
     assert "hidden" in out
+    # enriched columns: coupling role (derived) and modelling approach
+    assert "COUPLING" in out and "APPROACH" in out
+    assert "in MDA feedback loop" in out
+    assert "loop" in out and "feed-fwd" in out
+    assert "top_down" in out or "bottom_up" in out  # an approach-tagged discipline is listed
 
     cross = proc.describe_models(scope="cross_market", display=False)
     assert "RPKPriceIncomeElasticity" in cross  # a cross_market discipline is listed

@@ -179,6 +179,8 @@ class NOxEmissionIndexComplex(AeroMAPSModel):
     - Detailed i/o documentation is not yet provided for models defined wityh generic .yaml files?
     """
 
+    MODEL_APPROACH = "bottom_up"
+
     def __init__(self, name="nox_emission_index_complex", *args, **kwargs):
         super().__init__(name=name, model_type="custom", *args, **kwargs)
         self.fleet_model = None
@@ -485,6 +487,8 @@ class SootEmissionIndexComplex(AeroMAPSModel):
     --------------
     - Detailed i/o documentation is not yet provided for models defined wityh generic .yaml files?
     """
+
+    MODEL_APPROACH = "bottom_up"
 
     def __init__(self, name="soot_emission_index_complex", *args, **kwargs):
         super().__init__(name=name, model_type="custom", *args, **kwargs)

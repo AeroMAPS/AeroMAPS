@@ -725,10 +725,14 @@ class AeroMAPSProcess(object):
         """Summarise the disciplines wired into this process, by market scope.
 
         Surfaces each discipline's :attr:`~aeromaps.models.base.AeroMAPSModel.MARKET_SCOPE`
-        (per-market / cross-market / aggregator / market-agnostic) together with the
-        market it is bound to, its region namespace (multi-regional runs) and its
-        I/O counts — the topology view that is otherwise only recoverable by reading
-        the factory wiring and the N2 plot.
+        (per-market / cross-market / aggregator / market-agnostic) together with its
+        :attr:`~aeromaps.models.base.AeroMAPSModel.MODEL_APPROACH` (top-down /
+        bottom-up, where applicable), its **coupling
+        role** — ``loop`` (inside the MDA feedback cycle, re-run every iteration and
+        therefore driving convergence cost) vs ``feed-fwd`` (run once), derived from
+        the GEMSEO coupling structure — the market it is bound to, its region namespace
+        (multi-regional runs) and its I/O counts. This is the topology + cost view that
+        is otherwise only recoverable by reading the factory wiring and the N2 plot.
 
         Parameters
         ----------
@@ -750,10 +754,25 @@ class AeroMAPSProcess(object):
         from aeromaps.models.base import MARKET_SCOPES
 
         _ORDER = ["per_market", "cross_market", "aggregator", "market_agnostic"]
+        disciplines = list(getattr(self, "disciplines", []) or [])
+
+        # Which disciplines sit inside the MDA feedback loop (strongly coupled) — they
+        # are re-executed on every Gauss-Seidel iteration and drive convergence cost;
+        # the rest are feed-forward (run once). Best-effort: skip on any error/version.
+        strong_ids, coupling_available = set(), False
+        try:
+            from gemseo.core.coupling_structure import CouplingStructure
+
+            strong_ids = {
+                id(d) for d in CouplingStructure(disciplines).strongly_coupled_disciplines
+            }
+            coupling_available = True
+        except Exception:
+            pass
 
         rows = []
         counts = {s: 0 for s in _ORDER}
-        for discipline in getattr(self, "disciplines", []) or []:
+        for discipline in disciplines:
             model = getattr(discipline, "model", None)
             if model is None:
                 continue
@@ -781,6 +800,12 @@ class AeroMAPSProcess(object):
             rows.append(
                 {
                     "scope": model_scope,
+                    "approach": getattr(model, "MODEL_APPROACH", None) or "—",
+                    "coupling": (
+                        ("loop" if id(discipline) in strong_ids else "feed-fwd")
+                        if coupling_available
+                        else "?"
+                    ),
                     "model": type(model).__name__,
                     "instance": getattr(model, "name", None) or getattr(discipline, "name", "?"),
                     "region": self._region_of(discipline) or "",
@@ -803,6 +828,7 @@ class AeroMAPSProcess(object):
         shown.sort(key=lambda r: (rank.get(r["scope"], 99), r["market"], r["instance"]))
 
         has_region = any(r["region"] for r in rows)
+        n_coupled = sum(1 for r in rows if r["coupling"] == "loop")
 
         lines = [f"{type(self).__name__}: {len(rows)} disciplines"]
         lines.append("")
@@ -811,13 +837,22 @@ class AeroMAPSProcess(object):
             lines.append(f"  {s:<16}{counts.get(s, 0):>4}")
         lines.append(f"  {'-' * 20}")
         lines.append(f"  {'total':<16}{len(rows):>4}")
+        if coupling_available:
+            lines.append("")
+            lines.append(
+                f"  in MDA feedback loop: {n_coupled} / {len(rows)} disciplines "
+                f"(re-run every iteration); {len(rows) - n_coupled} feed-forward"
+            )
         lines.append("")
 
         hidden = len(rows) - len(shown)
         if shown:
             # (key, header, max_width) — column widths are fitted to the data up to
             # max_width; longer cells are truncated with an ellipsis to keep alignment.
-            cols = [("scope", "SCOPE", 15), ("model", "MODEL", 40), ("instance", "INSTANCE", 30)]
+            cols = [("scope", "SCOPE", 15), ("approach", "APPROACH", 10)]
+            if coupling_available:
+                cols.append(("coupling", "COUPLING", 9))
+            cols += [("model", "MODEL", 40), ("instance", "INSTANCE", 30)]
             if has_region:
                 cols.append(("region", "REGION", 12))
             cols += [("market", "MARKET", 14), ("n_in", "#IN", 4), ("n_out", "#OUT", 4)]
@@ -837,6 +872,12 @@ class AeroMAPSProcess(object):
             lines.append("  " + "-" * (len(header) - 2))
             for r in shown:
                 lines.append("  " + "".join(_cell(r[key], widths[key]) for key, _, _ in cols))
+            if coupling_available:
+                lines.append("")
+                lines.append(
+                    "  COUPLING: 'loop' = inside the MDA feedback cycle (cost scales with "
+                    "iterations); 'feed-fwd' = executed once."
+                )
         if hidden and scope is None and not include_agnostic:
             lines.append("")
             lines.append(

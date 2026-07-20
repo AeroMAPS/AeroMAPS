@@ -42,6 +42,8 @@ class PassengerAircraftDocNonEnergyComplex(AeroMAPSModel):
           self.input_names and self.output_names grammars.
     """
 
+    MODEL_APPROACH = "bottom_up"
+
     def __init__(self, name="passenger_aircraft_doc_non_energy_complex", *args, **kwargs):
         super().__init__(name=name, model_type="custom", *args, **kwargs)
         self.fleet_model = None
@@ -163,6 +165,8 @@ class PassengerAircraftDocNonEnergySimple(AeroMAPSModel):
         - I/O names are generated from configuration and passed to GEMSEO via
           self.input_names and self.output_names grammars.
     """
+
+    MODEL_APPROACH = "top_down"
 
     def __init__(self, name="passenger_aircraft_doc_non_energy_simple", *args, **kwargs):
         super().__init__(name=name, model_type="custom", *args, **kwargs)

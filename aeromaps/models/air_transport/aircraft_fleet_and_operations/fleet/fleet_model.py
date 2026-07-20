@@ -1238,6 +1238,7 @@ class FleetModel(FleetAssignmentMixin, FleetPerformanceMixin, AeroMAPSModel):
     """
 
     MARKET_SCOPE = "cross_market"
+    MODEL_APPROACH = "bottom_up"
 
     def __init__(self, name="fleet_model", fleet=None, markets=None, *args, **kwargs):
         super().__init__(name, *args, **kwargs)

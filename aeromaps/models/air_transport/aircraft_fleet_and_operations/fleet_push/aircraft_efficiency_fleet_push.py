@@ -253,6 +253,7 @@ class PassengerAircraftEfficiencyFleetPush(AeroMAPSModel):
     shares are 0 and their ``energy_per_ask`` columns mirror the drop-in series.
     """
 
+    MODEL_APPROACH = "bottom_up"
 
     def __init__(self, name="passenger_aircraft_efficiency_fleet_push", *args, **kwargs):
         super().__init__(name=name, model_type="custom", *args, **kwargs)

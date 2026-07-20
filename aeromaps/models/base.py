@@ -66,6 +66,15 @@ class AeroMapsCustomDataType:
 #                     /climate models).
 MARKET_SCOPES = frozenset({"per_market", "cross_market", "aggregator", "market_agnostic"})
 
+# Allowed non-None values for AeroMAPSModel.MODEL_APPROACH — the modelling approach
+# for families that ship both a top-down (parametric/aggregate) and a bottom-up
+# (fleet-resolved) variant. ``None`` means the discipline is approach-agnostic:
+# either shared by both wirings (e.g. FreightAircraftEfficiency, the shared airfare
+# / total-cost models) or outside the top-down/bottom-up split entirely (demand,
+# traffic, load factor, climate). Approach is a property of the *group wiring*, so
+# only disciplines exclusive to one approach declare it at the class level.
+MODEL_APPROACHES = frozenset({"top_down", "bottom_up"})
+
 
 class AeroMAPSModel(object):
     """
@@ -89,6 +98,11 @@ class AeroMAPSModel(object):
         callers (and the N2 topology) don't have to infer it from the class name
         or the factory wiring. Defaults to ``"market_agnostic"``; market-family
         disciplines override it at the class level.
+    MODEL_APPROACH
+        Class attribute naming this discipline's modelling approach —
+        ``"top_down"`` or ``"bottom_up"`` (one of :data:`MODEL_APPROACHES`) — for
+        disciplines exclusive to one side of a top-down/bottom-up family, or
+        ``None`` when approach-agnostic.
     name
         Name of the model instance.
     parameters
@@ -126,6 +140,13 @@ class AeroMAPSModel(object):
     # Market-axis granularity of this discipline (see MARKET_SCOPES above).
     # Market-family disciplines override this at the class level.
     MARKET_SCOPE: str = "market_agnostic"
+
+    # Modelling approach of this discipline: "top_down" (parametric/aggregate) or
+    # "bottom_up" (fleet-resolved), for families that ship both — e.g. efficiency
+    # (SimpleShares top-down vs the Complex/fleet bottom-up path) and DOC
+    # (DocNonEnergySimple vs DocNonEnergyComplex). One of MODEL_APPROACHES above, or
+    # None when approach-agnostic (shared across both wirings, or outside the split).
+    MODEL_APPROACH = None
 
     def __init__(self, name, parameters=None, model_type="auto"):
         self.name = name
