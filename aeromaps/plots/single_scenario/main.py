@@ -244,11 +244,11 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
     """
 
     required_outputs = [
-        "co2_emissions_2019technology",
+        "co2_emissions_last_historical_year_technology",
         "co2_emissions_including_aircraft_efficiency",
         "co2_emissions_including_load_factor",
         "co2_emissions_including_energy",
-        "co2_emissions_2019technology_baseline3",
+        "co2_emissions_last_historical_year_technology_baseline3",
         "carbon_offset",
         "co2_emissions",
     ]
@@ -360,7 +360,7 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
 
         (self.line_co2_emissions_no_action,) = self.ax.plot(
             self.prospective_years,
-            self.df.loc[self.prospective_years, "co2_emissions_2019technology_baseline3"],
+            self.df.loc[self.prospective_years, "co2_emissions_last_historical_year_technology_baseline3"],
             color="red",
             linestyle="-",
             label="Emissions at 2019 technological level with trend air traffic growth",
@@ -404,8 +404,8 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
         # Demand/supply side management
         self.ax.fill_between(
             self.years,
-            self.df["co2_emissions_2019technology_baseline3"],
-            self.df["co2_emissions_2019technology"],
+            self.df["co2_emissions_last_historical_year_technology_baseline3"],
+            self.df["co2_emissions_last_historical_year_technology"],
             color="lightskyblue",
             label="Demand/supply side management",
         )
@@ -414,12 +414,12 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
         # a single aggregated band (same as AirTransportCO2EmissionsPlot)
         efficiency_bands = self._efficiency_bands()
         if efficiency_bands is not None:
-            upper = self.df.loc[self.years, "co2_emissions_2019technology"]
+            upper = self.df.loc[self.years, "co2_emissions_last_historical_year_technology"]
             self._plot_sub_lever_bands(upper, efficiency_bands)
         else:
             self.ax.fill_between(
                 self.years,
-                self.df["co2_emissions_2019technology"],
+                self.df["co2_emissions_last_historical_year_technology"],
                 self.df["co2_emissions_including_aircraft_efficiency"],
                 color="gold",
                 label="Aircraft efficiency",
@@ -463,7 +463,7 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
 
     def _update_plot_elements(self):
         self.line_co2_emissions_no_action.set_ydata(
-            self.df.loc[self.prospective_years, "co2_emissions_2019technology_baseline3"]
+            self.df.loc[self.prospective_years, "co2_emissions_last_historical_year_technology_baseline3"]
         )
 
         self.line_co2_emissions.set_ydata(
