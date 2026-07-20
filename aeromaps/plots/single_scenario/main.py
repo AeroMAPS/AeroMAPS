@@ -1,7 +1,12 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from aeromaps.models.impacts.emissions.co2_emissions import aircraft_efficiency_lever_names
+from aeromaps.models.impacts.emissions.co2_emissions import (
+    MARKET_CROSS_MIX,
+    aircraft_efficiency_lever_names,
+    market_lever_column,
+    market_lever_names,
+)
 from aeromaps.plots.single_scenario_plot import SingleScenarioPlot
 from aeromaps.plots.single_scenario_plot import plot_1_x
 from aeromaps.plots.single_scenario_plot import plot_1_y
@@ -360,7 +365,9 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
 
         (self.line_co2_emissions_no_action,) = self.ax.plot(
             self.prospective_years,
-            self.df.loc[self.prospective_years, "co2_emissions_last_historical_year_technology_baseline3"],
+            self.df.loc[
+                self.prospective_years, "co2_emissions_last_historical_year_technology_baseline3"
+            ],
             color="red",
             linestyle="-",
             label="Emissions at 2019 technological level with trend air traffic growth",
@@ -463,7 +470,9 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
 
     def _update_plot_elements(self):
         self.line_co2_emissions_no_action.set_ydata(
-            self.df.loc[self.prospective_years, "co2_emissions_last_historical_year_technology_baseline3"]
+            self.df.loc[
+                self.prospective_years, "co2_emissions_last_historical_year_technology_baseline3"
+            ]
         )
 
         self.line_co2_emissions.set_ydata(
@@ -479,6 +488,104 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
             collection.remove()
 
         self._draw_fills()
+        self.fig.canvas.draw()
+
+
+class AirTransportCO2EmissionsPerMarketPlot(SingleScenarioPlot):
+    """
+    Small-multiples decomposition of the CO2 levers of action per market.
+
+    One panel per lever of action (aircraft efficiency, fleet operations, load
+    factor, aircraft energy); within each panel the annual CO2 contribution of
+    every market is drawn as a signed line (positive = emissions avoided w.r.t.
+    the last-historical-year technology), together with the cross-market-mix
+    residual. Market colours are kept consistent across panels.
+
+    A faceted layout is used on purpose: several per-market contributions turn
+    negative over time, for which a single stacked chart would be order-dependent
+    and misleading. Requires DetailedCo2EmissionsPerMarket.
+    """
+
+    # (lever key as produced by DetailedCo2EmissionsPerMarket, panel title)
+    _LEVERS = [
+        ("efficiency", "Aircraft efficiency"),
+        ("operations", "Fleet operations"),
+        ("loadfactor", "Load factor"),
+        ("energy", "Aircraft energy"),
+    ]
+
+    required_outputs = [market_lever_column("efficiency", MARKET_CROSS_MIX)]
+
+    def __init__(self, process, figsize=None, **kwargs):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize, **kwargs)
+
+    def _get_default_figsize(self):
+        return (plot_1_x, plot_1_y)
+
+    def _ordered_market_ids(self):
+        """Canonical market order: passenger markets (config order) then freight."""
+        markets = self.process.markets
+        return [m.id for m in markets.get(traffic_type="passenger")] + [
+            m.id for m in markets.get(traffic_type="freight")
+        ]
+
+    def create_plot(self):
+        # Replace the single default axes by a 2x2 grid of lever panels.
+        self.ax.remove()
+        self.facet_axes = self.fig.subplots(2, 2).flatten()
+        self._draw_facets()
+
+    def _draw_facets(self):
+        for legend in list(self.fig.legends):
+            legend.remove()
+
+        market_ids = self._ordered_market_ids()
+        colors = dict(zip(market_ids, plt.cm.tab10(np.linspace(0, 1, max(len(market_ids), 1)))))
+        names = market_lever_names(self.process.markets)
+        years = self.prospective_years
+
+        for ax, (lever, title) in zip(self.facet_axes, self._LEVERS):
+            ax.clear()
+            ax.axhline(0, color="black", linewidth=0.6)
+            for mid in market_ids:
+                column = names.get((lever, mid))
+                if column is None or column not in self.df.columns:
+                    continue
+                ax.plot(
+                    years,
+                    self.df.loc[years, column],
+                    color=colors[mid],
+                    label=mid.replace("_", " ").title(),
+                )
+            cross_column = names.get((lever, MARKET_CROSS_MIX))
+            if cross_column in self.df.columns:
+                ax.plot(
+                    years,
+                    self.df.loc[years, cross_column],
+                    color="grey",
+                    linestyle=":",
+                    label="Cross-market mix",
+                )
+            ax.set_title(title, fontsize=9)
+            ax.grid(True, alpha=0.3)
+            ax.tick_params(labelsize=7)
+
+        self.fig.suptitle("CO₂ levers of action decomposed per market", fontsize=11)
+        self.fig.supxlabel("Year", fontsize=8)
+        self.fig.supylabel("Annual CO₂ avoided [MtCO₂]", fontsize=8)
+        handles, labels = self.facet_axes[0].get_legend_handles_labels()
+        if handles:
+            self.fig.legend(
+                handles,
+                labels,
+                loc="outside lower center",
+                ncols=min(len(labels), 5),
+                fontsize=7,
+            )
+
+    def _update_plot_elements(self):
+        self._draw_facets()
         self.fig.canvas.draw()
 
 

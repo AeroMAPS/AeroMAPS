@@ -88,6 +88,7 @@ from aeromaps.models.impacts.emissions.co2_emissions import (
     DetailedCo2Emissions,
     DetailedCumulativeCO2Emissions,
     DetailedCo2EmissionsPerAircraft,
+    DetailedCo2EmissionsPerMarket,
     DetailedCo2EmissionsPerPathway,
 )
 from aeromaps.models.impacts.emissions.non_co2_emissions import (
@@ -240,6 +241,9 @@ models_efficiency_bottom_up = {
     "sulfur_emission_index": SulfurEmissionIndex("sulfur_emission_index"),
     "detailed_co2_emissions_per_aircraft": DetailedCo2EmissionsPerAircraft(
         "detailed_co2_emissions_per_aircraft"
+    ),
+    "detailed_co2_emissions_per_market": DetailedCo2EmissionsPerMarket(
+        "detailed_co2_emissions_per_market"
     ),
 }
 
