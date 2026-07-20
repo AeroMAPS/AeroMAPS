@@ -5,9 +5,11 @@ cost
 Module to compute pathway MFSP and investments using the top-down techno-economic model.
 """
 
+import jax.numpy as jnp
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
+from aeromaps.models.jax_helpers import jax_nan_add
 
 
 class TopDownCost(AeroMAPSModel):
@@ -335,4 +337,115 @@ class TopDownCost(AeroMAPSModel):
         # Store the results in the df
         self._store_outputs(output_data)
 
+        return output_data
+
+    def jax_compute(self, input_data) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        output_data = {}
+        n = self.end_year - self.historic_start_year + 1
+        zeros = jnp.zeros(n)
+
+        def get(name, default):
+            value = input_data.get(name, None)
+            return default if value is None else jnp.asarray(value)
+
+        pathway_mfsp = get(f"{self.pathway_name}_mean_mfsp_without_resource", zeros)
+        pathway_unit_subsidy = get(
+            f"{self.pathway_name}_mean_unit_subsidy_without_resource", zeros
+        )
+        pathway_unit_tax = get(f"{self.pathway_name}_mean_unit_tax_without_resource", zeros)
+
+        for key in self.resource_keys:
+            specific_consumption = input_data.get(
+                f"{self.pathway_name}_resource_specific_consumption_{key}", None
+            )
+            if specific_consumption is not None:
+                mfsp_ressource = get(f"{key}_cost", zeros) * specific_consumption
+                pathway_mfsp = jax_nan_add(pathway_mfsp, mfsp_ressource)
+                output_data[f"{self.pathway_name}_excluding_processes_{key}_mean_unit_cost"] = (
+                    mfsp_ressource
+                )
+
+                subsidy_ressource = get(f"{key}_subsidy", zeros) * specific_consumption
+                pathway_unit_subsidy = jax_nan_add(pathway_unit_subsidy, subsidy_ressource)
+                output_data[f"{self.pathway_name}_excluding_processes_{key}_mean_unit_subsidy"] = (
+                    subsidy_ressource
+                )
+
+                tax_ressource = get(f"{key}_tax", zeros) * specific_consumption
+                pathway_unit_tax = jax_nan_add(pathway_unit_tax, tax_ressource)
+                output_data[f"{self.pathway_name}_excluding_processes_{key}_mean_unit_tax"] = (
+                    tax_ressource
+                )
+
+            for process_key in self.process_keys:
+                specific_consumption = input_data.get(
+                    f"{process_key}_resource_specific_consumption_{key}"
+                )
+                if specific_consumption is not None:
+                    mfsp_ressource = get(f"{key}_cost", zeros) * specific_consumption
+                    pathway_mfsp = jax_nan_add(pathway_mfsp, mfsp_ressource)
+                    output_data[f"{self.pathway_name}_{process_key}_{key}_mean_unit_cost"] = (
+                        mfsp_ressource
+                    )
+
+                    subsidy_ressource = get(f"{key}_subsidy", zeros) * specific_consumption
+                    pathway_unit_subsidy = jax_nan_add(pathway_unit_subsidy, subsidy_ressource)
+                    output_data[f"{self.pathway_name}_{process_key}_{key}_mean_unit_subsidy"] = (
+                        subsidy_ressource
+                    )
+
+                    tax_ressource = get(f"{key}_tax", zeros) * specific_consumption
+                    pathway_unit_tax = jax_nan_add(pathway_unit_tax, tax_ressource)
+                    output_data[f"{self.pathway_name}_{process_key}_{key}_mean_unit_tax"] = (
+                        tax_ressource
+                    )
+
+        for process_key in self.process_keys:
+            mfsp_process = get(f"{process_key}_mean_mfsp_without_resource", zeros)
+            pathway_mfsp = jax_nan_add(pathway_mfsp, mfsp_process)
+            output_data[f"{self.pathway_name}_{process_key}_mean_unit_cost_without_resources"] = (
+                mfsp_process
+            )
+
+            subsidy_process = get(f"{process_key}_mean_unit_subsidy_without_resources", zeros)
+            pathway_unit_subsidy = jax_nan_add(pathway_unit_subsidy, subsidy_process)
+            output_data[
+                f"{self.pathway_name}_{process_key}_mean_unit_subsidy_without_resources"
+            ] = subsidy_process
+
+            tax_process = get(f"{process_key}_mean_unit_tax_without_resources", zeros)
+            pathway_unit_tax = jax_nan_add(pathway_unit_tax, tax_process)
+            output_data[f"{self.pathway_name}_{process_key}_mean_unit_tax_without_resources"] = (
+                tax_process
+            )
+
+        pathway_net_mfsp_without_carbon_tax = jax_nan_add(
+            jax_nan_add(pathway_mfsp, -pathway_unit_subsidy), pathway_unit_tax
+        )
+
+        if f"{self.pathway_name}_carbon_tax" in input_data:
+            carbon_tax = jnp.asarray(input_data[f"{self.pathway_name}_carbon_tax"]) / 1000.0
+        else:
+            carbon_tax = jnp.asarray(input_data["carbon_tax"]) / 1000.0
+
+        emission_factor = (
+            jnp.asarray(input_data[f"{self.pathway_name}_mean_co2_emission_factor"]) / 1000.0
+        )
+        pathway_unit_carbon_tax = carbon_tax * emission_factor
+
+        pathway_net_mfsp = jax_nan_add(
+            pathway_net_mfsp_without_carbon_tax, pathway_unit_carbon_tax
+        )
+
+        output_data.update(
+            {
+                f"{self.pathway_name}_net_mfsp_without_carbon_tax": pathway_net_mfsp_without_carbon_tax,
+                f"{self.pathway_name}_net_mfsp": pathway_net_mfsp,
+                f"{self.pathway_name}_mean_mfsp": pathway_mfsp,
+                f"{self.pathway_name}_mean_unit_tax": pathway_unit_tax,
+                f"{self.pathway_name}_mean_unit_carbon_tax": pathway_unit_carbon_tax,
+                f"{self.pathway_name}_mean_unit_subsidy": pathway_unit_subsidy,
+            }
+        )
         return output_data

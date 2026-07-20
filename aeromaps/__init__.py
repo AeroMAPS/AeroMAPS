@@ -19,6 +19,7 @@ def create_process(
     optimisation: bool = False,
     multi_regional: bool = False,
     disable_execution_statistics: Optional[bool] = None,
+    use_jax: bool = False,
 ) -> Union[AeroMAPSProcess, MultiRegionalProcess]:
     """
     Create an AeroMAPS process, auto-detecting single vs multi-regional mode.
@@ -48,6 +49,11 @@ def create_process(
         Whether to disable GEMSEO's execution statistics shared memory.
         If None (default), automatically enabled for multi-regional mode to
         avoid semaphore exhaustion with many disciplines.
+    use_jax : bool, optional
+        Whether to wrap models providing a ``jax_compute`` method with the
+        gemseo-jax ``JAXDiscipline`` (jit compilation and analytic derivatives
+        through automatic differentiation). Requires the ``gemseo-jax``
+        package. Only supported for single-region mode currently.
 
     Returns
     -------
@@ -106,6 +112,7 @@ def create_process(
             custom_models=custom_models,
             optimisation=optimisation,
             disable_execution_statistics=disable_execution_statistics,
+            use_jax=use_jax,
         )
 
 

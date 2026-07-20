@@ -127,7 +127,15 @@ class ExtendedJSONGrammar(JSONGrammar):
 
 
 class CustomDataConverter(SimpleGrammarDataConverter):
-    _IS_CONTINUOUS_TYPES: ClassVar[tuple[type, ...]] = (float, complex, pd.Series, list)
+    # ndarray is kept from the base converter: the JAX disciplines declare
+    # their variables as arrays and must remain differentiable.
+    _IS_CONTINUOUS_TYPES: ClassVar[tuple[type, ...]] = (
+        float,
+        complex,
+        pd.Series,
+        list,
+        np.ndarray,
+    )
     _IS_NUMERIC_TYPES: ClassVar[tuple[type, ...]] = (int, *_IS_CONTINUOUS_TYPES)
 
     _list_names = set()

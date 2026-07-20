@@ -8,8 +8,16 @@ carbon_tax
 Module to compute carbon tax evolution over the years.
 """
 
+import jax.numpy as jnp
 import pandas as pd
 from aeromaps.models.base import AeroMAPSModel, aeromaps_interpolation_function
+from aeromaps.models.jax_helpers import (
+    hist_mask,
+    jax_interp_backfill,
+    jax_interpolation_function,
+    year_pos,
+    years_index,
+)
 
 
 class CarbonTax(AeroMAPSModel):
@@ -58,4 +66,14 @@ class CarbonTax(AeroMAPSModel):
             self.df.loc[k, "carbon_tax"] = 5.0
         carbon_tax = self.df["carbon_tax"]
 
+        return carbon_tax
+
+    jax_static_input_names = {"carbon_tax_reference_years"}
+
+    def jax_compute(self, carbon_tax_reference_years, carbon_tax_reference_years_values):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        prospective = jax_interpolation_function(
+            self, carbon_tax_reference_years, carbon_tax_reference_years_values
+        )
+        carbon_tax = jnp.where(hist_mask(self), 5.0, prospective)
         return carbon_tax

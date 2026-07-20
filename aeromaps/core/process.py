@@ -225,6 +225,7 @@ class AeroMAPSProcess(object):
         custom_models=None,
         optimisation=False,
         disable_execution_statistics=False,
+        use_jax=False,
     ):
         """Initialize an AeroMAPSProcess instance.
 
@@ -250,6 +251,11 @@ class AeroMAPSProcess(object):
             Whether to disable GEMSEO's execution statistics shared memory.
             If False, statistics are enabled. Set to True to disable
             (useful when running many disciplines to avoid semaphore exhaustion).
+        use_jax
+            Whether to wrap models providing a ``jax_compute`` method with the
+            gemseo-jax ``JAXDiscipline`` (jit compilation and automatic
+            differentiation). Models without ``jax_compute`` keep the regular
+            wrappers. Requires the ``gemseo-jax`` package.
         """
         # Initialize pathways_manager to None - will be populated if energy models are used
         self.pathways_manager = None
@@ -273,6 +279,7 @@ class AeroMAPSProcess(object):
 
         # Store mode flags
         self._optimisation = optimisation
+        self._use_jax = use_jax
 
         # --- Standard initialization ---
         # Load standard models from config
@@ -517,18 +524,25 @@ class AeroMAPSProcess(object):
         """
         self._initialize_disciplines()
 
+        main_mda_settings = {
+            "inner_mda_name": "MDAGaussSeidel",
+            "max_mda_iter": 12,
+            "initialize_defaults": True,
+            "tolerance": 1e-4,
+        }
+        if self._use_jax:
+            # Coupled (analytic) derivatives from the JAX disciplines: solve the
+            # linearized coupling system by LU factorization — the default
+            # iterative solver stalls on the stiff, badly-scaled system.
+            main_mda_settings["use_lu_fact"] = True
+
         self.scenario = create_scenario(
             disciplines=self.disciplines,
             objective_name=self.gemseo_settings["objective_name"],
             design_space=self.gemseo_settings["design_space"],
             scenario_type=self.gemseo_settings["scenario_type"],
             formulation_name=self.gemseo_settings["formulation"],
-            main_mda_settings={
-                "inner_mda_name": "MDAGaussSeidel",
-                "max_mda_iter": 12,
-                "initialize_defaults": True,
-                "tolerance": 1e-4,
-            },
+            main_mda_settings=main_mda_settings,
             # grammar_type=self.gemseo_settings["grammar_type"],
             # input_data=self.input_data,
         )
@@ -2007,7 +2021,21 @@ class AeroMAPSProcess(object):
                             )
                         model.climate_historical_data = self.climate_historical_data
                     if hasattr(model, "compute"):
-                        if getattr(model, "model_type") == "custom":
+                        if (
+                            self._use_jax
+                            and hasattr(model, "jax_compute")
+                            and getattr(model, "jax_ready", True)
+                        ):
+                            from aeromaps.core.jax_wrapper import (
+                                AeroMAPSAutoJAXModelWrapper,
+                                AeroMAPSJAXModelWrapper,
+                            )
+
+                            if getattr(model, "model_type") == "custom":
+                                model = AeroMAPSJAXModelWrapper(model=model)
+                            else:
+                                model = AeroMAPSAutoJAXModelWrapper(model=model)
+                        elif getattr(model, "model_type") == "custom":
                             model = AeroMAPSCustomModelWrapper(model=model)
                         else:
                             model = AeroMAPSAutoModelWrapper(model=model)
@@ -2415,6 +2443,10 @@ class AeroMAPSProcess(object):
 
         # TODO: better to use _local_data?
         for disc in self.disciplines:
+            # JAX-wrapped disciplines only materialize their outputs into
+            # model.df on demand, to keep pandas out of the execution loop.
+            if hasattr(disc, "sync_model_df"):
+                disc.sync_model_df()
             if hasattr(disc.model, "df") and disc.model.df.columns.size != 0:
                 if first_computation:
                     self.data["vector_outputs"] = pd.concat(

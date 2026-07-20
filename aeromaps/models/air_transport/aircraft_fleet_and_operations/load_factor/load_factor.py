@@ -11,9 +11,16 @@ Module for computing aircraft load factor evolution.
 
 import warnings
 
+import jax.numpy as jnp
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel, aeromaps_interpolation_function
+from aeromaps.models.jax_helpers import (
+    hist_mask,
+    jax_interpolation_function,
+    year_pos,
+    years_index,
+)
 
 # Horizon (years) at which the arrival-slope constraint was calibrated from
 # historical load-factor data: 2050 - 2019 = 31.  The fitted linear trend
@@ -146,6 +153,34 @@ class LoadFactorMarket(AeroMAPSModel):
         self._store_outputs(output_data)
         return output_data
 
+    def jax_compute(self, input_data: dict) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        mid = self.market_id
+        end_year_value = input_data[f"{mid}_load_factor_end_year"]
+        covid_2020 = input_data[f"{mid}_covid_load_factor_2020"]
+        rpk_init = jnp.asarray(input_data["rpk_init"])
+        ask_init = jnp.asarray(input_data["ask_init"])
+
+        hist = hist_mask(self)
+        lf_hist = rpk_init / ask_init * 100.0
+
+        lhy = self.last_historical_year
+        load_factor_lhy = lf_hist[year_pos(self, lhy)]
+
+        derivative = 2 * (-5.62003082e-05) * _LF_DERIV_CALIB_HORIZON + 3.59670410e-03
+        horizon = self.end_year - lhy
+        a = -(end_year_value - load_factor_lhy - derivative * horizon) / horizon**2
+        b = derivative - 2 * a * horizon
+
+        x = jnp.asarray(years_index(self) - lhy, dtype=jnp.float64)
+        lf_prosp = a * x**2 + b * x + load_factor_lhy
+
+        load_factor = jnp.where(hist, lf_hist, lf_prosp)
+        if self.prospection_start_year <= 2020:
+            load_factor = load_factor.at[year_pos(self, 2020)].set(covid_2020)
+
+        return {f"load_factor_{mid}": load_factor}
+
 
 class LoadFactorMarketSimpleInterpolation(AeroMAPSModel):
     """Per-market aircraft load factor projection via linear interpolation.
@@ -194,6 +229,8 @@ class LoadFactorMarketSimpleInterpolation(AeroMAPSModel):
         self.output_names = {
             f"load_factor_{mid}": pd.Series([0.0]),
         }
+        # Interpolation reference years are static knots for the JAX path.
+        self.jax_static_input_names = {f"{mid}_load_factor_reference_years"}
 
     def compute(self, input_data: dict) -> dict:
         """Execute the computation of per-market aircraft load factor via linear interpolation.
@@ -231,6 +268,25 @@ class LoadFactorMarketSimpleInterpolation(AeroMAPSModel):
         output_data = {col: self.df[col]}
         self._store_outputs(output_data)
         return output_data
+
+    def jax_compute(self, input_data: dict) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        mid = self.market_id
+        reference_years = input_data[f"{mid}_load_factor_reference_years"]
+        reference_years_values = input_data[f"{mid}_load_factor_reference_years_values"]
+        covid_2020 = input_data[f"{mid}_covid_load_factor_2020"]
+        rpk_init = jnp.asarray(input_data["rpk_init"])
+        ask_init = jnp.asarray(input_data["ask_init"])
+
+        hist = hist_mask(self)
+        lf_hist = rpk_init / ask_init * 100.0
+        lf_prosp = jax_interpolation_function(self, reference_years, reference_years_values)
+
+        load_factor = jnp.where(hist, lf_hist, lf_prosp)
+        if self.prospection_start_year <= 2020:
+            load_factor = load_factor.at[year_pos(self, 2020)].set(covid_2020)
+
+        return {f"load_factor_{mid}": load_factor}
 
 
 class LoadFactorAggregator(AeroMAPSModel):
@@ -280,3 +336,9 @@ class LoadFactorAggregator(AeroMAPSModel):
         output_data = {"load_factor": load_factor}
         self._store_outputs(output_data)
         return output_data
+
+    def jax_compute(self, input_data: dict) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        rpk = jnp.asarray(input_data["rpk"])
+        ask = jnp.asarray(input_data["ask"])
+        return {"load_factor": rpk / ask * 100.0}

@@ -4,13 +4,17 @@ energy_resources
 Module to model energy resources consumption.
 """
 
+import jax.numpy as jnp
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
+from aeromaps.models.jax_helpers import prosp_mask, year_pos
 from aeromaps.models.impacts.generic_energy_model.common.energy_carriers_manager import (
     EnergyCarrierManager,
 )
 from aeromaps.utils.functions import _custom_series_addition
+
+
 
 
 class EnergyResourceConsumption(AeroMAPSModel):
@@ -174,6 +178,62 @@ class EnergyResourceConsumption(AeroMAPSModel):
         self._store_outputs(output_data)
 
         return output_data
+
+    def jax_compute(self, input_data) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        output_data = {}
+        n = len(self.df.index)
+        prosp = ~jnp.asarray(
+            jnp.arange(self.historic_start_year, self.end_year + 1)
+            < self.prospection_start_year
+        )
+
+        def _nan_add(a, b):
+            return jnp.where(
+                jnp.isnan(a) & jnp.isnan(b),
+                jnp.nan,
+                jnp.nan_to_num(a) + jnp.nan_to_num(b),
+            )
+
+        # Series(0.0, prospective index) in the pandas version: zeros on the
+        # prospective window, missing (NaN) on historic years.
+        total_consumption = jnp.where(prosp, 0.0, jnp.nan)
+        total_mobilised = jnp.where(prosp, 0.0, jnp.nan)
+
+        for pathway in self.pathways_manager.get(
+            resources_used=self.resource_name
+        ) + self.pathways_manager.get(resources_used_processes=self.resource_name):
+            consumption = jnp.asarray(
+                input_data[f"{pathway.name}_{self.resource_name}_total_consumption"]
+            )
+            mobilised = jnp.asarray(
+                input_data[f"{pathway.name}_{self.resource_name}_total_mobilised_with_selectivity"]
+            )
+            total_consumption = _nan_add(total_consumption, consumption)
+            total_mobilised = _nan_add(total_mobilised, mobilised)
+
+        output_data[f"{self.resource_name}_total_consumption"] = total_consumption
+        output_data[f"{self.resource_name}_total_necessary_with_selectivity"] = total_mobilised
+
+        if f"{self.resource_name}_availability_global" in input_data:
+            availability = jnp.asarray(input_data[f"{self.resource_name}_availability_global"])
+            output_data[f"{self.resource_name}_consumed_global_share"] = (
+                total_consumption / availability * 100.0
+            )
+            output_data[f"{self.resource_name}_necessary_global_share_with_selectivity"] = (
+                total_mobilised / availability * 100.0
+            )
+
+        if f"{self.resource_name}_availability_aviation_allocated_share" in input_data:
+            availability = jnp.asarray(input_data[f"{self.resource_name}_availability_global"])
+            allocated_share = jnp.asarray(
+                input_data[f"{self.resource_name}_availability_aviation_allocated_share"]
+            )
+            output_data[f"{self.resource_name}_consumed_aviation_allocated_share"] = (
+                total_consumption / (availability * allocated_share / 100.0) * 100.0
+            )
+        return output_data
+
 
 
 class OverallResourcesConsumption(AeroMAPSModel):
@@ -348,3 +408,91 @@ class OverallResourcesConsumption(AeroMAPSModel):
 
         self._store_outputs(output_data)
         return output_data
+
+    @property
+    def jax_output_indexes(self):
+        # Availability-derived outputs keep the prospective index (they are
+        # built from Series defined on the prospective window only).
+        index = pd.RangeIndex(self.prospection_start_year, self.end_year + 1)
+        return {
+            f"{origin}_{suffix}": index
+            for origin in self.resources_origins
+            for suffix in (
+                "overall_aviation_allocated_share",
+                "availability_global",
+                "availability_aviation_allocated",
+            )
+        }
+
+    def jax_compute(self, input_data) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        output_data = {}
+        ps_pos = year_pos(self, self.prospection_start_year)
+        prosp = ~jnp.asarray(
+            jnp.arange(self.historic_start_year, self.end_year + 1)
+            < self.prospection_start_year
+        )
+
+        def _nan_add(a, b):
+            return jnp.where(
+                jnp.isnan(a) & jnp.isnan(b),
+                jnp.nan,
+                jnp.nan_to_num(a) + jnp.nan_to_num(b),
+            )
+
+        zeros_prosp = jnp.where(prosp, 0.0, jnp.nan)
+        origin_consumption = {o: zeros_prosp for o in self.resources_origins}
+        origin_necessary = {o: zeros_prosp for o in self.resources_origins}
+        origin_availability = {o: zeros_prosp for o in self.resources_origins}
+        origin_availability_allocated = {o: zeros_prosp for o in self.resources_origins}
+
+        for resource in self.resources_names:
+            origin = self.resources_names_origins.get(resource, None)
+            if origin is None:
+                continue
+
+            total_consumption = jnp.asarray(input_data[f"{resource}_total_consumption"])
+            total_necessary = jnp.asarray(
+                input_data[f"{resource}_total_necessary_with_selectivity"]
+            )
+            availability = jnp.asarray(input_data[f"{resource}_availability_global"])
+            availability_allocated = (
+                jnp.asarray(input_data[f"{resource}_availability_aviation_allocated_share"])
+                / 100.0
+                * availability
+            )
+
+            origin_consumption[origin] = _nan_add(origin_consumption[origin], total_consumption)
+            origin_necessary[origin] = _nan_add(origin_necessary[origin], total_necessary)
+            # Plain addition (NaN-propagating), like the pandas `+=`.
+            origin_availability[origin] = origin_availability[origin] + availability
+            origin_availability_allocated[origin] = (
+                origin_availability_allocated[origin] + availability_allocated
+            )
+
+        for origin in self.resources_origins:
+            total_consumption = origin_consumption[origin]
+            total_necessary = origin_necessary[origin]
+            total_availability = origin_availability[origin]
+            total_availability_allocated = origin_availability_allocated[origin]
+
+            output_data[f"{origin}_total_consumption"] = total_consumption
+            output_data[f"{origin}_total_necessary_with_selectivity"] = total_necessary
+            output_data[f"{origin}_consumed_global_share"] = (
+                total_consumption / total_availability * 100.0
+            )
+            output_data[f"{origin}_necessary_global_share_with_selectivity"] = (
+                total_necessary / total_availability * 100.0
+            )
+            output_data[f"{origin}_overall_aviation_allocated_share"] = (
+                total_availability_allocated / total_availability * 100.0
+            )[ps_pos:]
+            output_data[f"{origin}_consumed_aviation_allocated_share"] = (
+                total_consumption / total_availability_allocated * 100.0
+            )
+            output_data[f"{origin}_availability_global"] = total_availability[ps_pos:]
+            output_data[f"{origin}_availability_aviation_allocated"] = (
+                total_availability_allocated[ps_pos:]
+            )
+        return output_data
+

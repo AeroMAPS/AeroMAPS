@@ -14,7 +14,10 @@ from numbers import Number
 import numpy as np
 import pandas as pd
 
+import jax.numpy as jnp
+
 from aeromaps.models.base import AeroMAPSModel
+from aeromaps.models.jax_helpers import years_index
 from aeromaps.utils.defaults import get_default_series
 
 
@@ -84,6 +87,32 @@ class OperationsContrailsSimple(AeroMAPSModel):
         operations_contrails_gain = self.df["operations_contrails_gain"]
         operations_contrails_overconsumption = self.df["operations_contrails_overconsumption"]
 
+        return operations_contrails_gain, operations_contrails_overconsumption
+
+    def jax_compute(
+        self,
+        operations_contrails_final_gain,
+        operations_contrails_final_overconsumption,
+        operations_contrails_start_year,
+        operations_contrails_duration,
+    ):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        transition_year = (
+            operations_contrails_start_year + operations_contrails_duration / 2.0
+        )
+        limit = 0.02 * operations_contrails_final_gain
+        parameter = jnp.log(100.0 / 2.0 - 1.0) / (operations_contrails_duration / 2.0)
+
+        years = jnp.asarray(years_index(self), dtype=jnp.float64)
+        sigmoid = 1.0 / (1.0 + jnp.exp(-parameter * (years - transition_year)))
+        gain_val = operations_contrails_final_gain * sigmoid
+        below = gain_val < limit
+        hist = years_index(self) < self.prospection_start_year
+
+        operations_contrails_gain = jnp.where(hist | below, 0.0, gain_val)
+        operations_contrails_overconsumption = jnp.where(
+            hist | below, 0.0, operations_contrails_final_overconsumption * sigmoid
+        )
         return operations_contrails_gain, operations_contrails_overconsumption
 
 
@@ -272,4 +301,9 @@ class WithoutFuelEffectCorrectionContrails(AeroMAPSModel):
             self.df.loc[k, "fuel_effect_correction_contrails"] = 1
 
         fuel_effect_correction_contrails = self.df["fuel_effect_correction_contrails"]
+        return fuel_effect_correction_contrails
+
+    def jax_compute(self, total_aircraft_distance):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        fuel_effect_correction_contrails = jnp.ones(len(years_index(self)))
         return fuel_effect_correction_contrails

@@ -13,8 +13,16 @@ This module is a simple implementation that uses user-defined values for airline
 # @Author : a.salgas
 # @File : operational_margin.py
 # @Software: PyCharm
+import jax.numpy as jnp
 import pandas as pd
 from aeromaps.models.base import AeroMAPSModel, aeromaps_interpolation_function
+from aeromaps.models.jax_helpers import (
+    hist_mask,
+    jax_interp_backfill,
+    jax_interpolation_function,
+    year_pos,
+    years_index,
+)
 from typing import Tuple
 
 
@@ -73,4 +81,22 @@ class PassengerAircraftOperationalProfit(AeroMAPSModel):
         operational_profit_per_ask = self.df["operational_profit_per_ask"]
 
         operational_profit_per_rpk = operational_profit_per_ask * ask / rpk
+        return (operational_profit_per_ask, operational_profit_per_rpk)
+
+    jax_static_input_names = {"operational_profit_reference_years"}
+
+    def jax_compute(
+        self,
+        operational_profit_reference_years,
+        operational_profit_reference_years_values,
+        ask,
+        rpk,
+    ):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        operational_profit_per_ask = jax_interp_backfill(
+            self, operational_profit_reference_years, operational_profit_reference_years_values
+        )
+        operational_profit_per_rpk = (
+            operational_profit_per_ask * jnp.asarray(ask) / jnp.asarray(rpk)
+        )
         return (operational_profit_per_ask, operational_profit_per_rpk)

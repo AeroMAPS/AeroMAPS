@@ -13,7 +13,10 @@ from numbers import Number
 import numpy as np
 import pandas as pd
 
+import jax.numpy as jnp
+
 from aeromaps.models.base import AeroMAPSModel, aeromaps_interpolation_function
+from aeromaps.models.jax_helpers import years_index
 
 
 class OperationsLogistic(AeroMAPSModel):
@@ -69,6 +72,28 @@ class OperationsLogistic(AeroMAPSModel):
 
         operations_gain = self.df["operations_gain"]
 
+        return operations_gain
+
+    def jax_compute(
+        self,
+        operations_final_gain,
+        operations_start_year,
+        operations_duration,
+    ):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        transition_year = operations_start_year + operations_duration / 2.0
+        operations_limit = 0.02 * operations_final_gain
+        operations_parameter = jnp.log(100.0 / 2.0 - 1.0) / (operations_duration / 2.0)
+
+        years = jnp.asarray(years_index(self), dtype=jnp.float64)
+        sigmoid_val = operations_final_gain / (
+            1.0 + jnp.exp(-operations_parameter * (years - transition_year))
+        )
+        gain = jnp.where(sigmoid_val < operations_limit, 0.0, sigmoid_val)
+        # The sigmoid is applied from prospection_start_year - 1.
+        operations_gain = jnp.where(
+            years_index(self) < self.prospection_start_year - 1, 0.0, gain
+        )
         return operations_gain
 
 

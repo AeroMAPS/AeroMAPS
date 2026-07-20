@@ -7,6 +7,7 @@ This module contains models to compute mean emissions and costs
 
 import warnings
 
+import jax.numpy as jnp
 import numpy as np
 import pandas as pd
 
@@ -326,6 +327,97 @@ class EnergyCarriersMeans(AeroMAPSModel):
 
         return output_data
 
+    def jax_compute(self, input_data) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        output_data = {}
+        n = self.end_year - self.historic_start_year + 1
+        aircraft_types = ["dropin_fuel", "hydrogen", "electric"]
+
+        fields = (
+            ("mean_co2_emission_factor", "mean_co2_emission_factor"),
+            ("mean_mfsp", "mean_mfsp"),
+            ("net_mfsp", "mean_net_mfsp"),
+            ("net_mfsp_without_carbon_tax", "mean_net_mfsp_without_carbon_tax"),
+            ("mean_unit_subsidy", "mean_unit_subsidy"),
+            ("mean_unit_tax", "mean_unit_tax"),
+            ("mean_unit_carbon_tax", "mean_unit_carbon_tax"),
+        )
+
+        for aircraft_type in aircraft_types:
+            means = {out: jnp.zeros(n) for _, out in fields}
+            mean_carbon_tax_supplement = jnp.zeros(n)
+            marginal_net_mfsp = jnp.zeros(n)
+            cumulative_share = jnp.zeros(n)
+
+            for energy_origin in self.pathways_manager.get_all_types("energy_origin"):
+                pathways = self.pathways_manager.get(
+                    aircraft_type=aircraft_type, energy_origin=energy_origin
+                )
+                if not pathways:
+                    continue
+                origin_means = {out: jnp.zeros(n) for _, out in fields}
+                origin_mean_carbon_tax_supplement = jnp.zeros(n)
+                origin_marginal_net_mfsp = jnp.zeros(n)
+                origin_cumulative_share = jnp.zeros(n)
+
+                for pathway in pathways:
+                    share = jnp.asarray(input_data[f"{pathway.name}_share_{aircraft_type}"])
+                    origin_share = jnp.asarray(
+                        input_data[f"{pathway.name}_share_{aircraft_type}_{energy_origin}"]
+                    )
+                    cumulative_share = cumulative_share + jnp.nan_to_num(share) / 100.0
+                    origin_cumulative_share = (
+                        origin_cumulative_share + jnp.nan_to_num(origin_share) / 100.0
+                    )
+
+                    for in_key, out_key in fields:
+                        value = jnp.asarray(input_data[f"{pathway.name}_{in_key}"])
+                        means[out_key] = means[out_key] + jnp.nan_to_num(value * share) / 100.0
+                        origin_means[out_key] = (
+                            origin_means[out_key] + jnp.nan_to_num(value * origin_share) / 100.0
+                        )
+
+                    net_mfsp = jnp.asarray(input_data[f"{pathway.name}_net_mfsp"])
+                    net_mfsp_wo_ct = jnp.asarray(
+                        input_data[f"{pathway.name}_net_mfsp_without_carbon_tax"]
+                    )
+                    supplement = net_mfsp - net_mfsp_wo_ct
+                    mean_carbon_tax_supplement = (
+                        mean_carbon_tax_supplement + jnp.nan_to_num(supplement * share) / 100.0
+                    )
+                    origin_mean_carbon_tax_supplement = (
+                        origin_mean_carbon_tax_supplement
+                        + jnp.nan_to_num(supplement * origin_share) / 100.0
+                    )
+
+                    marginal_net_mfsp = jnp.maximum(marginal_net_mfsp, jnp.nan_to_num(net_mfsp))
+                    origin_marginal_net_mfsp = jnp.maximum(
+                        origin_marginal_net_mfsp, jnp.nan_to_num(net_mfsp)
+                    )
+
+                origin_valid = jnp.where(
+                    origin_cumulative_share == 0.0, jnp.nan, origin_cumulative_share
+                )
+                prefix = f"{aircraft_type}_{energy_origin}"
+                for _, out_key in fields:
+                    output_data[f"{prefix}_{out_key}"] = origin_means[out_key] * origin_valid
+                output_data[f"{prefix}_mean_carbon_tax_supplement"] = (
+                    origin_mean_carbon_tax_supplement * origin_valid
+                )
+                output_data[f"{prefix}_marginal_net_mfsp"] = (
+                    origin_marginal_net_mfsp * origin_valid
+                )
+
+            valid = jnp.where(cumulative_share == 0.0, jnp.nan, cumulative_share)
+            for _, out_key in fields:
+                output_data[f"{aircraft_type}_{out_key}"] = means[out_key] * valid
+            output_data[f"{aircraft_type}_mean_carbon_tax_supplement"] = (
+                mean_carbon_tax_supplement * valid
+            )
+            output_data[f"{aircraft_type}_marginal_net_mfsp"] = marginal_net_mfsp * valid
+
+        return output_data
+
 
 class EnergyCarriersMassicShares(AeroMAPSModel):
     """
@@ -438,6 +530,47 @@ class EnergyCarriersMassicShares(AeroMAPSModel):
                         output_data[f"{pathway.name}_massic_share_{aircraft_type}"] = massic_share
 
         self._store_outputs(output_data)
+        return output_data
+
+    def jax_compute(self, input_data) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        output_data = {}
+
+        for aircraft_type in self.pathways_manager.get_all_types("aircraft_type"):
+            mass_consumption = sum(
+                jnp.nan_to_num(jnp.asarray(input_data[f"{pathway.name}_energy_consumption"]))
+                / input_data[f"{pathway.name}_lhv"]
+                for pathway in self.pathways_manager.get(aircraft_type=aircraft_type)
+            )
+            for energy_origin in self.pathways_manager.get_all_types("energy_origin"):
+                pathways = self.pathways_manager.get(
+                    aircraft_type=aircraft_type, energy_origin=energy_origin
+                )
+                if not pathways:
+                    continue
+                origin_mass_consumption = sum(
+                    jnp.nan_to_num(jnp.asarray(input_data[f"{pathway.name}_energy_consumption"]))
+                    / input_data[f"{pathway.name}_lhv"]
+                    for pathway in pathways
+                )
+                for pathway in pathways:
+                    pathway_mass_consumption = jnp.nan_to_num(
+                        jnp.asarray(input_data[f"{pathway.name}_energy_consumption"])
+                        / input_data[f"{pathway.name}_lhv"]
+                    )
+                    origin_massic_share = (
+                        jnp.nan_to_num(pathway_mass_consumption / origin_mass_consumption) * 100.0
+                    )
+                    massic_share = (
+                        jnp.nan_to_num(pathway_mass_consumption / mass_consumption) * 100.0
+                    )
+
+                    output_data[f"{pathway.name}_mass_consumption"] = pathway_mass_consumption
+                    output_data[
+                        f"{pathway.name}_massic_share_{aircraft_type}_{energy_origin}"
+                    ] = origin_massic_share
+                    output_data[f"{pathway.name}_massic_share_{aircraft_type}"] = massic_share
+
         return output_data
 
 
@@ -560,5 +693,49 @@ class EnergyCarriersMeanLHV(AeroMAPSModel):
                     output_data[f"{aircraft_type}_mean_lhv"] = mean_lhv * valid_years
 
         self._store_outputs(output_data)
+
+        return output_data
+
+    def jax_compute(self, input_data) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        output_data = {}
+        n = self.end_year - self.historic_start_year + 1
+
+        for aircraft_type in self.pathways_manager.get_all_types("aircraft_type"):
+            mean_lhv = jnp.zeros(n)
+            cumulative_share = jnp.zeros(n)
+            for energy_origin in self.pathways_manager.get_all_types("energy_origin"):
+                pathways = self.pathways_manager.get(
+                    aircraft_type=aircraft_type, energy_origin=energy_origin
+                )
+                if not pathways:
+                    continue
+                origin_mean_lhv = jnp.zeros(n)
+                origin_cumulative_share = jnp.zeros(n)
+                for pathway in pathways:
+                    origin_share = jnp.asarray(
+                        input_data[f"{pathway.name}_massic_share_{aircraft_type}_{energy_origin}"]
+                    )
+                    share = jnp.asarray(input_data[f"{pathway.name}_massic_share_{aircraft_type}"])
+                    origin_cumulative_share = (
+                        origin_cumulative_share + jnp.nan_to_num(origin_share) / 100.0
+                    )
+                    cumulative_share = cumulative_share + jnp.nan_to_num(share) / 100.0
+
+                    pathway_lhv = input_data[f"{pathway.name}_lhv"]
+                    origin_mean_lhv = (
+                        origin_mean_lhv + jnp.nan_to_num(pathway_lhv * origin_share) / 100.0
+                    )
+                    mean_lhv = mean_lhv + jnp.nan_to_num(pathway_lhv * share) / 100.0
+
+                origin_valid = jnp.where(
+                    origin_cumulative_share == 0.0, jnp.nan, origin_cumulative_share
+                )
+                valid = jnp.where(cumulative_share == 0.0, jnp.nan, cumulative_share)
+
+                output_data[f"{aircraft_type}_{energy_origin}_mean_lhv"] = (
+                    origin_mean_lhv * origin_valid
+                )
+                output_data[f"{aircraft_type}_mean_lhv"] = mean_lhv * valid
 
         return output_data

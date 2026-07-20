@@ -14,6 +14,7 @@ All use ``model_type="custom"`` (``AeroMAPSCustomModelWrapper``).  Input/output
 names are built from the market id at construction time.
 """
 
+import jax.numpy as jnp
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
@@ -68,6 +69,13 @@ class ASKMarket(AeroMAPSModel):
         self._store_outputs(output_data)
         return output_data
 
+    def jax_compute(self, input_data: dict) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        mid = self.market_id
+        load_factor = jnp.asarray(input_data[f"load_factor_{mid}"])
+        rpk = jnp.asarray(input_data[f"rpk_{mid}"])
+        return {f"ask_{mid}": rpk / (load_factor / 100.0)}
+
 
 class ASKAggregator(AeroMAPSModel):
     """Sum per-market ASKs into the total ``ask`` consumed by downstream models.
@@ -115,3 +123,10 @@ class ASKAggregator(AeroMAPSModel):
         output_data = {"ask": total_ask}
         self._store_outputs(output_data)
         return output_data
+
+    def jax_compute(self, input_data: dict) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        total_ask = sum(
+            jnp.asarray(input_data[f"ask_{mid}"]) for mid in self.passenger_market_ids
+        )
+        return {"ask": total_ask}

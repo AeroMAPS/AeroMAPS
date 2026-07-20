@@ -7,6 +7,7 @@ Central module with a model to handle pathways interaction.
 
 import warnings
 
+import jax.numpy as jnp
 import numpy as np
 import pandas as pd
 
@@ -402,4 +403,191 @@ class EnergyUseChoice(AeroMAPSModel):
         # Add all output data in self.df and self.float_outputs
         self._store_outputs(output_data)
 
+        return output_data
+
+    def jax_compute(self, input_data) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy).
+
+        The global "mandates exceed consumption" branch of the pandas version is
+        expressed as an elementwise scaling factor so the function stays
+        traceable; the (warning-only) global NaN-filling of that branch is not
+        reproduced.
+        """
+        output_data = {}
+        n = self.end_year - self.historic_start_year + 1
+        zeros = jnp.zeros(n)
+
+        for aircraft_type in self.pathways_manager.get_all_types("aircraft_type"):
+            try:
+                energy_consumption = jnp.asarray(
+                    input_data[f"energy_consumption_{aircraft_type}"]
+                )
+            except KeyError:
+                raise KeyError(
+                    f"Aircraft type <{aircraft_type}> specified in energy_carriers_data.yaml not supported by AeroMAPS aircraft models."
+                )
+
+            type_pathways = self.pathways_manager.get(aircraft_type=aircraft_type)
+            if not type_pathways:
+                continue
+
+            type_default_pathway = self.pathways_manager.get(
+                aircraft_type=aircraft_type, default=True
+            )
+            if not type_default_pathway:
+                raise ValueError(
+                    f"It is mandatory to define a default {aircraft_type} fuel pathway defined in the energy_carriers_data.yaml"
+                )
+            if len(type_default_pathway) > 1:
+                raise ValueError(
+                    f"There should be only one default {aircraft_type} fuel pathway defined in the energy_carriers_data.yaml"
+                )
+
+            # Traced scalar flag: any non-NaN value and a nonzero total.
+            has_consumption = jnp.any(~jnp.isnan(energy_consumption)) & (
+                jnp.nansum(energy_consumption) != 0
+            )
+
+            remaining = energy_consumption
+            allocations = {}
+
+            # First case: quantity-defined pathways.
+            type_quantity_pathways = self.pathways_manager.get(
+                aircraft_type=aircraft_type, mandate_type="quantity"
+            )
+            if type_quantity_pathways:
+                total_quantity = sum(
+                    jnp.nan_to_num(jnp.asarray(input_data[f"{pathway.name}_mandate_quantity"]))
+                    for pathway in type_quantity_pathways
+                )
+                scaling = jnp.where(
+                    total_quantity > remaining,
+                    remaining / jnp.where(total_quantity > remaining, total_quantity, 1.0),
+                    1.0,
+                )
+                for pathway in type_quantity_pathways:
+                    original = jnp.asarray(input_data[f"{pathway.name}_mandate_quantity"])
+                    consumption = jnp.where(
+                        scaling < 1.0, jnp.nan_to_num(original) * scaling, original
+                    )
+                    allocations[pathway.name] = consumption
+                    remaining = remaining - jnp.nan_to_num(consumption)
+
+            # Second case: blending-mandate pathways.
+            type_share_pathways = self.pathways_manager.get(
+                aircraft_type=aircraft_type, mandate_type="share"
+            )
+            if type_share_pathways:
+                total_share_quantity = sum(
+                    jnp.nan_to_num(
+                        jnp.asarray(input_data[f"{pathway.name}_mandate_share"])
+                        / 100.0
+                        * energy_consumption
+                    )
+                    for pathway in type_share_pathways
+                )
+                scaling = jnp.where(
+                    total_share_quantity > remaining,
+                    remaining
+                    / jnp.where(total_share_quantity > remaining, total_share_quantity, 1.0),
+                    1.0,
+                )
+                for pathway in type_share_pathways:
+                    share = jnp.asarray(input_data[f"{pathway.name}_mandate_share"])
+                    consumption = share / 100.0 * energy_consumption
+                    consumption = jnp.where(
+                        scaling < 1.0, jnp.nan_to_num(consumption) * scaling, consumption
+                    )
+                    allocations[pathway.name] = consumption
+                    remaining = remaining - jnp.nan_to_num(consumption)
+
+            # Third case: the default pathway fills the remaining consumption.
+            allocations[type_default_pathway[0].name] = remaining
+
+            for pathway in type_pathways:
+                consumption = allocations.get(pathway.name, zeros)
+                output_data[f"{pathway.name}_energy_consumption"] = jnp.where(
+                    has_consumption, consumption, 0.0
+                )
+
+        total_energy_consumption = jnp.asarray(input_data["energy_consumption"])
+
+        for pathway in self.pathways_manager.get_all():
+            output_data[f"{pathway.name}_share_total_energy"] = (
+                output_data[f"{pathway.name}_energy_consumption"]
+                / total_energy_consumption
+                * 100.0
+            )
+
+        def _zero_to_nan(x):
+            return jnp.where(x == 0.0, jnp.nan, x)
+
+        for aircraft_type in self.pathways_manager.get_all_types("aircraft_type"):
+            type_energy_consumption = jnp.nan_to_num(
+                jnp.asarray(input_data[f"energy_consumption_{aircraft_type}"])
+            )
+            for pathway in self.pathways_manager.get(aircraft_type=aircraft_type):
+                output_data[f"{pathway.name}_share_{aircraft_type}"] = (
+                    output_data[f"{pathway.name}_energy_consumption"]
+                    / _zero_to_nan(type_energy_consumption)
+                    * 100.0
+                )
+
+        for energy_origin in self.pathways_manager.get_all_types("energy_origin"):
+            origin_energy_consumption = sum(
+                jnp.nan_to_num(output_data[f"{pathway.name}_energy_consumption"])
+                for pathway in self.pathways_manager.get(energy_origin=energy_origin)
+            )
+            for pathway in self.pathways_manager.get(energy_origin=energy_origin):
+                output_data[f"{pathway.name}_share_{energy_origin}"] = (
+                    output_data[f"{pathway.name}_energy_consumption"]
+                    / _zero_to_nan(origin_energy_consumption)
+                    * 100.0
+                )
+            output_data[f"{energy_origin}_share_total_energy"] = (
+                origin_energy_consumption / total_energy_consumption * 100.0
+            )
+
+            for aircraft_type in self.pathways_manager.get_all_types("aircraft_type"):
+                if self.pathways_manager.get(
+                    aircraft_type=aircraft_type, energy_origin=energy_origin
+                ):
+                    type_energy_consumption = jnp.asarray(
+                        input_data[f"energy_consumption_{aircraft_type}"]
+                    )
+                    origin_type_energy_consumption = sum(
+                        jnp.nan_to_num(output_data[f"{pathway.name}_energy_consumption"])
+                        for pathway in self.pathways_manager.get(
+                            energy_origin=energy_origin, aircraft_type=aircraft_type
+                        )
+                    )
+                    output_data[f"{aircraft_type}_{energy_origin}_energy_consumption"] = (
+                        origin_type_energy_consumption
+                    )
+                    output_data[f"{energy_origin}_share_{aircraft_type}"] = (
+                        origin_type_energy_consumption
+                        / _zero_to_nan(type_energy_consumption)
+                        * 100.0
+                    )
+                    output_data[f"{aircraft_type}_share_{energy_origin}"] = (
+                        origin_type_energy_consumption
+                        / _zero_to_nan(origin_energy_consumption)
+                        * 100.0
+                    )
+                    for pathway in self.pathways_manager.get(
+                        energy_origin=energy_origin, aircraft_type=aircraft_type
+                    ):
+                        output_data[f"{pathway.name}_share_{aircraft_type}_{energy_origin}"] = (
+                            output_data[f"{pathway.name}_energy_consumption"]
+                            / _zero_to_nan(origin_type_energy_consumption)
+                            * 100.0
+                        )
+
+        for output in (
+            "biomass_share_dropin_fuel",
+            "electricity_share_dropin_fuel",
+            "fossil_share_dropin_fuel",
+        ):
+            if output not in output_data:
+                output_data[output] = zeros
         return output_data

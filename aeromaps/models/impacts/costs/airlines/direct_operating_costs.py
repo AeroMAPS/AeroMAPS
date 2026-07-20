@@ -5,10 +5,46 @@ direct_operating_costs
 Direct Operating Costs (DOC) models for passenger aircraft.
 """
 
+import jax.numpy as jnp
 import numpy as np
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
+from aeromaps.models.jax_helpers import hist_mask, year_pos
+
+
+
+
+def _jax_doc_energy_family(model, input_data, unit_prices, out_prefix, zero_to_nan):
+    """Shared JAX pattern of the energy-DOC models.
+
+    ``doc = energy_per_ask * unit_price`` per (market, energy type), per-market
+    ASK-share-weighted mean, and global ASK-weighted mean.
+    """
+    energy_types = ["dropin_fuel", "hydrogen", "electric"]
+    output_data = {}
+
+    doc_per_market_mean = {}
+    ask_per_market = {}
+    for market in model.markets.get(traffic_type="passenger"):
+        mid = market.id
+        ask_per_market[mid] = jnp.asarray(input_data[f"ask_{mid}"])
+        total = 0.0
+        for et in energy_types:
+            energy = jnp.asarray(input_data[f"energy_per_ask_{mid}_{et}"])
+            if zero_to_nan:
+                energy = jnp.where(energy == 0.0, jnp.nan, energy)
+            doc = energy * unit_prices[et]
+            output_data[f"{out_prefix}_{mid}_{et}"] = doc
+            share = jnp.asarray(input_data[f"ask_{mid}_{et}_share"])
+            total = total + jnp.nan_to_num(doc) * share / 100.0
+        doc_per_market_mean[mid] = total
+        output_data[f"{out_prefix}_{mid}_mean"] = total
+
+    ask_weighted_sum = sum(doc_per_market_mean[mid] * ask_per_market[mid] for mid in ask_per_market)
+    ask_total = sum(ask_per_market.values())
+    output_data[f"{out_prefix}_mean"] = ask_weighted_sum / ask_total
+    return output_data
 
 
 class PassengerAircraftDocNonEnergyComplex(AeroMAPSModel):
@@ -286,6 +322,49 @@ class PassengerAircraftDocNonEnergySimple(AeroMAPSModel):
         self._store_outputs(output_data)
         return output_data
 
+    def jax_compute(self, input_data) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        energy_types = ["dropin_fuel", "hydrogen", "electric"]
+        output_data = {}
+        hist = hist_mask(self)
+
+        doc_mean = {}
+        ask_per_market = {}
+        for market in self.markets.get(traffic_type="passenger"):
+            mid = market.id
+            init = input_data[f"{mid}_doc_non_energy_per_ask_dropin_fuel_init"]
+            gain = input_data[f"{mid}_doc_non_energy_per_ask_dropin_fuel_gain"]
+            rel = {
+                "hydrogen": input_data[
+                    f"{mid}_relative_doc_non_energy_per_ask_hydrogen_wrt_dropin"
+                ],
+                "electric": input_data[
+                    f"{mid}_relative_doc_non_energy_per_ask_electric_wrt_dropin"
+                ],
+            }
+            ask_per_market[mid] = jnp.asarray(input_data[f"ask_{mid}"])
+
+            factors = jnp.where(~hist, 1.0 - gain / 100.0, 1.0)
+            dropin = init * jnp.cumprod(factors)
+
+            series = {
+                "dropin_fuel": dropin,
+                "hydrogen": dropin * rel["hydrogen"],
+                "electric": dropin * rel["electric"],
+            }
+            total = 0.0
+            for et in energy_types:
+                output_data[f"doc_non_energy_per_ask_{mid}_{et}"] = series[et]
+                share = jnp.asarray(input_data[f"ask_{mid}_{et}_share"])
+                total = total + series[et] * share / 100.0
+            doc_mean[mid] = total
+            output_data[f"doc_non_energy_per_ask_{mid}_mean"] = total
+
+        ask_weighted_sum = sum(doc_mean[mid] * ask_per_market[mid] for mid in ask_per_market)
+        ask_total = sum(ask_per_market.values())
+        output_data["doc_non_energy_per_ask_mean"] = ask_weighted_sum / ask_total
+        return output_data
+
 
 class PassengerAircraftDocEnergy(AeroMAPSModel):
     """
@@ -412,6 +491,16 @@ class PassengerAircraftDocEnergy(AeroMAPSModel):
 
         self._store_outputs(output_data)
         return output_data
+
+    def jax_compute(self, input_data) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        unit_prices = {
+            et: jnp.asarray(input_data[f"{et}_mean_mfsp"])
+            for et in ("dropin_fuel", "hydrogen", "electric")
+        }
+        return _jax_doc_energy_family(
+            self, input_data, unit_prices, "doc_energy_per_ask", zero_to_nan=True
+        )
 
 
 class PassengerAircraftDocEnergyCarbonTax(AeroMAPSModel):
@@ -567,6 +656,32 @@ class PassengerAircraftDocEnergyCarbonTax(AeroMAPSModel):
         self._store_outputs(output_data)
         return output_data
 
+    def jax_compute(self, input_data) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        unit_prices = {
+            et: jnp.asarray(input_data[f"{et}_mean_unit_carbon_tax"])
+            for et in ("dropin_fuel", "hydrogen", "electric")
+        }
+        output_data = _jax_doc_energy_family(
+            self, input_data, unit_prices, "doc_energy_carbon_tax_per_ask", zero_to_nan=True
+        )
+
+        # co2_emissions is indexed on climate years; slice the model years.
+        offset_climate = self.historic_start_year - self.climate_historic_start_year
+        co2_emissions = jnp.asarray(input_data["co2_emissions"])[offset_climate:]
+        carbon_offset = jnp.nan_to_num(jnp.asarray(input_data["carbon_offset"]))
+        carbon_remaining_ratio = (co2_emissions - carbon_offset) / co2_emissions
+
+        output_data["doc_carbon_tax_lowering_offset_per_ask_mean"] = (
+            output_data["doc_energy_carbon_tax_per_ask_mean"] * carbon_remaining_ratio
+        )
+        for market in self.markets.get(traffic_type="passenger"):
+            mid = market.id
+            output_data[f"doc_carbon_tax_lowering_offset_per_ask_{mid}_mean"] = (
+                output_data[f"doc_energy_carbon_tax_per_ask_{mid}_mean"] * carbon_remaining_ratio
+            )
+        return output_data
+
 
 class PassengerAircraftDocEnergySubsidy(AeroMAPSModel):
     """
@@ -695,6 +810,16 @@ class PassengerAircraftDocEnergySubsidy(AeroMAPSModel):
         self._store_outputs(output_data)
         return output_data
 
+    def jax_compute(self, input_data) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        unit_prices = {
+            et: jnp.asarray(input_data[f"{et}_mean_unit_subsidy"])
+            for et in ("dropin_fuel", "hydrogen", "electric")
+        }
+        return _jax_doc_energy_family(
+            self, input_data, unit_prices, "doc_energy_subsidy_per_ask", zero_to_nan=False
+        )
+
 
 class PassengerAircraftDocEnergyTax(AeroMAPSModel):
     """
@@ -822,6 +947,16 @@ class PassengerAircraftDocEnergyTax(AeroMAPSModel):
 
         self._store_outputs(output_data)
         return output_data
+
+    def jax_compute(self, input_data) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        unit_prices = {
+            et: jnp.asarray(input_data[f"{et}_mean_unit_tax"])
+            for et in ("dropin_fuel", "hydrogen", "electric")
+        }
+        return _jax_doc_energy_family(
+            self, input_data, unit_prices, "doc_energy_tax_per_ask", zero_to_nan=False
+        )
 
 
 # class PassengerAircraftDocCarbonTax(AeroMAPSModel):
@@ -1205,4 +1340,50 @@ class PassengerAircraftTotalDoc(AeroMAPSModel):
         output_data["doc_net_energy_per_rpk_mean"] = doc_net_energy_per_rpk_mean
 
         self._store_outputs(output_data)
+        return output_data
+
+    def jax_compute(self, input_data) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        energy_types = ["dropin_fuel", "hydrogen", "electric"]
+        output_data = {}
+
+        total = lambda ne, en, ct, su, tx: ne + en + ct - su + tx  # noqa: E731
+        get = lambda name: jnp.asarray(input_data[name])  # noqa: E731
+
+        for market in self.markets.get(traffic_type="passenger"):
+            mid = market.id
+            for et in energy_types:
+                output_data[f"doc_total_per_ask_{mid}_{et}"] = total(
+                    get(f"doc_non_energy_per_ask_{mid}_{et}"),
+                    get(f"doc_energy_per_ask_{mid}_{et}"),
+                    get(f"doc_energy_carbon_tax_per_ask_{mid}_{et}"),
+                    get(f"doc_energy_subsidy_per_ask_{mid}_{et}"),
+                    get(f"doc_energy_tax_per_ask_{mid}_{et}"),
+                )
+            output_data[f"doc_total_per_ask_{mid}_mean"] = total(
+                get(f"doc_non_energy_per_ask_{mid}_mean"),
+                get(f"doc_energy_per_ask_{mid}_mean"),
+                get(f"doc_energy_carbon_tax_per_ask_{mid}_mean"),
+                get(f"doc_energy_subsidy_per_ask_{mid}_mean"),
+                get(f"doc_energy_tax_per_ask_{mid}_mean"),
+            )
+
+        output_data["doc_total_per_ask_mean"] = total(
+            get("doc_non_energy_per_ask_mean"),
+            get("doc_energy_per_ask_mean"),
+            get("doc_energy_carbon_tax_per_ask_mean"),
+            get("doc_energy_subsidy_per_ask_mean"),
+            get("doc_energy_tax_per_ask_mean"),
+        )
+
+        doc_net_energy_per_ask_mean = (
+            get("doc_energy_per_ask_mean")
+            + get("doc_energy_carbon_tax_per_ask_mean")
+            - get("doc_energy_subsidy_per_ask_mean")
+            + get("doc_energy_tax_per_ask_mean")
+        )
+        load_factor = get("load_factor")
+        output_data["doc_net_energy_per_rpk_mean"] = jnp.where(
+            load_factor > 0, doc_net_energy_per_ask_mean * 100.0 / load_factor, 0.0
+        )
         return output_data

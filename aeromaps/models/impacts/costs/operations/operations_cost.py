@@ -8,8 +8,12 @@ operations_costs
 Module to compute aircraft operations costs.
 """
 
+import jax.numpy as jnp
 import pandas as pd
 from aeromaps.models.base import AeroMAPSModel
+from aeromaps.models.jax_helpers import (
+    year_pos,
+)
 
 
 class OperationalEfficiencyCost(AeroMAPSModel):
@@ -59,6 +63,20 @@ class OperationalEfficiencyCost(AeroMAPSModel):
 
         return operational_efficiency_cost_non_energy_per_ask
 
+    def jax_compute(
+        self,
+        operational_efficiency_cost_non_energy_per_ask_final_value,
+        operations_final_gain,
+        operations_gain,
+    ):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        operational_efficiency_cost_non_energy_per_ask = (
+            operational_efficiency_cost_non_energy_per_ask_final_value
+            * jnp.asarray(operations_gain)
+            / operations_final_gain
+        )
+        return operational_efficiency_cost_non_energy_per_ask
+
 
 class LoadFactorEfficiencyCost(AeroMAPSModel):
     """
@@ -102,4 +120,16 @@ class LoadFactorEfficiencyCost(AeroMAPSModel):
         )
         self.df.loc[:, "load_factor_cost_non_energy_per_ask"] = load_factor_cost_non_energy_per_ask
 
+        return load_factor_cost_non_energy_per_ask
+
+    def jax_compute(self, load_factor_cost_non_energy_per_ask_final_value, load_factor):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        load_factor = jnp.asarray(load_factor)
+        load_factor_init = load_factor[year_pos(self, self.prospection_start_year - 1)]
+        load_factor_end_year_value = load_factor[year_pos(self, self.end_year)]
+        load_factor_cost_non_energy_per_ask = (
+            load_factor_cost_non_energy_per_ask_final_value
+            * (load_factor - load_factor_init)
+            / (load_factor_end_year_value - load_factor_init)
+        )
         return load_factor_cost_non_energy_per_ask

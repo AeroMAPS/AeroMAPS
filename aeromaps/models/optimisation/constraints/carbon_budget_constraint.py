@@ -11,9 +11,11 @@ which defines and enforces the constraint on aviation's carbon budget consumptio
 
 import logging
 
+import jax.numpy as jnp
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
+from aeromaps.models.jax_helpers import year_pos
 
 
 class CarbonBudgetConstraint(AeroMAPSModel):
@@ -78,4 +80,29 @@ class CarbonBudgetConstraint(AeroMAPSModel):
 
         self.float_outputs["aviation_carbon_budget_constraint"] = aviation_carbon_budget_constraint
 
+        return aviation_carbon_budget_constraint
+
+    def jax_compute(
+        self,
+        gross_carbon_budget_2050,
+        aviation_carbon_budget_objective,
+        cumulative_co2_emissions,
+    ):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        cumulative_co2_emissions = jnp.asarray(cumulative_co2_emissions)
+        cumulative_emissions = (
+            cumulative_co2_emissions[year_pos(self, 2050)]
+            - cumulative_co2_emissions[year_pos(self, 2025)]
+        )
+        adjusted_carbon_budget_2050 = (
+            gross_carbon_budget_2050 * aviation_carbon_budget_objective / 100.0
+            - cumulative_co2_emissions[year_pos(self, 2025)]
+        )
+        # Infeasibility guard of the pandas version, expressed elementwise.
+        adjusted_carbon_budget_2050 = jnp.where(
+            adjusted_carbon_budget_2050 <= 0, 1e6, adjusted_carbon_budget_2050
+        )
+        aviation_carbon_budget_constraint = (
+            cumulative_emissions - adjusted_carbon_budget_2050
+        ) / adjusted_carbon_budget_2050
         return aviation_carbon_budget_constraint

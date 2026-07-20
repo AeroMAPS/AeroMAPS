@@ -6,9 +6,11 @@ Module to compute pathway environmental parameters using the top-down techno-eco
 """
 
 import numpy as np
+import jax.numpy as jnp
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
+from aeromaps.models.jax_helpers import jax_nan_add
 
 
 class TopDownEnvironmental(AeroMAPSModel):
@@ -336,6 +338,116 @@ class TopDownEnvironmental(AeroMAPSModel):
 
         self._store_outputs(output_data)
 
+        return output_data
+
+    @property
+    def jax_ready(self):
+        # The per-vintage abatement-cost loop is not ported to JAX.
+        return not self.compute_abatement_cost
+
+    def jax_compute(self, input_data) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        output_data = {}
+        n = self.end_year - self.historic_start_year + 1
+        zeros = jnp.zeros(n)
+
+        def get(name, default):
+            value = input_data.get(name, None)
+            return default if value is None else jnp.asarray(value)
+
+        co2_emission_factor = get(
+            f"{self.pathway_name}_mean_co2_emission_factor_without_resource", zeros
+        )
+        energy_consumption = jnp.asarray(input_data[f"{self.pathway_name}_energy_consumption"])
+        pathway_kerosene_selectivity = input_data.get(
+            f"{self.pathway_name}_kerosene_selectivity", 1.0
+        )
+
+        for key in self.resource_keys:
+            specific_consumption = input_data.get(
+                f"{self.pathway_name}_resource_specific_consumption_{key}", None
+            )
+            total_ressource_consumption = zeros
+            total_ressource_mobilised = zeros
+
+            if specific_consumption is not None:
+                ressource_consumption = energy_consumption * specific_consumption
+                ressource_required = ressource_consumption / pathway_kerosene_selectivity
+                total_ressource_consumption = jax_nan_add(
+                    total_ressource_consumption, ressource_consumption
+                )
+                total_ressource_mobilised = jax_nan_add(
+                    total_ressource_mobilised, ressource_required
+                )
+
+                output_data[f"{self.pathway_name}_excluding_processes_{key}_total_consumption"] = (
+                    ressource_consumption
+                )
+                output_data[
+                    f"{self.pathway_name}_excluding_processes_{key}_total_mobilised_with_selectivity"
+                ] = ressource_required
+
+                unit_emissions = get(f"{key}_co2_emission_factor", zeros)
+                co2_emission_factor_ressource = specific_consumption * unit_emissions
+                output_data[
+                    f"{self.pathway_name}_excluding_processes_{key}_mean_co2_emission_factor"
+                ] = co2_emission_factor_ressource
+                co2_emission_factor = jax_nan_add(
+                    co2_emission_factor, co2_emission_factor_ressource
+                )
+
+            for process_key in self.process_keys:
+                specific_consumption = input_data.get(
+                    f"{process_key}_resource_specific_consumption_{key}"
+                )
+                if specific_consumption is not None:
+                    ressource_consumption = energy_consumption * specific_consumption
+                    ressource_required = ressource_consumption / pathway_kerosene_selectivity
+                    total_ressource_consumption = jax_nan_add(
+                        total_ressource_consumption, ressource_consumption
+                    )
+                    total_ressource_mobilised = jax_nan_add(
+                        total_ressource_mobilised, ressource_required
+                    )
+
+                    output_data[f"{self.pathway_name}_{process_key}_{key}_total_consumption"] = (
+                        ressource_consumption
+                    )
+                    output_data[
+                        f"{self.pathway_name}_{process_key}_{key}_total_mobilised_with_selectivity"
+                    ] = ressource_required
+
+                    unit_emissions = get(f"{key}_co2_emission_factor", zeros)
+                    co2_emission_factor_ressource = specific_consumption * unit_emissions
+                    output_data[
+                        f"{self.pathway_name}_{process_key}_{key}_mean_co2_emission_factor"
+                    ] = co2_emission_factor_ressource
+                    co2_emission_factor = jax_nan_add(
+                        co2_emission_factor, co2_emission_factor_ressource
+                    )
+
+            output_data[f"{self.pathway_name}_{key}_total_consumption"] = (
+                total_ressource_consumption
+            )
+            output_data[f"{self.pathway_name}_{key}_total_mobilised_with_selectivity"] = (
+                total_ressource_mobilised
+            )
+
+        for process_key in self.process_keys:
+            co2_emission_factor_process = get(
+                f"{process_key}_co2_emission_factor_without_resource", zeros
+            )
+            output_data[
+                f"{self.pathway_name}_{process_key}_without_resources_mean_co2_emission_factor"
+            ] = co2_emission_factor_process
+            # Plain (NaN-propagating) addition, like the pandas `.add()` without
+            # fill_value.
+            co2_emission_factor = co2_emission_factor + co2_emission_factor_process
+
+        output_data[f"{self.pathway_name}_mean_co2_emission_factor"] = co2_emission_factor
+
+        total_co2_emissions = energy_consumption * co2_emission_factor
+        output_data[f"{self.pathway_name}_total_co2_emissions"] = total_co2_emissions
         return output_data
 
     def _unitary_cumul_emissions(

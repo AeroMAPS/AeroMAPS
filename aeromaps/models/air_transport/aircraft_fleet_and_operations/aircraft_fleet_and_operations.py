@@ -6,6 +6,7 @@ Models to compute energy intensities per ASK/RTK for different aircraft pathways
 including effects of operations and contrails.
 """
 
+import jax.numpy as jnp
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
@@ -139,4 +140,38 @@ class EnergyIntensity(AeroMAPSModel):
                 output_data[col] = value
 
         self._store_outputs(output_data)
+        return output_data
+
+    def jax_compute(self, input_data: dict) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        passenger_markets = self.markets.get(traffic_type="passenger")
+        freight_markets = self.markets.get(traffic_type="freight")
+
+        operations_gain = jnp.asarray(input_data["operations_gain"])
+        operations_contrails_overconsumption = jnp.asarray(
+            input_data["operations_contrails_overconsumption"]
+        )
+        operations_factor = (1.0 - operations_gain / 100.0) * (
+            1.0 + operations_contrails_overconsumption / 100.0
+        )
+
+        output_data = {}
+        for m in passenger_markets:
+            mid = m.id
+            for energy_type in ("dropin_fuel", "hydrogen", "electric"):
+                output_data[f"energy_per_ask_{mid}_{energy_type}"] = (
+                    jnp.asarray(
+                        input_data[f"energy_per_ask_without_operations_{mid}_{energy_type}"]
+                    )
+                    * operations_factor
+                )
+        for m in freight_markets:
+            mid = m.id
+            for energy_type in ("dropin_fuel", "hydrogen", "electric"):
+                output_data[f"energy_per_rtk_{mid}_{energy_type}"] = (
+                    jnp.asarray(
+                        input_data[f"energy_per_rtk_without_operations_{mid}_{energy_type}"]
+                    )
+                    * operations_factor
+                )
         return output_data

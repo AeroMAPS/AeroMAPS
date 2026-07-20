@@ -6,9 +6,12 @@ This module contains models for calculating CO2 emissions and related factors.
 
 from typing import Tuple
 
+import jax.numpy as jnp
+import numpy as np
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
+from aeromaps.models.jax_helpers import hist_mask, year_pos, years_index
 
 
 class KayaFactors(AeroMAPSModel):
@@ -151,6 +154,68 @@ class KayaFactors(AeroMAPSModel):
         self.df.loc[:, "energy_per_ask_mean"] = energy_per_ask_mean
         self.df.loc[:, "energy_per_rtk_mean"] = energy_per_rtk_mean
         self.df.loc[:, "co2_per_energy_mean"] = co2_per_energy_mean
+
+        return (
+            energy_per_ask_mean_without_operations,
+            energy_per_ask_mean,
+            energy_per_rtk_mean_without_operations,
+            energy_per_rtk_mean,
+            co2_per_energy_mean,
+        )
+
+    def jax_compute(
+        self,
+        ask,
+        rtk,
+        energy_consumption_passenger_dropin_fuel_without_operations,
+        energy_consumption_passenger_hydrogen_without_operations,
+        energy_consumption_passenger_electric_without_operations,
+        energy_consumption_passenger_dropin_fuel,
+        energy_consumption_passenger_hydrogen,
+        energy_consumption_passenger_electric,
+        energy_consumption_freight_dropin_fuel_without_operations,
+        energy_consumption_freight_hydrogen_without_operations,
+        energy_consumption_freight_electric_without_operations,
+        energy_consumption_freight_dropin_fuel,
+        energy_consumption_freight_hydrogen,
+        energy_consumption_freight_electric,
+        energy_consumption_dropin_fuel,
+        energy_consumption_hydrogen,
+        energy_consumption_electric,
+        energy_consumption,
+        dropin_fuel_mean_co2_emission_factor,
+        hydrogen_mean_co2_emission_factor,
+        electric_mean_co2_emission_factor,
+    ):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        energy_per_ask_mean_without_operations = (
+            energy_consumption_passenger_dropin_fuel_without_operations
+            + energy_consumption_passenger_hydrogen_without_operations
+            + energy_consumption_passenger_electric_without_operations
+        ) / ask
+        energy_per_ask_mean = (
+            energy_consumption_passenger_dropin_fuel
+            + energy_consumption_passenger_hydrogen
+            + energy_consumption_passenger_electric
+        ) / ask
+        energy_per_rtk_mean_without_operations = (
+            energy_consumption_freight_dropin_fuel_without_operations
+            + energy_consumption_freight_hydrogen_without_operations
+            + energy_consumption_freight_electric_without_operations
+        ) / rtk
+        energy_per_rtk_mean = (
+            energy_consumption_freight_dropin_fuel
+            + energy_consumption_freight_hydrogen
+            + energy_consumption_freight_electric
+        ) / rtk
+        co2_per_energy_mean = (
+            jnp.nan_to_num(jnp.asarray(dropin_fuel_mean_co2_emission_factor))
+            * energy_consumption_dropin_fuel
+            + jnp.nan_to_num(jnp.asarray(hydrogen_mean_co2_emission_factor))
+            * energy_consumption_hydrogen
+            + jnp.nan_to_num(jnp.asarray(electric_mean_co2_emission_factor))
+            * energy_consumption_electric
+        ) / energy_consumption
 
         return (
             energy_per_ask_mean_without_operations,
@@ -334,6 +399,72 @@ class CO2Emissions(AeroMAPSModel):
         self._store_outputs(output_data, climate_outputs_keys=["co2_emissions"])
         return output_data
 
+    @property
+    def jax_output_indexes(self):
+        return {
+            "co2_emissions": pd.RangeIndex(self.climate_historic_start_year, self.end_year + 1)
+        }
+
+    def jax_compute(self, input_data) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        energy_types = ["dropin_fuel", "hydrogen", "electric"]
+
+        co2_emission_factor_by_energy_type = {
+            energy_type: jnp.nan_to_num(
+                jnp.asarray(input_data[f"{energy_type}_mean_co2_emission_factor"])
+            )
+            for energy_type in energy_types
+        }
+        load_factor = jnp.asarray(input_data["load_factor"])
+        output_data = {}
+
+        co2_emissions_passenger = 0.0
+        for market in self.markets.get(traffic_type="passenger"):
+            mid = market.id
+            rpk_market = jnp.asarray(input_data[f"rpk_{mid}"])
+            weighted = 0.0
+            for energy_type in energy_types:
+                energy_per_ask = jnp.nan_to_num(
+                    jnp.asarray(input_data[f"energy_per_ask_{mid}_{energy_type}"])
+                )
+                ask_share = jnp.asarray(input_data[f"ask_{mid}_{energy_type}_share"])
+                weighted = weighted + ask_share / 100.0 * (
+                    energy_per_ask * co2_emission_factor_by_energy_type[energy_type]
+                )
+            co2_emissions_market = rpk_market / (load_factor / 100.0) * weighted * 1e-12
+            output_data[f"co2_emissions_{mid}"] = co2_emissions_market
+            co2_emissions_passenger = co2_emissions_passenger + co2_emissions_market
+
+        co2_emissions_freight = 0.0
+        for market in self.markets.get(traffic_type="freight"):
+            mid = market.id
+            rtk_market = jnp.asarray(input_data[f"rtk_{mid}"])
+            weighted = 0.0
+            for energy_type in energy_types:
+                energy_per_rtk = jnp.nan_to_num(
+                    jnp.asarray(input_data[f"energy_per_rtk_{mid}_{energy_type}"])
+                )
+                rtk_share = jnp.asarray(input_data[f"rtk_{mid}_{energy_type}_share"])
+                weighted = weighted + rtk_share / 100.0 * (
+                    energy_per_rtk * co2_emission_factor_by_energy_type[energy_type]
+                )
+            co2_emissions_market = rtk_market * weighted * 1e-12
+            output_data[f"co2_emissions_{mid}"] = co2_emissions_market
+            co2_emissions_freight = co2_emissions_freight + co2_emissions_market
+
+        offset = self.historic_start_year - self.climate_historic_start_year
+        climate_hist = jnp.asarray(
+            np.asarray(self.climate_historical_data[:offset, 1], dtype=np.float64)
+        )
+        co2_emissions_total = jnp.concatenate(
+            [climate_hist, co2_emissions_passenger + co2_emissions_freight]
+        )
+
+        output_data["co2_emissions_passenger"] = co2_emissions_passenger
+        output_data["co2_emissions_freight"] = co2_emissions_freight
+        output_data["co2_emissions"] = co2_emissions_total
+        return output_data
+
 
 class CumulativeCO2Emissions(AeroMAPSModel):
     """
@@ -389,6 +520,37 @@ class CumulativeCO2Emissions(AeroMAPSModel):
             cumulative_co2_emissions_from_carbon_budget_reference_year
         )
 
+        return (
+            cumulative_co2_emissions,
+            cumulative_co2_emissions_from_carbon_budget_reference_year,
+        )
+
+    # The reference year is a static slice bound for the JAX path.
+    jax_static_input_names = {"carbon_budget_reference_year"}
+
+    @property
+    def jax_output_indexes(self):
+        ref_year = int(self.parameters.carbon_budget_reference_year)
+        return {
+            "cumulative_co2_emissions": pd.RangeIndex(
+                self.prospection_start_year, self.end_year + 1
+            ),
+            "cumulative_co2_emissions_from_carbon_budget_reference_year": pd.RangeIndex(
+                ref_year, self.end_year + 1
+            ),
+        }
+
+    def jax_compute(self, co2_emissions, carbon_budget_reference_year):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        co2 = jnp.asarray(co2_emissions)
+        # co2_emissions is indexed on climate years.
+        ps_pos = self.prospection_start_year - self.climate_historic_start_year
+        ref_pos = int(carbon_budget_reference_year) - self.climate_historic_start_year
+
+        cumulative_co2_emissions = jnp.cumsum(co2[ps_pos:] / 1000.0)
+        cumulative_co2_emissions_from_carbon_budget_reference_year = jnp.cumsum(
+            co2[ref_pos:] / 1000.0
+        )
         return (
             cumulative_co2_emissions,
             cumulative_co2_emissions_from_carbon_budget_reference_year,
@@ -628,6 +790,147 @@ class DetailedCo2Emissions(AeroMAPSModel):
             co2_emissions_including_energy,
         )
 
+    @property
+    def jax_output_indexes(self):
+        index = pd.RangeIndex(self.prospection_start_year - 1, self.end_year + 1)
+        return {
+            name: index
+            for name in (
+                "co2_emissions_last_historical_year_technology_baseline3",
+                "co2_emissions_last_historical_year_technology",
+                "co2_emissions_including_aircraft_efficiency",
+                "co2_emissions_including_operations",
+                "co2_emissions_including_load_factor",
+                "co2_emissions_including_energy",
+            )
+        }
+
+    def jax_compute(
+        self,
+        rpk_reference,
+        rtk_reference,
+        rpk,
+        rtk,
+        load_factor,
+        energy_per_ask_mean,
+        energy_per_rtk_mean,
+        energy_per_ask_mean_without_operations,
+        energy_per_rtk_mean_without_operations,
+        co2_per_energy_mean,
+    ):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        start = year_pos(self, self.prospection_start_year - 1)
+
+        rpk_reference_local = jnp.asarray(rpk_reference)[start:]
+        rtk_reference_local = jnp.asarray(rtk_reference)[start:]
+        rpk_local = jnp.asarray(rpk)[start:]
+        rtk_local = jnp.asarray(rtk)[start:]
+        load_factor_local = jnp.asarray(load_factor)[start:]
+        energy_per_ask_mean_local = jnp.asarray(energy_per_ask_mean)[start:]
+        energy_per_rtk_mean_local = jnp.asarray(energy_per_rtk_mean)[start:]
+        energy_per_ask_wo_local = jnp.asarray(energy_per_ask_mean_without_operations)[start:]
+        energy_per_rtk_wo_local = jnp.asarray(energy_per_rtk_mean_without_operations)[start:]
+        co2_per_energy_mean_local = jnp.asarray(co2_per_energy_mean)[start:]
+
+        load_factor_sy = load_factor_local[0]
+        energy_per_ask_mean_sy = energy_per_ask_mean_local[0]
+        energy_per_rtk_mean_sy = energy_per_rtk_mean_local[0]
+        energy_per_ask_wo_sy = energy_per_ask_wo_local[0]
+        energy_per_rtk_wo_sy = energy_per_rtk_wo_local[0]
+        co2_per_energy_mean_sy = co2_per_energy_mean_local[0]
+
+        emissions = lambda rpk_term, rtk_term, ask_wo, rtk_wo, ask_full, rtk_full, lf, co2f: (  # noqa: E731
+            rpk_term * ask_wo * ask_full / energy_per_ask_wo_sy / (lf / 100.0) * co2f * 1e-12
+        ) + (rtk_term * rtk_wo * rtk_full / energy_per_rtk_wo_sy * co2f * 1e-12)
+
+        co2_emissions_last_historical_year_technology_baseline3 = emissions(
+            rpk_reference_local,
+            rtk_reference_local,
+            energy_per_ask_wo_sy,
+            energy_per_rtk_wo_sy,
+            energy_per_ask_mean_sy,
+            energy_per_rtk_mean_sy,
+            load_factor_sy,
+            co2_per_energy_mean_sy,
+        )
+        co2_emissions_last_historical_year_technology = emissions(
+            rpk_local,
+            rtk_local,
+            energy_per_ask_wo_sy,
+            energy_per_rtk_wo_sy,
+            energy_per_ask_mean_sy,
+            energy_per_rtk_mean_sy,
+            load_factor_sy,
+            co2_per_energy_mean_sy,
+        )
+        co2_emissions_including_aircraft_efficiency = emissions(
+            rpk_local,
+            rtk_local,
+            energy_per_ask_wo_local,
+            energy_per_rtk_wo_local,
+            energy_per_ask_mean_sy,
+            energy_per_rtk_mean_sy,
+            load_factor_sy,
+            co2_per_energy_mean_sy,
+        )
+        co2_emissions_including_operations = (
+            rpk_local
+            * energy_per_ask_wo_local
+            * energy_per_ask_mean_local
+            / energy_per_ask_wo_local
+            / (load_factor_sy / 100.0)
+            * co2_per_energy_mean_sy
+            * 1e-12
+        ) + (
+            rtk_local
+            * energy_per_rtk_wo_local
+            * energy_per_rtk_mean_local
+            / energy_per_rtk_wo_local
+            * co2_per_energy_mean_sy
+            * 1e-12
+        )
+        co2_emissions_including_load_factor = (
+            rpk_local
+            * energy_per_ask_wo_local
+            * energy_per_ask_mean_local
+            / energy_per_ask_wo_local
+            / (load_factor_local / 100.0)
+            * co2_per_energy_mean_sy
+            * 1e-12
+        ) + (
+            rtk_local
+            * energy_per_rtk_wo_local
+            * energy_per_rtk_mean_local
+            / energy_per_rtk_wo_local
+            * co2_per_energy_mean_sy
+            * 1e-12
+        )
+        co2_emissions_including_energy = (
+            rpk_local
+            * energy_per_ask_wo_local
+            * energy_per_ask_mean_local
+            / energy_per_ask_wo_local
+            / (load_factor_local / 100.0)
+            * co2_per_energy_mean_local
+            * 1e-12
+        ) + (
+            rtk_local
+            * energy_per_rtk_wo_local
+            * energy_per_rtk_mean_local
+            / energy_per_rtk_wo_local
+            * co2_per_energy_mean_local
+            * 1e-12
+        )
+
+        return (
+            co2_emissions_last_historical_year_technology_baseline3,
+            co2_emissions_last_historical_year_technology,
+            co2_emissions_including_aircraft_efficiency,
+            co2_emissions_including_operations,
+            co2_emissions_including_load_factor,
+            co2_emissions_including_energy,
+        )
+
 
 class DetailedCumulativeCO2Emissions(AeroMAPSModel):
     """
@@ -739,6 +1042,61 @@ class DetailedCumulativeCO2Emissions(AeroMAPSModel):
         self.df["cumulative_co2_emissions_including_energy"] = (
             cumulative_co2_emissions_including_energy
         )
+
+        return (
+            cumulative_co2_emissions_last_historical_year_technology_baseline3,
+            cumulative_co2_emissions_last_historical_year_technology,
+            cumulative_co2_emissions_including_aircraft_efficiency,
+            cumulative_co2_emissions_including_operations,
+            cumulative_co2_emissions_including_load_factor,
+            cumulative_co2_emissions_including_energy,
+        )
+
+    @property
+    def jax_output_indexes(self):
+        index = pd.RangeIndex(self.prospection_start_year, self.end_year + 1)
+        return {
+            name: index
+            for name in (
+                "cumulative_co2_emissions_last_historical_year_technology_baseline3",
+                "cumulative_co2_emissions_last_historical_year_technology",
+                "cumulative_co2_emissions_including_aircraft_efficiency",
+                "cumulative_co2_emissions_including_operations",
+                "cumulative_co2_emissions_including_load_factor",
+                "cumulative_co2_emissions_including_energy",
+            )
+        }
+
+    def jax_compute(
+        self,
+        co2_emissions_last_historical_year_technology_baseline3,
+        co2_emissions_last_historical_year_technology,
+        co2_emissions_including_aircraft_efficiency,
+        co2_emissions_including_operations,
+        co2_emissions_including_load_factor,
+        co2_emissions_including_energy,
+    ):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        start = year_pos(self, self.prospection_start_year)
+
+        cumulate = lambda series: jnp.cumsum(jnp.asarray(series)[start:] / 1000.0)  # noqa: E731
+
+        cumulative_co2_emissions_last_historical_year_technology_baseline3 = cumulate(
+            co2_emissions_last_historical_year_technology_baseline3
+        )
+        cumulative_co2_emissions_last_historical_year_technology = cumulate(
+            co2_emissions_last_historical_year_technology
+        )
+        cumulative_co2_emissions_including_aircraft_efficiency = cumulate(
+            co2_emissions_including_aircraft_efficiency
+        )
+        cumulative_co2_emissions_including_operations = cumulate(
+            co2_emissions_including_operations
+        )
+        cumulative_co2_emissions_including_load_factor = cumulate(
+            co2_emissions_including_load_factor
+        )
+        cumulative_co2_emissions_including_energy = cumulate(co2_emissions_including_energy)
 
         return (
             cumulative_co2_emissions_last_historical_year_technology_baseline3,

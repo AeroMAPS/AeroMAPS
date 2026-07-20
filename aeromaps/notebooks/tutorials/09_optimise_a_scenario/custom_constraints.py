@@ -1,4 +1,6 @@
 from aeromaps.models.base import AeroMAPSModel
+from aeromaps.models.jax_helpers import year_pos
+import jax.numpy as jnp
 import pandas as pd
 from typing import Tuple
 
@@ -30,6 +32,27 @@ class BlendCompletenessConstraint(AeroMAPSModel):
             if year in total_share.index
         ]
 
+        return blend_completeness_constraint
+
+    jax_static_input_names = {"blend_completeness_constraint_enforcement_years"}
+
+    def jax_compute(
+        self,
+        generic_biofuel_mandate_share,
+        electrofuel_mandate_share,
+        blend_completeness_constraint_enforcement_years,
+    ):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        total_share = jnp.asarray(generic_biofuel_mandate_share) + jnp.asarray(
+            electrofuel_mandate_share
+        )
+        violation_normalised = (total_share - 100.0) / 100.0
+        positions = [
+            year_pos(self, year)
+            for year in blend_completeness_constraint_enforcement_years
+            if self.historic_start_year <= year <= self.end_year
+        ]
+        blend_completeness_constraint = violation_normalised[jnp.array(positions, dtype=int)]
         return blend_completeness_constraint
 
 
@@ -76,6 +99,25 @@ class BiomassAvailabilityConstraintTrajectory(AeroMAPSModel):
 
         return biomass_trajectory_constraint, biomass_violation_viz
 
+    jax_static_input_names = {"generic_biomass_availability_constraint_enforcement_years"}
+
+    def jax_compute(
+        self,
+        generic_biomass_availability_constraint_enforcement_years,
+        generic_biomass_consumed_aviation_allocated_share,
+    ):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        share = jnp.asarray(generic_biomass_consumed_aviation_allocated_share)
+        violation_normalised = (share - 100.0) / 100.0
+        positions = [
+            year_pos(self, year)
+            for year in generic_biomass_availability_constraint_enforcement_years
+            if self.historic_start_year <= year <= self.end_year
+        ]
+        biomass_trajectory_constraint = violation_normalised[jnp.array(positions, dtype=int)]
+        biomass_violation_viz = share
+        return biomass_trajectory_constraint, biomass_violation_viz
+
 
 class GridElectricityAvailabilityConstraintTrajectory(AeroMAPSModel):
     def __init__(self, name="grid_electricity_availability_constraint_trajectory", *args, **kwargs):
@@ -118,4 +160,25 @@ class GridElectricityAvailabilityConstraintTrajectory(AeroMAPSModel):
         electricity_violation_viz = grid_electricity_consumed_aviation_allocated_share.copy()
         self.df.loc[:, "grid_electricity_availability_violation_viz"] = electricity_violation_viz
 
+        return grid_electricity_trajectory_constraint, electricity_violation_viz
+
+    jax_static_input_names = {"grid_electricity_constraint_enforcement_years"}
+
+    def jax_compute(
+        self,
+        grid_electricity_constraint_enforcement_years,
+        grid_electricity_consumed_aviation_allocated_share,
+    ):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        share = jnp.asarray(grid_electricity_consumed_aviation_allocated_share)
+        violation_normalised = (share - 100.0) / 100.0
+        positions = [
+            year_pos(self, year)
+            for year in grid_electricity_constraint_enforcement_years
+            if self.historic_start_year <= year <= self.end_year
+        ]
+        grid_electricity_trajectory_constraint = violation_normalised[
+            jnp.array(positions, dtype=int)
+        ]
+        electricity_violation_viz = share
         return grid_electricity_trajectory_constraint, electricity_violation_viz

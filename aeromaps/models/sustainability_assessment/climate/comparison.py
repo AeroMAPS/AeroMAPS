@@ -3,9 +3,11 @@ comparison
 ==========
 This module contains classes to compute the share of carbon budget and temperature target consumed by aviation.
 """
+import jax.numpy as jnp
 import pandas as pd
 import warnings
 from aeromaps.models.base import AeroMAPSModel
+from aeromaps.models.jax_helpers import year_pos
 
 
 class CarbonBudgetConsumedShare(AeroMAPSModel):
@@ -53,6 +55,16 @@ class CarbonBudgetConsumedShare(AeroMAPSModel):
 
         self.float_outputs["carbon_budget_consumed_share"] = carbon_budget_consumed_share
 
+        return carbon_budget_consumed_share
+
+    def jax_compute(self, cumulative_co2_emissions, gross_carbon_budget_2050):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        year = 2050 if self.end_year >= 2050 else self.end_year
+        carbon_budget_consumed_share = (
+            jnp.asarray(cumulative_co2_emissions)[year_pos(self, year)]
+            / gross_carbon_budget_2050
+            * 100.0
+        )
         return carbon_budget_consumed_share
 
 

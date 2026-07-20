@@ -5,6 +5,7 @@ others
 This module contains models for various KPI computations.
 """
 
+import jax.numpy as jnp
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
@@ -129,4 +130,21 @@ class DropinFuelConsumptionLiterPerPax100km(AeroMAPSModel):
             "dropin_fuel_consumption_liter_per_pax_100km"
         ]
 
+        return dropin_fuel_consumption_liter_per_pax_100km
+
+    def jax_compute(
+        self,
+        energy_consumption_passenger_dropin_fuel,
+        dropin_fuel_mean_lhv,
+        rpk,
+    ):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        density = 0.8
+        dropin_fuel_consumption_liter_per_pax_100km = (
+            jnp.asarray(energy_consumption_passenger_dropin_fuel)
+            / jnp.asarray(dropin_fuel_mean_lhv)
+            / density
+            * 100.0
+            / jnp.asarray(rpk)
+        )
         return dropin_fuel_consumption_liter_per_pax_100km

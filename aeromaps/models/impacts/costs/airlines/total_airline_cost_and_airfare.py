@@ -12,6 +12,7 @@ Module grouping models to compute total airline costs and airfares for passenger
 # import numpy as np
 from typing import Tuple
 
+import jax.numpy as jnp
 import pandas as pd
 # from scipy.interpolate import interp1d
 
@@ -103,6 +104,24 @@ class PassengerAircraftSimpleAirfare(AeroMAPSModel):
             output_data[f"airfare_per_rpk_{mid}"] = airfare_per_rpk_m
 
         self._store_outputs(output_data)
+        return output_data
+
+    def jax_compute(self, input_data) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        output_data = {}
+        load_factor = jnp.asarray(input_data["load_factor"])
+        profit = jnp.asarray(input_data["operational_profit_per_ask"])
+
+        airfare_per_ask = jnp.asarray(input_data["total_cost_per_ask"]) + profit
+        output_data["airfare_per_ask"] = airfare_per_ask
+        output_data["airfare_per_rpk"] = airfare_per_ask / (load_factor / 100.0)
+
+        for market in self.markets.get(traffic_type="passenger"):
+            mid = market.id
+            load_factor_m = jnp.asarray(input_data[f"load_factor_{mid}"])
+            airfare_per_ask_m = jnp.asarray(input_data[f"total_cost_per_ask_{mid}"]) + profit
+            output_data[f"airfare_per_ask_{mid}"] = airfare_per_ask_m
+            output_data[f"airfare_per_rpk_{mid}"] = airfare_per_ask_m / (load_factor_m / 100.0)
         return output_data
 
 
@@ -280,6 +299,64 @@ class PassengerAircraftTotalCost(AeroMAPSModel):
             output_data[f"total_cost_per_rpk_{mid}"] = total_cost_per_rpk_m
 
         self._store_outputs(output_data)
+        return output_data
+
+    def jax_compute(self, input_data) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        output_data = {}
+        get = lambda name: jnp.asarray(input_data[name])  # noqa: E731
+
+        load_factor = get("load_factor")
+        common = (
+            get("non_operating_cost_per_ask")
+            + get("indirect_operating_cost_per_ask")
+            + get("noc_carbon_offset_per_ask")
+            + get("operational_efficiency_cost_non_energy_per_ask")
+            + get("load_factor_cost_non_energy_per_ask")
+        )
+
+        total_cost_per_ask_without_extra_tax = (
+            get("doc_non_energy_per_ask_mean") + get("doc_energy_per_ask_mean") + common
+        )
+        total_extra_tax_per_ask = (
+            get("doc_carbon_tax_lowering_offset_per_ask_mean") + get("passenger_tax_per_ask")
+        )
+        total_cost_per_ask = total_cost_per_ask_without_extra_tax + total_extra_tax_per_ask
+        total_cost_per_rpk_without_extra_tax = total_cost_per_ask_without_extra_tax / (
+            load_factor / 100.0
+        )
+        total_extra_tax_per_rpk = total_extra_tax_per_ask / (load_factor / 100.0)
+
+        output_data["total_cost_per_ask_without_extra_tax"] = total_cost_per_ask_without_extra_tax
+        output_data["total_extra_tax_per_ask"] = total_extra_tax_per_ask
+        output_data["total_extra_tax_per_rpk"] = total_extra_tax_per_rpk
+        output_data["total_cost_per_ask"] = total_cost_per_ask
+        output_data["total_cost_per_rpk_without_extra_tax"] = total_cost_per_rpk_without_extra_tax
+        output_data["total_cost_per_rpk"] = (
+            total_cost_per_rpk_without_extra_tax + total_extra_tax_per_rpk
+        )
+
+        for market in self.markets.get(traffic_type="passenger"):
+            mid = market.id
+            load_factor_m = get(f"load_factor_{mid}")
+            without_extra_m = (
+                get(f"doc_non_energy_per_ask_{mid}_mean")
+                + get(f"doc_energy_per_ask_{mid}_mean")
+                + common
+            )
+            extra_m = (
+                get(f"doc_carbon_tax_lowering_offset_per_ask_{mid}_mean")
+                + get("passenger_tax_per_ask")
+            )
+            without_extra_rpk_m = without_extra_m / (load_factor_m / 100.0)
+            extra_rpk_m = extra_m / (load_factor_m / 100.0)
+
+            output_data[f"total_cost_per_ask_without_extra_tax_{mid}"] = without_extra_m
+            output_data[f"total_extra_tax_per_ask_{mid}"] = extra_m
+            output_data[f"total_extra_tax_per_rpk_{mid}"] = extra_rpk_m
+            output_data[f"total_cost_per_ask_{mid}"] = without_extra_m + extra_m
+            output_data[f"total_cost_per_rpk_without_extra_tax_{mid}"] = without_extra_rpk_m
+            output_data[f"total_cost_per_rpk_{mid}"] = without_extra_rpk_m + extra_rpk_m
         return output_data
 
 

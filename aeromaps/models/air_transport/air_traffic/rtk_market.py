@@ -12,10 +12,19 @@ Per-market RTK models for freight markets when a MarketManager is loaded.
 All classes use ``model_type="custom"`` (``AeroMAPSCustomModelWrapper``).
 """
 
+import jax.numpy as jnp
 import pandas as pd
 from scipy.interpolate import interp1d
 
 from aeromaps.models.base import AeroMAPSModel, aeromaps_leveling_function
+from aeromaps.models.jax_helpers import (
+    covid_recovery_trajectory,
+    hist_mask,
+    jax_leveling_function,
+    jax_pct_change,
+    year_pos,
+    years_index,
+)
 
 
 class RTKMarket(AeroMAPSModel):
@@ -50,6 +59,12 @@ class RTKMarket(AeroMAPSModel):
             f"annual_growth_rate_rtk_{mid}": pd.Series([0.0]),
             f"cagr_rtk_{mid}": 0.0,
             f"prospective_evolution_rtk_{mid}": 0.0,
+        }
+        # Years used as loop bounds / interpolation knots are static for JAX.
+        self.jax_static_input_names = {
+            "covid_start_year",
+            f"{mid}_covid_end_year",
+            f"{mid}_cagr_reference_periods",
         }
 
     def compute(self, input_data: dict) -> dict:
@@ -143,6 +158,47 @@ class RTKMarket(AeroMAPSModel):
         self._store_outputs(output_data)
         return output_data
 
+    def jax_compute(self, input_data: dict) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        mid = self.market_id
+        rtk_init = jnp.asarray(input_data["rtk_init"])
+        share = input_data[f"{mid}_rtk_share_last_historical_year"]
+        covid_start_year = int(input_data["covid_start_year"])
+        covid_drop = input_data[f"{mid}_covid_drop_start_year"]
+        covid_end_year = int(input_data[f"{mid}_covid_end_year"])
+        covid_end_ratio = input_data[f"{mid}_covid_end_year_reference_ratio"]
+
+        years = years_index(self)
+        hist = hist_mask(self)
+        history = jnp.where(hist, share / 100.0 * rtk_init, jnp.nan)
+
+        annual_gr = jax_leveling_function(
+            self,
+            input_data[f"{mid}_cagr_reference_periods"],
+            input_data[f"{mid}_cagr_reference_periods_values"],
+        )
+
+        rtk = covid_recovery_trajectory(
+            self, history, covid_start_year, covid_end_year, covid_drop, covid_end_ratio, annual_gr
+        )
+
+        # Actual historic growth rates overwrite the leveled prospective rates.
+        hist_rate_mask = (years > self.historic_start_year) & hist
+        rate = jnp.where(hist_rate_mask, jax_pct_change(rtk), annual_gr)
+
+        base = rtk[year_pos(self, self.prospection_start_year - 1)]
+        n_years = self.end_year - self.prospection_start_year
+        ratio = rtk[-1] / base
+        cagr_rtk = 100.0 * (ratio ** (1.0 / n_years) - 1.0)
+        prospective_evolution_rtk = 100.0 * (ratio - 1.0)
+
+        return {
+            f"rtk_{mid}": rtk,
+            f"annual_growth_rate_rtk_{mid}": rate,
+            f"cagr_rtk_{mid}": cagr_rtk,
+            f"prospective_evolution_rtk_{mid}": prospective_evolution_rtk,
+        }
+
 
 class RTKReferenceMarket(AeroMAPSModel):
     """Reference RTK trajectory for one freight market.
@@ -177,6 +233,12 @@ class RTKReferenceMarket(AeroMAPSModel):
         self.output_names = {
             f"rtk_reference_{mid}": pd.Series([0.0]),
             f"reference_annual_growth_rate_rtk_{mid}": pd.Series([0.0]),
+        }
+        # Years used as loop bounds / interpolation knots are static for JAX.
+        self.jax_static_input_names = {
+            "covid_start_year",
+            f"{mid}_covid_end_year",
+            f"{mid}_reference_cagr_reference_periods",
         }
 
     def compute(self, input_data: dict) -> dict:
@@ -233,6 +295,40 @@ class RTKReferenceMarket(AeroMAPSModel):
         }
         self._store_outputs(output_data)
         return output_data
+
+    def jax_compute(self, input_data: dict) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        mid = self.market_id
+        rtk = jnp.asarray(input_data[f"rtk_{mid}"])
+        covid_start_year = int(input_data["covid_start_year"])
+        covid_drop = input_data[f"{mid}_covid_drop_start_year"]
+        covid_end_year = int(input_data[f"{mid}_covid_end_year"])
+        covid_end_ratio = input_data[f"{mid}_covid_end_year_reference_ratio"]
+
+        # Historic years (and the pre-COVID anchor year) copy the actual RTK.
+        anchor_mask = years_index(self) == covid_start_year - 1
+        history = jnp.where(hist_mask(self) | anchor_mask, rtk, jnp.nan)
+
+        reference_rate = jax_leveling_function(
+            self,
+            input_data[f"{mid}_reference_cagr_reference_periods"],
+            input_data[f"{mid}_reference_cagr_reference_periods_values"],
+        )
+
+        rtk_reference = covid_recovery_trajectory(
+            self,
+            history,
+            covid_start_year,
+            covid_end_year,
+            covid_drop,
+            covid_end_ratio,
+            reference_rate,
+        )
+
+        return {
+            f"rtk_reference_{mid}": rtk_reference,
+            f"reference_annual_growth_rate_rtk_{mid}": reference_rate,
+        }
 
 
 class RTKAggregator(AeroMAPSModel):
@@ -320,3 +416,35 @@ class RTKAggregator(AeroMAPSModel):
         }
         self._store_outputs(output_data)
         return output_data
+
+    def jax_compute(self, input_data: dict) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        years = years_index(self)
+        total_rtk = sum(
+            jnp.asarray(input_data[f"rtk_{mid}"]) for mid in self.freight_market_ids
+        )
+        total_rtk_reference = sum(
+            jnp.asarray(input_data[f"rtk_reference_{mid}"]) for mid in self.freight_market_ids
+        )
+
+        rate = jax_pct_change(total_rtk)
+        reference_rate = jnp.where(
+            years >= self.prospection_start_year + 1,
+            jax_pct_change(total_rtk_reference),
+            jnp.nan,
+        )
+
+        base = total_rtk[year_pos(self, self.prospection_start_year - 1)]
+        n_years = self.end_year - self.prospection_start_year
+        ratio = total_rtk[-1] / base
+        cagr_rtk = 100.0 * (ratio ** (1.0 / n_years) - 1.0)
+        prospective_evolution_rtk = 100.0 * (ratio - 1.0)
+
+        return {
+            "rtk": total_rtk,
+            "annual_growth_rate_freight": rate,
+            "cagr_rtk": cagr_rtk,
+            "prospective_evolution_rtk": prospective_evolution_rtk,
+            "rtk_reference": total_rtk_reference,
+            "reference_annual_growth_rate_freight": reference_rate,
+        }

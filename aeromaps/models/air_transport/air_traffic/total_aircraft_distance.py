@@ -5,8 +5,13 @@ Module for computing total aircraft distance flown.
 """
 
 from typing import Tuple
+
+import jax.numpy as jnp
+import numpy as np
 import pandas as pd
+
 from aeromaps.models.base import AeroMAPSModel
+from aeromaps.models.jax_helpers import hist_mask, year_pos
 
 
 class TotalAircraftDistance(AeroMAPSModel):
@@ -92,6 +97,59 @@ class TotalAircraftDistance(AeroMAPSModel):
         self.df.loc[:, "total_aircraft_distance_dropin_fuel"] = total_aircraft_distance_dropin_fuel
         self.df.loc[:, "total_aircraft_distance_hydrogen"] = total_aircraft_distance_hydrogen
         self.df.loc[:, "total_aircraft_distance_electric"] = total_aircraft_distance_electric
+
+        return (
+            total_aircraft_distance,
+            total_aircraft_distance_dropin_fuel,
+            total_aircraft_distance_hydrogen,
+            total_aircraft_distance_electric,
+        )
+
+    @property
+    def jax_output_indexes(self):
+        climate_index = pd.RangeIndex(self.climate_historic_start_year, self.end_year + 1)
+        return {
+            "total_aircraft_distance": climate_index,
+            "total_aircraft_distance_dropin_fuel": climate_index,
+            "total_aircraft_distance_hydrogen": climate_index,
+            "total_aircraft_distance_electric": climate_index,
+        }
+
+    def jax_compute(
+        self,
+        rtk,
+        ask,
+        ask_dropin_fuel,
+        ask_hydrogen,
+        ask_electric,
+        total_aircraft_distance_init,
+    ):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        offset = self.historic_start_year - self.climate_historic_start_year
+        climate_hist = jnp.asarray(
+            np.asarray(self.climate_historical_data[:offset, 6], dtype=np.float64)
+        )
+
+        rtk = jnp.asarray(rtk)
+        ask = jnp.asarray(ask)
+        init = jnp.asarray(total_aircraft_distance_init)
+
+        base_pos = year_pos(self, self.prospection_start_year - 1)
+        scale = (ask + 10.0 * rtk) / (ask[base_pos] + 10.0 * rtk[base_pos])
+        total_model_years = jnp.where(hist_mask(self), init, scale * init[base_pos])
+
+        total_aircraft_distance = jnp.concatenate([climate_hist, total_model_years])
+
+        nan_pad = jnp.full(offset, jnp.nan)
+        total_aircraft_distance_dropin_fuel = jnp.concatenate(
+            [nan_pad, total_model_years * jnp.asarray(ask_dropin_fuel) / ask]
+        )
+        total_aircraft_distance_hydrogen = jnp.concatenate(
+            [nan_pad, total_model_years * jnp.asarray(ask_hydrogen) / ask]
+        )
+        total_aircraft_distance_electric = jnp.concatenate(
+            [nan_pad, total_model_years * jnp.asarray(ask_electric) / ask]
+        )
 
         return (
             total_aircraft_distance,

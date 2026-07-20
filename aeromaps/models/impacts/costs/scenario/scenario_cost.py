@@ -11,9 +11,11 @@ Module to compute overall scenario costs.
 from typing import Tuple
 
 import numpy as np
+import jax.numpy as jnp
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
+from aeromaps.models.jax_helpers import jax_nan_add, year_pos, years_index
 
 
 class NonDiscountedScenarioCost(AeroMAPSModel):
@@ -174,6 +176,74 @@ class NonDiscountedScenarioCost(AeroMAPSModel):
 
         self._store_outputs(output_data)
 
+
+    def jax_compute(self, input_data) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        n = self.end_year - self.historic_start_year + 1
+        zeros = jnp.zeros(n)
+
+        def get(name):
+            value = input_data.get(name, None)
+            return zeros if value is None else jnp.nan_to_num(jnp.asarray(value))
+
+        non_discounted_energy_expenses = zeros
+        non_discounted_net_energy_expenses = zeros
+        for pathway in self.pathways_manager.get_all():
+            energy_consumption = get(f"{pathway.name}_energy_consumption")
+            non_discounted_energy_expenses = jax_nan_add(
+                non_discounted_energy_expenses, get(f"{pathway.name}_mean_mfsp") * energy_consumption
+            )
+            non_discounted_net_energy_expenses = jax_nan_add(
+                non_discounted_net_energy_expenses,
+                get(f"{pathway.name}_net_mfsp") * energy_consumption,
+            )
+
+        non_discounted_energy_expenses = non_discounted_energy_expenses / 1000000.0
+        non_discounted_net_energy_expenses = non_discounted_net_energy_expenses / 1000000.0
+
+        if "fossil_kerosene_mean_co2_emission_factor" not in input_data:
+            kerosene_emission_factor = 88.7
+            kerosene_market_price = 0.013921201
+        else:
+            kerosene_emission_factor = jnp.asarray(
+                input_data["fossil_kerosene_mean_co2_emission_factor"]
+            )[year_pos(self, self.prospection_start_year - 1)]
+            kerosene_market_price = jnp.asarray(input_data["fossil_kerosene_mean_mfsp"])
+
+        co2_emissions_including_load_factor = jnp.asarray(
+            input_data["co2_emissions_including_load_factor"]
+        )
+        carbon_tax = jnp.asarray(input_data["carbon_tax"])
+
+        non_discounted_full_kero_energy_expenses = (
+            co2_emissions_including_load_factor
+            * 1e12
+            / kerosene_emission_factor
+            * kerosene_market_price
+            / 1000000.0
+        )
+        carbon_tax_full_kero = co2_emissions_including_load_factor * carbon_tax
+
+        co2_emissions_last_historical_year_technology = jnp.asarray(
+            input_data["co2_emissions_last_historical_year_technology"]
+        )
+        non_discounted_bau_energy_expenses = (
+            co2_emissions_last_historical_year_technology
+            * 1e12
+            / kerosene_emission_factor
+            * kerosene_market_price
+            / 1000000.0
+        )
+        carbon_tax_bau = co2_emissions_last_historical_year_technology * carbon_tax
+
+        return {
+            "non_discounted_energy_expenses": non_discounted_energy_expenses,
+            "non_discounted_net_energy_expenses": non_discounted_net_energy_expenses,
+            "non_discounted_bau_energy_expenses": non_discounted_bau_energy_expenses,
+            "non_discounted_full_kero_energy_expenses": non_discounted_full_kero_energy_expenses,
+            "carbon_tax_full_kero": carbon_tax_full_kero,
+            "carbon_tax_bau": carbon_tax_bau,
+        }
         return output_data
 
 
@@ -224,6 +294,18 @@ class DicountedScenarioCost(AeroMAPSModel):
 
         discounted_energy_expenses_obj = discounted_energy_expenses.cumsum()[self.end_year]
 
+        return discounted_energy_expenses, discounted_energy_expenses_obj
+
+    def jax_compute(self, non_discounted_energy_expenses, social_discount_rate):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        years = jnp.asarray(years_index(self), dtype=jnp.float64)
+        discount = jnp.where(
+            years >= self.prospection_start_year,
+            (1.0 + social_discount_rate) ** (years - self.prospection_start_year),
+            1.0,
+        )
+        discounted_energy_expenses = jnp.asarray(non_discounted_energy_expenses) / discount
+        discounted_energy_expenses_obj = jnp.cumsum(discounted_energy_expenses)[-1]
         return discounted_energy_expenses, discounted_energy_expenses_obj
 
 
@@ -318,6 +400,43 @@ class TotalAirlineCostNoElast(AeroMAPSModel):
         cumulative_total_airline_cost_discounted_obj = (
             cumulative_total_airline_cost_increase_discounted[self.end_year]
             - cumulative_total_airline_cost_increase_discounted[2025]
+        )
+
+        return (
+            total_airline_cost,
+            cumulative_total_airline_cost,
+            cumulative_total_airline_cost_discounted,
+            cumulative_total_airline_cost_increase,
+            cumulative_total_airline_cost_increase_discounted,
+            cumulative_total_airline_cost_discounted_obj,
+        )
+
+    def jax_compute(self, total_cost_per_rpk, rpk, social_discount_rate):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        total_cost_per_rpk = jnp.asarray(total_cost_per_rpk)
+        rpk = jnp.asarray(rpk)
+        years = jnp.asarray(years_index(self), dtype=jnp.float64)
+
+        initial_airline_cost = (
+            total_cost_per_rpk[year_pos(self, self.prospection_start_year - 1)] * rpk
+        )
+        total_airline_cost = total_cost_per_rpk * rpk
+        total_airline_cost_increase = total_airline_cost - initial_airline_cost
+
+        discount = (1.0 + social_discount_rate) ** (years - self.prospection_start_year)
+        total_airline_cost_discounted = total_airline_cost / discount
+        total_airline_cost_increase_discounted = total_airline_cost_increase / discount
+
+        cumulative_total_airline_cost = jnp.cumsum(total_airline_cost)
+        cumulative_total_airline_cost_discounted = jnp.cumsum(total_airline_cost_discounted)
+        cumulative_total_airline_cost_increase = jnp.cumsum(total_airline_cost_increase)
+        cumulative_total_airline_cost_increase_discounted = jnp.cumsum(
+            total_airline_cost_increase_discounted
+        )
+
+        cumulative_total_airline_cost_discounted_obj = (
+            cumulative_total_airline_cost_increase_discounted[year_pos(self, self.end_year)]
+            - cumulative_total_airline_cost_increase_discounted[year_pos(self, 2025)]
         )
 
         return (

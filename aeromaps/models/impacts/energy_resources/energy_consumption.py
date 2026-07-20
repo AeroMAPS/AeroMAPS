@@ -4,9 +4,52 @@ energy_consumption
 Module to compute energy consumption from different aircraft types.
 """
 
+import jax.numpy as jnp
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
+
+
+def _jax_traffic_energy(model, input_data, fuel):
+    """Shared JAX pattern of the per-fuel consumption models.
+
+    Per-market ``energy = intensity * traffic`` (zeroed where there is no
+    traffic) plus passenger/freight/total aggregates, mirroring the pandas
+    ``compute`` of DropInFuel/Hydrogen/Electric consumption models.
+    """
+    output_data = {}
+    n = len(model.df.index)
+
+    totals = {}
+    for traffic_type, unit in (("passenger", "ask"), ("freight", "rtk")):
+        total_wo = jnp.zeros(n)
+        total = jnp.zeros(n)
+        for market in model.markets.get(traffic_type=traffic_type):
+            mid = market.id
+            traffic = jnp.asarray(input_data[f"{unit}_{mid}_{fuel}"])
+            intensity_wo = jnp.asarray(
+                input_data[f"energy_per_{unit}_without_operations_{mid}_{fuel}"]
+            )
+            intensity = jnp.asarray(input_data[f"energy_per_{unit}_{mid}_{fuel}"])
+
+            energy_wo = jnp.where(traffic != 0.0, intensity_wo * traffic, 0.0)
+            energy = jnp.where(traffic != 0.0, intensity * traffic, 0.0)
+
+            output_data[f"energy_consumption_{mid}_{fuel}_without_operations"] = energy_wo
+            output_data[f"energy_consumption_{mid}_{fuel}"] = energy
+            total_wo = total_wo + energy_wo
+            total = total + energy
+        totals[traffic_type] = (total_wo, total)
+
+    passenger_wo, passenger = totals["passenger"]
+    freight_wo, freight = totals["freight"]
+    output_data[f"energy_consumption_passenger_{fuel}_without_operations"] = passenger_wo
+    output_data[f"energy_consumption_freight_{fuel}_without_operations"] = freight_wo
+    output_data[f"energy_consumption_{fuel}_without_operations"] = passenger_wo + freight_wo
+    output_data[f"energy_consumption_passenger_{fuel}"] = passenger
+    output_data[f"energy_consumption_freight_{fuel}"] = freight
+    output_data[f"energy_consumption_{fuel}"] = passenger + freight
+    return output_data
 
 
 class DropInFuelConsumption(AeroMAPSModel):
@@ -208,6 +251,10 @@ class DropInFuelConsumption(AeroMAPSModel):
         self._store_outputs(output_data)
         return output_data
 
+    def jax_compute(self, input_data) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        return _jax_traffic_energy(self, input_data, "dropin_fuel")
+
 
 class DropInFuelDetailledConsumption(AeroMAPSModel):
     """
@@ -376,6 +423,51 @@ class DropInFuelDetailledConsumption(AeroMAPSModel):
             )
 
         self._store_outputs(output_data)
+        return output_data
+
+    def jax_compute(self, input_data) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        output_data = {}
+        n = len(self.df.index)
+
+        shares = {
+            "biofuel": jnp.asarray(input_data["biomass_share_dropin_fuel"]) / 100.0,
+            "electrofuel": jnp.asarray(input_data["electricity_share_dropin_fuel"]) / 100.0,
+            "kerosene": jnp.asarray(input_data["fossil_share_dropin_fuel"]) / 100.0,
+        }
+
+        totals = {}
+        for traffic_type in ("passenger", "freight"):
+            fuel_totals_wo = {fuel: jnp.zeros(n) for fuel in shares}
+            fuel_totals = {fuel: jnp.zeros(n) for fuel in shares}
+            for market in self.markets.get(traffic_type=traffic_type):
+                mid = market.id
+                dropin_wo = jnp.asarray(
+                    input_data[f"energy_consumption_{mid}_dropin_fuel_without_operations"]
+                )
+                dropin = jnp.asarray(input_data[f"energy_consumption_{mid}_dropin_fuel"])
+                for fuel, share in shares.items():
+                    fuel_energy_wo = share * dropin_wo
+                    fuel_energy = share * dropin
+                    output_data[f"energy_consumption_{mid}_{fuel}_without_operations"] = (
+                        fuel_energy_wo
+                    )
+                    output_data[f"energy_consumption_{mid}_{fuel}"] = fuel_energy
+                    fuel_totals_wo[fuel] = fuel_totals_wo[fuel] + fuel_energy_wo
+                    fuel_totals[fuel] = fuel_totals[fuel] + fuel_energy
+            totals[traffic_type] = (fuel_totals_wo, fuel_totals)
+
+        for fuel in shares:
+            passenger_wo = totals["passenger"][0][fuel]
+            passenger = totals["passenger"][1][fuel]
+            freight_wo = totals["freight"][0][fuel]
+            freight = totals["freight"][1][fuel]
+            output_data[f"energy_consumption_passenger_{fuel}_without_operations"] = passenger_wo
+            output_data[f"energy_consumption_freight_{fuel}_without_operations"] = freight_wo
+            output_data[f"energy_consumption_{fuel}_without_operations"] = passenger_wo + freight_wo
+            output_data[f"energy_consumption_passenger_{fuel}"] = passenger
+            output_data[f"energy_consumption_freight_{fuel}"] = freight
+            output_data[f"energy_consumption_{fuel}"] = passenger + freight
         return output_data
 
 
@@ -556,6 +648,10 @@ class HydrogenConsumption(AeroMAPSModel):
         self._store_outputs(output_data)
         return output_data
 
+    def jax_compute(self, input_data) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        return _jax_traffic_energy(self, input_data, "hydrogen")
+
 
 class ElectricConsumption(AeroMAPSModel):
     """
@@ -734,6 +830,10 @@ class ElectricConsumption(AeroMAPSModel):
         self._store_outputs(output_data)
         return output_data
 
+    def jax_compute(self, input_data) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        return _jax_traffic_energy(self, input_data, "electric")
+
 
 class EnergyConsumption(AeroMAPSModel):
     """
@@ -879,4 +979,47 @@ class EnergyConsumption(AeroMAPSModel):
         output_data["energy_consumption"] = passenger_energy + freight_energy
 
         self._store_outputs(output_data)
+        return output_data
+
+    def jax_compute(self, input_data) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        output_data = {}
+        n = len(self.df.index)
+
+        totals = {}
+        for traffic_type in ("passenger", "freight"):
+            total_wo = jnp.zeros(n)
+            total = jnp.zeros(n)
+            for market in self.markets.get(traffic_type=traffic_type):
+                mid = market.id
+                market_wo = (
+                    jnp.asarray(
+                        input_data[f"energy_consumption_{mid}_dropin_fuel_without_operations"]
+                    )
+                    + jnp.asarray(
+                        input_data[f"energy_consumption_{mid}_hydrogen_without_operations"]
+                    )
+                    + jnp.asarray(
+                        input_data[f"energy_consumption_{mid}_electric_without_operations"]
+                    )
+                )
+                market_energy = (
+                    jnp.asarray(input_data[f"energy_consumption_{mid}_dropin_fuel"])
+                    + jnp.asarray(input_data[f"energy_consumption_{mid}_hydrogen"])
+                    + jnp.asarray(input_data[f"energy_consumption_{mid}_electric"])
+                )
+                output_data[f"energy_consumption_{mid}_without_operations"] = market_wo
+                output_data[f"energy_consumption_{mid}"] = market_energy
+                total_wo = total_wo + market_wo
+                total = total + market_energy
+            totals[traffic_type] = (total_wo, total)
+
+        passenger_wo, passenger = totals["passenger"]
+        freight_wo, freight = totals["freight"]
+        output_data["energy_consumption_passenger_without_operations"] = passenger_wo
+        output_data["energy_consumption_freight_without_operations"] = freight_wo
+        output_data["energy_consumption_without_operations"] = passenger_wo + freight_wo
+        output_data["energy_consumption_passenger"] = passenger
+        output_data["energy_consumption_freight"] = freight
+        output_data["energy_consumption"] = passenger + freight
         return output_data

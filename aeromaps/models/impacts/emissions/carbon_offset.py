@@ -7,12 +7,20 @@ Module to compute effects of carbon offsets.
 
 from typing import Tuple
 
+import jax.numpy as jnp
 import pandas as pd
 
 from aeromaps.models.base import (
     AeroMAPSModel,
     aeromaps_interpolation_function,
     aeromaps_leveling_function,
+)
+from aeromaps.models.jax_helpers import (
+    hist_mask,
+    jax_interpolation_function,
+    jax_leveling_function,
+    year_pos,
+    years_index,
 )
 
 
@@ -122,6 +130,56 @@ class LevelCarbonOffset(AeroMAPSModel):
             level_carbon_offset,
         )
 
+    # Years used as slice bounds / leveling knots are static for JAX.
+    jax_static_input_names = {
+        "corsia_reference_year",
+        "carbon_offset_baseline_level_vs_corsia_reference_year_reference_periods",
+        "carbon_offset_baseline_share_total_emissions_reference_periods",
+    }
+
+    def jax_compute(
+        self,
+        co2_emissions,
+        corsia_reference_year,
+        carbon_offset_baseline_level_vs_corsia_reference_year_reference_periods,
+        carbon_offset_baseline_level_vs_corsia_reference_year_reference_periods_values,
+        carbon_offset_baseline_share_total_emissions_reference_periods,
+        carbon_offset_baseline_share_total_emissions_reference_periods_values,
+    ):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        carbon_offset_baseline_level_vs_corsia_reference_year = jax_leveling_function(
+            self,
+            carbon_offset_baseline_level_vs_corsia_reference_year_reference_periods,
+            carbon_offset_baseline_level_vs_corsia_reference_year_reference_periods_values,
+        )
+        carbon_offset_baseline_share_total_emissions = jax_leveling_function(
+            self,
+            carbon_offset_baseline_share_total_emissions_reference_periods,
+            carbon_offset_baseline_share_total_emissions_reference_periods_values,
+        )
+
+        # co2_emissions is indexed on climate years.
+        co2 = jnp.asarray(co2_emissions)
+        offset_climate = self.historic_start_year - self.climate_historic_start_year
+        co2_model_years = co2[offset_climate:]
+        ref_pos = int(corsia_reference_year) - self.climate_historic_start_year
+
+        baseline_level = (
+            co2[ref_pos] * carbon_offset_baseline_level_vs_corsia_reference_year / 100.0
+        )
+        level = (
+            jnp.clip(co2_model_years - baseline_level, 0.0)
+            * carbon_offset_baseline_share_total_emissions
+            / 100.0
+        )
+        level_carbon_offset = jnp.where(hist_mask(self), 0.0, level)
+
+        return (
+            carbon_offset_baseline_level_vs_corsia_reference_year,
+            carbon_offset_baseline_share_total_emissions,
+            level_carbon_offset,
+        )
+
 
 class ResidualCarbonOffset(AeroMAPSModel):
     """
@@ -187,6 +245,34 @@ class ResidualCarbonOffset(AeroMAPSModel):
 
         return (residual_carbon_offset_share, residual_carbon_offset)
 
+    # Interpolation reference years are static knots for JAX.
+    jax_static_input_names = {"residual_carbon_offset_share_reference_years"}
+
+    def jax_compute(
+        self,
+        co2_emissions,
+        level_carbon_offset,
+        residual_carbon_offset_share_reference_years,
+        residual_carbon_offset_share_reference_years_values,
+    ):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        share = jax_interpolation_function(
+            self,
+            residual_carbon_offset_share_reference_years,
+            residual_carbon_offset_share_reference_years_values,
+        )
+        residual_carbon_offset_share = jnp.where(hist_mask(self), 0.0, share)
+
+        offset_climate = self.historic_start_year - self.climate_historic_start_year
+        co2_model_years = jnp.asarray(co2_emissions)[offset_climate:]
+
+        residual_carbon_offset = (
+            residual_carbon_offset_share
+            / 100.0
+            * (co2_model_years - jnp.asarray(level_carbon_offset))
+        )
+        return (residual_carbon_offset_share, residual_carbon_offset)
+
 
 class CarbonOffset(AeroMAPSModel):
     """
@@ -226,6 +312,13 @@ class CarbonOffset(AeroMAPSModel):
 
         self.df.loc[:, "carbon_offset"] = carbon_offset
 
+        return carbon_offset
+
+    def jax_compute(self, level_carbon_offset, residual_carbon_offset):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        carbon_offset = jnp.nan_to_num(jnp.asarray(level_carbon_offset)) + jnp.nan_to_num(
+            jnp.asarray(residual_carbon_offset)
+        )
         return carbon_offset
 
 
@@ -268,4 +361,15 @@ class CumulativeCarbonOffset(AeroMAPSModel):
 
         cumulative_carbon_offset = self.df["cumulative_carbon_offset"]
 
+        return cumulative_carbon_offset
+
+    def jax_compute(self, carbon_offset):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        years = years_index(self)
+        ps_pos = year_pos(self, self.prospection_start_year)
+        increments = jnp.where(years >= self.prospection_start_year, carbon_offset / 1000.0, 0.0)
+        cumulative = jnp.cumsum(increments)
+        cumulative_carbon_offset = jnp.where(
+            years >= self.prospection_start_year - 1, cumulative, jnp.nan
+        )
         return cumulative_carbon_offset

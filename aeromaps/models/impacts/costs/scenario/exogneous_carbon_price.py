@@ -8,8 +8,16 @@ exogenous_carbon_price
 Module to compute exogenous carbon price trajectory.
 """
 
+import jax.numpy as jnp
 import pandas as pd
 from aeromaps.models.base import AeroMAPSModel, aeromaps_interpolation_function
+from aeromaps.models.jax_helpers import (
+    hist_mask,
+    jax_interp_backfill,
+    jax_interpolation_function,
+    year_pos,
+    years_index,
+)
 
 
 class ExogenousCarbonPriceTrajectory(AeroMAPSModel):
@@ -59,4 +67,19 @@ class ExogenousCarbonPriceTrajectory(AeroMAPSModel):
             ]
         exogenous_carbon_price_trajectory = self.df["exogenous_carbon_price_trajectory"]
 
+        return exogenous_carbon_price_trajectory
+
+    jax_static_input_names = {"exogenous_carbon_price_reference_years"}
+
+    def jax_compute(
+        self,
+        exogenous_carbon_price_reference_years,
+        exogenous_carbon_price_reference_years_values,
+    ):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        exogenous_carbon_price_trajectory = jax_interp_backfill(
+            self,
+            exogenous_carbon_price_reference_years,
+            exogenous_carbon_price_reference_years_values,
+        )
         return exogenous_carbon_price_trajectory

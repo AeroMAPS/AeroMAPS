@@ -11,8 +11,16 @@ Module to compute indirect operating cost (IOC) and offsets cost.
 # @Software: PyCharm
 
 from typing import Tuple
+import jax.numpy as jnp
 import pandas as pd
 from aeromaps.models.base import AeroMAPSModel, aeromaps_interpolation_function
+from aeromaps.models.jax_helpers import (
+    hist_mask,
+    jax_interp_backfill,
+    jax_interpolation_function,
+    year_pos,
+    years_index,
+)
 
 
 class PassengerAircraftIndirectOpCosts(AeroMAPSModel):
@@ -60,6 +68,15 @@ class PassengerAircraftIndirectOpCosts(AeroMAPSModel):
                 self.prospection_start_year, "indirect_operating_cost_per_ask"
             ]
         indirect_operating_cost_per_ask = self.df["indirect_operating_cost_per_ask"]
+        return indirect_operating_cost_per_ask
+
+    jax_static_input_names = {"ioc_reference_years"}
+
+    def jax_compute(self, ioc_reference_years, ioc_reference_years_values):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        indirect_operating_cost_per_ask = jax_interp_backfill(
+            self, ioc_reference_years, ioc_reference_years_values
+        )
         return indirect_operating_cost_per_ask
 
 
@@ -119,4 +136,25 @@ class PassengerAircraftNocCarbonOffset(AeroMAPSModel):
 
         self.df.loc[:, "noc_carbon_offset_per_ask"] = noc_carbon_offset_per_ask
 
+        return (carbon_offset_price, noc_carbon_offset_per_ask)
+
+    jax_static_input_names = {"carbon_offset_price_reference_years"}
+
+    def jax_compute(
+        self,
+        carbon_offset,
+        ask,
+        carbon_offset_price_reference_years,
+        carbon_offset_price_reference_years_values,
+    ):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        prospective = jax_interpolation_function(
+            self,
+            carbon_offset_price_reference_years,
+            carbon_offset_price_reference_years_values,
+        )
+        carbon_offset_price = jnp.where(hist_mask(self), 0.0, prospective)
+        noc_carbon_offset_per_ask = (
+            jnp.asarray(carbon_offset) * carbon_offset_price * 10.0**6 / jnp.asarray(ask)
+        )
         return (carbon_offset_price, noc_carbon_offset_per_ask)

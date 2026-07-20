@@ -5,8 +5,16 @@ non_operating_costs_cost
 Module for computing non-operating costs and passenger taxes.
 """
 
+import jax.numpy as jnp
 import pandas as pd
 from aeromaps.models.base import AeroMAPSModel, aeromaps_interpolation_function
+from aeromaps.models.jax_helpers import (
+    hist_mask,
+    jax_interp_backfill,
+    jax_interpolation_function,
+    year_pos,
+    years_index,
+)
 
 
 class PassengerAircraftNonOpCosts(AeroMAPSModel):
@@ -54,6 +62,15 @@ class PassengerAircraftNonOpCosts(AeroMAPSModel):
                 self.prospection_start_year, "non_operating_cost_per_ask"
             ]
         non_operating_cost_per_ask = self.df["non_operating_cost_per_ask"]
+        return non_operating_cost_per_ask
+
+    jax_static_input_names = {"noc_reference_years"}
+
+    def jax_compute(self, noc_reference_years, noc_reference_years_values):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        non_operating_cost_per_ask = jax_interp_backfill(
+            self, noc_reference_years, noc_reference_years_values
+        )
         return non_operating_cost_per_ask
 
 
@@ -107,4 +124,13 @@ class PassengerAircraftPassengerTax(AeroMAPSModel):
                 self.prospection_start_year, "passenger_tax_per_ask"
             ]
         passenger_tax_per_ask = self.df["passenger_tax_per_ask"]
+        return passenger_tax_per_ask
+
+    jax_static_input_names = {"passenger_tax_reference_years"}
+
+    def jax_compute(self, passenger_tax_reference_years, passenger_tax_reference_years_values):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        passenger_tax_per_ask = jax_interp_backfill(
+            self, passenger_tax_reference_years, passenger_tax_reference_years_values
+        )
         return passenger_tax_per_ask

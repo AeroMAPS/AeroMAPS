@@ -5,11 +5,54 @@ non_co2_emissions
 Module to compute non-CO2 emissions from various aircraft types and energy origins.
 """
 
+import jax.numpy as jnp
 import numpy as np
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
 from aeromaps.utils.defaults import get_default_series
+
+
+
+
+def _jax_mean_emission_index(model, input_data, species, with_growth):
+    """Shared JAX pattern of the simple mean emission-index models."""
+    n = model.end_year - model.historic_start_year + 1
+    n_hist = model.prospection_start_year - model.historic_start_year
+    output_data = {}
+
+    for aircraft_type in model.pathways_manager.get_all_types("aircraft_type"):
+        if with_growth:
+            cagr_aircraft = input_data.get(f"emission_index_{species}_{aircraft_type}_evolution", 0.0)
+            growth = jnp.concatenate(
+                [
+                    jnp.ones(n_hist),
+                    (1.0 + cagr_aircraft) ** jnp.arange(0, n - n_hist),
+                ]
+            )
+        else:
+            growth = 1.0
+
+        for energy_origin in model.pathways_manager.get_all_types("energy_origin"):
+            pathways = model.pathways_manager.get(
+                aircraft_type=aircraft_type, energy_origin=energy_origin
+            )
+            if pathways:
+                mean_index = jnp.zeros(n)
+                cumulative_share = jnp.zeros(n)
+                for pathway in pathways:
+                    share = jnp.asarray(
+                        input_data[f"{pathway.name}_massic_share_{aircraft_type}_{energy_origin}"]
+                    )
+                    cumulative_share = cumulative_share + jnp.nan_to_num(share) / 100.0
+                    pathway_index = input_data[f"{pathway.name}_emission_index_{species}"]
+                    mean_index = mean_index + jnp.nan_to_num(pathway_index * share) / 100.0
+
+                valid_years = jnp.where(cumulative_share == 0.0, jnp.nan, cumulative_share)
+                output_data[f"{aircraft_type}_{energy_origin}_mean_emission_index_{species}"] = (
+                    mean_index * valid_years * growth
+                )
+    return output_data
 
 
 class NOxEmissionIndex(AeroMAPSModel):
@@ -148,6 +191,10 @@ class NOxEmissionIndex(AeroMAPSModel):
         self._store_outputs(output_data)
 
         return output_data
+
+    def jax_compute(self, input_data) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        return _jax_mean_emission_index(self, input_data, "nox", with_growth=True)
 
 
 class NOxEmissionIndexComplex(AeroMAPSModel):
@@ -450,6 +497,10 @@ class SootEmissionIndex(AeroMAPSModel):
 
         return output_data
 
+    def jax_compute(self, input_data) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        return _jax_mean_emission_index(self, input_data, "soot", with_growth=True)
+
 
 class SootEmissionIndexComplex(AeroMAPSModel):
     """
@@ -735,6 +786,10 @@ class H2OEmissionIndex(AeroMAPSModel):
 
         return output_data
 
+    def jax_compute(self, input_data) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        return _jax_mean_emission_index(self, input_data, "h2o", with_growth=False)
+
 
 class SulfurEmissionIndex(AeroMAPSModel):
     """
@@ -853,6 +908,10 @@ class SulfurEmissionIndex(AeroMAPSModel):
         self._store_outputs(output_data)
 
         return output_data
+
+    def jax_compute(self, input_data) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        return _jax_mean_emission_index(self, input_data, "sulfur", with_growth=False)
 
 
 class NonCO2Emissions(AeroMAPSModel):

@@ -15,11 +15,20 @@ names are built from the market id at construction time, so no ``custom_setup``
 hook is required.
 """
 
+import jax.numpy as jnp
 import numpy as np
 import pandas as pd
 from scipy.interpolate import interp1d
 
 from aeromaps.models.base import AeroMAPSModel, aeromaps_leveling_function
+from aeromaps.models.jax_helpers import (
+    covid_recovery_trajectory,
+    hist_mask,
+    jax_leveling_function,
+    jax_pct_change,
+    year_pos,
+    years_index,
+)
 
 
 class RPKMeasuresMarket(AeroMAPSModel):
@@ -87,6 +96,31 @@ class RPKMeasuresMarket(AeroMAPSModel):
         self._store_outputs(output_data)
         return output_data
 
+    def jax_compute(self, input_data: dict) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        mid = self.market_id
+        final_impact = input_data[f"{mid}_measures_final_impact"]
+        start_year = input_data[f"{mid}_measures_start_year"]
+        duration = input_data[f"{mid}_measures_duration"]
+
+        transition_year = start_year + duration / 2.0
+        limit = 0.02 * final_impact
+        parameter = jnp.where(
+            duration > 0,
+            jnp.log(100.0 / 2.0 - 1.0) / jnp.where(duration > 0, duration / 2.0, 1.0),
+            1e10,
+        )
+
+        years = jnp.asarray(years_index(self), dtype=jnp.float64)
+        sigmoid = 1.0 / (1.0 + jnp.exp(-parameter * (years - transition_year)))
+        sigmoid_val = final_impact * sigmoid
+        impact = jnp.where(sigmoid_val < limit, 1.0, 1.0 - final_impact / 100.0 * sigmoid)
+
+        # Pure-historic years (the sigmoid is applied from prospection_start_year - 1)
+        impact = jnp.where(years_index(self) < self.prospection_start_year - 1, 1.0, impact)
+
+        return {f"rpk_{mid}_measures_impact": impact}
+
 
 class RPKMarket(AeroMAPSModel):
     """CAGR-based RPK growth with COVID recovery for one passenger market.
@@ -140,6 +174,12 @@ class RPKMarket(AeroMAPSModel):
             f"annual_growth_rate_rpk_{mid}{sfx}": pd.Series([0.0]),
             f"cagr_rpk_{mid}{sfx}": 0.0,
             f"prospective_evolution_rpk_{mid}{sfx}": 0.0,
+        }
+        # Years used as loop bounds / interpolation knots are static for JAX.
+        self.jax_static_input_names = {
+            "covid_start_year",
+            f"{mid}_covid_end_year",
+            f"{mid}_cagr_reference_periods",
         }
 
     def compute(self, input_data: dict) -> dict:
@@ -245,6 +285,54 @@ class RPKMarket(AeroMAPSModel):
         }
         self._store_outputs(output_data)
         return output_data
+
+    def jax_compute(self, input_data: dict) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        mid = self.market_id
+        sfx = self.output_suffix
+        rpk_init = jnp.asarray(input_data["rpk_init"])
+        share = input_data[f"{mid}_rpk_share_last_historical_year"]
+        covid_start_year = int(input_data["covid_start_year"])
+        covid_drop = input_data[f"{mid}_covid_drop_start_year"]
+        covid_end_year = int(input_data[f"{mid}_covid_end_year"])
+        covid_end_ratio = input_data[f"{mid}_covid_end_year_reference_ratio"]
+        measures_impact = jnp.asarray(input_data[f"rpk_{mid}_measures_impact"])
+
+        years = years_index(self)
+        hist = hist_mask(self)
+
+        history = jnp.where(hist, share / 100.0 * rpk_init, jnp.nan)
+
+        annual_gr = jax_leveling_function(
+            self,
+            input_data[f"{mid}_cagr_reference_periods"],
+            input_data[f"{mid}_cagr_reference_periods_values"],
+        )
+
+        rpk = covid_recovery_trajectory(
+            self, history, covid_start_year, covid_end_year, covid_drop, covid_end_ratio, annual_gr
+        )
+        rpk = rpk * measures_impact
+
+        # Actual historic growth rates overwrite the leveled prospective rates.
+        pct = jax_pct_change(rpk)
+        hist_rate_mask = (years > self.historic_start_year) & hist
+        prev_nonzero = jnp.concatenate([jnp.array([1.0]), rpk[:-1]]) != 0
+        rate = jnp.where(hist_rate_mask, jnp.where(prev_nonzero, pct, 0.0), annual_gr)
+
+        base = rpk[year_pos(self, self.prospection_start_year - 1)]
+        safe_base = jnp.where(base != 0, base, 1.0)
+        n_years = self.end_year - self.prospection_start_year
+        ratio = rpk[-1] / safe_base
+        cagr = jnp.where(base != 0, 100.0 * (ratio ** (1.0 / n_years) - 1.0), 0.0)
+        prospective_evolution = jnp.where(base != 0, 100.0 * (ratio - 1.0), 0.0)
+
+        return {
+            f"rpk_{mid}{sfx}": rpk,
+            f"annual_growth_rate_rpk_{mid}{sfx}": rate,
+            f"cagr_rpk_{mid}{sfx}": cagr,
+            f"prospective_evolution_rpk_{mid}{sfx}": prospective_evolution,
+        }
 
 
 class RPKAggregator(AeroMAPSModel):
@@ -359,6 +447,40 @@ class RPKAggregator(AeroMAPSModel):
         self._store_outputs(output_data)
         return output_data
 
+    def jax_compute(self, input_data: dict) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        sfx = self.output_suffix
+        years = years_index(self)
+
+        total_rpk = sum(
+            jnp.asarray(input_data[f"rpk_{mid}{sfx}"]) for mid in self.passenger_market_ids
+        )
+        total_rpk_reference = sum(
+            jnp.asarray(input_data[f"rpk_reference_{mid}"]) for mid in self.passenger_market_ids
+        )
+
+        rate = jax_pct_change(total_rpk)
+        reference_rate = jnp.where(
+            years >= self.prospection_start_year + 1,
+            jax_pct_change(total_rpk_reference),
+            jnp.nan,
+        )
+
+        base = total_rpk[year_pos(self, self.prospection_start_year - 1)]
+        n_years = self.end_year - self.prospection_start_year
+        ratio = total_rpk[-1] / base
+        cagr_rpk = 100.0 * (ratio ** (1.0 / n_years) - 1.0)
+        prospective_evolution_rpk = 100.0 * (ratio - 1.0)
+
+        return {
+            f"rpk{sfx}": total_rpk,
+            f"annual_growth_rate_passenger{sfx}": rate,
+            f"cagr_rpk{sfx}": cagr_rpk,
+            f"prospective_evolution_rpk{sfx}": prospective_evolution_rpk,
+            "rpk_reference": total_rpk_reference,
+            "reference_annual_growth_rate_passenger": reference_rate,
+        }
+
 
 class RPKReferenceMarket(AeroMAPSModel):
     """Reference RPK trajectory for one passenger market.
@@ -395,6 +517,12 @@ class RPKReferenceMarket(AeroMAPSModel):
         self.output_names = {
             f"rpk_reference_{mid}": pd.Series([0.0]),
             f"reference_annual_growth_rate_rpk_{mid}": pd.Series([0.0]),
+        }
+        # Years used as loop bounds / interpolation knots are static for JAX.
+        self.jax_static_input_names = {
+            "covid_start_year",
+            f"{mid}_covid_end_year",
+            f"{mid}_reference_cagr_reference_periods",
         }
 
     def compute(self, input_data: dict) -> dict:
@@ -455,6 +583,39 @@ class RPKReferenceMarket(AeroMAPSModel):
         self._store_outputs(output_data)
         return output_data
 
+    def jax_compute(self, input_data: dict) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        mid = self.market_id
+        rpk_init = jnp.asarray(input_data["rpk_init"])
+        share = input_data[f"{mid}_rpk_share_last_historical_year"]
+        covid_start_year = int(input_data["covid_start_year"])
+        covid_drop = input_data[f"{mid}_covid_drop_start_year"]
+        covid_end_year = int(input_data[f"{mid}_covid_end_year"])
+        covid_end_ratio = input_data[f"{mid}_covid_end_year_reference_ratio"]
+
+        history = jnp.where(hist_mask(self), share / 100.0 * rpk_init, jnp.nan)
+
+        reference_rate = jax_leveling_function(
+            self,
+            input_data[f"{mid}_reference_cagr_reference_periods"],
+            input_data[f"{mid}_reference_cagr_reference_periods_values"],
+        )
+
+        rpk_reference = covid_recovery_trajectory(
+            self,
+            history,
+            covid_start_year,
+            covid_end_year,
+            covid_drop,
+            covid_end_ratio,
+            reference_rate,
+        )
+
+        return {
+            f"rpk_reference_{mid}": rpk_reference,
+            f"reference_annual_growth_rate_rpk_{mid}": reference_rate,
+        }
+
 
 class RPKElasticity(AeroMAPSModel):
     """Global price-elasticity layer for cost-feedback mode.
@@ -504,6 +665,10 @@ class RPKElasticity(AeroMAPSModel):
             self.output_names[f"annual_growth_rate_rpk_{mid}"] = pd.Series([0.0])
             self.output_names[f"cagr_rpk_{mid}"] = 0.0
             self.output_names[f"prospective_evolution_rpk_{mid}"] = 0.0
+        # COVID end years bound the elasticity start year (static for JAX).
+        self.jax_static_input_names = {
+            f"{mid}_covid_end_year" for mid in self.passenger_market_ids
+        }
 
     def _initialize_df(self):
         super()._initialize_df()
@@ -604,4 +769,53 @@ class RPKElasticity(AeroMAPSModel):
         output_data["prospective_evolution_rpk"] = prospective_rpk
 
         self._store_outputs(output_data)
+        return output_data
+
+    def jax_compute(self, input_data: dict) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        rpk_no_elasticity = jnp.asarray(input_data["rpk_no_elasticity"])
+        airfare_per_rpk = jnp.asarray(input_data["airfare_per_rpk"])
+        price_elasticity = input_data["price_elasticity"]
+        airfare_init = input_data["initial_airfare_per_rpk"]
+
+        elasticity_start = max(
+            int(
+                max(
+                    int(input_data[f"{mid}_covid_end_year"])
+                    for mid in self.passenger_market_ids
+                )
+            )
+            + 1,
+            self.prospection_start_year,
+        )
+
+        years = years_index(self)
+        proj = years >= elasticity_start
+        multiplier = jnp.where(proj, (airfare_per_rpk / airfare_init) ** price_elasticity, 1.0)
+
+        total_rpk = rpk_no_elasticity * multiplier
+
+        n_years = self.end_year - self.prospection_start_year
+        base_pos = year_pos(self, self.prospection_start_year - 1)
+
+        def growth_metrics(series):
+            ratio = series[-1] / series[base_pos]
+            return 100.0 * (ratio ** (1.0 / n_years) - 1.0), 100.0 * (ratio - 1.0)
+
+        output_data = {
+            "rpk": total_rpk,
+            "elasticity_factor": multiplier,
+            "annual_growth_rate_passenger": jax_pct_change(total_rpk),
+        }
+        for mid in self.passenger_market_ids:
+            rpk_m = jnp.asarray(input_data[f"rpk_{mid}_no_elasticity"]) * multiplier
+            cagr_m, prospective_m = growth_metrics(rpk_m)
+            output_data[f"rpk_{mid}"] = rpk_m
+            output_data[f"annual_growth_rate_rpk_{mid}"] = jax_pct_change(rpk_m)
+            output_data[f"cagr_rpk_{mid}"] = cagr_m
+            output_data[f"prospective_evolution_rpk_{mid}"] = prospective_m
+
+        cagr_rpk, prospective_rpk = growth_metrics(total_rpk)
+        output_data["cagr_rpk"] = cagr_rpk
+        output_data["prospective_evolution_rpk"] = prospective_rpk
         return output_data

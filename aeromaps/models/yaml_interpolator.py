@@ -8,6 +8,8 @@ in a YAML configuration file.
 
 import warnings
 
+import jax.numpy as jnp
+import numpy as np
 import pandas as pd
 from scipy.interpolate import interp1d
 
@@ -58,6 +60,39 @@ class YAMLInterpolator(AeroMAPSModel):
         }
 
         self.output_names = {self.value_name: pd.Series([0.0])}
+
+        # JAX path: reference years are static interpolation knots; only the
+        # linear method is supported (other methods fall back to pandas).
+        self.jax_static_input_names = {f"{self.value_name}_years"}
+        self.jax_ready = custom_data_type.method == "linear"
+
+    @property
+    def _jax_start_year(self):
+        """First year of the output index (pandas convention)."""
+        years = self.custom_data_type.years
+        if len(years) == 0 or int(years[0]) == self.prospection_start_year:
+            return self.prospection_start_year
+        return int(years[0])
+
+    @property
+    def jax_output_indexes(self):
+        return {self.value_name: pd.RangeIndex(self._jax_start_year, self.end_year + 1)}
+
+    def jax_compute(self, input_data) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        reference_years = np.asarray(input_data[f"{self.value_name}_years"], dtype=np.float64)
+        values = jnp.asarray(input_data[f"{self.value_name}_values"], dtype=jnp.float64)
+
+        out_years = np.arange(self._jax_start_year, self.end_year + 1, dtype=np.float64)
+        if len(reference_years) == 0:
+            out = jnp.full(out_years.shape, values[0])
+        else:
+            # Constant extension outside the reference range matches the pandas
+            # behaviour (last value reused up to end_year).
+            out = jnp.interp(out_years, reference_years, values)
+        if self.custom_data_type.positive_constraint:
+            out = jnp.maximum(out, 0.0)
+        return {self.value_name: out}
 
     def compute(self, input_data) -> dict:
         """
