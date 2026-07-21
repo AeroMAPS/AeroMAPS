@@ -58,6 +58,14 @@ ENERGY_ORIGIN_COLORMAPS = {
 }
 ENERGY_ORIGIN_FALLBACK_COLORMAP = plt.cm.Purples
 
+# Friendly family names used when the energy sub-levers are grouped by origin
+# (coarse "biofuels vs electrofuels" granularity).
+ENERGY_ORIGIN_LABELS = {
+    "biomass": "Biofuels",
+    "electricity": "Electrofuels & e-hydrogen",
+    "fossil": "Fossil-derived",
+}
+
 # --- Market identity (categorical, CVD-validated slots) ------------------------
 # First four slots validate all-pairs in both light and dark surfaces; markets
 # keep their colour across every panel of the per-market plot. Direct labels /
