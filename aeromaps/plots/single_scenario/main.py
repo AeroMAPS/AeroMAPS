@@ -7,6 +7,7 @@ from aeromaps.models.impacts.emissions.co2_emissions import (
     market_lever_column,
     market_lever_names,
 )
+from aeromaps.plots import colors
 from aeromaps.plots.single_scenario_plot import SingleScenarioPlot
 from aeromaps.plots.single_scenario_plot import plot_1_x
 from aeromaps.plots.single_scenario_plot import plot_1_y
@@ -112,7 +113,7 @@ class AirTransportCO2EmissionsPlot(SingleScenarioPlot):
             self.years,
             self.df["co2_emissions_last_historical_year_technology_baseline3"],
             self.df["co2_emissions_last_historical_year_technology"],
-            color="lightskyblue",
+            color=colors.LEVER_COLORS["demand"],
             label="Demand/supply side management",
         )
 
@@ -120,7 +121,7 @@ class AirTransportCO2EmissionsPlot(SingleScenarioPlot):
             self.years,
             self.df["co2_emissions_last_historical_year_technology"],
             self.df["co2_emissions_including_aircraft_efficiency"],
-            color="gold",
+            color=colors.LEVER_COLORS["efficiency"],
             label="Aircraft efficiency",
         )
 
@@ -128,7 +129,7 @@ class AirTransportCO2EmissionsPlot(SingleScenarioPlot):
             self.years,
             self.df["co2_emissions_including_aircraft_efficiency"],
             self.df["co2_emissions_including_load_factor"],
-            color="orange",
+            color=colors.LEVER_OPERATIONS_LOADFACTOR,
             label="Fleet operations and load factor",
         )
 
@@ -136,7 +137,7 @@ class AirTransportCO2EmissionsPlot(SingleScenarioPlot):
             self.years,
             self.df["co2_emissions_including_load_factor"],
             self.df_climate.loc[self.years, "co2_emissions"],
-            color="yellowgreen",
+            color=colors.LEVER_COLORS["energy"],
             label="Aircraft energy",
         )
 
@@ -146,7 +147,7 @@ class AirTransportCO2EmissionsPlot(SingleScenarioPlot):
             self.df_climate.loc[self.years, "co2_emissions"],
             self.df_climate.loc[self.years, "co2_emissions"] - self.df["carbon_offset"],
             color="white",
-            facecolor="silver",
+            facecolor=colors.LEVER_COLORS["offset"],
             hatch="//",
             label="Carbon offset",
         )
@@ -192,7 +193,7 @@ class AirTransportCO2EmissionsPlot(SingleScenarioPlot):
             self.years,
             self.df["co2_emissions_last_historical_year_technology_baseline3"],
             self.df["co2_emissions_last_historical_year_technology"],
-            color="lightskyblue",
+            color=colors.LEVER_COLORS["demand"],
             label="Demand/supply side management",
         )
 
@@ -200,7 +201,7 @@ class AirTransportCO2EmissionsPlot(SingleScenarioPlot):
             self.years,
             self.df["co2_emissions_last_historical_year_technology"],
             self.df["co2_emissions_including_aircraft_efficiency"],
-            color="gold",
+            color=colors.LEVER_COLORS["efficiency"],
             label="Aircraft efficiency",
         )
 
@@ -208,7 +209,7 @@ class AirTransportCO2EmissionsPlot(SingleScenarioPlot):
             self.years,
             self.df["co2_emissions_including_aircraft_efficiency"],
             self.df["co2_emissions_including_load_factor"],
-            color="orange",
+            color=colors.LEVER_OPERATIONS_LOADFACTOR,
             label="Fleet operations and load factor",
         )
 
@@ -216,7 +217,7 @@ class AirTransportCO2EmissionsPlot(SingleScenarioPlot):
             self.years,
             self.df["co2_emissions_including_load_factor"],
             self.df_climate.loc[self.years, "co2_emissions"],
-            color="yellowgreen",
+            color=colors.LEVER_COLORS["energy"],
             label="Aircraft energy",
         )
 
@@ -226,7 +227,7 @@ class AirTransportCO2EmissionsPlot(SingleScenarioPlot):
             self.df_climate.loc[self.years, "co2_emissions"],
             self.df_climate.loc[self.years, "co2_emissions"] - self.df["carbon_offset"],
             color="white",
-            facecolor="silver",
+            facecolor=colors.LEVER_COLORS["offset"],
             hatch="//",
             label="Carbon offset",
         )
@@ -259,12 +260,9 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
     ]
 
     # Colormap used per energy origin for the energy pathway sub-levers
-    ENERGY_ORIGIN_COLORMAPS = {
-        "biomass": plt.cm.Greens,
-        "electricity": plt.cm.Blues,
-        "fossil": plt.cm.Reds,
-    }
-    ENERGY_ORIGIN_FALLBACK_COLORMAP = plt.cm.Purples
+    # (fuel-origin convention, shared with the colour module).
+    ENERGY_ORIGIN_COLORMAPS = colors.ENERGY_ORIGIN_COLORMAPS
+    ENERGY_ORIGIN_FALLBACK_COLORMAP = colors.ENERGY_ORIGIN_FALLBACK_COLORMAP
 
     # Bands whose absolute contribution never exceeds this value [MtCO2] are not
     # drawn nor referenced in the legend (their thickness would not be visible)
@@ -297,13 +295,23 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
             if column in self.df.columns:
                 aircraft_columns.append((f"{aircraft_name} ({category_name})", column))
 
-        aircraft_colors = plt.cm.YlOrBr(np.linspace(0.25, 0.75, max(len(aircraft_columns), 1)))
+        # Ordinal sub-levers (fleet renewal then each newer aircraft) read as
+        # steps of the efficiency lever's own hue (blue), lightest to darkest.
+        efficiency_cmap = colors.LEVER_SEQUENTIAL_CMAP["efficiency"]
+        aircraft_colors = efficiency_cmap(np.linspace(0.45, 0.85, max(len(aircraft_columns), 1)))
 
-        bands = [("Fleet renewal", "co2_emissions_lever_efficiency_fleet_renewal", "gold")]
+        bands = [
+            ("Fleet renewal", "co2_emissions_lever_efficiency_fleet_renewal", efficiency_cmap(0.35))
+        ]
         for (label, column), color in zip(aircraft_columns, aircraft_colors):
             bands.append((label, column, color))
-        bands.append(("Freight fleet", "co2_emissions_lever_efficiency_freight", "tan"))
-        bands.append(("Traffic mix and others", "co2_emissions_lever_efficiency_other", "wheat"))
+        bands.append(
+            ("Freight fleet", "co2_emissions_lever_efficiency_freight", efficiency_cmap(0.25))
+        )
+        # Residual (traffic mix) is not an identity band -> neutral grey.
+        bands.append(
+            ("Traffic mix and others", "co2_emissions_lever_efficiency_other", colors.NEUTRAL)
+        )
         return bands
 
     def _energy_bands(self):
@@ -331,11 +339,12 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
             colormap = self.ENERGY_ORIGIN_COLORMAPS.get(
                 energy_origin, self.ENERGY_ORIGIN_FALLBACK_COLORMAP
             )
-            colors = colormap(np.linspace(0.4, 0.8, len(pathways)))
-            for (pathway_name, column), color in zip(pathways, colors):
+            pathway_colors = colormap(np.linspace(0.4, 0.8, len(pathways)))
+            for (pathway_name, column), color in zip(pathways, pathway_colors):
                 label = pathway_name.replace("_", " ").title()
                 bands.append((label, column, color))
-        bands.append(("Other energy effects", "co2_emissions_lever_energy_other", "darkseagreen"))
+        # Residual energy effects are not an identity band -> neutral grey.
+        bands.append(("Other energy effects", "co2_emissions_lever_energy_other", colors.NEUTRAL))
         return bands
 
     def _plot_sub_lever_bands(self, upper, bands):
@@ -413,7 +422,7 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
             self.years,
             self.df["co2_emissions_last_historical_year_technology_baseline3"],
             self.df["co2_emissions_last_historical_year_technology"],
-            color="lightskyblue",
+            color=colors.LEVER_COLORS["demand"],
             label="Demand/supply side management",
         )
 
@@ -437,7 +446,7 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
             self.years,
             self.df["co2_emissions_including_aircraft_efficiency"],
             self.df["co2_emissions_including_load_factor"],
-            color="orange",
+            color=colors.LEVER_OPERATIONS_LOADFACTOR,
             label="Fleet operations and load factor",
         )
 
@@ -463,7 +472,7 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
             self.df_climate.loc[self.years, "co2_emissions"],
             self.df_climate.loc[self.years, "co2_emissions"] - self.df["carbon_offset"],
             color="white",
-            facecolor="silver",
+            facecolor=colors.LEVER_COLORS["offset"],
             hatch="//",
             label="Carbon offset",
         )
@@ -541,9 +550,11 @@ class AirTransportCO2EmissionsPerMarketPlot(SingleScenarioPlot):
             legend.remove()
 
         market_ids = self._ordered_market_ids()
-        colors = dict(zip(market_ids, plt.cm.tab10(np.linspace(0, 1, max(len(market_ids), 1)))))
+        # Validated categorical palette, constant per market across panels.
+        market_color = colors.market_colors(market_ids)
         names = market_lever_names(self.process.markets)
         years = self.prospective_years
+        last_year = years[-1]
 
         for ax, (lever, title) in zip(self.facet_axes, self._LEVERS):
             ax.clear()
@@ -552,18 +563,31 @@ class AirTransportCO2EmissionsPerMarketPlot(SingleScenarioPlot):
                 column = names.get((lever, mid))
                 if column is None or column not in self.df.columns:
                     continue
+                series = self.df.loc[years, column]
                 ax.plot(
                     years,
-                    self.df.loc[years, column],
-                    color=colors[mid],
+                    series,
+                    color=market_color[mid],
                     label=mid.replace("_", " ").title(),
+                )
+                # Direct end-label: secondary (non-colour) encoding of identity,
+                # required alongside the market palette for CVD/contrast safety.
+                ax.annotate(
+                    mid.replace("_", " ").title(),
+                    xy=(last_year, series.loc[last_year]),
+                    xytext=(3, 0),
+                    textcoords="offset points",
+                    va="center",
+                    fontsize=6,
+                    color=market_color[mid],
+                    clip_on=False,
                 )
             cross_column = names.get((lever, MARKET_CROSS_MIX))
             if cross_column in self.df.columns:
                 ax.plot(
                     years,
                     self.df.loc[years, cross_column],
-                    color="grey",
+                    color=colors.NEUTRAL,
                     linestyle=":",
                     label="Cross-market mix",
                 )
