@@ -50,20 +50,44 @@ LEVER_SEQUENTIAL_CMAP = {
     "energy": plt.cm.Greens,
 }
 
-# --- Energy sub-levers: fuel-origin convention ---------------------------------
-ENERGY_ORIGIN_COLORMAPS = {
-    "biomass": plt.cm.Greens,
-    "electricity": plt.cm.Blues,
-    "fossil": plt.cm.Reds,
-}
-ENERGY_ORIGIN_FALLBACK_COLORMAP = plt.cm.Purples
+# --- Energy sub-levers: fuel-family convention ---------------------------------
+# Energy sub-levers are grouped by *fuel family*, not by raw energy origin, so
+# that hydrogen (used through hydrogen aircraft, a distinct technology) is never
+# merged with drop-in electrofuels even though electrolytic hydrogen and
+# electrofuels share the "electricity" origin. Hydrogen aircraft are often
+# credited to the technology/efficiency side of decarbonisation scenarios, so
+# hydrogen keeps its own family, label and colour.
 
-# Friendly family names used when the energy sub-levers are grouped by origin
-# (coarse "biofuels vs electrofuels" granularity).
-ENERGY_ORIGIN_LABELS = {
+
+def energy_family(aircraft_type, energy_origin):
+    """Fuel family of a pathway.
+
+    Drop-in fuels keep their energy origin (biomass / electricity / fossil);
+    hydrogen and battery-electric carriers form their own families regardless of
+    origin, so e-hydrogen is never lumped in with drop-in electrofuels.
+    """
+    if aircraft_type == "hydrogen":
+        return "hydrogen"
+    if aircraft_type == "electric":
+        return "electric"
+    return energy_origin
+
+
+ENERGY_FAMILY_COLORMAPS = {
+    "biomass": plt.cm.Greens,  # biofuels
+    "electricity": plt.cm.Blues,  # drop-in electrofuels
+    "fossil": plt.cm.Reds,  # fossil kerosene
+    "hydrogen": plt.cm.RdPu,  # hydrogen aircraft (magenta: kept clear of the efuel blue)
+    "electric": plt.cm.GnBu,  # battery-electric aircraft
+}
+ENERGY_FAMILY_FALLBACK_COLORMAP = plt.cm.Oranges
+
+ENERGY_FAMILY_LABELS = {
     "biomass": "Biofuels",
-    "electricity": "Electrofuels & e-hydrogen",
+    "electricity": "Electrofuels",
     "fossil": "Fossil-derived",
+    "hydrogen": "Hydrogen",
+    "electric": "Electric",
 }
 
 # --- Market identity (categorical, CVD-validated slots) ------------------------
