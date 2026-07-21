@@ -136,6 +136,18 @@ def market_lever_dataframe(df: pd.DataFrame, markets) -> pd.DataFrame:
     return tidy
 
 
+def _denoise(series: pd.Series, atol: float = 1e-9) -> pd.Series:
+    """Snap negligible decomposition values (``|x| < atol`` MtCO2) to exactly zero.
+
+    The decomposition residuals and unused sub-lever columns are zero by
+    construction but carry floating-point cancellation noise (~1e-13 MtCO2) that
+    varies run to run. Snapping this sub-nanotonne noise to 0 keeps the outputs
+    deterministic (so strict golden-file notebook checks pass) without affecting
+    any physically meaningful contribution. NaNs (historic years) are preserved.
+    """
+    return series.mask(series.abs() < atol, 0.0)
+
+
 class KayaFactors(AeroMAPSModel):
     """
     Class to compute Kaya factors for CO2 emissions calculation.
@@ -988,6 +1000,7 @@ class DetailedCo2EmissionsPerPathway(AeroMAPSModel):
         other.loc[years] = total_lever.fillna(0) - cumulated_contributions
         output_data["co2_emissions_lever_energy_other"] = other
 
+        output_data = {name: _denoise(series) for name, series in output_data.items()}
         self._store_outputs(output_data)
 
         return output_data
@@ -1199,6 +1212,7 @@ class DetailedCo2EmissionsPerAircraft(AeroMAPSModel):
             series.loc[years] = values
             output_data[name] = series
 
+        output_data = {name: _denoise(series) for name, series in output_data.items()}
         self._store_outputs(output_data)
 
         return output_data
@@ -1480,6 +1494,7 @@ class DetailedCo2EmissionsPerMarket(AeroMAPSModel):
             residual = global_lever.loc[years].fillna(0) - lever_sum[lever]
             emit(market_lever_column(lever, MARKET_CROSS_MIX), residual)
 
+        output_data = {name: _denoise(series) for name, series in output_data.items()}
         self._store_outputs(output_data)
 
         return output_data
