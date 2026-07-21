@@ -1,6 +1,7 @@
 from aeromaps.plots.single_scenario.main import (
     AirTransportCO2EmissionsPlot,
     AirTransportCO2EmissionsDetailedPlot,
+    AirTransportCO2EmissionsGroupedPlot,
     AirTransportCO2EmissionsPerMarketPlot,
     AirTransportClimateImpactsPlot,
 )
@@ -92,6 +93,7 @@ from aeromaps.plots.single_scenario.costs_generic import (
 available_plots = {
     "air_transport_co2_emissions": AirTransportCO2EmissionsPlot,
     "air_transport_co2_emissions_detailed": AirTransportCO2EmissionsDetailedPlot,
+    "air_transport_co2_emissions_grouped": AirTransportCO2EmissionsGroupedPlot,
     "air_transport_co2_emissions_per_market": AirTransportCO2EmissionsPerMarketPlot,
     "air_transport_climate_impacts": AirTransportClimateImpactsPlot,
     "carbon_budget_assessment": CarbonBudgetAssessmentPlot,

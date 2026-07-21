@@ -972,7 +972,15 @@ class AeroMAPSProcess(object):
         return self.data["str_inputs"]
 
     def plot(
-        self, name, save=False, size_inches=None, remove_title=False, fig=None, ax=None, legend=True
+        self,
+        name,
+        save=False,
+        size_inches=None,
+        remove_title=False,
+        fig=None,
+        ax=None,
+        legend=True,
+        **plot_options,
     ):
         """Generate a predefined AeroMAPS plot.
 
@@ -1006,7 +1014,9 @@ class AeroMAPSProcess(object):
             Object holding the created plot, as returned by the plot
             function.
         """
-        plot_kwargs = dict(fig=fig, ax=ax, legend=legend)
+        # Extra keyword arguments (e.g. efficiency_granularity / energy_granularity
+        # for the detailed CO2 plot) are forwarded to the plot constructor.
+        plot_kwargs = dict(fig=fig, ax=ax, legend=legend, **plot_options)
         if name in available_plots_fleet:
             try:
                 fig_obj = available_plots_fleet[name](self, **plot_kwargs)

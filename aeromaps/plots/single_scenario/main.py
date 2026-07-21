@@ -268,16 +268,60 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
     # drawn nor referenced in the legend (their thickness would not be visible)
     NEGLIGIBLE_BAND_THRESHOLD = 1e-3
 
-    def __init__(self, process, figsize=None, **kwargs):
+    EFFICIENCY_GRANULARITIES = ("aircraft", "category")
+    ENERGY_GRANULARITIES = ("pathway", "origin")
+
+    def __init__(
+        self,
+        process,
+        figsize=None,
+        efficiency_granularity="aircraft",
+        energy_granularity="pathway",
+        **kwargs,
+    ):
+        """
+        Parameters
+        ----------
+        efficiency_granularity : {"aircraft", "category"}
+            Granularity of the aircraft-efficiency decomposition: one band per
+            individual aircraft (default) or one band per fleet category (the
+            per-aircraft contributions summed within each category).
+        energy_granularity : {"pathway", "origin"}
+            Granularity of the aircraft-energy decomposition: one band per energy
+            pathway (default) or one band per fuel origin family (biofuels /
+            electrofuels & e-hydrogen / fossil-derived).
+        """
+        if efficiency_granularity not in self.EFFICIENCY_GRANULARITIES:
+            raise ValueError(
+                f"efficiency_granularity must be one of {self.EFFICIENCY_GRANULARITIES}, "
+                f"got {efficiency_granularity!r}"
+            )
+        if energy_granularity not in self.ENERGY_GRANULARITIES:
+            raise ValueError(
+                f"energy_granularity must be one of {self.ENERGY_GRANULARITIES}, "
+                f"got {energy_granularity!r}"
+            )
+        self._efficiency_granularity = efficiency_granularity
+        self._energy_granularity = energy_granularity
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_1_x, plot_1_y)
 
-    def _efficiency_bands(self):
-        """Return the (label, column, color) list of the aircraft efficiency sub-levers.
+    def _col(self, column):
+        """Sub-lever column over the plot years, NaNs treated as zero."""
+        return self.df.loc[self.years, column].fillna(0)
 
+    def _sum_cols(self, columns):
+        """Sum of several sub-lever columns over the plot years (for grouping)."""
+        return self.df.loc[self.years, list(columns)].fillna(0).sum(axis=1)
+
+    def _efficiency_bands(self):
+        """Return the (label, values, color) list of the aircraft efficiency sub-levers.
+
+        Sub-levers are shown per individual aircraft or, when
+        ``efficiency_granularity="category"``, aggregated per fleet category.
         Returns None when the decomposition is not available (e.g. a top-down
         fleet model is used instead of the bottom-up one), so that the caller
         falls back to a single aggregated band.
@@ -289,34 +333,57 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
             return None
 
         lever_names = aircraft_efficiency_lever_names(fleet_model.fleet)
+        # (category, aircraft, column) for every aircraft with a contribution.
+        aircraft = [
+            (category_name, aircraft_name, column)
+            for (category_name, _, aircraft_name), column in lever_names.items()
+            if column in self.df.columns
+        ]
 
-        aircraft_columns = []
-        for (category_name, _, aircraft_name), column in lever_names.items():
-            if column in self.df.columns:
-                aircraft_columns.append((f"{aircraft_name} ({category_name})", column))
-
-        # Ordinal sub-levers (fleet renewal then each newer aircraft) read as
-        # steps of the efficiency lever's own hue (blue), lightest to darkest.
+        # Ordinal sub-levers read as steps of the efficiency lever's own hue (blue).
         efficiency_cmap = colors.LEVER_SEQUENTIAL_CMAP["efficiency"]
-        aircraft_colors = efficiency_cmap(np.linspace(0.45, 0.85, max(len(aircraft_columns), 1)))
 
         bands = [
-            ("Fleet renewal", "co2_emissions_lever_efficiency_fleet_renewal", efficiency_cmap(0.35))
+            (
+                "Fleet renewal",
+                self._col("co2_emissions_lever_efficiency_fleet_renewal"),
+                efficiency_cmap(0.35),
+            )
         ]
-        for (label, column), color in zip(aircraft_columns, aircraft_colors):
-            bands.append((label, column, color))
+
+        if self._efficiency_granularity == "category":
+            categories = list(dict.fromkeys(category for category, _, _ in aircraft))
+            ramp = efficiency_cmap(np.linspace(0.45, 0.85, max(len(categories), 1)))
+            for category_name, color in zip(categories, ramp):
+                columns = [col for cat, _, col in aircraft if cat == category_name]
+                bands.append((f"{category_name} fleet", self._sum_cols(columns), color))
+        else:
+            ramp = efficiency_cmap(np.linspace(0.45, 0.85, max(len(aircraft), 1)))
+            for (category_name, aircraft_name, column), color in zip(aircraft, ramp):
+                bands.append((f"{aircraft_name} ({category_name})", self._col(column), color))
+
         bands.append(
-            ("Freight fleet", "co2_emissions_lever_efficiency_freight", efficiency_cmap(0.25))
+            (
+                "Freight fleet",
+                self._col("co2_emissions_lever_efficiency_freight"),
+                efficiency_cmap(0.25),
+            )
         )
         # Residual (traffic mix) is not an identity band -> neutral grey.
         bands.append(
-            ("Traffic mix and others", "co2_emissions_lever_efficiency_other", colors.NEUTRAL)
+            (
+                "Traffic mix and others",
+                self._col("co2_emissions_lever_efficiency_other"),
+                colors.NEUTRAL,
+            )
         )
         return bands
 
     def _energy_bands(self):
-        """Return the (label, column, color) list of the energy pathway sub-levers.
+        """Return the (label, values, color) list of the energy pathway sub-levers.
 
+        Sub-levers are shown per pathway or, when ``energy_granularity="origin"``,
+        aggregated per fuel origin family (biofuels / electrofuels / fossil).
         Returns None when the decomposition is not available (e.g. non-generic,
         top-down energy models are used), so that the caller falls back to a
         single aggregated band.
@@ -339,12 +406,21 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
             colormap = self.ENERGY_ORIGIN_COLORMAPS.get(
                 energy_origin, self.ENERGY_ORIGIN_FALLBACK_COLORMAP
             )
-            pathway_colors = colormap(np.linspace(0.4, 0.8, len(pathways)))
-            for (pathway_name, column), color in zip(pathways, pathway_colors):
-                label = pathway_name.replace("_", " ").title()
-                bands.append((label, column, color))
+            if self._energy_granularity == "origin":
+                # One solid band per fuel family (biofuels / electrofuels / fossil).
+                label = colors.ENERGY_ORIGIN_LABELS.get(
+                    energy_origin, energy_origin.replace("_", " ").title()
+                )
+                columns = [column for _, column in pathways]
+                bands.append((label, self._sum_cols(columns), colormap(0.7)))
+            else:
+                pathway_colors = colormap(np.linspace(0.4, 0.8, len(pathways)))
+                for (pathway_name, column), color in zip(pathways, pathway_colors):
+                    bands.append((pathway_name.replace("_", " ").title(), self._col(column), color))
         # Residual energy effects are not an identity band -> neutral grey.
-        bands.append(("Other energy effects", "co2_emissions_lever_energy_other", colors.NEUTRAL))
+        bands.append(
+            ("Other energy effects", self._col("co2_emissions_lever_energy_other"), colors.NEUTRAL)
+        )
         return bands
 
     def _plot_sub_lever_bands(self, upper, bands):
@@ -353,8 +429,7 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
         Negligible bands are subtracted but not drawn, so that the legend only
         references visible bands.
         """
-        for label, column, color in bands:
-            values = self.df.loc[self.years, column].fillna(0)
+        for label, values, color in bands:
             lower = upper - values
             if values.abs().max() > self.NEGLIGIBLE_BAND_THRESHOLD:
                 self.ax.fill_between(self.years, upper, lower, color=color, label=label)
@@ -498,6 +573,33 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
 
         self._draw_fills()
         self.fig.canvas.draw()
+
+
+class AirTransportCO2EmissionsGroupedPlot(AirTransportCO2EmissionsDetailedPlot):
+    """
+    Coarse-granularity variant of AirTransportCO2EmissionsDetailedPlot: the
+    aircraft-efficiency lever is decomposed per fleet category (rather than per
+    individual aircraft) and the aircraft-energy lever per fuel origin family
+    (biofuels / electrofuels & e-hydrogen / fossil-derived, rather than per
+    pathway). For a mixed choice, use AirTransportCO2EmissionsDetailedPlot
+    directly with the ``efficiency_granularity`` / ``energy_granularity`` keywords.
+    """
+
+    def __init__(
+        self,
+        process,
+        figsize=None,
+        efficiency_granularity="category",
+        energy_granularity="origin",
+        **kwargs,
+    ):
+        super().__init__(
+            process,
+            figsize=figsize,
+            efficiency_granularity=efficiency_granularity,
+            energy_granularity=energy_granularity,
+            **kwargs,
+        )
 
 
 class AirTransportCO2EmissionsPerMarketPlot(SingleScenarioPlot):
