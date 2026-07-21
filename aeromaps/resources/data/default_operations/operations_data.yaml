@@ -1,0 +1,78 @@
+### DEFAULT OPERATIONS DATA ###
+# This file contains the default operational concepts for the generic operations models.
+# Each concept contributes one or more gains that compose multiplicatively into the
+# aggregate operational effects consumed downstream:
+#   - fuel_efficiency.gain          -> operations_gain [%]                    (reduces energy per ASK, CO2)
+#   - contrails.gain                -> operations_contrails_gain [%]          (reduces contrail climate impact, non-CO2)
+#   - contrails.overconsumption     -> operations_contrails_overconsumption [%] (fuel-burn penalty of contrail avoidance, CO2)
+#
+# -----------------------------------------------------------------------------
+# Example of a generic operational concept (all possible fields)
+# -----------------------------------------------------------------------------
+# generic_example:
+#   name: "generic_example"
+#   category: "flight_operations"   # e.g. flight_operations, ground_operations, contrails - free to add/decompose
+#   inputs:
+#     fuel_efficiency:
+#       gain: !AeroMapsCustomDataType        # [%] reduction in energy per ASK
+#         years: [2020, 2050]
+#         values: [0.0, 3.0]
+#         method: linear
+#     contrails:
+#       gain: !AeroMapsCustomDataType        # [%] reduction in contrail climate impact
+#         years: [2020, 2050]
+#         values: [0.0, 60.0]
+#         method: linear
+#       overconsumption: !AeroMapsCustomDataType   # [%] increase in fuel consumption
+#         years: [2020, 2050]
+#         values: [0.0, 0.5]
+#         method: linear
+# -----------------------------------------------------------------------------
+
+
+air_traffic_management:
+  name: "air_traffic_management"
+  category: "flight_operations"
+  inputs:
+    fuel_efficiency:
+      gain: !AeroMapsCustomDataType
+        years: [2020, 2030, 2050]
+        values: [0.0, 2.0, 4.0]
+        method: linear
+
+
+trajectory_and_speed_optimization:
+  name: "trajectory_and_speed_optimization"
+  category: "flight_operations"
+  inputs:
+    fuel_efficiency:
+      gain: !AeroMapsCustomDataType
+        years: [2020, 2050]
+        values: [0.0, 2.0]
+        method: linear
+
+
+eco_taxiing:
+  name: "eco_taxiing"
+  category: "ground_operations"
+  inputs:
+    fuel_efficiency:
+      gain: !AeroMapsCustomDataType
+        years: [2020, 2050]
+        values: [0.0, 1.0]
+        method: linear
+
+
+contrail_avoidance:
+  name: "contrail_avoidance"
+  category: "contrails"
+  inputs:
+    contrails:
+      gain: !AeroMapsCustomDataType
+        years: [2020, 2035, 2050]
+        values: [0.0, 30.0, 60.0]
+        method: linear
+      overconsumption: !AeroMapsCustomDataType
+        years: [2020, 2050]
+        values: [0.0, 0.5]
+        method: linear
