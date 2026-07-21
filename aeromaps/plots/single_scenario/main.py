@@ -259,17 +259,12 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
         "co2_emissions",
     ]
 
-    # Colormap used per energy origin for the energy pathway sub-levers
-    # (fuel-origin convention, shared with the colour module).
-    ENERGY_ORIGIN_COLORMAPS = colors.ENERGY_ORIGIN_COLORMAPS
-    ENERGY_ORIGIN_FALLBACK_COLORMAP = colors.ENERGY_ORIGIN_FALLBACK_COLORMAP
-
     # Bands whose absolute contribution never exceeds this value [MtCO2] are not
     # drawn nor referenced in the legend (their thickness would not be visible)
     NEGLIGIBLE_BAND_THRESHOLD = 1e-3
 
     EFFICIENCY_GRANULARITIES = ("aircraft", "category")
-    ENERGY_GRANULARITIES = ("pathway", "origin")
+    ENERGY_GRANULARITIES = ("pathway", "family")
 
     def __init__(
         self,
@@ -286,10 +281,11 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
             Granularity of the aircraft-efficiency decomposition: one band per
             individual aircraft (default) or one band per fleet category (the
             per-aircraft contributions summed within each category).
-        energy_granularity : {"pathway", "origin"}
+        energy_granularity : {"pathway", "family"}
             Granularity of the aircraft-energy decomposition: one band per energy
-            pathway (default) or one band per fuel origin family (biofuels /
-            electrofuels & e-hydrogen / fossil-derived).
+            pathway (default) or one band per fuel family (biofuels / electrofuels
+            / fossil-derived / hydrogen / electric). Hydrogen is its own family and
+            is never merged with drop-in electrofuels.
         """
         if efficiency_granularity not in self.EFFICIENCY_GRANULARITIES:
             raise ValueError(
@@ -382,35 +378,36 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
     def _energy_bands(self):
         """Return the (label, values, color) list of the energy pathway sub-levers.
 
-        Sub-levers are shown per pathway or, when ``energy_granularity="origin"``,
-        aggregated per fuel origin family (biofuels / electrofuels / fossil).
-        Returns None when the decomposition is not available (e.g. non-generic,
-        top-down energy models are used), so that the caller falls back to a
-        single aggregated band.
+        Sub-levers are shown per pathway or, when ``energy_granularity="family"``,
+        aggregated per fuel family (biofuels / electrofuels / fossil / hydrogen /
+        electric). Hydrogen is always its own family and is never merged with
+        drop-in electrofuels, even though e-hydrogen and electrofuels share the
+        "electricity" origin. Returns None when the decomposition is not available
+        (e.g. non-generic, top-down energy models are used), so that the caller
+        falls back to a single aggregated band.
         """
         if self.pathways_manager is None or "co2_emissions_lever_energy_other" not in (
             self.df.columns
         ):
             return None
 
-        pathways_by_origin = {}
+        # Group pathways by fuel family (hydrogen / electric kept separate from
+        # drop-in fuels via the pathway's aircraft_type), preserving first-seen order.
+        pathways_by_family = {}
         for pathway in self.pathways_manager.get_all():
             column = f"co2_emissions_lever_energy_{pathway.name}"
             if column in self.df.columns:
-                pathways_by_origin.setdefault(pathway.energy_origin, []).append(
-                    (pathway.name, column)
-                )
+                family = colors.energy_family(pathway.aircraft_type, pathway.energy_origin)
+                pathways_by_family.setdefault(family, []).append((pathway.name, column))
 
         bands = []
-        for energy_origin, pathways in pathways_by_origin.items():
-            colormap = self.ENERGY_ORIGIN_COLORMAPS.get(
-                energy_origin, self.ENERGY_ORIGIN_FALLBACK_COLORMAP
+        for family, pathways in pathways_by_family.items():
+            colormap = colors.ENERGY_FAMILY_COLORMAPS.get(
+                family, colors.ENERGY_FAMILY_FALLBACK_COLORMAP
             )
-            if self._energy_granularity == "origin":
-                # One solid band per fuel family (biofuels / electrofuels / fossil).
-                label = colors.ENERGY_ORIGIN_LABELS.get(
-                    energy_origin, energy_origin.replace("_", " ").title()
-                )
+            if self._energy_granularity == "family":
+                # One solid band per fuel family.
+                label = colors.ENERGY_FAMILY_LABELS.get(family, family.replace("_", " ").title())
                 columns = [column for _, column in pathways]
                 bands.append((label, self._sum_cols(columns), colormap(0.7)))
             else:
@@ -579,10 +576,11 @@ class AirTransportCO2EmissionsGroupedPlot(AirTransportCO2EmissionsDetailedPlot):
     """
     Coarse-granularity variant of AirTransportCO2EmissionsDetailedPlot: the
     aircraft-efficiency lever is decomposed per fleet category (rather than per
-    individual aircraft) and the aircraft-energy lever per fuel origin family
-    (biofuels / electrofuels & e-hydrogen / fossil-derived, rather than per
-    pathway). For a mixed choice, use AirTransportCO2EmissionsDetailedPlot
-    directly with the ``efficiency_granularity`` / ``energy_granularity`` keywords.
+    individual aircraft) and the aircraft-energy lever per fuel family (biofuels /
+    electrofuels / fossil-derived / hydrogen / electric, rather than per pathway;
+    hydrogen is kept separate from electrofuels). For a mixed choice, use
+    AirTransportCO2EmissionsDetailedPlot directly with the
+    ``efficiency_granularity`` / ``energy_granularity`` keywords.
     """
 
     def __init__(
@@ -590,7 +588,7 @@ class AirTransportCO2EmissionsGroupedPlot(AirTransportCO2EmissionsDetailedPlot):
         process,
         figsize=None,
         efficiency_granularity="category",
-        energy_granularity="origin",
+        energy_granularity="family",
         **kwargs,
     ):
         super().__init__(
