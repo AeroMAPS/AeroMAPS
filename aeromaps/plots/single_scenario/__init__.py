@@ -97,6 +97,12 @@ from aeromaps.plots.single_scenario.offsettings import (
     CarbonOffsetPricesPlot,
 )
 
+from aeromaps.plots.single_scenario.operations_generic import (
+    OperationsGainByConceptPlot,
+    OperationsGainByCategoryPlot,
+    OperationsContrailsGainByConceptPlot,
+)
+
 available_plots = {
     "air_transport_co2_emissions": AirTransportCO2EmissionsPlot,
     "air_transport_co2_emissions_detailed": AirTransportCO2EmissionsDetailedPlot,
@@ -159,6 +165,10 @@ available_plots = {
     "carbon_offset_mechanisms_breakdown": CarbonOffsetMechanismsBreakdownPlot,
     "carbon_offset_cost_breakdown": CarbonOffsetCostBreakdownPlot,
     "carbon_offset_prices": CarbonOffsetPricesPlot,
+    # Generic operations-manager-driven plots
+    "operations_gain_by_concept": OperationsGainByConceptPlot,
+    "operations_gain_by_category": OperationsGainByCategoryPlot,
+    "operations_contrails_gain_by_concept": OperationsContrailsGainByConceptPlot,
     "annual_MACC_simple_fleet": AnnualMACCSimple,
     "shadow_carbon_pricing_simple_fleet": ShadowCarbonPriceSimple,
 }

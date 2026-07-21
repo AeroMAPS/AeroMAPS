@@ -113,3 +113,12 @@ def market_colors(market_ids):
     market, so a market keeps its colour regardless of how many markets exist.
     """
     return {mid: MARKET_PALETTE[i % len(MARKET_PALETTE)] for i, mid in enumerate(market_ids)}
+
+
+def categorical_colors(keys):
+    """Return a stable ``{key: hex}`` mapping for an arbitrary categorical axis.
+
+    Uses the same CVD-validated categorical palette as the markets, assigned in
+    the given order (e.g. operational concepts or categories).
+    """
+    return {key: MARKET_PALETTE[i % len(MARKET_PALETTE)] for i, key in enumerate(keys)}

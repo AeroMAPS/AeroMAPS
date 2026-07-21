@@ -73,6 +73,15 @@ from aeromaps.models.impacts.generic_offsettings_model.common.offsettings_factor
     CarbonOffsettingsFactory,
 )
 
+# Generic operations models imports
+from aeromaps.models.impacts.generic_operations_model.common.operations_manager import (
+    OperationalConceptManager,
+    OperationalConceptMetadata,
+)
+from aeromaps.models.impacts.generic_operations_model.common.operations_factory import (
+    OperationsFactory,
+)
+
 # TODO: investigate if this should be handle in a model layer
 # Markets registry
 from aeromaps.models.air_transport.markets.market import Market
@@ -270,6 +279,9 @@ class AeroMAPSProcess(object):
 
         # Initialize offsettings_manager to None - will be populated if offsettings models are used
         self.offsettings_manager = None
+
+        # Initialize operations_manager to None - will be populated if generic operations models are used
+        self.operations_manager = None
 
         custom_logger_config(logging.getLogger("gemseo.utils.source_parsing"))
 
@@ -474,6 +486,7 @@ class AeroMAPSProcess(object):
         self._initialize_lca_model()
         self._initialize_generic_energy()
         self._initialize_offsettings()
+        self._initialize_operations()
         self._initialize_vector_inputs()
 
         # Fail loudly on stale `_2019` config keys (renamed when prospection_start_year
@@ -1842,6 +1855,100 @@ class AeroMAPSProcess(object):
         self.models.update(
             CarbonOffsettingsFactory.instantiate_offsettings_models(
                 self.offsettings_data, self.offsettings_manager
+            )
+        )
+
+    def _remove_models(self, names):
+        """Recursively remove models whose key is in ``names`` from ``self.models``.
+
+        ``self.models`` mixes nested standard-group dictionaries with flat
+        factory-added entries, so the removal walks the whole structure.
+
+        Parameters
+        ----------
+        names : set of str
+            Model keys to remove wherever they appear.
+        """
+
+        def _prune(models_dict):
+            for key in list(models_dict.keys()):
+                value = models_dict[key]
+                if key in names:
+                    del models_dict[key]
+                elif isinstance(value, dict):
+                    _prune(value)
+
+        _prune(self.models)
+
+    def _initialize_operations(self):
+        """Initialize generic operational concepts.
+
+        Reads the operational concept configurations, builds concept metadata,
+        flattens and interpolates the per-concept, per-channel gain inputs
+        (fuel-efficiency gain, contrail gain, contrail overconsumption), and uses
+        the ``OperationsFactory`` to create the model that composes the concept
+        gains into the aggregate operational effects (``operations_gain``,
+        ``operations_contrails_gain``, ``operations_contrails_overconsumption``).
+        The generic model replaces the simple operations and contrails models, so
+        those are removed from the models dictionary.
+        Skipped if the models.operations key is not present in the user configuration.
+        """
+        operations_config = self._get_user_config_value("models", "operations", default=None)
+        if operations_config is None:
+            return
+
+        operations_data_file_path = self._resolve_config_path(
+            "models",
+            "operations",
+            "operations_model_data_file",
+            default_filename="default_operations/operations_data.yaml",
+        )
+
+        self.operations_data = read_yaml_file(str(operations_data_file_path))
+
+        # The first level of the yaml conf file contains all the operational concepts
+        concepts = list(self.operations_data.keys())
+
+        self.operations_manager = OperationalConceptManager()
+
+        for concept in concepts:
+            concept_data = self.operations_data[concept]
+            if "name" not in concept_data:
+                raise ValueError(
+                    "The operational concept configuration file should contain its name"
+                )
+            if "inputs" not in concept_data:
+                raise ValueError("The operational concept configuration file should contain inputs")
+
+            inputs = concept_data["inputs"]
+            self.operations_manager.add(
+                OperationalConceptMetadata(
+                    name=concept,
+                    category=concept_data.get("category"),
+                    has_fuel_efficiency="fuel_efficiency" in inputs,
+                    has_contrails="contrails" in inputs,
+                )
+            )
+
+            # Flatten each channel's inputs with a "<concept>_<channel>" prefix
+            # (so fuel_efficiency.gain and contrails.gain do not collide) and interpolate.
+            for channel, value in inputs.items():
+                flattened_yaml = _flatten_dict(value, f"{concept_data['name']}_{channel}")
+                inputs[channel] = self._convert_custom_data_types(flattened_yaml)
+                self.parameters.from_dict(inputs[channel])
+
+            concept_data["inputs"] = inputs
+            self.operations_data[concept] = concept_data
+
+        # The generic operations model is the single producer of the aggregate
+        # operational effects, so drop the simple operations and contrails models.
+        self._remove_models(
+            {"operations_logistic", "operations_interpolation", "operations_contrails_simple"}
+        )
+
+        self.models.update(
+            OperationsFactory.instantiate_operations_models(
+                self.operations_data, self.operations_manager
             )
         )
 
