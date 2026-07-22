@@ -1157,14 +1157,25 @@ class Fleet(object):
         if old_energy is None or recent_energy is None:
             raise ValueError(f"{category_name} reference aircraft energy_per_ask must be defined")
 
+        # A zero last-historical-year RPK share means the market carried no traffic
+        # in the calibration year, so the mean-energy formula below is a 0/0: there
+        # is nothing to calibrate against. Skip calibration and keep the YAML-declared
+        # reference aircraft (energy and EIS) as-is, rather than back-filling a NaN
+        # that would silently poison old_reference_aircraft.energy_per_ask and trip
+        # the wrong-reason warning further down.
         if getattr(self.parameters, rpk_share_param) == 0.0:
-            mean_energy_init_ask = np.nan
-        else:
-            lhy = self.parameters.last_historical_year
-            mean_energy_init_ask = (
-                self.parameters.energy_consumption_init[lhy]
-                * getattr(self.parameters, energy_share_param)
-            ) / (self.parameters.ask_init[lhy] * getattr(self.parameters, rpk_share_param))
+            warnings.warn(
+                f"Warning Message - Fleet Model: {category_name} has a zero last-historical-year "
+                f"RPK share — reference-aircraft calibration is skipped; the YAML-declared "
+                f"reference aircraft performances are used as-is."
+            )
+            return
+
+        lhy = self.parameters.last_historical_year
+        mean_energy_init_ask = (
+            self.parameters.energy_consumption_init[lhy]
+            * getattr(self.parameters, energy_share_param)
+        ) / (self.parameters.ask_init[lhy] * getattr(self.parameters, rpk_share_param))
 
         share_recent = (mean_energy_init_ask - old_energy) / (recent_energy - old_energy)
 
