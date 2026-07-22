@@ -64,6 +64,7 @@ from aeromaps.models.impacts.generic_energy_model.common.energy_carriers_factory
     AviationEnergyCarriersFactory,
 )
 
+# TODO: investigate if this should be handle in a model layer
 # Markets registry
 from aeromaps.models.air_transport.markets.market import Market
 from aeromaps.models.air_transport.markets.market_manager import MarketManager
@@ -113,6 +114,14 @@ DEFAULT_RESOURCES_DATA_DIR = os.path.join(CURRENT_DIR, "..", "resources", "data"
 # TODO(flex-start-year): delete this guard once downstream configs are migrated
 # and a release cycle has passed (target: remove after 2026-12, or once no
 # in-repo config and no known external scenario still carries a `_2019` key).
+# As of 2026-07 neither condition is met: four input files still use old keys
+# and must be migrated to `_last_historical_year` before removal:
+#   - notebooks/publications/ecats_2026/data/data_optim/markets_is2medium.yaml
+#   - notebooks/publications/tsas_2025/data/data_tsas_optim/markets_is2medium.yaml
+#   - notebooks/publications/optimisation/data/partitioned_inputs.json
+#   - notebooks/publications/optimisation/data/partitioned_inputs_merged.json
+# (Output/result files carrying `_2019` — outputs.json, slsqp_*.json,
+# *_outputs.json — are never loaded as inputs and do not block removal.)
 #
 # When prospection_start_year became flexible, parameters whose `_2019` suffix
 # encoded "last historical year" (or a fixed CORSIA / carbon-budget reference)

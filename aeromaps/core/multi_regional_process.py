@@ -1102,6 +1102,7 @@ class MultiRegionalProcess(AeroMAPSProcess):
             legend=legend,
         )
 
+    # TODO: investigate if plots should be in dedicated class with process (or data) as arg/attribute
     def _plot_global(
         self,
         name: str,
