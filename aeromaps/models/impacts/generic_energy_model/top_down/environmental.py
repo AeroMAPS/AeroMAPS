@@ -27,6 +27,8 @@ class TopDownEnvironmental(AeroMAPSModel):
         Configuration data for the energy processes from the config file.
     """
 
+    MODEL_APPROACH = "top_down"
+
     def __init__(
         self,
         name,

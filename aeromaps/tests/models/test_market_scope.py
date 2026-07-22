@@ -207,25 +207,39 @@ def test_demand_process_exposes_all_market_scopes():
 
 
 def test_describe_models_summary_and_filter():
-    """describe_models renders the scope summary and honours the scope filter."""
+    """describe_models renders the summaries and honours the scope/domain filters."""
     proc = create_process(configuration_file=str(CONFIG_DIR / "config_elasticity_demand.yaml"))
 
     out = proc.describe_models(display=False)
+    assert "Domain summary" in out
     assert "Market scope summary" in out
     for scope in ("per_market", "cross_market", "aggregator", "market_agnostic"):
         assert scope in out
-    # market_agnostic disciplines are hidden from the table by default
-    assert "hidden" in out
+    # all disciplines are shown by default, grouped by module-derived domain —
+    # energy, cost, … models included
+    assert "hidden" not in out
+    assert "DOMAIN" in out
+    assert "impacts/costs" in out
     # enriched columns: coupling role (derived) and modelling approach
     assert "COUPLING" in out and "APPROACH" in out
     assert "in MDA feedback loop" in out
     assert "loop" in out and "feed-fwd" in out
     assert "top_down" in out or "bottom_up" in out  # an approach-tagged discipline is listed
 
+    # legacy market-centric view: agnostic rows hidden on demand, still counted
+    legacy = proc.describe_models(include_agnostic=False, display=False)
+    assert "hidden" in legacy
+
     cross = proc.describe_models(scope="cross_market", display=False)
     assert "RPKPriceIncomeElasticity" in cross  # a cross_market discipline is listed
     assert "ASKMarket" not in cross  # per_market disciplines are filtered out
     assert "ASKAggregator" not in cross  # aggregator disciplines are filtered out
 
+    costs = proc.describe_models(domain="impacts/costs", display=False)
+    assert "ASKMarket" not in costs  # other domains are filtered out
+    assert "impacts/costs" in costs
+
     with pytest.raises(ValueError):
         proc.describe_models(scope="not_a_scope", display=False)
+    with pytest.raises(ValueError):
+        proc.describe_models(domain="not_a_domain", display=False)

@@ -33,6 +33,8 @@ class BottomUpCapacity(AeroMAPSModel):
         Dictionary of output variable names populated at model initialisation before MDA chain creation.
     """
 
+    MODEL_APPROACH = "bottom_up"
+
     def __init__(self, name, configuration_data, processes_data, *args, **kwargs):
         super().__init__(
             name=name,

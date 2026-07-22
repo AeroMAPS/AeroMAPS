@@ -730,11 +730,14 @@ class AeroMAPSProcess(object):
             pass
         return None
 
-    def describe_models(self, include_agnostic=False, scope=None, display=True):
-        """Summarise the disciplines wired into this process, by market scope.
+    def describe_models(self, include_agnostic=True, scope=None, domain=None, display=True):
+        """Summarise every discipline wired into this process.
 
-        Surfaces each discipline's :attr:`~aeromaps.models.base.AeroMAPSModel.MARKET_SCOPE`
-        (per-market / cross-market / aggregator / market-agnostic) together with its
+        Surfaces, for each discipline, its **domain** (air traffic, fleet, energy,
+        costs, climate, … — derived from the model class's module path under
+        ``aeromaps.models``, so new models classify automatically), its
+        :attr:`~aeromaps.models.base.AeroMAPSModel.MARKET_SCOPE`
+        (per-market / cross-market / aggregator / market-agnostic), its
         :attr:`~aeromaps.models.base.AeroMAPSModel.MODEL_APPROACH` (top-down /
         bottom-up, where applicable), its **coupling
         role** — ``loop`` (inside the MDA feedback cycle, re-run every iteration and
@@ -747,11 +750,16 @@ class AeroMAPSProcess(object):
         ----------
         include_agnostic : bool
             Include ``market_agnostic`` disciplines in the per-discipline table.
-            They are hidden by default (usually the large majority) but always
-            counted in the summary.
+            True by default (all disciplines are shown, grouped by domain); pass
+            False for the market-centric view that hides them. They are always
+            counted in the summaries either way.
         scope : str or None
             If set (one of :data:`~aeromaps.models.base.MARKET_SCOPES`), restrict
             the table to that scope only.
+        domain : str or None
+            If set (one of the domains listed in the domain summary, e.g.
+            ``"impacts/costs"``), restrict the table to that domain only.
+            Combines with ``scope``.
         display : bool
             If True, print the summary; the string is returned in either case.
 
@@ -764,6 +772,19 @@ class AeroMAPSProcess(object):
 
         _ORDER = ["per_market", "cross_market", "aggregator", "market_agnostic"]
         disciplines = list(getattr(self, "disciplines", []) or [])
+
+        def _domain(model):
+            # Domain = the model's home (sub)package under aeromaps.models, e.g.
+            # "impacts/generic_energy_model" or "air_transport/air_traffic".
+            # Derived from the class's module path — no per-model annotation, so
+            # new models classify automatically. The trailing module file is
+            # dropped to keep package-level granularity (root-level modules keep
+            # their own name).
+            parts = (type(model).__module__ or "?").split(".")
+            if parts[:2] == ["aeromaps", "models"]:
+                parts = parts[2:]
+            pkg = parts[:-1] or parts
+            return "/".join(pkg[:2]) if pkg else "?"
 
         # Which disciplines sit inside the MDA feedback loop (strongly coupled) — they
         # are re-executed on every Gauss-Seidel iteration and drive convergence cost;
@@ -808,6 +829,7 @@ class AeroMAPSProcess(object):
 
             rows.append(
                 {
+                    "domain": _domain(model),
                     "scope": model_scope,
                     "approach": getattr(model, "MODEL_APPROACH", None) or "—",
                     "coupling": (
@@ -824,22 +846,38 @@ class AeroMAPSProcess(object):
                 }
             )
 
-        # Row filtering for the table (summary always counts everything).
+        # Row filtering for the table (summaries always count everything).
         shown = rows
+        if domain is not None:
+            available_domains = sorted({r["domain"] for r in rows})
+            if domain not in available_domains:
+                raise ValueError(f"domain must be one of {available_domains}; got {domain!r}")
+            shown = [r for r in shown if r["domain"] == domain]
         if scope is not None:
             if scope not in MARKET_SCOPES:
                 raise ValueError(f"scope must be one of {sorted(MARKET_SCOPES)}; got {scope!r}")
             shown = [r for r in shown if r["scope"] == scope]
-        elif not include_agnostic:
+        elif not include_agnostic and domain is None:
             shown = [r for r in shown if r["scope"] != "market_agnostic"]
 
         rank = {s: i for i, s in enumerate(_ORDER)}
-        shown.sort(key=lambda r: (rank.get(r["scope"], 99), r["market"], r["instance"]))
+        shown.sort(
+            key=lambda r: (r["domain"], rank.get(r["scope"], 99), r["market"], r["instance"])
+        )
 
         has_region = any(r["region"] for r in rows)
         n_coupled = sum(1 for r in rows if r["coupling"] == "loop")
 
+        domain_counts = {}
+        for r in rows:
+            domain_counts[r["domain"]] = domain_counts.get(r["domain"], 0) + 1
+
         lines = [f"{type(self).__name__}: {len(rows)} disciplines"]
+        lines.append("")
+        lines.append("Domain summary:")
+        dom_width = max((len(d) for d in domain_counts), default=0)
+        for d in sorted(domain_counts, key=lambda d: (-domain_counts[d], d)):
+            lines.append(f"  {d:<{dom_width}}{domain_counts[d]:>5}")
         lines.append("")
         lines.append("Market scope summary:")
         for s in _ORDER:
@@ -858,7 +896,11 @@ class AeroMAPSProcess(object):
         if shown:
             # (key, header, max_width) — column widths are fitted to the data up to
             # max_width; longer cells are truncated with an ellipsis to keep alignment.
-            cols = [("scope", "SCOPE", 15), ("approach", "APPROACH", 10)]
+            cols = [
+                ("domain", "DOMAIN", 30),
+                ("scope", "SCOPE", 15),
+                ("approach", "APPROACH", 10),
+            ]
             if coupling_available:
                 cols.append(("coupling", "COUPLING", 9))
             cols += [("model", "MODEL", 40), ("instance", "INSTANCE", 30)]
@@ -887,7 +929,7 @@ class AeroMAPSProcess(object):
                     "  COUPLING: 'loop' = inside the MDA feedback cycle (cost scales with "
                     "iterations); 'feed-fwd' = executed once."
                 )
-        if hidden and scope is None and not include_agnostic:
+        if hidden and scope is None and domain is None and not include_agnostic:
             lines.append("")
             lines.append(
                 f"  ({hidden} market_agnostic disciplines hidden; "

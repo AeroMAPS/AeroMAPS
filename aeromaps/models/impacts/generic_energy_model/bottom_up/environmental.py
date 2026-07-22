@@ -42,6 +42,8 @@ class BottomUpEnvironmental(AeroMAPSModel):
 
     """
 
+    MODEL_APPROACH = "bottom_up"
+
     def __init__(
         self,
         name,
