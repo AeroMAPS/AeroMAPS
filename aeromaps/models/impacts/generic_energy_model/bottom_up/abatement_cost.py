@@ -35,6 +35,8 @@ class EnergyAbatementCost(AeroMAPSModel):
         Dictionary of output variable names populated at model initialisation before MDA chain creation.
     """
 
+    MODEL_APPROACH = "bottom_up"
+
     def __init__(self, name, pathway_name, pathways_data, *args, **kwargs):
         super().__init__(
             name=name,
@@ -156,6 +158,8 @@ class ReferenceAbatementCost(AeroMAPSModel):
     output_names : dict
         Dictionary of output variable names populated at model initialisation before MDA chain creation.
     """
+
+    MODEL_APPROACH = "bottom_up"
 
     # TODO : clarify the role of this class compared to EnergyAbatementCost, i can't remember
     #  --> I suppose it's to allow computing ref if the ref pathway is not used (no energy consumed)

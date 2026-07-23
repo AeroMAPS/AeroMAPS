@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 import numpy as np
 from aeromaps.plots.single_scenario_plot import SingleScenarioPlot, plot_3_x, plot_3_y
 
@@ -37,11 +36,13 @@ class MeanCO2PerRPKPlot(SingleScenarioPlot):
         self._setup_grid_and_labels(
             "Evolution of CO2 emissions\nper passenger and per kilometer",
             "Year",
-            "CO2 emissions per RPK [gCO2/RPK]"
+            "CO2 emissions per RPK [gCO2/RPK]",
         )
         self.ax.legend(loc=0, fontsize=10)
         self._set_x_limits()
-        self.ax.set_ylim(0,)
+        self.ax.set_ylim(
+            0,
+        )
 
     def _update_plot_elements(self):
         self.line_emissions_per_rpk.set_ydata(
@@ -83,11 +84,13 @@ class MeanCO2PerRTKPlot(SingleScenarioPlot):
         self._setup_grid_and_labels(
             "Evolution of CO2 emissions\nper tonne and per kilometer",
             "Year",
-            "CO2 emissions per RTK [gCO2/RTK]"
+            "CO2 emissions per RTK [gCO2/RTK]",
         )
         self.ax.legend(loc=0, fontsize=10)
         self._set_x_limits()
-        self.ax.set_ylim(0,)
+        self.ax.set_ylim(
+            0,
+        )
 
     def _update_plot_elements(self):
         self.line_emissions_per_rtk.set_ydata(
@@ -157,7 +160,7 @@ class PassengerKayaFactorsPlot(SingleScenarioPlot):
         self._setup_grid_and_labels(
             "Evolution of the factors in the Kaya equation\nfor passenger air transport (historical until 2019)",
             "Year",
-            "Reference to 2000 with logarithmic scale"
+            "Reference to 2000 with logarithmic scale",
         )
         self.ax.legend()
         self._set_x_limits()
@@ -240,7 +243,7 @@ class FreightKayaFactorsPlot(SingleScenarioPlot):
         self._setup_grid_and_labels(
             "Evolution of the factors in the Kaya equation\nfor freight air transport (historical until 2019)",
             "Year",
-            "Reference to 2000 with logarithmic scale"
+            "Reference to 2000 with logarithmic scale",
         )
         self.ax.legend()
         self._set_x_limits()
@@ -264,8 +267,8 @@ class FreightKayaFactorsPlot(SingleScenarioPlot):
 
 class LeversOfActionDistributionPlot(SingleScenarioPlot):
     required_outputs = [
-        "cumulative_co2_emissions_2019technology_baseline3",
-        "cumulative_co2_emissions_2019technology",
+        "cumulative_co2_emissions_last_historical_year_technology_baseline3",
+        "cumulative_co2_emissions_last_historical_year_technology",
         "cumulative_co2_emissions_including_load_factor",
         "cumulative_co2_emissions_including_energy",
         "cumulative_co2_emissions",
@@ -280,38 +283,54 @@ class LeversOfActionDistributionPlot(SingleScenarioPlot):
 
     def create_plot(self):
         if (
-            self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology_baseline3"]
+            self.df.loc[
+                self.years[-1], "cumulative_co2_emissions_last_historical_year_technology_baseline3"
+            ]
             - self.df.loc[self.years[-1], "cumulative_co2_emissions"]
             > 0
         ):
             if (
-                self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology_baseline3"]
-                - self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology"]
+                self.df.loc[
+                    self.years[-1],
+                    "cumulative_co2_emissions_last_historical_year_technology_baseline3",
+                ]
+                - self.df.loc[
+                    self.years[-1], "cumulative_co2_emissions_last_historical_year_technology"
+                ]
                 >= 0
             ):
                 sizes = [
                     (
                         self.df.loc[
-                            self.years[-1], "cumulative_co2_emissions_2019technology_baseline3"
+                            self.years[-1],
+                            "cumulative_co2_emissions_last_historical_year_technology_baseline3",
                         ]
-                        - self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology"]
+                        - self.df.loc[
+                            self.years[-1],
+                            "cumulative_co2_emissions_last_historical_year_technology",
+                        ]
                     )
                     / (
                         self.df.loc[
-                            self.years[-1], "cumulative_co2_emissions_2019technology_baseline3"
+                            self.years[-1],
+                            "cumulative_co2_emissions_last_historical_year_technology_baseline3",
                         ]
                         - self.df.loc[self.years[-1], "cumulative_co2_emissions"]
                     )
                     * 100,
                     (
-                        self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology"]
+                        self.df.loc[
+                            self.years[-1],
+                            "cumulative_co2_emissions_last_historical_year_technology",
+                        ]
                         - self.df.loc[
                             self.years[-1], "cumulative_co2_emissions_including_load_factor"
                         ]
                     )
                     / (
                         self.df.loc[
-                            self.years[-1], "cumulative_co2_emissions_2019technology_baseline3"
+                            self.years[-1],
+                            "cumulative_co2_emissions_last_historical_year_technology_baseline3",
                         ]
                         - self.df.loc[self.years[-1], "cumulative_co2_emissions"]
                     )
@@ -324,7 +343,8 @@ class LeversOfActionDistributionPlot(SingleScenarioPlot):
                     )
                     / (
                         self.df.loc[
-                            self.years[-1], "cumulative_co2_emissions_2019technology_baseline3"
+                            self.years[-1],
+                            "cumulative_co2_emissions_last_historical_year_technology_baseline3",
                         ]
                         - self.df.loc[self.years[-1], "cumulative_co2_emissions"]
                     )
@@ -335,7 +355,8 @@ class LeversOfActionDistributionPlot(SingleScenarioPlot):
                     )
                     / (
                         self.df.loc[
-                            self.years[-1], "cumulative_co2_emissions_2019technology_baseline3"
+                            self.years[-1],
+                            "cumulative_co2_emissions_last_historical_year_technology_baseline3",
                         ]
                         - self.df.loc[self.years[-1], "cumulative_co2_emissions"]
                     )
@@ -346,13 +367,19 @@ class LeversOfActionDistributionPlot(SingleScenarioPlot):
                 sizes = [
                     0,
                     (
-                        self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology"]
+                        self.df.loc[
+                            self.years[-1],
+                            "cumulative_co2_emissions_last_historical_year_technology",
+                        ]
                         - self.df.loc[
                             self.years[-1], "cumulative_co2_emissions_including_load_factor"
                         ]
                     )
                     / (
-                        self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology"]
+                        self.df.loc[
+                            self.years[-1],
+                            "cumulative_co2_emissions_last_historical_year_technology",
+                        ]
                         - self.df.loc[self.years[-1], "cumulative_co2_emissions"]
                     )
                     * 100,
@@ -363,7 +390,10 @@ class LeversOfActionDistributionPlot(SingleScenarioPlot):
                         - self.df.loc[self.years[-1], "cumulative_co2_emissions_including_energy"]
                     )
                     / (
-                        self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology"]
+                        self.df.loc[
+                            self.years[-1],
+                            "cumulative_co2_emissions_last_historical_year_technology",
+                        ]
                         - self.df.loc[self.years[-1], "cumulative_co2_emissions"]
                     )
                     * 100,
@@ -372,7 +402,10 @@ class LeversOfActionDistributionPlot(SingleScenarioPlot):
                         - self.df.loc[self.years[-1], "cumulative_co2_emissions"]
                     )
                     / (
-                        self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology"]
+                        self.df.loc[
+                            self.years[-1],
+                            "cumulative_co2_emissions_last_historical_year_technology",
+                        ]
                         - self.df.loc[self.years[-1], "cumulative_co2_emissions"]
                     )
                     * 100,

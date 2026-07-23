@@ -40,6 +40,7 @@ from aeromaps.models.yaml_interpolator import YAMLInterpolator
 from aeromaps.utils.functions import (
     _dict_to_df,
     _flatten_dict,
+    custom_logger_config,
 )
 from aeromaps.utils.yaml import read_yaml_file
 from aeromaps.plots.single_scenario import available_plots, available_plots_fleet
@@ -49,6 +50,10 @@ from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_mod
     Fleet,
     FleetModel,
 )
+from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet_push.aircraft_efficiency_fleet_push import (
+    PassengerAircraftEfficiencyFleetPush,
+    PUSH_FLEET_INPUT_FILE_KEYS,
+)
 
 # Generic energy models imports
 from aeromaps.models.impacts.generic_energy_model.common.energy_carriers_manager import (
@@ -57,6 +62,21 @@ from aeromaps.models.impacts.generic_energy_model.common.energy_carriers_manager
 )
 from aeromaps.models.impacts.generic_energy_model.common.energy_carriers_factory import (
     AviationEnergyCarriersFactory,
+)
+
+# TODO: investigate if this should be handle in a model layer
+# Markets registry
+from aeromaps.models.air_transport.markets.market import Market
+from aeromaps.models.air_transport.markets.market_manager import MarketManager
+from aeromaps.models.air_transport.markets.markets_factory import (
+    create_market_ask_models,
+    create_market_load_factor_models,
+    create_market_rpk_aggregator,
+    create_market_rpk_demand_model,
+    create_market_rpk_elasticity,
+    create_market_rpk_models,
+    create_market_rtk_aggregator,
+    create_market_rtk_models,
 )
 
 # Climate model imports
@@ -90,6 +110,50 @@ DEFAULT_CONFIG_PATH = os.path.join(CURRENT_DIR, "..", "resources", "data", "conf
 
 # Base directory for resources/data (used to resolve relative paths in config.yaml)
 DEFAULT_RESOURCES_DATA_DIR = os.path.join(CURRENT_DIR, "..", "resources", "data")
+
+# TODO(flex-start-year): delete this guard once downstream configs are migrated
+# and a release cycle has passed (target: remove after 2026-12, or once no
+# in-repo config and no known external scenario still carries a `_2019` key).
+# As of 2026-07 neither condition is met: four input files still use old keys
+# and must be migrated to `_last_historical_year` before removal:
+#   - notebooks/publications/ecats_2026/data/data_optim/markets_is2medium.yaml
+#   - notebooks/publications/tsas_2025/data/data_tsas_optim/markets_is2medium.yaml
+#   - notebooks/publications/optimisation/data/partitioned_inputs.json
+#   - notebooks/publications/optimisation/data/partitioned_inputs_merged.json
+# (Output/result files carrying `_2019` — outputs.json, slsqp_*.json,
+# *_outputs.json — are never loaded as inputs and do not block removal.)
+#
+# When prospection_start_year became flexible, parameters whose `_2019` suffix
+# encoded "last historical year" (or a fixed CORSIA / carbon-budget reference)
+# were renamed with NO backward-compat alias. The loader blindly setattrs any
+# key, so a stale `_2019` key would silently resolve to a default (share -> 0%,
+# NaN cascade) — wrong numbers, no crash. This guard turns that into a loud,
+# self-documenting error. It is NOT a general unknown-key validator: it matches
+# only the specific renamed patterns below, none of which any current internal
+# code emits, so scanning parameters.__dict__ cannot false-positive.
+RENAMED_INPUTS = {
+    "world_co2_emissions_2019": "world_co2_emissions_carbon_budget_reference_year",
+    "carbon_offset_baseline_level_vs_2019_reference_periods": "carbon_offset_baseline_level_vs_corsia_reference_year_reference_periods",
+    "carbon_offset_baseline_level_vs_2019_reference_periods_values": "carbon_offset_baseline_level_vs_corsia_reference_year_reference_periods_values",
+    "gdp_per_capita_2019": "gdp_per_capita_last_historical_year",
+}
+# Matched against the tail of any (possibly market-prefixed) flattened key. The
+# single `_share_2019` rule covers every share family: <mid>_rpk_share_2019,
+# <mid>_energy_share_2019, <mid>_rtk_share_2019, freight_energy_share_2019 and
+# the short_range_*_share_2019 interpolation anchors.
+RENAMED_INPUT_SUFFIXES = {
+    "_share_2019": "_share_last_historical_year",
+}
+
+
+def _renamed_input_replacement(key: str):
+    """Return the new name for a stale renamed input key, or None if not renamed."""
+    if key in RENAMED_INPUTS:
+        return RENAMED_INPUTS[key]
+    for old_suffix, new_suffix in RENAMED_INPUT_SUFFIXES.items():
+        if key.endswith(old_suffix):
+            return key[: -len(old_suffix)] + new_suffix
+    return None
 
 
 class AeroMAPSProcess(object):
@@ -190,6 +254,8 @@ class AeroMAPSProcess(object):
         # Initialize pathways_manager to None - will be populated if energy models are used
         self.pathways_manager = None
 
+        custom_logger_config(logging.getLogger("gemseo.utils.source_parsing"))
+
         self.configuration_file = (
             os.path.abspath(os.fspath(configuration_file))
             if configuration_file is not None
@@ -225,7 +291,6 @@ class AeroMAPSProcess(object):
             k: deepcopy(v) if getattr(v, "deepcopy_at_init", True) else v for k, v in models.items()
         }
 
-        # Initialize inputs
         self._initialize_inputs()
 
         # Common setup (disciplines list, data containers, etc.)
@@ -257,20 +322,22 @@ class AeroMAPSProcess(object):
         """
         standards = self._get_config_value("models", "standards", default=[])
 
-        if not standards:
-            # Fallback to default_models_top_down if no standards specified
-            return aeromaps_models.default_models_top_down
+        # Bypassing standards loading if the user explicitly set an empty list (to avoid loading default models)
+        # if not standards:
+        #    # Fallback to default_models_top_down if no standards specified
+        #    return aeromaps_models.default_models_top_down
 
         models = {}
-        for model_name in standards:
-            if hasattr(aeromaps_models, model_name):
-                model_dict = getattr(aeromaps_models, model_name)
-                models[model_name] = model_dict
-            else:
-                raise ValueError(
-                    f"Model '{model_name}' specified in config.yaml is not found in "
-                    f"aeromaps.core.models. Available models: {[name for name in dir(aeromaps_models) if name.startswith('models_')]}"
-                )
+        if standards:
+            for model_name in standards:
+                if hasattr(aeromaps_models, model_name):
+                    model_dict = getattr(aeromaps_models, model_name)
+                    models[model_name] = model_dict
+                else:
+                    raise ValueError(
+                        f"Model '{model_name}' specified in config.yaml is not found in "
+                        f"aeromaps.core.models. Available models: {[name for name in dir(aeromaps_models) if name.startswith('models_')]}"
+                    )
 
         # Load custom models from config if specified
         customs = self._get_user_config_value("models", "customs", default=None)
@@ -369,6 +436,33 @@ class AeroMAPSProcess(object):
         This method should be called only if end year was modified, otherwise it is called in __init__.
 
         """
+        # Initialization order is load-bearing — do not reorder:
+        #   1. _initialize_inputs()        — loads parameters.json + user JSON, then
+        #                                    calls _format_input_vectors() to pad and
+        #                                    index the *_init arrays from that JSON
+        #   2. _initialize_markets()       — pushes market YAML values (growth rates,
+        #                                    covid params, share defaults, …) into parameters
+        #   3. _initialize_climate_model() / _initialize_lca_model() / _initialize_generic_energy()
+        #   4. _initialize_vector_inputs() — loads AeroSCOPE-derived partitioning data;
+        #                                    scalars override YAML defaults for market shares,
+        #                                    vectors use .update() to fill only the historical
+        #                                    slice of already-formatted Series
+
+        # TODO : think about the execution order.
+        #    Currently it is driven by what should be available for models and what writes paramaters last (e.g. partitionning after custom setups)
+
+        # Initialize markets registry (must precede disciplines that consume it)
+        self._initialize_markets()
+        self._initialize_climate_model()
+        self._initialize_lca_model()
+        self._initialize_generic_energy()
+        self._initialize_vector_inputs()
+
+        # Fail loudly on stale `_2019` config keys (renamed when prospection_start_year
+        # became flexible). Runs after every user surface (JSON inputs, market YAML
+        # leaves, vector/partitioning inputs) has been applied to self.parameters.
+        self._check_renamed_inputs()
+
         self.disciplines = []
         self.data = {}
         self.json = {}
@@ -385,13 +479,9 @@ class AeroMAPSProcess(object):
         ---------
         This method should be called only if end year was modified, otherwise it is called in __init__.
         """
-        # Initialize energy carriers
-        self._initialize_generic_energy()
-        # Initialize climate model
-        self._initialize_climate_model()
-        # Initialize LCA model
-        self._initialize_lca_model()
-        # Initialize disciplines
+        #  Initialize conventional disciplines.
+        # Here and not in common_setup because one need to create scenario
+        # and declare constraints as models from the same place. TODO; clarify why though.
         self._initialize_disciplines()
 
         # TODO: expose these MDA settings (tolerance, max_mda_iter, inner_mda_name,
@@ -425,9 +515,6 @@ class AeroMAPSProcess(object):
         ``gemseo_settings`` for objective, design space, scenario type,
         and formulation.
         """
-        self._initialize_generic_energy()
-        self._initialize_climate_model()
-        self._initialize_lca_model()
         self._initialize_disciplines()
 
         self.scenario = create_scenario(
@@ -627,6 +714,233 @@ class AeroMAPSProcess(object):
         """
         generate_n2_plot(self.disciplines)
 
+    @staticmethod
+    def _region_of(discipline):
+        """Return the region namespace of a discipline, or None if unnamespaced.
+
+        Multi-regional disciplines have their I/O renamed ``<region>:<var>`` by
+        :func:`aeromaps.core.gemseo.apply_namespace_to_discipline`; single-region
+        disciplines have no ``:`` prefix.
+        """
+        try:
+            for name in discipline.input_grammar.names:
+                if ":" in name:
+                    return name.split(":", 1)[0]
+        except Exception:
+            pass
+        return None
+
+    def describe_models(self, include_agnostic=True, scope=None, domain=None, display=True):
+        """Summarise every discipline wired into this process.
+
+        Surfaces, for each discipline, its **domain** (air traffic, fleet, energy,
+        costs, climate, … — derived from the model class's module path under
+        ``aeromaps.models``, so new models classify automatically), its
+        :attr:`~aeromaps.models.base.AeroMAPSModel.MARKET_SCOPE`
+        (per-market / cross-market / aggregator / market-agnostic), its
+        :attr:`~aeromaps.models.base.AeroMAPSModel.MODEL_APPROACH` (top-down /
+        bottom-up, where applicable), its **coupling
+        role** — ``loop`` (inside the MDA feedback cycle, re-run every iteration and
+        therefore driving convergence cost) vs ``feed-fwd`` (run once), derived from
+        the GEMSEO coupling structure — the market it is bound to, its region namespace
+        (multi-regional runs) and its I/O counts. This is the topology + cost view that
+        is otherwise only recoverable by reading the factory wiring and the N2 plot.
+
+        Parameters
+        ----------
+        include_agnostic : bool
+            Include ``market_agnostic`` disciplines in the per-discipline table.
+            True by default (all disciplines are shown, grouped by domain); pass
+            False for the market-centric view that hides them. They are always
+            counted in the summaries either way.
+        scope : str or None
+            If set (one of :data:`~aeromaps.models.base.MARKET_SCOPES`), restrict
+            the table to that scope only.
+        domain : str or None
+            If set (one of the domains listed in the domain summary, e.g.
+            ``"impacts/costs"``), restrict the table to that domain only.
+            Combines with ``scope``.
+        display : bool
+            If True, print the summary; the string is returned in either case.
+
+        Returns
+        -------
+        str
+            The formatted multi-line summary.
+        """
+        from aeromaps.models.base import MARKET_SCOPES
+
+        _ORDER = ["per_market", "cross_market", "aggregator", "market_agnostic"]
+        disciplines = list(getattr(self, "disciplines", []) or [])
+
+        def _domain(model):
+            # Domain = the model's home (sub)package under aeromaps.models, e.g.
+            # "impacts/generic_energy_model" or "air_transport/air_traffic".
+            # Derived from the class's module path — no per-model annotation, so
+            # new models classify automatically. The trailing module file is
+            # dropped to keep package-level granularity (root-level modules keep
+            # their own name).
+            parts = (type(model).__module__ or "?").split(".")
+            if parts[:2] == ["aeromaps", "models"]:
+                parts = parts[2:]
+            pkg = parts[:-1] or parts
+            return "/".join(pkg[:2]) if pkg else "?"
+
+        # Which disciplines sit inside the MDA feedback loop (strongly coupled) — they
+        # are re-executed on every Gauss-Seidel iteration and drive convergence cost;
+        # the rest are feed-forward (run once). Best-effort: skip on any error/version.
+        strong_ids, coupling_available = set(), False
+        try:
+            from gemseo.core.coupling_structure import CouplingStructure
+
+            strong_ids = {
+                id(d) for d in CouplingStructure(disciplines).strongly_coupled_disciplines
+            }
+            coupling_available = True
+        except Exception:
+            pass
+
+        rows = []
+        counts = {s: 0 for s in _ORDER}
+        for discipline in disciplines:
+            model = getattr(discipline, "model", None)
+            if model is None:
+                continue
+            model_scope = getattr(model, "MARKET_SCOPE", "market_agnostic")
+            counts[model_scope] = counts.get(model_scope, 0) + 1
+
+            # Market binding: the market_id for per-market disciplines, the market
+            # count for the spanning ones, "-" when the discipline ignores markets.
+            if model_scope == "per_market":
+                market = str(getattr(model, "market_id", "?"))
+            elif model_scope in ("cross_market", "aggregator"):
+                ids = getattr(model, "passenger_market_ids", None) or getattr(
+                    model, "freight_market_ids", None
+                )
+                market = f"(all: {len(ids)})" if ids else "(all)"
+            else:
+                market = "-"
+
+            try:
+                n_in = len(list(discipline.input_grammar.names))
+                n_out = len(list(discipline.output_grammar.names))
+            except Exception:
+                n_in = n_out = "?"
+
+            rows.append(
+                {
+                    "domain": _domain(model),
+                    "scope": model_scope,
+                    "approach": getattr(model, "MODEL_APPROACH", None) or "—",
+                    "coupling": (
+                        ("loop" if id(discipline) in strong_ids else "feed-fwd")
+                        if coupling_available
+                        else "?"
+                    ),
+                    "model": type(model).__name__,
+                    "instance": getattr(model, "name", None) or getattr(discipline, "name", "?"),
+                    "region": self._region_of(discipline) or "",
+                    "market": market,
+                    "n_in": n_in,
+                    "n_out": n_out,
+                }
+            )
+
+        # Row filtering for the table (summaries always count everything).
+        shown = rows
+        if domain is not None:
+            available_domains = sorted({r["domain"] for r in rows})
+            if domain not in available_domains:
+                raise ValueError(f"domain must be one of {available_domains}; got {domain!r}")
+            shown = [r for r in shown if r["domain"] == domain]
+        if scope is not None:
+            if scope not in MARKET_SCOPES:
+                raise ValueError(f"scope must be one of {sorted(MARKET_SCOPES)}; got {scope!r}")
+            shown = [r for r in shown if r["scope"] == scope]
+        elif not include_agnostic and domain is None:
+            shown = [r for r in shown if r["scope"] != "market_agnostic"]
+
+        rank = {s: i for i, s in enumerate(_ORDER)}
+        shown.sort(
+            key=lambda r: (r["domain"], rank.get(r["scope"], 99), r["market"], r["instance"])
+        )
+
+        has_region = any(r["region"] for r in rows)
+        n_coupled = sum(1 for r in rows if r["coupling"] == "loop")
+
+        domain_counts = {}
+        for r in rows:
+            domain_counts[r["domain"]] = domain_counts.get(r["domain"], 0) + 1
+
+        lines = [f"{type(self).__name__}: {len(rows)} disciplines"]
+        lines.append("")
+        lines.append("Domain summary:")
+        dom_width = max((len(d) for d in domain_counts), default=0)
+        for d in sorted(domain_counts, key=lambda d: (-domain_counts[d], d)):
+            lines.append(f"  {d:<{dom_width}}{domain_counts[d]:>5}")
+        lines.append("")
+        lines.append("Market scope summary:")
+        for s in _ORDER:
+            lines.append(f"  {s:<16}{counts.get(s, 0):>4}")
+        lines.append(f"  {'-' * 20}")
+        lines.append(f"  {'total':<16}{len(rows):>4}")
+        if coupling_available:
+            lines.append("")
+            lines.append(
+                f"  in MDA feedback loop: {n_coupled} / {len(rows)} disciplines "
+                f"(re-run every iteration); {len(rows) - n_coupled} feed-forward"
+            )
+        lines.append("")
+
+        hidden = len(rows) - len(shown)
+        if shown:
+            # (key, header, max_width) — column widths are fitted to the data up to
+            # max_width; longer cells are truncated with an ellipsis to keep alignment.
+            cols = [
+                ("domain", "DOMAIN", 30),
+                ("scope", "SCOPE", 15),
+                ("approach", "APPROACH", 10),
+            ]
+            if coupling_available:
+                cols.append(("coupling", "COUPLING", 9))
+            cols += [("model", "MODEL", 40), ("instance", "INSTANCE", 30)]
+            if has_region:
+                cols.append(("region", "REGION", 12))
+            cols += [("market", "MARKET", 14), ("n_in", "#IN", 4), ("n_out", "#OUT", 4)]
+
+            def _cell(value, width):
+                text = str(value)
+                if len(text) > width:
+                    text = text[: width - 1] + "…"
+                return f"{text:<{width}}  "
+
+            widths = {
+                key: min(maxw, max(len(header), *(len(str(r[key])) for r in shown)))
+                for key, header, maxw in cols
+            }
+            header = "  " + "".join(_cell(title, widths[key]) for key, title, _ in cols)
+            lines.append(header)
+            lines.append("  " + "-" * (len(header) - 2))
+            for r in shown:
+                lines.append("  " + "".join(_cell(r[key], widths[key]) for key, _, _ in cols))
+            if coupling_available:
+                lines.append("")
+                lines.append(
+                    "  COUPLING: 'loop' = inside the MDA feedback cycle (cost scales with "
+                    "iterations); 'feed-fwd' = executed once."
+                )
+        if hidden and scope is None and domain is None and not include_agnostic:
+            lines.append("")
+            lines.append(
+                f"  ({hidden} market_agnostic disciplines hidden; "
+                f"pass include_agnostic=True to show)"
+            )
+
+        output = "\n".join(lines)
+        if display:
+            print(output)
+        return output
+
     def list_available_plots(self):
         """List the names of supported plots.
 
@@ -657,8 +971,9 @@ class AeroMAPSProcess(object):
         """
         return self.data["str_inputs"]
 
-    def plot(self, name, save=False, size_inches=None, remove_title=False,
-             fig=None, ax=None, legend=True):
+    def plot(
+        self, name, save=False, size_inches=None, remove_title=False, fig=None, ax=None, legend=True
+    ):
         """Generate a predefined AeroMAPS plot.
 
         Depending on the plot name, this method uses either generic or
@@ -991,6 +1306,221 @@ class AeroMAPSProcess(object):
         self.data["vector_outputs"] = pd.DataFrame(index=self.data["years"]["full_years"])
         self.data["climate_outputs"] = pd.DataFrame(index=self.data["years"]["climate_full_years"])
         self.data["lca_outputs"] = xr.DataArray()
+
+    def _initialize_markets(self):
+        """Load the user-defined markets registry.
+
+        Reads the ``markets.yaml`` path from the user config, instantiates a
+        :class:`MarketManager` and stores it as ``self.markets``.  Flattened
+        per-market input values are pushed into ``self.parameters`` using the
+        ``<market_id>_<leaf_key>`` convention, analogous to the generic energy
+        pathway pattern in :meth:`_instantiate_generic_energy_models`.
+
+        Sub-grouping keys under ``inputs`` (e.g. ``initial``, ``growth``,
+        ``covid``, ``measures``, ``efficiency_simple``, ``costs``) are treated
+        as organisational groupings only: their names are *not* included in the
+        flattened variable names.  This makes names like ``short_range_rpk_share_last_historical_year``
+        coincide with legacy flat names in ``parameters.json``, so for default
+        scenarios the push is a numerical no-op.  Names introduced under new
+        sub-groupings are harmless extras until Phase 2 consumes them.
+
+        Always runs: when ``models.markets`` is absent from the user config the
+        default ``default_markets/markets.yaml`` is used, reproducing the legacy
+        four-market numerics exactly.  A custom file can be supplied via
+        ``models.markets.markets_data_file`` in the user config.
+        """
+        self.markets = MarketManager()
+        self.markets_data = {}
+
+        # Always load markets — default_markets/markets.yaml is the fallback when the
+        # user config has no models.markets block.  A custom file can be pointed to via
+        # models.markets.markets_data_file in the user config.yaml.
+        markets_file_path = self._resolve_config_path(
+            "models",
+            "markets",
+            "markets_data_file",
+            default_filename="default_markets/markets.yaml",
+        )
+        if markets_file_path is None or not markets_file_path.exists():
+            return
+
+        self.markets_data = read_yaml_file(str(markets_file_path))
+
+        # Pop the optional ``defaults`` block (keyed by traffic_type) so it is not
+        # treated as a market.  Each market's ``inputs`` is deep-merged on top of
+        # the corresponding traffic_type defaults — market values win at every
+        # leaf, lists are replaced wholesale, and absent sub-groups stay absent
+        # (so optional disciplines remain opt-in via their factory checks).
+        defaults = self.markets_data.pop("defaults", {}) or {}
+
+        # Pop the optional ``global`` block: scalars shared across all markets,
+        # flattened into ``self.parameters`` without market prefix.  The
+        # ``elasticity.use_elasticity`` flag controls whether the cost-feedback
+        # elasticity layer is wired into the discipline graph; it is read here
+        # so the case distinction lives in YAML rather than in model dicts.
+        globals_block = self.markets_data.pop("global", {}) or {}
+        # ``demand.model`` selects the passenger demand model among four modes:
+        #   ``cagr``               — CAGR RPKMarket chain (no price feedback);
+        #   ``cagr_elasticity``    — CAGR chain + RPKElasticity (airfare feedback);
+        #   ``constant_elasticity``— RPKPriceIncomeElasticity (income/price model);
+        #   ``logistic_income``    — RPKLogisticIncomePriceElasticity.
+        # Build-time selector, not a model parameter, so the ``demand`` sub-block
+        # is dropped before flattening. ``elasticity.use_elasticity`` is kept as a
+        # legacy fallback for configs predating ``demand.model``.
+        with_elasticity = bool(globals_block.get("elasticity", {}).get("use_elasticity", False))
+        demand_model = (globals_block.pop("demand", {}) or {}).get("model")
+        if demand_model is None:
+            demand_model = "cagr_elasticity" if with_elasticity else "cagr"
+        for value in globals_block.values():
+            if isinstance(value, dict):
+                flattened = _flatten_dict(value)
+                # ``use_elasticity`` is a build-time toggle, not a model parameter.
+                flattened.pop("use_elasticity", None)
+                self.parameters.from_dict(self._convert_custom_data_types(flattened))
+
+        def _deep_merge(base: dict, override: dict) -> dict:
+            out = dict(base)
+            for k, v in override.items():
+                if isinstance(v, dict) and isinstance(out.get(k), dict):
+                    out[k] = _deep_merge(out[k], v)
+                else:
+                    out[k] = v
+            return out
+
+        # The first level of the yaml conf file contains all the markets
+        market_ids = list(self.markets_data.keys())
+
+        for market_id in market_ids:
+            market_data = self.markets_data[market_id]
+            if "name" not in market_data:
+                raise ValueError("The market configuration file should contain its name")
+            if "inputs" not in market_data:
+                raise ValueError("The market configuration file should contain inputs")
+
+            tt_defaults = defaults.get(market_data.get("traffic_type"), {})
+            market_data["inputs"] = _deep_merge(
+                tt_defaults.get("inputs", {}),
+                market_data.get("inputs", {}),
+            )
+
+            market = Market(
+                id=market_id,
+                name=market_data["name"],
+                traffic_type=market_data.get("traffic_type"),
+                traffic_unit=market_data.get("traffic_unit"),
+            )
+            self.markets.add(market)
+
+            # Flatten each input group with <market_id> prefix and push values to parameters.
+            inputs = market_data["inputs"]
+            for key, value in inputs.items():
+                if isinstance(value, dict):
+                    flattened_yaml = _flatten_dict(value, market.id)
+                    inputs[key] = self._convert_custom_data_types(flattened_yaml)
+                    self.parameters.from_dict(inputs[key])
+
+            market_data["inputs"] = inputs
+            self.markets_data[market_id] = market_data
+
+        # Shares feed the last-historical-year traffic/energy split, so a set that
+        # does not sum to 100% silently rescales the whole scenario. Hard-error.
+        self._validate_market_shares()
+
+        if demand_model in ("cagr", "cagr_elasticity"):
+            with_elast = demand_model == "cagr_elasticity"
+            self.models.update(
+                create_market_rpk_models(
+                    self.markets, self.markets_data, with_elasticity=with_elast
+                )
+            )
+            self.models.update(
+                create_market_rpk_aggregator(self.markets, with_elasticity=with_elast)
+            )
+            if with_elast:
+                self.models.update(create_market_rpk_elasticity(self.markets))
+        elif demand_model in ("constant_elasticity", "logistic_income"):
+            # Price-coupled demand model: owns the per-market RPK split and its
+            # own price feedback, so the CAGR chain / RPKElasticity are skipped.
+            self.models.update(
+                create_market_rpk_demand_model(
+                    self.markets, self.markets_data, demand_model=demand_model
+                )
+            )
+        else:
+            raise ValueError(
+                f"Unknown global.demand.model '{demand_model}'. Expected one of: "
+                "cagr, cagr_elasticity, constant_elasticity, logistic_income."
+            )
+        # ``load_factor.model`` selects the per-market load factor model:
+        #   ``quadratic``            — LoadFactorMarket (quadratic curve, default);
+        #   ``simple_interpolation`` — LoadFactorMarketSimpleInterpolation
+        #                              (piece-wise linear via aeromaps_interpolation_function).
+        # Dropped before flattening so the string is not pushed into parameters.
+        load_factor_block = globals_block.pop("load_factor", {}) or {}
+        load_factor_model = load_factor_block.get("model", "quadratic")
+
+        self.models.update(create_market_rtk_models(self.markets, self.markets_data))
+        self.models.update(create_market_rtk_aggregator(self.markets))
+        self.models.update(create_market_ask_models(self.markets))
+        self.models.update(
+            create_market_load_factor_models(self.markets, load_factor_model=load_factor_model)
+        )
+
+    # Tolerance [%] on each last-historical-year share sum vs 100%.
+    _SHARE_SUM_TOLERANCE = 0.2
+
+    def _validate_market_shares(self):
+        """Error if the declared market shares are not internally consistent.
+
+        Three sums must each reach 100% within ``_SHARE_SUM_TOLERANCE``:
+
+        - ``rpk_share_last_historical_year`` over all passenger markets,
+        - ``rtk_share_last_historical_year`` over all freight markets,
+        - ``energy_share_last_historical_year`` over all markets (passenger + freight).
+
+        The flattened ``<market_id>_<leaf>`` values are read from
+        ``self.parameters``. These shares split the last-historical-year traffic
+        and energy across markets, so a sum off 100% silently rescales the whole
+        scenario; a deviation beyond the tolerance is a hard error rather than a
+        warning.
+        """
+        tol = self._SHARE_SUM_TOLERANCE
+        passenger_ids = [m.id for m in self.markets.get(traffic_type="passenger")]
+        freight_ids = [m.id for m in self.markets.get(traffic_type="freight")]
+        all_ids = self.markets.get_ids()
+
+        def _share_sum(ids, leaf):
+            return sum(float(getattr(self.parameters, f"{mid}_{leaf}", 0.0) or 0.0) for mid in ids)
+
+        checks = (
+            (
+                "rpk_share_last_historical_year (passenger markets)",
+                passenger_ids,
+                "rpk_share_last_historical_year",
+            ),
+            (
+                "rtk_share_last_historical_year (freight markets)",
+                freight_ids,
+                "rtk_share_last_historical_year",
+            ),
+            (
+                "energy_share_last_historical_year (all markets)",
+                all_ids,
+                "energy_share_last_historical_year",
+            ),
+        )
+        errors = []
+        for label, ids, leaf in checks:
+            if not ids:
+                continue
+            total = _share_sum(ids, leaf)
+            if abs(total - 100.0) > tol:
+                errors.append(f"  - {label}: sums to {total:.4f}% (expected 100% ± {tol}%)")
+        if errors:
+            raise ValueError(
+                "Inconsistent market shares in the markets data file "
+                f"(must each sum to 100% ± {tol}%):\n" + "\n".join(errors)
+            )
 
     def _initialize_generic_energy(self):
         """Initialize generic energy resources, processes, and carriers.
@@ -1340,6 +1870,26 @@ class AeroMAPSProcess(object):
                 data[key] = pd.Series([0.0])  # initialize to future interpolation type.
         return data
 
+    def _get_model_instance(self, model_cls):
+        """Return the first selected model instance of ``model_cls`` (or None).
+
+        Searches the nested ``self.models`` standards/customs structure (same shape
+        ``check_instance_in_dict`` walks). Used to expose a named handle to a model that
+        is selected via ``models.standards`` rather than constructed here.
+        """
+
+        def search(d):
+            for value in d.values():
+                if isinstance(value, model_cls):
+                    return value
+                if isinstance(value, dict):
+                    found = search(value)
+                    if found is not None:
+                        return found
+            return None
+
+        return search(self.models)
+
     def _initialize_disciplines(self):
         """Wrap models as GEMSEO disciplines and configure coupling.
 
@@ -1373,12 +1923,26 @@ class AeroMAPSProcess(object):
                 parameters=self.parameters,
                 aircraft_inventory_path=aircraft_inventory_path,
                 fleet_config_path=fleet_config_path,
+                markets=self.markets,
             )
-            self.fleet_model = FleetModel(fleet=self.fleet)
+            self.fleet_model = FleetModel(fleet=self.fleet, markets=self.markets)
             self.fleet_model.parameters = self.parameters
             self.fleet_model._initialize_df()
         else:
             self.fleet = None
+
+        # Push fleet efficiency model: mirror self.fleet_model above — expose a named
+        # handle and resolve+inject its input files. The instance lives in the selected
+        # models_efficiency_push standard; it is None when that standard is not used.
+        # Each fleet_push file resolves like any AeroMAPS data file (user override / the
+        # ``default`` keyword / package default config). Injected before custom_setup()
+        # (run inside check_instance_in_dict) reads it.
+        self.push_fleet_model = self._get_model_instance(PassengerAircraftEfficiencyFleetPush)
+        if self.push_fleet_model is not None:
+            self.push_fleet_model.input_files = {
+                fkey: str(self._resolve_config_path("models", "fleet_push", fkey))
+                for fkey in PUSH_FLEET_INPUT_FILE_KEYS
+            }
 
         def check_instance_in_dict(d):
             # todo rename that function as it is now clearly much more than just checking instance in dict... ;)
@@ -1390,6 +1954,10 @@ class AeroMAPSProcess(object):
                     # TODO: check how to avoid providing all parameters
                     model.parameters = self.parameters
                     model._initialize_df()
+                    needs_custom_setup = False
+                    if hasattr(model, "markets") and hasattr(model, "custom_setup"):
+                        model.markets = self.markets
+                        needs_custom_setup = True
                     if (
                         hasattr(model, "pathways_manager")
                         and hasattr(model, "custom_setup")
@@ -1405,9 +1973,15 @@ class AeroMAPSProcess(object):
                                 "Add 'models.energy' to your configuration."
                             )
                         model.pathways_manager = self.pathways_manager
-                        model.custom_setup()
+                        needs_custom_setup = True
                     if hasattr(self, "fleet_model"):
                         model.fleet_model = self.fleet_model
+                        # Allow custom models to rebuild their I/O grammar once
+                        # fleet_model is injected (e.g. FleetEvolution 3.C).
+                        if hasattr(model, "custom_setup"):
+                            needs_custom_setup = True
+                    if needs_custom_setup:
+                        model.custom_setup()
                     if hasattr(model, "climate_historical_data"):
                         if not hasattr(self, "climate_historical_data"):
                             raise RuntimeError(
@@ -1464,6 +2038,23 @@ class AeroMAPSProcess(object):
         self.data["years"]["prospective_years"] = list(
             range(self.parameters.prospection_start_year - 1, self.parameters.end_year + 1)
         )
+
+    def _check_renamed_inputs(self):
+        """Raise a clear error if a user config carries a renamed ``_2019`` key.
+
+        See ``RENAMED_INPUTS`` / ``RENAMED_INPUT_SUFFIXES``. Scans the applied
+        parameter names (every user surface funnels into ``self.parameters``);
+        no internal code emits these old patterns, so this is rename-breakage
+        detection only, never a general typo validator.
+        """
+        for key in list(self.parameters.__dict__):
+            new_name = _renamed_input_replacement(key)
+            if new_name is not None:
+                raise ValueError(
+                    f"input '{key}' was renamed to '{new_name}' "
+                    "(prospection_start_year is now flexible). "
+                    "Update your config — no backward-compat alias is provided."
+                )
 
     def _initialize_inputs(self, use_defaults=True):
         """Initialize model parameters from JSON and vector inputs.
@@ -1532,9 +2123,10 @@ class AeroMAPSProcess(object):
                 value = value.reindex(new_index, fill_value=np.nan)
                 setattr(self.parameters, key, value)
 
-        self._initialize_vector_inputs()
-        # TODO clarify the role of _initialize_vector_inputs vs read_json_direct @Scott?
-        # Format input vectors
+        # Pad and index the *_init numpy arrays (rpk_init, ask_init, etc.) that come
+        # from parameters.json as plain lists. Must run here, before _initialize_markets()
+        # and _initialize_vector_inputs(), because those two only push scalars or use
+        # .update() to fill in the historical slice of already-formatted Series.
         self._format_input_vectors()
 
     def _initialize_vector_inputs(self):
@@ -1552,7 +2144,7 @@ class AeroMAPSProcess(object):
         Example JSON format:
         {
             "other_float_data": {
-                "short_range_energy_share_2019": 10.5,
+                "short_range_energy_share_last_historical_year": 10.5,
                 ...
             },
             "other_vector_data": {
@@ -1595,7 +2187,22 @@ class AeroMAPSProcess(object):
 
             for param_name, value in other_vector_data.items():
                 if isinstance(value, list) and years_index is not None:
-                    setattr(self.parameters, param_name, pd.Series(value, index=years_index))
+                    if len(value) != len(years_index):
+                        raise ValueError(
+                            f"Vector input '{param_name}' has {len(value)} values but its "
+                            f"'years' index has {len(years_index)} entries. "
+                            f"The value list and the declared 'years' array must be the "
+                            f"same length."
+                        )
+                    new_series = pd.Series(value, index=years_index)
+                    existing = getattr(self.parameters, param_name, None)
+                    if isinstance(existing, pd.Series):
+                        # The Series was already padded to end_year by _format_input_vectors().
+                        # Only overwrite the historical slice; future NaN padding is preserved.
+                        existing.update(new_series)
+                        setattr(self.parameters, param_name, existing)
+                    else:
+                        setattr(self.parameters, param_name, new_series)
                 else:
                     setattr(self.parameters, param_name, value)
 
@@ -1704,6 +2311,7 @@ class AeroMAPSProcess(object):
                 new_value = pd.Series(new_value, index=new_index)
                 setattr(self.parameters, field_name, new_value)
             elif not isinstance(field_value, (float, int, list, str)):
+                print(field_name, field_value, type(field_value))
                 if (
                     field_value.size
                     == self.parameters.end_year - self.parameters.climate_historic_start_year + 1

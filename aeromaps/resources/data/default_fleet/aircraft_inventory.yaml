@@ -5,13 +5,11 @@
 #   models.fleet.aircraft_inventory_model_data_file
 # Defines every aircraft ID used by fleet.yaml. Two top-level lists:
 #
-#   reference_aircraft : in-service baselines (the "old"/"recent" refs that each
-#                        subcategory benchmarks against). Their performance is
-#                        given in ABSOLUTE terms (e.g. energy_per_ask in MJ/ASK).
-#   aircraft           : future aircraft. Their performance is given RELATIVE to
-#                        a reference aircraft, as *_evolution percentages.
+#   reference_aircraft — old/recent baselines each subcategory is measured
+#                        against (see fleet.yaml for the grouping).
+#   aircraft           — new aircraft entering service.
 #
-# Absolute fields (reference_aircraft):
+# Field units:
 #   energy_per_ask        energy consumption per seat-km [MJ/ASK]
 #   emission_index_nox    NOx emission index [kg/ASK]
 #   emission_index_soot   soot emission index [kg/ASK]
@@ -19,17 +17,31 @@
 #   entry_into_service_year [yr]   cruise_altitude [m]   ask_year [ASK/yr]
 #   rc_cost  recurring (per-unit) cost [€]   nrc_cost  development cost [€]
 #   oew      operational empty weight [t]
-#
-# Relative fields (aircraft) — % change vs the linked reference_aircraft:
-#   consumption_evolution, nox_evolution, soot_evolution, doc_non_energy_evolution
 #   hybridization_factor  0 (conventional) .. 1 (fully electric) [-]
 #   energy_type           DROP_IN_FUEL | HYDROGEN | ELECTRIC | HYBRID_ELECTRIC
-#   (entry_into_service_year, cruise_altitude, ask_year, rc_cost, nrc_cost, oew
-#    keep the same meaning/units as above)
+#
+# Performance fields (energy_per_ask, emission_index_nox, emission_index_soot,
+# doc_non_energy_base) can be given in one of two modes — set exactly one:
+#   * absolute — set the field directly (as done throughout this file).
+#   * relative — omit the absolute field and set the paired *_evolution field
+#                instead, as a percentage:
+#                  energy_per_ask      ↔ consumption_evolution
+#                  emission_index_nox  ↔ nox_evolution
+#                  emission_index_soot ↔ soot_evolution
+#                  doc_non_energy_base ↔ doc_non_energy_evolution
+#                The absolute value is then  reference.<field> * (1 + evolution/100).
+#
+# IMPORTANT — relative mode anchors to the reference's STATIC card value, not a
+# moving one. The optional per-aircraft `continuous_improvement_factor_energy`
+# (a per-year multiplier on energy_per_ask, allowed on new aircraft AND on
+# references) is applied separately, on top of the resolved value. Therefore a
+# relatively-defined aircraft does NOT track its reference's own improvement over
+# time — only its own factor moves it after the base year. To hold a constant
+# relative gap to an improving reference, give the aircraft the reference's
+# improvement trajectory as its own continuous_improvement_factor_energy.
 #
 # See docs/books/configuration.md for the full reference.
 # =============================================================================
-
 reference_aircraft:
   - id: sr_conventional_nb_old        # referenced as old_ref/recent_ref in fleet.yaml
     name: "SR conventional narrow-body old"
@@ -132,7 +144,7 @@ reference_aircraft:
       emission_index_soot: 0.00003
       doc_non_energy_base: 0.024725
       cruise_altitude: 12000.0
-      ask_year: 912000000.
+      ask_year: 912000000.0
       rc_cost: 150000000.0
       nrc_cost: 25000000000.0
       oew: 129.0

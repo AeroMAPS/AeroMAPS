@@ -11,8 +11,9 @@
 #   subcategories : the fleet renewal decompositions. Each holds a market `share`, the
 #                   two reference aircraft it is benchmarked against, and the
 #                   list of new aircraft that progressively replace it.
-#   categories    : groups of subcategories (Short/Medium/Long Range) carrying
-#                   fleet-renewal parameters (`life`, `limit`).
+#   categories    : one entry per market served (`market_served`), grouping
+#                   subcategories and carrying fleet-renewal parameters
+#                   (`life`, `limit`, `calibration_subcategory`).
 #
 # See docs/books/configuration.md for the full reference.
 # =============================================================================
@@ -69,32 +70,39 @@ subcategories:
 
 
 # Categories group subcategories and carry fleet-renewal parameters:
+#   market_served : ID of the market this category serves (as defined in the
+#           markets configuration)
 #   life  : average operational lifetime of aircraft in the category [yr]
 #   limit : market-share floor below which a share is set to zero [%]
 #           (needed for the S-curve fleet-renewal parametrization)
+#   calibration_subcategory : subcategory whose reference aircraft are calibrated
+#           on the market's last-historical-year energy/RPK shares. Optional only
+#           when the category has a single subcategory (unambiguous fallback);
+#           with several subcategories, omitting it skips calibration with a
+#           warning and leaves the fleet wrongly efficient mid-term.
 categories:
-  - id: short_range
-    name: "Short Range"
+  - market_served: short_range
     parameters:
       life: 25
       limit: 2
+    calibration_subcategory: sr_conventional_nb
     subcategories:                    # must reference subcategory IDs defined above
       - sr_conventional_nb
       - sr_regional_tp
       - sr_hydrogen_nb
 
-  - id: medium_range
-    name: "Medium Range"
+  - market_served: medium_range
     parameters:
       life: 25
       limit: 2
+    calibration_subcategory: mr_conventional_nb
     subcategories:
       - mr_conventional_nb
 
-  - id: long_range
-    name: "Long Range"
+  - market_served: long_range
     parameters:
       life: 25
       limit: 2
+    calibration_subcategory: lr_conventional_wb
     subcategories:
       - lr_conventional_wb

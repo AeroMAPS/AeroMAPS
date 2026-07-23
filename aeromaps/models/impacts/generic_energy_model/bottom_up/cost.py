@@ -45,6 +45,8 @@ class BottomUpCost(AeroMAPSModel):
         Flag indicating whether to compute abatement costs.
     """
 
+    MODEL_APPROACH = "bottom_up"
+
     def __init__(self, name, configuration_data, resources_data, processes_data, *args, **kwargs):
         super().__init__(
             name=name,

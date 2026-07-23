@@ -9,9 +9,9 @@ total_airline_cost_and_airfare
 Module grouping models to compute total airline costs and airfares for passenger aircraft.
 """
 
+# import numpy as np
 from typing import Tuple
 
-# import numpy as np
 import pandas as pd
 # from scipy.interpolate import interp1d
 
@@ -26,99 +26,84 @@ class PassengerAircraftSimpleAirfare(AeroMAPSModel):
     ----------
     name : str
         Name of the model instance ('passenger_aircraft_simple_airfare' by default).
+
+    Documentation
+    --------------
+    Inputs
+        - total_cost_per_ask: Total cost per available seat kilometer (ASK) [EUR/ASK].
+        - total_cost_per_ask_<market>: Total cost per ASK for a passenger market [EUR/ASK].
+        - load_factor: Load factor [%].
+        - load_factor_<market>: Load factor for a passenger market [%].
+        - operational_profit_per_ask: Operational profit per ASK [EUR/ASK].
+    Outputs
+        - airfare_per_ask: Airfare per available seat kilometer (ASK) [EUR/ASK].
+        - airfare_per_ask_<market>: Airfare per ASK for a passenger market [EUR/ASK].
+        - airfare_per_rpk: Airfare per revenue passenger kilometer (RPK) [EUR/RPK].
+        - airfare_per_rpk_<market>: Airfare per RPK for a passenger market [EUR/RPK].
+    Notes
+        - <market> is the MarketManager id (passenger markets).
+        - I/O names are generated from configuration and passed to GEMSEO via
+          self.input_names and self.output_names grammars.
     """
 
     def __init__(self, name="passenger_aircraft_simple_airfare", fleet_model=None, *args, **kwargs):
-        super().__init__(name=name, *args, **kwargs)
+        super().__init__(name=name, model_type="custom", *args, **kwargs)
+        self.markets = None
 
-    def compute(
-        self,
-        total_cost_per_ask: pd.Series,
-        total_cost_per_ask_short_range: pd.Series,
-        total_cost_per_ask_medium_range: pd.Series,
-        total_cost_per_ask_long_range: pd.Series,
-        load_factor: pd.Series,
-        operational_profit_per_ask: pd.Series,
-    ) -> Tuple[
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-    ]:
-        """
-        Execute the computation of simple airfare computation.
+    def custom_setup(self):
+        self.input_names = {
+            "total_cost_per_ask": pd.Series([0.0]),
+            "load_factor": pd.Series([0.0]),
+            "operational_profit_per_ask": pd.Series([0.0]),
+        }
+        self.output_names = {
+            "airfare_per_ask": pd.Series([0.0]),
+            "airfare_per_rpk": pd.Series([0.0]),
+        }
+
+        for market in self.markets.get(traffic_type="passenger"):
+            mid = market.id
+            self.input_names[f"total_cost_per_ask_{mid}"] = pd.Series([0.0])
+            self.input_names[f"load_factor_{mid}"] = pd.Series([0.0])
+            self.output_names[f"airfare_per_ask_{mid}"] = pd.Series([0.0])
+            self.output_names[f"airfare_per_rpk_{mid}"] = pd.Series([0.0])
+
+    def compute(self, input_data) -> dict:
+        """Compute global and per-market airfares from costs and load factors.
 
         Parameters
         ----------
-        total_cost_per_ask
-            Total cost per available seat kilometer (ASK) [€/ASK].
-        total_cost_per_ask_short_range
-            Total cost per available seat kilometer (ASK) for short-range flights [€/ASK].
-        total_cost_per_ask_medium_range
-            Total cost per available seat kilometer (ASK) for medium-range flights [€/ASK].
-        total_cost_per_ask_long_range
-            Total cost per available seat kilometer (ASK) for long-range flights [€/ASK].
-        load_factor
-            Load factor [%].
-        operational_profit_per_ask
-            Operational profit per available seat kilometer (ASK) [€/ASK].
+        input_data : dict
+            Inputs containing cost per ASK and load factor series.
 
         Returns
         -------
-        airfare_per_ask
-            Airfare per available seat kilometer (ASK) [€/ASK].
-        airfare_per_ask_short_range
-            Airfare per available seat kilometer (ASK) for short-range flights [€/ASK].
-        airfare_per_ask_medium_range
-            Airfare per available seat kilometer (ASK) for medium-range flights [€/ASK].
-        airfare_per_ask_long_range
-            Airfare per available seat kilometer (ASK) for long-range flights [€/ASK].
-        airfare_per_rpk
-            Airfare per revenue passenger kilometer (RPK) [€/RPK].
-        airfare_per_rpk_short_range
-            Airfare per revenue passenger kilometer (RPK) for short-range flights [€/RPK].
-        airfare_per_rpk_medium_range
-            Airfare per revenue passenger kilometer (RPK) for medium-range flights [€/RPK].
-        airfare_per_rpk_long_range
-            Airfare per revenue passenger kilometer (RPK) for long-range flights [€/RPK].
-
+        dict
+            Output airfares per ASK and per RPK for all markets.
         """
-        # Airfare per ask
-        airfare_per_ask = total_cost_per_ask + operational_profit_per_ask
-        airfare_per_ask_short_range = total_cost_per_ask_short_range + operational_profit_per_ask
-        airfare_per_ask_medium_range = total_cost_per_ask_medium_range + operational_profit_per_ask
-        airfare_per_ask_long_range = total_cost_per_ask_long_range + operational_profit_per_ask
+        output_data = {}
+        load_factor = input_data["load_factor"]
 
-        # Airfare per rpk
-        airfare_per_rpk = airfare_per_ask / (load_factor / 100)
-        airfare_per_rpk_short_range = airfare_per_ask_short_range / (load_factor / 100)
-        airfare_per_rpk_medium_range = airfare_per_ask_medium_range / (load_factor / 100)
-        airfare_per_rpk_long_range = airfare_per_ask_long_range / (load_factor / 100)
-
-        self.df.loc[:, "airfare_per_ask"] = airfare_per_ask
-        self.df.loc[:, "airfare_per_ask_short_range"] = airfare_per_ask_short_range
-        self.df.loc[:, "airfare_per_ask_medium_range"] = airfare_per_ask_medium_range
-        self.df.loc[:, "airfare_per_ask_long_range"] = airfare_per_ask_long_range
-
-        self.df.loc[:, "airfare_per_rpk"] = airfare_per_rpk
-        self.df.loc[:, "airfare_per_rpk_short_range"] = airfare_per_rpk_short_range
-        self.df.loc[:, "airfare_per_rpk_medium_range"] = airfare_per_rpk_medium_range
-        self.df.loc[:, "airfare_per_rpk_long_range"] = airfare_per_rpk_long_range
-
-        return (
-            airfare_per_ask,
-            airfare_per_ask_short_range,
-            airfare_per_ask_medium_range,
-            airfare_per_ask_long_range,
-            airfare_per_rpk,
-            airfare_per_rpk_short_range,
-            airfare_per_rpk_medium_range,
-            airfare_per_rpk_long_range,
+        airfare_per_ask = (
+            input_data["total_cost_per_ask"] + input_data["operational_profit_per_ask"]
         )
+        airfare_per_rpk = airfare_per_ask / (load_factor / 100)
+
+        output_data["airfare_per_ask"] = airfare_per_ask
+        output_data["airfare_per_rpk"] = airfare_per_rpk
+
+        for market in self.markets.get(traffic_type="passenger"):
+            mid = market.id
+            load_factor_m = input_data[f"load_factor_{mid}"]
+            airfare_per_ask_m = (
+                input_data[f"total_cost_per_ask_{mid}"] + input_data["operational_profit_per_ask"]
+            )
+            airfare_per_rpk_m = airfare_per_ask_m / (load_factor_m / 100)
+            output_data[f"airfare_per_ask_{mid}"] = airfare_per_ask_m
+            output_data[f"airfare_per_rpk_{mid}"] = airfare_per_rpk_m
+
+        self._store_outputs(output_data)
+        return output_data
 
 
 class PassengerAircraftTotalCost(AeroMAPSModel):
@@ -129,336 +114,173 @@ class PassengerAircraftTotalCost(AeroMAPSModel):
     ----------
     name : str
         Name of the model instance ('passenger_aircraft_total_cost' by default).
+
+    Documentation
+    --------------
+    Inputs
+        - doc_non_energy_per_ask_mean: Mean DOC (non-energy) per ASK [EUR/ASK].
+        - doc_non_energy_per_ask_<market>_mean: Mean DOC (non-energy) per ASK for a market [EUR/ASK].
+        - doc_energy_per_ask_mean: Mean DOC (energy) per ASK [EUR/ASK].
+        - doc_energy_per_ask_<market>_mean: Mean DOC (energy) per ASK for a market [EUR/ASK].
+        - doc_carbon_tax_lowering_offset_per_ask_mean: Mean carbon tax lowering offset per ASK [EUR/ASK].
+        - doc_carbon_tax_lowering_offset_per_ask_<market>_mean: Mean carbon tax lowering offset per ASK for a market [EUR/ASK].
+        - noc_carbon_offset_per_ask: Non-operating cost carbon offset per ASK [EUR/ASK].
+        - non_operating_cost_per_ask: Non-operating cost per ASK [EUR/ASK].
+        - indirect_operating_cost_per_ask: Indirect operating cost per ASK [EUR/ASK].
+        - passenger_tax_per_ask: Passenger tax per ASK [EUR/ASK].
+        - operational_efficiency_cost_non_energy_per_ask: Operational efficiency cost (non-energy) per ASK [EUR/ASK].
+        - load_factor_cost_non_energy_per_ask: Load factor cost (non-energy) per ASK [EUR/ASK].
+        - load_factor: Load factor [%].
+        - load_factor_<market>: Load factor for a passenger market [%].
+    Outputs
+        - total_cost_per_ask_without_extra_tax: Total cost per ASK excluding extra taxes [EUR/ASK].
+        - total_cost_per_ask_without_extra_tax_<market>: Total cost per ASK excluding extra taxes for a market [EUR/ASK].
+        - total_extra_tax_per_ask: Total extra tax per ASK [EUR/ASK].
+        - total_extra_tax_per_ask_<market>: Total extra tax per ASK for a market [EUR/ASK].
+        - total_extra_tax_per_rpk: Total extra tax per RPK [EUR/RPK].
+        - total_extra_tax_per_rpk_<market>: Total extra tax per RPK for a market [EUR/RPK].
+        - total_cost_per_ask: Total cost per ASK [EUR/ASK].
+        - total_cost_per_ask_<market>: Total cost per ASK for a market [EUR/ASK].
+        - total_cost_per_rpk_without_extra_tax: Total cost per RPK excluding extra taxes [EUR/RPK].
+        - total_cost_per_rpk_without_extra_tax_<market>: Total cost per RPK excluding extra taxes for a market [EUR/RPK].
+        - total_cost_per_rpk: Total cost per RPK [EUR/RPK].
+        - total_cost_per_rpk_<market>: Total cost per RPK for a market [EUR/RPK].
+    Notes
+        - <market> is the MarketManager id (passenger markets).
+        - I/O names are generated from configuration and passed to GEMSEO via
+          self.input_names and self.output_names grammars.
     """
 
     def __init__(self, name="passenger_aircraft_total_cost", fleet_model=None, *args, **kwargs):
-        super().__init__(name=name, *args, **kwargs)
+        super().__init__(name=name, model_type="custom", *args, **kwargs)
+        self.markets = None
 
-    def compute(
-        self,
-        doc_non_energy_per_ask_mean: pd.Series,
-        doc_non_energy_per_ask_short_range_mean: pd.Series,
-        doc_non_energy_per_ask_medium_range_mean: pd.Series,
-        doc_non_energy_per_ask_long_range_mean: pd.Series,
-        doc_energy_per_ask_mean: pd.Series,
-        doc_energy_per_ask_short_range_mean: pd.Series,
-        doc_energy_per_ask_medium_range_mean: pd.Series,
-        doc_energy_per_ask_long_range_mean: pd.Series,
-        doc_carbon_tax_lowering_offset_per_ask_mean: pd.Series,
-        doc_carbon_tax_lowering_offset_per_ask_short_range_mean: pd.Series,
-        doc_carbon_tax_lowering_offset_per_ask_medium_range_mean: pd.Series,
-        doc_carbon_tax_lowering_offset_per_ask_long_range_mean: pd.Series,
-        noc_carbon_offset_per_ask: pd.Series,
-        non_operating_cost_per_ask: pd.Series,
-        indirect_operating_cost_per_ask: pd.Series,
-        passenger_tax_per_ask: pd.Series,
-        operational_efficiency_cost_non_energy_per_ask: pd.Series,
-        load_factor_cost_non_energy_per_ask: pd.Series,
-        load_factor: pd.Series,
-    ) -> Tuple[
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-    ]:
-        """
-        Execute the computation of total cost aggregation.
+    def custom_setup(self):
+        self.input_names = {
+            "doc_non_energy_per_ask_mean": pd.Series([0.0]),
+            "doc_energy_per_ask_mean": pd.Series([0.0]),
+            "doc_carbon_tax_lowering_offset_per_ask_mean": pd.Series([0.0]),
+            "noc_carbon_offset_per_ask": pd.Series([0.0]),
+            "non_operating_cost_per_ask": pd.Series([0.0]),
+            "indirect_operating_cost_per_ask": pd.Series([0.0]),
+            "passenger_tax_per_ask": pd.Series([0.0]),
+            "operational_efficiency_cost_non_energy_per_ask": pd.Series([0.0]),
+            "load_factor_cost_non_energy_per_ask": pd.Series([0.0]),
+            "load_factor": pd.Series([0.0]),
+        }
+        self.output_names = {
+            "total_cost_per_ask_without_extra_tax": pd.Series([0.0]),
+            "total_extra_tax_per_ask": pd.Series([0.0]),
+            "total_extra_tax_per_rpk": pd.Series([0.0]),
+            "total_cost_per_ask": pd.Series([0.0]),
+            "total_cost_per_rpk_without_extra_tax": pd.Series([0.0]),
+            "total_cost_per_rpk": pd.Series([0.0]),
+        }
+
+        for market in self.markets.get(traffic_type="passenger"):
+            mid = market.id
+            self.input_names[f"doc_non_energy_per_ask_{mid}_mean"] = pd.Series([0.0])
+            self.input_names[f"doc_energy_per_ask_{mid}_mean"] = pd.Series([0.0])
+            self.input_names[f"doc_carbon_tax_lowering_offset_per_ask_{mid}_mean"] = pd.Series(
+                [0.0]
+            )
+            self.input_names[f"load_factor_{mid}"] = pd.Series([0.0])
+
+            self.output_names[f"total_cost_per_ask_without_extra_tax_{mid}"] = pd.Series([0.0])
+            self.output_names[f"total_extra_tax_per_ask_{mid}"] = pd.Series([0.0])
+            self.output_names[f"total_extra_tax_per_rpk_{mid}"] = pd.Series([0.0])
+            self.output_names[f"total_cost_per_ask_{mid}"] = pd.Series([0.0])
+            self.output_names[f"total_cost_per_rpk_without_extra_tax_{mid}"] = pd.Series([0.0])
+            self.output_names[f"total_cost_per_rpk_{mid}"] = pd.Series([0.0])
+
+    def compute(self, input_data) -> dict:
+        """Compute total airline cost per ASK/RPK for global and market splits.
+
         Parameters
         ----------
-        doc_non_energy_per_ask_mean
-            Direct operating non-energy cost per available seat kilometer (ASK) [€/ASK].
-        doc_non_energy_per_ask_short_range_mean
-            Direct operating non-energy cost per available seat kilometer (ASK) for short-range flights [€/ASK].
-        doc_non_energy_per_ask_medium_range_mean
-            Direct operating non-energy cost per available seat kilometer (ASK) for medium-range flights [€/ASK].
-        doc_non_energy_per_ask_long_range_mean
-            Direct operating non-energy cost per available seat kilometer (ASK) for long-range flights [€/ASK].
-        doc_energy_per_ask_mean
-            Direct operating energy cost per available seat kilometer (ASK) [€/ASK].
-        doc_energy_per_ask_short_range_mean
-            Direct operating energy cost per available seat kilometer (ASK) for short-range flights [€/ASK].
-        doc_energy_per_ask_medium_range_mean
-            Direct operating energy cost per available seat kilometer (ASK) for medium-range flights [€/ASK].
-        doc_energy_per_ask_long_range_mean
-            Direct operating energy cost per available seat kilometer (ASK) for long-range flights [€/ASK].
-        doc_carbon_tax_lowering_offset_per_ask_mean
-            Direct operating carbon tax lowering offset per available seat kilometer (ASK) [€/ASK].
-        doc_carbon_tax_lowering_offset_per_ask_short_range_mean
-            Direct operating carbon tax lowering offset per available seat kilometer (ASK) for short-range flights [€/ASK].
-        doc_carbon_tax_lowering_offset_per_ask_medium_range_mean
-            Direct operating carbon tax lowering offset per available seat kilometer (ASK) for medium-range flights [€/ASK].
-        doc_carbon_tax_lowering_offset_per_ask_long_range_mean
-            Direct operating carbon tax lowering offset per available seat kilometer (ASK) for long-range flights [€/ASK].
-        noc_carbon_offset_per_ask
-            Non-operating carbon offset cost per available seat kilometer (ASK) [€/ASK].
-        non_operating_cost_per_ask
-            Non-operating cost per available seat kilometer (ASK) [€/ASK].
-        indirect_operating_cost_per_ask
-            Indirect operating cost per available seat kilometer (ASK) [€/ASK].
-        passenger_tax_per_ask
-            Passenger tax per available seat kilometer (ASK) [€/ASK].
-        operational_efficiency_cost_non_energy_per_ask
-            Operational efficiency non-energy cost per available seat kilometer (ASK) [€/ASK].
-        load_factor_cost_non_energy_per_ask
-            Load factor non-energy cost per available seat kilometer (ASK) [€/ASK].
-        load_factor
-            Load factor [%].
+        input_data : dict
+            Inputs containing DOC/NOC and load factor series.
 
         Returns
         -------
-        total_cost_per_ask_without_extra_tax
-            Total cost per available seat kilometer (ASK) without extra tax [€/ASK].
-        total_cost_per_ask_without_extra_tax_short_range
-            Total cost per available seat kilometer (ASK) without extra tax for short-range flights [€/ASK].
-        total_cost_per_ask_without_extra_tax_medium_range
-            Total cost per available seat kilometer (ASK) without extra tax for medium-range flights [€/ASK].
-        total_cost_per_ask_without_extra_tax_long_range
-            Total cost per available seat kilometer (ASK) without extra tax for long-range flights [€/ASK].
-        total_extra_tax_per_ask
-            Total extra tax per available seat kilometer (ASK) [€/ASK].
-        total_extra_tax_per_ask_short_range
-            Total extra tax per available seat kilometer (ASK) for short-range flights [€/ASK].
-        total_extra_tax_per_ask_medium_range
-            Total extra tax per available seat kilometer (ASK) for medium-range flights [€/ASK].
-        total_extra_tax_per_ask_long_range
-            Total extra tax per available seat kilometer (ASK) for long-range flights [€/ASK].
-        total_extra_tax_per_rpk
-            Total extra tax per revenue passenger kilometer (RPK) [€/RPK].
-        total_extra_tax_per_rpk_short_range
-            Total extra tax per revenue passenger kilometer (RPK) for short-range flights [€/RPK].
-        total_extra_tax_per_rpk_medium_range
-            Total extra tax per revenue passenger kilometer (RPK) for medium-range flights [€/RPK].
-        total_extra_tax_per_rpk_long_range
-            Total extra tax per revenue passenger kilometer (RPK) for long-range flights [€/RPK].
-        total_cost_per_ask
-            Total cost per available seat kilometer (ASK) [€/ASK].
-        total_cost_per_ask_short_range
-            Total cost per available seat kilometer (ASK) for short-range flights [€/ASK].
-        total_cost_per_ask_medium_range
-            Total cost per available seat kilometer (ASK) for medium-range flights [€/ASK].
-        total_cost_per_ask_long_range
-            Total cost per available seat kilometer (ASK) for long-range flights [€/ASK].
-        total_cost_per_rpk_without_extra_tax
-            Total cost per revenue passenger kilometer (RPK) without extra tax [€/RPK].
-        total_cost_per_rpk_without_extra_tax_short_range
-            Total cost per revenue passenger kilometer (RPK) without extra tax for short-range flights [€/RPK].
-        total_cost_per_rpk_without_extra_tax_medium_range
-            Total cost per revenue passenger kilometer (RPK) without extra tax for medium-range flights [€/RPK].
-        total_cost_per_rpk_without_extra_tax_long_range
-            Total cost per revenue passenger kilometer (RPK) without extra tax for long-range flights [€/RPK].
-        total_cost_per_rpk
-            Total cost per revenue passenger kilometer (RPK) [€/RPK].
-        total_cost_per_rpk_short_range
-            Total cost per revenue passenger kilometer (RPK) for short-range flights [€/RPK].
-        total_cost_per_rpk_medium_range
-            Total cost per revenue passenger kilometer (RPK) for medium-range flights [€/RPK].
-        total_cost_per_rpk_long_range
-            Total cost per revenue passenger kilometer (RPK) for long-range flights [€/RPK].
+        dict
+            Output total cost series per ASK and per RPK.
         """
-        ######## Overall #########
+        output_data = {}
 
-        # Cost without any tax
+        load_factor = input_data["load_factor"]
 
         total_cost_per_ask_without_extra_tax = (
-            doc_non_energy_per_ask_mean
-            + doc_energy_per_ask_mean
-            + non_operating_cost_per_ask
-            + indirect_operating_cost_per_ask
-            + noc_carbon_offset_per_ask
-            + operational_efficiency_cost_non_energy_per_ask
-            + load_factor_cost_non_energy_per_ask
+            input_data["doc_non_energy_per_ask_mean"]
+            + input_data["doc_energy_per_ask_mean"]
+            + input_data["non_operating_cost_per_ask"]
+            + input_data["indirect_operating_cost_per_ask"]
+            + input_data["noc_carbon_offset_per_ask"]
+            + input_data["operational_efficiency_cost_non_energy_per_ask"]
+            + input_data["load_factor_cost_non_energy_per_ask"]
         )
-
-        total_cost_per_ask_without_extra_tax_short_range = (
-            doc_non_energy_per_ask_short_range_mean
-            + doc_energy_per_ask_short_range_mean
-            + non_operating_cost_per_ask
-            + indirect_operating_cost_per_ask
-            + noc_carbon_offset_per_ask
-            + operational_efficiency_cost_non_energy_per_ask
-            + load_factor_cost_non_energy_per_ask
-        )
-
-        total_cost_per_ask_without_extra_tax_medium_range = (
-            doc_non_energy_per_ask_medium_range_mean
-            + doc_energy_per_ask_medium_range_mean
-            + non_operating_cost_per_ask
-            + indirect_operating_cost_per_ask
-            + noc_carbon_offset_per_ask
-            + operational_efficiency_cost_non_energy_per_ask
-            + load_factor_cost_non_energy_per_ask
-        )
-
-        total_cost_per_ask_without_extra_tax_long_range = (
-            doc_non_energy_per_ask_long_range_mean
-            + doc_energy_per_ask_long_range_mean
-            + non_operating_cost_per_ask
-            + indirect_operating_cost_per_ask
-            + noc_carbon_offset_per_ask
-            + operational_efficiency_cost_non_energy_per_ask
-            + load_factor_cost_non_energy_per_ask
-        )
-
-        # Tax revenue
         total_extra_tax_per_ask = (
-            doc_carbon_tax_lowering_offset_per_ask_mean + passenger_tax_per_ask
+            input_data["doc_carbon_tax_lowering_offset_per_ask_mean"]
+            + input_data["passenger_tax_per_ask"]
         )
-        total_extra_tax_per_ask_short_range = (
-            doc_carbon_tax_lowering_offset_per_ask_short_range_mean + passenger_tax_per_ask
-        )
-        total_extra_tax_per_ask_medium_range = (
-            doc_carbon_tax_lowering_offset_per_ask_medium_range_mean + passenger_tax_per_ask
-        )
-        total_extra_tax_per_ask_long_range = (
-            doc_carbon_tax_lowering_offset_per_ask_long_range_mean + passenger_tax_per_ask
-        )
-
-        # Average Cost per ask
         total_cost_per_ask = total_cost_per_ask_without_extra_tax + total_extra_tax_per_ask
-        total_cost_per_ask_short_range = (
-            total_cost_per_ask_without_extra_tax_short_range + total_extra_tax_per_ask_short_range
-        )
-        total_cost_per_ask_medium_range = (
-            total_cost_per_ask_without_extra_tax_medium_range + total_extra_tax_per_ask_medium_range
-        )
-        total_cost_per_ask_long_range = (
-            total_cost_per_ask_without_extra_tax_long_range + total_extra_tax_per_ask_long_range
-        )
 
-        # Cost per rpk
         total_cost_per_rpk_without_extra_tax = total_cost_per_ask_without_extra_tax / (
             load_factor / 100
         )
-        total_cost_per_rpk_without_extra_tax_short_range = (
-            total_cost_per_ask_without_extra_tax_short_range / (load_factor / 100)
-        )
-        total_cost_per_rpk_without_extra_tax_medium_range = (
-            total_cost_per_ask_without_extra_tax_medium_range / (load_factor / 100)
-        )
-        total_cost_per_rpk_without_extra_tax_long_range = (
-            total_cost_per_ask_without_extra_tax_long_range / (load_factor / 100)
-        )
-
-        # Tax per rpk
         total_extra_tax_per_rpk = total_extra_tax_per_ask / (load_factor / 100)
-        total_extra_tax_per_rpk_short_range = total_extra_tax_per_ask_short_range / (
-            load_factor / 100
-        )
-        total_extra_tax_per_rpk_medium_range = total_extra_tax_per_ask_medium_range / (
-            load_factor / 100
-        )
-        total_extra_tax_per_rpk_long_range = total_extra_tax_per_ask_long_range / (
-            load_factor / 100
-        )
-
-        # Average Cost per rpk
         total_cost_per_rpk = total_cost_per_rpk_without_extra_tax + total_extra_tax_per_rpk
-        total_cost_per_rpk_short_range = (
-            total_cost_per_rpk_without_extra_tax_short_range + total_extra_tax_per_rpk_short_range
-        )
-        total_cost_per_rpk_medium_range = (
-            total_cost_per_rpk_without_extra_tax_medium_range + total_extra_tax_per_rpk_medium_range
-        )
-        total_cost_per_rpk_long_range = (
-            total_cost_per_rpk_without_extra_tax_long_range + total_extra_tax_per_rpk_long_range
-        )
 
-        self.df.loc[:, "total_cost_per_ask_without_extra_tax"] = (
-            total_cost_per_ask_without_extra_tax
-        )
-        self.df.loc[:, "total_cost_per_ask_without_extra_tax_short_range"] = (
-            total_cost_per_ask_without_extra_tax_short_range
-        )
-        self.df.loc[:, "total_cost_per_ask_without_extra_tax_medium_range"] = (
-            total_cost_per_ask_without_extra_tax_medium_range
-        )
-        self.df.loc[:, "total_cost_per_ask_without_extra_tax_long_range"] = (
-            total_cost_per_ask_without_extra_tax_long_range
-        )
+        output_data["total_cost_per_ask_without_extra_tax"] = total_cost_per_ask_without_extra_tax
+        output_data["total_extra_tax_per_ask"] = total_extra_tax_per_ask
+        output_data["total_extra_tax_per_rpk"] = total_extra_tax_per_rpk
+        output_data["total_cost_per_ask"] = total_cost_per_ask
+        output_data["total_cost_per_rpk_without_extra_tax"] = total_cost_per_rpk_without_extra_tax
+        output_data["total_cost_per_rpk"] = total_cost_per_rpk
 
-        self.df.loc[:, "total_extra_tax_per_ask"] = total_extra_tax_per_ask
-        self.df.loc[:, "total_extra_tax_per_ask_short_range"] = total_extra_tax_per_ask_short_range
-        self.df.loc[:, "total_extra_tax_per_ask_medium_range"] = (
-            total_extra_tax_per_ask_medium_range
-        )
-        self.df.loc[:, "total_extra_tax_per_ask_long_range"] = total_extra_tax_per_ask_long_range
+        for market in self.markets.get(traffic_type="passenger"):
+            mid = market.id
 
-        self.df.loc[:, "total_extra_tax_per_rpk"] = total_extra_tax_per_rpk
-        self.df.loc[:, "total_extra_tax_per_rpk_short_range"] = total_extra_tax_per_rpk_short_range
-        self.df.loc[:, "total_extra_tax_per_rpk_medium_range"] = (
-            total_extra_tax_per_rpk_medium_range
-        )
-        self.df.loc[:, "total_extra_tax_per_rpk_long_range"] = total_extra_tax_per_rpk_long_range
+            load_factor_m = input_data[f"load_factor_{mid}"]
 
-        self.df.loc[:, "total_cost_per_ask"] = total_cost_per_ask
-        self.df.loc[:, "total_cost_per_ask_short_range"] = total_cost_per_ask_short_range
-        self.df.loc[:, "total_cost_per_ask_medium_range"] = total_cost_per_ask_medium_range
-        self.df.loc[:, "total_cost_per_ask_long_range"] = total_cost_per_ask_long_range
+            total_cost_per_ask_without_extra_tax_m = (
+                input_data[f"doc_non_energy_per_ask_{mid}_mean"]
+                + input_data[f"doc_energy_per_ask_{mid}_mean"]
+                + input_data["non_operating_cost_per_ask"]
+                + input_data["indirect_operating_cost_per_ask"]
+                + input_data["noc_carbon_offset_per_ask"]
+                + input_data["operational_efficiency_cost_non_energy_per_ask"]
+                + input_data["load_factor_cost_non_energy_per_ask"]
+            )
+            total_extra_tax_per_ask_m = (
+                input_data[f"doc_carbon_tax_lowering_offset_per_ask_{mid}_mean"]
+                + input_data["passenger_tax_per_ask"]
+            )
+            total_cost_per_ask_m = (
+                total_cost_per_ask_without_extra_tax_m + total_extra_tax_per_ask_m
+            )
 
-        self.df.loc[:, "total_cost_per_rpk_without_extra_tax"] = (
-            total_cost_per_rpk_without_extra_tax
-        )
-        self.df.loc[:, "total_cost_per_rpk_without_extra_tax_short_range"] = (
-            total_cost_per_rpk_without_extra_tax_short_range
-        )
-        self.df.loc[:, "total_cost_per_rpk_without_extra_tax_medium_range"] = (
-            total_cost_per_rpk_without_extra_tax_medium_range
-        )
-        self.df.loc[:, "total_cost_per_rpk_without_extra_tax_long_range"] = (
-            total_cost_per_rpk_without_extra_tax_long_range
-        )
+            total_cost_per_rpk_without_extra_tax_m = total_cost_per_ask_without_extra_tax_m / (
+                load_factor_m / 100
+            )
+            total_extra_tax_per_rpk_m = total_extra_tax_per_ask_m / (load_factor_m / 100)
+            total_cost_per_rpk_m = (
+                total_cost_per_rpk_without_extra_tax_m + total_extra_tax_per_rpk_m
+            )
 
-        self.df.loc[:, "total_cost_per_rpk"] = total_cost_per_rpk
-        self.df.loc[:, "total_cost_per_rpk_short_range"] = total_cost_per_rpk_short_range
-        self.df.loc[:, "total_cost_per_rpk_medium_range"] = total_cost_per_rpk_medium_range
-        self.df.loc[:, "total_cost_per_rpk_long_range"] = total_cost_per_rpk_long_range
+            output_data[f"total_cost_per_ask_without_extra_tax_{mid}"] = (
+                total_cost_per_ask_without_extra_tax_m
+            )
+            output_data[f"total_extra_tax_per_ask_{mid}"] = total_extra_tax_per_ask_m
+            output_data[f"total_extra_tax_per_rpk_{mid}"] = total_extra_tax_per_rpk_m
+            output_data[f"total_cost_per_ask_{mid}"] = total_cost_per_ask_m
+            output_data[f"total_cost_per_rpk_without_extra_tax_{mid}"] = (
+                total_cost_per_rpk_without_extra_tax_m
+            )
+            output_data[f"total_cost_per_rpk_{mid}"] = total_cost_per_rpk_m
 
-        return (
-            total_cost_per_ask_without_extra_tax,
-            total_cost_per_ask_without_extra_tax_short_range,
-            total_cost_per_ask_without_extra_tax_medium_range,
-            total_cost_per_ask_without_extra_tax_long_range,
-            total_extra_tax_per_ask,
-            total_extra_tax_per_ask_short_range,
-            total_extra_tax_per_ask_medium_range,
-            total_extra_tax_per_ask_long_range,
-            total_extra_tax_per_rpk,
-            total_extra_tax_per_rpk_short_range,
-            total_extra_tax_per_rpk_medium_range,
-            total_extra_tax_per_rpk_long_range,
-            total_cost_per_ask,
-            total_cost_per_ask_short_range,
-            total_cost_per_ask_medium_range,
-            total_cost_per_ask_long_range,
-            total_cost_per_rpk_without_extra_tax,
-            total_cost_per_rpk_without_extra_tax_short_range,
-            total_cost_per_rpk_without_extra_tax_medium_range,
-            total_cost_per_rpk_without_extra_tax_long_range,
-            total_cost_per_rpk,
-            total_cost_per_rpk_short_range,
-            total_cost_per_rpk_medium_range,
-            total_cost_per_rpk_long_range,
-        )
+        self._store_outputs(output_data)
+        return output_data
 
 
 class PassengerAircraftMarginalCost(AeroMAPSModel):

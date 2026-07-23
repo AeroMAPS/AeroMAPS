@@ -26,11 +26,11 @@ regionalisation:
       - co2_emissions_including_energy
       - co2_emissions_including_aircraft_efficiency
       - co2_emissions_including_load_factor
-      - co2_emissions_2019technology
+      - co2_emissions_last_historical_year_technology
       - cumulative_co2_emissions
       - cumulative_co2_emissions_including_aircraft_efficiency
       - cumulative_co2_emissions_including_load_factor
-      - cumulative_co2_emissions_2019technology
+      - cumulative_co2_emissions_last_historical_year_technology
       - cumulative_carbon_offset
       - carbon_offset
       - rpk

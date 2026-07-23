@@ -1,4 +1,7 @@
-from aeromaps.plots.single_scenario.main import AirTransportCO2EmissionsPlot, AirTransportClimateImpactsPlot
+from aeromaps.plots.single_scenario.main import (
+    AirTransportCO2EmissionsPlot,
+    AirTransportClimateImpactsPlot,
+)
 from aeromaps.plots.single_scenario.sustainability_assessment import (
     CarbonBudgetAssessmentPlot,
     TemperatureTargetAssessmentPlot,
@@ -47,7 +50,10 @@ from aeromaps.plots.single_scenario.climate import (
     TemperatureIncreaseFromAirTransportPlot,
     DetailedTemperatureIncreaseFromAirTransportPlot,
 )
-from aeromaps.plots.single_scenario.energy_resources import BiomassConsumptionPlot, ElectricityConsumptionPlot
+from aeromaps.plots.single_scenario.energy_resources import (
+    BiomassConsumptionPlot,
+    ElectricityConsumptionPlot,
+)
 
 from aeromaps.plots.single_scenario.energy_mix import (
     EnergyMixPlot,
@@ -145,3 +151,39 @@ available_plots_fleet = {
     "cumulative_MACC": CumulativeMACC,
     "shadow_carbon_pricing": ShadowCarbonPrice,
 }
+
+# Plot names (from ``available_plots``) that stay meaningful when their required
+# outputs are aggregated across regions: additive series summed, intensities
+# weighted-averaged (the ``aggregation`` block of a regionalisation file).
+# ``MultiRegionalProcess.plot(name)`` without a ``region`` only accepts these.
+# The other plots read data that has no per-region aggregate — climate response,
+# energy pathways (pathways_manager), scenario floats, cost structures — and
+# must be drawn on a single region (``region=<id>``). To expose a new plot
+# globally, check its ``create_plot`` only reads aggregable df/df_climate
+# columns, then add its name here.
+aggregation_safe_plot_names = [
+    # Additive series (aggregate with "sum")
+    "revenue_passenger_kilometer",
+    "revenue_tonne_kilometer",
+    "available_seat_kilometer",
+    "total_aircraft_distance",
+    "air_transport_co2_emissions",
+    "direct_h2o_emissions",
+    "direct_nox_emissions",
+    "direct_sulfur_emissions",
+    "direct_soot_emissions",
+    "carbon_offset",
+    "cumulative_carbon_offset",
+    "levers_of_action_distribution",
+    # Intensive series (aggregate with "weighted_average" + a traffic weight)
+    "load_factor",
+    "energy_per_ask",
+    "energy_per_rtk",
+    "co2_per_rpk",
+    "co2_per_rtk",
+    "fuel_consumption_liter_per_pax_100km",
+    # Mixed additive/intensive
+    "passenger_kaya_factors",
+    "freight_kaya_factors",
+]
+aggregation_safe_plots = {name: available_plots[name] for name in aggregation_safe_plot_names}

@@ -2,11 +2,10 @@
 This module creates dictionaries of default models for various AeroMAPS configurations.
 """
 
-from aeromaps.models.air_transport.air_traffic.price_elasticity import RPKPriceElasticity
-from aeromaps.models.air_transport.air_traffic.price_and_income_elasticity import \
-    RPKPriceIncomeElasticity
-from aeromaps.models.air_transport.air_traffic.price_elasticity_logistic_income import \
-    RPKLogisticIncomePriceElasticity
+# Passenger demand models (CAGR + the price-coupled constant-elasticity /
+# logistic-income variants) are instantiated per-market by
+# ``markets_factory`` from the ``markets.yaml`` registry, selected via
+# ``global.demand.model``. They are not registered in the static model dicts.
 from aeromaps.models.impacts.costs.airlines.direct_operating_costs import (
     PassengerAircraftDocEnergy,
     PassengerAircraftDocNonEnergyComplex,
@@ -18,6 +17,7 @@ from aeromaps.models.impacts.costs.airlines.direct_operating_costs import (
 )
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_numeric import (
     FleetEvolution,
+    SimpleFleetCount,
 )
 from aeromaps.models.impacts.costs.efficiency_abatement_cost.fleet_abatement_cost import (
     FleetCarbonAbatementCosts,
@@ -42,17 +42,8 @@ from aeromaps.models.impacts.generic_energy_model.common.energy_carriers_means i
     EnergyCarriersMassicShares,
 )
 
-from aeromaps.models.air_transport.air_traffic.rpk import (
-    RPK,
-    RPKReference,
-    RPKMeasures,
-)
-from aeromaps.models.air_transport.air_traffic.rtk import RTK, RTKReference
 from aeromaps.models.air_transport.air_traffic.total_aircraft_distance import TotalAircraftDistance
-from aeromaps.models.air_transport.aircraft_fleet_and_operations.load_factor.load_factor import (
-    LoadFactor,
-)
-from aeromaps.models.air_transport.air_traffic.ask import ASK
+
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.operations.operations import (
     OperationsLogistic,
     OperationsInterpolation,
@@ -66,7 +57,11 @@ from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.aircraft_
     PassengerAircraftEfficiencySimpleShares,
     PassengerAircraftEfficiencyComplex,
     FreightAircraftEfficiency,
+    FreightAircraftEfficiencySimple,  # noqa: F401  re-exported for user-composed dicts
     PassengerAircraftEfficiencySimpleASK,
+)
+from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet_push.aircraft_efficiency_fleet_push import (
+    PassengerAircraftEfficiencyFleetPush,
 )
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.aircraft_fleet_and_operations import (
     EnergyIntensity,
@@ -160,55 +155,42 @@ from aeromaps.models.impacts.costs.airlines.total_airline_cost_and_airfare impor
 )
 
 models_traffic = {
-    "rpk_measures": RPKMeasures("rpk_measures"),
-    "rpk": RPK("rpk"),
-    "rpk_reference": RPKReference("rpk_reference"),
+    # Per-market RPK / RTK / ASK / LoadFactor disciplines are registered by
+    # ``_initialize_markets()`` from the ``markets.yaml`` registry.
+    # The optional ``RPKElasticity`` layer is wired in by the same hook when
+    # ``global.elasticity.use_elasticity`` is true in ``markets.yaml``.
     "total_aircraft_distance": TotalAircraftDistance("total_aircraft_distance"),
-    "rtk": RTK("rtk"),
-    "rtk_reference": RTKReference("rtk_reference"),
-    "ask": ASK("ask"),
-}
-
-
-models_traffic_cost_feedback = {
-    "rpk_with_elasticity": RPKPriceElasticity("rpk_with_elasticity"),
-    "rpk_measures": RPKMeasures("rpk_measures"),
-    "rpk_reference": RPKReference("rpk_reference"),
-    "total_aircraft_distance": TotalAircraftDistance("total_aircraft_distance"),
-    "rtk": RTK("rtk"),
-    "rtk_reference": RTKReference("rtk_reference"),
-    "ask": ASK("ask"),
-}
-
-
-models_traffic_price_adjusted_logistic = {
-    "rpk_logistic_income_price_elasticity": RPKLogisticIncomePriceElasticity("rpk_with_elasticity"),
-    "rpk_measures": RPKMeasures("rpk_measures"),
-    "rpk_reference": RPKReference("rpk_reference"),
-    "total_aircraft_distance": TotalAircraftDistance("total_aircraft_distance"),
-    "rtk": RTK("rtk"),
-    "rtk_reference": RTKReference("rtk_reference"),
-    "ask": ASK("ask"),
-}
-
-
-models_traffic_constant_elasticities = {
-    "rpk_price_income_elasticity": RPKPriceIncomeElasticity("rpk_with_elasticity"),
-    "rpk_measures": RPKMeasures("rpk_measures"),
-    "rpk_reference": RPKReference("rpk_reference"),
-    "total_aircraft_distance": TotalAircraftDistance("total_aircraft_distance"),
-    "rtk": RTK("rtk"),
-    "rtk_reference": RTKReference("rtk_reference"),
-    "ask": ASK("ask"),
 }
 
 
 models_efficiency_top_down = {
-    "load_factor": LoadFactor("load_factor"),
     "operations_logistic": OperationsLogistic("operations_logistic"),
     "operations_contrails_simple": OperationsContrailsSimple("operations_contrails_simple"),
     "passenger_aircraft_efficiency_simple_shares": PassengerAircraftEfficiencySimpleShares(
         "passenger_aircraft_efficiency_simple_shares"
+    ),
+    "passenger_aircraft_efficiency_simple_ask": PassengerAircraftEfficiencySimpleASK(
+        "passenger_aircraft_efficiency_simple_ask"
+    ),
+    # Swap for ``FreightAircraftEfficiencySimple`` for per-freight-market drop-in
+    # gain curves (no propulsion mix) — see aircraft_efficiency.py.
+    "freight_aircraft_efficiency": FreightAircraftEfficiency("freight_aircraft_efficiency"),
+    "energy_intensity": EnergyIntensity("energy_intensity"),
+    "nox_emission_index": NOxEmissionIndex("nox_emission_index"),
+    "soot_emission_index": SootEmissionIndex("soot_emission_index"),
+    "h2o_emission_index": H2OEmissionIndex("h2o_emission_index"),
+    "sulfur_emission_index": SulfurEmissionIndex("sulfur_emission_index"),
+}
+
+models_efficiency_push = {
+    # Push-fleet variant of ``models_efficiency_top_down``: the passenger
+    # efficiency entry runs Paco's delivery-driven engine (drop-in bridge only).
+    # The ASK-splitting, freight, energy-intensity and emission-index models are
+    # unchanged, so downstream consumers see the same bridge as the top-down path.
+    "operations_logistic": OperationsLogistic("operations_logistic"),
+    "operations_contrails_simple": OperationsContrailsSimple("operations_contrails_simple"),
+    "passenger_aircraft_efficiency_fleet_push": PassengerAircraftEfficiencyFleetPush(
+        "passenger_aircraft_efficiency_fleet_push"
     ),
     "passenger_aircraft_efficiency_simple_ask": PassengerAircraftEfficiencySimpleASK(
         "passenger_aircraft_efficiency_simple_ask"
@@ -222,7 +204,6 @@ models_efficiency_top_down = {
 }
 
 models_efficiency_top_down_interp = {
-    "load_factor": LoadFactor("load_factor"),
     "operations_interpolation": OperationsInterpolation("operations_interpolation"),
     "operations_contrails_simple": OperationsContrailsSimple("operations_contrails_simple"),
     "passenger_aircraft_efficiency_simple_shares": PassengerAircraftEfficiencySimpleShares(
@@ -231,6 +212,8 @@ models_efficiency_top_down_interp = {
     "passenger_aircraft_efficiency_simple_ask": PassengerAircraftEfficiencySimpleASK(
         "passenger_aircraft_efficiency_simple_ask"
     ),
+    # Swap for ``FreightAircraftEfficiencySimple`` for per-freight-market drop-in
+    # gain curves (no propulsion mix) — see aircraft_efficiency.py.
     "freight_aircraft_efficiency": FreightAircraftEfficiency("freight_aircraft_efficiency"),
     "energy_intensity": EnergyIntensity("energy_intensity"),
     "nox_emission_index": NOxEmissionIndex("nox_emission_index"),
@@ -240,18 +223,30 @@ models_efficiency_top_down_interp = {
 }
 
 models_efficiency_bottom_up = {
-    "load_factor": LoadFactor("load_factor"),
     "operations_logistic": OperationsLogistic("operations_logistic"),
     "operations_contrails_simple": OperationsContrailsSimple("operations_contrails_simple"),
     "passenger_aircraft_efficiency_complex": PassengerAircraftEfficiencyComplex(
         "passenger_aircraft_efficiency_complex"
     ),
+    # Swap for ``FreightAircraftEfficiencySimple`` for per-freight-market drop-in
+    # gain curves (no propulsion mix) — see aircraft_efficiency.py.
     "freight_aircraft_efficiency": FreightAircraftEfficiency("freight_aircraft_efficiency"),
     "energy_intensity": EnergyIntensity("energy_intensity"),
     "nox_emission_index_complex": NOxEmissionIndexComplex("nox_emission_index_complex"),
     "soot_emission_index_complex": SootEmissionIndexComplex("soot_emission_index_complex"),
     "h2o_emission_index": H2OEmissionIndex("h2o_emission_index"),
     "sulfur_emission_index": SulfurEmissionIndex("sulfur_emission_index"),
+}
+
+
+models_efficiency_bottom_up_simple_freight = {
+    **models_efficiency_bottom_up,
+    "freight_aircraft_efficiency": FreightAircraftEfficiencySimple("freight_aircraft_efficiency"),
+}
+
+
+models_fleet_count_simple = {
+    "passenger_aircraft_fleet_count": SimpleFleetCount("passenger_aircraft_fleet_count"),
 }
 
 
@@ -468,7 +463,7 @@ models_optim_simple = {
 }
 
 models_optim_complex = {
-    "models_traffic_cost_feedback": models_traffic_cost_feedback,
+    "models_traffic": models_traffic,
     "models_efficiency_top_down": models_efficiency_top_down,
     "models_energy_without_fuel_effect": models_energy_without_fuel_effect,
     "models_offset": models_offset,
@@ -496,7 +491,7 @@ carbon_tax = {
 }
 
 # models_optim_complex_v2 = {
-#     "models_traffic_cost_feedback": models_traffic_cost_feedback,
+#     "models_traffic": models_traffic,
 #     "models_efficiency_top_down": models_efficiency_top_down,
 #     "models_energy_without_fuel_effect": models_energy_without_fuel_effect,
 #     "models_offset": models_offset,
