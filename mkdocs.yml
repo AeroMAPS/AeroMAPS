@@ -52,11 +52,11 @@ nav:
             - Constants: full_doc/aeromaps.models.air_transport.constants.md
             - Air traffic:
                 - Package: full_doc/aeromaps.models.air_transport.air_traffic.md
-                - ask: full_doc/aeromaps.models.air_transport.air_traffic.ask.md
-                - price_elasticity: full_doc/aeromaps.models.air_transport.air_traffic.price_elasticity.md
-                - rpk: full_doc/aeromaps.models.air_transport.air_traffic.rpk.md
-                - rtk: full_doc/aeromaps.models.air_transport.air_traffic.rtk.md
-                - short_range_distribution: full_doc/aeromaps.models.air_transport.air_traffic.short_range_distribution.md
+                - ask_market: full_doc/aeromaps.models.air_transport.air_traffic.ask_market.md
+                - price_and_income_elasticity: full_doc/aeromaps.models.air_transport.air_traffic.price_and_income_elasticity.md
+                - price_elasticity_logistic_income: full_doc/aeromaps.models.air_transport.air_traffic.price_elasticity_logistic_income.md
+                - rpk_market: full_doc/aeromaps.models.air_transport.air_traffic.rpk_market.md
+                - rtk_market: full_doc/aeromaps.models.air_transport.air_traffic.rtk_market.md
                 - total_aircraft_distance: full_doc/aeromaps.models.air_transport.air_traffic.total_aircraft_distance.md
             - Aircraft fleet and operations:
                 - Package: full_doc/aeromaps.models.air_transport.aircraft_fleet_and_operations.md

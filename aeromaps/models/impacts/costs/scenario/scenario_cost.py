@@ -50,10 +50,6 @@ class NonDiscountedScenarioCost(AeroMAPSModel):
         Dynamically add all pathway MFSPs and associated energy consumption variables to input_names and function outputs to output_names.
         Specific function for custom AeroMAPSModel instances.
 
-        Parameters
-        ----------
-        None
-
         Returns
         -------
         None

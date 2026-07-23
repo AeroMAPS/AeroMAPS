@@ -45,10 +45,6 @@ class NOxEmissionIndex(AeroMAPSModel):
         Dynamically add all pathways variables to input_names and function outputs to output_names.
         Specific function for custom AeroMAPSModel instances.
 
-        Parameters
-        ----------
-        None
-
         Returns
         -------
         None
@@ -191,10 +187,6 @@ class NOxEmissionIndexComplex(AeroMAPSModel):
         """
         Dynamically add all pathways variables to input_names and function outputs to output_names.
         Specific function for custom AeroMAPSModel instances.
-
-        Parameters
-        ----------
-        None
 
         Returns
         -------
@@ -357,10 +349,6 @@ class SootEmissionIndex(AeroMAPSModel):
         Dynamically add all pathways variables to input_names and function outputs to output_names.
         Specific function for custom AeroMAPSModel instances.
 
-        Parameters
-        ----------
-        None
-
         Returns
         -------
         None
@@ -500,10 +488,6 @@ class SootEmissionIndexComplex(AeroMAPSModel):
         """
         Dynamically add all pathways variables to input_names and function outputs to output_names.
         Specific function for custom AeroMAPSModel instances.
-
-        Parameters
-        ----------
-        None
 
         Returns
         -------
@@ -665,10 +649,6 @@ class H2OEmissionIndex(AeroMAPSModel):
         Dynamically add all pathways variables to input_names and function outputs to output_names.
         Specific function for custom AeroMAPSModel instances.
 
-        Parameters
-        ----------
-        None
-
         Returns
         -------
         None
@@ -787,10 +767,6 @@ class SulfurEmissionIndex(AeroMAPSModel):
         """
         Dynamically add all pathways variables to input_names and function outputs to output_names.
         Specific function for custom AeroMAPSModel instances.
-
-        Parameters
-        ----------
-        None
 
         Returns
         -------
@@ -911,10 +887,6 @@ class NonCO2Emissions(AeroMAPSModel):
         """
         Dynamically add all pathways variables to input_names and function outputs to output_names.
         Specific function for custom AeroMAPSModel instances.
-
-        Parameters
-        ----------
-        None
 
         Returns
         -------

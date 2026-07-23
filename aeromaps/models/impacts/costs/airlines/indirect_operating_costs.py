@@ -66,12 +66,12 @@ class PassengerAircraftIndirectOpCosts(AeroMAPSModel):
 class PassengerAircraftNocCarbonOffset(AeroMAPSModel):
     """Compute carbon offset costs.
 
+    TODO: MOVE TO INDIRECT OPERATING COSTS MODULE
+
     Parameters
     ----------
     name
         Model instance name ('passenger_aircraft_noc_carbon_offset' by default).
-
-    TODO: MOVE TO INDIRECT OPERATING COSTS MODULE
     """
 
     def __init__(self, name="passenger_aircraft_noc_carbon_offset", *args, **kwargs):
