@@ -10,6 +10,12 @@ on:
     tags:
       - 'v*'
 
+  # Verification build on pull requests targeting main (no deployment),
+  # so a broken docs build is caught before merge instead of after.
+  pull_request:
+    branches:
+      - main
+
   # Manual trigger with options
   workflow_dispatch:
     inputs:
@@ -35,8 +41,32 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Verification-only build for pull requests (never deploys)
+  build-check:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r docs/requirements.txt
+          pip install -e .  # Install the package for autodoc
+
+      - name: Build docs (verification)
+        run: |
+          mkdocs build
+          echo "Build successful! Site generated in ./site/"
+
   # Check if we should deploy (for push events)
   check-deploy:
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     outputs:
       should_deploy: ${{ steps.check.outputs.should_deploy }}
