@@ -9,6 +9,20 @@
 # energy_share_last_historical_year must sum to 85  across passenger markets : 52.19 + 32.81 = 85 ✓
 # freight energy_share_last_historical_year = 15.0 → grand total = 100 ✓
 
+# Optional settings shared across all markets. This block can be omitted
+# entirely — the values below are the defaults. See the
+# 08_use_variable_demand tutorial for the price-elastic demand modes
+# (cagr_elasticity, constant_elasticity, logistic_income) and their
+# ``elasticity`` calibration block.
+global:
+  # Passenger demand model selector (build-time, not a model parameter):
+  # cagr | cagr_elasticity | constant_elasticity | logistic_income
+  demand:
+    model: cagr
+  # Load factor model selector: quadratic | simple_interpolation
+  load_factor:
+    model: quadratic
+
 defaults:
   passenger:
     inputs:

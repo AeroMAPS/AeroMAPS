@@ -1324,6 +1324,23 @@ class AeroMAPSProcess(object):
         scenarios the push is a numerical no-op.  Names introduced under new
         sub-groupings are harmless extras until Phase 2 consumes them.
 
+        The optional ``global`` block holds settings shared across all markets.
+        It may be omitted entirely; every entry has a default:
+
+        - ``demand.model`` — build-time selector of the passenger demand model:
+          ``cagr`` (default), ``cagr_elasticity``, ``constant_elasticity`` or
+          ``logistic_income``.  Legacy fallback: ``elasticity.use_elasticity:
+          true`` selects ``cagr_elasticity`` when ``demand.model`` is absent.
+        - ``load_factor.model`` — load factor model selector: ``quadratic``
+          (default) or ``simple_interpolation``.
+        - any other sub-block (e.g. ``elasticity``) — scalar parameters
+          flattened into ``self.parameters`` *without* market prefix (top-level
+          sub-block names are dropped, like ``inputs`` groupings).  Beware of
+          collisions: these land after ``parameters.json`` is loaded and
+          silently override same-named entries, which is why the two selector
+          sub-blocks above are popped *before* the flatten loop (their ``model``
+          leaf would otherwise clobber the IAM ``model`` parameter).
+
         Always runs: when ``models.markets`` is absent from the user config the
         default ``default_markets/markets.yaml`` is used, reproducing the legacy
         four-market numerics exactly.  A custom file can be supplied via
@@ -1367,10 +1384,18 @@ class AeroMAPSProcess(object):
         # Build-time selector, not a model parameter, so the ``demand`` sub-block
         # is dropped before flattening. ``elasticity.use_elasticity`` is kept as a
         # legacy fallback for configs predating ``demand.model``.
-        with_elasticity = bool(globals_block.get("elasticity", {}).get("use_elasticity", False))
+        with_elasticity = bool((globals_block.get("elasticity") or {}).get("use_elasticity", False))
         demand_model = (globals_block.pop("demand", {}) or {}).get("model")
         if demand_model is None:
             demand_model = "cagr_elasticity" if with_elasticity else "cagr"
+        # ``load_factor.model`` selects the per-market load factor model:
+        #   ``quadratic``            — LoadFactorMarket (quadratic curve, default);
+        #   ``simple_interpolation`` — LoadFactorMarketSimpleInterpolation
+        #                              (piece-wise linear via aeromaps_interpolation_function).
+        # Build-time selector like ``demand.model``: popped before the flatten
+        # loop so the string is not pushed into parameters as a stray ``model``.
+        load_factor_block = globals_block.pop("load_factor", {}) or {}
+        load_factor_model = load_factor_block.get("model", "quadratic")
         for value in globals_block.values():
             if isinstance(value, dict):
                 flattened = _flatten_dict(value)
@@ -1451,14 +1476,6 @@ class AeroMAPSProcess(object):
                 f"Unknown global.demand.model '{demand_model}'. Expected one of: "
                 "cagr, cagr_elasticity, constant_elasticity, logistic_income."
             )
-        # ``load_factor.model`` selects the per-market load factor model:
-        #   ``quadratic``            — LoadFactorMarket (quadratic curve, default);
-        #   ``simple_interpolation`` — LoadFactorMarketSimpleInterpolation
-        #                              (piece-wise linear via aeromaps_interpolation_function).
-        # Dropped before flattening so the string is not pushed into parameters.
-        load_factor_block = globals_block.pop("load_factor", {}) or {}
-        load_factor_model = load_factor_block.get("model", "quadratic")
-
         self.models.update(create_market_rtk_models(self.markets, self.markets_data))
         self.models.update(create_market_rtk_aggregator(self.markets))
         self.models.update(create_market_ask_models(self.markets))
