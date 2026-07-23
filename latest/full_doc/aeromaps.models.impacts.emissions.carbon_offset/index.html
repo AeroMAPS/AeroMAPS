@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -2317,14 +2317,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../aeromaps.models.air_transport.air_traffic.ask/" class="md-nav__link">
+      <a href="../aeromaps.models.air_transport.air_traffic.ask_market/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    ask
+    ask_market
   
 
     
@@ -2345,14 +2345,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../aeromaps.models.air_transport.air_traffic.price_elasticity/" class="md-nav__link">
+      <a href="../aeromaps.models.air_transport.air_traffic.price_and_income_elasticity/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    price_elasticity
+    price_and_income_elasticity
   
 
     
@@ -2373,14 +2373,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../aeromaps.models.air_transport.air_traffic.rpk/" class="md-nav__link">
+      <a href="../aeromaps.models.air_transport.air_traffic.price_elasticity_logistic_income/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    rpk
+    price_elasticity_logistic_income
   
 
     
@@ -2401,14 +2401,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../aeromaps.models.air_transport.air_traffic.rtk/" class="md-nav__link">
+      <a href="../aeromaps.models.air_transport.air_traffic.rpk_market/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    rtk
+    rpk_market
   
 
     
@@ -2429,14 +2429,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../aeromaps.models.air_transport.air_traffic.short_range_distribution/" class="md-nav__link">
+      <a href="../aeromaps.models.air_transport.air_traffic.rtk_market/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    short_range_distribution
+    rtk_market
   
 
     
@@ -5974,7 +5974,7 @@ Module to compute effects of carbon offsets.</p>
 
 
 <a href="#aeromaps.models.impacts.emissions.carbon_offset.LevelCarbonOffset.compute" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span><span class="n">co2_emissions</span><span class="p">,</span> <span class="n">carbon_offset_baseline_level_vs_2019_reference_periods</span><span class="p">,</span> <span class="n">carbon_offset_baseline_level_vs_2019_reference_periods_values</span><span class="p">,</span> <span class="n">carbon_offset_baseline_share_total_emissions_reference_periods</span><span class="p">,</span> <span class="n">carbon_offset_baseline_share_total_emissions_reference_periods_values</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span><span class="n">co2_emissions</span><span class="p">,</span> <span class="n">corsia_reference_year</span><span class="p">,</span> <span class="n">carbon_offset_baseline_level_vs_corsia_reference_year_reference_periods</span><span class="p">,</span> <span class="n">carbon_offset_baseline_level_vs_corsia_reference_year_reference_periods_values</span><span class="p">,</span> <span class="n">carbon_offset_baseline_share_total_emissions_reference_periods</span><span class="p">,</span> <span class="n">carbon_offset_baseline_share_total_emissions_reference_periods_values</span><span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6011,7 +6011,25 @@ Module to compute effects of carbon offsets.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>carbon_offset_baseline_level_vs_2019_reference_periods</code>
+                <code>corsia_reference_year</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Fixed regulatory baseline year for CORSIA offsetting (default 2019).
+The offsetting baseline is measured against this year's emissions,
+independent of prospection_start_year.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>carbon_offset_baseline_level_vs_corsia_reference_year_reference_periods</code>
             </td>
             <td>
                   <code><span title="list">list</span></code>
@@ -6027,7 +6045,7 @@ Module to compute effects of carbon offsets.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>carbon_offset_baseline_level_vs_2019_reference_periods_values</code>
+                <code>carbon_offset_baseline_level_vs_corsia_reference_year_reference_periods_values</code>
             </td>
             <td>
                   <code><span title="list">list</span></code>
@@ -6088,7 +6106,7 @@ Module to compute effects of carbon offsets.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code><span title="carbon_offset_baseline_level_vs_2019">carbon_offset_baseline_level_vs_2019</span></code>
+                  <code><span title="carbon_offset_baseline_level_vs_corsia_reference_year">carbon_offset_baseline_level_vs_corsia_reference_year</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -6197,11 +6215,18 @@ Module to compute effects of carbon offsets.</p>
 <span class="normal">114</span>
 <span class="normal">115</span>
 <span class="normal">116</span>
-<span class="normal">117</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">co2_emissions</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
-    <span class="n">carbon_offset_baseline_level_vs_2019_reference_periods</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
-    <span class="n">carbon_offset_baseline_level_vs_2019_reference_periods_values</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+    <span class="n">corsia_reference_year</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">carbon_offset_baseline_level_vs_corsia_reference_year_reference_periods</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+    <span class="n">carbon_offset_baseline_level_vs_corsia_reference_year_reference_periods_values</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
     <span class="n">carbon_offset_baseline_share_total_emissions_reference_periods</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
     <span class="n">carbon_offset_baseline_share_total_emissions_reference_periods_values</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">]:</span>
@@ -6212,9 +6237,13 @@ Module to compute effects of carbon offsets.</p>
 <span class="sd">    ----------</span>
 <span class="sd">    co2_emissions</span>
 <span class="sd">        CO2 emissions trajectory [MtCO2].</span>
-<span class="sd">    carbon_offset_baseline_level_vs_2019_reference_periods</span>
+<span class="sd">    corsia_reference_year</span>
+<span class="sd">        Fixed regulatory baseline year for CORSIA offsetting (default 2019).</span>
+<span class="sd">        The offsetting baseline is measured against this year&#39;s emissions,</span>
+<span class="sd">        independent of prospection_start_year.</span>
+<span class="sd">    carbon_offset_baseline_level_vs_corsia_reference_year_reference_periods</span>
 <span class="sd">        Reference periods for the level of CO2 emissions relative to 2019 from which higher emissions are offset [years].</span>
-<span class="sd">    carbon_offset_baseline_level_vs_2019_reference_periods_values</span>
+<span class="sd">    carbon_offset_baseline_level_vs_corsia_reference_year_reference_periods_values</span>
 <span class="sd">        Level of CO2 emissions relative to 2019 from which higher emissions are offset for the reference periods [%].</span>
 <span class="sd">    carbon_offset_baseline_share_total_emissions_reference_periods</span>
 <span class="sd">        Reference periods for the share of total CO2 emissions on which offset is applied [years].</span>
@@ -6223,16 +6252,16 @@ Module to compute effects of carbon offsets.</p>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    carbon_offset_baseline_level_vs_2019</span>
+<span class="sd">    carbon_offset_baseline_level_vs_corsia_reference_year</span>
 <span class="sd">        Level of CO2 emissions relative to 2019 from which higher emissions are offset [%].</span>
 <span class="sd">    level_carbon_offset</span>
 <span class="sd">        Annual carbon offset due to offsetting for a given level of emissions [MtCO2].</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">carbon_offset_baseline_level_vs_2019</span> <span class="o">=</span> <span class="n">aeromaps_leveling_function</span><span class="p">(</span>
+    <span class="n">carbon_offset_baseline_level_vs_corsia_reference_year</span> <span class="o">=</span> <span class="n">aeromaps_leveling_function</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">carbon_offset_baseline_level_vs_2019_reference_periods</span><span class="p">,</span>
-        <span class="n">carbon_offset_baseline_level_vs_2019_reference_periods_values</span><span class="p">,</span>
+        <span class="n">carbon_offset_baseline_level_vs_corsia_reference_year_reference_periods</span><span class="p">,</span>
+        <span class="n">carbon_offset_baseline_level_vs_corsia_reference_year_reference_periods_values</span><span class="p">,</span>
         <span class="n">model_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
     <span class="p">)</span>
 
@@ -6243,8 +6272,8 @@ Module to compute effects of carbon offsets.</p>
         <span class="n">model_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;carbon_offset_baseline_level_vs_2019&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">carbon_offset_baseline_level_vs_2019</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;carbon_offset_baseline_level_vs_corsia_reference_year&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">carbon_offset_baseline_level_vs_corsia_reference_year</span>
     <span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;carbon_offset_baseline_share_total_emissions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">carbon_offset_baseline_share_total_emissions</span>
@@ -6255,9 +6284,10 @@ Module to compute effects of carbon offsets.</p>
     <span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
 
     <span class="n">baseline_level</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">co2_emissions</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">2019</span><span class="p">]</span>
+        <span class="n">co2_emissions</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">corsia_reference_year</span><span class="p">]</span>
         <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">,</span> <span class="s2">&quot;carbon_offset_baseline_level_vs_2019&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">,</span>
+            <span class="s2">&quot;carbon_offset_baseline_level_vs_corsia_reference_year&quot;</span><span class="p">,</span>
         <span class="p">]</span>
         <span class="o">/</span> <span class="mi">100</span>
     <span class="p">)</span>
@@ -6279,7 +6309,7 @@ Module to compute effects of carbon offsets.</p>
     <span class="n">level_carbon_offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;level_carbon_offset&quot;</span><span class="p">]</span>
 
     <span class="k">return</span> <span class="p">(</span>
-        <span class="n">carbon_offset_baseline_level_vs_2019</span><span class="p">,</span>
+        <span class="n">carbon_offset_baseline_level_vs_corsia_reference_year</span><span class="p">,</span>
         <span class="n">carbon_offset_baseline_share_total_emissions</span><span class="p">,</span>
         <span class="n">level_carbon_offset</span><span class="p">,</span>
     <span class="p">)</span>
@@ -6357,8 +6387,8 @@ Module to compute effects of carbon offsets.</p>
 
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/impacts/emissions/carbon_offset.py</code></summary>
-                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">130</span>
-<span class="normal">131</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;residual_carbon_offset&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">136</span>
+<span class="normal">137</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;residual_carbon_offset&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -6506,13 +6536,7 @@ Module to compute effects of carbon offsets.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/models/impacts/emissions/carbon_offset.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">133</span>
-<span class="normal">134</span>
-<span class="normal">135</span>
-<span class="normal">136</span>
-<span class="normal">137</span>
-<span class="normal">138</span>
-<span class="normal">139</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">139</span>
 <span class="normal">140</span>
 <span class="normal">141</span>
 <span class="normal">142</span>
@@ -6555,7 +6579,13 @@ Module to compute effects of carbon offsets.</p>
 <span class="normal">179</span>
 <span class="normal">180</span>
 <span class="normal">181</span>
-<span class="normal">182</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">co2_emissions</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
     <span class="n">level_carbon_offset</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
@@ -6679,8 +6709,8 @@ Module to compute effects of carbon offsets.</p>
 
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/impacts/emissions/carbon_offset.py</code></summary>
-                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">195</span>
-<span class="normal">196</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;carbon_offset&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">201</span>
+<span class="normal">202</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;carbon_offset&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -6786,13 +6816,7 @@ Module to compute effects of carbon offsets.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/models/impacts/emissions/carbon_offset.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">198</span>
-<span class="normal">199</span>
-<span class="normal">200</span>
-<span class="normal">201</span>
-<span class="normal">202</span>
-<span class="normal">203</span>
-<span class="normal">204</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">204</span>
 <span class="normal">205</span>
 <span class="normal">206</span>
 <span class="normal">207</span>
@@ -6811,7 +6835,13 @@ Module to compute effects of carbon offsets.</p>
 <span class="normal">220</span>
 <span class="normal">221</span>
 <span class="normal">222</span>
-<span class="normal">223</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">level_carbon_offset</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
     <span class="n">residual_carbon_offset</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
@@ -6911,8 +6941,8 @@ Module to compute effects of carbon offsets.</p>
 
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/impacts/emissions/carbon_offset.py</code></summary>
-                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">236</span>
-<span class="normal">237</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;cumulative_carbon_offset&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">242</span>
+<span class="normal">243</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;cumulative_carbon_offset&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -7002,13 +7032,7 @@ Module to compute effects of carbon offsets.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/models/impacts/emissions/carbon_offset.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">239</span>
-<span class="normal">240</span>
-<span class="normal">241</span>
-<span class="normal">242</span>
-<span class="normal">243</span>
-<span class="normal">244</span>
-<span class="normal">245</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">245</span>
 <span class="normal">246</span>
 <span class="normal">247</span>
 <span class="normal">248</span>
@@ -7028,7 +7052,13 @@ Module to compute effects of carbon offsets.</p>
 <span class="normal">262</span>
 <span class="normal">263</span>
 <span class="normal">264</span>
-<span class="normal">265</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">carbon_offset</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
@@ -7132,10 +7162,10 @@ Module to compute effects of carbon offsets.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       

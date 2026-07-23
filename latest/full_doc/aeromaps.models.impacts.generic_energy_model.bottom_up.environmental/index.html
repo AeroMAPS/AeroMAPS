@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -2317,14 +2317,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../aeromaps.models.air_transport.air_traffic.ask/" class="md-nav__link">
+      <a href="../aeromaps.models.air_transport.air_traffic.ask_market/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    ask
+    ask_market
   
 
     
@@ -2345,14 +2345,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../aeromaps.models.air_transport.air_traffic.price_elasticity/" class="md-nav__link">
+      <a href="../aeromaps.models.air_transport.air_traffic.price_and_income_elasticity/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    price_elasticity
+    price_and_income_elasticity
   
 
     
@@ -2373,14 +2373,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../aeromaps.models.air_transport.air_traffic.rpk/" class="md-nav__link">
+      <a href="../aeromaps.models.air_transport.air_traffic.price_elasticity_logistic_income/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    rpk
+    price_elasticity_logistic_income
   
 
     
@@ -2401,14 +2401,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../aeromaps.models.air_transport.air_traffic.rtk/" class="md-nav__link">
+      <a href="../aeromaps.models.air_transport.air_traffic.rpk_market/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    rtk
+    rpk_market
   
 
     
@@ -2429,14 +2429,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../aeromaps.models.air_transport.air_traffic.short_range_distribution/" class="md-nav__link">
+      <a href="../aeromaps.models.air_transport.air_traffic.rtk_market/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    short_range_distribution
+    rtk_market
   
 
     
@@ -5972,9 +5972,7 @@ Module to compute pathway emissions based on bottom-up plant descriptions (EIS a
 
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/impacts/generic_energy_model/bottom_up/environmental.py</code></summary>
-                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 45</span>
-<span class="normal"> 46</span>
-<span class="normal"> 47</span>
+                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 47</span>
 <span class="normal"> 48</span>
 <span class="normal"> 49</span>
 <span class="normal"> 50</span>
@@ -6113,7 +6111,9 @@ Module to compute pathway emissions based on bottom-up plant descriptions (EIS a
 <span class="normal">183</span>
 <span class="normal">184</span>
 <span class="normal">185</span>
-<span class="normal">186</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">name</span><span class="p">,</span>
     <span class="n">configuration_data</span><span class="p">,</span>
@@ -6344,9 +6344,7 @@ and its emissions are distributed over its lifespan, weighted by its share in an
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/models/impacts/generic_energy_model/bottom_up/environmental.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">188</span>
-<span class="normal">189</span>
-<span class="normal">190</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">190</span>
 <span class="normal">191</span>
 <span class="normal">192</span>
 <span class="normal">193</span>
@@ -6622,7 +6620,9 @@ and its emissions are distributed over its lifespan, weighted by its share in an
 <span class="normal">463</span>
 <span class="normal">464</span>
 <span class="normal">465</span>
-<span class="normal">466</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="normal">466</span>
+<span class="normal">467</span>
+<span class="normal">468</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the environmental impact of the energy carrier pathway.</span>
 <span class="sd">    Each plant (vintage) is commissioned with the characteristics of its commissioning year,</span>
@@ -6978,10 +6978,10 @@ and its emissions are distributed over its lifespan, weighted by its share in an
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       

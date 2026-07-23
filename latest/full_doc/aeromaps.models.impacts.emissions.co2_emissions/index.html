@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -2317,14 +2317,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../aeromaps.models.air_transport.air_traffic.ask/" class="md-nav__link">
+      <a href="../aeromaps.models.air_transport.air_traffic.ask_market/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    ask
+    ask_market
   
 
     
@@ -2345,14 +2345,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../aeromaps.models.air_transport.air_traffic.price_elasticity/" class="md-nav__link">
+      <a href="../aeromaps.models.air_transport.air_traffic.price_and_income_elasticity/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    price_elasticity
+    price_and_income_elasticity
   
 
     
@@ -2373,14 +2373,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../aeromaps.models.air_transport.air_traffic.rpk/" class="md-nav__link">
+      <a href="../aeromaps.models.air_transport.air_traffic.price_elasticity_logistic_income/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    rpk
+    price_elasticity_logistic_income
   
 
     
@@ -2401,14 +2401,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../aeromaps.models.air_transport.air_traffic.rtk/" class="md-nav__link">
+      <a href="../aeromaps.models.air_transport.air_traffic.rpk_market/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    rtk
+    rpk_market
   
 
     
@@ -2429,14 +2429,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../aeromaps.models.air_transport.air_traffic.short_range_distribution/" class="md-nav__link">
+      <a href="../aeromaps.models.air_transport.air_traffic.rtk_market/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    short_range_distribution
+    rtk_market
   
 
     
@@ -3445,6 +3445,17 @@
   
     <nav class="md-nav" aria-label="CO2Emissions">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aeromaps.models.impacts.emissions.co2_emissions.CO2Emissions.custom_setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        custom_setup
+      
+    </span>
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#aeromaps.models.impacts.emissions.co2_emissions.CO2Emissions.compute" class="md-nav__link">
@@ -6799,6 +6810,29 @@
     </table>
 
 
+<details class="documentation" open>
+  <summary>Documentation</summary>
+  <p>Inputs
+    - load_factor: Load factor [%].
+    - rpk_<market>: Passenger RPK [RPK].
+    - rtk_<market>: Freight RTK [RTK].
+    - energy_per_ask_<market><em><energy>: Passenger MJ/ASK.
+    - ask</em><market><em><energy>_share: Passenger energy shares [%].
+    - energy_per_rtk</em><market><em><energy>: Freight MJ/RTK.
+    - rtk</em><market><em><energy>_share: Freight energy shares [%].
+    - <energy>_mean_co2_emission_factor: Mean CO2 factor [gCO2/MJ].
+Outputs
+    - co2_emissions</em><market>: Per-market CO2 [MtCO2].
+    - co2_emissions_passenger: Passenger total [MtCO2].
+    - co2_emissions_freight: Freight total [MtCO2].
+    - co2_emissions: Passenger + freight [MtCO2].
+Notes
+    - <market> is the MarketManager id (passenger and freight markets).
+    - <energy> is one of: dropin_fuel, hydrogen, electric.
+    - I/O names are generated from configuration and passed to GEMSEO via
+      self.input_names and self.output_names grammars.</p>
+</details>
+
 
 
 
@@ -6807,11 +6841,13 @@
 
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/impacts/emissions/co2_emissions.py</code></summary>
-                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">174</span>
-<span class="normal">175</span>
-<span class="normal">176</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;co2_emissions&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;co2_emissions&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">climate_historical_data</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">markets</span> <span class="o">=</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
                   </details>
 
@@ -6831,645 +6867,23 @@
 <div class="doc doc-object doc-function">
 
 
-<h3 id="aeromaps.models.impacts.emissions.co2_emissions.CO2Emissions.compute" class="doc doc-heading">
-            <span class="doc doc-object-name doc-function-name">compute</span>
+<h3 id="aeromaps.models.impacts.emissions.co2_emissions.CO2Emissions.custom_setup" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">custom_setup</span>
 
 
-<a href="#aeromaps.models.impacts.emissions.co2_emissions.CO2Emissions.compute" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span><span class="n">rpk_short_range</span><span class="p">,</span> <span class="n">rpk_medium_range</span><span class="p">,</span> <span class="n">rpk_long_range</span><span class="p">,</span> <span class="n">rtk</span><span class="p">,</span> <span class="n">load_factor</span><span class="p">,</span> <span class="n">energy_per_ask_short_range_dropin_fuel</span><span class="p">,</span> <span class="n">energy_per_ask_medium_range_dropin_fuel</span><span class="p">,</span> <span class="n">energy_per_ask_long_range_dropin_fuel</span><span class="p">,</span> <span class="n">energy_per_rtk_freight_dropin_fuel</span><span class="p">,</span> <span class="n">energy_per_ask_short_range_hydrogen</span><span class="p">,</span> <span class="n">energy_per_ask_medium_range_hydrogen</span><span class="p">,</span> <span class="n">energy_per_ask_long_range_hydrogen</span><span class="p">,</span> <span class="n">energy_per_rtk_freight_hydrogen</span><span class="p">,</span> <span class="n">energy_per_ask_short_range_electric</span><span class="p">,</span> <span class="n">energy_per_ask_medium_range_electric</span><span class="p">,</span> <span class="n">energy_per_ask_long_range_electric</span><span class="p">,</span> <span class="n">energy_per_rtk_freight_electric</span><span class="p">,</span> <span class="n">ask_short_range_dropin_fuel_share</span><span class="p">,</span> <span class="n">ask_medium_range_dropin_fuel_share</span><span class="p">,</span> <span class="n">ask_long_range_dropin_fuel_share</span><span class="p">,</span> <span class="n">rtk_dropin_fuel_share</span><span class="p">,</span> <span class="n">ask_short_range_hydrogen_share</span><span class="p">,</span> <span class="n">ask_medium_range_hydrogen_share</span><span class="p">,</span> <span class="n">ask_long_range_hydrogen_share</span><span class="p">,</span> <span class="n">rtk_hydrogen_share</span><span class="p">,</span> <span class="n">ask_short_range_electric_share</span><span class="p">,</span> <span class="n">ask_medium_range_electric_share</span><span class="p">,</span> <span class="n">ask_long_range_electric_share</span><span class="p">,</span> <span class="n">rtk_electric_share</span><span class="p">,</span> <span class="n">dropin_fuel_mean_co2_emission_factor</span><span class="p">,</span> <span class="n">hydrogen_mean_co2_emission_factor</span><span class="p">,</span> <span class="n">electric_mean_co2_emission_factor</span><span class="p">)</span>
+<a href="#aeromaps.models.impacts.emissions.co2_emissions.CO2Emissions.custom_setup" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">custom_setup</span><span class="p">()</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
-        <p>CO2 emissions calculation.</p>
-
-
-<p><span class="doc-section-title">Parameters:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Description</th>
-          <th>Default</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>rpk_short_range</code>
-            </td>
-            <td>
-                  <code><span title="pandas.Series">Series</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Revenue passenger kilometers for short-range flights [RPK].</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>rpk_medium_range</code>
-            </td>
-            <td>
-                  <code><span title="pandas.Series">Series</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Revenue passenger kilometers for medium-range flights [RPK].</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>rpk_long_range</code>
-            </td>
-            <td>
-                  <code><span title="pandas.Series">Series</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Revenue passenger kilometers for long-range flights [RPK].</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>rtk</code>
-            </td>
-            <td>
-                  <code><span title="pandas.Series">Series</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Revenue ton kilometers [RTK].</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>load_factor</code>
-            </td>
-            <td>
-                  <code><span title="pandas.Series">Series</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Load factor [%].</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>energy_per_ask_short_range_dropin_fuel</code>
-            </td>
-            <td>
-                  <code><span title="pandas.Series">Series</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Energy consumption per ASK for short-range flights using drop-in fuels [MJ/ASK].</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>energy_per_ask_medium_range_dropin_fuel</code>
-            </td>
-            <td>
-                  <code><span title="pandas.Series">Series</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Energy consumption per ASK for medium-range flights using drop-in fuels [MJ/ASK].</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>energy_per_ask_long_range_dropin_fuel</code>
-            </td>
-            <td>
-                  <code><span title="pandas.Series">Series</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Energy consumption per ASK for long-range flights using drop-in fuels [MJ/ASK].</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>energy_per_rtk_freight_dropin_fuel</code>
-            </td>
-            <td>
-                  <code><span title="pandas.Series">Series</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Energy consumption per RTK for freight using drop-in fuels [MJ/RTK].</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>energy_per_ask_short_range_hydrogen</code>
-            </td>
-            <td>
-                  <code><span title="pandas.Series">Series</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Energy consumption per ASK for short-range flights using hydrogen [MJ/ASK].</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>energy_per_ask_medium_range_hydrogen</code>
-            </td>
-            <td>
-                  <code><span title="pandas.Series">Series</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Energy consumption per ASK for medium-range flights using hydrogen [MJ/ASK].</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>energy_per_ask_long_range_hydrogen</code>
-            </td>
-            <td>
-                  <code><span title="pandas.Series">Series</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Energy consumption per ASK for long-range flights using hydrogen [MJ/ASK].</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>energy_per_rtk_freight_hydrogen</code>
-            </td>
-            <td>
-                  <code><span title="pandas.Series">Series</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Energy consumption per RTK for freight using hydrogen [MJ/RTK].</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>energy_per_ask_short_range_electric</code>
-            </td>
-            <td>
-                  <code><span title="pandas.Series">Series</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Energy consumption per ASK for short-range flights using electricity [MJ/ASK].</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>energy_per_ask_medium_range_electric</code>
-            </td>
-            <td>
-                  <code><span title="pandas.Series">Series</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Energy consumption per ASK for medium-range flights using electricity [MJ/ASK].</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>energy_per_ask_long_range_electric</code>
-            </td>
-            <td>
-                  <code><span title="pandas.Series">Series</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Energy consumption per ASK for long-range flights using electricity [MJ/ASK].</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>energy_per_rtk_freight_electric</code>
-            </td>
-            <td>
-                  <code><span title="pandas.Series">Series</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Energy consumption per RTK for freight using electricity [MJ/RTK].</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>ask_short_range_dropin_fuel_share</code>
-            </td>
-            <td>
-                  <code><span title="pandas.Series">Series</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Share of drop-in fuels in ASK for short-range flights [%].</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>ask_medium_range_dropin_fuel_share</code>
-            </td>
-            <td>
-                  <code><span title="pandas.Series">Series</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Share of drop-in fuels in ASK for medium-range flights [%].</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>ask_long_range_dropin_fuel_share</code>
-            </td>
-            <td>
-                  <code><span title="pandas.Series">Series</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Share of drop-in fuels in ASK for long-range flights [%].</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>rtk_dropin_fuel_share</code>
-            </td>
-            <td>
-                  <code><span title="pandas.Series">Series</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Share of drop-in fuels in RTK for freight [%].</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>ask_short_range_hydrogen_share</code>
-            </td>
-            <td>
-                  <code><span title="pandas.Series">Series</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Share of hydrogen in ASK for short-range flights [%].</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>ask_medium_range_hydrogen_share</code>
-            </td>
-            <td>
-                  <code><span title="pandas.Series">Series</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Share of hydrogen in ASK for medium-range flights [%].</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>ask_long_range_hydrogen_share</code>
-            </td>
-            <td>
-                  <code><span title="pandas.Series">Series</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Share of hydrogen in ASK for long-range flights [%].</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>rtk_hydrogen_share</code>
-            </td>
-            <td>
-                  <code><span title="pandas.Series">Series</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Share of hydrogen in RTK for freight [%].</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>ask_short_range_electric_share</code>
-            </td>
-            <td>
-                  <code><span title="pandas.Series">Series</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Share of electricity in ASK for short-range flights [%].</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>ask_medium_range_electric_share</code>
-            </td>
-            <td>
-                  <code><span title="pandas.Series">Series</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Share of electricity in ASK for medium-range flights [%].</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>ask_long_range_electric_share</code>
-            </td>
-            <td>
-                  <code><span title="pandas.Series">Series</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Share of electricity in ASK for long-range flights [%].</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>rtk_electric_share</code>
-            </td>
-            <td>
-                  <code><span title="pandas.Series">Series</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Share of electricity in RTK for freight [%].</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>dropin_fuel_mean_co2_emission_factor</code>
-            </td>
-            <td>
-                  <code><span title="pandas.Series">Series</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Mean CO2 emission factor for drop-in fuels [gCO2/MJ].</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>hydrogen_mean_co2_emission_factor</code>
-            </td>
-            <td>
-                  <code><span title="pandas.Series">Series</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Mean CO2 emission factor for hydrogen [gCO2/MJ].</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>electric_mean_co2_emission_factor</code>
-            </td>
-            <td>
-                  <code><span title="pandas.Series">Series</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Mean CO2 emission factor for electricity [gCO2/MJ].</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-    <p><span class="doc-section-title">Returns:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Type</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                  <code><span title="co2_emissions_short_range">co2_emissions_short_range</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>CO2 emissions from short-range flights [MtCO2].</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                  <code><span title="co2_emissions_medium_range">co2_emissions_medium_range</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>CO2 emissions from medium-range flights [MtCO2].</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                  <code><span title="co2_emissions_long_range">co2_emissions_long_range</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>CO2 emissions from long-range flights [MtCO2].</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                  <code><span title="co2_emissions_passenger">co2_emissions_passenger</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>CO2 emissions from passenger transport [MtCO2].</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                  <code><span title="co2_emissions_freight">co2_emissions_freight</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>CO2 emissions from freight transport [MtCO2].</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                  <code><a class="autorefs autorefs-internal" title="aeromaps.models.impacts.emissions.co2_emissions" href="#aeromaps.models.impacts.emissions.co2_emissions">co2_emissions</a></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Total CO2 emissions [MtCO2].</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
+        <p>Dynamically build input_names and output_names based on the markets manager.
+Specific function for custom AeroMAPSModel instances.</p>
 
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/models/impacts/emissions/co2_emissions.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">178</span>
-<span class="normal">179</span>
-<span class="normal">180</span>
-<span class="normal">181</span>
-<span class="normal">182</span>
-<span class="normal">183</span>
-<span class="normal">184</span>
-<span class="normal">185</span>
-<span class="normal">186</span>
-<span class="normal">187</span>
-<span class="normal">188</span>
-<span class="normal">189</span>
-<span class="normal">190</span>
-<span class="normal">191</span>
-<span class="normal">192</span>
-<span class="normal">193</span>
-<span class="normal">194</span>
-<span class="normal">195</span>
-<span class="normal">196</span>
-<span class="normal">197</span>
-<span class="normal">198</span>
-<span class="normal">199</span>
-<span class="normal">200</span>
-<span class="normal">201</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">201</span>
 <span class="normal">202</span>
 <span class="normal">203</span>
 <span class="normal">204</span>
@@ -7505,9 +6919,68 @@
 <span class="normal">234</span>
 <span class="normal">235</span>
 <span class="normal">236</span>
-<span class="normal">237</span>
-<span class="normal">238</span>
-<span class="normal">239</span>
+<span class="normal">237</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">custom_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Dynamically build input_names and output_names based on the markets manager.</span>
+<span class="sd">    Specific function for custom AeroMAPSModel instances.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">energy_types</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;dropin_fuel&quot;</span><span class="p">,</span> <span class="s2">&quot;hydrogen&quot;</span><span class="p">,</span> <span class="s2">&quot;electric&quot;</span><span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;load_factor&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+    <span class="p">}</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># Per-passenger-market inputs and per-market output.</span>
+    <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">&quot;passenger&quot;</span><span class="p">):</span>
+        <span class="n">mid</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;rpk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">et</span> <span class="ow">in</span> <span class="n">energy_types</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_per_ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">et</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">et</span><span class="si">}</span><span class="s2">_share&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;co2_emissions_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+
+    <span class="c1"># Per-freight-market inputs and per-market output.</span>
+    <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">&quot;freight&quot;</span><span class="p">):</span>
+        <span class="n">mid</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">et</span> <span class="ow">in</span> <span class="n">energy_types</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_per_rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">et</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">et</span><span class="si">}</span><span class="s2">_share&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;co2_emissions_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+
+    <span class="c1"># Mean CO2 emission factors (per energy type, global).</span>
+    <span class="k">for</span> <span class="n">et</span> <span class="ow">in</span> <span class="n">energy_types</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">et</span><span class="si">}</span><span class="s2">_mean_co2_emission_factor&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+
+    <span class="c1"># Aggregate outputs.</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="s2">&quot;co2_emissions_passenger&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="s2">&quot;co2_emissions_freight&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="s2">&quot;co2_emissions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="aeromaps.models.impacts.emissions.co2_emissions.CO2Emissions.compute" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">compute</span>
+
+
+<a href="#aeromaps.models.impacts.emissions.co2_emissions.CO2Emissions.compute" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span><span class="n">input_data</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>CO2 emissions per market and aggregates.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>aeromaps/models/impacts/emissions/co2_emissions.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">239</span>
 <span class="normal">240</span>
 <span class="normal">241</span>
 <span class="normal">242</span>
@@ -7603,305 +7076,85 @@
 <span class="normal">332</span>
 <span class="normal">333</span>
 <span class="normal">334</span>
-<span class="normal">335</span>
-<span class="normal">336</span>
-<span class="normal">337</span>
-<span class="normal">338</span>
-<span class="normal">339</span>
-<span class="normal">340</span>
-<span class="normal">341</span>
-<span class="normal">342</span>
-<span class="normal">343</span>
-<span class="normal">344</span>
-<span class="normal">345</span>
-<span class="normal">346</span>
-<span class="normal">347</span>
-<span class="normal">348</span>
-<span class="normal">349</span>
-<span class="normal">350</span>
-<span class="normal">351</span>
-<span class="normal">352</span>
-<span class="normal">353</span>
-<span class="normal">354</span>
-<span class="normal">355</span>
-<span class="normal">356</span>
-<span class="normal">357</span>
-<span class="normal">358</span>
-<span class="normal">359</span>
-<span class="normal">360</span>
-<span class="normal">361</span>
-<span class="normal">362</span>
-<span class="normal">363</span>
-<span class="normal">364</span>
-<span class="normal">365</span>
-<span class="normal">366</span>
-<span class="normal">367</span>
-<span class="normal">368</span>
-<span class="normal">369</span>
-<span class="normal">370</span>
-<span class="normal">371</span>
-<span class="normal">372</span>
-<span class="normal">373</span>
-<span class="normal">374</span>
-<span class="normal">375</span>
-<span class="normal">376</span>
-<span class="normal">377</span>
-<span class="normal">378</span>
-<span class="normal">379</span>
-<span class="normal">380</span>
-<span class="normal">381</span>
-<span class="normal">382</span>
-<span class="normal">383</span>
-<span class="normal">384</span>
-<span class="normal">385</span>
-<span class="normal">386</span>
-<span class="normal">387</span>
-<span class="normal">388</span>
-<span class="normal">389</span>
-<span class="normal">390</span>
-<span class="normal">391</span>
-<span class="normal">392</span>
-<span class="normal">393</span>
-<span class="normal">394</span>
-<span class="normal">395</span>
-<span class="normal">396</span>
-<span class="normal">397</span>
-<span class="normal">398</span>
-<span class="normal">399</span>
-<span class="normal">400</span>
-<span class="normal">401</span>
-<span class="normal">402</span>
-<span class="normal">403</span>
-<span class="normal">404</span>
-<span class="normal">405</span>
-<span class="normal">406</span>
-<span class="normal">407</span>
-<span class="normal">408</span>
-<span class="normal">409</span>
-<span class="normal">410</span>
-<span class="normal">411</span>
-<span class="normal">412</span>
-<span class="normal">413</span>
-<span class="normal">414</span>
-<span class="normal">415</span>
-<span class="normal">416</span>
-<span class="normal">417</span>
-<span class="normal">418</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span>
-    <span class="bp">self</span><span class="p">,</span>
-    <span class="n">rpk_short_range</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
-    <span class="n">rpk_medium_range</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
-    <span class="n">rpk_long_range</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
-    <span class="n">rtk</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
-    <span class="n">load_factor</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
-    <span class="n">energy_per_ask_short_range_dropin_fuel</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
-    <span class="n">energy_per_ask_medium_range_dropin_fuel</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
-    <span class="n">energy_per_ask_long_range_dropin_fuel</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
-    <span class="n">energy_per_rtk_freight_dropin_fuel</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
-    <span class="n">energy_per_ask_short_range_hydrogen</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
-    <span class="n">energy_per_ask_medium_range_hydrogen</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
-    <span class="n">energy_per_ask_long_range_hydrogen</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
-    <span class="n">energy_per_rtk_freight_hydrogen</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
-    <span class="n">energy_per_ask_short_range_electric</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
-    <span class="n">energy_per_ask_medium_range_electric</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
-    <span class="n">energy_per_ask_long_range_electric</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
-    <span class="n">energy_per_rtk_freight_electric</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
-    <span class="n">ask_short_range_dropin_fuel_share</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
-    <span class="n">ask_medium_range_dropin_fuel_share</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
-    <span class="n">ask_long_range_dropin_fuel_share</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
-    <span class="n">rtk_dropin_fuel_share</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
-    <span class="n">ask_short_range_hydrogen_share</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
-    <span class="n">ask_medium_range_hydrogen_share</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
-    <span class="n">ask_long_range_hydrogen_share</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
-    <span class="n">rtk_hydrogen_share</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
-    <span class="n">ask_short_range_electric_share</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
-    <span class="n">ask_medium_range_electric_share</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
-    <span class="n">ask_long_range_electric_share</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
-    <span class="n">rtk_electric_share</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
-    <span class="n">dropin_fuel_mean_co2_emission_factor</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
-    <span class="n">hydrogen_mean_co2_emission_factor</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
-    <span class="n">electric_mean_co2_emission_factor</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">]:</span>
+<span class="normal">335</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    CO2 emissions calculation.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    rpk_short_range</span>
-<span class="sd">        Revenue passenger kilometers for short-range flights [RPK].</span>
-<span class="sd">    rpk_medium_range</span>
-<span class="sd">        Revenue passenger kilometers for medium-range flights [RPK].</span>
-<span class="sd">    rpk_long_range</span>
-<span class="sd">        Revenue passenger kilometers for long-range flights [RPK].</span>
-<span class="sd">    rtk</span>
-<span class="sd">        Revenue ton kilometers [RTK].</span>
-<span class="sd">    load_factor</span>
-<span class="sd">        Load factor [%].</span>
-<span class="sd">    energy_per_ask_short_range_dropin_fuel</span>
-<span class="sd">        Energy consumption per ASK for short-range flights using drop-in fuels [MJ/ASK].</span>
-<span class="sd">    energy_per_ask_medium_range_dropin_fuel</span>
-<span class="sd">        Energy consumption per ASK for medium-range flights using drop-in fuels [MJ/ASK].</span>
-<span class="sd">    energy_per_ask_long_range_dropin_fuel</span>
-<span class="sd">        Energy consumption per ASK for long-range flights using drop-in fuels [MJ/ASK].</span>
-<span class="sd">    energy_per_rtk_freight_dropin_fuel</span>
-<span class="sd">        Energy consumption per RTK for freight using drop-in fuels [MJ/RTK].</span>
-<span class="sd">    energy_per_ask_short_range_hydrogen</span>
-<span class="sd">        Energy consumption per ASK for short-range flights using hydrogen [MJ/ASK].</span>
-<span class="sd">    energy_per_ask_medium_range_hydrogen</span>
-<span class="sd">        Energy consumption per ASK for medium-range flights using hydrogen [MJ/ASK].</span>
-<span class="sd">    energy_per_ask_long_range_hydrogen</span>
-<span class="sd">        Energy consumption per ASK for long-range flights using hydrogen [MJ/ASK].</span>
-<span class="sd">    energy_per_rtk_freight_hydrogen</span>
-<span class="sd">        Energy consumption per RTK for freight using hydrogen [MJ/RTK].</span>
-<span class="sd">    energy_per_ask_short_range_electric</span>
-<span class="sd">        Energy consumption per ASK for short-range flights using electricity [MJ/ASK].</span>
-<span class="sd">    energy_per_ask_medium_range_electric</span>
-<span class="sd">        Energy consumption per ASK for medium-range flights using electricity [MJ/ASK].</span>
-<span class="sd">    energy_per_ask_long_range_electric</span>
-<span class="sd">        Energy consumption per ASK for long-range flights using electricity [MJ/ASK].</span>
-<span class="sd">    energy_per_rtk_freight_electric</span>
-<span class="sd">        Energy consumption per RTK for freight using electricity [MJ/RTK].</span>
-<span class="sd">    ask_short_range_dropin_fuel_share</span>
-<span class="sd">        Share of drop-in fuels in ASK for short-range flights [%].</span>
-<span class="sd">    ask_medium_range_dropin_fuel_share</span>
-<span class="sd">        Share of drop-in fuels in ASK for medium-range flights [%].</span>
-<span class="sd">    ask_long_range_dropin_fuel_share</span>
-<span class="sd">        Share of drop-in fuels in ASK for long-range flights [%].</span>
-<span class="sd">    rtk_dropin_fuel_share</span>
-<span class="sd">        Share of drop-in fuels in RTK for freight [%].</span>
-<span class="sd">    ask_short_range_hydrogen_share</span>
-<span class="sd">        Share of hydrogen in ASK for short-range flights [%].</span>
-<span class="sd">    ask_medium_range_hydrogen_share</span>
-<span class="sd">        Share of hydrogen in ASK for medium-range flights [%].</span>
-<span class="sd">    ask_long_range_hydrogen_share</span>
-<span class="sd">        Share of hydrogen in ASK for long-range flights [%].</span>
-<span class="sd">    rtk_hydrogen_share</span>
-<span class="sd">        Share of hydrogen in RTK for freight [%].</span>
-<span class="sd">    ask_short_range_electric_share</span>
-<span class="sd">        Share of electricity in ASK for short-range flights [%].</span>
-<span class="sd">    ask_medium_range_electric_share</span>
-<span class="sd">        Share of electricity in ASK for medium-range flights [%].</span>
-<span class="sd">    ask_long_range_electric_share</span>
-<span class="sd">        Share of electricity in ASK for long-range flights [%].</span>
-<span class="sd">    rtk_electric_share</span>
-<span class="sd">        Share of electricity in RTK for freight [%].</span>
-<span class="sd">    dropin_fuel_mean_co2_emission_factor</span>
-<span class="sd">        Mean CO2 emission factor for drop-in fuels [gCO2/MJ].</span>
-<span class="sd">    hydrogen_mean_co2_emission_factor</span>
-<span class="sd">        Mean CO2 emission factor for hydrogen [gCO2/MJ].</span>
-<span class="sd">    electric_mean_co2_emission_factor</span>
-<span class="sd">        Mean CO2 emission factor for electricity [gCO2/MJ].</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    co2_emissions_short_range</span>
-<span class="sd">        CO2 emissions from short-range flights [MtCO2].</span>
-<span class="sd">    co2_emissions_medium_range</span>
-<span class="sd">        CO2 emissions from medium-range flights [MtCO2].</span>
-<span class="sd">    co2_emissions_long_range</span>
-<span class="sd">        CO2 emissions from long-range flights [MtCO2].</span>
-<span class="sd">    co2_emissions_passenger</span>
-<span class="sd">        CO2 emissions from passenger transport [MtCO2].</span>
-<span class="sd">    co2_emissions_freight</span>
-<span class="sd">        CO2 emissions from freight transport [MtCO2].</span>
-<span class="sd">    co2_emissions</span>
-<span class="sd">        Total CO2 emissions [MtCO2].</span>
+<span class="sd">    CO2 emissions per market and aggregates.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Locally filling incomplete emission factors with zeros so that sums are not nan if one is undefined</span>
-    <span class="n">dropin_fuel_mean_co2_emission_factor</span> <span class="o">=</span> <span class="n">dropin_fuel_mean_co2_emission_factor</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">hydrogen_mean_co2_emission_factor</span> <span class="o">=</span> <span class="n">hydrogen_mean_co2_emission_factor</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">electric_mean_co2_emission_factor</span> <span class="o">=</span> <span class="n">electric_mean_co2_emission_factor</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">energy_types</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;dropin_fuel&quot;</span><span class="p">,</span> <span class="s2">&quot;hydrogen&quot;</span><span class="p">,</span> <span class="s2">&quot;electric&quot;</span><span class="p">]</span>
 
-    <span class="c1"># Locally filling void energy per ask/rtk with zeros so that sums are not nan if one is undefined</span>
-    <span class="n">energy_per_ask_short_range_dropin_fuel</span> <span class="o">=</span> <span class="n">energy_per_ask_short_range_dropin_fuel</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">energy_per_ask_medium_range_dropin_fuel</span> <span class="o">=</span> <span class="n">energy_per_ask_medium_range_dropin_fuel</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">energy_per_ask_long_range_dropin_fuel</span> <span class="o">=</span> <span class="n">energy_per_ask_long_range_dropin_fuel</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">energy_per_rtk_freight_dropin_fuel</span> <span class="o">=</span> <span class="n">energy_per_rtk_freight_dropin_fuel</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">energy_per_ask_short_range_hydrogen</span> <span class="o">=</span> <span class="n">energy_per_ask_short_range_hydrogen</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">energy_per_ask_medium_range_hydrogen</span> <span class="o">=</span> <span class="n">energy_per_ask_medium_range_hydrogen</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">energy_per_ask_long_range_hydrogen</span> <span class="o">=</span> <span class="n">energy_per_ask_long_range_hydrogen</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">energy_per_rtk_freight_hydrogen</span> <span class="o">=</span> <span class="n">energy_per_rtk_freight_hydrogen</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">energy_per_ask_short_range_electric</span> <span class="o">=</span> <span class="n">energy_per_ask_short_range_electric</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">energy_per_ask_medium_range_electric</span> <span class="o">=</span> <span class="n">energy_per_ask_medium_range_electric</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">energy_per_ask_long_range_electric</span> <span class="o">=</span> <span class="n">energy_per_ask_long_range_electric</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">energy_per_rtk_freight_electric</span> <span class="o">=</span> <span class="n">energy_per_rtk_freight_electric</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="c1"># Locally fill incomplete emission factors with zeros so that sums are not nan.</span>
+    <span class="n">co2_emission_factor_by_energy_type</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">energy_type</span> <span class="ow">in</span> <span class="n">energy_types</span><span class="p">:</span>
+        <span class="n">co2_emission_factor</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">energy_type</span><span class="si">}</span><span class="s2">_mean_co2_emission_factor&quot;</span><span class="p">]</span>
+        <span class="n">co2_emission_factor</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">co2_emission_factor_by_energy_type</span><span class="p">[</span><span class="n">energy_type</span><span class="p">]</span> <span class="o">=</span> <span class="n">co2_emission_factor</span>
 
-    <span class="c1"># Short range</span>
-    <span class="n">co2_emissions_short_range</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">rpk_short_range</span>
-        <span class="o">/</span> <span class="p">(</span><span class="n">load_factor</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span>
-        <span class="o">*</span> <span class="p">(</span>
-            <span class="n">ask_short_range_dropin_fuel_share</span>
-            <span class="o">/</span> <span class="mi">100</span>
-            <span class="o">*</span> <span class="p">(</span><span class="n">dropin_fuel_mean_co2_emission_factor</span> <span class="o">*</span> <span class="n">energy_per_ask_short_range_dropin_fuel</span><span class="p">)</span>
-            <span class="o">+</span> <span class="n">ask_short_range_hydrogen_share</span>
-            <span class="o">/</span> <span class="mi">100</span>
-            <span class="o">*</span> <span class="p">(</span><span class="n">energy_per_ask_short_range_hydrogen</span> <span class="o">*</span> <span class="n">hydrogen_mean_co2_emission_factor</span><span class="p">)</span>
-            <span class="o">+</span> <span class="n">ask_short_range_electric_share</span>
-            <span class="o">/</span> <span class="mi">100</span>
-            <span class="o">*</span> <span class="p">(</span><span class="n">energy_per_ask_short_range_electric</span> <span class="o">*</span> <span class="n">electric_mean_co2_emission_factor</span><span class="p">)</span>
+    <span class="n">load_factor</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;load_factor&quot;</span><span class="p">]</span>
+    <span class="n">output_data</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># Per-passenger-market CO2 emissions.</span>
+    <span class="n">co2_emissions_passenger</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">&quot;passenger&quot;</span><span class="p">):</span>
+        <span class="n">mid</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">id</span>
+        <span class="n">rpk_market</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;rpk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+        <span class="n">co2_weighted_energy_intensity_sum</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">energy_type</span> <span class="ow">in</span> <span class="n">energy_types</span><span class="p">:</span>
+            <span class="n">energy_per_ask</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_per_ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">ask_share</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_type</span><span class="si">}</span><span class="s2">_share&quot;</span><span class="p">]</span>
+            <span class="n">co2_weighted_energy_intensity</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">ask_share</span>
+                <span class="o">/</span> <span class="mi">100</span>
+                <span class="o">*</span> <span class="p">(</span><span class="n">energy_per_ask</span> <span class="o">*</span> <span class="n">co2_emission_factor_by_energy_type</span><span class="p">[</span><span class="n">energy_type</span><span class="p">])</span>
+            <span class="p">)</span>
+            <span class="n">co2_weighted_energy_intensity_sum</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">co2_weighted_energy_intensity</span>
+                <span class="k">if</span> <span class="n">co2_weighted_energy_intensity_sum</span> <span class="ow">is</span> <span class="kc">None</span>
+                <span class="k">else</span> <span class="n">co2_weighted_energy_intensity_sum</span> <span class="o">+</span> <span class="n">co2_weighted_energy_intensity</span>
+            <span class="p">)</span>
+        <span class="n">co2_emissions_market</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">rpk_market</span> <span class="o">/</span> <span class="p">(</span><span class="n">load_factor</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span> <span class="o">*</span> <span class="n">co2_weighted_energy_intensity_sum</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mi">12</span><span class="p">)</span>
         <span class="p">)</span>
-        <span class="o">*</span> <span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mi">12</span><span class="p">)</span>
-    <span class="p">)</span>
-
-    <span class="c1"># Medium range</span>
-    <span class="n">co2_emissions_medium_range</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">rpk_medium_range</span>
-        <span class="o">/</span> <span class="p">(</span><span class="n">load_factor</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span>
-        <span class="o">*</span> <span class="p">(</span>
-            <span class="n">ask_medium_range_dropin_fuel_share</span>
-            <span class="o">/</span> <span class="mi">100</span>
-            <span class="o">*</span> <span class="p">(</span><span class="n">dropin_fuel_mean_co2_emission_factor</span> <span class="o">*</span> <span class="n">energy_per_ask_medium_range_dropin_fuel</span><span class="p">)</span>
-            <span class="o">+</span> <span class="n">ask_medium_range_hydrogen_share</span>
-            <span class="o">/</span> <span class="mi">100</span>
-            <span class="o">*</span> <span class="p">(</span><span class="n">energy_per_ask_medium_range_hydrogen</span> <span class="o">*</span> <span class="n">hydrogen_mean_co2_emission_factor</span><span class="p">)</span>
-            <span class="o">+</span> <span class="n">ask_medium_range_electric_share</span>
-            <span class="o">/</span> <span class="mi">100</span>
-            <span class="o">*</span> <span class="p">(</span><span class="n">energy_per_ask_medium_range_electric</span> <span class="o">*</span> <span class="n">electric_mean_co2_emission_factor</span><span class="p">)</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;co2_emissions_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">co2_emissions_market</span>
+        <span class="n">co2_emissions_passenger</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">co2_emissions_market</span>
+            <span class="k">if</span> <span class="n">co2_emissions_passenger</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="n">co2_emissions_passenger</span> <span class="o">+</span> <span class="n">co2_emissions_market</span>
         <span class="p">)</span>
-        <span class="o">*</span> <span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mi">12</span><span class="p">)</span>
-    <span class="p">)</span>
 
-    <span class="c1"># Long range</span>
-    <span class="n">co2_emissions_long_range</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">rpk_long_range</span>
-        <span class="o">/</span> <span class="p">(</span><span class="n">load_factor</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span>
-        <span class="o">*</span> <span class="p">(</span>
-            <span class="n">ask_long_range_dropin_fuel_share</span>
-            <span class="o">/</span> <span class="mi">100</span>
-            <span class="o">*</span> <span class="p">(</span><span class="n">dropin_fuel_mean_co2_emission_factor</span> <span class="o">*</span> <span class="n">energy_per_ask_long_range_dropin_fuel</span><span class="p">)</span>
-            <span class="o">+</span> <span class="n">ask_long_range_hydrogen_share</span>
-            <span class="o">/</span> <span class="mi">100</span>
-            <span class="o">*</span> <span class="p">(</span><span class="n">energy_per_ask_long_range_hydrogen</span> <span class="o">*</span> <span class="n">hydrogen_mean_co2_emission_factor</span><span class="p">)</span>
-            <span class="o">+</span> <span class="n">ask_long_range_electric_share</span>
-            <span class="o">/</span> <span class="mi">100</span>
-            <span class="o">*</span> <span class="p">(</span><span class="n">energy_per_ask_long_range_electric</span> <span class="o">*</span> <span class="n">electric_mean_co2_emission_factor</span><span class="p">)</span>
+    <span class="c1"># Per-freight-market CO2 emissions.</span>
+    <span class="n">co2_emissions_freight</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">&quot;freight&quot;</span><span class="p">):</span>
+        <span class="n">mid</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">id</span>
+        <span class="n">rtk_market</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+        <span class="n">co2_weighted_energy_intensity_sum</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">energy_type</span> <span class="ow">in</span> <span class="n">energy_types</span><span class="p">:</span>
+            <span class="n">energy_per_rtk</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_per_rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">rtk_share</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_type</span><span class="si">}</span><span class="s2">_share&quot;</span><span class="p">]</span>
+            <span class="n">co2_weighted_energy_intensity</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">rtk_share</span>
+                <span class="o">/</span> <span class="mi">100</span>
+                <span class="o">*</span> <span class="p">(</span><span class="n">energy_per_rtk</span> <span class="o">*</span> <span class="n">co2_emission_factor_by_energy_type</span><span class="p">[</span><span class="n">energy_type</span><span class="p">])</span>
+            <span class="p">)</span>
+            <span class="n">co2_weighted_energy_intensity_sum</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">co2_weighted_energy_intensity</span>
+                <span class="k">if</span> <span class="n">co2_weighted_energy_intensity_sum</span> <span class="ow">is</span> <span class="kc">None</span>
+                <span class="k">else</span> <span class="n">co2_weighted_energy_intensity_sum</span> <span class="o">+</span> <span class="n">co2_weighted_energy_intensity</span>
+            <span class="p">)</span>
+        <span class="n">co2_emissions_market</span> <span class="o">=</span> <span class="n">rtk_market</span> <span class="o">*</span> <span class="n">co2_weighted_energy_intensity_sum</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mi">12</span><span class="p">)</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;co2_emissions_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">co2_emissions_market</span>
+        <span class="n">co2_emissions_freight</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">co2_emissions_market</span>
+            <span class="k">if</span> <span class="n">co2_emissions_freight</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="n">co2_emissions_freight</span> <span class="o">+</span> <span class="n">co2_emissions_market</span>
         <span class="p">)</span>
-        <span class="o">*</span> <span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mi">12</span><span class="p">)</span>
-    <span class="p">)</span>
 
-    <span class="c1"># Freight</span>
-    <span class="n">co2_emissions_freight</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">rtk</span>
-        <span class="o">*</span> <span class="p">(</span>
-            <span class="n">rtk_dropin_fuel_share</span>
-            <span class="o">/</span> <span class="mi">100</span>
-            <span class="o">*</span> <span class="p">(</span><span class="n">dropin_fuel_mean_co2_emission_factor</span> <span class="o">*</span> <span class="n">energy_per_rtk_freight_dropin_fuel</span><span class="p">)</span>
-            <span class="o">+</span> <span class="n">rtk_hydrogen_share</span>
-            <span class="o">/</span> <span class="mi">100</span>
-            <span class="o">*</span> <span class="p">(</span><span class="n">energy_per_rtk_freight_hydrogen</span> <span class="o">*</span> <span class="n">hydrogen_mean_co2_emission_factor</span><span class="p">)</span>
-            <span class="o">+</span> <span class="n">rtk_electric_share</span>
-            <span class="o">/</span> <span class="mi">100</span>
-            <span class="o">*</span> <span class="p">(</span><span class="n">energy_per_rtk_freight_electric</span> <span class="o">*</span> <span class="n">electric_mean_co2_emission_factor</span><span class="p">)</span>
-        <span class="p">)</span>
-        <span class="o">*</span> <span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mi">12</span><span class="p">)</span>
-    <span class="p">)</span>
+    <span class="c1"># Defensive defaults if no markets.</span>
+    <span class="k">if</span> <span class="n">co2_emissions_passenger</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">co2_emissions_passenger</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">co2_emissions_freight</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">co2_emissions_freight</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
 
-    <span class="c1"># Passenger</span>
-    <span class="n">co2_emissions_passenger</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">co2_emissions_short_range</span> <span class="o">+</span> <span class="n">co2_emissions_medium_range</span> <span class="o">+</span> <span class="n">co2_emissions_long_range</span>
-    <span class="p">)</span>
-
-    <span class="c1"># Total: new way to affect without for loops</span>
+    <span class="c1"># Update climate DataFrame side-effect (matches legacy behaviour).</span>
     <span class="n">historical_co2_emissions_for_temperature</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">climate_historical_data</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">climate_historic_start_year</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">historic_start_year</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;co2_emissions&quot;</span>
@@ -7912,21 +7165,14 @@
         <span class="n">co2_emissions_passenger</span> <span class="o">+</span> <span class="n">co2_emissions_freight</span>
     <span class="p">)</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;co2_emissions_short_range&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">co2_emissions_short_range</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;co2_emissions_medium_range&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">co2_emissions_medium_range</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;co2_emissions_long_range&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">co2_emissions_long_range</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;co2_emissions_freight&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">co2_emissions_freight</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;co2_emissions_passenger&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">co2_emissions_passenger</span>
-    <span class="n">co2_emissions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">&quot;co2_emissions&quot;</span><span class="p">]</span>
+    <span class="n">co2_emissions_total</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">&quot;co2_emissions&quot;</span><span class="p">]</span>
 
-    <span class="k">return</span> <span class="p">(</span>
-        <span class="n">co2_emissions_short_range</span><span class="p">,</span>
-        <span class="n">co2_emissions_medium_range</span><span class="p">,</span>
-        <span class="n">co2_emissions_long_range</span><span class="p">,</span>
-        <span class="n">co2_emissions_passenger</span><span class="p">,</span>
-        <span class="n">co2_emissions_freight</span><span class="p">,</span>
-        <span class="n">co2_emissions</span><span class="p">,</span>
-    <span class="p">)</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;co2_emissions_passenger&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">co2_emissions_passenger</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;co2_emissions_freight&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">co2_emissions_freight</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;co2_emissions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">co2_emissions_total</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">_store_outputs</span><span class="p">(</span><span class="n">output_data</span><span class="p">,</span> <span class="n">climate_outputs_keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;co2_emissions&quot;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">output_data</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -8001,8 +7247,8 @@
 
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/impacts/emissions/co2_emissions.py</code></summary>
-                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">431</span>
-<span class="normal">432</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;cumulative_co2_emissions&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">348</span>
+<span class="normal">349</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;cumulative_co2_emissions&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -8028,7 +7274,7 @@
 
 
 <a href="#aeromaps.models.impacts.emissions.co2_emissions.CumulativeCO2Emissions.compute" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span><span class="n">co2_emissions</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span><span class="n">co2_emissions</span><span class="p">,</span> <span class="n">carbon_budget_reference_year</span><span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -8063,6 +7309,23 @@
                 <em>required</em>
             </td>
           </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>carbon_budget_reference_year</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Fixed reference year from which the budget-comparable cumulative is
+summed (default 2019), matching the aviation carbon budget framing.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
       </tbody>
     </table>
 
@@ -8082,7 +7345,21 @@
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Cumulative CO2 emissions [GtCO2].</p>
+                <p>Cumulative CO2 emissions over the prospective window
+(prospection_start_year -&gt; end_year) [GtCO2].</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="cumulative_co2_emissions_from_carbon_budget_reference_year">cumulative_co2_emissions_from_carbon_budget_reference_year</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Cumulative CO2 emissions summed from carbon_budget_reference_year -&gt;
+end_year [GtCO2]. Includes observed historic emissions from the
+reference year onward, so it is directly comparable to the aviation
+carbon budget regardless of prospection_start_year.</p>
               </div>
             </td>
           </tr>
@@ -8092,34 +7369,55 @@
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/models/impacts/emissions/co2_emissions.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">434</span>
-<span class="normal">435</span>
-<span class="normal">436</span>
-<span class="normal">437</span>
-<span class="normal">438</span>
-<span class="normal">439</span>
-<span class="normal">440</span>
-<span class="normal">441</span>
-<span class="normal">442</span>
-<span class="normal">443</span>
-<span class="normal">444</span>
-<span class="normal">445</span>
-<span class="normal">446</span>
-<span class="normal">447</span>
-<span class="normal">448</span>
-<span class="normal">449</span>
-<span class="normal">450</span>
-<span class="normal">451</span>
-<span class="normal">452</span>
-<span class="normal">453</span>
-<span class="normal">454</span>
-<span class="normal">455</span>
-<span class="normal">456</span>
-<span class="normal">457</span>
-<span class="normal">458</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">351</span>
+<span class="normal">352</span>
+<span class="normal">353</span>
+<span class="normal">354</span>
+<span class="normal">355</span>
+<span class="normal">356</span>
+<span class="normal">357</span>
+<span class="normal">358</span>
+<span class="normal">359</span>
+<span class="normal">360</span>
+<span class="normal">361</span>
+<span class="normal">362</span>
+<span class="normal">363</span>
+<span class="normal">364</span>
+<span class="normal">365</span>
+<span class="normal">366</span>
+<span class="normal">367</span>
+<span class="normal">368</span>
+<span class="normal">369</span>
+<span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span>
+<span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span>
+<span class="normal">383</span>
+<span class="normal">384</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span>
+<span class="normal">388</span>
+<span class="normal">389</span>
+<span class="normal">390</span>
+<span class="normal">391</span>
+<span class="normal">392</span>
+<span class="normal">393</span>
+<span class="normal">394</span>
+<span class="normal">395</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">co2_emissions</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+    <span class="n">carbon_budget_reference_year</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Execute the computation of cumulative CO2 emissions.</span>
 
@@ -8127,20 +7425,39 @@
 <span class="sd">    ----------</span>
 <span class="sd">    co2_emissions</span>
 <span class="sd">        Annual CO2 emissions [MtCO2].</span>
+<span class="sd">    carbon_budget_reference_year</span>
+<span class="sd">        Fixed reference year from which the budget-comparable cumulative is</span>
+<span class="sd">        summed (default 2019), matching the aviation carbon budget framing.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    cumulative_co2_emissions</span>
-<span class="sd">        Cumulative CO2 emissions [GtCO2].</span>
+<span class="sd">        Cumulative CO2 emissions over the prospective window</span>
+<span class="sd">        (prospection_start_year -&gt; end_year) [GtCO2].</span>
+<span class="sd">    cumulative_co2_emissions_from_carbon_budget_reference_year</span>
+<span class="sd">        Cumulative CO2 emissions summed from carbon_budget_reference_year -&gt;</span>
+<span class="sd">        end_year [GtCO2]. Includes observed historic emissions from the</span>
+<span class="sd">        reference year onward, so it is directly comparable to the aviation</span>
+<span class="sd">        carbon budget regardless of prospection_start_year.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">cumulative_co2_emissions</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">co2_emissions</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">]</span> <span class="o">/</span> <span class="mi">1000</span>
     <span class="p">)</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;cumulative_co2_emissions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cumulative_co2_emissions</span>
+    <span class="n">cumulative_co2_emissions_from_carbon_budget_reference_year</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">co2_emissions</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">carbon_budget_reference_year</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">]</span> <span class="o">/</span> <span class="mi">1000</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span>
 
-    <span class="k">return</span> <span class="n">cumulative_co2_emissions</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;cumulative_co2_emissions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cumulative_co2_emissions</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;cumulative_co2_emissions_from_carbon_budget_reference_year&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">cumulative_co2_emissions_from_carbon_budget_reference_year</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="n">cumulative_co2_emissions</span><span class="p">,</span>
+        <span class="n">cumulative_co2_emissions_from_carbon_budget_reference_year</span><span class="p">,</span>
+    <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -8215,8 +7532,8 @@
 
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/impacts/emissions/co2_emissions.py</code></summary>
-                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">471</span>
-<span class="normal">472</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;detailed_co2_emissions&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">408</span>
+<span class="normal">409</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;detailed_co2_emissions&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -8436,21 +7753,21 @@
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code><span title="co2_emissions_2019technology_baseline3">co2_emissions_2019technology_baseline3</span></code>
+                  <code><span title="co2_emissions_last_historical_year_technology_baseline3">co2_emissions_last_historical_year_technology_baseline3</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>CO2 emissions from all commercial air transport based on 2019 technological level with a baseline air traffic growth [MtCO2].</p>
+                <p>CO2 emissions from all commercial air transport based on last-historical-year technological level with a baseline air traffic growth [MtCO2].</p>
               </div>
             </td>
           </tr>
           <tr class="doc-section-item">
             <td>
-                  <code><span title="co2_emissions_2019technology">co2_emissions_2019technology</span></code>
+                  <code><span title="co2_emissions_last_historical_year_technology">co2_emissions_last_historical_year_technology</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>CO2 emissions from all commercial air transport based on 2019 technological level [MtCO2].</p>
+                <p>CO2 emissions from all commercial air transport based on last-historical-year technological level [MtCO2].</p>
               </div>
             </td>
           </tr>
@@ -8500,7 +7817,70 @@
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/models/impacts/emissions/co2_emissions.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">474</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">411</span>
+<span class="normal">412</span>
+<span class="normal">413</span>
+<span class="normal">414</span>
+<span class="normal">415</span>
+<span class="normal">416</span>
+<span class="normal">417</span>
+<span class="normal">418</span>
+<span class="normal">419</span>
+<span class="normal">420</span>
+<span class="normal">421</span>
+<span class="normal">422</span>
+<span class="normal">423</span>
+<span class="normal">424</span>
+<span class="normal">425</span>
+<span class="normal">426</span>
+<span class="normal">427</span>
+<span class="normal">428</span>
+<span class="normal">429</span>
+<span class="normal">430</span>
+<span class="normal">431</span>
+<span class="normal">432</span>
+<span class="normal">433</span>
+<span class="normal">434</span>
+<span class="normal">435</span>
+<span class="normal">436</span>
+<span class="normal">437</span>
+<span class="normal">438</span>
+<span class="normal">439</span>
+<span class="normal">440</span>
+<span class="normal">441</span>
+<span class="normal">442</span>
+<span class="normal">443</span>
+<span class="normal">444</span>
+<span class="normal">445</span>
+<span class="normal">446</span>
+<span class="normal">447</span>
+<span class="normal">448</span>
+<span class="normal">449</span>
+<span class="normal">450</span>
+<span class="normal">451</span>
+<span class="normal">452</span>
+<span class="normal">453</span>
+<span class="normal">454</span>
+<span class="normal">455</span>
+<span class="normal">456</span>
+<span class="normal">457</span>
+<span class="normal">458</span>
+<span class="normal">459</span>
+<span class="normal">460</span>
+<span class="normal">461</span>
+<span class="normal">462</span>
+<span class="normal">463</span>
+<span class="normal">464</span>
+<span class="normal">465</span>
+<span class="normal">466</span>
+<span class="normal">467</span>
+<span class="normal">468</span>
+<span class="normal">469</span>
+<span class="normal">470</span>
+<span class="normal">471</span>
+<span class="normal">472</span>
+<span class="normal">473</span>
+<span class="normal">474</span>
 <span class="normal">475</span>
 <span class="normal">476</span>
 <span class="normal">477</span>
@@ -8655,68 +8035,7 @@
 <span class="normal">626</span>
 <span class="normal">627</span>
 <span class="normal">628</span>
-<span class="normal">629</span>
-<span class="normal">630</span>
-<span class="normal">631</span>
-<span class="normal">632</span>
-<span class="normal">633</span>
-<span class="normal">634</span>
-<span class="normal">635</span>
-<span class="normal">636</span>
-<span class="normal">637</span>
-<span class="normal">638</span>
-<span class="normal">639</span>
-<span class="normal">640</span>
-<span class="normal">641</span>
-<span class="normal">642</span>
-<span class="normal">643</span>
-<span class="normal">644</span>
-<span class="normal">645</span>
-<span class="normal">646</span>
-<span class="normal">647</span>
-<span class="normal">648</span>
-<span class="normal">649</span>
-<span class="normal">650</span>
-<span class="normal">651</span>
-<span class="normal">652</span>
-<span class="normal">653</span>
-<span class="normal">654</span>
-<span class="normal">655</span>
-<span class="normal">656</span>
-<span class="normal">657</span>
-<span class="normal">658</span>
-<span class="normal">659</span>
-<span class="normal">660</span>
-<span class="normal">661</span>
-<span class="normal">662</span>
-<span class="normal">663</span>
-<span class="normal">664</span>
-<span class="normal">665</span>
-<span class="normal">666</span>
-<span class="normal">667</span>
-<span class="normal">668</span>
-<span class="normal">669</span>
-<span class="normal">670</span>
-<span class="normal">671</span>
-<span class="normal">672</span>
-<span class="normal">673</span>
-<span class="normal">674</span>
-<span class="normal">675</span>
-<span class="normal">676</span>
-<span class="normal">677</span>
-<span class="normal">678</span>
-<span class="normal">679</span>
-<span class="normal">680</span>
-<span class="normal">681</span>
-<span class="normal">682</span>
-<span class="normal">683</span>
-<span class="normal">684</span>
-<span class="normal">685</span>
-<span class="normal">686</span>
-<span class="normal">687</span>
-<span class="normal">688</span>
-<span class="normal">689</span>
-<span class="normal">690</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span>
+<span class="normal">629</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">rpk_reference</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
     <span class="n">rtk_reference</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
@@ -8758,10 +8077,10 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    co2_emissions_2019technology_baseline3</span>
-<span class="sd">        CO2 emissions from all commercial air transport based on 2019 technological level with a baseline air traffic growth [MtCO2].</span>
-<span class="sd">    co2_emissions_2019technology</span>
-<span class="sd">        CO2 emissions from all commercial air transport based on 2019 technological level [MtCO2].</span>
+<span class="sd">    co2_emissions_last_historical_year_technology_baseline3</span>
+<span class="sd">        CO2 emissions from all commercial air transport based on last-historical-year technological level with a baseline air traffic growth [MtCO2].</span>
+<span class="sd">    co2_emissions_last_historical_year_technology</span>
+<span class="sd">        CO2 emissions from all commercial air transport based on last-historical-year technological level [MtCO2].</span>
 <span class="sd">    co2_emissions_including_aircraft_efficiency</span>
 <span class="sd">        CO2 emissions from all commercial air transport including aircraft efficiency improvements [MtCO2].</span>
 <span class="sd">    co2_emissions_including_operations</span>
@@ -8808,7 +8127,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span> <span class="o">-</span> <span class="mi">1</span>
     <span class="p">]</span>
 
-    <span class="n">co2_emissions_2019technology_baseline3</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">co2_emissions_last_historical_year_technology_baseline3</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">rpk_reference_local</span>
         <span class="o">*</span> <span class="n">energy_per_ask_mean_without_operations_start_year_local</span>
         <span class="o">*</span> <span class="n">energy_per_ask_mean_start_year_local</span>
@@ -8825,7 +8144,7 @@
         <span class="o">*</span> <span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mi">12</span><span class="p">)</span>
     <span class="p">)</span>
 
-    <span class="n">co2_emissions_2019technology</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">co2_emissions_last_historical_year_technology</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">rpk_local</span>
         <span class="o">*</span> <span class="n">energy_per_ask_mean_without_operations_start_year_local</span>
         <span class="o">*</span> <span class="n">energy_per_ask_mean_start_year_local</span>
@@ -8910,10 +8229,12 @@
         <span class="o">*</span> <span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mi">12</span><span class="p">)</span>
     <span class="p">)</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">years</span><span class="p">,</span> <span class="s2">&quot;co2_emissions_2019technology_baseline3&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">co2_emissions_2019technology_baseline3</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">years</span><span class="p">,</span> <span class="s2">&quot;co2_emissions_last_historical_year_technology_baseline3&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">co2_emissions_last_historical_year_technology_baseline3</span>
     <span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">years</span><span class="p">,</span> <span class="s2">&quot;co2_emissions_2019technology&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">co2_emissions_2019technology</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">years</span><span class="p">,</span> <span class="s2">&quot;co2_emissions_last_historical_year_technology&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">co2_emissions_last_historical_year_technology</span>
+    <span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">years</span><span class="p">,</span> <span class="s2">&quot;co2_emissions_including_aircraft_efficiency&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">co2_emissions_including_aircraft_efficiency</span>
     <span class="p">)</span>
@@ -8926,8 +8247,8 @@
     <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">years</span><span class="p">,</span> <span class="s2">&quot;co2_emissions_including_energy&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">co2_emissions_including_energy</span>
 
     <span class="k">return</span> <span class="p">(</span>
-        <span class="n">co2_emissions_2019technology_baseline3</span><span class="p">,</span>
-        <span class="n">co2_emissions_2019technology</span><span class="p">,</span>
+        <span class="n">co2_emissions_last_historical_year_technology_baseline3</span><span class="p">,</span>
+        <span class="n">co2_emissions_last_historical_year_technology</span><span class="p">,</span>
         <span class="n">co2_emissions_including_aircraft_efficiency</span><span class="p">,</span>
         <span class="n">co2_emissions_including_operations</span><span class="p">,</span>
         <span class="n">co2_emissions_including_load_factor</span><span class="p">,</span>
@@ -9007,8 +8328,8 @@
 
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/impacts/emissions/co2_emissions.py</code></summary>
-                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">703</span>
-<span class="normal">704</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;detailed_cumulative_co2_emissions&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">642</span>
+<span class="normal">643</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;detailed_cumulative_co2_emissions&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -9034,7 +8355,7 @@
 
 
 <a href="#aeromaps.models.impacts.emissions.co2_emissions.DetailedCumulativeCO2Emissions.compute" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span><span class="n">co2_emissions_2019technology_baseline3</span><span class="p">,</span> <span class="n">co2_emissions_2019technology</span><span class="p">,</span> <span class="n">co2_emissions_including_aircraft_efficiency</span><span class="p">,</span> <span class="n">co2_emissions_including_operations</span><span class="p">,</span> <span class="n">co2_emissions_including_load_factor</span><span class="p">,</span> <span class="n">co2_emissions_including_energy</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span><span class="n">co2_emissions_last_historical_year_technology_baseline3</span><span class="p">,</span> <span class="n">co2_emissions_last_historical_year_technology</span><span class="p">,</span> <span class="n">co2_emissions_including_aircraft_efficiency</span><span class="p">,</span> <span class="n">co2_emissions_including_operations</span><span class="p">,</span> <span class="n">co2_emissions_including_load_factor</span><span class="p">,</span> <span class="n">co2_emissions_including_energy</span><span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -9055,14 +8376,14 @@
       <tbody>
           <tr class="doc-section-item">
             <td>
-                <code>co2_emissions_2019technology_baseline3</code>
+                <code>co2_emissions_last_historical_year_technology_baseline3</code>
             </td>
             <td>
                   <code><span title="pandas.Series">Series</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>CO2 emissions from all commercial air transport based on 2019 technological level with a baseline air traffic growth [MtCO2].</p>
+                <p>CO2 emissions from all commercial air transport based on last-historical-year technological level with a baseline air traffic growth [MtCO2].</p>
               </div>
             </td>
             <td>
@@ -9071,14 +8392,14 @@
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>co2_emissions_2019technology</code>
+                <code>co2_emissions_last_historical_year_technology</code>
             </td>
             <td>
                   <code><span title="pandas.Series">Series</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>CO2 emissions from all commercial air transport based on 2019 technological level [MtCO2].</p>
+                <p>CO2 emissions from all commercial air transport based on last-historical-year technological level [MtCO2].</p>
               </div>
             </td>
             <td>
@@ -9164,21 +8485,21 @@
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code><span title="cumulative_co2_emissions_2019technology_baseline3">cumulative_co2_emissions_2019technology_baseline3</span></code>
+                  <code><span title="cumulative_co2_emissions_last_historical_year_technology_baseline3">cumulative_co2_emissions_last_historical_year_technology_baseline3</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Cumulative CO2 emissions from all commercial air transport based on 2019 technological level with a baseline air traffic growth [GtCO2].</p>
+                <p>Cumulative CO2 emissions from all commercial air transport based on last-historical-year technological level with a baseline air traffic growth [GtCO2].</p>
               </div>
             </td>
           </tr>
           <tr class="doc-section-item">
             <td>
-                  <code><span title="cumulative_co2_emissions_2019technology">cumulative_co2_emissions_2019technology</span></code>
+                  <code><span title="cumulative_co2_emissions_last_historical_year_technology">cumulative_co2_emissions_last_historical_year_technology</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Cumulative CO2 emissions from all commercial air transport based on 2019 technological level [GtCO2].</p>
+                <p>Cumulative CO2 emissions from all commercial air transport based on last-historical-year technological level [GtCO2].</p>
               </div>
             </td>
           </tr>
@@ -9230,7 +8551,68 @@ improvements and energy decarbonization [GtCO2].</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/models/impacts/emissions/co2_emissions.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">706</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">645</span>
+<span class="normal">646</span>
+<span class="normal">647</span>
+<span class="normal">648</span>
+<span class="normal">649</span>
+<span class="normal">650</span>
+<span class="normal">651</span>
+<span class="normal">652</span>
+<span class="normal">653</span>
+<span class="normal">654</span>
+<span class="normal">655</span>
+<span class="normal">656</span>
+<span class="normal">657</span>
+<span class="normal">658</span>
+<span class="normal">659</span>
+<span class="normal">660</span>
+<span class="normal">661</span>
+<span class="normal">662</span>
+<span class="normal">663</span>
+<span class="normal">664</span>
+<span class="normal">665</span>
+<span class="normal">666</span>
+<span class="normal">667</span>
+<span class="normal">668</span>
+<span class="normal">669</span>
+<span class="normal">670</span>
+<span class="normal">671</span>
+<span class="normal">672</span>
+<span class="normal">673</span>
+<span class="normal">674</span>
+<span class="normal">675</span>
+<span class="normal">676</span>
+<span class="normal">677</span>
+<span class="normal">678</span>
+<span class="normal">679</span>
+<span class="normal">680</span>
+<span class="normal">681</span>
+<span class="normal">682</span>
+<span class="normal">683</span>
+<span class="normal">684</span>
+<span class="normal">685</span>
+<span class="normal">686</span>
+<span class="normal">687</span>
+<span class="normal">688</span>
+<span class="normal">689</span>
+<span class="normal">690</span>
+<span class="normal">691</span>
+<span class="normal">692</span>
+<span class="normal">693</span>
+<span class="normal">694</span>
+<span class="normal">695</span>
+<span class="normal">696</span>
+<span class="normal">697</span>
+<span class="normal">698</span>
+<span class="normal">699</span>
+<span class="normal">700</span>
+<span class="normal">701</span>
+<span class="normal">702</span>
+<span class="normal">703</span>
+<span class="normal">704</span>
+<span class="normal">705</span>
+<span class="normal">706</span>
 <span class="normal">707</span>
 <span class="normal">708</span>
 <span class="normal">709</span>
@@ -9274,64 +8656,10 @@ improvements and energy decarbonization [GtCO2].</p>
 <span class="normal">747</span>
 <span class="normal">748</span>
 <span class="normal">749</span>
-<span class="normal">750</span>
-<span class="normal">751</span>
-<span class="normal">752</span>
-<span class="normal">753</span>
-<span class="normal">754</span>
-<span class="normal">755</span>
-<span class="normal">756</span>
-<span class="normal">757</span>
-<span class="normal">758</span>
-<span class="normal">759</span>
-<span class="normal">760</span>
-<span class="normal">761</span>
-<span class="normal">762</span>
-<span class="normal">763</span>
-<span class="normal">764</span>
-<span class="normal">765</span>
-<span class="normal">766</span>
-<span class="normal">767</span>
-<span class="normal">768</span>
-<span class="normal">769</span>
-<span class="normal">770</span>
-<span class="normal">771</span>
-<span class="normal">772</span>
-<span class="normal">773</span>
-<span class="normal">774</span>
-<span class="normal">775</span>
-<span class="normal">776</span>
-<span class="normal">777</span>
-<span class="normal">778</span>
-<span class="normal">779</span>
-<span class="normal">780</span>
-<span class="normal">781</span>
-<span class="normal">782</span>
-<span class="normal">783</span>
-<span class="normal">784</span>
-<span class="normal">785</span>
-<span class="normal">786</span>
-<span class="normal">787</span>
-<span class="normal">788</span>
-<span class="normal">789</span>
-<span class="normal">790</span>
-<span class="normal">791</span>
-<span class="normal">792</span>
-<span class="normal">793</span>
-<span class="normal">794</span>
-<span class="normal">795</span>
-<span class="normal">796</span>
-<span class="normal">797</span>
-<span class="normal">798</span>
-<span class="normal">799</span>
-<span class="normal">800</span>
-<span class="normal">801</span>
-<span class="normal">802</span>
-<span class="normal">803</span>
-<span class="normal">804</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span>
+<span class="normal">750</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-    <span class="n">co2_emissions_2019technology_baseline3</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
-    <span class="n">co2_emissions_2019technology</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
+    <span class="n">co2_emissions_last_historical_year_technology_baseline3</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
+    <span class="n">co2_emissions_last_historical_year_technology</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
     <span class="n">co2_emissions_including_aircraft_efficiency</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
     <span class="n">co2_emissions_including_operations</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
     <span class="n">co2_emissions_including_load_factor</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
@@ -9341,10 +8669,10 @@ improvements and energy decarbonization [GtCO2].</p>
 <span class="sd">    Execute the computation of detailed cumulative CO2 emissions breakdown.</span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    co2_emissions_2019technology_baseline3</span>
-<span class="sd">        CO2 emissions from all commercial air transport based on 2019 technological level with a baseline air traffic growth [MtCO2].</span>
-<span class="sd">    co2_emissions_2019technology</span>
-<span class="sd">        CO2 emissions from all commercial air transport based on 2019 technological level [MtCO2].</span>
+<span class="sd">    co2_emissions_last_historical_year_technology_baseline3</span>
+<span class="sd">        CO2 emissions from all commercial air transport based on last-historical-year technological level with a baseline air traffic growth [MtCO2].</span>
+<span class="sd">    co2_emissions_last_historical_year_technology</span>
+<span class="sd">        CO2 emissions from all commercial air transport based on last-historical-year technological level [MtCO2].</span>
 <span class="sd">    co2_emissions_including_aircraft_efficiency</span>
 <span class="sd">        CO2 emissions from all commercial air transport including aircraft efficiency improvements [MtCO2].</span>
 <span class="sd">    co2_emissions_including_operations</span>
@@ -9356,10 +8684,10 @@ improvements and energy decarbonization [GtCO2].</p>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    cumulative_co2_emissions_2019technology_baseline3</span>
-<span class="sd">        Cumulative CO2 emissions from all commercial air transport based on 2019 technological level with a baseline air traffic growth [GtCO2].</span>
-<span class="sd">    cumulative_co2_emissions_2019technology</span>
-<span class="sd">        Cumulative CO2 emissions from all commercial air transport based on 2019 technological level [GtCO2].</span>
+<span class="sd">    cumulative_co2_emissions_last_historical_year_technology_baseline3</span>
+<span class="sd">        Cumulative CO2 emissions from all commercial air transport based on last-historical-year technological level with a baseline air traffic growth [GtCO2].</span>
+<span class="sd">    cumulative_co2_emissions_last_historical_year_technology</span>
+<span class="sd">        Cumulative CO2 emissions from all commercial air transport based on last-historical-year technological level [GtCO2].</span>
 <span class="sd">    cumulative_co2_emissions_including_aircraft_efficiency</span>
 <span class="sd">        Cumulative CO2 emissions from all commercial air transport including aircraft efficiency improvements [GtCO2].</span>
 <span class="sd">    cumulative_co2_emissions_including_operations</span>
@@ -9372,13 +8700,18 @@ improvements and energy decarbonization [GtCO2].</p>
 <span class="sd">        improvements and energy decarbonization [GtCO2].</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">cumulative_co2_emissions_2019technology_baseline3</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">co2_emissions_2019technology_baseline3</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">]</span>
+    <span class="n">cumulative_co2_emissions_last_historical_year_technology_baseline3</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">co2_emissions_last_historical_year_technology_baseline3</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span>
+        <span class="p">]</span>
         <span class="o">/</span> <span class="mi">1000</span>
     <span class="p">)</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span>
 
-    <span class="n">cumulative_co2_emissions_2019technology</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">co2_emissions_2019technology</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">]</span> <span class="o">/</span> <span class="mi">1000</span>
+    <span class="n">cumulative_co2_emissions_last_historical_year_technology</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">co2_emissions_last_historical_year_technology</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span>
+        <span class="p">]</span>
+        <span class="o">/</span> <span class="mi">1000</span>
     <span class="p">)</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span>
 
     <span class="n">cumulative_co2_emissions_including_aircraft_efficiency</span> <span class="o">=</span> <span class="p">(</span>
@@ -9402,10 +8735,12 @@ improvements and energy decarbonization [GtCO2].</p>
         <span class="n">co2_emissions_including_energy</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">]</span> <span class="o">/</span> <span class="mi">1000</span>
     <span class="p">)</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;cumulative_co2_emissions_2019technology_baseline3&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">cumulative_co2_emissions_2019technology_baseline3</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;cumulative_co2_emissions_last_historical_year_technology_baseline3&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">cumulative_co2_emissions_last_historical_year_technology_baseline3</span>
     <span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;cumulative_co2_emissions_2019technology&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cumulative_co2_emissions_2019technology</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;cumulative_co2_emissions_last_historical_year_technology&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">cumulative_co2_emissions_last_historical_year_technology</span>
+    <span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;cumulative_co2_emissions_including_aircraft_efficiency&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">cumulative_co2_emissions_including_aircraft_efficiency</span>
     <span class="p">)</span>
@@ -9420,8 +8755,8 @@ improvements and energy decarbonization [GtCO2].</p>
     <span class="p">)</span>
 
     <span class="k">return</span> <span class="p">(</span>
-        <span class="n">cumulative_co2_emissions_2019technology_baseline3</span><span class="p">,</span>
-        <span class="n">cumulative_co2_emissions_2019technology</span><span class="p">,</span>
+        <span class="n">cumulative_co2_emissions_last_historical_year_technology_baseline3</span><span class="p">,</span>
+        <span class="n">cumulative_co2_emissions_last_historical_year_technology</span><span class="p">,</span>
         <span class="n">cumulative_co2_emissions_including_aircraft_efficiency</span><span class="p">,</span>
         <span class="n">cumulative_co2_emissions_including_operations</span><span class="p">,</span>
         <span class="n">cumulative_co2_emissions_including_load_factor</span><span class="p">,</span>
@@ -9501,9 +8836,9 @@ improvements and energy decarbonization [GtCO2].</p>
 
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/impacts/emissions/co2_emissions.py</code></summary>
-                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">817</span>
-<span class="normal">818</span>
-<span class="normal">819</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;simple_co2_emissions&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">763</span>
+<span class="normal">764</span>
+<span class="normal">765</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;simple_co2_emissions&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">climate_historical_data</span> <span class="o">=</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
@@ -9690,7 +9025,61 @@ improvements and energy decarbonization [GtCO2].</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/models/impacts/emissions/co2_emissions.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">821</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">767</span>
+<span class="normal">768</span>
+<span class="normal">769</span>
+<span class="normal">770</span>
+<span class="normal">771</span>
+<span class="normal">772</span>
+<span class="normal">773</span>
+<span class="normal">774</span>
+<span class="normal">775</span>
+<span class="normal">776</span>
+<span class="normal">777</span>
+<span class="normal">778</span>
+<span class="normal">779</span>
+<span class="normal">780</span>
+<span class="normal">781</span>
+<span class="normal">782</span>
+<span class="normal">783</span>
+<span class="normal">784</span>
+<span class="normal">785</span>
+<span class="normal">786</span>
+<span class="normal">787</span>
+<span class="normal">788</span>
+<span class="normal">789</span>
+<span class="normal">790</span>
+<span class="normal">791</span>
+<span class="normal">792</span>
+<span class="normal">793</span>
+<span class="normal">794</span>
+<span class="normal">795</span>
+<span class="normal">796</span>
+<span class="normal">797</span>
+<span class="normal">798</span>
+<span class="normal">799</span>
+<span class="normal">800</span>
+<span class="normal">801</span>
+<span class="normal">802</span>
+<span class="normal">803</span>
+<span class="normal">804</span>
+<span class="normal">805</span>
+<span class="normal">806</span>
+<span class="normal">807</span>
+<span class="normal">808</span>
+<span class="normal">809</span>
+<span class="normal">810</span>
+<span class="normal">811</span>
+<span class="normal">812</span>
+<span class="normal">813</span>
+<span class="normal">814</span>
+<span class="normal">815</span>
+<span class="normal">816</span>
+<span class="normal">817</span>
+<span class="normal">818</span>
+<span class="normal">819</span>
+<span class="normal">820</span>
+<span class="normal">821</span>
 <span class="normal">822</span>
 <span class="normal">823</span>
 <span class="normal">824</span>
@@ -9703,61 +9092,7 @@ improvements and energy decarbonization [GtCO2].</p>
 <span class="normal">831</span>
 <span class="normal">832</span>
 <span class="normal">833</span>
-<span class="normal">834</span>
-<span class="normal">835</span>
-<span class="normal">836</span>
-<span class="normal">837</span>
-<span class="normal">838</span>
-<span class="normal">839</span>
-<span class="normal">840</span>
-<span class="normal">841</span>
-<span class="normal">842</span>
-<span class="normal">843</span>
-<span class="normal">844</span>
-<span class="normal">845</span>
-<span class="normal">846</span>
-<span class="normal">847</span>
-<span class="normal">848</span>
-<span class="normal">849</span>
-<span class="normal">850</span>
-<span class="normal">851</span>
-<span class="normal">852</span>
-<span class="normal">853</span>
-<span class="normal">854</span>
-<span class="normal">855</span>
-<span class="normal">856</span>
-<span class="normal">857</span>
-<span class="normal">858</span>
-<span class="normal">859</span>
-<span class="normal">860</span>
-<span class="normal">861</span>
-<span class="normal">862</span>
-<span class="normal">863</span>
-<span class="normal">864</span>
-<span class="normal">865</span>
-<span class="normal">866</span>
-<span class="normal">867</span>
-<span class="normal">868</span>
-<span class="normal">869</span>
-<span class="normal">870</span>
-<span class="normal">871</span>
-<span class="normal">872</span>
-<span class="normal">873</span>
-<span class="normal">874</span>
-<span class="normal">875</span>
-<span class="normal">876</span>
-<span class="normal">877</span>
-<span class="normal">878</span>
-<span class="normal">879</span>
-<span class="normal">880</span>
-<span class="normal">881</span>
-<span class="normal">882</span>
-<span class="normal">883</span>
-<span class="normal">884</span>
-<span class="normal">885</span>
-<span class="normal">886</span>
-<span class="normal">887</span>
-<span class="normal">888</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span>
+<span class="normal">834</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">energy_consumption_init</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
     <span class="n">dropin_fuel_mean_co2_emission_factor</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
@@ -9902,10 +9237,10 @@ improvements and energy decarbonization [GtCO2].</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       
