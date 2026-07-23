@@ -148,7 +148,7 @@ class ReferenceAbatementCost(AeroMAPSModel):
         Name of the model instance ('f"{pathway_name}_bottom_up_abatement_cost"' by default).
     pathway_name : str
         Name of the energy pathway for which the abatement cost is computed.
-    pathways_data : dict
+    configuration_data : dict
         Dictionary containing data for all pathways, used to complete inputs names necessary.
 
     Attributes

@@ -210,7 +210,11 @@ def create_market_load_factor_models(markets, load_factor_model: str = "quadrati
           (``load_factor_reference_years`` / ``..._values``) via the shared
           ``aeromaps_interpolation_function``.
 
-    Returns an empty mapping when no passenger markets are configured.
+    Returns
+    -------
+    dict
+        Mapping of per-market load factor disciplines. Empty when no
+        passenger markets are configured.
 
     Raises
     ------

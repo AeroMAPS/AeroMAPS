@@ -167,7 +167,7 @@ class AeroMAPSProcess(object):
     ----------
     configuration_file
         Path to a configuration JSON file overriding default settings.
-    models
+    custom_models
         Dictionary of model instances to be used in the process.
     optimisation
         Whether to configure GEMSEO for optimisation instead of a pure
