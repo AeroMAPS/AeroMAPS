@@ -19,3 +19,5 @@ models:
   - models_offset
   - models_sustainability
   - models_operation_cost_top_down
+  markets:
+    markets_data_file: ../../markets/markets_central.yaml
