@@ -19,3 +19,9 @@ __pycache__/
 aeromaps/notebooks/tutorials/11_custom_markets_multi_regions/custom_data_excel/~$Classeur1.xlsx
 aeromaps/notebooks/tutorials/11_custom_markets_multi_regions/custom_data_excel/Classeur1.xlsx
 aeromaps/notebooks/tutorials/11_custom_markets_multi_regions/custom_data_excel/aeromaps_custom_inputs.xlsx
+
+# Generated notebook/premise build artifacts
+# NB: a pattern containing a slash is anchored to this file's directory, so the
+# export/logs rule needs the **/ prefix to match nested notebook folders.
+unlinked.log
+**/export/logs/
