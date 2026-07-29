@@ -240,14 +240,19 @@ def aggregate_regions_to_single_process(
 
     # --- model chain -------------------------------------------------------------------
     reference_full_config = read_yaml_file(reference_config_path)
+    # Relative model-data paths must resolve against the file they were written in:
+    # an override config's paths are relative to that config, not to the region's.
     if standards_override is None:
         models = reference_full_config.get("models", {})
+        models_base_dir = reference_dir
     elif isinstance(standards_override, str):
         models = read_yaml_file(standards_override).get("models", {})
+        models_base_dir = os.path.dirname(os.path.abspath(standards_override))
     else:
         models = dict(reference_full_config.get("models", {}))
         models["standards"] = list(standards_override)
-    models = _resolve_model_paths(models, reference_dir)
+        models_base_dir = reference_dir
+    models = _resolve_model_paths(models, models_base_dir)
 
     reference_models = _resolve_model_paths(
         reference_full_config.get("models", {}), reference_dir
