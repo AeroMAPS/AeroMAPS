@@ -5,6 +5,9 @@ data:
     json_outputs_file: "../data/outputs.json"
 
 models:
+  markets:
+    markets_data_file: "../data/markets_exogenous_growth.yaml"
+
   climate:
     climate_model_data_file: default
 

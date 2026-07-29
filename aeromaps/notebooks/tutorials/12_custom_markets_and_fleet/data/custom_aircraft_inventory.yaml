@@ -1,0 +1,119 @@
+# Aircraft inventory for the Phase 3 custom-market smoke test.
+# Two passenger markets (regional, intercontinental) + one freight market.
+#
+# Energy values are derived from the default fleet defaults:
+#   regional        → weighted blend of default SR and MR reference aircraft
+#   intercontinental → identical to default LR reference aircraft
+
+reference_aircraft:
+  # ── Regional reference aircraft ──────────────────────────────────────────
+  - id: regional_conventional_nb_old
+    name: "Regional conventional NB — legacy"
+    parameters:
+      entry_into_service_year: 1970.0
+      energy_per_ask: 1.1       # blend of SR (1.247) and MR (0.916)
+      emission_index_nox: 0.01514
+      emission_index_soot: 0.00003
+      doc_non_energy_base: 0.038
+      cruise_altitude: 12000.0
+      ask_year: 320000000.0     # between SR 280M and MR 352M
+      rc_cost: 50000000.0
+      nrc_cost: 10000000000.0
+      oew: 40.0
+
+  - id: regional_conventional_nb_recent
+    name: "Regional conventional NB — recent"
+    parameters:
+      entry_into_service_year: 2008.5   # between SR 2007 and MR 2010
+      energy_per_ask: 0.82      # blend of SR (0.948) and MR (0.698)
+      emission_index_nox: 0.01514
+      emission_index_soot: 0.00003
+      doc_non_energy_base: 0.038
+      cruise_altitude: 12000.0
+      ask_year: 320000000.0
+      rc_cost: 50000000.0
+      nrc_cost: 10000000000.0
+      oew: 40.0
+
+  # ── Intercontinental reference aircraft ───────────────────────────────────
+  - id: intercont_conventional_wb_old
+    name: "Intercontinental conventional WB — legacy"
+    parameters:
+      entry_into_service_year: 1970.0
+      energy_per_ask: 1.0879726775956282   # identical to default LR old
+      emission_index_nox: 0.01514
+      emission_index_soot: 0.00003
+      doc_non_energy_base: 0.024725
+      cruise_altitude: 12000.0
+      ask_year: 912000000.0
+      rc_cost: 150000000.0
+      nrc_cost: 25000000000.0
+      oew: 135.0
+
+  - id: intercont_conventional_wb_recent
+    name: "Intercontinental conventional WB — recent"
+    parameters:
+      entry_into_service_year: 2009.36     # identical to default LR recent
+      energy_per_ask: 0.8268142076502732   # identical to default LR recent
+      emission_index_nox: 0.01514
+      emission_index_soot: 0.00003
+      doc_non_energy_base: 0.024725
+      cruise_altitude: 12000.0
+      ask_year: 912000000.0
+      rc_cost: 150000000.0
+      nrc_cost: 25000000000.0
+      oew: 129.0
+
+aircraft:
+  # ── Regional new aircraft ─────────────────────────────────────────────────
+  - id: regional_nb_2035
+    name: "Regional NB gen-2 (2035)"
+    energy_type: DROP_IN_FUEL
+    reference_aircraft: regional_conventional_nb_recent
+    parameters:
+      entry_into_service_year: 2035
+      consumption_evolution: -15.0
+      nox_evolution: 0.0
+      soot_evolution: 0.0
+      doc_non_energy_evolution: 0.0
+      cruise_altitude: 12000.0
+      hybridization_factor: 0.0
+      ask_year: 320000000.0
+      rc_cost: 70000000.0
+      nrc_cost: 10000000000.0
+      oew: 42.0
+
+  - id: regional_h2_2040
+    name: "Regional hydrogen NB (2040)"
+    energy_type: HYDROGEN
+    reference_aircraft: regional_hydrogen_nb_recent
+    parameters:
+      entry_into_service_year: 2040
+      consumption_evolution: 5.0
+      nox_evolution: 0.0
+      soot_evolution: -100.0
+      doc_non_energy_evolution: 8.0
+      cruise_altitude: 12000.0
+      hybridization_factor: 0.0
+      ask_year: 320000000.0
+      rc_cost: 40000000.0
+      nrc_cost: 5000000000.0
+      oew: 44.0
+
+  # ── Intercontinental new aircraft ─────────────────────────────────────────
+  - id: intercont_wb_2035
+    name: "Intercontinental WB gen-2 (2035)"
+    energy_type: DROP_IN_FUEL
+    reference_aircraft: intercont_conventional_wb_recent
+    parameters:
+      entry_into_service_year: 2035
+      consumption_evolution: -15.0
+      nox_evolution: 0.0
+      soot_evolution: 0.0
+      doc_non_energy_evolution: 0.0
+      cruise_altitude: 12000.0
+      hybridization_factor: 0.0
+      ask_year: 912000000.0
+      rc_cost: 160000000.0
+      nrc_cost: 25000000000.0
+      oew: 130.0

@@ -21,11 +21,20 @@ jobs:
     steps:
       - name: Check if tests should run
         id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PUSH_COMMIT_MSG: ${{ github.event.head_commit.message }}
         run: |
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            echo "should_run=true" >> $GITHUB_OUTPUT
-            echo "is_light=false" >> $GITHUB_OUTPUT
-          elif [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            # head_commit is unset for pull_request events; fetch the PR head commit message via the API instead.
+            COMMIT_MSG=$(gh api repos/${{ github.repository }}/commits/${{ github.event.pull_request.head.sha }} --jq .commit.message)
+          else
+            COMMIT_MSG="$PUSH_COMMIT_MSG"
+          fi
+
+          # main, manual dispatches and reusable-workflow calls always run the full suite,
+          # regardless of any [skip-tests]/[tests-light] tag in the commit message.
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             echo "should_run=true" >> $GITHUB_OUTPUT
             echo "is_light=false" >> $GITHUB_OUTPUT
           elif [[ "${{ github.event_name }}" == "workflow_call" ]]; then
@@ -34,12 +43,18 @@ jobs:
           elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
             echo "should_run=true" >> $GITHUB_OUTPUT
             echo "is_light=false" >> $GITHUB_OUTPUT
-          elif [[ "${{ github.event.head_commit.message }}" == *"[tests]"* ]]; then
-            echo "should_run=true" >> $GITHUB_OUTPUT
+          elif [[ "$COMMIT_MSG" == *"[skip-tests]"* ]]; then
+            echo "should_run=false" >> $GITHUB_OUTPUT
             echo "is_light=false" >> $GITHUB_OUTPUT
-          elif [[ "${{ github.event.head_commit.message }}" == *"[tests-light]"* ]]; then
+          elif [[ "$COMMIT_MSG" == *"[tests-light]"* ]]; then
             echo "should_run=true" >> $GITHUB_OUTPUT
             echo "is_light=true" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "should_run=true" >> $GITHUB_OUTPUT
+            echo "is_light=false" >> $GITHUB_OUTPUT
+          elif [[ "$COMMIT_MSG" == *"[tests]"* ]]; then
+            echo "should_run=true" >> $GITHUB_OUTPUT
+            echo "is_light=false" >> $GITHUB_OUTPUT
           else
             echo "should_run=false" >> $GITHUB_OUTPUT
             echo "is_light=false" >> $GITHUB_OUTPUT
@@ -85,6 +100,8 @@ jobs:
           # Find all notebooks to test, excluding specified paths
           notebooks=$(find aeromaps -name "*.ipynb" \
             ! -path "aeromaps/notebooks/publications/*" \
+            ! -path "aeromaps/notebooks/private/*" \
+            ! -path "aeromaps/utils/calibration_notebooks/fleet_model_calibration_notebook.ipynb" \
             ! -path "aeromaps/notebooks/tutorials/07_life_cycle_assessment/life_cycle_assessment_custom.ipynb" \
             ! -path "aeromaps/notebooks/tutorials/07_life_cycle_assessment/utils/export_lca_model.ipynb" \
             ! -path "aeromaps/notebooks/tutorials/09_optimise_a_scenario/example_optim_with_elasticity.ipynb")

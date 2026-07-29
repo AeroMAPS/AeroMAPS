@@ -25,6 +25,14 @@ class RegionalAggregator(AeroMAPSModel):
     The model dynamically builds its input/output grammars based on the configuration
     and the list of regions.
 
+    The aggregation rules are type-agnostic: a variable listed under ``sum`` or
+    ``weighted_average`` may be a vector output (year-indexed series), a climate
+    output (series on the longer climate-year index) or a float output (scalar).
+    Aggregated series keep their index, so climate series come out climate-length
+    and are stored in ``df_climate``; scalars come out as floats. For a weighted
+    average of a climate variable, prefer a climate-length weight — with a
+    vector-length weight the result is NaN outside the vector years.
+
     Parameters
     ----------
     name
@@ -91,6 +99,13 @@ class RegionalAggregator(AeroMAPSModel):
         self.sum_variables = aggregation_config.get("sum", [])
         self.weighted_avg_configs = aggregation_config.get("weighted_average", [])
 
+        # The variables' types cannot be known when the grammars are built: regional
+        # outputs may be vector series, climate series or floats, and some (e.g.
+        # market-scoped fleet columns, directly-set float_outputs) are not declared
+        # in any discipline grammar. The grammars below therefore only fix the
+        # variable names; type validation is skipped and compute() checks presence.
+        self._skip_data_type_validation = True
+
         # Build input and output names dynamically
         self._build_grammars()
 
@@ -151,6 +166,13 @@ class RegionalAggregator(AeroMAPSModel):
         # Sum aggregation
         for var in self.sum_variables:
             total = self._aggregate_sum(input_data, var)
+            if total is None:
+                raise ValueError(
+                    f"Aggregation variable '{var}' (sum) was not produced by any region. "
+                    f"Check the 'aggregation' block of the regionalisation file: the "
+                    f"variable must be an output (vector, climate or float) of at least "
+                    f"one region (and a declared model output in 'unified_mda' mode)."
+                )
             output_key = f"{self.global_namespace}:{var}"
             output_data[output_key] = total
 
@@ -159,17 +181,31 @@ class RegionalAggregator(AeroMAPSModel):
             var = config["variable"]
             weight = config["weight_by"]
             weighted_avg = self._aggregate_weighted_average(input_data, var, weight)
+            if weighted_avg is None:
+                raise ValueError(
+                    f"Weighted-average aggregation of '{var}' failed: no region produces "
+                    f"both '{var}' and its weight '{weight}'. Check the 'aggregation' "
+                    f"block of the regionalisation file."
+                )
             output_key = f"{self.global_namespace}:{var}"
             output_data[output_key] = weighted_avg
 
-        # Store outputs for AeroMAPS compatibility
-        self._store_outputs(output_data)
+        # Store outputs for AeroMAPS compatibility. Series that do not fit the model
+        # years index (i.e. climate-length series) belong in df_climate, not df.
+        climate_keys = [
+            key
+            for key, value in output_data.items()
+            if isinstance(value, pd.Series) and not value.index.isin(self.df.index).all()
+        ]
+        self._store_outputs(output_data, climate_outputs_keys=climate_keys or None)
 
         return output_data
 
-    def _aggregate_sum(self, input_data: dict, variable: str) -> pd.Series:
+    def _aggregate_sum(self, input_data: dict, variable: str):
         """
         Aggregate a variable across regions by summation.
+
+        Works for vector/climate series (pd.Series) and float outputs alike.
 
         Parameters
         ----------
@@ -180,8 +216,9 @@ class RegionalAggregator(AeroMAPSModel):
 
         Returns
         -------
-        pd.Series
-            The summed values across all regions.
+        pd.Series or float or None
+            The summed values across all regions, or None if no region
+            provides the variable.
         """
         total = None
 
@@ -194,13 +231,14 @@ class RegionalAggregator(AeroMAPSModel):
                 else:
                     total = total + value
 
-        return total if total is not None else pd.Series(dtype=float)
+        return total
 
-    def _aggregate_weighted_average(
-        self, input_data: dict, variable: str, weight_variable: str
-    ) -> pd.Series:
+    def _aggregate_weighted_average(self, input_data: dict, variable: str, weight_variable: str):
         """
         Aggregate a variable across regions by weighted average.
+
+        Works for vector/climate series (pd.Series) and float outputs alike:
+        the variable and its weight may each be a series or a scalar.
 
         Parameters
         ----------
@@ -213,8 +251,9 @@ class RegionalAggregator(AeroMAPSModel):
 
         Returns
         -------
-        pd.Series
-            The weighted average across all regions.
+        pd.Series or float or None
+            The weighted average across all regions, or None if no region
+            provides both the variable and its weight.
         """
         weighted_sum = None
         total_weight = None
@@ -238,9 +277,10 @@ class RegionalAggregator(AeroMAPSModel):
                     weighted_sum = weighted_sum + weighted_value
                     total_weight = total_weight + weight
 
-        if weighted_sum is not None and total_weight is not None:
-            # Avoid division by zero
-            result = weighted_sum / total_weight.replace(0, np.nan)
-            return result
-        else:
-            return pd.Series(dtype=float)
+        if weighted_sum is None or total_weight is None:
+            return None
+
+        # Avoid division by zero
+        if isinstance(total_weight, pd.Series):
+            return weighted_sum / total_weight.replace(0, np.nan)
+        return weighted_sum / total_weight if total_weight != 0 else np.nan

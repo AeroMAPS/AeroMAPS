@@ -5,13 +5,16 @@ data:
     json_outputs_file: "./outputs_elasticity.json"
 
 models:
+  markets:
+    markets_data_file: "./markets_elasticity.yaml"
+
   energy:
     energy_carriers_model_data_file: default
     resources_model_data_file: default
     processes_model_data_file: default
 
   standards:
-    - models_traffic_cost_feedback
+    - models_traffic
     - models_efficiency_top_down
     - models_energy_without_fuel_effect
     - models_offset

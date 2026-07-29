@@ -1,12 +1,24 @@
 # Changelog
 
-## Branch scenario_comparison
+## Version 1.1.0
 
 Changed:
-- Added new publication notebook on comparing industry scenarios
-- Refactor of plots into plots.single_scenario
-- Added multi_process to core and a plots.multi_scenario
-- Added minor tests for core and plots
+- ECATS application. (#126)
+- Improved error handling across the codebase. (#134)
+- Added scenario comparison utilities and unit tests. (#128)
+- Added multi-regionalisation in AeroMAPS. (#140)
+- Added two new models for estimating air traffic demand for passengers. (#139)
+- Improved configuration files documentation. (#147)
+- Added custom workflow public pickup. (#150)
+- Made prospection_start_year flexible. (#146, #149)
+- Refactored markets in AeroMAPS for a fully generic yaml description, with interactions with fleet. (#145)
+- Documentation update. (#154)
+
+Fixed:
+- Fixed drop_in_macc_curve plot: updated variable names to match generic energy model naming convention. (#136)
+- Corrected reference outputs of JOAS notebook. (#143)
+- Corrected docs and workflow. (#155)
+
 
 ## Version 1.0.0
 

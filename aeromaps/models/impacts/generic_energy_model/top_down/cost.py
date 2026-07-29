@@ -34,6 +34,8 @@ class TopDownCost(AeroMAPSModel):
         Dictionary of output variable names populated at model initialisation before MDA chain creation.
     """
 
+    MODEL_APPROACH = "top_down"
+
     def __init__(
         self,
         name,

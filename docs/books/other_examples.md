@@ -35,6 +35,8 @@ including the advanced notebooks.
   
 - [Optimise a scenario](https://github.com/AeroMAPS/AeroMAPS/blob/main/aeromaps/notebooks/tutorials/09_optimise_a_scenario/example_optim.ipynb)
 
+- [Change the prospection start year](https://github.com/AeroMAPS/AeroMAPS/blob/main/aeromaps/notebooks/tutorials/13_change_the_prospection_start_year/change_the_prospection_start_year.ipynb)
+
 
 ## Advanced applications
   

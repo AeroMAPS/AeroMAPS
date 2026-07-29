@@ -9,6 +9,7 @@ This section provides an overview of the AeroMAPS modelling, and additional reso
 In particular, it includes sections on: 
 
 - **Graphical User Interface (GUI)**: Instructions on how to use the AeroMAPS GUI.
+- **[Configuration files](configuration.md)**: Reference for the configuration files that drive an AeroMAPS run (entry config, model data files, loading/merge semantics). *Up to date.*
 - **Model documentation**: Detailed information about the models used in AeroMAPS.
 - **References**: Information on how to cite AeroMAPS in your work.
 

@@ -6,9 +6,12 @@ data:
     json_outputs_file: "./outputs.json"
 
 models:
+  markets:
+    markets_data_file: "./markets.yaml"
+
   fleet:
     fleet_model_data_file: "./../fleet/fleet.yaml"
-    aircraft_inventory_model_data_file: "./../fleet/aircraft_inventory.yaml" 
+    aircraft_inventory_model_data_file: "./../fleet/aircraft_inventory.yaml"
 
   energy:
     energy_carriers_model_data_file: "./energy_carriers_data.yaml"

@@ -1,0 +1,25 @@
+data:
+  outputs:
+    json_outputs_file: "./outputs.json"
+
+
+models:
+  fleet:
+    fleet_model_data_file: "./custom_fleet.yaml"
+    aircraft_inventory_model_data_file: "./custom_aircraft_inventory.yaml"
+
+  markets:
+    markets_data_file: "./custom_markets.yaml"
+
+  energy:
+    energy_carriers_model_data_file: default
+    resources_model_data_file: default
+    processes_model_data_file: default
+
+  standards:
+    - models_traffic
+    - models_efficiency_bottom_up
+    - models_energy_without_fuel_effect
+    - models_energy_cost
+    - models_offset
+    - models_emissions

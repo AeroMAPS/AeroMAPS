@@ -1,28 +1,18 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from matplotlib import pyplot as plt
-from matplotlib import pyplot as plt
 from matplotlib.lines import Line2D
 from matplotlib.patches import Patch
 from ipywidgets import interact
 from ipywidgets import widgets
-from matplotlib.patches import Patch
-from matplotlib.patches import Patch
-from matplotlib.patches import Patch
-from matplotlib.patches import Patch
-from matplotlib.patches import Patch
 
-from aeromaps.plots.single_scenario_plot import SingleScenarioPlot
 from aeromaps.plots.single_scenario_plot import SingleScenarioPlot
 from aeromaps.plots.single_scenario_plot import plot_1_x
 from aeromaps.plots.single_scenario_plot import plot_1_y
 from aeromaps.plots.single_scenario_plot import plot_2_x
-from aeromaps.plots.single_scenario_plot import plot_2_x
 from aeromaps.plots.single_scenario_plot import plot_2_y
-from aeromaps.plots.single_scenario_plot import plot_2_y
-from aeromaps.plots.single_scenario_plot import plot_3_x
-from aeromaps.plots.single_scenario_plot import plot_3_y
+# from aeromaps.plots.single_scenario_plot import plot_3_x
+# from aeromaps.plots.single_scenario_plot import plot_3_y
 
 
 class ScenarioEnergyCapitalPlot(SingleScenarioPlot):
@@ -3008,9 +2998,7 @@ class NetEnergyDOCPerRPKBreakdown(SingleScenarioPlot):
 
     required_outputs = [
         "doc_net_energy_per_rpk_mean",
-        "rpk_long_range",
-        "rpk_medium_range",
-        "rpk_short_range",
+        "rpk",
     ]
 
     # Hatch / label maps – same visual language as ScenarioEnergyExpensesPlot
@@ -3055,12 +3043,9 @@ class NetEnergyDOCPerRPKBreakdown(SingleScenarioPlot):
         ]
 
     def _total_rpk(self):
+        # Total passenger RPK aggregated across all (user-defined) markets.
         y = self.prospective_years
-        return (
-            self.df.loc[y, "rpk_long_range"]
-            + self.df.loc[y, "rpk_medium_range"]
-            + self.df.loc[y, "rpk_short_range"]
-        ).values
+        return self.df.loc[y, "rpk"].values
 
     def _compute_pathway_data(self, pathways, total_rpk):
         """Build per-pathway cost-component arrays expressed in €/RPK.
@@ -3096,18 +3081,30 @@ class NetEnergyDOCPerRPKBreakdown(SingleScenarioPlot):
             energy = raw_energy * ratio
 
             data[p.name] = {
-                "mfsp": np.where(total_rpk > 0, energy
-                * self.df.loc[y, f"{p.name}_mean_mfsp"].fillna(0).values
-                / total_rpk, 0),
-                "carbon_tax": np.where(total_rpk > 0, energy
-                * self.df.loc[y, f"{p.name}_mean_unit_carbon_tax"].fillna(0).values
-                / total_rpk, 0),
-                "tax": np.where(total_rpk > 0, energy
-                * self.df.loc[y, f"{p.name}_mean_unit_tax"].fillna(0).values
-                / total_rpk, 0),
-                "subsidy": np.where(total_rpk > 0, energy
-                * self.df.loc[y, f"{p.name}_mean_unit_subsidy"].fillna(0).values
-                / total_rpk, 0),
+                "mfsp": np.where(
+                    total_rpk > 0,
+                    energy * self.df.loc[y, f"{p.name}_mean_mfsp"].fillna(0).values / total_rpk,
+                    0,
+                ),
+                "carbon_tax": np.where(
+                    total_rpk > 0,
+                    energy
+                    * self.df.loc[y, f"{p.name}_mean_unit_carbon_tax"].fillna(0).values
+                    / total_rpk,
+                    0,
+                ),
+                "tax": np.where(
+                    total_rpk > 0,
+                    energy * self.df.loc[y, f"{p.name}_mean_unit_tax"].fillna(0).values / total_rpk,
+                    0,
+                ),
+                "subsidy": np.where(
+                    total_rpk > 0,
+                    energy
+                    * self.df.loc[y, f"{p.name}_mean_unit_subsidy"].fillna(0).values
+                    / total_rpk,
+                    0,
+                ),
             }
 
         # Normalise so that the stacked net total exactly matches the model's
@@ -3193,13 +3190,19 @@ class NetEnergyDOCPerRPKBreakdown(SingleScenarioPlot):
             delayed = self.df.loc[y, "doc_net_energy_per_rpk_delayed"]
             if delayed.notna().any():
                 self.ax.plot(
-                    y, delayed, color="red", linestyle="--", linewidth=1.5,
-                    zorder=4, label="Delayed (perceived) energy costs per RPK",
+                    y,
+                    delayed,
+                    color="red",
+                    linestyle="--",
+                    linewidth=1.5,
+                    zorder=4,
+                    label="Delayed (perceived) energy costs per RPK",
                 )
 
     def _draw_legends(self, pathways, pathway_colors):
         """Add two legends: one for carrier colours, one for component hatches."""
         from matplotlib.lines import Line2D
+
         # Left legend – active energy carriers
         carrier_handles = [
             Patch(

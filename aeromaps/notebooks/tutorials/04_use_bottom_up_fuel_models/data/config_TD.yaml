@@ -3,6 +3,9 @@ data:
     json_outputs_file: "./outputs_td.json"
 
 models:
+  markets:
+    markets_data_file: default
+
   energy:
     energy_carriers_model_data_file: default
     resources_model_data_file: default

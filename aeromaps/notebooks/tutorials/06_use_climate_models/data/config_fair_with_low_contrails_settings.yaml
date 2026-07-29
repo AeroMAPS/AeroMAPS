@@ -1,4 +1,7 @@
 models:
+  markets:
+    markets_data_file: default
+
   climate:
     climate_model_data_file: "./climate_model_fair_low_contrails.yaml"
 

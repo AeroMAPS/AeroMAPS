@@ -8,11 +8,11 @@ from aeromaps.plots.single_scenario_plot import plot_1_y
 
 class AirTransportCO2EmissionsPlot(SingleScenarioPlot):
     required_outputs = [
-        "co2_emissions_2019technology",
+        "co2_emissions_last_historical_year_technology",
         "co2_emissions_including_aircraft_efficiency",
         "co2_emissions_including_load_factor",
         "co2_emissions_including_energy",
-        "co2_emissions_2019technology_baseline3",
+        "co2_emissions_last_historical_year_technology_baseline3",
         "carbon_offset",
         "co2_emissions",
     ]
@@ -27,7 +27,7 @@ class AirTransportCO2EmissionsPlot(SingleScenarioPlot):
     def create_plot(self):
         (self.line_co2_emissions_including_sobriety,) = self.ax.plot(
             self.years,
-            self.df["co2_emissions_2019technology"],
+            self.df["co2_emissions_last_historical_year_technology"],
             color="black",
             linestyle="--",
             linewidth=1,
@@ -69,7 +69,9 @@ class AirTransportCO2EmissionsPlot(SingleScenarioPlot):
 
         (self.line_co2_emissions_no_action,) = self.ax.plot(
             self.prospective_years,
-            self.df.loc[self.prospective_years, "co2_emissions_2019technology_baseline3"],
+            self.df.loc[
+                self.prospective_years, "co2_emissions_last_historical_year_technology_baseline3"
+            ],
             color="red",
             linestyle="-",
             label="Emissions at 2019 technological level with trend air traffic growth",
@@ -102,15 +104,15 @@ class AirTransportCO2EmissionsPlot(SingleScenarioPlot):
 
         self.ax.fill_between(
             self.years,
-            self.df["co2_emissions_2019technology_baseline3"],
-            self.df["co2_emissions_2019technology"],
+            self.df["co2_emissions_last_historical_year_technology_baseline3"],
+            self.df["co2_emissions_last_historical_year_technology"],
             color="lightskyblue",
             label="Demand/supply side management",
         )
 
         self.ax.fill_between(
             self.years,
-            self.df["co2_emissions_2019technology"],
+            self.df["co2_emissions_last_historical_year_technology"],
             self.df["co2_emissions_including_aircraft_efficiency"],
             color="gold",
             label="Aircraft efficiency",
@@ -152,7 +154,7 @@ class AirTransportCO2EmissionsPlot(SingleScenarioPlot):
 
     def _update_plot_elements(self):
         self.line_co2_emissions_including_sobriety.set_ydata(
-            self.df["co2_emissions_2019technology"]
+            self.df["co2_emissions_last_historical_year_technology"]
         )
 
         self.line_co2_emissions_including_technology.set_ydata(
@@ -182,15 +184,15 @@ class AirTransportCO2EmissionsPlot(SingleScenarioPlot):
         # Fill between
         self.ax.fill_between(
             self.years,
-            self.df["co2_emissions_2019technology_baseline3"],
-            self.df["co2_emissions_2019technology"],
+            self.df["co2_emissions_last_historical_year_technology_baseline3"],
+            self.df["co2_emissions_last_historical_year_technology"],
             color="lightskyblue",
             label="Demand/supply side management",
         )
 
         self.ax.fill_between(
             self.years,
-            self.df["co2_emissions_2019technology"],
+            self.df["co2_emissions_last_historical_year_technology"],
             self.df["co2_emissions_including_aircraft_efficiency"],
             color="gold",
             label="Aircraft efficiency",

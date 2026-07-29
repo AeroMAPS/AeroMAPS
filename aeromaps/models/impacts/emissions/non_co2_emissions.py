@@ -45,10 +45,6 @@ class NOxEmissionIndex(AeroMAPSModel):
         Dynamically add all pathways variables to input_names and function outputs to output_names.
         Specific function for custom AeroMAPSModel instances.
 
-        Parameters
-        ----------
-        None
-
         Returns
         -------
         None
@@ -179,40 +175,31 @@ class NOxEmissionIndexComplex(AeroMAPSModel):
     - Detailed i/o documentation is not yet provided for models defined wityh generic .yaml files?
     """
 
+    MODEL_APPROACH = "bottom_up"
+
     def __init__(self, name="nox_emission_index_complex", *args, **kwargs):
         super().__init__(name=name, model_type="custom", *args, **kwargs)
         self.fleet_model = None
         self.pathways_manager = None
+        self.markets = None
 
     def custom_setup(self):
         """
         Dynamically add all pathways variables to input_names and function outputs to output_names.
         Specific function for custom AeroMAPSModel instances.
 
-        Parameters
-        ----------
-        None
-
         Returns
         -------
         None
         """
         # TODO caution aircraft types not generic there
-        self.input_names = {
-            "ask_long_range_dropin_fuel": pd.Series([0.0]),
-            "ask_medium_range_dropin_fuel": pd.Series([0.0]),
-            "ask_short_range_dropin_fuel": pd.Series([0.0]),
-            "ask_long_range_hydrogen": pd.Series([0.0]),
-            "ask_medium_range_hydrogen": pd.Series([0.0]),
-            "ask_short_range_hydrogen": pd.Series([0.0]),
-            "ask_long_range_electric": pd.Series([0.0]),
-            "ask_medium_range_electric": pd.Series([0.0]),
-            "ask_short_range_electric": pd.Series([0.0]),
-        }
+        aircraft_types = ["dropin_fuel", "hydrogen", "electric"]
+        self.input_names = {}
+        for market in self.markets.get(traffic_type="passenger"):
+            for aircraft_type in aircraft_types:
+                self.input_names[f"ask_{market.id}_{aircraft_type}"] = pd.Series([0.0])
 
         self.output_names = {}
-
-        aircraft_types = ["dropin_fuel", "hydrogen", "electric"]
 
         for aircraft_type in aircraft_types:
             for energy_origin in self.pathways_manager.get_all_types("energy_origin"):
@@ -260,47 +247,28 @@ class NOxEmissionIndexComplex(AeroMAPSModel):
         aircraft_types = ["dropin_fuel", "hydrogen", "electric"]
 
         for aircraft_type in aircraft_types:
-            emission_index_nox_short_range = self.fleet_model.df[
-                f"Short Range:emission_index_nox:{aircraft_type}"
-            ]
-            emission_index_nox_medium_range = self.fleet_model.df[
-                f"Medium Range:emission_index_nox:{aircraft_type}"
-            ]
-            emission_index_nox_long_range = self.fleet_model.df[
-                f"Long Range:emission_index_nox:{aircraft_type}"
-            ]
-
-            ask_short_range = input_data.get(
-                f"ask_short_range_{aircraft_type}",
-                get_default_series(self.historic_start_year, self.end_year),
+            weighted_emission_index_nox_sum = get_default_series(
+                self.historic_start_year, self.end_year
             )
-            ask_medium_range = input_data.get(
-                f"ask_medium_range_{aircraft_type}",
-                get_default_series(self.historic_start_year, self.end_year),
-            )
-            ask_long_range = input_data.get(
-                f"ask_long_range_{aircraft_type}",
-                get_default_series(self.historic_start_year, self.end_year),
-            )
-
-            emission_index_aircraft_type = (
-                (
-                    emission_index_nox_short_range.loc[self.historic_start_year : self.end_year]
-                    * ask_short_range.loc[self.historic_start_year : self.end_year].fillna(0)
+            ask_sum = get_default_series(self.historic_start_year, self.end_year)
+            for market in self.markets.get(traffic_type="passenger"):
+                emission_index_nox_market = self.fleet_model.df[
+                    f"{market.name}:emission_index_nox:{aircraft_type}"
+                ]
+                ask_market = input_data.get(
+                    f"ask_{market.id}_{aircraft_type}",
+                    get_default_series(self.historic_start_year, self.end_year),
                 )
-                + (
-                    emission_index_nox_medium_range.loc[self.historic_start_year : self.end_year]
-                    * ask_medium_range.loc[self.historic_start_year : self.end_year].fillna(0)
+                ask_market_filled = ask_market.loc[self.historic_start_year : self.end_year].fillna(
+                    0
                 )
-                + (
-                    emission_index_nox_long_range.loc[self.historic_start_year : self.end_year]
-                    * ask_long_range.loc[self.historic_start_year : self.end_year].fillna(0)
+                weighted_emission_index_nox_sum = (
+                    weighted_emission_index_nox_sum
+                    + emission_index_nox_market.loc[self.historic_start_year : self.end_year]
+                    * ask_market_filled
                 )
-            ) / (
-                ask_short_range.loc[self.historic_start_year : self.end_year].fillna(0)
-                + ask_medium_range.loc[self.historic_start_year : self.end_year].fillna(0)
-                + ask_long_range.loc[self.historic_start_year : self.end_year].fillna(0)
-            )
+                ask_sum = ask_sum + ask_market_filled
+            emission_index_aircraft_type = weighted_emission_index_nox_sum / ask_sum
 
             relative_emission_index_aircraft_type = (
                 emission_index_aircraft_type
@@ -380,10 +348,6 @@ class SootEmissionIndex(AeroMAPSModel):
         """
         Dynamically add all pathways variables to input_names and function outputs to output_names.
         Specific function for custom AeroMAPSModel instances.
-
-        Parameters
-        ----------
-        None
 
         Returns
         -------
@@ -512,36 +476,29 @@ class SootEmissionIndexComplex(AeroMAPSModel):
     - Detailed i/o documentation is not yet provided for models defined wityh generic .yaml files?
     """
 
+    MODEL_APPROACH = "bottom_up"
+
     def __init__(self, name="soot_emission_index_complex", *args, **kwargs):
         super().__init__(name=name, model_type="custom", *args, **kwargs)
         self.fleet_model = None
         self.pathways_manager = None
+        self.markets = None
 
     def custom_setup(self):
         """
         Dynamically add all pathways variables to input_names and function outputs to output_names.
         Specific function for custom AeroMAPSModel instances.
 
-        Parameters
-        ----------
-        None
-
         Returns
         -------
         None
         """
         # TODO caution aircraft types not generic there
-        self.input_names = {
-            "ask_long_range_dropin_fuel": pd.Series([0.0]),
-            "ask_medium_range_dropin_fuel": pd.Series([0.0]),
-            "ask_short_range_dropin_fuel": pd.Series([0.0]),
-            "ask_long_range_hydrogen": pd.Series([0.0]),
-            "ask_medium_range_hydrogen": pd.Series([0.0]),
-            "ask_short_range_hydrogen": pd.Series([0.0]),
-            "ask_long_range_electric": pd.Series([0.0]),
-            "ask_medium_range_electric": pd.Series([0.0]),
-            "ask_short_range_electric": pd.Series([0.0]),
-        }
+        aircraft_types = ["dropin_fuel", "hydrogen", "electric"]
+        self.input_names = {}
+        for market in self.markets.get(traffic_type="passenger"):
+            for aircraft_type in aircraft_types:
+                self.input_names[f"ask_{market.id}_{aircraft_type}"] = pd.Series([0.0])
 
         self.output_names = {}
 
@@ -592,38 +549,28 @@ class SootEmissionIndexComplex(AeroMAPSModel):
         aircraft_types = ["dropin_fuel", "hydrogen", "electric"]
 
         for aircraft_type in aircraft_types:
-            emission_index_soot_short_range = self.fleet_model.df[
-                f"Short Range:emission_index_soot:{aircraft_type}"
-            ]
-            emission_index_soot_medium_range = self.fleet_model.df[
-                f"Medium Range:emission_index_soot:{aircraft_type}"
-            ]
-            emission_index_soot_long_range = self.fleet_model.df[
-                f"Long Range:emission_index_soot:{aircraft_type}"
-            ]
-
-            ask_short_range = input_data[f"ask_short_range_{aircraft_type}"]
-            ask_medium_range = input_data[f"ask_medium_range_{aircraft_type}"]
-            ask_long_range = input_data[f"ask_long_range_{aircraft_type}"]
-
-            emission_index_aircraft_type = (
-                (
-                    emission_index_soot_short_range.loc[self.historic_start_year : self.end_year]
-                    * ask_short_range.loc[self.historic_start_year : self.end_year].fillna(0)
-                )
-                + (
-                    emission_index_soot_medium_range.loc[self.historic_start_year : self.end_year]
-                    * ask_medium_range.loc[self.historic_start_year : self.end_year].fillna(0)
-                )
-                + (
-                    emission_index_soot_long_range.loc[self.historic_start_year : self.end_year]
-                    * ask_long_range.loc[self.historic_start_year : self.end_year].fillna(0)
-                )
-            ) / (
-                ask_short_range.loc[self.historic_start_year : self.end_year].fillna(0)
-                + ask_medium_range.loc[self.historic_start_year : self.end_year].fillna(0)
-                + ask_long_range.loc[self.historic_start_year : self.end_year].fillna(0)
+            weighted_emission_index_soot_sum = get_default_series(
+                self.historic_start_year, self.end_year
             )
+            ask_sum = get_default_series(self.historic_start_year, self.end_year)
+            for market in self.markets.get(traffic_type="passenger"):
+                emission_index_soot_market = self.fleet_model.df[
+                    f"{market.name}:emission_index_soot:{aircraft_type}"
+                ]
+                ask_market = input_data.get(
+                    f"ask_{market.id}_{aircraft_type}",
+                    get_default_series(self.historic_start_year, self.end_year),
+                )
+                ask_market_filled = ask_market.loc[self.historic_start_year : self.end_year].fillna(
+                    0
+                )
+                weighted_emission_index_soot_sum = (
+                    weighted_emission_index_soot_sum
+                    + emission_index_soot_market.loc[self.historic_start_year : self.end_year]
+                    * ask_market_filled
+                )
+                ask_sum = ask_sum + ask_market_filled
+            emission_index_aircraft_type = weighted_emission_index_soot_sum / ask_sum
 
             relative_emission_index_aircraft_type = (
                 emission_index_aircraft_type
@@ -701,10 +648,6 @@ class H2OEmissionIndex(AeroMAPSModel):
         """
         Dynamically add all pathways variables to input_names and function outputs to output_names.
         Specific function for custom AeroMAPSModel instances.
-
-        Parameters
-        ----------
-        None
 
         Returns
         -------
@@ -825,10 +768,6 @@ class SulfurEmissionIndex(AeroMAPSModel):
         Dynamically add all pathways variables to input_names and function outputs to output_names.
         Specific function for custom AeroMAPSModel instances.
 
-        Parameters
-        ----------
-        None
-
         Returns
         -------
         None
@@ -948,10 +887,6 @@ class NonCO2Emissions(AeroMAPSModel):
         """
         Dynamically add all pathways variables to input_names and function outputs to output_names.
         Specific function for custom AeroMAPSModel instances.
-
-        Parameters
-        ----------
-        None
 
         Returns
         -------

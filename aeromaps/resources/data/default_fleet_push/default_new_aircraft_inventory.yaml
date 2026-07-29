@@ -1,0 +1,107 @@
+markets:
+  TP:
+    new_aircraft_types:
+      - name: "new_gen_TP"
+        intro_year: 2030
+        production_duration: 20
+        energy_efficiency: 1.0
+        seats: 80
+        renewal_rate: 1
+        time_to_market: 8
+        ret_year_delay: 0
+      - name: "final_gen_TP"
+        intro_year: 2045
+        production_duration: 30
+        energy_efficiency: 0.5
+        seats: 80
+        renewal_rate: 0.8
+        time_to_market: 10
+        ret_year_delay: 0
+    
+  RJ:
+    new_aircraft_types:
+      - name: "new_gen_RJ"
+        intro_year: 2035
+        production_duration: 20
+        energy_efficiency: 1.15
+        seats: 100
+        renewal_rate: 0.6
+        time_to_market: 8
+        ret_year_delay: 0
+      - name: "final_gen_RJ"
+        intro_year: 2050
+        production_duration: 30
+        energy_efficiency: 1
+        seats: 100
+        renewal_rate: 0.8
+        time_to_market: 10
+        ret_year_delay: 0
+  NB:
+    new_aircraft_types:
+      - name: "new_gen_NB_SR"
+        intro_year: 2030
+        production_duration: 20
+        energy_efficiency: 0.65
+        seats: 150
+        renewal_rate: 0.4
+        time_to_market: 8
+        ret_year_delay: 0
+      - name: "new_gen_NB_MR"
+        intro_year: 2035
+        production_duration: 20
+        energy_efficiency: 0.68
+        seats: 150
+        renewal_rate: 0.7
+        time_to_market: 8
+        ret_year_delay: 0
+      - name: "final_gen_NB_SR"
+        intro_year: 2047
+        production_duration: 30
+        energy_efficiency: 0.3
+        seats: 150
+        renewal_rate: 0.4
+        time_to_market: 1
+        ret_year_delay: 15
+      - name: "final_gen_NB_MR"
+        intro_year: 2047
+        production_duration: 30
+        energy_efficiency: 0.35
+        seats: 150
+        renewal_rate: 0.6
+        time_to_market: 1
+        ret_year_delay: 15
+  WB:
+    new_aircraft_types:
+      - name: "new_gen_WB_MR"
+        intro_year: 2035
+        production_duration: 20
+        energy_efficiency: 0.8
+        seats: 280
+        renewal_rate: 0.6
+        time_to_market: 12
+        ret_year_delay: 0
+      - name: "new_gen_WB_LR"
+        intro_year: 2030
+        production_duration: 20
+        energy_efficiency: 0.8
+        seats: 400
+        renewal_rate: 0.4
+        time_to_market: 12
+        ret_year_delay: 0
+      - name: "final_gen_WB_MR"
+        intro_year: 2050
+        production_duration: 30
+        energy_efficiency: 0.4
+        seats: 280
+        renewal_rate: 0.6
+        time_to_market: 12
+        ret_year_delay: 0
+      - name: "final_gen_WB_LR"
+        intro_year: 2045
+        production_duration: 30
+        energy_efficiency: 0.6
+        seats: 400
+        renewal_rate: 0.4
+        time_to_market: 12
+        ret_year_delay: 0
+      

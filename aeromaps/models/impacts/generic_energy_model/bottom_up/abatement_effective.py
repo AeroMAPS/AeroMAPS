@@ -26,6 +26,8 @@ class EnergyAbatementEffective(AeroMAPSModel):
         Dictionary of output variable names populated at model initialisation before MDA chain creation.
     """
 
+    MODEL_APPROACH = "bottom_up"
+
     def __init__(self, name, pathway_name, *args, **kwargs):
         super().__init__(
             name=name,

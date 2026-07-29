@@ -14,7 +14,7 @@ class SocioeconomicDrivers(AeroMAPSModel):
     name
         Name of the model instance ('socioeconomic_drivers' by default).
     """
-    
+
     def __init__(self, name="socioeconomic_drivers", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -24,7 +24,9 @@ class SocioeconomicDrivers(AeroMAPSModel):
         population_reference_years_values: list,
         gdp_per_capita_reference_years: list,
         gdp_per_capita_reference_years_values: list,
-        covid_end_year_passenger: int,
+        short_range_covid_end_year: int,
+        medium_range_covid_end_year: int,
+        long_range_covid_end_year: int,
     ) -> Tuple[pd.Series, pd.Series, float]:
         """Socioeconomic drivers calculation.
 
@@ -38,8 +40,12 @@ class SocioeconomicDrivers(AeroMAPSModel):
             Reference years for the GDP per capita [yr].
         gdp_per_capita_reference_years_values
             GDP per capita for the reference years [USD/capita].
-        covid_end_year_passenger
-            Year marking the end of the COVID-19 impact on passenger traffic [yr].
+        short_range_covid_end_year
+            Year marking the end of the short-range COVID-19 impact [yr].
+        medium_range_covid_end_year
+            Year marking the end of the medium-range COVID-19 impact [yr].
+        long_range_covid_end_year
+            Year marking the end of the long-range COVID-19 impact [yr].
 
         Returns
         -------
@@ -69,6 +75,9 @@ class SocioeconomicDrivers(AeroMAPSModel):
         )
         self.df.loc[:, "gdp_per_capita"] = gdp_per_capita
 
+        covid_end_year_passenger = max(
+            short_range_covid_end_year, medium_range_covid_end_year, long_range_covid_end_year
+        )
         # GDP per capita at COVID end year
         gdp_per_capita_covid_end = self.df.loc[covid_end_year_passenger, "gdp_per_capita"]
         self.float_outputs["gdp_per_capita_covid_end"] = gdp_per_capita_covid_end

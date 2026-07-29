@@ -255,57 +255,6 @@ class GraphicalUserInterface(widgets.VBox):
         )
         self.w_growth_air_traffic_percent.observe(self.update, "value")
 
-        # self.w_growth_short_range_percent = widgets.FloatSlider(
-        #     min=-7,
-        #     max=7,
-        #     step=0.1,
-        #     value=3.0,
-        #     description="Short Range",
-        #     description_tooltip="Annual air traffic growth (RPK) in percent (%) for Passenger Short Range market\n"
-        #     "The default value of 3.0% corresponds to the aviation industry's projections",
-        # )
-        # self.w_growth_short_range_percent.observe(self.update, "value")
-        #
-        # self.w_growth_medium_range_percent = widgets.FloatSlider(
-        #     min=-7,
-        #     max=7,
-        #     step=0.1,
-        #     value=3.0,
-        #     description="Medium Range",
-        #     description_tooltip="Annual air traffic growth (RPK) in percent (%) for Passenger Medium Range market\n"
-        #     "The default value of 3.0% corresponds to the aviation industry's projections",
-        # )
-        # self.w_growth_medium_range_percent.observe(self.update, "value")
-        #
-        # self.w_growth_long_range_percent = widgets.FloatSlider(
-        #     min=-7,
-        #     max=7,
-        #     step=0.1,
-        #     value=3.0,
-        #     description="Long Range",
-        #     description_tooltip="Annual air traffic growth (RPK) in percent (%) for Passenger Long Range market\n"
-        #     "The default value of 3.0% corresponds to the aviation industry's projections",
-        # )
-        # self.w_growth_long_range_percent.observe(self.update, "value")
-        #
-        # self.w_growth_freight_percent = widgets.FloatSlider(
-        #     min=-7,
-        #     max=7,
-        #     step=0.1,
-        #     value=3.0,
-        #     description="Freight",
-        #     description_tooltip="Annual air traffic growth (RTK) in percent (%) for Freight market\n"
-        #     "The default value of 3.0% corresponds to the aviation industry's projections",
-        # )
-        # self.w_growth_freight_percent.observe(self.update, "value")
-
-        # self.w_grouped_market = widgets.Checkbox(
-        #     value=False,
-        #     description="Assuming similar market evolutions",
-        #     layout={"width": "max-content"},
-        # )
-        # self.w_grouped_market.observe(self.update, "value")
-
         self.w_short_range_reduction = widgets.Checkbox(
             value=False,
             description="Reduction of Short Range flights (modal shift, ban)",
@@ -597,11 +546,6 @@ class GraphicalUserInterface(widgets.VBox):
                 widgets.VBox(
                     [
                         self.w_growth_air_traffic_percent,
-                        # self.w_grouped_market,
-                        # self.w_growth_short_range_percent,
-                        # self.w_growth_medium_range_percent,
-                        # self.w_growth_long_range_percent,
-                        # self.w_growth_freight_percent,
                         self.w_short_range_reduction,
                         self.w_social_measure,
                     ]
@@ -927,94 +871,59 @@ class GraphicalUserInterface(widgets.VBox):
         # DISCOVERY
 
         # Traffic
-        # if self.w_grouped_market.value is False:
-        #     self.process.parameters.cagr_passenger_short_range_reference_periods_values = [
-        #         self.w_growth_short_range_percent.value
-        #     ]
-        #     self.process.parameters.cagr_passenger_medium_range_reference_periods_values = [
-        #         self.w_growth_medium_range_percent.value
-        #     ]
-        #     self.process.parameters.cagr_passenger_long_range_reference_periods_values = [
-        #         self.w_growth_long_range_percent.value
-        #     ]
-        #     self.process.parameters.cagr_freight_reference_periods_values = [
-        #         self.w_growth_freight_percent.value
-        #     ]
-        #     self.w_growth_medium_range_percent.disabled = False
-        #     self.w_growth_long_range_percent.disabled = False
-        #     self.w_growth_freight_percent.disabled = False
-        # else:
-        #     self.process.parameters.cagr_passenger_short_range_reference_periods_values = [
-        #         self.w_growth_short_range_percent.value
-        #     ]
-        #     self.process.parameters.cagr_passenger_medium_range_reference_periods_values = [
-        #         self.w_growth_short_range_percent.value
-        #     ]
-        #     self.process.parameters.cagr_passenger_long_range_reference_periods_values = [
-        #         self.w_growth_short_range_percent.value
-        #     ]
-        #     self.process.parameters.cagr_freight_reference_periods_values = [
-        #         self.w_growth_short_range_percent.value
-        #     ]
-        #     self.w_growth_medium_range_percent.disabled = True
-        #     self.w_growth_medium_range_percent.value = self.w_growth_short_range_percent.value
-        #     self.w_growth_long_range_percent.disabled = True
-        #     self.w_growth_long_range_percent.value = self.w_growth_short_range_percent.value
-        #     self.w_growth_freight_percent.disabled = True
-        #     self.w_growth_freight_percent.value = self.w_growth_short_range_percent.value
-        self.process.parameters.cagr_passenger_short_range_reference_periods_values = [
+        self.process.parameters.short_range_cagr_reference_periods_values = [
             self.w_growth_air_traffic_percent.value
         ]
-        self.process.parameters.cagr_passenger_medium_range_reference_periods_values = [
+        self.process.parameters.medium_range_cagr_reference_periods_values = [
             self.w_growth_air_traffic_percent.value
         ]
-        self.process.parameters.cagr_passenger_long_range_reference_periods_values = [
+        self.process.parameters.long_range_cagr_reference_periods_values = [
             self.w_growth_air_traffic_percent.value
         ]
-        self.process.parameters.cagr_freight_reference_periods_values = [
+        self.process.parameters.freight_cagr_reference_periods_values = [
             self.w_growth_air_traffic_percent.value
         ]
 
         if self.w_short_range_reduction.value is False and self.w_social_measure.value is False:
-            self.process.parameters.rpk_short_range_measures_final_impact = 0.0
-            self.process.parameters.rpk_medium_range_measures_final_impact = 0.0
-            self.process.parameters.rpk_long_range_measures_final_impact = 0.0
-            self.process.parameters.rpk_short_range_measures_start_year = 2051
-            self.process.parameters.rpk_medium_range_measures_start_year = 2051
-            self.process.parameters.rpk_long_range_measures_start_year = 2051
-            self.process.parameters.rpk_short_range_measures_duration = 5.0
-            self.process.parameters.rpk_medium_range_measures_duration = 5.0
-            self.process.parameters.rpk_long_range_measures_duration = 5.0
+            self.process.parameters.short_range_measures_final_impact = 0.0
+            self.process.parameters.medium_range_measures_final_impact = 0.0
+            self.process.parameters.long_range_measures_final_impact = 0.0
+            self.process.parameters.short_range_measures_start_year = 2051
+            self.process.parameters.medium_range_measures_start_year = 2051
+            self.process.parameters.long_range_measures_start_year = 2051
+            self.process.parameters.short_range_measures_duration = 5.0
+            self.process.parameters.medium_range_measures_duration = 5.0
+            self.process.parameters.long_range_measures_duration = 5.0
         elif self.w_short_range_reduction.value and self.w_social_measure.value is False:
-            self.process.parameters.rpk_short_range_measures_final_impact = 50.0
-            self.process.parameters.rpk_medium_range_measures_final_impact = 0.0
-            self.process.parameters.rpk_long_range_measures_final_impact = 0.0
-            self.process.parameters.rpk_short_range_measures_start_year = 2025
-            self.process.parameters.rpk_medium_range_measures_start_year = 2051
-            self.process.parameters.rpk_long_range_measures_start_year = 2051
-            self.process.parameters.rpk_short_range_measures_duration = 5.0
-            self.process.parameters.rpk_medium_range_measures_duration = 5.0
-            self.process.parameters.rpk_long_range_measures_duration = 5.0
+            self.process.parameters.short_range_measures_final_impact = 50.0
+            self.process.parameters.medium_range_measures_final_impact = 0.0
+            self.process.parameters.long_range_measures_final_impact = 0.0
+            self.process.parameters.short_range_measures_start_year = 2025
+            self.process.parameters.medium_range_measures_start_year = 2051
+            self.process.parameters.long_range_measures_start_year = 2051
+            self.process.parameters.short_range_measures_duration = 5.0
+            self.process.parameters.medium_range_measures_duration = 5.0
+            self.process.parameters.long_range_measures_duration = 5.0
         elif self.w_short_range_reduction.value is False and self.w_social_measure.value:
-            self.process.parameters.rpk_short_range_measures_final_impact = 25.0
-            self.process.parameters.rpk_medium_range_measures_final_impact = 25.0
-            self.process.parameters.rpk_long_range_measures_final_impact = 25.0
-            self.process.parameters.rpk_short_range_measures_start_year = 2025
-            self.process.parameters.rpk_medium_range_measures_start_year = 2025
-            self.process.parameters.rpk_long_range_measures_start_year = 2025
-            self.process.parameters.rpk_short_range_measures_duration = 5.0
-            self.process.parameters.rpk_medium_range_measures_duration = 5.0
-            self.process.parameters.rpk_long_range_measures_duration = 5.0
+            self.process.parameters.short_range_measures_final_impact = 25.0
+            self.process.parameters.medium_range_measures_final_impact = 25.0
+            self.process.parameters.long_range_measures_final_impact = 25.0
+            self.process.parameters.short_range_measures_start_year = 2025
+            self.process.parameters.medium_range_measures_start_year = 2025
+            self.process.parameters.long_range_measures_start_year = 2025
+            self.process.parameters.short_range_measures_duration = 5.0
+            self.process.parameters.medium_range_measures_duration = 5.0
+            self.process.parameters.long_range_measures_duration = 5.0
         else:
-            self.process.parameters.rpk_short_range_measures_final_impact = 62.5
-            self.process.parameters.rpk_medium_range_measures_final_impact = 25.0
-            self.process.parameters.rpk_long_range_measures_final_impact = 25.0
-            self.process.parameters.rpk_short_range_measures_start_year = 2025
-            self.process.parameters.rpk_medium_range_measures_start_year = 2025
-            self.process.parameters.rpk_long_range_measures_start_year = 2025
-            self.process.parameters.rpk_short_range_measures_duration = 5.0
-            self.process.parameters.rpk_medium_range_measures_duration = 5.0
-            self.process.parameters.rpk_long_range_measures_duration = 5.0
+            self.process.parameters.short_range_measures_final_impact = 62.5
+            self.process.parameters.medium_range_measures_final_impact = 25.0
+            self.process.parameters.long_range_measures_final_impact = 25.0
+            self.process.parameters.short_range_measures_start_year = 2025
+            self.process.parameters.medium_range_measures_start_year = 2025
+            self.process.parameters.long_range_measures_start_year = 2025
+            self.process.parameters.short_range_measures_duration = 5.0
+            self.process.parameters.medium_range_measures_duration = 5.0
+            self.process.parameters.long_range_measures_duration = 5.0
 
         # Energy intensity
 
@@ -1991,15 +1900,18 @@ class GraphicalUserInterface(widgets.VBox):
                 )
         # Load factor
         if self.w_load_factor.value == "Constant":
-            self.process.parameters.load_factor_end_year = 82.4
+            load_factor_end_year_value = 82.4
         elif self.w_load_factor.value == "Unambitious":
-            self.process.parameters.load_factor_end_year = 85.0
+            load_factor_end_year_value = 85.0
         elif self.w_load_factor.value == "Trend":
-            self.process.parameters.load_factor_end_year = 89.0
+            load_factor_end_year_value = 89.0
         elif self.w_load_factor.value == "Ambitious":
-            self.process.parameters.load_factor_end_year = 92.0
+            load_factor_end_year_value = 92.0
         elif self.w_load_factor.value == "Very ambitious":
-            self.process.parameters.load_factor_end_year = 95.0
+            load_factor_end_year_value = 95.0
+        self.process.parameters.short_range_load_factor_end_year = load_factor_end_year_value
+        self.process.parameters.medium_range_load_factor_end_year = load_factor_end_year_value
+        self.process.parameters.long_range_load_factor_end_year = load_factor_end_year_value
 
         if self.w_operations.value == "Constant":
             self.process.parameters.operations_final_gain = 0.0
@@ -2291,31 +2203,33 @@ class GraphicalUserInterface(widgets.VBox):
         if self.w_accordion.selected_index == 1:
             if self.w_action_scenarios.value == "Example scenario":
                 # Traffic
-                self.process.parameters.cagr_passenger_short_range_reference_periods_values = [3.0]
-                self.process.parameters.cagr_passenger_medium_range_reference_periods_values = [3.0]
-                self.process.parameters.cagr_passenger_long_range_reference_periods_values = [3.0]
-                self.process.parameters.cagr_freight_reference_periods_values = [3.0]
+                self.process.parameters.short_range_cagr_reference_periods_values = [3.0]
+                self.process.parameters.medium_range_cagr_reference_periods_values = [3.0]
+                self.process.parameters.long_range_cagr_reference_periods_values = [3.0]
+                self.process.parameters.freight_cagr_reference_periods_values = [3.0]
                 #  RPK measures
-                self.process.parameters.rpk_short_range_measures_final_impact = 0.0
-                self.process.parameters.rpk_medium_range_measures_final_impact = 0.0
-                self.process.parameters.rpk_long_range_measures_final_impact = 0.0
-                self.process.parameters.rpk_short_range_measures_start_year = 2051
-                self.process.parameters.rpk_medium_range_measures_start_year = 2051
-                self.process.parameters.rpk_long_range_measures_start_year = 2051
-                self.process.parameters.rpk_short_range_measures_duration = 5.0
-                self.process.parameters.rpk_medium_range_measures_duration = 5.0
-                self.process.parameters.rpk_long_range_measures_duration = 5.0
+                self.process.parameters.short_range_measures_final_impact = 0.0
+                self.process.parameters.medium_range_measures_final_impact = 0.0
+                self.process.parameters.long_range_measures_final_impact = 0.0
+                self.process.parameters.short_range_measures_start_year = 2051
+                self.process.parameters.medium_range_measures_start_year = 2051
+                self.process.parameters.long_range_measures_start_year = 2051
+                self.process.parameters.short_range_measures_duration = 5.0
+                self.process.parameters.medium_range_measures_duration = 5.0
+                self.process.parameters.long_range_measures_duration = 5.0
                 # Efficiency
-                self.process.parameters.load_factor_end_year = 89.0
-                self.process.parameters.energy_per_ask_short_range_dropin_fuel_gain = 1.5
-                self.process.parameters.energy_per_ask_medium_range_dropin_fuel_gain = 1.5
-                self.process.parameters.energy_per_ask_long_range_dropin_fuel_gain = 1.5
-                self.process.parameters.hydrogen_final_market_share_short_range = 50.0  # [%]
-                self.process.parameters.hydrogen_introduction_year_short_range = 2035
-                self.process.parameters.hydrogen_final_market_share_medium_range = 0.0  # [%]
-                self.process.parameters.hydrogen_introduction_year_medium_range = 2051
-                self.process.parameters.hydrogen_final_market_share_long_range = 0.0  # [%]
-                self.process.parameters.hydrogen_introduction_year_long_range = 2051
+                self.process.parameters.short_range_load_factor_end_year = 89.0
+                self.process.parameters.medium_range_load_factor_end_year = 89.0
+                self.process.parameters.long_range_load_factor_end_year = 89.0
+                self.process.parameters.short_range_energy_per_ask_dropin_fuel_gain = 1.5
+                self.process.parameters.medium_range_energy_per_ask_dropin_fuel_gain = 1.5
+                self.process.parameters.long_range_energy_per_ask_dropin_fuel_gain = 1.5
+                self.process.parameters.short_range_hydrogen_final_market_share = 50.0  # [%]
+                self.process.parameters.short_range_hydrogen_introduction_year = 2035
+                self.process.parameters.medium_range_hydrogen_final_market_share = 0.0  # [%]
+                self.process.parameters.medium_range_hydrogen_introduction_year = 2051
+                self.process.parameters.long_range_hydrogen_final_market_share = 0.0  # [%]
+                self.process.parameters.long_range_hydrogen_introduction_year = 2051
                 self.process.parameters.fleet_renewal_duration = 20.0
                 self.process.parameters.operations_final_gain = 12.0
                 self.process.parameters.operations_start_year = 2020
