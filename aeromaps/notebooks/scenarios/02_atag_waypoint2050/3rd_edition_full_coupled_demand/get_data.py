@@ -87,15 +87,15 @@ def get_scenario_color(scenario_name: str):
 def get_ar6_input_data(start_year=2010, end_year=2100, plot_data=True):
     """Get relevant data from AR6 scenarios."""
     population_data = read_csv(
-        "../../publications/wctr_2026/ar6_scenarios/population.csv",
+        "../../../publications/wctr_2026/ar6_scenarios/population.csv",
         index_col=1,
     )
     gdp_data = read_csv(
-        "../../publications/wctr_2026/ar6_scenarios/gdp.csv",
+        "../../../publications/wctr_2026/ar6_scenarios/gdp.csv",
         index_col=1,
     )
     co2tax_data = read_csv(
-        "../../publications/wctr_2026/ar6_scenarios/carbon_tax.csv",
+        "../../../publications/wctr_2026/ar6_scenarios/carbon_tax.csv",
         index_col=1,
     )
 
@@ -213,7 +213,7 @@ def get_ar6_input_data(start_year=2010, end_year=2100, plot_data=True):
 def get_ar6_rpk_data(start_year=2005, end_year=2100, plot_data=True):
     """Get RPK (Revenue Passenger Kilometres) data for all AR6 scenarios."""
     rpk_data = read_csv(
-        "../../publications/wctr_2026/ar6_scenarios/rpk.csv",
+        "../../../publications/wctr_2026/ar6_scenarios/rpk.csv",
         index_col=1,
     )
 

@@ -11,7 +11,10 @@ models:
     resources_model_data_file: ../data_inputs/resources.yaml
     processes_model_data_file: ../data_inputs/processes.yaml
   standards:
-  - models_traffic_price_adjusted_logistic
+  # The logistic income demand model is now selected via
+  # global.demand.model: logistic_income in markets_coupled.yaml,
+  # replacing the removed models_traffic_price_adjusted_logistic bundle.
+  - models_traffic
   - models_efficiency_top_down_interp
   - models_energy_with_fuel_effect
   - models_energy_cost
