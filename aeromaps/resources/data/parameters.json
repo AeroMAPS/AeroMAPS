@@ -1,7 +1,7 @@
 {
     "climate_historic_start_year": 1940,
     "historic_start_year": 2000,
-    "prospection_start_year": 2020,
+    "prospection_start_year": 2024,
     "end_year": 2050,
     "rpk_init": [
         3037530000000.0,
@@ -23,7 +23,11 @@
         7144500000000.0,
         7716540000000.0,
         8278780000000.0,
-        8685670000000.0
+        8685670000000.0,
+        2950654000000.0,
+        3621985000000.0,
+        5947702000000.0,
+        8226592000000.0
     ],
     "ask_init": [
         4286200000000.0,
@@ -45,7 +49,11 @@
         8898860000000.0,
         9470760000000.0,
         10124500000000.0,
-        10540900000000.0
+        10540900000000.0,
+        4540414000000.0,
+        5355569000000.0,
+        7568363000000.0,
+        10018223000000.0
     ],
     "rtk_init": [
         118080000000.0,
@@ -67,7 +75,11 @@
         206175000000.0,
         225167000000.0,
         231750000000.0,
-        225001000000.0
+        225001000000.0,
+        191213627304.17725,
+        229192023975.60464,
+        214824225576.22888,
+        215741442605.36075
     ],
     "pax_init": [
         1672000000.0,
@@ -89,7 +101,11 @@
         3798000000.0,
         4066000000.0,
         4331000000.0,
-        4486000000.0
+        4486000000.0,
+        1781000000.0,
+        2279000000.0,
+        3273000000.0,
+        4325000000.0
     ],
     "freight_init": [
         30400000.0,
@@ -111,7 +127,11 @@
         53200000.0,
         57000000.0,
         58800000.0,
-        57600000.0
+        57600000.0,
+        49500000.0,
+        57400000.0,
+        54100000.0,
+        56100000.0
     ],
     "energy_consumption_init": [
         8326710000000.0,
@@ -133,7 +153,11 @@
         11274200000000.0,
         12011100000000.0,
         12563700000000.0,
-        12711100000000.0
+        12711100000000.0,
+        6921434498336.964,
+        6386168138438.341,
+        8962532081347.334,
+        11779377463319.121
     ],
     "total_aircraft_distance_init": [
         25982000000.0,
@@ -155,10 +179,14 @@
         49204000000.0,
         51588000000.0,
         54279000000.0,
-        56199000000.0
+        56199000000.0,
+        28013000000.0,
+        33705000000.0,
+        42801000000.0,
+        53873000000.0
     ],
     "commercial_aviation_coefficient": 0.88,
-    "aviation_carbon_budget_objective": 2.40,
+    "aviation_carbon_budget_objective": 2.4,
     "emission_index_nox_dropin_fuel_evolution": 0.0,
     "emission_index_nox_hydrogen_evolution": 0.0,
     "emission_index_soot_dropin_fuel_evolution": 0.0,
@@ -168,8 +196,14 @@
     "operations_final_gain": 7.0,
     "operations_start_year": 2020,
     "operations_duration": 40.0,
-    "operations_gain_reference_years": [2020, 2050],
-    "operations_gain_reference_years_values": [0, 6],
+    "operations_gain_reference_years": [
+        2020,
+        2050
+    ],
+    "operations_gain_reference_years_values": [
+        0,
+        6
+    ],
     "fleet_renewal_duration": 25.0,
     "net_carbon_budget": 900.0,
     "carbon_dioxyde_removal_2100": 100.0,
@@ -180,37 +214,67 @@
     "aviation_carbon_budget_allocated_share": 2.6,
     "aviation_temperature_target_allocated_share": 3.8,
     "carbon_tax_reference_years": [],
-    "carbon_tax_reference_years_values": [5.0],
+    "carbon_tax_reference_years_values": [
+        5.0
+    ],
     "private_discount_rate": 0.1,
     "social_discount_rate": 0.03,
     "corsia_reference_year": 2019,
     "carbon_offset_baseline_level_vs_corsia_reference_year_reference_periods": [],
-    "carbon_offset_baseline_level_vs_corsia_reference_year_reference_periods_values": [850000.0],
+    "carbon_offset_baseline_level_vs_corsia_reference_year_reference_periods_values": [
+        850000.0
+    ],
     "carbon_offset_baseline_share_total_emissions_reference_periods": [],
-    "carbon_offset_baseline_share_total_emissions_reference_periods_values": [100.0],
+    "carbon_offset_baseline_share_total_emissions_reference_periods_values": [
+        100.0
+    ],
     "residual_carbon_offset_share_reference_years": [],
-    "residual_carbon_offset_share_reference_years_values": [0.0],
+    "residual_carbon_offset_share_reference_years_values": [
+        0.0
+    ],
     "prescribed_carbon_offset_reference_years": [],
-    "prescribed_carbon_offset_reference_years_values": [0.0],
+    "prescribed_carbon_offset_reference_years_values": [
+        0.0
+    ],
     "carbon_offset_price_reference_years": [],
-    "carbon_offset_price_reference_years_values": [5.0],
+    "carbon_offset_price_reference_years_values": [
+        5.0
+    ],
     "operations_contrails_duration": 15.0,
     "operations_contrails_final_gain": 59.4,
     "operations_contrails_final_overconsumption": 0.014,
     "operations_contrails_start_year": 2101,
     "noc_reference_years": [],
-    "noc_reference_years_values": [0.0],
+    "noc_reference_years_values": [
+        0.0
+    ],
     "ioc_reference_years": [],
-    "ioc_reference_years_values": [0.028],
+    "ioc_reference_years_values": [
+        0.028
+    ],
     "operational_profit_reference_years": [],
-    "operational_profit_reference_years_values": [0.00314],
+    "operational_profit_reference_years_values": [
+        0.00314
+    ],
     "passenger_tax_reference_years": [],
-    "passenger_tax_reference_years_values": [0.0],
+    "passenger_tax_reference_years_values": [
+        0.0
+    ],
     "operational_efficiency_cost_non_energy_per_ask_final_value": 0.0,
     "load_factor_cost_non_energy_per_ask_final_value": 0.0,
     "contrails_relative_effect_hydrogen_wrt_kerosene": 1.0,
-    "exogenous_carbon_price_reference_years": [2020, 2030, 2040, 2050],
-    "exogenous_carbon_price_reference_years_values": [54.0, 250.0, 500.0, 775.0],
+    "exogenous_carbon_price_reference_years": [
+        2020,
+        2030,
+        2040,
+        2050
+    ],
+    "exogenous_carbon_price_reference_years_values": [
+        54.0,
+        250.0,
+        500.0,
+        775.0
+    ],
     "initial_price_per_rpk": 0.082949239,
     "model": "remind",
     "pathway": "SSP2_Base",
