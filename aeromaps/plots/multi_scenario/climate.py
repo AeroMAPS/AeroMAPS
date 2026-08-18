@@ -14,7 +14,7 @@ class TotalERFComparisonPlot(MultiScenarioPlot):
         self._plot_grouped_series()
         self.ax.set_title("Total Effective Radiative Forcing Comparison")
         self.ax.set_xlabel("Year")
-        self.ax.set_ylabel("Total ERF [mW/m²]")
+        self.ax.set_ylabel("Total ERF [W/m²]")
         self.ax.legend(loc="best")
         self.ax.grid(True, alpha=0.3)
 
@@ -47,7 +47,7 @@ class CO2ERFComparisonPlot(MultiScenarioPlot):
         self._plot_grouped_series()
         self.ax.set_title("CO₂ Effective Radiative Forcing Comparison")
         self.ax.set_xlabel("Year")
-        self.ax.set_ylabel("CO₂ ERF [mW/m²]")
+        self.ax.set_ylabel("CO₂ ERF [W/m²]")
         self.ax.legend(loc="best")
         self.ax.grid(True, alpha=0.3)
 
@@ -66,6 +66,6 @@ class NonCO2ERFComparisonPlot(MultiScenarioPlot):
         self._plot_grouped_series()
         self.ax.set_title("Non-CO₂ Effective Radiative Forcing Comparison")
         self.ax.set_xlabel("Year")
-        self.ax.set_ylabel("Non-CO₂ ERF [mW/m²]")
+        self.ax.set_ylabel("Non-CO₂ ERF [W/m²]")
         self.ax.legend(loc="best")
         self.ax.grid(True, alpha=0.3)
