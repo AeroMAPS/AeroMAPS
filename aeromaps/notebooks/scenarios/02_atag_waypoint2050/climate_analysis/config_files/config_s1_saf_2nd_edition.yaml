@@ -1,0 +1,35 @@
+# Third-edition S1 with the SAF mandates of its second-edition analogue (S2).
+#
+# Used by climate_edition_deltas.ipynb to isolate the SAF contribution to the
+# inter-edition temperature difference. Identical to
+# 3rd_edition_full/config_files/config_s1.yaml in every respect except
+# energy_carriers_model_data_file, which points at the second edition's S2
+# pathway mandates. The two editions define the same eleven pathways (in a
+# different order) against identical resources and processes files, so the
+# substitution is a pure mandate swap.
+#
+# Outputs are written under this directory so the committed edition results are
+# never touched.
+data:
+  inputs:
+    json_inputs_file: ../../3rd_edition_full/data_inputs/s1_inputs.json
+  outputs:
+    json_outputs_file: ../data_outputs/s1_saf_2nd_edition.json
+models:
+  climate:
+    climate_model_data_file: default
+  energy:
+    energy_carriers_model_data_file: ../../2nd_edition_full/data_inputs/s2_energy.yaml
+    resources_model_data_file: ../../3rd_edition_full/data_inputs/resources.yaml
+    processes_model_data_file: ../../3rd_edition_full/data_inputs/processes.yaml
+  standards:
+  - models_traffic
+  - models_efficiency_top_down_interp
+  - models_energy_with_fuel_effect
+  - models_energy_cost
+  - models_emissions
+  - models_offset
+  - models_sustainability
+  - models_operation_cost_top_down
+  markets:
+    markets_data_file: ../../markets/markets_central.yaml
