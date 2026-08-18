@@ -178,3 +178,55 @@ CONTRAIL_NOTE = (
     "Contrail avoidance is disabled in all scenarios "
     "(operations_contrails_start_year = 2101), matching the reports' scope."
 )
+
+
+# --------------------------------------------------------------------------
+# Contrail mitigation variants
+# --------------------------------------------------------------------------
+
+CONTRAIL_VARIANTS = Path(__file__).resolve().parent / "contrail_variants.yaml"
+
+LEVELS = ("Low", "Central", "High")
+
+
+def load_contrail_variants(path=CONTRAIL_VARIANTS):
+    """Load the Teoh-based contrail mitigation variants.
+
+    Returns
+    -------
+    reference : dict
+        Citation and DOI of the source study.
+    families : dict
+        ``{family_key: {"label": str, "description": str,
+                        "levels": {level: {parameter: value}}}}`` where each
+        level's mapping is the complete set of ``process.parameters`` overrides
+        for that variant, with the shared defaults already merged in.
+    """
+    import yaml
+
+    document = yaml.safe_load(Path(path).read_text())
+    defaults = document.get("defaults", {})
+
+    families = {}
+    for key, family in document["families"].items():
+        shared = {
+            "operations_contrails_start_year": family["operations_contrails_start_year"],
+            **defaults,
+        }
+        families[key] = {
+            "label": family["label"],
+            "description": " ".join(family["description"].split()),
+            "levels": {
+                level: {**shared, **values} for level, values in family["levels"].items()
+            },
+        }
+        missing = set(LEVELS) - set(families[key]["levels"])
+        if missing:
+            raise ValueError(f"family {key!r} is missing level(s) {sorted(missing)}")
+
+    return document["reference"], families
+
+
+def variant_name(family_label, level):
+    """Scenario name used in the assembly, e.g. 'Low-risk diversion - Central'."""
+    return f"{family_label} - {level}"

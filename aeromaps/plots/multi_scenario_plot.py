@@ -60,7 +60,7 @@ class MultiScenarioPlot(ABC):
     def __init__(self, processes, figsize=None, check_outputs=True, required_outputs=None,
                  scenario_groups=None, fig=None, ax=None, legend=True, colors=None,
                  group_display="lines", group_envelope_middle="median",
-                 group_envelope_alpha=0.25):
+                 group_envelope_alpha=0.25, group_envelope_show_members=True):
         """
         Initialize the plot with data from multiple processes.
 
@@ -115,6 +115,12 @@ class MultiScenarioPlot(ABC):
             * ``dict`` of ``{group_name: scenario_name}`` – use the given
               scenario as the middle line for that group. Groups omitted from
               the dict fall back to ``"median"``.
+        group_envelope_show_members : bool, optional
+            In envelope mode, whether to draw the individual member scenarios as
+            lines inside the band. ``True`` (default) preserves the historical
+            behaviour. ``False`` draws only the band and its middle line, which
+            reads better when the band itself is the message and the members are
+            uncertainty bounds rather than scenarios of independent interest.
         group_envelope_alpha : float, optional
             Transparency of the ``fill_between`` band in envelope mode.
             Default ``0.25``.
@@ -126,6 +132,7 @@ class MultiScenarioPlot(ABC):
         self.group_display = group_display
         self.group_envelope_middle = group_envelope_middle
         self.group_envelope_alpha = group_envelope_alpha
+        self.group_envelope_show_members = group_envelope_show_members
 
         # Store legend preference
         self._legend_setting = legend
@@ -494,11 +501,16 @@ class MultiScenarioPlot(ABC):
             effective_picked = picked
 
         mid_scenario = scenario_names[effective_picked]
-        mid_ls = self.get_scenario_style(mid_scenario)['linestyle']
+        # With the members hidden the middle line carries the group on its own,
+        # so it takes a plain solid stroke rather than its index-based dash.
+        mid_ls = ("-" if not self.group_envelope_show_members
+                  else self.get_scenario_style(mid_scenario)['linestyle'])
 
         # Background lines: all scenarios except the last and the mid scenario,
         # each using its pre-assigned index-based linestyle from scenario_styles.
-        for scenario_name in scenario_names[:-1]:
+        # Skipped entirely when the caller wants band + middle line only.
+        for scenario_name in ([] if not self.group_envelope_show_members
+                              else scenario_names[:-1]):
             if scenario_name == mid_scenario:
                 continue
             style = self.get_scenario_style(scenario_name)
@@ -753,13 +765,20 @@ class MultiScenarioPlot(ABC):
         )
         style_labels.append(f"{first_unique} to {last_unique} range")
 
-        # One grey line per plotted variant (all except the last)
-        for i, member in enumerate(first_members[:-1]):
-            ls = DEFAULT_LINESTYLES[i % len(DEFAULT_LINESTYLES)]
+        if not self.group_envelope_show_members:
+            # Only the middle line is drawn, so advertise that and nothing else.
             style_handles.append(
-                mlines.Line2D([], [], color="grey", linestyle=ls, linewidth=2)
+                mlines.Line2D([], [], color="grey", linestyle="-", linewidth=2)
             )
-            style_labels.append(self._variant_label(first_group_name, member))
+            style_labels.append(self._middle_legend_label(first_group_name, first_members))
+        else:
+            # One grey line per plotted variant (all except the last)
+            for i, member in enumerate(first_members[:-1]):
+                ls = DEFAULT_LINESTYLES[i % len(DEFAULT_LINESTYLES)]
+                style_handles.append(
+                    mlines.Line2D([], [], color="grey", linestyle=ls, linewidth=2)
+                )
+                style_labels.append(self._variant_label(first_group_name, member))
 
         # --- Put all group entries first, then all style entries ---
         # matplotlib fills ncols=2 column-major (top-down per column), so
@@ -778,6 +797,17 @@ class MultiScenarioPlot(ABC):
         combined_labels = group_labels + style_labels
 
         self.ax.legend(combined_handles, combined_labels, ncols=2, loc=loc)
+
+    def _middle_legend_label(self, group_name, members):
+        """Legend label for the envelope's middle line.
+
+        Names the pinned scenario when one is pinned, otherwise the statistic
+        used to derive the middle pointwise.
+        """
+        picked = self._resolve_middle_index(group_name, members)
+        if picked is not None:
+            return self._variant_label(group_name, members[picked])
+        return "mean" if self.group_envelope_middle == "mean" else "median"
 
     @staticmethod
     def _variant_label(group_name: str, scenario_name: str) -> str:

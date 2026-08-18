@@ -69,3 +69,41 @@ class NonCO2ERFComparisonPlot(MultiScenarioPlot):
         self.ax.set_ylabel("Non-CO₂ ERF [W/m²]")
         self.ax.legend(loc="best")
         self.ax.grid(True, alpha=0.3)
+
+
+class ContrailsTemperatureComparisonPlot(MultiScenarioPlot):
+    """Compare contrail-induced temperature increase across scenarios.
+
+    Contrails are typically the largest single non-CO2 warming term, and the
+    one most sensitive to operational and combustor interventions, so they are
+    worth comparing on their own rather than only inside the non-CO2 aggregate.
+    """
+
+    required_outputs = ["temperature_increase_from_contrails_from_aviation"]
+    column_name = "temperature_increase_from_contrails_from_aviation"
+    data_source = "df_climate"
+    y_scale = 1000  # convert from K to mK
+
+    def create_plot(self):
+        self._plot_grouped_series()
+        self.ax.set_title("Contrail-Induced Temperature Increase Comparison")
+        self.ax.set_xlabel("Year")
+        self.ax.set_ylabel("Temperature increase [mK]")
+        self.ax.legend(loc="best")
+        self.ax.grid(True, alpha=0.3)
+
+
+class ContrailsERFComparisonPlot(MultiScenarioPlot):
+    """Compare contrail effective radiative forcing across scenarios."""
+
+    required_outputs = ["contrails_erf"]
+    column_name = "contrails_erf"
+    data_source = "df_climate"
+
+    def create_plot(self):
+        self._plot_grouped_series()
+        self.ax.set_title("Contrail Effective Radiative Forcing Comparison")
+        self.ax.set_xlabel("Year")
+        self.ax.set_ylabel("Contrail ERF [W/m²]")
+        self.ax.legend(loc="best")
+        self.ax.grid(True, alpha=0.3)

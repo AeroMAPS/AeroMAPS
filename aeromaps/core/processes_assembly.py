@@ -156,7 +156,8 @@ class AeroMAPSProcessesAssembly:
              remove_title: bool = False, check_outputs: bool = True,
              scenario_groups: dict = None, fig=None, ax=None, legend=True,
              colors=None, group_display: str = "lines",
-             group_envelope_middle="median", group_envelope_alpha: float = 0.25):
+             group_envelope_middle="median", group_envelope_alpha: float = 0.25,
+             group_envelope_show_members: bool = True):
         """
         Generate a multi-scenario comparison plot.
         
@@ -206,6 +207,10 @@ class AeroMAPSProcessesAssembly:
         group_envelope_alpha : float, optional
             Transparency of the ``fill_between`` band in envelope mode.
             Default ``0.25``.
+        group_envelope_show_members : bool, optional
+            In envelope mode, whether to draw the individual member scenarios as
+            lines inside the band. Default ``True``. Set ``False`` for band plus
+            middle line only.
 
         Returns
         -------
@@ -242,6 +247,7 @@ class AeroMAPSProcessesAssembly:
             group_display=group_display,
             group_envelope_middle=group_envelope_middle,
             group_envelope_alpha=group_envelope_alpha,
+            group_envelope_show_members=group_envelope_show_members,
         )
         
         # Save if requested
