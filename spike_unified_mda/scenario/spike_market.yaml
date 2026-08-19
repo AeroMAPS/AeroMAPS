@@ -1,0 +1,9 @@
+# Own configuration of the SpikeFuelMarket global discipline, loaded by the model
+# itself in custom_setup() -- the air_transport/markets/ pattern.
+base_price: 150.0      # EUR/tCO2 at the reference demand
+stiffness: 0.3         # supply-curve steepness
+gamma: 1.0             # supply-curve convexity exponent
+demand_ref: 20.0       # reference total demand (rpk / 1e12, all regions)
+local_offset:
+  region_A: 0.0
+  region_B: 0.0
