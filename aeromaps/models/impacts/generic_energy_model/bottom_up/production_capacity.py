@@ -110,8 +110,14 @@ class BottomUpCapacity(AeroMAPSModel):
         """
         output_data = {}
 
-        # Get the energy consumption trajectory and capacity factor
+        # Get the energy consumption trajectory and capacity factor.
+        # Copied because the virtual-years block below extends and re-sorts this Series
+        # in place: input_data holds the very Series objects the MDA snapshotted as its
+        # previous iterate, and this one is a coupling variable, so mutating it would
+        # rewrite that snapshot -- here even changing its length.
         energy_required = input_data.get(f"{self.pathway_name}_energy_consumption")
+        if energy_required is not None:
+            energy_required = energy_required.copy()
 
         technology_introduction = input_data.get(
             f"{self.pathway_name}_technology_introduction_year"
