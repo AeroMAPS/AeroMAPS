@@ -440,11 +440,12 @@
     </p>
     <ol>
       <li>
-        Le risque immédiat n'est pas la convergence de Gauss-Seidel mais sa
-        <em>détection</em>&nbsp;: sur la chaîne réelle le résidu MDA est aujourd'hui
-        plafonné à ~1,6e-6 par des NaN dans les variables de couplage. Défaut
-        préexistant, indépendant du spike, <strong>diagnostiqué mais non corrigé
-        ici</strong>.
+        Le risque principal n'était pas la convergence de Gauss-Seidel mais sa
+        <em>détection</em>&nbsp;: sur la chaîne réelle le résidu MDA était plafonné à
+        ~1,6e-6, au-dessus de toute tolérance utile. Défaut préexistant, indépendant du
+        spike, <strong>diagnostiqué et corrigé ici</strong>. La cause n'était pas le
+        sentinel NaN mais une discipline qui mutait sa propre entrée de couplage en
+        place, écrasant l'itéré précédent du solveur.
       </li>
       <li>
         Il existe un vrai plafond de convexité que <strong>aucun réglage de solveur ne
@@ -467,9 +468,9 @@
     <div class="score">
       <span class="n">CRITÈRE 2</span>
       <span class="name">Convergence</span>
-      <span class="chip warn">validé sous réserve</span>
+      <span class="chip ok">validé</span>
       <span class="figure">22 itér.</span>
-      <span class="note">chaîne réelle à 1e-10 — mais seulement une fois les NaN neutralisés</span>
+      <span class="note">chaîne réelle à 1e-10, après correction du plancher de résidu (§&nbsp;2)</span>
     </div>
     <div class="score">
       <span class="n">CRITÈRE 3</span>
@@ -653,10 +654,10 @@ norme totale 1.01e+07 / échelle 6.33e+12 = 1.59e-06</pre></div>
       objet » et non « zéro ».
     </p>
 
-    <h3>Pourquoi le sentinel ne peut pas être rattrapé sur place</h3>
+    <h3>Cause racine&nbsp;: une discipline mutait l'itéré précédent du solveur</h3>
     <p>
       Le sentinel est censé faire un aller-retour&nbsp;: <code>fillna(-999999)</code> à
-      l'entrée, <code>where(== -999999, nan)</code> à la sortie. Mesuré, il ne revient
+      l'entrée, <code>where(== -999999, nan)</code> à la sortie. Mesuré, il ne revenait
       pas. Sur <code>hydrogen_mean_co2_emission_factor</code> (51/51 NaN), au moment du
       calcul du résidu&nbsp;:
     </p>
@@ -664,13 +665,88 @@ norme totale 1.01e+07 / échelle 6.33e+12 = 1.59e-06</pre></div>
 côté entrée  (itéré précédent)    :       0.        0.        0.
 résidu                            : -999999.  -999999.  -999999.   (constant, à jamais)</pre></div>
     <p>
-      La raison est structurelle&nbsp;: le MDA fait de l'<strong>arithmétique</strong> sur
-      le vecteur de couplage — <code>residual = sortie − entrée</code>, puis le
-      <em>sequence transformer</em> combine itéré et résidu pour produire l'itéré
-      suivant. Un sentinel numérique ne survit à aucune de ces opérations&nbsp;:
-      <code>-999999</code> combiné à quoi que ce soit cesse d'être reconnaissable comme
-      NaN. <strong>Aucun encodage de NaN par une valeur réelle ne peut tenir ici.</strong>
-      La conclusion pointe vers les modèles producteurs, pas vers le convertisseur.
+      <strong>Le sentinel n'était pas en cause.</strong> En traçant l'identité des
+      objets, le côté entrée et le côté sortie sont <em>le même objet Python</em>&nbsp;:
+      <code>nan=51</code> en haut de <code>_iterate_once</code>, <code>nan=0</code> au
+      moment du résidu, <code>id()</code> inchangé. Une discipline réécrivait la série
+      en place pendant le balayage.
+    </p>
+    <p>
+      Le coupable&nbsp;: <code>CO2Emissions</code> faisait
+      <code>co2_emission_factor.fillna(0, inplace=True)</code> sur une entrée de
+      couplage. Le commentaire disait «&nbsp;<em>Locally</em> fill&nbsp;» — mais
+      <code>inplace=True</code> n'a rien de local. GEMSEO capture l'itéré précédent avec
+      <code>self.io.data.copy()</code>, une copie <strong>superficielle</strong>&nbsp;:
+      les <code>pd.Series</code> qu'elle contient sont exactement les objets passés à
+      <code>compute()</code>. Muter l'un d'eux réécrit l'instantané que le solveur
+      s'apprête à différencier. D'où le résidu constant&nbsp;:
+      <code>-999999 − 0 = -999999</code>, à chaque itération, pour toujours.
+    </p>
+
+    <h3>Correctif</h3>
+    <p>Deux changements, aucun dans <code>core/gemseo.py</code>, aucun zéro fictif&nbsp;:</p>
+    <div class="scroller">
+      <table>
+        <thead><tr><th>fichier</th><th>changement</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="txt"><code>impacts/emissions/co2_emissions.py</code></td>
+            <td class="txt"><code>fillna(0, inplace=True)</code> → <code>fillna(0)</code> non mutant</td>
+          </tr>
+          <tr>
+            <td class="txt"><code>generic_energy_model/bottom_up/production_capacity.py</code></td>
+            <td class="txt"><code>.copy()</code> avant d'étendre et re-trier une entrée de couplage</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      Le second est un bug latent trouvé par le même balayage&nbsp;: le modèle ajoutait
+      des «&nbsp;années virtuelles&nbsp;» à <code>{pathway}_energy_consumption</code> —
+      une variable de couplage — puis la re-triait, <strong>en place</strong>. Il ne
+      changeait pas seulement des valeurs, mais la <em>longueur</em> de la série.
+    </p>
+
+    <div class="scroller">
+      <table>
+        <caption>tolérance 1e-10, MDAGaussSeidel</caption>
+        <thead><tr><th></th><th>avant</th><th>après</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="txt">contrôle mono-région</td>
+            <td class="fail">19 it · 1,59e-6 · non convergé</td>
+            <td class="pass">9 it · 1,27e-11 · convergé</td>
+          </tr>
+          <tr>
+            <td class="txt">spike bi-région + marché global</td>
+            <td class="fail">38 it · 7,06e-7 · non convergé</td>
+            <td class="pass">22 it · 2,94e-11 · convergé</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout">
+      <p class="callout-label">NaN préservé</p>
+      <p>
+        <code>hydrogen_mean_co2_emission_factor</code> <strong>reste NaN</strong> en
+        sortie, et 214 colonnes tout-NaN sont préservées. Comparé au dump
+        «&nbsp;neutralisé&nbsp;» (convergé mais sémantiquement faux)&nbsp;: 1877
+        colonnes identiques, 58 qui ne diffèrent que par un NaN correctement restauré là
+        où le probe forçait un 0, et <strong>aucune autre différence</strong>. Le
+        sentinel <code>-999999</code> reste en place et fonctionne exactement comme
+        prévu&nbsp;: NaN → sentinel des deux côtés → résidu nul → la variable ne
+        contribue pas.
+      </p>
+    </div>
+
+    <h3>Garde-fou</h3>
+    <p>
+      <code>aeromaps/tests/core/test_mda_input_mutation.py</code> vérifie l'invariant
+      directement&nbsp;: après <code>compute()</code>, toute valeur reçue par une
+      discipline doit être inchangée en valeur, longueur et index. Testé dans les deux
+      sens — le test échoue en nommant la discipline et la variable quand on réintroduit
+      la mutation, et passe une fois corrigée.
     </p>
   </section>
 

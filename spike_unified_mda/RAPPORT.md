@@ -8,10 +8,11 @@ solveur.
 
 Deux réserves, dans cet ordre d'importance :
 
-1. Le risque immédiat n'est pas la convergence de Gauss-Seidel mais sa *détection* :
-   sur la chaîne réelle le résidu MDA est aujourd'hui plafonné à ~1,6e-6 par des NaN
-   dans les variables de couplage. Défaut préexistant, indépendant du spike,
-   **diagnostiqué mais non corrigé ici**.
+1. Le risque principal n'était pas la convergence de Gauss-Seidel mais sa *détection* :
+   sur la chaîne réelle le résidu MDA était plafonné à ~1,6e-6, au-dessus de toute
+   tolérance utile. Défaut préexistant, indépendant du spike, **diagnostiqué et corrigé
+   ici** (§ 2) — la cause n'était pas le sentinel NaN mais une discipline qui mutait sa
+   propre entrée de couplage en place, écrasant l'itéré précédent du solveur.
 2. Il existe un vrai plafond de convexité que **aucun réglage de solveur ne franchit**
    (§ 4). L'accélération repousse le seuil d'un facteur ~2 à 4 sur la chaîne réelle,
    pas à l'infini. Au-delà, il faudra amortir la mise à jour du prix *dans* la
@@ -69,11 +70,11 @@ GEMSEO absorbe donc `SpikeClearing` **dans la même CFC** que `rpk ↔ airfare_p
 Étape 1 : l'écart au point fixe analytique est de **2.1e-14** — le solveur trouve la
 bonne racine, pas seulement un plateau.
 
-Le chiffre de 22 itérations suppose le correctif de détection décrit ci-dessous. **En
-l'état du dépôt, le même cas s'arrête à 38 itérations avec un résidu de 7.06e-7**, sur
+Le chiffre de 22 itérations suppose le correctif décrit ci-dessous. Avant celui-ci, le
+même cas s'arrêtait à 38 itérations avec un résidu de 7,06e-7, sur
 `max_consecutive_unsuccessful_iterations`.
 
-### Le plancher de résidu à ~1.6e-6 est préexistant
+### Le plancher de résidu à ~1,6e-6 était préexistant
 
 Contrôle décisif — tutoriel `08_use_variable_demand`, **une seule région, AeroMAPS non
 modifié**, mêmes réglages que `AeroMAPSProcess` (`tolerance=1e-10`, `MDAGaussSeidel`) :
@@ -92,9 +93,10 @@ norme totale 1.01e+07 / échelle 6.33e+12 = 1.59e-06
 ```
 
 `CustomDataConverter.convert_value_to_array` fait `value.fillna(-999999)`. Une série de
-couplage entièrement NaN (ici : ni hydrogène ni électrique dans le scénario) injecte
-donc **999999 par élément** dans le vecteur résidu, en permanence. Le plancher est
-structurel, pas numérique.
+couplage entièrement NaN (ici : ni hydrogène ni électrique dans le scénario) injectait
+donc **999999 par élément** dans le vecteur résidu, en permanence.
+
+Le premier réflexe — accuser le sentinel — était faux. Voir la cause réelle ci-dessous.
 
 Diagnostic (`nan_floor_probe.py`, une ligne : `fillna(0.0)` au lieu du sentinel) :
 
@@ -122,10 +124,10 @@ Les 24 colonnes NaN → 0 sont précisément le motif qui interdit de promouvoir
 diagnostic en correctif : ce sont les `doc_energy_per_ask_*_{hydrogen,electric}`, où
 NaN signifie « sans objet » et non « zéro ».
 
-### Pourquoi le sentinel ne peut pas être rattrapé sur place
+### Cause racine : une discipline mutait l'itéré précédent du solveur
 
 Le sentinel est censé faire un aller-retour : `fillna(-999999)` à l'entrée,
-`where(== -999999, nan)` à la sortie. Mesuré, il ne revient pas. Sur
+`where(== -999999, nan)` à la sortie. Mesuré, il ne revenait pas. Sur
 `hydrogen_mean_co2_emission_factor` (51/51 NaN), au moment du calcul du résidu :
 
 ```
@@ -134,14 +136,55 @@ côté entrée  (itéré précédent)    :       0.        0.        0.
 résidu                            : -999999.  -999999.  -999999.   (constant, à jamais)
 ```
 
-La raison est structurelle : le MDA fait de l'**arithmétique** sur le vecteur de
-couplage — `residual = sortie - entrée`, puis le *sequence transformer* combine itéré
-et résidu pour produire l'itéré suivant. Un sentinel numérique ne survit à aucune de
-ces opérations : `-999999` combiné à quoi que ce soit cesse d'être reconnaissable comme
-NaN, et l'aller-retour est rompu. **Aucun encodage de NaN par une valeur réelle ne peut
-tenir ici.** La conclusion qui en découle est que NaN n'a rien à faire dans une
-variable de couplage GEMSEO — ce qui pointe vers les modèles producteurs, pas vers le
-convertisseur.
+**Le sentinel n'était pas en cause.** En traçant l'identité des objets, le côté entrée
+et le côté sortie sont *le même objet Python* : `nan=51` en haut de `_iterate_once`,
+`nan=0` au moment du résidu, `id()` inchangé. Une discipline réécrivait la série en
+place pendant le balayage.
+
+Le coupable : `CO2Emissions` faisait `co2_emission_factor.fillna(0, inplace=True)` sur
+une entrée de couplage. Le commentaire disait « *Locally* fill » — mais `inplace=True`
+n'a rien de local. GEMSEO capture l'itéré précédent avec `self.io.data.copy()`, une
+copie **superficielle** : les `pd.Series` qu'elle contient sont exactement les objets
+passés à `compute()`. Muter l'un d'eux réécrit l'instantané que le solveur s'apprête à
+différencier.
+
+D'où le résidu constant : le producteur émettait NaN → `-999999`, pendant que le
+consommateur avait déjà réécrit l'entrée à `0`. `-999999 - 0 = -999999`, à chaque
+itération, pour toujours.
+
+### Correctif
+
+Deux changements, aucun dans `core/gemseo.py`, aucun zéro fictif :
+
+| fichier | changement |
+|---|---|
+| `impacts/emissions/co2_emissions.py` | `fillna(0, inplace=True)` → `fillna(0)` non mutant |
+| `generic_energy_model/bottom_up/production_capacity.py` | `.copy()` avant d'étendre et re-trier une entrée de couplage |
+
+Le second est un bug latent trouvé par le même balayage : `BottomUpCapacity` ajoutait
+des « années virtuelles » à `{pathway}_energy_consumption` — une variable de couplage —
+puis la re-triait, **en place**. Il ne changeait pas seulement des valeurs, mais la
+*longueur* de la série.
+
+| | avant | après |
+|---|---|---|
+| contrôle mono-région | 19 it, résidu 1,59e-6, **non convergé** | **9 it, 1,27e-11, convergé** |
+| spike bi-région + marché global | 38 it, 7,06e-7, **non convergé** | **22 it, 2,94e-11, convergé** |
+
+Et surtout : `hydrogen_mean_co2_emission_factor` **reste NaN** en sortie, 214 colonnes
+tout-NaN sont préservées. Comparé au dump « neutralisé » (converged mais sémantiquement
+faux), 1877 colonnes identiques, 58 qui ne diffèrent que par un NaN correctement
+restauré là où le probe forçait un 0, et **aucune autre différence**.
+
+Le sentinel `-999999` reste donc en place et fonctionne exactement comme prévu :
+NaN → sentinel des deux côtés → résidu nul → la variable ne contribue pas.
+
+### Garde-fou
+
+`aeromaps/tests/core/test_mda_input_mutation.py` vérifie l'invariant directement :
+après `compute()`, toute valeur reçue par une discipline doit être inchangée en valeur,
+longueur et index. Testé dans les deux sens — le test échoue en nommant la discipline
+et la variable quand on réintroduit la mutation, et passe une fois corrigée.
 
 ## 3. Idempotence
 
@@ -405,7 +448,7 @@ Rien n'est structurellement bloqué. Chiffrage, du plus urgent au moins :
 |---|---|
 | Point d'accroche `global_models` + réglages MDA configurables | **fait** (commit `aaf71547`) |
 | Duplication des colonnes sur `compute()` répété | **fait** (commit `e8b6f8c2`) |
-| NaN dans les couplages → plancher de résidu | **3 à 5 j**, et **non fait ici**. Le `fillna(0.0)` du diagnostic n'est pas un correctif : il désactive aussi l'aller-retour qui restaure NaN, donc tout NaN devient un 0 définitif (24 colonnes concernées sur le seul scénario spike). Le correctif consiste à empêcher les producteurs d'émettre NaN sur une variable de couplage — cf. le même motif sur les marchés vides — ou à retirer ces variables du jeu de couplage. |
+| NaN dans les couplages → plancher de résidu | **fait** (§ 2). Deux lignes dans deux modèles, plus un test de non-régression. Ce n'était pas le sentinel : une discipline mutait son entrée de couplage en place et écrasait l'itéré précédent du solveur. `core/gemseo.py` reste inchangé, NaN reste NaN. |
 | Faire échouer bruyamment une MDA non convergée | **1 j**. Lire le statut après `execute()` et lever, ou avertir explicitement. |
 | Aligner les réglages MDA de `unified_mda` sur `AeroMAPSProcess` | **0.5 j** + revalidation des scénarios existants |
 | Exposer damping / accélération et choisir un défaut | **1 j** (le point d'accroche existe ; il reste à décider du défaut) |
