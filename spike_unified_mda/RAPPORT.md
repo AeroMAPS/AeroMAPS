@@ -4,9 +4,18 @@
 
 **Recommandation : architecture confirmée.** Le montage tient. Ce qui manquait était
 un point d'accroche (une trentaine de lignes, livrée ici) et non une propriété du
-solveur. Le vrai risque n'est pas la convergence de Gauss-Seidel mais sa *détection* :
-sur la chaîne réelle le résidu MDA est aujourd'hui plafonné à ~1.6e-6 par des NaN
-dans les variables de couplage — un défaut préexistant, indépendant du spike.
+solveur.
+
+Deux réserves, dans cet ordre d'importance :
+
+1. Le risque immédiat n'est pas la convergence de Gauss-Seidel mais sa *détection* :
+   sur la chaîne réelle le résidu MDA est aujourd'hui plafonné à ~1,6e-6 par des NaN
+   dans les variables de couplage. Défaut préexistant, indépendant du spike,
+   **diagnostiqué mais non corrigé ici**.
+2. Il existe un vrai plafond de convexité que **aucun réglage de solveur ne franchit**
+   (§ 4). L'accélération repousse le seuil d'un facteur ~2 à 4 sur la chaîne réelle,
+   pas à l'infini. Au-delà, il faudra amortir la mise à jour du prix *dans* la
+   discipline de marché plutôt que compter sur le MDA.
 
 ---
 
@@ -45,10 +54,10 @@ Le cycle bouclé est bien celui visé :
 
 GEMSEO absorbe donc `SpikeClearing` **dans la même CFC** que `rpk ↔ airfare_per_rpk`.
 
-> À signaler : sur `main`, `unified_mda` n'avait jamais résolu de cycle. Le tutoriel
-> deux régions produit `mda_chain.inner_mdas == []` — 167 disciplines, chaîne
-> purement séquentielle, GEMSEO émet même *« No coupling in MDA »*. Ce spike est le
-> premier cas où le mode fait réellement tourner un solveur.
+> À signaler : sur la base, `unified_mda` n'avait jamais résolu de cycle. Le tutoriel
+> deux régions produit `mda_chain.inner_mdas == []` — 167 disciplines, aucune
+> composante fortement connexe, chaîne purement séquentielle. Ce spike est le premier
+> cas où le mode fait réellement tourner un solveur de couplage.
 
 ## 2. Convergence
 
@@ -94,10 +103,45 @@ Diagnostic (`nan_floor_probe.py`, une ligne : `fillna(0.0)` au lieu du sentinel)
 | contrôle une région (AeroMAPS non modifié) | 19 it, 1.59e-06 ✗ | **9 it, 1.27e-11 ✓** |
 | spike deux régions + marché global | 38 it, 7.06e-07 ✗ | **22 it, 2.94e-11 ✓** |
 
-**Les résultats numériques sont identiques dans les deux colonnes** (prix 2050 =
-238.038761 des deux côtés). Le point fixe était atteint ; seule sa *détection*
-échouait. C'est une bonne nouvelle sur la validité des scénarios existants, et une
-mauvaise sur l'usage du résidu comme critère d'acceptation.
+Comparaison **colonne par colonne** des 1935 sorties du scénario spike, stock contre
+neutralisé (`nan_impact_check.py`) :
+
+| | colonnes |
+|---|---|
+| identiques au bit près | 1196 |
+| écart **uniquement** NaN → 0 | 24 |
+| numériquement différentes | 715, **toutes à ≤ 8,8e-12 en relatif** |
+
+Aucun écart matériel : les 715 colonnes « différentes » le sont au niveau de l'écart
+entre un run arrêté à 7e-7 et un run convergé à 3e-11, pas au niveau de la physique.
+Le point fixe était bien atteint ; seule sa *détection* échouait. Bonne nouvelle sur la
+validité des scénarios existants, mauvaise sur l'usage du résidu comme critère
+d'acceptation.
+
+Les 24 colonnes NaN → 0 sont précisément le motif qui interdit de promouvoir ce
+diagnostic en correctif : ce sont les `doc_energy_per_ask_*_{hydrogen,electric}`, où
+NaN signifie « sans objet » et non « zéro ».
+
+### Pourquoi le sentinel ne peut pas être rattrapé sur place
+
+Le sentinel est censé faire un aller-retour : `fillna(-999999)` à l'entrée,
+`where(== -999999, nan)` à la sortie. Mesuré, il ne revient pas. Sur
+`hydrogen_mean_co2_emission_factor` (51/51 NaN), au moment du calcul du résidu :
+
+```
+côté sortie (la discipline émet)  : -999999.  -999999.  -999999.
+côté entrée  (itéré précédent)    :       0.        0.        0.
+résidu                            : -999999.  -999999.  -999999.   (constant, à jamais)
+```
+
+La raison est structurelle : le MDA fait de l'**arithmétique** sur le vecteur de
+couplage — `residual = sortie - entrée`, puis le *sequence transformer* combine itéré
+et résidu pour produire l'itéré suivant. Un sentinel numérique ne survit à aucune de
+ces opérations : `-999999` combiné à quoi que ce soit cesse d'être reconnaissable comme
+NaN, et l'aller-retour est rompu. **Aucun encodage de NaN par une valeur réelle ne peut
+tenir ici.** La conclusion qui en découle est que NaN n'a rien à faire dans une
+variable de couplage GEMSEO — ce qui pointe vers les modèles producteurs, pas vers le
+convertisseur.
 
 ## 3. Idempotence
 
@@ -141,8 +185,9 @@ Balayage par bisection, `elasticity=0.5`, `tolerance=1e-10`, `max_mda_iter=2000`
 Deux enseignements :
 
 1. **La raideur seule ne casse jamais Gauss-Seidel.** À `gamma=1`, `stiffness=1000`
-   converge encore en 34 itérations : le gain de boucle sature sous 0.5. Ce qui tue le
-   solveur, c'est la **convexité** de la courbe d'offre (l'exposant local), pas son
+   converge encore en 34 itérations : le gain de boucle sature juste sous l'élasticité
+   (0.495 mesuré pour `elasticity=0.5`), donc sous 1 quoi qu'il arrive. Ce qui tue le
+   solveur, c'est la **convexité** de la courbe d'offre (son exposant local), pas son
    niveau.
 2. **Le seuil est prédictible à 2 % près** par le critère analytique
    `|g'(x*)| = elasticity × gamma × stiffness · x*^(gamma-1) / (1 + stiffness·x*^gamma) = 1`.
@@ -169,8 +214,8 @@ racine (vérifiée par `brentq`, pas par itération de point fixe) :
 | + accélération `Alternate2Delta` | **181.1** | **32.9** | **18.3** |
 
 Sur les cas durs (s=3, γ=4…10 ; s=0.3, γ=20…30), l'accélération converge en **10 à 22
-itérations** là où Gauss-Seidel nu stagne, avec une erreur au point fixe de 1e-14 à
-1e-16. `MDAJacobi` — le défaut GEMSEO, qui embarque `Alternate2Delta` — converge
+itérations** là où Gauss-Seidel nu stagne, avec une erreur au point fixe comprise entre
+2e-16 et 3e-13. `MDAJacobi` — le défaut GEMSEO, qui embarque `Alternate2Delta` — converge
 partout en 10 à 12 itérations. **AeroMAPS force `inner_mda_name="MDAGaussSeidel"`,
 ce qui désactive cette accélération.**
 
@@ -212,6 +257,34 @@ itérations), la convexité casse. Le seuil réel est plus bas que celui du joue
 gain (`price_elasticity = -0.9`) en série avec celui du marché. Le rapport entre les
 deux seuils est du même ordre que le rapport des élasticités (0.9 / 0.5), ce qui est
 cohérent avec le critère `élasticité × exposant local < 1` du § précédent.
+
+### Étape 2 : les remèdes sur la chaîne réelle
+
+Les cas en échec, repassés avec chaque levier (`tolerance=1e-10`, `max_mda_iter=200`).
+
+| stiffness / gamma | GS nu | relax 0,7 | relax 0,4 | + `Alternate2Delta` | `MDAJacobi` |
+|---|---|---|---|---|---|
+| 0,3 / 8 | ✗ 3,7e+00 | ✗ 1,2e+00 | ✗ 8,0e-01 | **✓ 87 it, 9,9e-11** | erreur |
+| 0,3 / 16 | ✗ 7,4e+00 | ✗ 3,4e+00 | ✗ 6,4e+00 | **✓ 91 it, 5,7e-11** | erreur |
+| 3 / 8 | ✗ 3,2e+00 | ✗ 1,4e+00 | ✗ 1,8e+00 | ✗ 6,3e-01 | erreur |
+
+Trois écarts par rapport au jouet, tous à retenir :
+
+1. **La sur-relaxation ne rachète rien sur la chaîne réelle.** À 0,7 comme à 0,4, aucun
+   des trois cas ne passe — alors que sur le jouet elle récupérait tout. Le damping
+   simple est un mauvais pari ici.
+2. **L'accélération, elle, fonctionne** : `Alternate2Delta` fait passer `gamma*` de
+   « entre 4 et 8 » à « au moins 16 » à `stiffness=0,3`, en ~90 itérations.
+3. **`MDAJacobi` échoue franchement** (`ValueError: array must not contain infs or
+   NaNs`) sur les trois cas : il exécute toutes les disciplines depuis le même état et
+   traverse des valeurs invalides que Gauss-Seidel ne voit jamais. Basculer sur le
+   défaut GEMSEO n'est donc pas une option, malgré ce que suggère le jouet.
+
+Mais le cas `3 / 8` ne passe avec **aucun** levier. **Il y a donc bien un plafond
+réel**, et non un simple réglage à trouver. Recommandation opérationnelle :
+`MDAGaussSeidel` + `acceleration_method: Alternate2Delta` via `inner_mda_settings`, en
+sachant qu'au-delà il faudra changer de formulation — amortir la mise à jour du prix
+*dans* la discipline de marché, ou fournir des jacobiennes.
 
 ## 5. Rejet par `_wrap_top_level_model`
 
@@ -284,9 +357,22 @@ Mesuré (`seed_probe.py`, jouet à `stiffness=0.3`, `gamma=15`, tolérance 1e-10
 | trajectoire calculée volontairement fausse (×10) | 124 |
 
 L'amorce est bien prise en compte — l'amorce exacte converge en une itération. Mais
-**l'amorçage achète de la vitesse, pas de la stabilité** : les quatre amorces
-échouent identiquement au-delà de `gamma* ≈ 20.6`. Pour une offre raide, c'est le
-damping ou l'accélération qu'il faut, pas une meilleure amorce.
+**l'amorçage achète de la vitesse, pas de la stabilité.** Au-delà de `gamma* ≈ 20.6`
+le point fixe est répulsif et aucune amorce ne convertit ça en convergence. Mesuré à
+`gamma=25` :
+
+| amorce | itérations | résidu | x rendu | x vrai |
+|---|---|---|---|---|
+| constante non informée | 167 | 7.7e-01 | 0.987886 | 0.955329 |
+| constante à la solution exacte | 8 | 1.0e+00 | 0.955329 | 0.955329 |
+| trajectoire calculée | 11 | 1.1e+00 | 0.955329 | 0.955329 |
+
+Le piège est net : avec une bonne amorce, le solveur **rend la bonne valeur tout en
+n'ayant jamais convergé** (résidu 1.0, arrêt sur `max_consecutive_unsuccessful_iterations`).
+Sans vérification du statut de convergence en aval, rien ne distingue ce cas d'un
+calcul sain — et la ligne du dessus, non informée, rend une valeur fausse de 3 % avec
+le même silence. Pour une offre raide, c'est le damping ou l'accélération qu'il faut,
+pas une meilleure amorce.
 
 ### Autres angles morts de `unified_mda`
 
@@ -319,7 +405,7 @@ Rien n'est structurellement bloqué. Chiffrage, du plus urgent au moins :
 |---|---|
 | Point d'accroche `global_models` + réglages MDA configurables | **fait** (commit `aaf71547`) |
 | Duplication des colonnes sur `compute()` répété | **fait** (commit `e8b6f8c2`) |
-| NaN dans les couplages → plancher de résidu | **3 à 5 j**. La neutralisation d'une ligne fait converger contrôle et spike, mais le vrai correctif est de décider ce que signifie un couplage NaN (série absente vs. valeur manquante) et de traiter la cause en amont — cf. le même motif sur les marchés vides. |
+| NaN dans les couplages → plancher de résidu | **3 à 5 j**, et **non fait ici**. Le `fillna(0.0)` du diagnostic n'est pas un correctif : il désactive aussi l'aller-retour qui restaure NaN, donc tout NaN devient un 0 définitif (24 colonnes concernées sur le seul scénario spike). Le correctif consiste à empêcher les producteurs d'émettre NaN sur une variable de couplage — cf. le même motif sur les marchés vides — ou à retirer ces variables du jeu de couplage. |
 | Faire échouer bruyamment une MDA non convergée | **1 j**. Lire le statut après `execute()` et lever, ou avertir explicitement. |
 | Aligner les réglages MDA de `unified_mda` sur `AeroMAPSProcess` | **0.5 j** + revalidation des scénarios existants |
 | Exposer damping / accélération et choisir un défaut | **1 j** (le point d'accroche existe ; il reste à décider du défaut) |
@@ -357,6 +443,7 @@ python -m spike_unified_mda.step1_threshold       # critère 4, seuils (long)
 python -m spike_unified_mda.step1_remedies        # damping / accélération / Newton
 python -m spike_unified_mda.step_criterion5       # critère 5
 python -m spike_unified_mda.nan_floor_probe [--neutralise]
+python -m spike_unified_mda.nan_impact_check {stock,neutralised,compare}
 python -m spike_unified_mda.step2_criteria 1234 --neutralise   # chaîne réelle
 python -m spike_unified_mda.step2_remedies
 python -m spike_unified_mda.seed_probe

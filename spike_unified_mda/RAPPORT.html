@@ -1,0 +1,1145 @@
+<title>Spike unified_mda</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+
+<style>
+  :root {
+    --ground: #EFF3F4;
+    --surface: #FFFFFF;
+    --surface-sunk: #F5F8F8;
+    --ink: #0F1D23;
+    --ink-soft: #4A5D65;
+    --ink-faint: #7C8D94;
+    --line: #D5DFE1;
+    --line-soft: #E6EDEE;
+    --accent: #0B6E75;
+    --accent-ink: #06474C;
+    --accent-wash: #DFEFEF;
+    --ok: #2C6A4B;
+    --ok-wash: #DDEDE3;
+    --warn: #8A6110;
+    --warn-wash: #F3E8CE;
+    --bad: #A0362A;
+    --bad-wash: #F5E0DC;
+
+    --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+    --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+    --measure: 68ch;
+    --wide: 1120px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0C1517;
+      --surface: #141F22;
+      --surface-sunk: #101A1D;
+      --ink: #DFE9EA;
+      --ink-soft: #9AACB1;
+      --ink-faint: #6D8288;
+      --line: #253538;
+      --line-soft: #1C2A2D;
+      --accent: #56C6CC;
+      --accent-ink: #8FDDE1;
+      --accent-wash: #102E31;
+      --ok: #6DBF93;
+      --ok-wash: #13291F;
+      --warn: #D9A845;
+      --warn-wash: #2C2413;
+      --bad: #E88070;
+      --bad-wash: #2E1A17;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground: #0C1517;
+    --surface: #141F22;
+    --surface-sunk: #101A1D;
+    --ink: #DFE9EA;
+    --ink-soft: #9AACB1;
+    --ink-faint: #6D8288;
+    --line: #253538;
+    --line-soft: #1C2A2D;
+    --accent: #56C6CC;
+    --accent-ink: #8FDDE1;
+    --accent-wash: #102E31;
+    --ok: #6DBF93;
+    --ok-wash: #13291F;
+    --warn: #D9A845;
+    --warn-wash: #2C2413;
+    --bad: #E88070;
+    --bad-wash: #2E1A17;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .shell {
+    max-width: var(--wide);
+    margin: 0 auto;
+    padding: 0 24px 96px;
+  }
+
+  /* ---------- masthead ---------- */
+
+  header.masthead {
+    padding: 56px 0 32px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 14px;
+  }
+
+  h1 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(2.1rem, 5vw, 3.1rem);
+    line-height: 1.05;
+    letter-spacing: -0.024em;
+    text-wrap: balance;
+    margin: 0 0 18px;
+  }
+
+  h1 code {
+    font-family: var(--mono);
+    font-weight: 600;
+    font-size: 0.86em;
+    letter-spacing: -0.01em;
+    background: none;
+    padding: 0;
+    color: inherit;
+  }
+
+  .standfirst {
+    max-width: var(--measure);
+    font-size: 1.06rem;
+    color: var(--ink-soft);
+    margin: 0 0 26px;
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 10px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--ink-soft);
+  }
+
+  .meta span {
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    padding: 3px 9px;
+    background: var(--surface);
+  }
+
+  /* ---------- verdict ---------- */
+
+  .verdict {
+    margin: 34px 0 8px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--ok);
+    padding: 26px 30px;
+    display: grid;
+    gap: 14px;
+  }
+
+  .verdict-label {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: var(--ok);
+    margin: 0;
+  }
+
+  .verdict h2 {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: clamp(1.35rem, 3vw, 1.75rem);
+    letter-spacing: -0.016em;
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  .verdict p {
+    margin: 0;
+    max-width: var(--measure);
+    color: var(--ink-soft);
+  }
+
+  /* ---------- scorecard ---------- */
+
+  .scorecard {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(196px, 1fr));
+    gap: 12px;
+    margin: 30px 0 8px;
+  }
+
+  .score {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    padding: 16px 18px 18px;
+    display: grid;
+    gap: 6px;
+    align-content: start;
+  }
+
+  .score .n {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.1em;
+    color: var(--ink-faint);
+  }
+
+  .score .name {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 0.98rem;
+    letter-spacing: -0.008em;
+  }
+
+  .score .figure {
+    font-family: var(--mono);
+    font-size: 1.32rem;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+    margin-top: 2px;
+  }
+
+  .score .note {
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.45;
+  }
+
+  .chip {
+    justify-self: start;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 2px;
+  }
+  .chip.ok   { color: var(--ok);   background: var(--ok-wash); }
+  .chip.warn { color: var(--warn); background: var(--warn-wash); }
+  .chip.bad  { color: var(--bad);  background: var(--bad-wash); }
+
+  /* ---------- sections ---------- */
+
+  section { margin-top: 62px; }
+
+  .sec-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 10px;
+    margin-bottom: 26px;
+  }
+
+  .sec-num {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0.06em;
+    flex: none;
+  }
+
+  h2.sec-title {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: clamp(1.3rem, 2.6vw, 1.62rem);
+    letter-spacing: -0.018em;
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  h3 {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 1.06rem;
+    letter-spacing: -0.008em;
+    margin: 36px 0 12px;
+    text-wrap: balance;
+  }
+
+  p, ul, ol { max-width: var(--measure); }
+  p { margin: 0 0 16px; }
+  ul, ol { margin: 0 0 16px; padding-left: 1.15em; }
+  li { margin-bottom: 7px; }
+  li::marker { color: var(--ink-faint); }
+
+  strong { font-weight: 600; color: var(--ink); }
+
+  code {
+    font-family: var(--mono);
+    font-size: 0.87em;
+    background: var(--surface-sunk);
+    border: 1px solid var(--line-soft);
+    border-radius: 2px;
+    padding: 0.1em 0.35em;
+  }
+
+  /* ---------- data blocks ---------- */
+
+  .scroller {
+    overflow-x: auto;
+    margin: 0 0 22px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+  }
+
+  pre {
+    margin: 0;
+    padding: 18px 20px;
+    font-family: var(--mono);
+    font-size: 12.6px;
+    line-height: 1.65;
+    color: var(--ink-soft);
+    white-space: pre;
+  }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 13.6px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  caption {
+    caption-side: top;
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    padding: 12px 16px 10px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  th, td {
+    padding: 8px 16px;
+    text-align: right;
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  th:first-child, td:first-child { text-align: left; }
+
+  thead th {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+  }
+
+  tbody tr:last-child td { border-bottom: none; }
+  tbody td { font-family: var(--mono); }
+  tbody td.txt { font-family: var(--body); }
+
+  td.pass { color: var(--ok); font-weight: 500; }
+  td.fail { color: var(--bad); font-weight: 500; }
+  tr.highlight td { background: var(--accent-wash); }
+
+  /* ---------- callout ---------- */
+
+  .callout {
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--accent);
+    background: var(--surface);
+    padding: 18px 22px;
+    margin: 0 0 22px;
+    max-width: var(--measure);
+  }
+
+  .callout p:last-child { margin-bottom: 0; }
+
+  .callout-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 8px;
+  }
+
+  .callout.danger { border-left-color: var(--bad); }
+  .callout.danger .callout-label { color: var(--bad); }
+
+  /* ---------- footer ---------- */
+
+  footer {
+    margin-top: 72px;
+    padding-top: 26px;
+    border-top: 1px solid var(--line);
+    color: var(--ink-soft);
+    font-size: 13.6px;
+  }
+
+  footer p { max-width: var(--measure); }
+
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a:focus-visible, :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+
+<div class="shell">
+
+  <header class="masthead">
+    <p class="eyebrow">Spike · rapport de décision</p>
+    <h1>Discipline globale non namespacée dans <code>unified_mda</code></h1>
+    <p class="standfirst">
+      Peut-on faire tenir un module de marché du carburant — discipline globale, non
+      namespacée, couplée à des variables régionales namespacées — dans un
+      <code>MDAChain</code> unique&nbsp;? Cinq critères, deux étages de test, et les
+      chiffres qui vont avec.
+    </p>
+    <div class="meta">
+      <span>branche <strong>spike/unified-mda-global-discipline</strong></span>
+      <span>base <strong>a1bb678c</strong></span>
+      <span>GEMSEO <strong>6.2.0</strong></span>
+      <span>19 août 2026</span>
+    </div>
+  </header>
+
+  <div class="verdict">
+    <p class="verdict-label">Recommandation</p>
+    <h2>Architecture confirmée.</h2>
+    <p>
+      Le montage tient. Ce qui manquait était un point d'accroche — une trentaine de
+      lignes, livrée ici — et non une propriété du solveur. Deux réserves, dans cet
+      ordre d'importance&nbsp;:
+    </p>
+    <ol>
+      <li>
+        Le risque immédiat n'est pas la convergence de Gauss-Seidel mais sa
+        <em>détection</em>&nbsp;: sur la chaîne réelle le résidu MDA est aujourd'hui
+        plafonné à ~1,6e-6 par des NaN dans les variables de couplage. Défaut
+        préexistant, indépendant du spike, <strong>diagnostiqué mais non corrigé
+        ici</strong>.
+      </li>
+      <li>
+        Il existe un vrai plafond de convexité que <strong>aucun réglage de solveur ne
+        franchit</strong>. L'accélération repousse le seuil d'un facteur ~2 à 4 sur la
+        chaîne réelle, pas à l'infini&nbsp;; au-delà il faudra amortir la mise à jour du
+        prix <em>dans</em> la discipline de marché plutôt que compter sur le MDA.
+      </li>
+    </ol>
+    <p>Compter une à deux semaines d'hygiène de convergence avant de construire le module réel.</p>
+  </div>
+
+  <div class="scorecard">
+    <div class="score">
+      <span class="n">CRITÈRE 1</span>
+      <span class="name">Assemblage</span>
+      <span class="chip ok">validé</span>
+      <span class="figure">109 / 304</span>
+      <span class="note">disciplines dans la composante fortement connexe, marché global compris</span>
+    </div>
+    <div class="score">
+      <span class="n">CRITÈRE 2</span>
+      <span class="name">Convergence</span>
+      <span class="chip warn">validé sous réserve</span>
+      <span class="figure">22 itér.</span>
+      <span class="note">chaîne réelle à 1e-10 — mais seulement une fois les NaN neutralisés</span>
+    </div>
+    <div class="score">
+      <span class="n">CRITÈRE 3</span>
+      <span class="name">Idempotence</span>
+      <span class="chip ok">validé</span>
+      <span class="figure">bit à bit</span>
+      <span class="note">un défaut de duplication de colonnes trouvé et corrigé au passage</span>
+    </div>
+    <div class="score">
+      <span class="n">CRITÈRE 4</span>
+      <span class="name">Marge</span>
+      <span class="chip warn">seuil identifié</span>
+      <span class="figure">γ* ≈ 4–8</span>
+      <span class="note">la convexité casse, pas la raideur ; l'accélération repousse à ~16, pas plus</span>
+    </div>
+    <div class="score">
+      <span class="n">CRITÈRE 5</span>
+      <span class="name">Rejet top-level</span>
+      <span class="chip bad">mauvais point d'accroche</span>
+      <span class="figure">2 × hasattr</span>
+      <span class="note">la garde passe, mais le namespacing rend <code>top_level_models</code> inutilisable</span>
+    </div>
+  </div>
+
+  <!-- ============ 1 ============ -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">01</span>
+      <h2 class="sec-title">Assemblage et graphe de couplage</h2>
+    </div>
+
+    <h3>Étape 1 — plomberie pure</h3>
+    <p>
+      Le <code>MDAChain</code> se construit sans erreur. <code>SpikeClearing</code>
+      (globale, non namespacée) et les trois <code>SpikeDemand</code> régionaux forment
+      <strong>une seule composante fortement connexe</strong>.
+    </p>
+    <div class="scroller"><pre>disciplines       : EU_SpikeDemand, US_SpikeDemand, APAC_SpikeDemand, SpikeClearing
+composante connexe: les 4
+couplages forts   : {EU,US,APAC}:spike_demand, {EU,US,APAC}:spike_price</pre></div>
+
+    <h3>Étape 2 — cycle réel, deux régions, chaîne AeroMAPS complète</h3>
+    <div class="scroller"><pre>disciplines dans la chaîne    : 304
+composante fortement connexe  : 109 disciplines
+SpikeFuelMarket dans la CFC   : oui
+disciplines spike dans la CFC : region_{A,B}_SpikeFuelDemand, region_{A,B}_SpikeMarketCarbonTax,
+                                SpikeFuelMarket
+RPKElasticity dans la même CFC: region_A_RPKElasticity, region_B_RPKElasticity
+couplages forts spike         : region_{A,B}:spike_fuel_demand, region_{A,B}:spike_fuel_price
+couplages forts de référence  : region_{A,B}:rpk, region_{A,B}:airfare_per_rpk</pre></div>
+
+    <p>Le cycle bouclé est bien celui visé&nbsp;:</p>
+    <div class="scroller"><pre>{r}:rpk → {r}:spike_fuel_demand → SpikeFuelMarket (toutes régions)
+        → {r}:spike_fuel_price → {r}:carbon_tax → DOC énergie → coût total
+        → {r}:airfare_per_rpk → RPKElasticity → {r}:rpk</pre></div>
+
+    <p>
+      GEMSEO absorbe donc la discipline globale <strong>dans la même composante
+      fortement connexe</strong> que <code>rpk ↔ airfare_per_rpk</code>.
+    </p>
+
+    <div class="callout">
+      <p class="callout-label">À signaler</p>
+      <p>
+        Sur la base, <code>unified_mda</code> n'avait <strong>jamais résolu de
+        cycle</strong>. Le tutoriel deux régions produit
+        <code>mda_chain.inner_mdas == []</code> — 167 disciplines, aucune composante
+        fortement connexe, chaîne purement séquentielle. Ce spike est le premier cas où
+        le mode fait réellement tourner un solveur de couplage.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ 2 ============ -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">02</span>
+      <h2 class="sec-title">Convergence</h2>
+    </div>
+
+    <div class="scroller">
+      <table>
+        <caption>Cas nominal, tolérance 1e-10</caption>
+        <thead>
+          <tr><th>Cas</th><th>Itérations</th><th>Résidu final</th><th>Écart au point fixe</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="txt">Étape 1 — jouet (<code>stiffness</code> 0,3 · <code>gamma</code> 1 · <code>elasticity</code> 0,5)</td>
+            <td class="pass">12</td><td>1,76e-11</td><td>2,1e-14</td>
+          </tr>
+          <tr>
+            <td class="txt">Étape 2 — chaîne réelle (<code>price_elasticity</code> −0,9)</td>
+            <td class="pass">22</td><td>2,94e-11</td><td>—</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>
+      À l'étape 1, l'écart au point fixe analytique est de <strong>2,1e-14</strong>&nbsp;:
+      le solveur trouve la bonne racine, pas seulement un plateau.
+    </p>
+    <p>
+      Le chiffre de 22 itérations suppose le correctif de détection décrit ci-dessous.
+      <strong>En l'état du dépôt, le même cas s'arrête à 38 itérations avec un résidu de
+      7,06e-7</strong>, sur <code>max_consecutive_unsuccessful_iterations</code>.
+    </p>
+
+    <h3>Le plancher de résidu à ~1,6e-6 est préexistant</h3>
+    <p>
+      Contrôle décisif — tutoriel <code>08_use_variable_demand</code>,
+      <strong>une seule région, AeroMAPS non modifié</strong>, mêmes réglages que
+      <code>AeroMAPSProcess</code>&nbsp;:
+    </p>
+    <div class="scroller"><pre>52 disciplines couplées, 19 itérations, résidu final 1.595e-06  →  NON convergé</pre></div>
+
+    <p>Cause exacte, mesurée sur <code>_current_residuals</code>&nbsp;:</p>
+    <div class="scroller"><pre>hydrogen_mean_co2_emission_factor   norme 7.14e+06   (51/51 valeurs NaN)
+electric_mean_co2_emission_factor   norme 7.14e+06   (51/51 valeurs NaN)
+ask                                 norme 2.05e-02
+norme totale 1.01e+07 / échelle 6.33e+12 = 1.59e-06</pre></div>
+
+    <p>
+      <code>CustomDataConverter.convert_value_to_array</code> fait
+      <code>value.fillna(-999999)</code>. Une série de couplage entièrement NaN — ici, ni
+      hydrogène ni électrique dans le scénario — injecte donc <strong>999 999 par
+      élément</strong> dans le vecteur résidu, en permanence. Le plancher est structurel,
+      pas numérique.
+    </p>
+
+    <div class="scroller">
+      <table>
+        <caption>Diagnostic : sentinel NaN remplacé par 0 (une ligne, à l'exécution)</caption>
+        <thead>
+          <tr><th>Scénario</th><th>Stock</th><th>NaN neutralisés</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="txt">Contrôle une région, AeroMAPS non modifié</td>
+            <td class="fail">19 itér. · 1,59e-06</td>
+            <td class="pass">9 itér. · 1,27e-11</td>
+          </tr>
+          <tr>
+            <td class="txt">Spike deux régions + marché global</td>
+            <td class="fail">38 itér. · 7,06e-07</td>
+            <td class="pass">22 itér. · 2,94e-11</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>
+      Comparaison <strong>colonne par colonne</strong> des 1935 sorties du scénario
+      spike, stock contre neutralisé&nbsp;:
+    </p>
+
+    <div class="scroller">
+      <table>
+        <caption>Effet réel de la neutralisation sur les résultats</caption>
+        <thead><tr><th>Écart constaté</th><th>Colonnes</th></tr></thead>
+        <tbody>
+          <tr><td class="txt">identiques au bit près</td><td>1196</td></tr>
+          <tr><td class="txt">écart <strong>uniquement</strong> NaN → 0</td><td>24</td></tr>
+          <tr><td class="txt">numériquement différentes, toutes à ≤ 8,8e-12 en relatif</td><td>715</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>
+      <strong>Aucun écart matériel</strong>&nbsp;: les 715 colonnes « différentes » le
+      sont au niveau de l'écart entre un run arrêté à 7e-7 et un run convergé à 3e-11,
+      pas au niveau de la physique. Le point fixe était bien atteint&nbsp;; seule sa
+      <em>détection</em> échouait. Bonne nouvelle sur la validité des scénarios
+      existants, mauvaise sur l'usage du résidu comme critère d'acceptation.
+    </p>
+    <p>
+      Les 24 colonnes NaN → 0 sont précisément le motif qui interdit de promouvoir ce
+      diagnostic en correctif&nbsp;: ce sont les
+      <code>doc_energy_per_ask_*_{hydrogen,electric}</code>, où NaN signifie « sans
+      objet » et non « zéro ».
+    </p>
+
+    <h3>Pourquoi le sentinel ne peut pas être rattrapé sur place</h3>
+    <p>
+      Le sentinel est censé faire un aller-retour&nbsp;: <code>fillna(-999999)</code> à
+      l'entrée, <code>where(== -999999, nan)</code> à la sortie. Mesuré, il ne revient
+      pas. Sur <code>hydrogen_mean_co2_emission_factor</code> (51/51 NaN), au moment du
+      calcul du résidu&nbsp;:
+    </p>
+    <div class="scroller"><pre>côté sortie (la discipline émet)  : -999999.  -999999.  -999999.
+côté entrée  (itéré précédent)    :       0.        0.        0.
+résidu                            : -999999.  -999999.  -999999.   (constant, à jamais)</pre></div>
+    <p>
+      La raison est structurelle&nbsp;: le MDA fait de l'<strong>arithmétique</strong> sur
+      le vecteur de couplage — <code>residual = sortie − entrée</code>, puis le
+      <em>sequence transformer</em> combine itéré et résidu pour produire l'itéré
+      suivant. Un sentinel numérique ne survit à aucune de ces opérations&nbsp;:
+      <code>-999999</code> combiné à quoi que ce soit cesse d'être reconnaissable comme
+      NaN. <strong>Aucun encodage de NaN par une valeur réelle ne peut tenir ici.</strong>
+      La conclusion pointe vers les modèles producteurs, pas vers le convertisseur.
+    </p>
+  </section>
+
+  <!-- ============ 3 ============ -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">03</span>
+      <h2 class="sec-title">Idempotence</h2>
+    </div>
+
+    <p><strong>Vérifiée, au bit près</strong>, aux deux étages.</p>
+    <p>
+      Étape 1 — trois variantes, toutes identiques au bit près, 12 itérations à chaque
+      fois&nbsp;: même chaîne réexécutée (cache actif), même chaîne cache vidé, chaîne
+      fraîche contre chaîne chaude. La raison est que GEMSEO a
+      <code>warm_start = False</code> par défaut&nbsp;: chaque <code>execute()</code>
+      repart des <code>default_input_data</code>. L'état conservé dans <code>self.df</code>
+      entre itérations MDA ne fuit pas, parce que chaque <code>compute()</code> réécrit
+      les colonnes qu'il possède. C'est bien une convention et non une garantie — mais
+      elle tient sur tout ce qui a été testé ici, et elle cesserait de tenir si
+      <code>warm_start</code> était activé.
+    </p>
+    <p>
+      Étape 2 — <code>compute()</code> répété sur le même process, et process frais&nbsp;:
+      valeurs <strong>bit-identiques</strong> sur les 1935 colonnes.
+    </p>
+
+    <div class="callout danger">
+      <p class="callout-label">Défaut trouvé au passage — corrigé, commit séparé</p>
+      <p>
+        <code>vector_outputs</code> passait de 1935 à 3870 puis 5805 colonnes sur trois
+        <code>compute()</code> successifs. Les deux <code>pd.concat</code> de
+        <code>_update_data_from_unified_mda</code> et
+        <code>_aggregate_regional_outputs</code> ajoutaient une copie de chaque colonne
+        au lieu de la rafraîchir. Les <em>valeurs</em> étaient correctes, mais tout
+        <code>df[col]</code> en aval finissait par renvoyer un DataFrame. Les deux modes
+        d'exécution étaient touchés.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ 4 ============ -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">04</span>
+      <h2 class="sec-title">Marge de robustesse</h2>
+    </div>
+
+    <h3>Étape 1 — seuil de rupture de Gauss-Seidel, et sa prédiction</h3>
+    <p>
+      Bisection sur <code>gamma</code>, <code>elasticity</code> 0,5, tolérance 1e-10,
+      <code>max_mda_iter</code> 2000. <code>gamma*</code> est la plus grande valeur qui
+      converge encore.
+    </p>
+
+    <div class="scroller">
+      <table>
+        <caption>Seuil mesuré contre seuil prédit</caption>
+        <thead>
+          <tr><th>stiffness</th><th>gamma* mesuré</th><th>gamma* théorique |g′|=1</th><th>gain au seuil</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>0,1</td><td>56,13</td><td>57,35</td><td>0,989</td></tr>
+          <tr><td>0,3</td><td>20,63</td><td>21,07</td><td>0,989</td></tr>
+          <tr><td>1,0</td><td>8,12</td><td>8,28</td><td>0,989</td></tr>
+          <tr><td>3,0</td><td>4,42</td><td>4,50</td><td>0,989</td></tr>
+          <tr><td>10</td><td>2,98</td><td>3,03</td><td>0,989</td></tr>
+          <tr><td>30</td><td>2,47</td><td>2,50</td><td>0,989</td></tr>
+          <tr><td>100</td><td>2,22</td><td>2,24</td><td>0,989</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <ol>
+      <li>
+        <strong>La raideur seule ne casse jamais Gauss-Seidel.</strong> À
+        <code>gamma=1</code>, <code>stiffness=1000</code> converge encore en 34
+        itérations&nbsp;: le gain de boucle sature juste sous l'élasticité (0,495 mesuré
+        pour <code>elasticity=0,5</code>), donc sous 1 quoi qu'il arrive. Ce qui tue le
+        solveur, c'est la <strong>convexité</strong> de la courbe d'offre — son exposant
+        local — pas son niveau.
+      </li>
+      <li>
+        <strong>Le seuil est prédictible à 2&nbsp;% près.</strong> Autrement dit&nbsp;:
+        Gauss-Seidel converge tant que <strong>élasticité-prix × exposant local de la
+        courbe d'offre &lt; 1</strong>. C'est une règle utilisable en amont, pas seulement
+        un chiffre.
+      </li>
+    </ol>
+
+    <div class="callout danger">
+      <p class="callout-label">Mode de rupture</p>
+      <p>
+        Bénin en apparence, dangereux en pratique&nbsp;: ni NaN, ni exception, ni
+        divergence numérique. Le résidu se stabilise sur un plateau, GEMSEO s'arrête sur
+        <code>max_consecutive_unsuccessful_iterations</code> (8 par défaut) et
+        <code>execute()</code> <strong>retourne normalement un résultat faux</strong>. Il
+        n'y a aucun garde-fou en aval&nbsp;: ni <code>AeroMAPSProcess.compute()</code> ni
+        <code>MultiRegionalProcess.compute()</code> ne consultent le statut de
+        convergence.
+      </p>
+    </div>
+
+    <h3>Ce que le damping et l'accélération rachètent</h3>
+    <p>
+      Toutes les configurations en échec sont récupérées, et convergent vers la
+      <strong>vraie</strong> racine — vérifiée par <code>brentq</code>, pas par itération
+      de point fixe.
+    </p>
+
+    <div class="scroller">
+      <table>
+        <caption>gamma* atteignable selon le solveur (jouet)</caption>
+        <thead>
+          <tr><th>Solveur</th><th>stiffness 0,3</th><th>stiffness 3</th><th>stiffness 10</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="txt">Gauss-Seidel nu</td><td>20,6</td><td>4,42</td><td>2,98</td></tr>
+          <tr><td class="txt">+ sur-relaxation 0,7</td><td>114,1</td><td>15,6</td><td>7,55</td></tr>
+          <tr class="highlight"><td class="txt">+ accélération <code>Alternate2Delta</code></td><td>181,1</td><td>32,9</td><td>18,3</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>
+      Sur les cas durs, l'accélération converge en <strong>10 à 22 itérations</strong> là
+      où Gauss-Seidel nu stagne, avec une erreur au point fixe comprise entre 2e-16 et
+      3e-13. <code>MDAJacobi</code> — le défaut GEMSEO, qui embarque
+      <code>Alternate2Delta</code> — converge partout en 10 à 12 itérations.
+      <strong>AeroMAPS force <code>inner_mda_name="MDAGaussSeidel"</code>, ce qui
+      désactive cette accélération.</strong>
+    </p>
+    <p>
+      <code>MDANewtonRaphson</code> n'est <strong>pas</strong> disponible en l'état&nbsp;:
+      les wrappers AeroMAPS ne fournissent pas de jacobienne et le repli par différences
+      finies échoue (<code>ValueError: The discipline … was not linearized</code>). Ce
+      n'est pas bloquant — les deux autres leviers suffisent largement — mais ce serait
+      un chantier à part entière.
+    </p>
+
+    <div class="callout">
+      <p class="callout-label">Piège de configuration, coûteux</p>
+      <p>
+        <code>MDAChain</code> ne transmet à ses MDA internes que les champs de
+        <code>BaseMDASettings</code> (<code>tolerance</code>, <code>max_mda_iter</code>,
+        <code>warm_start</code>, <code>log_convergence</code>…).
+        <code>over_relaxation_factor</code> et <code>acceleration_method</code> n'en font
+        pas partie&nbsp;: passés en kwargs de <code>MDAChain</code>, ils configurent
+        <strong>la chaîne externe seulement</strong> et sont silencieusement ignorés par
+        le solveur qui itère réellement. Ils doivent passer par
+        <code>inner_mda_settings</code>. Un premier balayage a conclu à tort que le
+        damping était sans effet à cause de cela.
+      </p>
+    </div>
+
+    <h3>Étape 2 — le même balayage sur la chaîne réelle</h3>
+    <div class="scroller">
+      <table>
+        <caption>tolérance 1e-10 · max_mda_iter 200 · MDAGaussSeidel · NaN neutralisés</caption>
+        <thead>
+          <tr><th>stiffness</th><th>gamma</th><th>Statut</th><th>Itérations</th><th>Prix 2050</th><th>RPK 2050</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>0,3</td><td>1</td><td class="pass">convergé</td><td>22</td><td>238,04</td><td>3,913e13</td></tr>
+          <tr><td>1</td><td>1</td><td class="pass">convergé</td><td>30</td><td>433,18</td><td>3,776e13</td></tr>
+          <tr><td>3</td><td>1</td><td class="pass">convergé</td><td>45</td><td>930,09</td><td>3,467e13</td></tr>
+          <tr><td>10</td><td>1</td><td class="pass">convergé</td><td>72</td><td>2280,92</td><td>2,841e13</td></tr>
+          <tr><td>30</td><td>1</td><td class="pass">convergé</td><td>111</td><td>4906,14</td><td>2,114e13</td></tr>
+          <tr><td>0,3</td><td>2</td><td class="pass">convergé</td><td>28</td><td>317,27</td><td>3,856e13</td></tr>
+          <tr><td>0,3</td><td>4</td><td class="pass">convergé</td><td>68</td><td>643,04</td><td>3,639e13</td></tr>
+          <tr><td>0,3</td><td>8</td><td class="fail">échec</td><td>200</td><td>—</td><td>—</td></tr>
+          <tr><td>0,3</td><td>16</td><td class="fail">échec</td><td>200</td><td>—</td><td>—</td></tr>
+          <tr><td>3</td><td>2</td><td class="pass">convergé</td><td>78</td><td>1338,16</td><td>3,250e13</td></tr>
+          <tr><td>3</td><td>4</td><td class="fail">échec</td><td>200</td><td>—</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>
+      Même signature qu'à l'étape 1&nbsp;: la raideur passe — jusqu'à
+      <code>stiffness=30</code> en 111 itérations — la convexité casse. Le seuil réel est
+      plus bas que celui du jouet (<code>gamma*</code> entre 4 et 8 à
+      <code>stiffness=0,3</code> contre ~20,6&nbsp;; entre 2 et 4 à
+      <code>stiffness=3</code> contre ~4,4) parce que la boucle
+      <code>airfare ↔ rpk</code> ajoute son propre gain en série avec celui du marché. Le
+      rapport entre les deux seuils est du même ordre que le rapport des élasticités
+      (0,9 / 0,5), cohérent avec le critère du paragraphe précédent.
+    </p>
+
+    <h3>Les remèdes sur la chaîne réelle</h3>
+    <p>Les cas en échec, repassés avec chaque levier.</p>
+
+    <div class="scroller">
+      <table>
+        <caption>tolérance 1e-10 · max_mda_iter 200 — résidu final, ou itérations si convergé</caption>
+        <thead>
+          <tr><th>stiffness / gamma</th><th>GS nu</th><th>relax 0,7</th><th>relax 0,4</th><th>+ Alternate2Delta</th><th>MDAJacobi</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>0,3 / 8</td><td class="fail">3,7e+00</td><td class="fail">1,2e+00</td>
+            <td class="fail">8,0e-01</td><td class="pass">87 it · 9,9e-11</td><td class="fail">erreur</td>
+          </tr>
+          <tr>
+            <td>0,3 / 16</td><td class="fail">7,4e+00</td><td class="fail">3,4e+00</td>
+            <td class="fail">6,4e+00</td><td class="pass">91 it · 5,7e-11</td><td class="fail">erreur</td>
+          </tr>
+          <tr>
+            <td>3 / 8</td><td class="fail">3,2e+00</td><td class="fail">1,4e+00</td>
+            <td class="fail">1,8e+00</td><td class="fail">6,3e-01</td><td class="fail">erreur</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Trois écarts par rapport au jouet, tous à retenir&nbsp;:</p>
+    <ol>
+      <li>
+        <strong>La sur-relaxation ne rachète rien sur la chaîne réelle.</strong> À 0,7
+        comme à 0,4, aucun des trois cas ne passe — alors que sur le jouet elle
+        récupérait tout. Le damping simple est un mauvais pari ici.
+      </li>
+      <li>
+        <strong>L'accélération, elle, fonctionne</strong>&nbsp;:
+        <code>Alternate2Delta</code> fait passer <code>gamma*</code> de « entre 4 et 8 »
+        à « au moins 16 » à <code>stiffness=0,3</code>, en ~90 itérations.
+      </li>
+      <li>
+        <strong><code>MDAJacobi</code> échoue franchement</strong>
+        (<code>ValueError: array must not contain infs or NaNs</code>) sur les trois
+        cas&nbsp;: il exécute toutes les disciplines depuis le même état et traverse des
+        valeurs invalides que Gauss-Seidel ne voit jamais. Basculer sur le défaut GEMSEO
+        n'est donc pas une option, malgré ce que suggère le jouet.
+      </li>
+    </ol>
+
+    <div class="callout danger">
+      <p class="callout-label">Plafond réel</p>
+      <p>
+        Le cas <code>3 / 8</code> ne passe avec <strong>aucun</strong> levier. Il y a
+        donc bien un plafond, et non un simple réglage à trouver. Recommandation
+        opérationnelle&nbsp;: <code>MDAGaussSeidel</code> +
+        <code>acceleration_method: Alternate2Delta</code> via
+        <code>inner_mda_settings</code>, en sachant qu'au-delà il faudra changer de
+        formulation — amortir la mise à jour du prix <em>dans</em> la discipline de
+        marché, ou fournir des jacobiennes.
+      </p>
+    </div>
+
+  </section>
+
+  <!-- ============ 5 ============ -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">05</span>
+      <h2 class="sec-title">Rejet par <code>_wrap_top_level_model</code></h2>
+    </div>
+
+    <p>
+      Condition établie par sondage&nbsp;: ce sont <strong>deux <code>hasattr</code> sur
+      l'instance</strong>, sans aucune notion de « demande explicite ». Un attribut
+      déclaré à <code>None</code> dans <code>__init__</code> suffit à faire rejeter.
+    </p>
+
+    <div class="scroller">
+      <table>
+        <caption>Sondage du garde-fou, un attribut à la fois</caption>
+        <thead><tr><th>Modèle sondé</th><th>Verdict</th></tr></thead>
+        <tbody>
+          <tr><td class="txt">modèle custom nu</td><td class="pass">accepté</td></tr>
+          <tr><td class="txt">+ <code>custom_setup</code> seul</td><td class="pass">accepté</td></tr>
+          <tr><td class="txt">+ <code>pathways_manager = None</code> seul</td><td class="pass">accepté</td></tr>
+          <tr><td class="txt">+ <code>pathways_manager = None</code> <strong>et</strong> <code>custom_setup</code></td><td class="fail">rejeté</td></tr>
+          <tr><td class="txt">+ <code>climate_historical_data = None</code></td><td class="fail">rejeté</td></tr>
+          <tr><td class="txt">+ <code>markets = None</code> et <code>custom_setup</code> (patron markets)</td><td class="pass">accepté</td></tr>
+          <tr><td class="txt">+ <code>fleet_model = None</code></td><td class="pass">accepté</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Trois écarts entre le code et sa docstring&nbsp;:</p>
+    <ul>
+      <li>
+        La docstring annonce que les modèles de flotte sont rejetés. <strong>Il n'y a
+        aucun test sur <code>fleet_model</code></strong>&nbsp;: un tel modèle passe la
+        garde et sera exécuté sans flotte injectée.
+      </li>
+      <li>
+        <strong><code>custom_setup()</code> n'est jamais appelé</strong> au niveau
+        top-level. Une discipline qui construit sa grammaire dynamiquement embarquera le
+        placeholder de son <code>__init__</code>.
+      </li>
+      <li>
+        <strong>Aucune poignée de configuration n'est injectée</strong> —
+        <code>markets</code> ressort intact du wrapping.
+      </li>
+    </ul>
+
+    <p>
+      <strong>Réponse à la question posée&nbsp;:</strong> une discipline globale portant
+      sa propre configuration YAML (patron <code>air_transport/markets/</code>&nbsp;:
+      registre + Manager + factory) <strong>passe la garde</strong> — elle n'a ni
+      <code>pathways_manager</code> ni <code>climate_historical_data</code>. Mais elle ne
+      fonctionnerait pas pour autant, pour deux raisons indépendantes du rejet&nbsp;: son
+      <code>custom_setup()</code> ne serait pas appelé, et surtout
+      <code>_build_namespaced_top_level_disciplines</code> lui applique
+      <code>apply_namespace_to_disciplines(…, global_namespace)</code>, transformant
+      <code>{r}:fuel_demand</code> en <code>overall:{r}:fuel_demand</code>.
+      <strong><code>top_level_models</code> est structurellement le mauvais point
+      d'accroche</strong>&nbsp;: il est fait pour consommer les agrégats, pas pour boucler
+      entre régions.
+    </p>
+  </section>
+
+  <!-- ============ annexes ============ -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">·</span>
+      <h2 class="sec-title">Questions annexes</h2>
+    </div>
+
+    <h3>Comment enregistrer une discipline hors namespacing&nbsp;?</h3>
+    <p>
+      Aucun mécanisme n'existait. <code>RegionalAggregator</code> était la seule
+      discipline non namespacée du système, et elle est câblée en dur dans
+      <code>_build_top_level_disciplines</code>.
+    </p>
+    <p>
+      Un point d'accroche a été ajouté&nbsp;: bloc
+      <code>regionalisation.global_models</code>, même structure
+      <code>standards</code>/<code>customs</code> qu'un bloc <code>models</code> régional.
+      Une discipline globale est enveloppée <strong>sans namespacing</strong> — sa
+      grammaire est écrite directement en termes namespacés, exactement comme celle de
+      l'agrégateur. <code>_wrap_global_model</code> injecte la liste des régions et le
+      namespace global, <strong>puis appelle <code>custom_setup()</code></strong>, ce qui
+      rend possible le patron « registre + YAML propre au module ». La déclarer en
+      <code>separate_processes</code> lève désormais une erreur au lieu d'être ignorée
+      silencieusement.
+    </p>
+
+    <h3><code>_coupling_defaults</code> peut-il être amorcé par une trajectoire calculée&nbsp;?</h3>
+    <p>
+      <strong>Oui, sans réserve.</strong> Ce n'est qu'un dict fusionné dans
+      <code>default_input_data</code> du wrapper, construit dans
+      <code>_initialize_df()</code> où <code>self.parameters</code> et l'index annuel sont
+      déjà disponibles. Rien n'impose une série constante&nbsp;; c'est une convention des
+      modèles actuels.
+    </p>
+
+    <div class="scroller">
+      <table>
+        <caption>Jouet à stiffness 0,3 · gamma 15 (sous le seuil) · tolérance 1e-10</caption>
+        <thead><tr><th>Amorce</th><th>Itérations</th></tr></thead>
+        <tbody>
+          <tr><td class="txt">constante non informée</td><td>125</td></tr>
+          <tr class="highlight"><td class="txt">constante à la solution exacte</td><td>1</td></tr>
+          <tr><td class="txt">trajectoire calculée (rampe)</td><td>125</td></tr>
+          <tr><td class="txt">trajectoire calculée volontairement fausse (×10)</td><td>124</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>
+      L'amorce est bien prise en compte — l'amorce exacte converge en une itération. Mais
+      <strong>l'amorçage achète de la vitesse, pas de la stabilité.</strong> Au-delà de
+      <code>gamma* ≈ 20,6</code> le point fixe est répulsif et aucune amorce ne convertit
+      ça en convergence.
+    </p>
+
+    <div class="scroller">
+      <table>
+        <caption>Au-delà du seuil — gamma 25, stiffness 0,3</caption>
+        <thead><tr><th>Amorce</th><th>Itérations</th><th>Résidu</th><th>x rendu</th><th>x vrai</th></tr></thead>
+        <tbody>
+          <tr><td class="txt">constante non informée</td><td>167</td><td>7,7e-01</td><td class="fail">0,987886</td><td>0,955329</td></tr>
+          <tr><td class="txt">constante à la solution exacte</td><td>8</td><td>1,0e+00</td><td>0,955329</td><td>0,955329</td></tr>
+          <tr><td class="txt">trajectoire calculée</td><td>11</td><td>1,1e+00</td><td>0,955329</td><td>0,955329</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>
+      Le piège est net&nbsp;: avec une bonne amorce, le solveur <strong>rend la bonne
+      valeur tout en n'ayant jamais convergé</strong> (résidu 1,0, arrêt sur
+      <code>max_consecutive_unsuccessful_iterations</code>). Sans vérification du statut
+      de convergence en aval, rien ne distingue ce cas d'un calcul sain — et la ligne du
+      dessus, non informée, rend une valeur fausse de 3&nbsp;% avec le même silence. Pour
+      une offre raide, c'est le damping ou l'accélération qu'il faut, pas une meilleure
+      amorce.
+    </p>
+
+    <h3>Autres angles morts de <code>unified_mda</code></h3>
+    <ol>
+      <li><strong>Le mode n'avait jamais résolu de cycle.</strong> Tout ce qui touche au solveur y est non testé par construction.</li>
+      <li>
+        <strong>Réglages MDA incohérents entre les modes.</strong>
+        <code>_setup_unified_mda</code> utilisait <code>tolerance=1e-5</code>
+        <strong>sans <code>max_mda_iter</code></strong>, donc le défaut GEMSEO de
+        <strong>20 itérations</strong> — alors que <code>AeroMAPSProcess</code> utilise
+        <code>tolerance=1e-10, max_mda_iter=200</code>. Le nominal de l'étape 2 en demande
+        22, et 111 à <code>stiffness=30</code>&nbsp;: le mode multi-régional se serait
+        arrêté avant, en silence. Un bloc <code>regionalisation.mda</code> a été
+        ajouté&nbsp;; <strong>les valeurs par défaut ont été laissées inchangées</strong>
+        pour ne pas modifier les résultats existants.
+      </li>
+      <li>
+        <strong>Récolte des sorties.</strong> <code>_update_data_from_unified_mda</code>
+        ne collectait de <code>local_data</code> que les clés préfixées
+        <code>{global_namespace}:</code>. Les sorties d'une discipline globale
+        n'atteignaient jamais <code>data["vector_outputs"]</code>. Corrigé.
+      </li>
+      <li><strong>Duplication des colonnes</strong> sur <code>compute()</code> répété, les deux modes. Corrigé.</li>
+      <li>
+        <strong>Non-convergence silencieuse.</strong> Aucun des deux <code>compute()</code>
+        ne vérifie le statut du MDA. Combiné au plancher de résidu, un scénario peut
+        aujourd'hui rendre un résultat faux sans qu'aucun signal ne remonte au-delà d'un
+        <code>WARNING</code> GEMSEO.
+      </li>
+      <li>L'agrégation <code>overall:</code> fonctionne normalement en présence d'une discipline globale.</li>
+    </ol>
+
+    <h3>Si quelque chose casse&nbsp;: réparable, en combien de temps&nbsp;?</h3>
+    <p>Rien n'est structurellement bloqué.</p>
+
+    <div class="scroller">
+      <table>
+        <caption>Chiffrage, du plus urgent au moins</caption>
+        <thead><tr><th>Chantier</th><th>Effort</th></tr></thead>
+        <tbody>
+          <tr><td class="txt">Point d'accroche <code>global_models</code> + réglages MDA configurables</td><td class="txt pass">fait</td></tr>
+          <tr><td class="txt">Duplication des colonnes sur <code>compute()</code> répété</td><td class="txt pass">fait</td></tr>
+          <tr><td class="txt">NaN dans les couplages → plancher de résidu</td><td class="txt">3 à 5 j</td></tr>
+          <tr><td class="txt">Faire échouer bruyamment une MDA non convergée</td><td class="txt">1 j</td></tr>
+          <tr><td class="txt">Aligner les réglages MDA de <code>unified_mda</code> sur <code>AeroMAPSProcess</code></td><td class="txt">0,5 j + revalidation</td></tr>
+          <tr><td class="txt">Exposer damping / accélération et choisir un défaut</td><td class="txt">1 j</td></tr>
+          <tr><td class="txt">Jacobiennes pour <code>MDANewtonRaphson</code></td><td class="txt">hors périmètre</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>
+      Le poste à 3–5 jours est le seul qui demande une décision de fond&nbsp;: la
+      neutralisation d'une ligne fait converger contrôle et spike, mais le vrai correctif
+      est de décider ce que signifie un couplage NaN — série absente contre valeur
+      manquante — et de traiter la cause en amont.
+    </p>
+    <p>
+      Soit <strong>une à deux semaines</strong> pour amener <code>unified_mda</code> au
+      niveau de fiabilité qu'exige un module de marché du carburant — dont l'essentiel
+      n'est pas du travail de couplage mais de l'hygiène de convergence, utile au reste
+      d'AeroMAPS.
+    </p>
+  </section>
+
+  <footer>
+    <p>
+      <strong>Contenu de la branche.</strong> Trois commits de code jetable sous
+      <code>spike_unified_mda/</code>, et deux correctifs indépendants du spike,
+      reprenables tels quels&nbsp;: le point d'accroche <code>global_models</code> et la
+      correction de la duplication de colonnes. Hors <code>spike_unified_mda/</code>, seul
+      <code>aeromaps/core/multi_regional_process.py</code> est modifié.
+    </p>
+    <p>
+      Le tutoriel deux régions donne des résultats identiques avant et après dans les deux
+      modes (CO₂ <code>overall</code> 2050 = 78,4606), et
+      <code>pytest aeromaps/tests/core</code> passe 26/26. Le diagnostic NaN est un
+      instrument de mesure, pas un correctif proposé&nbsp;: il monkey-patche
+      <code>CustomDataConverter</code> à l'exécution et ne touche pas au dépôt.
+    </p>
+  </footer>
+
+</div>
