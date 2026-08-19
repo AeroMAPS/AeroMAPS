@@ -49,6 +49,34 @@ from aeromaps.plots.single_scenario import (
 ExecutionMode = Literal["unified_mda", "separate_processes"]
 
 
+def _concat_series(frame: pd.DataFrame, series: Dict[str, pd.Series]) -> pd.DataFrame:
+    """Add ``series`` as columns of ``frame``, replacing any column of the same name.
+
+    Columns are concatenated in one pass to avoid DataFrame fragmentation. Names
+    already present in ``frame`` are dropped first: ``compute()`` may be called more
+    than once on the same process, and without this the second call appended a second
+    copy of every column instead of refreshing it.
+
+    Parameters
+    ----------
+    frame
+        The existing DataFrame (returned unchanged when ``series`` is empty).
+    series
+        Mapping of column name to Series.
+
+    Returns
+    -------
+    pd.DataFrame
+        The frame with the new columns.
+    """
+    if not series:
+        return frame
+    stale = [col for col in frame.columns if col in series]
+    if stale:
+        frame = frame.drop(columns=stale)
+    return pd.concat([frame] + [pd.DataFrame({k: v}) for k, v in series.items()], axis=1)
+
+
 class _GlobalOutputsView:
     """Single-scenario-process facade over a MultiRegionalProcess' aggregated outputs.
 
@@ -983,18 +1011,8 @@ class MultiRegionalProcess(AeroMAPSProcess):
                 self.data["float_outputs"][key] = float(value)
 
         # Build DataFrames efficiently using concat to avoid fragmentation
-        if vector_series:
-            self.data["vector_outputs"] = pd.concat(
-                [self.data["vector_outputs"]]
-                + [pd.DataFrame({k: v}) for k, v in vector_series.items()],
-                axis=1,
-            )
-        if climate_series:
-            self.data["climate_outputs"] = pd.concat(
-                [self.data["climate_outputs"]]
-                + [pd.DataFrame({k: v}) for k, v in climate_series.items()],
-                axis=1,
-            )
+        self.data["vector_outputs"] = _concat_series(self.data["vector_outputs"], vector_series)
+        self.data["climate_outputs"] = _concat_series(self.data["climate_outputs"], climate_series)
 
     def _update_data_from_unified_mda(self):
         """Update all data structures from unified MDA results.
@@ -1053,18 +1071,8 @@ class MultiRegionalProcess(AeroMAPSProcess):
                     self.data["float_outputs"][key] = float(value)
 
         # Build DataFrames efficiently using concat to avoid fragmentation
-        if vector_series:
-            self.data["vector_outputs"] = pd.concat(
-                [self.data["vector_outputs"]]
-                + [pd.DataFrame({k: v}) for k, v in vector_series.items()],
-                axis=1,
-            )
-        if climate_series:
-            self.data["climate_outputs"] = pd.concat(
-                [self.data["climate_outputs"]]
-                + [pd.DataFrame({k: v}) for k, v in climate_series.items()],
-                axis=1,
-            )
+        self.data["vector_outputs"] = _concat_series(self.data["vector_outputs"], vector_series)
+        self.data["climate_outputs"] = _concat_series(self.data["climate_outputs"], climate_series)
 
     # =========================================================================
     # Data Access Methods
