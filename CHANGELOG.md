@@ -13,11 +13,14 @@ Changed:
 - Made prospection_start_year flexible. (#146, #149)
 - Refactored markets in AeroMAPS for a fully generic yaml description, with interactions with fleet. (#145)
 - Documentation update. (#154)
+- Added `regionalisation.global_models` and `regionalisation.mda` blocks, allowing non-namespaced disciplines coupled across regions in `unified_mda` mode. (#157)
 
 Fixed:
 - Fixed drop_in_macc_curve plot: updated variable names to match generic energy model naming convention. (#136)
 - Corrected reference outputs of JOAS notebook. (#143)
 - Corrected docs and workflow. (#155)
+- Fixed disciplines mutating their MDA inputs in place, which corrupted GEMSEO's previous-iterate snapshot and pinned the normalised residual above the requested tolerance. (#157)
+- Fixed multi-regional outputs being duplicated on every repeated `compute()`. (#157)
 
 
 ## Version 1.0.0
