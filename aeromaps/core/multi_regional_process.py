@@ -683,47 +683,27 @@ class MultiRegionalProcess(AeroMAPSProcess):
 
         self.disciplines = all_disciplines
 
-        self.mda_chain = MDAChain(disciplines=all_disciplines, **self._mda_settings())
+        # Build MDAChain
+        # TODO: Make these kwargs available at a higher level (e.g. config file).
+        #
+        # Until then they are tuned from the notebook on the GEMSEO objects themselves,
+        # e.g. ``process.mda_chain.settings.tolerance = 1e-10``. One trap is worth
+        # knowing about: ``MDAChain`` forwards to its inner MDAs only the settings that
+        # belong to ``BaseMDASettings`` (``tolerance``, ``max_mda_iter``, ``warm_start``,
+        # ``log_convergence``, ...). ``over_relaxation_factor`` and
+        # ``acceleration_method`` are NOT in that set, so setting them here or on the
+        # chain configures the outer chain only and is silently ignored by the solver
+        # that actually iterates -- they have to be set on ``mda_chain.inner_mdas[i]``
+        # (or passed as ``inner_mda_settings``).
+        self.mda_chain = MDAChain(
+            disciplines=all_disciplines,
+            tolerance=1e-5,
+            initialize_defaults=True,
+            inner_mda_name="MDAGaussSeidel",
+            log_convergence=True,
+        )
 
         logging.info(f"Unified MDAChain created with {len(all_disciplines)} disciplines")
-
-    def _mda_settings(self) -> dict:
-        """Resolve the MDAChain settings, overridable from the configuration file.
-
-        Read from an optional ``regionalisation.mda`` block::
-
-            regionalisation:
-              mda:
-                tolerance: 1.0e-10
-                max_mda_iter: 200
-                inner_mda_name: MDAGaussSeidel
-                log_convergence: true
-                inner_mda_settings:
-                  over_relaxation_factor: 0.7
-                  acceleration_method: Alternate2Delta
-
-        ``inner_mda_settings`` is load-bearing and easy to get wrong: ``MDAChain``
-        forwards to its inner MDAs only the settings that belong to
-        ``BaseMDASettings`` (``tolerance``, ``max_mda_iter``, ``warm_start``,
-        ``log_convergence``, ...). ``over_relaxation_factor`` and
-        ``acceleration_method`` are NOT in that set, so passing them as top-level
-        ``MDAChain`` kwargs configures the outer chain only and is silently ignored by
-        the solver that actually iterates. They must go through ``inner_mda_settings``.
-
-        Returns
-        -------
-        dict
-            Keyword arguments for the ``MDAChain`` constructor.
-        """
-        settings = {
-            "tolerance": 1e-5,
-            "initialize_defaults": True,
-            "inner_mda_name": "MDAGaussSeidel",
-            "log_convergence": True,
-        }
-        user_settings = self._regionalisation_config.get("mda", {}) or {}
-        settings.update(user_settings)
-        return settings
 
     def _initialize_data_containers(self):
         """Initialize data containers following AeroMAPSProcess structure.

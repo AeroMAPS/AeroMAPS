@@ -13,7 +13,7 @@ Changed:
 - Made prospection_start_year flexible. (#146, #149)
 - Refactored markets in AeroMAPS for a fully generic yaml description, with interactions with fleet. (#145)
 - Documentation update. (#154)
-- Added `regionalisation.global_models` and `regionalisation.mda` blocks, allowing non-namespaced disciplines coupled across regions in `unified_mda` mode. (#157)
+- Added a `regionalisation.global_models` block, allowing non-namespaced disciplines coupled across regions in `unified_mda` mode. (#157)
 
 Fixed:
 - Fixed drop_in_macc_curve plot: updated variable names to match generic energy model naming convention. (#136)
