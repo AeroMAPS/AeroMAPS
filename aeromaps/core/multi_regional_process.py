@@ -25,6 +25,7 @@ from typing import Dict, List, Optional, Literal
 # Third-party imports
 import numpy as np
 import pandas as pd
+from gemseo.algos.sequence_transformer.acceleration import AccelerationMethod
 from gemseo.mda.mda_chain import MDAChain
 from tqdm.auto import tqdm
 
@@ -685,22 +686,37 @@ class MultiRegionalProcess(AeroMAPSProcess):
 
         # Build MDAChain
         # TODO: Make these kwargs available at a higher level (e.g. config file).
-        #
         # Until then they are tuned from the notebook on the GEMSEO objects themselves,
-        # e.g. ``process.mda_chain.settings.tolerance = 1e-10``. One trap is worth
-        # knowing about: ``MDAChain`` forwards to its inner MDAs only the settings that
-        # belong to ``BaseMDASettings`` (``tolerance``, ``max_mda_iter``, ``warm_start``,
-        # ``log_convergence``, ...). ``over_relaxation_factor`` and
-        # ``acceleration_method`` are NOT in that set, so setting them here or on the
-        # chain configures the outer chain only and is silently ignored by the solver
-        # that actually iterates -- they have to be set on ``mda_chain.inner_mdas[i]``
-        # (or passed as ``inner_mda_settings``).
+        # e.g. ``process.mda_chain.settings.tolerance = 1e-10``.
+        #
+        # ``inner_mda_settings`` is listed separately on purpose: it is the only route to
+        # the relaxation/acceleration knobs. ``MDAChain`` forwards to its inner MDAs only
+        # the settings belonging to ``BaseMDASettings`` (``tolerance``, ``max_mda_iter``,
+        # ``warm_start``, ``log_convergence``, ...), and ``over_relaxation_factor`` /
+        # ``acceleration_method`` are NOT in that set, so passing them as ``MDAChain``
+        # kwargs configures the outer chain alone and is silently ignored by the solver
+        # that actually iterates.
+        #
+        # The values below are the MDAGaussSeidel defaults (no damping, no acceleration),
+        # so the chain behaves exactly as before. To change them from a notebook, assign
+        # to the *properties* of the inner solver, not to its settings::
+        #
+        #     process.mda_chain.inner_mdas[0].over_relaxation_factor = 0.7
+        #     process.mda_chain.inner_mdas[0].acceleration_method = "Alternate2Delta"
+        #
+        # ``BaseMDASolver.__init__`` builds its ``RelaxationAcceleration`` from the
+        # settings once and never re-reads them; those two properties write through to it,
+        # whereas assigning to ``inner_mdas[0].settings.*`` afterwards has no effect.
         self.mda_chain = MDAChain(
             disciplines=all_disciplines,
             tolerance=1e-5,
             initialize_defaults=True,
             inner_mda_name="MDAGaussSeidel",
             log_convergence=True,
+            inner_mda_settings={
+                "over_relaxation_factor": 1.0,
+                "acceleration_method": AccelerationMethod.NONE,
+            },
         )
 
         logging.info(f"Unified MDAChain created with {len(all_disciplines)} disciplines")
