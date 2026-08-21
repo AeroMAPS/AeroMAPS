@@ -28,7 +28,7 @@ hefa_oil_crops_trees:
       plant_lifespan: 25
     # Environmental:
     environmental:
-      co2_emission_factor_without_resource: !AeroMapsCustomDataType
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
         years: [2025, 2040, 2050]
         values: [67.0, 57.9, 48.8]
         # From f2_ef: 2025=67.0, 2050=48.8, 2040=(67.0+48.8)/2=57.9
@@ -77,7 +77,7 @@ atj_cellulosic_cover_crops:
       plant_lifespan: 25
     # Environmental:
     environmental:
-      co2_emission_factor_without_resource: !AeroMapsCustomDataType
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
         years: [2025, 2040, 2050]
         values: [56.7, 43.15, 29.6]
         # From f2_ef: 2025=56.7, 2050=29.6, 2040=(56.7+29.6)/2=43.15
@@ -126,7 +126,7 @@ hefa_waste_residue_lipids:
       plant_lifespan: 25
     # Environmental:
     environmental:
-      co2_emission_factor_without_resource: !AeroMapsCustomDataType
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
         years: [2025, 2040, 2050]
         values: [24.2, 20.15, 16.1]
         # From f2_ef: 2025=24.2, 2050=16.1, 2040=(24.2+16.1)/2=20.15
@@ -175,7 +175,7 @@ atj_agricultural_residues:
       plant_lifespan: 25
     # Environmental:
     environmental:
-      co2_emission_factor_without_resource: !AeroMapsCustomDataType
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
         years: [2025, 2040, 2050]
         values: [32.2, 25.9, 19.6]
         # From f2_ef: 2025=32.2, 2050=19.6, 2040=(32.2+19.6)/2=25.9
@@ -224,7 +224,7 @@ ft_woody_biomass:
       plant_lifespan: 25
     # Environmental:
     environmental:
-      co2_emission_factor_without_resource: !AeroMapsCustomDataType
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
         years: [2025, 2040, 2050]
         values: [8.3, 7.75, 7.2]
         # From f2_ef: 2025=8.3, 2050=7.2, 2040=(8.3+7.2)/2=7.75
@@ -273,7 +273,7 @@ ft_municipal_solid_waste:
       plant_lifespan: 25
     # Environmental:
     environmental:
-      co2_emission_factor_without_resource: !AeroMapsCustomDataType
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
         years: [2025, 2040, 2050]
         values: [22.3, 13.75, 5.2]
         # From f2_ef: 2025=22.3, 2050=5.2, 2040=(22.3+5.2)/2=13.75
@@ -322,7 +322,7 @@ atj_waste_gas:
       plant_lifespan: 25
     # Environmental:
     environmental:
-      co2_emission_factor_without_resource: !AeroMapsCustomDataType
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
         years: [2025, 2040, 2050]
         values: [35.9, 32.45, 29.0]
         # From f2_ef: 2025=35.9, 2050=29.0, 2040=(35.9+29.0)/2=32.45
@@ -371,7 +371,7 @@ electrofuel:
       plant_lifespan: 25
     # Environmental:
     environmental:
-      co2_emission_factor_without_resource: !AeroMapsCustomDataType
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
         years: [2025, 2040, 2050]
         values: [13.4, 10.5, 7.6]
         # From f2_ef: 2025=13.4, 2050=7.6, 2040=(13.4+7.6)/2=10.5

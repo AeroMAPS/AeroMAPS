@@ -31,7 +31,7 @@
         50.0,
         100.0
     ],
-    "prescribed_carbon_offset_reference_years": [
+    "manual_carbon_offset_reference_years": [
         2020,
         2022,
         2023,
@@ -50,7 +50,7 @@
         2036,
         2050
     ],
-    "prescribed_carbon_offset_reference_years_values": [
+    "manual_carbon_offset_reference_years_values": [
         0.0,
         0.0,
         19.041039435866402,
