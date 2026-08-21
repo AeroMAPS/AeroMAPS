@@ -20,7 +20,9 @@ different demand and model chain. This is how the ATAG "3rd edition light" S0 is
 central-traffic demand, T2 efficiency and top-down model chain.
 """
 
+import copy
 import os
+import warnings
 
 import numpy as np
 import pandas as pd
@@ -92,38 +94,95 @@ def _aggregate_fuel_policy(region_configs, fuel_carrier, year_range):
     """
     from aeromaps import create_process  # local import: avoids circular import at load time
 
-    years = np.arange(year_range[0], year_range[1] + 1)
+    ef_var = f"{fuel_carrier}_mean_co2_emission_factor_without_resource"
+    saf_var = f"{fuel_carrier}_energy_consumption"
+
+    # Compute every region first, so the year grid can be derived from what the regions
+    # actually declare rather than assumed. Only the output frame and the horizon are
+    # kept; the processes themselves are discarded as we go.
+    region_frames = {}
+    region_horizons = {}
+    for region_id, region_config_path in region_configs.items():
+        process = create_process(configuration_file=region_config_path)
+        process.compute()
+        region_frames[region_id] = process.data["vector_outputs"]
+        region_horizons[region_id] = (
+            int(process.parameters.prospection_start_year),
+            int(process.parameters.end_year),
+        )
+
+    if year_range is None:
+        # Derive from each region's own prospection window, NOT from the output frame's
+        # index: the frame also carries the historic period (typically from 2000), and the
+        # series being built here is a forward-looking mandate. Anchoring it in the
+        # historic years would hand the interpolator a first reference year decades before
+        # any policy exists.
+        #
+        # Intersect rather than union, because `at_years` substitutes 0.0 for years a
+        # region does not cover -- spanning beyond the common window would silently
+        # zero-fill the very quantities being aggregated.
+        starts = [h[0] for h in region_horizons.values()]
+        ends = [h[1] for h in region_horizons.values()]
+        first, last = max(starts), min(ends)
+        if first > last:
+            raise ValueError(
+                f"Regions {sorted(region_horizons)} share no common prospection window "
+                f"(latest start {first}, earliest end {last}); pass an explicit year_range."
+            )
+        if len(set(starts)) > 1 or len(set(ends)) > 1:
+            warnings.warn(
+                f"Regions do not share a prospection window (starts {sorted(set(starts))}, "
+                f"ends {sorted(set(ends))}). Aggregating over their intersection "
+                f"{first}-{last}."
+            )
+        years = np.arange(first, last + 1)
+    else:
+        years = np.arange(year_range[0], year_range[1] + 1)
+
     total_dropin = np.zeros(len(years))
     total_saf = np.zeros(len(years))
     total_saf_ef = np.zeros(len(years))
     reference_region = None
 
-    ef_var = f"{fuel_carrier}_mean_co2_emission_factor_without_resource"
-    saf_var = f"{fuel_carrier}_energy_consumption"
-
-    for region_id, region_config_path in region_configs.items():
-        process = create_process(configuration_file=region_config_path)
-        process.compute()
-        df = process.data["vector_outputs"]
+    for region_id, df in region_frames.items():
         idx = df.index
 
-        def at_years(series):
+        def at_years(series, idx=idx):
             # Restrict/reindex the model series onto the year grid.
             return np.array([float(series.loc[y]) if y in idx else 0.0 for y in years])
 
         total_dropin += at_years(df["energy_consumption_dropin_fuel"])
-        if saf_var in df.columns:
-            saf = at_years(df[saf_var])
-            ef = at_years(df[ef_var]) if ef_var in df.columns else np.zeros(len(years))
-            total_saf += saf
-            total_saf_ef += saf * ef
-            if reference_region is None:
-                reference_region = region_id
+        if saf_var not in df.columns:
+            continue
+
+        saf = at_years(df[saf_var])
+        if ef_var not in df.columns:
+            # Substituting zeros here would count this region's energy in the
+            # denominator while contributing nothing to the numerator, quietly
+            # dragging the global emission factor toward zero in proportion to the
+            # region's SAF volume. Given how easily the key can be misspelled --
+            # without the `mean_` prefix the model ignores it -- that is a realistic
+            # way to end up with a global factor that is wrong and looks plausible.
+            raise KeyError(
+                f"Region '{region_id}' deploys '{fuel_carrier}' but publishes no "
+                f"'{ef_var}'. Refusing to treat its fuel as zero-carbon. Check that "
+                f"the carrier declares 'mean_co2_emission_factor_without_resource' "
+                f"(the model ignores the key written without the 'mean_' prefix)."
+            )
+        ef = at_years(df[ef_var])
+        total_saf += saf
+        total_saf_ef += saf * ef
+        # Pick the reference on actual deployment, not merely on the column existing:
+        # a region that declares the carrier and never uses it carries no information
+        # about the technical block being copied from it.
+        if reference_region is None and saf.sum() > 0:
+            reference_region = region_id
 
     if reference_region is None:
         raise ValueError(
-            f"No region defines the fuel carrier '{fuel_carrier}'; cannot aggregate a "
-            f"fuel policy."
+            f"No region deploys the fuel carrier '{fuel_carrier}' anywhere in "
+            f"{years[0]}-{years[-1]}; cannot aggregate a fuel policy. Either no region "
+            f"declares it, or every region that does leaves it at zero over this range."
         )
 
     global_share = 100.0 * np.divide(
@@ -132,15 +191,28 @@ def _aggregate_fuel_policy(region_configs, fuel_carrier, year_range):
     global_ef = np.divide(
         total_saf_ef, total_saf, out=np.full_like(total_saf, np.nan), where=total_saf > 0
     )
+    # ffill/bfill can only propagate from a year that has a value; if the carrier is
+    # deployed nowhere the whole array is NaN and this is a no-op, which is why the
+    # guard above tests deployment rather than declaration.
     global_ef = pd.Series(global_ef).ffill().bfill().to_numpy()
     return years, global_share, global_ef, reference_region
 
 
 def _custom_data_type(years, values):
+    array = np.asarray(values, dtype=float)
+    if not np.all(np.isfinite(array)):
+        # float(nan) is a perfectly valid float, so an unguarded conversion serialises
+        # as `.nan` and only fails later inside the interpolator, with an error that
+        # says nothing about where the value came from.
+        raise ValueError(
+            "Refusing to write a non-finite value into the aggregated energy file. "
+            "This means the aggregation produced an undefined series -- typically a "
+            "quantity-weighted mean with no weight anywhere in the year range."
+        )
     return AeroMapsCustomDataType(
         {
             "years": [int(y) for y in years],
-            "values": [float(v) for v in values],
+            "values": [float(v) for v in array],
             "method": "linear",
         }
     )
@@ -155,7 +227,7 @@ def aggregate_regions_to_single_process(
     fuel_carrier="generic_saf",
     reference_region=None,
     output_json=None,
-    year_range=(2020, 2050),
+    year_range=None,
     **create_process_kwargs,
 ):
     """
@@ -191,6 +263,10 @@ def aggregate_regions_to_single_process(
         Path for the process JSON outputs. Defaults to ``<output_config_dir>/outputs.json``.
     year_range : tuple of int, optional
         Inclusive ``(start, end)`` yearly grid for the aggregated mandate/emission series.
+        Defaults to ``None``, meaning the grid is derived from the regions themselves --
+        the intersection of their prospection windows, which follows each region's own
+        ``prospection_start_year``/``end_year`` instead of assuming a fixed window. Pass an
+        explicit tuple only to deliberately restrict the range.
     **create_process_kwargs
         Forwarded to :func:`aeromaps.create_process`.
 
@@ -219,7 +295,21 @@ def aggregate_regions_to_single_process(
     reference_dir = os.path.dirname(reference_config_path)
     reference_energy = read_yaml_file(_region_energy_file(reference_config_path))
 
-    aggregated_carrier = reference_energy[fuel_carrier]
+    if fuel_carrier not in reference_energy:
+        # A caller-pinned reference is otherwise only checked for existing as a region,
+        # not for actually declaring the carrier whose technical block is taken from it.
+        raise KeyError(
+            f"reference_region '{reference_region}' does not declare '{fuel_carrier}', "
+            f"so it cannot supply the technical block for the aggregated carrier. "
+            f"Declares: {sorted(reference_energy)}"
+        )
+
+    # Everything except the mandate and the emission factor -- the technical block
+    # (feedstock, specific consumption, selectivity, LHV), the emission index and the
+    # economics -- is taken from this one region rather than aggregated. That is only
+    # sound while the regions agree on it, so say so plainly here; a mismatch across
+    # regions would charge every region this one's feedstock and selectivity.
+    aggregated_carrier = copy.deepcopy(reference_energy[fuel_carrier])
     aggregated_carrier["inputs"]["mandate"] = {
         "mandate_type": "share",
         "mandate_share": _custom_data_type(years, global_share),

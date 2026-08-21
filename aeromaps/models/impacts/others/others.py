@@ -101,7 +101,7 @@ class DropinFuelConsumptionLiterPerPax100km(AeroMAPSModel):
         super()._initialize_df()
         self._coupling_defaults = {
             "dropin_fuel_mean_lhv": pd.Series(
-                44.0,  # MJ/liter
+                44.0,  # MJ/kg (jet fuel LHV; the division by density below converts to liters)
                 index=range(self.historic_start_year, self.end_year + 1),
             ),
         }
@@ -120,7 +120,7 @@ class DropinFuelConsumptionLiterPerPax100km(AeroMAPSModel):
         energy_consumption_passenger_dropin_fuel
             Energy consumption in the form of drop-in fuels from passenger air transport [MJ].
         dropin_fuel_mean_lhv
-            Mean Lower Heating Value for drop-in fuels [MJ/liter].
+            Mean Lower Heating Value for drop-in fuels [MJ/kg].
         rpk
             Revenue Passenger Kilometer [RPK].
 
