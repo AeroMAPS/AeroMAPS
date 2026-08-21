@@ -157,4 +157,6 @@
   "private_discount_rate": 0.06,
   "electricity_load_factor_reference_years": [],
   "electricity_load_factor_reference_years_values": [0.5]
+,
+  "price_reference_year": 0
 }
