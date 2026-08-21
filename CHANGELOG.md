@@ -21,6 +21,8 @@ Fixed:
 - Corrected docs and workflow. (#155)
 - Fixed disciplines mutating their MDA inputs in place, which corrupted GEMSEO's previous-iterate snapshot and pinned the normalised residual above the requested tolerance. (#157)
 - Fixed multi-regional outputs being duplicated on every repeated `compute()`. (#157)
+- An MDA that stops before reaching its convergence tolerance, or that reaches it only because its coupling variables have gone NaN, now raises instead of silently returning results that are not a solution of the coupled system. Set `process.on_mda_failure = "warn"` to keep the old behaviour. (#157)
+- Multi-regional `unified_mda` mode now solves with the same MDA settings as a single-region process (`tolerance=1e-10`, `max_mda_iter=200`) instead of `tolerance=1e-5` and GEMSEO's default of 20 iterations. (#157)
 
 
 ## Version 1.0.0
