@@ -33,6 +33,8 @@ if "--neutralise" in sys.argv:
     CustomDataConverter.convert_value_to_array = _patched
 
 from aeromaps.core.multi_regional_process import MultiRegionalProcess  # noqa: E402
+from gemseo.algos.sequence_transformer.acceleration import AccelerationMethod  # noqa: E402
+
 from spike_unified_mda.mda_settings import rebuild, tune  # noqa: E402
 
 
@@ -42,6 +44,8 @@ def make_process(stiffness=None, gamma=None, mda=None):
     if gamma is not None:
         os.environ["SPIKE_GAMMA"] = str(gamma)
     p = MultiRegionalProcess(CONFIG)
+    # Non-convergence is the subject of the sweeps, not an error to abort on.
+    p.on_mda_failure = "warn"
     if mda:
         rebuild(p, **mda)
     else:
@@ -176,6 +180,9 @@ def criterion_4(mda=None, label=""):
             print(f"{s:>10} {g:>7} {'ERROR':>14}  {type(exc).__name__}: {str(exc)[:70]}")
 
 
+PLAIN_GAUSS_SEIDEL = {"acceleration_method": AccelerationMethod.NONE}
+
+
 if __name__ == "__main__":
     which = sys.argv[1] if len(sys.argv) > 1 and sys.argv[1].isdigit() else "1234"
     print(
@@ -196,4 +203,4 @@ if __name__ == "__main__":
         print()
     if "4" in which:
         print("### Criterion 4 - robustness margin")
-        criterion_4(label="plain MDAGaussSeidel")
+        criterion_4(mda=PLAIN_GAUSS_SEIDEL, label="plain MDAGaussSeidel")

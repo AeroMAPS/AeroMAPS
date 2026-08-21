@@ -15,19 +15,39 @@ Two routes, and they are not interchangeable:
   for anything structural, i.e. ``inner_mda_name``.
 """
 
+from gemseo.algos.sequence_transformer.acceleration import AccelerationMethod
 from gemseo.mda.mda_chain import MDAChain
 
-# What AeroMAPSProcess uses, and what every measurement in RAPPORT.md was taken at.
-# _setup_unified_mda ships tolerance=1e-5 with no max_mda_iter (GEMSEO default: 20).
-DEFAULTS = {"tolerance": 1e-10, "max_mda_iter": 200, "log_convergence": False}
+# Tolerance and iteration cap: what AeroMAPSProcess uses, and what every measurement in
+# RAPPORT.md was taken at.
+#
+# Acceleration: AeroMAPS ships none by default, deliberately -- it changes the iterates
+# of every existing scenario. The spike turns it on because its own § 4 measured it as
+# the only lever that works on the real chain: over-relaxation rescued nothing at 0.7 or
+# 0.4, MDAJacobi failed outright, and Alternate2Delta moved the market's stiffness
+# ceiling from "between 4 and 8" to "at least 16". A market discipline is exactly the
+# stiff-coupling case it is for.
+DEFAULTS = {
+    "tolerance": 1e-10,
+    "max_mda_iter": 200,
+    "log_convergence": False,
+    "acceleration_method": AccelerationMethod.ALTERNATE_2_DELTA,
+}
 
 
 def tune(process, over_relaxation_factor=None, acceleration_method=None, **settings):
     """Apply settings to the chain the process already built, without rebuilding it."""
-    mdas = [process.mda_chain, *process.mda_chain.inner_mdas]
-    for key, value in {**DEFAULTS, **settings}.items():
-        for mda in mdas:
-            setattr(mda.settings, key, value)
+    settings = {**DEFAULTS, **settings}
+    if acceleration_method is None:
+        acceleration_method = settings.pop("acceleration_method", None)
+    else:
+        settings.pop("acceleration_method", None)
+
+    # Assigned on the chain, which cascades them to the inner MDAs -- the reverse does
+    # not hold, see "Tuning an MDAChain" in aeromaps/core/gemseo.py.
+    for key, value in settings.items():
+        setattr(process.mda_chain.settings, key, value)
+
     # Properties, not settings -- see the module docstring.
     for inner in process.mda_chain.inner_mdas:
         if over_relaxation_factor is not None:

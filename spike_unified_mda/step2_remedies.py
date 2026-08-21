@@ -1,39 +1,34 @@
-"""Do the Step-1 remedies also rescue the REAL chain past its Gauss-Seidel limit?"""
+"""Do the Step-1 remedies also rescue the REAL chain past its Gauss-Seidel limit?
+
+Measured on the stock chain. An earlier version of this script monkey-patched the NaN
+sentinel to make the residual meaningful; that was a diagnostic for the residual floor,
+whose real cause -- a discipline mutating its own coupling input -- is now fixed in
+AeroMAPS, so the workaround is gone and these numbers are the real chain's.
+"""
 
 import logging
 import os
 import sys
 import warnings
 
-import pandas as pd
-
 warnings.filterwarnings("ignore")
 logging.disable(logging.INFO)
 
-from aeromaps.core.gemseo import CustomDataConverter  # noqa: E402
-
-_orig = CustomDataConverter.convert_value_to_array
-
-
-def _patched(self, name, value):
-    if isinstance(value, pd.Series):
-        value = value.fillna(0.0)
-    return _orig(self, name, value)
-
-
-CustomDataConverter.convert_value_to_array = _patched
+from gemseo.algos.sequence_transformer.acceleration import AccelerationMethod  # noqa: E402
 
 from aeromaps.core.multi_regional_process import MultiRegionalProcess  # noqa: E402
 from spike_unified_mda.mda_settings import rebuild  # noqa: E402
 
 CONFIG = "spike_unified_mda/scenario/regionalisation_spike.yaml"
 
+NONE = AccelerationMethod.NONE
+
 VARIANTS = [
-    ("GS baseline", {}),
-    ("GS relax=0.7", {"over_relaxation_factor": 0.7}),
-    ("GS relax=0.4", {"over_relaxation_factor": 0.4}),
+    ("GS baseline", {"acceleration_method": NONE}),
+    ("GS relax=0.7", {"over_relaxation_factor": 0.7, "acceleration_method": NONE}),
+    ("GS relax=0.4", {"over_relaxation_factor": 0.4, "acceleration_method": NONE}),
     ("GS + Alternate2Delta", {"acceleration_method": "Alternate2Delta"}),
-    ("MDAJacobi (GEMSEO default)", {"inner_mda_name": "MDAJacobi"}),
+    ("MDAJacobi (GEMSEO default)", {"inner_mda_name": "MDAJacobi", "acceleration_method": NONE}),
 ]
 
 HARD_CASES = [(0.3, 8.0), (0.3, 16.0), (3.0, 8.0)]
@@ -50,6 +45,7 @@ if __name__ == "__main__":
             os.environ["SPIKE_GAMMA"] = str(g)
             try:
                 p = MultiRegionalProcess(CONFIG)
+                p.on_mda_failure = "warn"
                 rebuild(p, **extra)
                 p.compute()
                 m = p.mda_chain.inner_mdas[0]
