@@ -649,7 +649,8 @@ class MultiRegionalProcess(AeroMAPSProcess):
         self.disciplines = self._build_top_level_disciplines()
         self._top_level_mda_chain = MDAChain(
             disciplines=self.disciplines,
-            tolerance=1e-5,
+            tolerance=1e-10,
+            max_mda_iter=200,
             initialize_defaults=True,
             inner_mda_name="MDAGaussSeidel",
             log_convergence=False,
@@ -690,6 +691,10 @@ class MultiRegionalProcess(AeroMAPSProcess):
         self.disciplines = all_disciplines
 
         # Build MDAChain
+        # The solver settings match AeroMAPSProcess: 1e-5 is too loose for the
+        # ``doc_net_energy_per_rpk_mean`` <-> ``rpk`` loop, and the GEMSEO default of 20
+        # iterations stops well short of what a coupled scenario needs.
+        #
         # TODO: Make these kwargs available at a higher level (e.g. config file).
         # Until then they are tuned from the notebook on the GEMSEO objects themselves,
         # which is a minefield -- assign on the chain, not on its inner MDAs, and see
