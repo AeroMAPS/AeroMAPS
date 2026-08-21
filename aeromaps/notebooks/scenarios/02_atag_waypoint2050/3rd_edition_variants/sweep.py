@@ -1,0 +1,416 @@
+"""Full lever sweep over the third-edition Waypoint 2050 grid.
+
+The report defines its scenarios as combinations of five levers, and publishes
+three of them (S0, S1, S2). This module runs the rest of the grid: every
+combination of traffic growth, aircraft technology, operations and SAF
+deployment. Market-based measures are not swept -- they are computed as the
+residual needed to reach the target, so they follow from the other four rather
+than varying independently.
+
+    3 traffic x 4 technology x 3 operations x 3 SAF = 108 runs
+
+Processes are built on the fly rather than from 108 committed configuration
+files. Only traffic and SAF need to differ at configuration level (they select
+data files, which are read at construction), so nine scratch configurations are
+generated into ``_generated/`` and reused; technology and operations are applied
+afterwards as parameter overrides. Each run is computed, reduced to the series
+and scalars worth keeping, and then discarded, so memory stays flat regardless
+of grid size.
+
+Lever definitions follow the report:
+
+* traffic     low / central / high, via the shared digitised market files
+* technology  T1 baseline existing aircraft, T2 conservative next-generation
+              tube-and-wing, T3 new configurations, T4 towards non-drop-in
+              energies. T0 (frozen fleet efficiency) is excluded: it is a
+              notional counterfactual, not a scenario.
+* operations  O1 / O2 / O3 at 0.00 / 0.10 / 0.20 %/yr, entered as the
+              cumulative gain over 2020-2050 (0 / 3 / 6 %).
+* SAF         F1 stated policies (~150 Mt), F2 (~430 Mt), F3 (~280-380 Mt).
+
+A note on SAF resolution. F2 and F3 are published as quantities *per pathway*,
+so they map onto the eleven-carrier energy files of the full edition. F1
+publishes only a total volume with no pathway breakdown, so it is modelled as a
+single generic SAF carrier, reusing the light edition's S0 energy file rather
+than inventing a pathway split. Consequently pathway-level outputs (biofuel
+mix, per-pathway resource use) are not defined for the F1 arm, and comparisons
+across the SAF axis must stay on totals.
+"""
+
+from __future__ import annotations
+
+import itertools
+import json
+from pathlib import Path
+
+import pandas as pd
+import yaml
+
+from aeromaps import create_process
+
+HERE = Path(__file__).resolve().parent
+ATAG = HERE.parent
+GENERATED = HERE / "_generated"
+
+# Paths inside a generated configuration are resolved against the
+# configuration's own directory, and ``_generated`` sits at the same depth as
+# an edition's ``config_files``, so these prefixes match the hand-written ones.
+FULL_INPUTS = "../../3rd_edition_full/data_inputs"
+LIGHT_INPUTS = "../../3rd_edition_light/data_inputs"
+MARKETS = "../../markets"
+
+# The third edition uses its own low/high files. The shared markets_low/high.yaml encode
+# second-edition growth whose spread lives in a COVID trough that the observed-data
+# baseline removes, which inverts the ordering; markets_{low,high}_3rd.yaml instead scale
+# central growth after the prospection start to hit the published 2050 figures. Built by
+# make_traffic_variants.py.
+TRAFFIC_LEVELS = {
+    "low": f"{MARKETS}/markets_low_3rd.yaml",
+    "central": f"{MARKETS}/markets_central.yaml",
+    "high": f"{MARKETS}/markets_high_3rd.yaml",
+}
+
+# Cumulative operations-and-infrastructure gain over 2020-2050, from the
+# report's 0.00 / 0.10 / 0.20 %/yr scenarios.
+OPERATIONS_LEVELS = {
+    "O1": [0, 0],
+    "O2": [0, 3],
+    "O3": [0, 6],
+}
+
+# F1 reuses the light edition's single-carrier setup, which draws its feedstock
+# from the packaged default resources rather than an edition-local file.
+SAF_LEVELS = {
+    "F1": {
+        "energy_carriers_model_data_file": f"{LIGHT_INPUTS}/s0_energy.yaml",
+        "resources_model_data_file": "default",
+        "processes_model_data_file": "default",
+    },
+    "F2": {
+        "energy_carriers_model_data_file": f"{FULL_INPUTS}/s1_energy.yaml",
+        "resources_model_data_file": f"{FULL_INPUTS}/resources.yaml",
+        "processes_model_data_file": f"{FULL_INPUTS}/processes.yaml",
+    },
+    "F3": {
+        "energy_carriers_model_data_file": f"{FULL_INPUTS}/s2_energy.yaml",
+        "resources_model_data_file": f"{FULL_INPUTS}/resources.yaml",
+        "processes_model_data_file": f"{FULL_INPUTS}/processes.yaml",
+    },
+}
+
+TECHNOLOGY_LEVELS = ("T1", "T2", "T3", "T4")
+
+# The technology lever proper. The t*_inputs.json files also differ in load
+# factor, operations and offsets, because they are isolated technology runs
+# with everything else switched off; those keys are deliberately not copied
+# here, since the sweep varies operations separately and keeps S1's demand,
+# load factor and offset assumptions throughout.
+TECHNOLOGY_KEYS = (
+    "short_range_energy_per_ask_dropin_fuel_gain_reference_years",
+    "short_range_energy_per_ask_dropin_fuel_gain_reference_years_values",
+    "medium_range_energy_per_ask_dropin_fuel_gain_reference_years",
+    "medium_range_energy_per_ask_dropin_fuel_gain_reference_years_values",
+    "long_range_energy_per_ask_dropin_fuel_gain_reference_years",
+    "long_range_energy_per_ask_dropin_fuel_gain_reference_years_values",
+    "short_range_electric_final_market_share",
+    "short_range_electric_introduction_year",
+)
+
+# The published scenarios, as coordinates in this grid. S1 and S2 are the
+# third-edition headline scenarios; the sweep reproduces them exactly, which is
+# what makes them usable as a correctness check.
+PUBLISHED_CELLS = {
+    "S1": ("central", "T3", "O3", "F2"),
+    "S2": ("central", "T4", "O3", "F3"),
+}
+
+# Annual series kept for every run. Anything else can be recomputed from the
+# committed scenario outputs, so the sweep file stays small enough to commit.
+SERIES_COLUMNS = {
+    "climate": (
+        "co2_emissions",
+        "temperature_increase_from_aviation",
+        "temperature_increase_from_contrails_from_aviation",
+        "total_erf",
+        "co2_erf",
+    ),
+    "vector": (
+        "rpk",
+        "load_factor",
+        "energy_consumption",
+        "carbon_offset",
+        "cumulative_carbon_offset",
+        "cumulative_co2_emissions",
+        "co2_emissions_last_historical_year_technology_baseline3",
+        "co2_emissions_last_historical_year_technology",
+        "co2_emissions_including_aircraft_efficiency",
+        "co2_emissions_including_load_factor",
+        "co2_emissions_including_energy",
+    ),
+}
+
+
+def _standards():
+    """Model bundles of the third-edition full scenarios, read from S1."""
+    base = yaml.safe_load((ATAG / "3rd_edition_full/config_files/config_s1.yaml").read_text())
+    return base["models"]["standards"]
+
+
+def config_path(traffic, saf):
+    """Path of the scratch configuration for one (traffic, SAF) pair.
+
+    Written on first use and reused afterwards: the pair selects data files,
+    which are read when the process is constructed, so it cannot be applied as
+    a parameter override the way technology and operations can.
+    """
+    GENERATED.mkdir(exist_ok=True)
+    path = GENERATED / f"config_{traffic}_{saf.lower()}.yaml"
+    if not path.exists():
+        config = {
+            "data": {
+                "inputs": {"json_inputs_file": f"{FULL_INPUTS}/s1_inputs.json"},
+                "outputs": {"json_outputs_file": f"./{path.stem}_outputs.json"},
+            },
+            "models": {
+                "climate": {"climate_model_data_file": "default"},
+                "energy": dict(SAF_LEVELS[saf]),
+                "standards": _standards(),
+                "markets": {"markets_data_file": TRAFFIC_LEVELS[traffic]},
+            },
+        }
+        path.write_text(yaml.safe_dump(config, sort_keys=False))
+    return path
+
+
+def technology_overrides(technology):
+    """Parameter overrides carrying one technology variant."""
+    inputs = json.loads(
+        (ATAG / f"3rd_edition_full/data_inputs/{technology.lower()}_inputs.json").read_text()
+    )
+    missing = [key for key in TECHNOLOGY_KEYS if key not in inputs]
+    if missing:
+        raise KeyError(f"{technology}_inputs.json is missing {missing}")
+    return {key: inputs[key] for key in TECHNOLOGY_KEYS}
+
+
+def build_process(traffic, technology, operations, saf):
+    """Build one grid cell, ready to compute."""
+    process = create_process(configuration_file=str(config_path(traffic, saf)))
+    for key, value in technology_overrides(technology).items():
+        setattr(process.parameters, key, value)
+    process.parameters.operations_gain_reference_years = [2020, 2050]
+    process.parameters.operations_gain_reference_years_values = OPERATIONS_LEVELS[operations]
+    return process
+
+
+def extract(process, traffic, technology, operations, saf):
+    """Reduce a computed process to the rows worth keeping.
+
+    Returns a long frame of annual series. Scalars are derived from it later
+    rather than stored twice.
+    """
+    years = process.data["years"]["full_years"]
+    climate = process.data["climate_outputs"]
+    vector = process.data["vector_outputs"]
+
+    frames = []
+    for column in SERIES_COLUMNS["climate"]:
+        if column in climate:
+            frames.append(pd.DataFrame({"year": years, "variable": column,
+                                        "value": climate.loc[years, column].to_numpy()}))
+    for column in SERIES_COLUMNS["vector"]:
+        if column in vector:
+            frames.append(pd.DataFrame({"year": years, "variable": column,
+                                        "value": vector.loc[years, column].to_numpy()}))
+
+    # Drop-in energy by origin, so the SAF share can be recomputed downstream.
+    # Collected dynamically because the F1 arm carries a different carrier set
+    # from the F2/F3 arms.
+    for column in vector.columns:
+        if column.startswith("dropin_fuel_") and column.endswith("_energy_consumption"):
+            frames.append(pd.DataFrame({"year": years, "variable": column,
+                                        "value": vector.loc[years, column].to_numpy()}))
+
+    tidy = pd.concat(frames, ignore_index=True)
+    tidy.insert(0, "traffic", traffic)
+    tidy.insert(1, "technology", technology)
+    tidy.insert(2, "operations", operations)
+    tidy.insert(3, "saf", saf)
+    return tidy
+
+
+def grid():
+    """The 108 cells, in a stable order."""
+    return list(
+        itertools.product(
+            TRAFFIC_LEVELS, TECHNOLOGY_LEVELS, OPERATIONS_LEVELS, SAF_LEVELS
+        )
+    )
+
+
+def run_sweep(cells=None, progress=True):
+    """Run the grid and return one tidy frame of annual series.
+
+    Each process is discarded as soon as it has been reduced, so peak memory is
+    one process regardless of how many cells are run.
+    """
+    cells = cells if cells is not None else grid()
+    results = []
+    for index, (traffic, technology, operations, saf) in enumerate(cells, start=1):
+        if progress:
+            print(f"[{index:3d}/{len(cells)}] {traffic:7s} {technology} {operations} {saf}")
+        process = build_process(traffic, technology, operations, saf)
+        process.compute()
+        results.append(extract(process, traffic, technology, operations, saf))
+        del process
+    return pd.concat(results, ignore_index=True)
+
+
+def summarise(tidy, year=2050):
+    """One row per cell: the headline quantities in a given year."""
+    keys = ["traffic", "technology", "operations", "saf"]
+    snapshot = tidy[tidy["year"] == year]
+    wide = snapshot.pivot_table(index=keys, columns="variable", values="value").reset_index()
+    return wide
+
+
+# Gzipped CSV rather than parquet: it is ~1 MB instead of ~6.6 MB raw, and unlike
+# parquet it needs nothing beyond the standard library, so the committed results stay
+# readable in the default environment (pyarrow ships only with the optional lca extra).
+RESULTS = HERE / "data_outputs" / "sweep_results.csv.gz"
+
+
+def write_results(tidy, path=None):
+    """Persist the sweep as a gzipped tidy CSV."""
+    path = Path(path) if path else RESULTS
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tidy.to_csv(path, index=False, compression="gzip")
+    return path
+
+
+def read_results(path=None):
+    """Read a persisted sweep."""
+    return pd.read_csv(Path(path) if path else RESULTS)
+
+
+# ---------------------------------------------------------------------------
+# Whole-grid figure
+# ---------------------------------------------------------------------------
+
+# Panels: (column, title, y label, scale applied to the stored value).
+# Stored units are Mt CO2, MJ and RPK, so energy becomes EJ by 1e-12 and carbon
+# intensity becomes g/RPK by 1e12 (Mt -> g).
+PANELS = (
+    ("co2_emissions", "CO$_2$ emissions", "Mt CO$_2$ / yr", 1.0),
+    ("energy_consumption", "Final energy", "EJ / yr", 1e-12),
+    ("energy_per_rpk", "Energy intensity", "MJ / RPK", 1.0),
+    ("co2_per_rpk", "Carbon intensity", "g CO$_2$ / RPK", 1.0),
+)
+
+CELL_KEYS = ["traffic", "technology", "operations", "saf"]
+
+
+def wide(tidy=None):
+    """Grid results as one row per (cell, year), with the two intensities derived."""
+    tidy = read_results() if tidy is None else tidy
+    frame = tidy.pivot_table(
+        index=CELL_KEYS + ["year"], columns="variable", values="value"
+    ).reset_index()
+    frame["energy_per_rpk"] = frame["energy_consumption"] / frame["rpk"]
+    # Mt -> g so the intensity reads in grams per RPK.
+    frame["co2_per_rpk"] = frame["co2_emissions"] * 1e12 / frame["rpk"]
+    return frame
+
+
+def plot_grid(tidy=None, color_by="saf", first_year=2023, alpha=0.18, figsize=(11, 8)):
+    """Every cell of the grid, one translucent line each, over four metrics.
+
+    One line per scenario at low opacity, so the density of the bundle carries the
+    message rather than any single trajectory -- the same reading as the envelope
+    comparison plots, but showing the individual runs instead of a min/max band,
+    which matters here because 108 cells do not form a single ordered family.
+
+    ``color_by`` picks which lever separates the colours; the remaining three vary
+    inside each colour. Choose it to match the question: SAF separates the two carbon
+    panels but does nothing to the two energy panels, because substituting the fuel
+    changes what a joule emits, not how many joules are burned. Traffic and technology
+    are what separate energy.
+
+    ``first_year`` defaults to the last observed year rather than 2019, because the
+    COVID collapse drives RPK down without a matching drop in energy: 2020 reads about
+    2.3 MJ/RPK against a 1.4 trend, and that spike compresses both intensity panels
+    into illegibility.
+
+    The two published scenarios are drawn on top in black so the reported cases can be
+    located inside the spread they belong to.
+    """
+    import matplotlib.pyplot as plt
+
+    from aeromaps.plots.multi_scenario_plot import DEFAULT_COLORS
+
+    frame = wide(tidy)
+    frame = frame[frame["year"] >= first_year]
+    if color_by not in CELL_KEYS:
+        raise ValueError(f"color_by must be one of {CELL_KEYS}, got {color_by!r}")
+
+    levels = sorted(frame[color_by].unique())
+    colors = {
+        level: DEFAULT_COLORS[index % len(DEFAULT_COLORS)]
+        for index, level in enumerate(levels)
+    }
+
+    figure, axes = plt.subplots(2, 2, figsize=figsize, layout="constrained")
+    published = {cell: name for name, cell in PUBLISHED_CELLS.items()}
+
+    for axis, (column, title, ylabel, scale) in zip(axes.ravel(), PANELS):
+        for cell, group in frame.groupby(CELL_KEYS, sort=False):
+            group = group.sort_values("year")
+            axis.plot(
+                group["year"],
+                group[column] * scale,
+                color=colors[cell[CELL_KEYS.index(color_by)]],
+                linewidth=1.0,
+                alpha=alpha,
+                zorder=1,
+            )
+        # Published scenarios last, so they sit above the bundle.
+        for cell, name in published.items():
+            group = frame
+            for key, value in zip(CELL_KEYS, cell):
+                group = group[group[key] == value]
+            if group.empty:
+                continue
+            group = group.sort_values("year")
+            axis.plot(
+                group["year"],
+                group[column] * scale,
+                color="black",
+                linewidth=2.0,
+                linestyle="-" if name == "S1" else "--",
+                zorder=5,
+                label=name,
+            )
+        axis.set_title(title)
+        axis.set_ylabel(ylabel)
+        axis.set_xlabel("Year")
+        axis.grid(True, alpha=0.3)
+
+    # One legend for the whole figure: the colour groups, then the published cases.
+    handles = [
+        plt.Line2D([], [], color=colors[level], linewidth=2, label=f"{color_by} = {level}")
+        for level in levels
+    ]
+    handles += [
+        plt.Line2D([], [], color="black", linewidth=2, linestyle=style, label=name)
+        for name, style in (("S1", "-"), ("S2", "--"))
+    ]
+    figure.legend(
+        handles=handles,
+        loc="outside lower center",
+        ncol=len(handles),
+        frameon=False,
+    )
+    figure.suptitle(
+        f"All {frame.groupby(CELL_KEYS).ngroups} lever combinations, coloured by {color_by}"
+    )
+    return figure, axes
