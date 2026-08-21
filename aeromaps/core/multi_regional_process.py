@@ -36,6 +36,7 @@ from aeromaps.core.gemseo import (
     AeroMAPSCustomModelWrapper,
     apply_namespace_to_disciplines,
     build_namespaced_inputs,
+    check_mda_convergence,
 )
 from aeromaps.core import models as aeromaps_models
 from aeromaps.models.multi_regional.regional_aggregator import RegionalAggregator
@@ -188,6 +189,10 @@ class MultiRegionalProcess(AeroMAPSProcess):
         self._initialize_configuration_only()
 
         # Read regionalisation config to determine execution mode
+        # How a non-converged MDA is reported: "raise" (default), "warn" or "ignore".
+        # Propagated to the regional processes in separate_processes mode.
+        self.on_mda_failure = "raise"
+
         self._read_regionalisation_config()
 
         # Set execution mode from config (default: separate_processes for scalability)
@@ -687,26 +692,11 @@ class MultiRegionalProcess(AeroMAPSProcess):
         # Build MDAChain
         # TODO: Make these kwargs available at a higher level (e.g. config file).
         # Until then they are tuned from the notebook on the GEMSEO objects themselves,
-        # e.g. ``process.mda_chain.settings.tolerance = 1e-10``.
+        # which is a minefield -- assign on the chain, not on its inner MDAs, and see
+        # "Tuning an MDAChain" in aeromaps/core/gemseo.py.
         #
-        # ``inner_mda_settings`` is listed separately on purpose: it is the only route to
-        # the relaxation/acceleration knobs. ``MDAChain`` forwards to its inner MDAs only
-        # the settings belonging to ``BaseMDASettings`` (``tolerance``, ``max_mda_iter``,
-        # ``warm_start``, ``log_convergence``, ...), and ``over_relaxation_factor`` /
-        # ``acceleration_method`` are NOT in that set, so passing them as ``MDAChain``
-        # kwargs configures the outer chain alone and is silently ignored by the solver
-        # that actually iterates.
-        #
-        # The values below are the MDAGaussSeidel defaults (no damping, no acceleration),
-        # so the chain behaves exactly as before. To change them from a notebook, assign
-        # to the *properties* of the inner solver, not to its settings::
-        #
-        #     process.mda_chain.inner_mdas[0].over_relaxation_factor = 0.7
-        #     process.mda_chain.inner_mdas[0].acceleration_method = "Alternate2Delta"
-        #
-        # ``BaseMDASolver.__init__`` builds its ``RelaxationAcceleration`` from the
-        # settings once and never re-reads them; those two properties write through to it,
-        # whereas assigning to ``inner_mdas[0].settings.*`` afterwards has no effect.
+        # inner_mda_settings carries the MDAGaussSeidel defaults (no damping, no
+        # acceleration) explicitly, because it is the only route to those two knobs.
         self.mda_chain = MDAChain(
             disciplines=all_disciplines,
             tolerance=1e-5,
@@ -814,6 +804,9 @@ class MultiRegionalProcess(AeroMAPSProcess):
         if self._execution_mode == "unified_mda":
             self._compute_unified_mda()
         else:
+            for region_id, regional_process in self._regional_processes.items():
+                regional_process.on_mda_failure = self.on_mda_failure
+                regional_process._mda_context = f"region '{region_id}': "
             self._compute_separate_processes(parallel=parallel, max_workers=max_workers)
 
         logging.info("Multi-regional computation completed.")
@@ -831,6 +824,10 @@ class MultiRegionalProcess(AeroMAPSProcess):
 
         # Update data from MDA results
         self._update_data_from_unified_mda()
+
+        # Checked after the outputs have been harvested, so that a failed run is still
+        # inspectable by whoever catches the error.
+        check_mda_convergence(self.mda_chain, on_failure=self.on_mda_failure)
 
     def _compute_separate_processes(
         self,
@@ -991,6 +988,9 @@ class MultiRegionalProcess(AeroMAPSProcess):
         # Execute the top-level disciplines (aggregator + optional top-level models)
         # as a standard MDA, fed with the regional outputs.
         self._top_level_mda_chain.execute(top_level_input)
+        check_mda_convergence(
+            self._top_level_mda_chain, context="top-level chain: ", on_failure=self.on_mda_failure
+        )
 
         # Harvest global (namespaced) outputs produced by the top-level chain.
         global_prefix = f"{self._global_namespace}:"
