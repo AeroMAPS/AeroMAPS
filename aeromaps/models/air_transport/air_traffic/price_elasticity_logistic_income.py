@@ -11,8 +11,9 @@ only the per-segment split now iterates over the registry's passenger markets.
 Selected via ``global.demand.model: logistic_income`` in ``markets.yaml``.
 """
 
+import numpy as np
 import pandas as pd
-from numpy import divide, exp
+from numpy import divide, exp, log
 
 from aeromaps.models.base import AeroMAPSModel
 
@@ -26,6 +27,28 @@ def generalised_logistic_function(
     )
 
     return y
+
+
+# Reference years for the COVID recovery calibration. These are observations, not
+# scenario settings: 2019 is the pre-COVID per-capita traffic level, and 2024 is the
+# year by which per-capita traffic is observed to have regained it. They are held
+# fixed on purpose and are deliberately NOT tied to ``prospection_start_year`` -- a
+# scenario's modelling window says nothing about when the pandemic happened.
+COVID_REFERENCE_YEAR = 2019
+COVID_RECOVERY_YEAR = 2024
+
+# Year the price index is anchored on. The index is a *relative* response: demand reacts
+# to how far the cost of flying has moved from a reference, so the reference has to be a
+# cost the world actually had. Anchoring on the model's own cost in this year makes
+# price_index == 1 there, so no demand response is attributed before the trajectory
+# departs from observed conditions.
+#
+# The alternative -- a fixed `price_ref` constant carried from an older calibration --
+# is only correct while that constant stays on the same basis as the computed
+# doc_net_energy_per_rpk_mean. It had drifted: the index started around 0.70 in the
+# first prospective year of every scenario, so roughly a 30% demand reduction was
+# already booked before any scenario had done anything.
+PRICE_REFERENCE_YEAR = 2024
 
 
 class RPKLogisticIncomePriceElasticity(AeroMAPSModel):
@@ -81,6 +104,7 @@ class RPKLogisticIncomePriceElasticity(AeroMAPSModel):
             "covid_end_year_passenger": 0.0,
             "gdp_per_capita_init": pd.Series([0.0]),
             "population_init": pd.Series([0.0]),
+            "price_reference_year": float(PRICE_REFERENCE_YEAR),
         }
         for mid in self.passenger_market_ids:
             self.input_names[f"{mid}_rpk_share_last_historical_year"] = 0.0
@@ -141,6 +165,79 @@ class RPKLogisticIncomePriceElasticity(AeroMAPSModel):
             delayed.loc[year] = prev
         return delayed
 
+    def _price_reference(self, price, fallback: float, reference_year) -> float:
+        """Cost per RPK the price index is measured against.
+
+        Anchored on the model's own cost in ``reference_year``, so the index is 1
+        there and demand responds only to movement away from that year. Because the
+        index enters as ``(P/P_ref)**elast``, the reference is a pure scale factor:
+        getting it wrong does not distort the *shape* of the response, but it shifts
+        every scenario's demand level by a constant, and with it the headline "demand
+        avoided" figure.
+
+        Set ``price_reference_year`` to 0 to opt out and use the calibrated
+        ``price_ref`` constant instead -- which is what scenarios published against the
+        old behaviour should do, so their numbers do not move. The same fallback
+        applies when the requested year lies outside the modelled horizon, or the cost
+        there is not usable.
+        """
+        try:
+            year = int(reference_year)
+        except (TypeError, ValueError):
+            return fallback
+        if year <= 0:
+            return fallback
+        try:
+            reference = float(price.loc[year])
+        except (KeyError, IndexError, TypeError):
+            return fallback
+        if not np.isfinite(reference) or reference <= 0.0:
+            return fallback
+        return reference
+
+    def _covid_shift(self, rpk_init, population_init, gdp_per_capita) -> float:
+        """Income-axis shift calibrated on the observed COVID recovery.
+
+        The pandemic left per-capita air travel below the level its income trend
+        alone would imply. That gap is represented as a shift along the GDP-per-capita
+        axis, calibrated so the logistic trend evaluated at :data:`COVID_RECOVERY_YEAR`
+        income returns the :data:`COVID_REFERENCE_YEAR` per-capita traffic level --
+        i.e. per-capita traffic recovers, but no more than recovers, its pre-COVID value.
+
+        Both years are observations and are fixed, so the same shift is obtained
+        whatever window a scenario models. The previous implementation instead zeroed
+        the shift whenever ``prospection_start_year > covid_end_year``, which made a
+        physical correction depend on an unrelated modelling choice.
+
+        The generalised logistic is invertible, so this is closed-form. From
+        ``y = L + (K - L) / (A + exp(-g (x - x_lag)))**(1/nu)``::
+
+            x_lag = x + ln( ((K - L) / (y - L))**nu - A ) / g
+
+        Returns 0.0 if the target is unreachable (outside the curve's range), leaving
+        the uncorrected trend rather than raising.
+        """
+        try:
+            target = float(rpk_init.loc[COVID_REFERENCE_YEAR]) / float(
+                population_init.loc[COVID_REFERENCE_YEAR]
+            )
+            income = float(gdp_per_capita.loc[COVID_RECOVERY_YEAR])
+        except (KeyError, IndexError, ZeroDivisionError):
+            return 0.0
+
+        span = self.capacity - self.left_asymptote
+        offset = target - self.left_asymptote
+        if offset <= 0.0 or span <= 0.0:
+            return 0.0
+
+        inner = (span / offset) ** self.logistic_nu - self.asymptote_coeff
+        if inner <= 0.0:
+            # Target sits above what the curve can produce at any income.
+            return 0.0
+
+        required_x_lag = income + log(inner) / self.growth_rate
+        return required_x_lag - self.x_lag
+
     def compute(self, input_data: dict) -> dict:
         """Compute prospective RPK using a generalised logistic income trend adjusted for price.
 
@@ -152,23 +249,13 @@ class RPKLogisticIncomePriceElasticity(AeroMAPSModel):
         rpk_init = input_data["rpk_init"]
         population = input_data["population"]
         gdp_per_capita = input_data["gdp_per_capita"]
+        # (COVID handling lives in _covid_shift, below.)
         doc_net_energy_per_rpk_mean = input_data["doc_net_energy_per_rpk_mean"]
-        gdp_per_capita_last_historical_year = float(
-            input_data["gdp_per_capita_last_historical_year"]
-        )
-        gdp_per_capita_covid_end = float(input_data["gdp_per_capita_covid_end"])
         gdp_per_capita_init = input_data["gdp_per_capita_init"]
         population_init = input_data["population_init"]
 
         price_ref_eur = self.price_ref * self.eur_usd_exchange_rate
-        covid_end_year = int(input_data["covid_end_year_passenger"])
-        # When the prospective window starts after COVID (prospection_start_year >
-        # covid_end_year), the GDP series already reflects the post-COVID level, so
-        # re-applying covid_shift would double-count the COVID dampening.
-        if self.prospection_start_year > covid_end_year:
-            covid_shift = 0.0
-        else:
-            covid_shift = gdp_per_capita_covid_end - gdp_per_capita_last_historical_year
+        covid_shift = self._covid_shift(rpk_init, population_init, gdp_per_capita)
         hist_slice = slice(self.historic_start_year, self.prospection_start_year - 1)
 
         # --- Logistic trends ---
@@ -201,7 +288,14 @@ class RPKLogisticIncomePriceElasticity(AeroMAPSModel):
         )
 
         doc_net_energy_per_rpk_delayed = self._apply_price_delay(doc_net_energy_per_rpk_mean)
-        price_index = (doc_net_energy_per_rpk_delayed / price_ref_eur) ** self.price_elast
+        price_index = (
+            doc_net_energy_per_rpk_delayed
+            / self._price_reference(
+                doc_net_energy_per_rpk_delayed,
+                price_ref_eur,
+                input_data["price_reference_year"],
+            )
+        ) ** self.price_elast
         rpk_per_capita = rpk_per_capita_trend * price_index
 
         # --- Total RPK (model, no measures yet) ---

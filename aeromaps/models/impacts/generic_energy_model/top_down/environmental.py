@@ -283,14 +283,21 @@ class TopDownEnvironmental(AeroMAPSModel):
 
         # 3 ) --> pathway gets a process that makes own emissions (besides resources)
         for process_key in self.process_keys:
+            # The key carries the mean_ prefix, matching the pathway lookup above, the
+            # cost model's process lookup (cost.py:279) and every processes file in the
+            # repository -- including the packaged default. Without the prefix the
+            # lookup missed and .get() returned the null series, so a process's own
+            # emissions were silently dropped from the pathway's emission factor.
             co2_emission_factor_process = input_data.get(
-                f"{process_key}_co2_emission_factor_without_resource", optional_null_series
+                f"{process_key}_mean_co2_emission_factor_without_resource", optional_null_series
             )
             output_data[
                 f"{self.pathway_name}_{process_key}_without_resources_mean_co2_emission_factor"
             ] = co2_emission_factor_process
 
-            co2_emission_factor = co2_emission_factor.add(co2_emission_factor_process)
+            # fill_value=0 for the same reason as every other addition in this method:
+            # a process series with a shorter index must not poison the pathway EF.
+            co2_emission_factor = co2_emission_factor.add(co2_emission_factor_process, fill_value=0)
 
         # Store the total CO2 emission factor in the dataframe
         output_data[f"{self.pathway_name}_mean_co2_emission_factor"] = co2_emission_factor

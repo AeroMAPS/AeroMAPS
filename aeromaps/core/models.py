@@ -117,7 +117,7 @@ from aeromaps.models.sustainability_assessment.climate.comparison import (
 from aeromaps.models.impacts.emissions.carbon_offset import (
     LevelCarbonOffset,
     ResidualCarbonOffset,
-    PrescribedCarbonOffset,
+    ManualCarbonOffset,
     CarbonOffset,
     CumulativeCarbonOffset,
 )
@@ -288,7 +288,7 @@ models_energy_with_fuel_effect = {
 models_offset = {
     "level_carbon_offset": LevelCarbonOffset("level_carbon_offset"),
     "residual_carbon_offset": ResidualCarbonOffset("residual_carbon_offset"),
-    "prescribed_carbon_offset": PrescribedCarbonOffset("prescribed_carbon_offset"),
+    "manual_carbon_offset": ManualCarbonOffset("manual_carbon_offset"),
     "carbon_offset": CarbonOffset("carbon_offset"),
     "cumulative_carbon_offset": CumulativeCarbonOffset("cumulative_carbon_offset"),
 }

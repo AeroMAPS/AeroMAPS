@@ -232,8 +232,8 @@
     "residual_carbon_offset_share_reference_years_values": [
         0.0
     ],
-    "prescribed_carbon_offset_reference_years": [],
-    "prescribed_carbon_offset_reference_years_values": [
+    "manual_carbon_offset_reference_years": [],
+    "manual_carbon_offset_reference_years_values": [
         0.0
     ],
     "carbon_offset_price_reference_years": [],
@@ -279,5 +279,6 @@
     "model": "remind",
     "pathway": "SSP2_Base",
     "elec_solar_share": 1.0,
-    "load_factor_photovoltaic": 1.0
+    "load_factor_photovoltaic": 1.0,
+    "price_reference_year": 2024
 }

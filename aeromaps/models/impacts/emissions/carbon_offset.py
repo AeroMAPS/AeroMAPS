@@ -188,9 +188,9 @@ class ResidualCarbonOffset(AeroMAPSModel):
         return (residual_carbon_offset_share, residual_carbon_offset)
 
 
-class PrescribedCarbonOffset(AeroMAPSModel):
+class ManualCarbonOffset(AeroMAPSModel):
     """
-    Class to compute an exogenously prescribed annual carbon offset trajectory.
+    Class to compute an manually specified annual carbon offset trajectory.
 
     The output is linearly interpolated across the reference years and added to
     the level + residual offsets by :class:`CarbonOffset`.
@@ -198,46 +198,46 @@ class PrescribedCarbonOffset(AeroMAPSModel):
     Parameters
     --------------
     name : str
-        Name of the model instance ('prescribed_carbon_offset' by default).
+        Name of the model instance ('manual_carbon_offset' by default).
     """
 
-    def __init__(self, name="prescribed_carbon_offset", *args, **kwargs):
+    def __init__(self, name="manual_carbon_offset", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
     def compute(
         self,
-        prescribed_carbon_offset_reference_years: list,
-        prescribed_carbon_offset_reference_years_values: list,
+        manual_carbon_offset_reference_years: list,
+        manual_carbon_offset_reference_years_values: list,
     ) -> pd.Series:
         """
-        Execute the computation of the prescribed carbon offset trajectory.
+        Execute the computation of the manual carbon offset trajectory.
 
         Parameters
         ----------
-        prescribed_carbon_offset_reference_years
-            Reference years for the prescribed annual offset trajectory [years].
-        prescribed_carbon_offset_reference_years_values
-            Prescribed annual offset values at the reference years [MtCO2].
+        manual_carbon_offset_reference_years
+            Reference years for the manual annual offset trajectory [years].
+        manual_carbon_offset_reference_years_values
+            Manually specified annual offset values at the reference years [MtCO2].
 
         Returns
         -------
-        prescribed_carbon_offset
-            Annual prescribed carbon offset [MtCO2].
+        manual_carbon_offset
+            Annual manually specified carbon offset [MtCO2].
         """
-        prescribed = aeromaps_interpolation_function(
+        manual = aeromaps_interpolation_function(
             self,
-            prescribed_carbon_offset_reference_years,
-            prescribed_carbon_offset_reference_years_values,
+            manual_carbon_offset_reference_years,
+            manual_carbon_offset_reference_years_values,
             model_name=self.name,
         )
         for k in range(self.historic_start_year, self.prospection_start_year):
-            self.df.loc[k, "prescribed_carbon_offset"] = 0.0
+            self.df.loc[k, "manual_carbon_offset"] = 0.0
         for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "prescribed_carbon_offset"] = prescribed.loc[k]
+            self.df.loc[k, "manual_carbon_offset"] = manual.loc[k]
 
-        prescribed_carbon_offset = self.df["prescribed_carbon_offset"]
+        manual_carbon_offset = self.df["manual_carbon_offset"]
 
-        return prescribed_carbon_offset
+        return manual_carbon_offset
 
 
 class CarbonOffset(AeroMAPSModel):
@@ -257,7 +257,7 @@ class CarbonOffset(AeroMAPSModel):
         self,
         level_carbon_offset: pd.Series,
         residual_carbon_offset: pd.Series,
-        prescribed_carbon_offset: pd.Series,
+        manual_carbon_offset: pd.Series,
     ) -> pd.Series:
         """
         Execute the computation of total carbon offset.
@@ -268,7 +268,7 @@ class CarbonOffset(AeroMAPSModel):
             Annual carbon offset due to offsetting for a given level of emissions [MtCO2].
         residual_carbon_offset
             Annual carbon offset due to offsetting of a given share of the remaining emissions [MtCO2].
-        prescribed_carbon_offset
+        manual_carbon_offset
             Annual carbon offset provided exogenously via reference years/values [MtCO2].
 
         Returns
@@ -280,7 +280,7 @@ class CarbonOffset(AeroMAPSModel):
         carbon_offset = (
             level_carbon_offset.fillna(0)
             + residual_carbon_offset.fillna(0)
-            + prescribed_carbon_offset.fillna(0)
+            + manual_carbon_offset.fillna(0)
         )
 
         self.df.loc[:, "carbon_offset"] = carbon_offset
