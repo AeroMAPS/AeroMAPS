@@ -254,7 +254,7 @@ class BottomUpEnvironmental(AeroMAPSModel):
                     0.0,
                 )
                 kerosene_selectivity = _get_value_for_year(
-                    input_data.get(f"{self.pathway_name}_eis_kerosene_selectivity"), year, 1.0
+                    input_data.get(f"{self.pathway_name}_kerosene_selectivity"), year, 1.0
                 )
 
                 vintage_emission_factor = _custom_series_addition(
@@ -286,8 +286,8 @@ class BottomUpEnvironmental(AeroMAPSModel):
                         resources_consumption = (
                             energy_production_commissioned[year] * specific_consumption
                         )
-                        resources_consumption_with_selectivity = (
-                            resources_consumption * kerosene_selectivity
+                        resources_mobilised_with_selectivity = (
+                            resources_consumption / kerosene_selectivity
                         )
 
                         total_ressource_consumption.loc[year : year + lifespan - 1] = (
@@ -295,14 +295,14 @@ class BottomUpEnvironmental(AeroMAPSModel):
                         )
                         total_ressource_mobilised_with_selectivity.loc[
                             year : year + lifespan - 1
-                        ] = resources_consumption_with_selectivity
+                        ] = resources_mobilised_with_selectivity
 
                         output_data[
                             f"{self.pathway_name}_excluding_processes_{key}_total_consumption"
                         ].loc[year : year + lifespan - 1] += resources_consumption
                         output_data[
                             f"{self.pathway_name}_excluding_processes_{key}_total_mobilised_with_selectivity"
-                        ].loc[year : year + lifespan - 1] += resources_consumption_with_selectivity
+                        ].loc[year : year + lifespan - 1] += resources_mobilised_with_selectivity
 
                         # Get the CO2 emission factor for the resource
                         unit_emissions = input_data.get(
@@ -339,8 +339,8 @@ class BottomUpEnvironmental(AeroMAPSModel):
                             resources_consumption = (
                                 energy_production_commissioned[year] * specific_consumption
                             )
-                            resources_consumption_with_selectivity = (
-                                resources_consumption * kerosene_selectivity
+                            resources_mobilised_with_selectivity = (
+                                resources_consumption / kerosene_selectivity
                             )
 
                             total_ressource_consumption.loc[year : year + lifespan - 1] = (
@@ -348,7 +348,7 @@ class BottomUpEnvironmental(AeroMAPSModel):
                             )
                             total_ressource_mobilised_with_selectivity.loc[
                                 year : year + lifespan - 1
-                            ] = resources_consumption_with_selectivity
+                            ] = resources_mobilised_with_selectivity
 
                             output_data[
                                 f"{self.pathway_name}_{process_key}_{key}_total_consumption"
@@ -357,7 +357,7 @@ class BottomUpEnvironmental(AeroMAPSModel):
                                 f"{self.pathway_name}_{process_key}_{key}_total_mobilised_with_selectivity"
                             ].loc[
                                 year : year + lifespan - 1
-                            ] += resources_consumption_with_selectivity
+                            ] += resources_mobilised_with_selectivity
 
                             # Get the CO2 emission factor for the resource
                             unit_emissions = input_data.get(
