@@ -36,6 +36,8 @@ from aeromaps.plots.multi_scenario.climate import (
     NonCO2ERFComparisonPlot,
     ContrailsTemperatureComparisonPlot,
     ContrailsERFComparisonPlot,
+    TemperatureDecompositionComparisonPlot,
+    ERFDecompositionComparisonPlot,
 )
 from aeromaps.plots.multi_scenario.costs import (
     EnergyExpensesComparisonPlot,
@@ -81,6 +83,8 @@ available_multi_plots = {
     "non_co2_erf_comparison": NonCO2ERFComparisonPlot,
     "contrails_temperature_comparison": ContrailsTemperatureComparisonPlot,
     "contrails_erf_comparison": ContrailsERFComparisonPlot,
+    "temperature_decomposition_comparison": TemperatureDecompositionComparisonPlot,
+    "erf_decomposition_comparison": ERFDecompositionComparisonPlot,
 
     # Costs
     "energy_expenses_comparison": EnergyExpensesComparisonPlot,
