@@ -57,20 +57,19 @@ def tune(process, over_relaxation_factor=None, acceleration_method=None, **setti
     return process.mda_chain
 
 
+# The knobs MDAChain does not forward: they only reach the solver that iterates
+# through inner_mda_settings. Passed at the top level they are silently ignored.
+_INNER_ONLY = ("over_relaxation_factor", "acceleration_method")
+
+
 def rebuild(process, **settings):
     """Rebuild the unified chain over the same disciplines with different settings."""
-    inner = {}
-    for key in ("over_relaxation_factor", "acceleration_method"):
-        if key in settings:
-            inner[key] = settings.pop(key)
-    kwargs = {
-        "disciplines": process.disciplines,
-        "initialize_defaults": True,
-        "inner_mda_name": "MDAGaussSeidel",
-        **DEFAULTS,
-        **settings,
-    }
-    if inner:
-        kwargs["inner_mda_settings"] = inner
-    process.mda_chain = MDAChain(**kwargs)
+    merged = {"inner_mda_name": "MDAGaussSeidel", **DEFAULTS, **settings}
+    inner = {key: merged.pop(key) for key in _INNER_ONLY if key in merged}
+    process.mda_chain = MDAChain(
+        disciplines=process.disciplines,
+        initialize_defaults=True,
+        inner_mda_settings=inner,
+        **merged,
+    )
     return process.mda_chain
