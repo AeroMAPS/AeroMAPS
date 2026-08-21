@@ -435,7 +435,7 @@
     <h2>Architecture confirmée.</h2>
     <p>
       Le montage tient. Ce qui manquait était un point d'accroche — une trentaine de
-      lignes, livrée ici — et non une propriété du solveur. Deux réserves, dans cet
+      lignes, livrée ici — et non une propriété du solveur. Trois réserves, dans cet
       ordre d'importance&nbsp;:
     </p>
     <ol>
@@ -449,9 +449,15 @@
       </li>
       <li>
         Il existe un vrai plafond de convexité que <strong>aucun réglage de solveur ne
-        franchit</strong>. L'accélération repousse le seuil d'un facteur ~2 à 4 sur la
-        chaîne réelle, pas à l'infini&nbsp;; au-delà il faudra amortir la mise à jour du
+        franchit</strong>. L'accélération achète de la vitesse à l'intérieur du domaine,
+        elle ne déplace pas le plafond&nbsp;; au-delà il faudra amortir la mise à jour du
         prix <em>dans</em> la discipline de marché plutôt que compter sur le MDA.
+      </li>
+      <li>
+        Hors du domaine, la chaîne ne diverge pas franchement&nbsp;: elle part en NaN, et
+        le sentinel NaN fait alors <strong>annoncer la convergence</strong> — un résidu
+        jusqu'à <code>0,00e+00</code> sur un état qui ne porte plus aucune valeur.
+        Deuxième défaut préexistant diagnostiqué ici, et corrigé lui aussi.
       </li>
     </ol>
     <p>Compter une à deux semaines d'hygiène de convergence avant de construire le module réel.</p>
@@ -937,26 +943,39 @@ résidu                            : -999999.  -999999.  -999999.   (constant, �
     </p>
 
     <h3>Les remèdes sur la chaîne réelle</h3>
-    <p>Les cas en échec, repassés avec chaque levier.</p>
+    <p>
+      Les cas en échec, repassés avec chaque levier. <strong>Mesures reprises</strong> une
+      fois le correctif de mutation en place et le diagnostic NaN retiré&nbsp;: la version
+      précédente de ce tableau avait été prise avec le monkey-patch <code>fillna(0)</code>
+      encore actif, qui gardait l'arithmétique finie et faisait passer pour des
+      convergences des cas qui, sur la chaîne stock, partent en NaN.
+    </p>
+    <p>
+      <strong><code>NaN</code> n'est pas une convergence.</strong> Le résidu passe sous la
+      tolérance — jusqu'à valoir exactement <code>0,00e+00</code> — parce que les variables
+      de couplage sont parties en NaN et que le sentinel les fait se différencier avec
+      elles-mêmes. Sur <code>0,3 / 8</code>, 216 des 460 couplages portent un NaN après une
+      vraie valeur, et le prix 2050 vaut <code>nan</code>.
+    </p>
 
     <div class="scroller">
       <table>
-        <caption>tolérance 1e-10 · max_mda_iter 200 — résidu final, ou itérations si convergé</caption>
+        <caption>tolérance 1e-10 · max_mda_iter 200 — résidu final, sur la chaîne stock</caption>
         <thead>
           <tr><th>stiffness / gamma</th><th>GS nu</th><th>relax 0,7</th><th>relax 0,4</th><th>+ Alternate2Delta</th><th>MDAJacobi</th></tr>
         </thead>
         <tbody>
           <tr>
-            <td>0,3 / 8</td><td class="fail">3,7e+00</td><td class="fail">1,2e+00</td>
-            <td class="fail">8,0e-01</td><td class="pass">87 it · 9,9e-11</td><td class="fail">erreur</td>
+            <td>0,3 / 8</td><td class="fail">3,74e+00</td><td class="fail">1,24e+00</td>
+            <td class="fail">7,99e-01</td><td class="fail">NaN · 37 it</td><td class="fail">NaN · 33 it</td>
           </tr>
           <tr>
-            <td>0,3 / 16</td><td class="fail">7,4e+00</td><td class="fail">3,4e+00</td>
-            <td class="fail">6,4e+00</td><td class="pass">91 it · 5,7e-11</td><td class="fail">erreur</td>
+            <td>0,3 / 16</td><td class="fail">7,37e+00</td><td class="fail">3,37e+00</td>
+            <td class="fail">6,40e+00</td><td class="fail">NaN · 20 it · 0,00e+00</td><td class="fail">NaN · 29 it</td>
           </tr>
           <tr>
-            <td>3 / 8</td><td class="fail">3,2e+00</td><td class="fail">1,4e+00</td>
-            <td class="fail">1,8e+00</td><td class="fail">6,3e-01</td><td class="fail">erreur</td>
+            <td>3 / 8</td><td class="fail">3,17e+00</td><td class="fail">1,41e+00</td>
+            <td class="fail">1,82e+00</td><td class="fail">NaN · 41 it</td><td class="fail">NaN · 29 it</td>
           </tr>
         </tbody>
       </table>
@@ -970,29 +989,33 @@ résidu                            : -999999.  -999999.  -999999.   (constant, �
         récupérait tout. Le damping simple est un mauvais pari ici.
       </li>
       <li>
-        <strong>L'accélération, elle, fonctionne</strong>&nbsp;:
-        <code>Alternate2Delta</code> fait passer <code>gamma*</code> de « entre 4 et 8 »
-        à « au moins 16 » à <code>stiffness=0,3</code>, en ~90 itérations.
+        <strong>L'accélération ne déplace pas le plafond.</strong> Elle achète de la
+        vitesse <em>à l'intérieur</em> du domaine — nominal 22 → 18 itérations,
+        <code>0,3 / 4</code> 68 → 38, <code>3 / 1</code> 45 → 32 — mais aucun des trois
+        cas hors domaine n'est récupéré. La version précédente de ce rapport concluait
+        l'inverse&nbsp;; cette conclusion venait du diagnostic NaN, pas du solveur.
       </li>
       <li>
-        <strong><code>MDAJacobi</code> échoue franchement</strong>
-        (<code>ValueError: array must not contain infs or NaNs</code>) sur les trois
-        cas&nbsp;: il exécute toutes les disciplines depuis le même état et traverse des
-        valeurs invalides que Gauss-Seidel ne voit jamais. Basculer sur le défaut GEMSEO
-        n'est donc pas une option, malgré ce que suggère le jouet.
+        <strong><code>MDAJacobi</code> n'est toujours pas une option.</strong> Il
+        n'échoue plus franchement (<code>ValueError: array must not contain infs or
+        NaNs</code>) comme avec le patch NaN&nbsp;: il rend maintenant le même état NaN
+        que Gauss-Seidel accéléré, en silence. Le mode d'échec est plus discret, pas
+        moins grave.
       </li>
     </ol>
 
     <div class="callout danger">
       <p class="callout-label">Plafond réel</p>
       <p>
-        Le cas <code>3 / 8</code> ne passe avec <strong>aucun</strong> levier. Il y a
-        donc bien un plafond, et non un simple réglage à trouver. Recommandation
-        opérationnelle&nbsp;: <code>MDAGaussSeidel</code> +
-        <code>acceleration_method: Alternate2Delta</code> via
-        <code>inner_mda_settings</code>, en sachant qu'au-delà il faudra changer de
-        formulation — amortir la mise à jour du prix <em>dans</em> la discipline de
-        marché, ou fournir des jacobiennes.
+        <strong>Aucun levier ne passe, sur aucun des trois cas.</strong> Le plafond est
+        donc réel — et plus bas que ne le suggérait la version précédente&nbsp;: à
+        <code>stiffness=0,3</code> la frontière est entre <code>gamma=4</code> (sain, 38
+        itérations) et <code>gamma=8</code> (NaN). Recommandation opérationnelle
+        inchangée sur la forme, corrigée sur le fond&nbsp;: <code>MDAGaussSeidel</code> +
+        <code>acceleration_method: Alternate2Delta</code> pour la vitesse, en sachant que
+        <strong>le plafond n'est pas négociable par réglage</strong> — au-delà il faut
+        amortir la mise à jour du prix <em>dans</em> la discipline de marché, ou fournir
+        des jacobiennes.
       </p>
     </div>
 
@@ -1152,8 +1175,9 @@ résidu                            : -999999.  -999999.  -999999.   (constant, �
         <code>regionalisation.mda</code>&nbsp;; <strong>il a été retiré en revue de
         #157</strong> — les réglages MDA restent sur les objets GEMSEO, réglés depuis le
         notebook, comme le fait <code>AeroMAPSProcess</code>. <strong>L'écart de réglage
-        entre les deux modes subsiste</strong>&nbsp;: l'aligner change les résultats des
-        scénarios multi-régionaux existants, c'est une décision à prendre à part.
+        entre les deux modes est depuis résorbé</strong> (<code>tolerance=1e-10</code>,
+        <code>max_mda_iter=200</code>)&nbsp;: le tutoriel deux régions est inchangé au bit
+        près, sa chaîne n'ayant aucune composante fortement connexe.
       </li>
       <li>
         <strong>Le piège des réglages d'un <code>MDAChain</code></strong> (découvert en
@@ -1177,10 +1201,13 @@ résidu                            : -999999.  -999999.  -999999.   (constant, �
       </li>
       <li><strong>Duplication des colonnes</strong> sur <code>compute()</code> répété, les deux modes. Corrigé.</li>
       <li>
-        <strong>Non-convergence silencieuse.</strong> Aucun des deux <code>compute()</code>
-        ne vérifie le statut du MDA. Combiné au plancher de résidu, un scénario peut
-        aujourd'hui rendre un résultat faux sans qu'aucun signal ne remonte au-delà d'un
-        <code>WARNING</code> GEMSEO.
+        <strong>Échec silencieux du MDA — corrigé.</strong> Aucun des deux
+        <code>compute()</code> ne vérifiait le statut du MDA&nbsp;: un scénario pouvait
+        rendre un résultat faux sans autre signal qu'un <code>WARNING</code> GEMSEO noyé
+        dans les logs. Deux formes, l'une et l'autre traitées&nbsp;: le résidu n'atteint
+        jamais la tolérance, et le résidu l'atteint sans rien vouloir dire parce que les
+        couplages sont partis en NaN. <code>compute()</code> lève désormais
+        <code>MDAConvergenceError</code> dans les deux cas.
       </li>
       <li>L'agrégation <code>overall:</code> fonctionne normalement en présence d'une discipline globale.</li>
     </ol>
@@ -1196,9 +1223,9 @@ résidu                            : -999999.  -999999.  -999999.   (constant, �
           <tr><td class="txt">Point d'accroche <code>global_models</code> + réglages MDA configurables</td><td class="txt pass">fait</td></tr>
           <tr><td class="txt">Duplication des colonnes sur <code>compute()</code> répété</td><td class="txt pass">fait</td></tr>
           <tr><td class="txt">NaN dans les couplages → plancher de résidu</td><td class="txt">3 à 5 j</td></tr>
-          <tr><td class="txt">Faire échouer bruyamment une MDA non convergée</td><td class="txt">1 j</td></tr>
-          <tr><td class="txt">Aligner les réglages MDA de <code>unified_mda</code> sur <code>AeroMAPSProcess</code></td><td class="txt">0,5 j + revalidation</td></tr>
-          <tr><td class="txt">Exposer damping / accélération et choisir un défaut</td><td class="txt">1 j</td></tr>
+          <tr><td class="txt">Faire échouer bruyamment une MDA qui ne rend pas de solution</td><td class="txt"><strong>fait</strong></td></tr>
+          <tr><td class="txt">Aligner les réglages MDA de <code>unified_mda</code> sur <code>AeroMAPSProcess</code></td><td class="txt"><strong>fait</strong></td></tr>
+          <tr><td class="txt">Exposer damping / accélération et choisir un défaut</td><td class="txt">1 j — le point d'accroche existe, le défaut reste « aucun »</td></tr>
           <tr><td class="txt">Jacobiennes pour <code>MDANewtonRaphson</code></td><td class="txt">hors périmètre</td></tr>
         </tbody>
       </table>
@@ -1220,11 +1247,12 @@ résidu                            : -999999.  -999999.  -999999.   (constant, �
 
   <footer>
     <p>
-      <strong>Contenu de la branche.</strong> Les trois correctifs indépendants du spike
-      — point d'accroche <code>global_models</code>, duplication de colonnes, mutation
-      d'entrée de couplage — ont été extraits dans la <strong>PR #157</strong>, sur
-      laquelle cette branche est maintenant rebasée. Il ne reste ici que du code jetable
-      sous <code>spike_unified_mda/</code>&nbsp;: aucune modification d'AeroMAPS.
+      <strong>Contenu de la branche.</strong> Les correctifs indépendants du spike vivent
+      sur deux branches empilées&nbsp;: <strong>PR #157</strong> (point d'accroche
+      <code>global_models</code>, duplication de colonnes, mutation d'entrée de couplage)
+      puis <strong><code>fix/mda-convergence-strictness</code></strong> (échec bruyant sur
+      les deux formes, réglages MDA alignés). Il ne reste ici que du code jetable sous
+      <code>spike_unified_mda/</code>&nbsp;: aucune modification d'AeroMAPS.
     </p>
     <p>
       Le tutoriel deux régions donne des résultats identiques avant et après dans les deux

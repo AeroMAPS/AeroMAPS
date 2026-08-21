@@ -7,7 +7,7 @@
 un point d'accroche (une trentaine de lignes, livrée ici) et non une propriété du
 solveur.
 
-Deux réserves, dans cet ordre d'importance :
+Trois réserves, dans cet ordre d'importance :
 
 1. Le risque principal n'était pas la convergence de Gauss-Seidel mais sa *détection* :
    sur la chaîne réelle le résidu MDA était plafonné à ~1,6e-6, au-dessus de toute
@@ -15,9 +15,13 @@ Deux réserves, dans cet ordre d'importance :
    ici** (§ 2) — la cause n'était pas le sentinel NaN mais une discipline qui mutait sa
    propre entrée de couplage en place, écrasant l'itéré précédent du solveur.
 2. Il existe un vrai plafond de convexité que **aucun réglage de solveur ne franchit**
-   (§ 4). L'accélération repousse le seuil d'un facteur ~2 à 4 sur la chaîne réelle,
-   pas à l'infini. Au-delà, il faudra amortir la mise à jour du prix *dans* la
+   (§ 4). L'accélération achète de la vitesse à l'intérieur du domaine, elle ne
+   déplace pas le plafond. Au-delà, il faudra amortir la mise à jour du prix *dans* la
    discipline de marché plutôt que compter sur le MDA.
+3. Hors du domaine, la chaîne ne diverge pas franchement : elle part en NaN, et le
+   sentinel NaN fait alors **annoncer la convergence** — résidu jusqu'à `0,00e+00` sur
+   un état sans aucune valeur (§ 4). Deuxième défaut préexistant diagnostiqué ici, et
+   corrigé lui aussi : `check_mda_convergence` refuse les deux cas.
 
 ---
 
@@ -278,7 +282,10 @@ autres leviers suffisent largement — mais ce serait un chantier à part entiè
 
 ### Étape 2 : le même balayage sur la chaîne réelle
 
-`tolerance=1e-10`, `max_mda_iter=200`, `MDAGaussSeidel`, NaN neutralisés.
+`tolerance=1e-10`, `max_mda_iter=200`, `MDAGaussSeidel`, NaN neutralisés — c'est-à-dire
+avec le diagnostic encore actif. Les lignes « convergé » ont été revérifiées sur la
+chaîne stock (nominal 22 itérations, identique) ; les lignes « échec » y partent en NaN
+plutôt que de simplement plafonner.
 
 | `stiffness` | `gamma` | statut | itérations | prix 2050 | RPK 2050 |
 |---|---|---|---|---|---|
@@ -306,29 +313,73 @@ cohérent avec le critère `élasticité × exposant local < 1` du § précéden
 
 Les cas en échec, repassés avec chaque levier (`tolerance=1e-10`, `max_mda_iter=200`).
 
+**Mesures reprises sur la chaîne réelle**, une fois le correctif de mutation en place et
+le diagnostic NaN retiré. La version précédente de ce tableau avait été prise avec le
+monkey-patch `fillna(0)` encore actif ; il gardait l'arithmétique finie et faisait
+passer pour des convergences des cas qui, sur la chaîne stock, partent en NaN. Les deux
+lignes concernées sont corrigées ci-dessous.
+
 | stiffness / gamma | GS nu | relax 0,7 | relax 0,4 | + `Alternate2Delta` | `MDAJacobi` |
 |---|---|---|---|---|---|
-| 0,3 / 8 | ✗ 3,7e+00 | ✗ 1,2e+00 | ✗ 8,0e-01 | **✓ 87 it, 9,9e-11** | erreur |
-| 0,3 / 16 | ✗ 7,4e+00 | ✗ 3,4e+00 | ✗ 6,4e+00 | **✓ 91 it, 5,7e-11** | erreur |
-| 3 / 8 | ✗ 3,2e+00 | ✗ 1,4e+00 | ✗ 1,8e+00 | ✗ 6,3e-01 | erreur |
+| 0,3 / 8 | ✗ 3,74e+00 | ✗ 1,24e+00 | ✗ 7,99e-01 | **NaN** (37 it, 6,9e-12) | **NaN** (33 it, 1,9e-14) |
+| 0,3 / 16 | ✗ 7,37e+00 | ✗ 3,37e+00 | ✗ 6,40e+00 | **NaN** (20 it, 0,00e+00) | **NaN** (29 it, 1,3e-14) |
+| 3 / 8 | ✗ 3,17e+00 | ✗ 1,41e+00 | ✗ 1,82e+00 | **NaN** (41 it, 5,4e-15) | **NaN** (29 it, 1,5e-14) |
+
+`NaN` n'est pas une convergence : le résidu passe sous la tolérance — jusqu'à valoir
+exactement `0,00e+00` — parce que les variables de couplage sont parties en NaN et que
+le sentinel les fait se différencier avec elles-mêmes. Sur `0,3 / 8`, **216 des 460
+couplages** portent un NaN après une vraie valeur, et le prix 2050 vaut `nan`. Voir la
+sous-section suivante.
 
 Trois écarts par rapport au jouet, tous à retenir :
 
 1. **La sur-relaxation ne rachète rien sur la chaîne réelle.** À 0,7 comme à 0,4, aucun
    des trois cas ne passe — alors que sur le jouet elle récupérait tout. Le damping
    simple est un mauvais pari ici.
-2. **L'accélération, elle, fonctionne** : `Alternate2Delta` fait passer `gamma*` de
-   « entre 4 et 8 » à « au moins 16 » à `stiffness=0,3`, en ~90 itérations.
-3. **`MDAJacobi` échoue franchement** (`ValueError: array must not contain infs or
-   NaNs`) sur les trois cas : il exécute toutes les disciplines depuis le même état et
-   traverse des valeurs invalides que Gauss-Seidel ne voit jamais. Basculer sur le
-   défaut GEMSEO n'est donc pas une option, malgré ce que suggère le jouet.
+2. **L'accélération ne déplace pas le plafond.** Elle achète de la vitesse *à
+   l'intérieur* du domaine — nominal 22 → 18 itérations, `0,3 / 4` 68 → 38, `3 / 1`
+   45 → 32 — mais aucun des trois cas hors domaine n'est récupéré. La version
+   précédente de ce rapport concluait l'inverse (« `gamma*` d'au moins 16 ») ; cette
+   conclusion venait du diagnostic NaN, pas du solveur.
+3. **`MDAJacobi` n'est toujours pas une option.** Il n'échoue plus franchement
+   (`ValueError: array must not contain infs or NaNs`) comme avec le patch NaN : il
+   rend maintenant le même état NaN que Gauss-Seidel accéléré, en silence. Le mode
+   d'échec est plus discret, pas moins grave.
 
-Mais le cas `3 / 8` ne passe avec **aucun** levier. **Il y a donc bien un plafond
-réel**, et non un simple réglage à trouver. Recommandation opérationnelle :
-`MDAGaussSeidel` + `acceleration_method: Alternate2Delta` via `inner_mda_settings`, en
-sachant qu'au-delà il faudra changer de formulation — amortir la mise à jour du prix
+**Aucun levier ne passe, sur aucun des trois cas.** Le plafond est donc réel — et plus
+bas que ne le suggérait la version précédente : à `stiffness=0,3` la frontière est
+entre `gamma=4` (sain, 38 itérations) et `gamma=8` (NaN). Recommandation opérationnelle
+inchangée sur la forme, corrigée sur le fond : `MDAGaussSeidel` +
+`acceleration_method: Alternate2Delta` pour la vitesse, en sachant que **le plafond
+n'est pas négociable par réglage** — au-delà il faut amortir la mise à jour du prix
 *dans* la discipline de marché, ou fournir des jacobiennes.
+
+### La fausse convergence sur NaN
+
+Le deuxième mode d'échec, découvert en reprenant ces mesures. Il est plus dangereux que
+la non-convergence, parce qu'il ne produit aucun avertissement — pas même celui de
+GEMSEO.
+
+`CustomDataConverter` convertit NaN en `-999999`. Une variable de couplage partie en NaN
+se différencie donc avec elle-même et contribue **exactement zéro** au résidu. Quand
+c'est toute la boucle qui part, le solveur annonce la convergence sur un état qui ne
+porte plus aucune valeur.
+
+Comment on les distingue, sans faux positifs : un NaN *après* une vraie valeur. Les
+séries AeroMAPS sont légitimement NaN sur les années historiques (bloc de tête), et un
+couplage appartenant à une filière que le scénario n'utilise pas est légitimement NaN
+partout. Ni l'un ni l'autre ne place un NaN après un nombre. Mesuré :
+
+| cas | itérations | résidu | couplages avec un NaN après une vraie valeur |
+|---|---|---|---|
+| nominal (`0,3 / 1`) | 18 | 6,4e-11 | **0** / 460 |
+| `0,3 / 4` | 38 | 9,6e-11 | **0** / 460 |
+| `3 / 1` | 32 | 4,9e-11 | **0** / 460 |
+| `3 / 8` | 41 | 5,4e-15 | **216** / 460 |
+| `0,3 / 64` | 24 | 1,6e-12 | **220** / 460 |
+
+Le contrôle est désormais dans AeroMAPS (`check_mda_convergence`), appliqué aux deux
+`compute()`, et il refuse ce cas comme il refuse une non-convergence.
 
 ## 5. Rejet par `_wrap_top_level_model`
 
@@ -449,9 +500,13 @@ pas une meilleure amorce.
    discipline globale (préfixées par une région, ou sans préfixe) n'atteignaient
    jamais `data["vector_outputs"]`. Corrigé dans le même commit.
 4. **Duplication des colonnes** sur `compute()` répété (§ 3), les deux modes.
-5. **Non-convergence silencieuse.** Aucun des deux `compute()` ne vérifie le statut
-   du MDA. Combiné au plancher de résidu du § 2, un scénario peut aujourd'hui rendre
-   un résultat faux sans qu'aucun signal ne remonte au-delà d'un `WARNING` GEMSEO.
+5. **Échec silencieux du MDA — corrigé.** Aucun des deux `compute()` ne vérifiait le
+   statut du MDA : un scénario pouvait rendre un résultat faux sans autre signal qu'un
+   `WARNING` GEMSEO noyé dans les logs. Deux formes, l'une et l'autre traitées :
+   le résidu n'atteint jamais la tolérance, et le résidu l'atteint sans rien vouloir
+   dire parce que les couplages sont partis en NaN. `compute()` lève désormais
+   `MDAConvergenceError` dans les deux cas ; `process.on_mda_failure = "warn"` permet
+   d'explorer un scénario qui ne converge pas encore.
 6. L'agrégation `overall:` fonctionne normalement en présence d'une discipline
    globale (`overall:rpk` correct, somme des deux régions).
 
@@ -464,8 +519,8 @@ Rien n'est structurellement bloqué. Chiffrage, du plus urgent au moins :
 | Point d'accroche `global_models` | **fait** (PR #157) |
 | Duplication des colonnes sur `compute()` répété | **fait** (PR #157) |
 | NaN dans les couplages → plancher de résidu | **fait** (§ 2). Deux lignes dans deux modèles, plus un test de non-régression. Ce n'était pas le sentinel : une discipline mutait son entrée de couplage en place et écrasait l'itéré précédent du solveur. `core/gemseo.py` reste inchangé, NaN reste NaN. |
-| Faire échouer bruyamment une MDA non convergée | **1 j**. Lire le statut après `execute()` et lever, ou avertir explicitement. |
-| Aligner les réglages MDA de `unified_mda` sur `AeroMAPSProcess` | **0.5 j** + revalidation des scénarios existants |
+| Faire échouer bruyamment une MDA qui ne rend pas de solution | **fait**. Les deux formes : résidu jamais atteint, et résidu atteint sur un état NaN. |
+| Aligner les réglages MDA de `unified_mda` sur `AeroMAPSProcess` | **fait** (`tolerance=1e-10`, `max_mda_iter=200`). Le tutoriel deux régions est inchangé au bit près : sa chaîne n'a aucune composante fortement connexe. |
 | Exposer damping / accélération et choisir un défaut | **1 j** (`inner_mda_settings` est en place avec les défauts GEMSEO ; il reste à décider du défaut) |
 | Jacobiennes pour `MDANewtonRaphson` | **non chiffré, hors périmètre.** Inutile au vu des § 4. |
 
@@ -477,15 +532,23 @@ mais de l'hygiène de convergence, utile au reste d'AeroMAPS.
 
 ## Contenu de la branche
 
-Les trois correctifs, indépendants du spike, ont été extraits dans la **PR #157**
-(`fix/mda-residual-floor-and-global-disciplines`), sur laquelle cette branche est
-maintenant rebasée :
+Les correctifs, indépendants du spike, vivent sur deux branches empilées, sur
+lesquelles celle-ci est rebasée :
+
+**PR #157** (`fix/mda-residual-floor-and-global-disciplines`) :
 
 | correctif | contenu |
 |---|---|
 | `global_models` | point d'accroche non namespacé + récolte des sorties globales |
 | duplication | plus de duplication de colonnes sur `compute()` répété |
 | mutation d'entrée | plancher de résidu, + test de non-régression |
+
+**`fix/mda-convergence-strictness`**, empilée dessus :
+
+| correctif | contenu |
+|---|---|
+| échec bruyant | `MDAConvergenceError` sur les deux formes d'échec, + 11 tests |
+| réglages MDA | `unified_mda` aligné sur `AeroMAPSProcess` (1e-10 / 200) |
 
 Il ne reste donc sur cette branche que `spike_unified_mda/` — code jetable, aucune
 modification d'AeroMAPS.
