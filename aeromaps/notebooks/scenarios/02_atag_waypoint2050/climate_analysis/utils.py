@@ -1,30 +1,22 @@
 """
 utils
 =====
-Shared loading and styling for the ATAG *Waypoint 2050* climate analysis
-notebooks.
+Loading helpers specific to the ATAG *Waypoint 2050* climate analysis.
 
-The scenario results are read straight from the committed
-``<edition>/data_outputs/<scenario>.json`` files, so the notebooks are pure
-post-processing and do not need to re-run the model. Two blocks are used:
+Only what is specific to this analysis lives here. Two things that used to sit
+in this module have moved into the package, so they exist once rather than in
+parallel:
 
-``climate_outputs``
-    Serialized as bare lists covering ``climate_historic_start_year`` to
-    ``end_year`` (1940-2050 in these scenarios), with no year index of their
-    own -- :func:`load_climate` restores the index.
-
-``vector_outputs``
-    Serialized over ``historic_start_year`` to ``end_year`` (2000-2050). The
-    start year is read back from the file rather than assumed, so the loader
-    survives a change of the prospection boundary.
-
-Both loaders return a DataFrame indexed by year.
+* reading committed ``<edition>/data_outputs/<scenario>.json`` back into a
+  plot-compatible object is :func:`aeromaps.utils.results_view.load_results`;
+* the five-family mechanism grouping and its palette are in
+  :mod:`aeromaps.plots.climate_mechanisms`, shared with the plot classes.
 """
 
 from __future__ import annotations
 
+import copy
 import csv
-import json
 from pathlib import Path
 
 import pandas as pd
@@ -35,54 +27,6 @@ REPO = BASE.parents[3]
 OBSERVED = REPO / "aeromaps" / "resources" / "historical_data" / (
     "world_air_transport_traffic_1929_2024.csv"
 )
-
-CLIMATE_HISTORIC_START_YEAR = 1940
-
-
-# --------------------------------------------------------------------------
-# Loading
-# --------------------------------------------------------------------------
-
-def _read(edition, scenario):
-    path = BASE / edition / "data_outputs" / f"{scenario}.json"
-    if not path.exists():
-        raise FileNotFoundError(
-            f"No committed results for {edition}/{scenario} at {path}. "
-            "Run the edition notebook first."
-        )
-    return json.loads(path.read_text())
-
-
-def load_climate(edition, scenario):
-    """Climate outputs for one scenario, indexed 1940-2050."""
-    block = _read(edition, scenario)["climate_outputs"]
-    n = len(next(iter(block.values())))
-    index = pd.RangeIndex(
-        CLIMATE_HISTORIC_START_YEAR, CLIMATE_HISTORIC_START_YEAR + n, name="year"
-    )
-    return pd.DataFrame(block, index=index)
-
-
-def load_vectors(edition, scenario):
-    """Vector outputs for one scenario, indexed from the historic start year.
-
-    The start year is derived from the file's own ``float_inputs`` where
-    available so that the loader keeps working if the prospection boundary
-    moves; otherwise it is inferred from the series length against the climate
-    block's end year.
-    """
-    data = _read(edition, scenario)
-    block = data["vector_outputs"]
-    n = len(next(iter(block.values())))
-
-    start = data.get("float_inputs", {}).get("historic_start_year")
-    if start is None:
-        n_climate = len(next(iter(data["climate_outputs"].values())))
-        end_year = CLIMATE_HISTORIC_START_YEAR + n_climate - 1
-        start = end_year - n + 1
-    start = int(start)
-
-    return pd.DataFrame(block, index=pd.RangeIndex(start, start + n, name="year"))
 
 
 def load_observed():
@@ -98,86 +42,13 @@ def load_observed():
     return frame.apply(pd.to_numeric, errors="coerce")
 
 
-# --------------------------------------------------------------------------
-# Mechanism grouping and styling
-# --------------------------------------------------------------------------
-# The climate module resolves twelve forcing mechanisms, which is well past the
-# number of hues a reader can hold apart. They are grouped into five families
-# for plotting -- the four NOx terms sum to a single net NOx contribution, and
-# soot and sulfur to a single aerosol term -- with the full twelve-way split
-# reported in the tables instead.
-
-MECHANISM_GROUPS = {
-    "co2": ("CO$_2$", ["co2"]),
-    "contrails": ("Contrails", ["contrails"]),
-    "nox": ("NO$_x$ (net)", [
-        "nox_short_term_o3_increase",
-        "nox_long_term_o3_decrease",
-        "nox_ch4_decrease",
-        "nox_stratospheric_water_vapor_decrease",
-    ]),
-    "h2o": ("H$_2$O", ["h2o"]),
-    "aerosol": ("Aerosols (soot + sulfur)", ["soot", "sulfur"]),
-}
-
-# Categorical slots 1-5 of the validated reference palette, assigned in fixed
-# order. Never cycled: a sixth family would be folded in, not given a new hue.
-COLORS = {
-    "co2": "#2a78d6",
-    "contrails": "#eb6834",
-    "nox": "#1baf7a",
-    "h2o": "#eda100",
-    "aerosol": "#e87ba4",
-}
-
-INK_PRIMARY = "#0b0b0b"
-INK_SECONDARY = "#52514e"
-INK_MUTED = "#8a8981"
-GRID = "#e3e2dd"
-
 # Scenario naming differs between editions: the third edition swapped its two
 # scenarios relative to the second, so analogous scenarios must be paired
-# explicitly rather than by name. Asserted in the comparison notebook.
+# explicitly rather than by name. Asserted in the analysis notebook.
 ANALOGOUS = {
     ("3rd_edition_full", "s1"): ("2nd_edition_full", "s2"),
     ("3rd_edition_full", "s2"): ("2nd_edition_full", "s1"),
 }
-
-
-def temperature(df, group):
-    """Aviation-attributable temperature for one mechanism group [K]."""
-    cols = [f"temperature_increase_from_{m}_from_aviation" for m in MECHANISM_GROUPS[group][1]]
-    return df[cols].sum(axis=1)
-
-
-def erf(df, group):
-    """Effective radiative forcing for one mechanism group [W/m2]."""
-    return df[[f"{m}_erf" for m in MECHANISM_GROUPS[group][1]]].sum(axis=1)
-
-
-def style_axes(ax, ylabel=None, xlabel="Year"):
-    """Recessive grid and axes, so the data carries the chart."""
-    ax.set_axisbelow(True)
-    ax.grid(True, color=GRID, linewidth=0.8)
-    for side in ("top", "right"):
-        ax.spines[side].set_visible(False)
-    for side in ("left", "bottom"):
-        ax.spines[side].set_color(GRID)
-    ax.tick_params(colors=INK_SECONDARY, labelsize=9, length=0)
-    if ylabel:
-        ax.set_ylabel(ylabel, color=INK_SECONDARY, fontsize=9)
-    if xlabel:
-        ax.set_xlabel(xlabel, color=INK_SECONDARY, fontsize=9)
-    return ax
-
-
-# Contrail avoidance is switched off in every ATAG configuration
-# (operations_contrails_start_year = 2101), matching the reports' own scope.
-# Stated on every figure that shows a contrail contribution.
-CONTRAIL_NOTE = (
-    "Contrail avoidance is disabled in all scenarios "
-    "(operations_contrails_start_year = 2101), matching the reports' scope."
-)
 
 
 # --------------------------------------------------------------------------
@@ -230,3 +101,94 @@ def load_contrail_variants(path=CONTRAIL_VARIANTS):
 def variant_name(family_label, level):
     """Scenario name used in the assembly, e.g. 'Low-risk diversion - Central'."""
     return f"{family_label} - {level}"
+
+
+# --------------------------------------------------------------------------
+# Non-CO2 uncertainty bands
+# --------------------------------------------------------------------------
+
+NON_CO2_BANDS = Path(__file__).resolve().parent / "non_co2_uncertainty.yaml"
+
+BANDS = ("low", "central", "high")
+
+
+def load_non_co2_bands(path=NON_CO2_BANDS):
+    """Load the non-CO2 uncertainty bands.
+
+    Returns
+    -------
+    reference : dict
+        Citations and DOIs behind the bounds.
+    bands : dict
+        ``{band_key: {"label", "description", "sensitivity_rf",
+        "saf_emission_index_particles_number", ...}}`` in low -> central ->
+        high order, i.e. increasing warming.
+    pairing : dict
+        ``{band_key: "strongest" | "central" | "weakest"}``, which mitigation
+        bound each band takes when the avoidance scenarios are run under it.
+    """
+    import yaml
+
+    document = yaml.safe_load(Path(path).read_text())
+    bands = {key: dict(document["bands"][key]) for key in BANDS}
+    missing = set(BANDS) - set(document["bands"])
+    if missing:
+        raise ValueError(f"non-CO2 band file is missing band(s) {sorted(missing)}")
+
+    kerosene = float(document["kerosene_emission_index_particles_number"])
+    for key, band in bands.items():
+        # Re-derive the implied reduction from the emission index rather than
+        # trusting the comment: the model scales contrail forcing by
+        # sqrt(EIn_pathway / EIn_default), so the two must stay consistent.
+        implied = 100.0 * (
+            1.0 - (float(band["saf_emission_index_particles_number"]) / kerosene) ** 0.5
+        )
+        declared = float(band["implied_saf_contrail_reduction_percent"])
+        if abs(implied - declared) > 0.1:
+            raise ValueError(
+                f"band {key!r} declares a {declared} % SAF contrail reduction but its "
+                f"emission index implies {implied:.1f} %"
+            )
+        band["implied_saf_contrail_reduction_percent"] = implied
+
+    return document["reference"], bands, document["mitigation_pairing"]
+
+
+def apply_non_co2_band(process, band):
+    """Apply one uncertainty band to an already-built process, in place.
+
+    Sets the contrail radiative-forcing sensitivity on the climate model and the
+    particle-number emission index on every non-default drop-in pathway (the
+    SAF pathways). Both are read at compute time, so this must be called before
+    ``compute()`` and after ``create_process()``.
+    """
+    climate_model = process.models["climate_model"]
+    # Deep-copy first. The settings dict is shared with whatever the climate
+    # configuration file was parsed into, so mutating it in place would leak
+    # this band into every process built afterwards -- silently, and in a way
+    # that depends on the order the bands happen to be run in.
+    climate_model.species_settings = copy.deepcopy(climate_model.species_settings)
+    climate_model.species_settings["Contrails"]["sensitivity_rf"] = float(
+        band["sensitivity_rf"]
+    )
+
+    emission_index = float(band["saf_emission_index_particles_number"])
+    applied = []
+    for pathway in process.pathways_manager.get(aircraft_type="dropin_fuel"):
+        if getattr(pathway, "default", False):
+            continue  # fossil kerosene is the reference the correction is relative to
+        setattr(process.parameters, f"{pathway.name}_emission_index_particles_number",
+                emission_index)
+        applied.append(pathway.name)
+
+    if not applied:
+        raise ValueError(
+            "no non-default drop-in pathway found; the SAF axis of the band would "
+            "have no effect and the result would silently be a contrail-only band"
+        )
+    return applied
+
+
+def band_name(scenario_label, band_label):
+    """Scenario name used in the assembly, e.g. 'S1 SAF-focused - High non-CO2'."""
+    return f"{scenario_label} - {band_label}"

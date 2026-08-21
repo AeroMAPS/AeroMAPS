@@ -40,15 +40,25 @@
 # defaults (final_gain 59.4, final_overconsumption 0.014); only the start year
 # keeps it switched off.
 #
-# Two modelling decisions
-# -----------------------
+# Three modelling decisions
+# -------------------------
 # 1. The fuel penalty tracks the benefit: more diversion buys more contrail
-#    reduction and costs more fuel, so the low/central/high benefit bounds are
-#    paired with the low/central/high penalty bounds.
+#    reduction and costs more fuel, so the strongest benefit bound is paired
+#    with the largest penalty.
 # 2. Combustor technology starts later than the diversion strategies because it
 #    depends on a fleet-renewal cycle. That timing difference matters: see the
 #    notebook, where the stronger measure delivers less by 2050 than the weaker
 #    one that arrives five years earlier.
+# 3. LEVELS ARE NAMED BY CLIMATE IMPACT, NOT BY PARAMETER MAGNITUDE. `Low` is
+#    the low-warming end, so it carries Teoh's *upper* confidence bound on the
+#    reduction; `High` is the high-warming end and carries the *lower* bound.
+#    Reading down a family, the gain therefore decreases -- that is deliberate,
+#    not a transcription error.
+#
+#    This matches non_co2_uncertainty.yaml, which names its bands the same way,
+#    so a scenario can be run at "High" on both files and mean one coherent
+#    pessimistic case: largest contrail forcing, weakest fuel benefit, weakest
+#    mitigation. `mitigation_pairing` in that file records the correspondence.
 
 reference:
   citation: >-
@@ -69,9 +79,9 @@ families:
       long-lived CO2 is emitted.
     operations_contrails_start_year: 2030
     levels:
-      Low:     {operations_contrails_final_gain: 17.4, operations_contrails_final_overconsumption: 0.0}
+      Low:     {operations_contrails_final_gain: 23.0, operations_contrails_final_overconsumption: 0.0}
       Central: {operations_contrails_final_gain: 20.0, operations_contrails_final_overconsumption: 0.0}
-      High:    {operations_contrails_final_gain: 23.0, operations_contrails_final_overconsumption: 0.0}
+      High:    {operations_contrails_final_gain: 17.4, operations_contrails_final_overconsumption: 0.0}
 
   small_scale:
     label: Small-scale diversion
@@ -80,9 +90,9 @@ families:
       penalty in exchange for a much larger contrail reduction.
     operations_contrails_start_year: 2030
     levels:
-      Low:     {operations_contrails_final_gain: 52.4, operations_contrails_final_overconsumption: 0.010}
+      Low:     {operations_contrails_final_gain: 65.6, operations_contrails_final_overconsumption: 0.017}
       Central: {operations_contrails_final_gain: 59.3, operations_contrails_final_overconsumption: 0.014}
-      High:    {operations_contrails_final_gain: 65.6, operations_contrails_final_overconsumption: 0.017}
+      High:    {operations_contrails_final_gain: 52.4, operations_contrails_final_overconsumption: 0.010}
 
   long_term_tech:
     label: Long-term combustor technology
@@ -92,7 +102,7 @@ families:
       because it depends on a fleet-renewal cycle.
     operations_contrails_start_year: 2035
     levels:
-      Low:     {operations_contrails_final_gain: 45.2, operations_contrails_final_overconsumption: 0.0}
+      Low:     {operations_contrails_final_gain: 82.1, operations_contrails_final_overconsumption: 0.0}
       Central: {operations_contrails_final_gain: 68.8, operations_contrails_final_overconsumption: 0.0}
-      High:    {operations_contrails_final_gain: 82.1, operations_contrails_final_overconsumption: 0.0}
+      High:    {operations_contrails_final_gain: 45.2, operations_contrails_final_overconsumption: 0.0}
 
