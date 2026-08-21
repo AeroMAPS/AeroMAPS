@@ -13,6 +13,19 @@ __pycache__/
 .python-version
 /docs/_build/
 /site/
+
+# MyST build output and the sweep's throwaway configurations, which are
+# regenerated on every run and must never be committed.
+/aeromaps/notebooks/scenarios/02_atag_waypoint2050/_build/
+/aeromaps/notebooks/scenarios/02_atag_waypoint2050/exports/
+/aeromaps/notebooks/scenarios/02_atag_waypoint2050/3rd_edition_variants/_generated/
+
+# The MyST document embeds a handful of figures that need a live process to
+# compute (a carrier-by-carrier cost breakdown, a cross-band comparison) and
+# so are saved once by their producing notebook rather than recomputed at
+# build time -- these must stay committed despite the blanket *.png rule above.
+!/aeromaps/notebooks/scenarios/02_atag_waypoint2050/3rd_edition_full_coupled_demand/figures/*.png
+!/aeromaps/notebooks/scenarios/02_atag_waypoint2050/climate_analysis/figures/*.png
 /aeromaps/notebooks/private/
 /aeromaps/notebooks/tutorials/07_life_cycle_assessment/data/config_files/lca/tmp/
 /aeromaps/notebooks/publications/ecats_2026/data/config_files/lca/tmp/

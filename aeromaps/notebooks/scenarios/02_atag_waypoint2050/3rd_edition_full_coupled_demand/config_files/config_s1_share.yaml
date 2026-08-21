@@ -1,13 +1,16 @@
+# Share-mandate reading of the coupled scenario: the SAF blend percentage is held
+# fixed, so SAF volume scales with demand. config_s1.yaml is the quantity reading,
+# where the volume is held fixed instead. The reports do not say which applies.
 data:
   inputs:
     json_inputs_file: ../data_inputs/s1_inputs.json
   outputs:
-    json_outputs_file: ../data_outputs/s1.json
+    json_outputs_file: ../data_outputs/s1_share.json
 models:
   climate:
     climate_model_data_file: default
   energy:
-    energy_carriers_model_data_file: ../data_inputs/s1_energy.yaml
+    energy_carriers_model_data_file: ../data_inputs/s1_energy_share.yaml
     resources_model_data_file: ../data_inputs/resources.yaml
     processes_model_data_file: ../data_inputs/processes.yaml
   standards:

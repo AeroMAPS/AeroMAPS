@@ -4,12 +4,11 @@ from numpy import ndarray
 from numpy import nanmin, nanmax, nanmedian, column_stack, asarray
 from pandas import read_csv
 
-from aeromaps.plots.multi_scenario_plot import DEFAULT_LINESTYLES, DEFAULT_COLORS
+from aeromaps.plots.multi_scenario_plot import DEFAULT_LINESTYLES
 
 scenario_to_model = {
-    # "SSP2-19": "REMIND-MAgPIE 1.5",
+    "SSP2-19": "REMIND-MAgPIE 1.5",
     "SSP2-26": "REMIND-MAgPIE 1.5",
-    "SSP2-34": "REMIND-MAgPIE 1.5",
     "SSP2-45": "REMIND-MAgPIE 1.5",
 }
 
