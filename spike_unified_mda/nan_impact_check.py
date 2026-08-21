@@ -99,15 +99,10 @@ if MODE == "neutralised":
     CustomDataConverter.convert_value_to_array = _patched
 
 from aeromaps.core.multi_regional_process import MultiRegionalProcess  # noqa: E402
+from spike_unified_mda.mda_settings import tune  # noqa: E402
 
 p = MultiRegionalProcess("spike_unified_mda/scenario/regionalisation_spike.yaml")
-p._regionalisation_config["mda"] = {
-    "tolerance": 1e-10,
-    "max_mda_iter": 200,
-    "inner_mda_name": "MDAGaussSeidel",
-    "log_convergence": False,
-}
-p._setup_unified_mda()
+tune(p)
 p.compute()
 vo = p.data["vector_outputs"]
 with open(DUMP.format(MODE), "wb") as fh:

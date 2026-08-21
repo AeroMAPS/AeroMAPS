@@ -50,6 +50,8 @@ if __name__ == "__main__":
     from aeromaps.core.process import AeroMAPSProcess
     from aeromaps.core.multi_regional_process import MultiRegionalProcess
 
+    from spike_unified_mda.mda_settings import tune
+
     cfg = (
         "aeromaps/notebooks/tutorials/08_use_variable_demand/data_elasticity/config_elasticity.yaml"
     )
@@ -58,6 +60,7 @@ if __name__ == "__main__":
     report("CONTROL single-region elasticity (stock AeroMAPS chain)", p.mda_chain)
 
     mp = MultiRegionalProcess("spike_unified_mda/scenario/regionalisation_spike.yaml")
+    tune(mp)  # same solver settings as the single-region control above
     mp.compute()
     report("SPIKE two regions + global fuel market", mp.mda_chain)
     vo = mp.data["vector_outputs"]

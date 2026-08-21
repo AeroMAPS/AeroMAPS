@@ -1,6 +1,7 @@
 # Spike `unified_mda` — discipline globale non namespacée
 
-**Branche** `spike/unified-mda-global-discipline` · **base** `a1bb678c` · GEMSEO 6.2.0
+**Branche** `spike/unified-mda-global-discipline` · **base** `fix/mda-residual-floor-and-global-disciplines`
+(PR #157, elle-même sur `a1bb678c`) · GEMSEO 6.2.0
 
 **Recommandation : architecture confirmée.** Le montage tient. Ce qui manquait était
 un point d'accroche (une trentaine de lignes, livrée ici) et non une propriété du
@@ -421,14 +422,28 @@ pas une meilleure amorce.
 
 1. **Le mode n'avait jamais résolu de cycle** (cf. § 1). Tout ce qui touche au
    solveur y est non testé par construction.
-2. **Réglages MDA incohérents entre les modes.** `_setup_unified_mda` utilisait
+2. **Réglages MDA incohérents entre les modes.** `_setup_unified_mda` utilise
    `tolerance=1e-5` **sans `max_mda_iter`**, donc le défaut GEMSEO de **20
    itérations** — alors que `AeroMAPSProcess` utilise `tolerance=1e-10,
    max_mda_iter=200`. Le nominal de l'étape 2 en demande 22, et 111 à
-   `stiffness=30` : le mode multi-régional se serait arrêté avant, en silence. Un
-   bloc `regionalisation.mda` a été ajouté ; **les valeurs par défaut ont été
-   laissées inchangées** pour ne pas modifier les résultats existants — les aligner
-   sur celles de `AeroMAPSProcess` est une décision à prendre à part.
+   `stiffness=30` : le mode multi-régional se serait arrêté avant, en silence.
+   Le spike avait proposé un bloc `regionalisation.mda` ; **il a été retiré en
+   revue de #157** — les réglages MDA restent sur les objets GEMSEO, réglés depuis
+   le notebook, comme le fait `AeroMAPSProcess`. Le spike applique donc les siens
+   via `spike_unified_mda/mda_settings.py`. **L'écart de réglage entre les deux
+   modes subsiste** : c'est une décision à prendre à part, car l'aligner change les
+   résultats des scénarios multi-régionaux existants.
+
+   Corollaire découvert en revue, et c'est un piège GEMSEO à part entière :
+   `MDAChain` ne transmet à ses MDA internes que les champs de `BaseMDASettings`
+   (`tolerance`, `max_mda_iter`, `warm_start`, `log_convergence`…).
+   `over_relaxation_factor` et `acceleration_method` **n'en font pas partie** :
+   passés en kwargs de `MDAChain`, ils configurent la chaîne externe et sont
+   ignorés par le solveur qui itère réellement. Seul `inner_mda_settings` y mène.
+   Et après construction, seules les *propriétés* `inner_mdas[i].over_relaxation_factor`
+   / `.acceleration_method` écrivent jusqu'au `RelaxationAcceleration` ; assigner à
+   `inner_mdas[i].settings.*` n'a aucun effet. `tolerance` et `max_mda_iter`, eux,
+   sont relus à chaque itération et se règlent bien après coup.
 3. **Récolte des sorties.** `_update_data_from_unified_mda` ne collectait de
    `local_data` que les clés préfixées `{global_namespace}:`. Les sorties d'une
    discipline globale (préfixées par une région, ou sans préfixe) n'atteignaient
@@ -446,12 +461,12 @@ Rien n'est structurellement bloqué. Chiffrage, du plus urgent au moins :
 
 | chantier | effort |
 |---|---|
-| Point d'accroche `global_models` + réglages MDA configurables | **fait** (commit `aaf71547`) |
-| Duplication des colonnes sur `compute()` répété | **fait** (commit `e8b6f8c2`) |
+| Point d'accroche `global_models` | **fait** (PR #157) |
+| Duplication des colonnes sur `compute()` répété | **fait** (PR #157) |
 | NaN dans les couplages → plancher de résidu | **fait** (§ 2). Deux lignes dans deux modèles, plus un test de non-régression. Ce n'était pas le sentinel : une discipline mutait son entrée de couplage en place et écrasait l'itéré précédent du solveur. `core/gemseo.py` reste inchangé, NaN reste NaN. |
 | Faire échouer bruyamment une MDA non convergée | **1 j**. Lire le statut après `execute()` et lever, ou avertir explicitement. |
 | Aligner les réglages MDA de `unified_mda` sur `AeroMAPSProcess` | **0.5 j** + revalidation des scénarios existants |
-| Exposer damping / accélération et choisir un défaut | **1 j** (le point d'accroche existe ; il reste à décider du défaut) |
+| Exposer damping / accélération et choisir un défaut | **1 j** (`inner_mda_settings` est en place avec les défauts GEMSEO ; il reste à décider du défaut) |
 | Jacobiennes pour `MDANewtonRaphson` | **non chiffré, hors périmètre.** Inutile au vu des § 4. |
 
 Soit **une à deux semaines** pour amener `unified_mda` au niveau de fiabilité qu'exige
@@ -462,14 +477,18 @@ mais de l'hygiène de convergence, utile au reste d'AeroMAPS.
 
 ## Contenu de la branche
 
-| commit | contenu |
-|---|---|
-| `be98ddb9` | code jetable du spike, `spike_unified_mda/` uniquement |
-| `aaf71547` | **correctif** : `regionalisation.global_models`, bloc `regionalisation.mda`, récolte des sorties globales |
-| `e8b6f8c2` | **correctif** : plus de duplication de colonnes sur `compute()` répété |
+Les trois correctifs, indépendants du spike, ont été extraits dans la **PR #157**
+(`fix/mda-residual-floor-and-global-disciplines`), sur laquelle cette branche est
+maintenant rebasée :
 
-Les deux correctifs sont indépendants du spike et peuvent être repris tels quels.
-Hors `spike_unified_mda/`, seul `aeromaps/core/multi_regional_process.py` est modifié.
+| correctif | contenu |
+|---|---|
+| `global_models` | point d'accroche non namespacé + récolte des sorties globales |
+| duplication | plus de duplication de colonnes sur `compute()` répété |
+| mutation d'entrée | plancher de résidu, + test de non-régression |
+
+Il ne reste donc sur cette branche que `spike_unified_mda/` — code jetable, aucune
+modification d'AeroMAPS.
 Le tutoriel deux régions donne des résultats identiques avant/après dans les deux modes
 (CO2 `overall` 2050 = 78.4606), et `pytest aeromaps/tests/core` passe (26/26).
 
@@ -491,3 +510,7 @@ python -m spike_unified_mda.step2_criteria 1234 --neutralise   # chaîne réelle
 python -m spike_unified_mda.step2_remedies
 python -m spike_unified_mda.seed_probe
 ```
+
+Les réglages MDA du scénario spike (`tolerance=1e-10`, `max_mda_iter=200`, damping,
+accélération, `inner_mda_name`) sont appliqués par `spike_unified_mda/mda_settings.py`
+sur les objets GEMSEO du process, et non par le fichier de configuration.

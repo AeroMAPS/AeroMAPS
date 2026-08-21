@@ -424,7 +424,7 @@
     </p>
     <div class="meta">
       <span>branche <strong>spike/unified-mda-global-discipline</strong></span>
-      <span>base <strong>a1bb678c</strong></span>
+      <span>base <strong>PR #157</strong> (sur a1bb678c)</span>
       <span>GEMSEO <strong>6.2.0</strong></span>
       <span>19 août 2026</span>
     </div>
@@ -1148,9 +1148,26 @@ résidu                            : -999999.  -999999.  -999999.   (constant, �
         <strong>20 itérations</strong> — alors que <code>AeroMAPSProcess</code> utilise
         <code>tolerance=1e-10, max_mda_iter=200</code>. Le nominal de l'étape 2 en demande
         22, et 111 à <code>stiffness=30</code>&nbsp;: le mode multi-régional se serait
-        arrêté avant, en silence. Un bloc <code>regionalisation.mda</code> a été
-        ajouté&nbsp;; <strong>les valeurs par défaut ont été laissées inchangées</strong>
-        pour ne pas modifier les résultats existants.
+        arrêté avant, en silence. Le spike avait proposé un bloc
+        <code>regionalisation.mda</code>&nbsp;; <strong>il a été retiré en revue de
+        #157</strong> — les réglages MDA restent sur les objets GEMSEO, réglés depuis le
+        notebook, comme le fait <code>AeroMAPSProcess</code>. <strong>L'écart de réglage
+        entre les deux modes subsiste</strong>&nbsp;: l'aligner change les résultats des
+        scénarios multi-régionaux existants, c'est une décision à prendre à part.
+      </li>
+      <li>
+        <strong>Le piège des réglages d'un <code>MDAChain</code></strong> (découvert en
+        revue). <code>MDAChain</code> ne transmet à ses MDA internes que les champs de
+        <code>BaseMDASettings</code>. <code>over_relaxation_factor</code> et
+        <code>acceleration_method</code> n'en font pas partie&nbsp;: passés en kwargs de
+        <code>MDAChain</code>, ils configurent la chaîne externe et sont <em>silencieusement
+        ignorés</em> par le solveur qui itère. Seul <code>inner_mda_settings</code> y mène.
+        Après construction, seules les <em>propriétés</em>
+        <code>inner_mdas[i].over_relaxation_factor</code> / <code>.acceleration_method</code>
+        écrivent jusqu'au <code>RelaxationAcceleration</code>&nbsp;; assigner à
+        <code>inner_mdas[i].settings.*</code> n'a aucun effet.
+        <code>tolerance</code> et <code>max_mda_iter</code>, eux, sont relus à chaque
+        itération et se règlent bien après coup.
       </li>
       <li>
         <strong>Récolte des sorties.</strong> <code>_update_data_from_unified_mda</code>
@@ -1203,11 +1220,11 @@ résidu                            : -999999.  -999999.  -999999.   (constant, �
 
   <footer>
     <p>
-      <strong>Contenu de la branche.</strong> Trois commits de code jetable sous
-      <code>spike_unified_mda/</code>, et deux correctifs indépendants du spike,
-      reprenables tels quels&nbsp;: le point d'accroche <code>global_models</code> et la
-      correction de la duplication de colonnes. Hors <code>spike_unified_mda/</code>, seul
-      <code>aeromaps/core/multi_regional_process.py</code> est modifié.
+      <strong>Contenu de la branche.</strong> Les trois correctifs indépendants du spike
+      — point d'accroche <code>global_models</code>, duplication de colonnes, mutation
+      d'entrée de couplage — ont été extraits dans la <strong>PR #157</strong>, sur
+      laquelle cette branche est maintenant rebasée. Il ne reste ici que du code jetable
+      sous <code>spike_unified_mda/</code>&nbsp;: aucune modification d'AeroMAPS.
     </p>
     <p>
       Le tutoriel deux régions donne des résultats identiques avant et après dans les deux

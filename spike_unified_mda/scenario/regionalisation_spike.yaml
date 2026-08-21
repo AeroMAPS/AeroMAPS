@@ -9,11 +9,9 @@ regionalisation:
     customs:
       spike_fuel_market: "./spike_market_models.py::SpikeFuelMarket"
 
-  mda:
-    tolerance: 1.0e-10
-    max_mda_iter: 200
-    inner_mda_name: "MDAGaussSeidel"
-    log_convergence: false
+  # MDA settings are NOT configured here: see spike_unified_mda/mda_settings.py.
+  # They are applied to the GEMSEO objects after the process is built, which is the
+  # pattern AeroMAPSProcess uses (a regionalisation.mda block was rejected in #157).
 
   regions:
     region_A:

@@ -24,14 +24,15 @@ def _patched(self, name, value):
 CustomDataConverter.convert_value_to_array = _patched
 
 from aeromaps.core.multi_regional_process import MultiRegionalProcess  # noqa: E402
+from spike_unified_mda.mda_settings import rebuild  # noqa: E402
 
 CONFIG = "spike_unified_mda/scenario/regionalisation_spike.yaml"
 
 VARIANTS = [
     ("GS baseline", {}),
-    ("GS relax=0.7", {"inner_mda_settings": {"over_relaxation_factor": 0.7}}),
-    ("GS relax=0.4", {"inner_mda_settings": {"over_relaxation_factor": 0.4}}),
-    ("GS + Alternate2Delta", {"inner_mda_settings": {"acceleration_method": "Alternate2Delta"}}),
+    ("GS relax=0.7", {"over_relaxation_factor": 0.7}),
+    ("GS relax=0.4", {"over_relaxation_factor": 0.4}),
+    ("GS + Alternate2Delta", {"acceleration_method": "Alternate2Delta"}),
     ("MDAJacobi (GEMSEO default)", {"inner_mda_name": "MDAJacobi"}),
 ]
 
@@ -49,14 +50,7 @@ if __name__ == "__main__":
             os.environ["SPIKE_GAMMA"] = str(g)
             try:
                 p = MultiRegionalProcess(CONFIG)
-                p._regionalisation_config["mda"] = {
-                    "tolerance": 1e-10,
-                    "max_mda_iter": 200,
-                    "inner_mda_name": "MDAGaussSeidel",
-                    "log_convergence": False,
-                    **extra,
-                }
-                p._setup_unified_mda()
+                rebuild(p, **extra)
                 p.compute()
                 m = p.mda_chain.inner_mdas[0]
                 h = list(m.residual_history)

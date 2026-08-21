@@ -33,6 +33,7 @@ if "--neutralise" in sys.argv:
     CustomDataConverter.convert_value_to_array = _patched
 
 from aeromaps.core.multi_regional_process import MultiRegionalProcess  # noqa: E402
+from spike_unified_mda.mda_settings import rebuild, tune  # noqa: E402
 
 
 def make_process(stiffness=None, gamma=None, mda=None):
@@ -42,9 +43,9 @@ def make_process(stiffness=None, gamma=None, mda=None):
         os.environ["SPIKE_GAMMA"] = str(gamma)
     p = MultiRegionalProcess(CONFIG)
     if mda:
-        # Rebuild the chain with different solver settings.
-        p._regionalisation_config["mda"] = {**p._regionalisation_config.get("mda", {}), **mda}
-        p._setup_unified_mda()
+        rebuild(p, **mda)
+    else:
+        tune(p)
     return p
 
 
