@@ -32,7 +32,11 @@ from gemseo import generate_n2_plot
 
 # Local application imports
 from aeromaps.models.base import AeroMAPSModel, AeroMapsCustomDataType
-from aeromaps.core.gemseo import AeroMAPSAutoModelWrapper, AeroMAPSCustomModelWrapper
+from aeromaps.core.gemseo import (
+    AeroMAPSAutoModelWrapper,
+    AeroMAPSCustomModelWrapper,
+    check_mda_convergence,
+)
 from aeromaps.core import models as aeromaps_models
 
 from aeromaps.models.parameters import Parameters
@@ -253,6 +257,14 @@ class AeroMAPSProcess(object):
         """
         # Initialize pathways_manager to None - will be populated if energy models are used
         self.pathways_manager = None
+
+        # How a non-converged MDA is reported at the end of compute(): "raise"
+        # (default), "warn" or "ignore". An unconverged run is not a solution of the
+        # coupled system and is indistinguishable from a converged one in the output
+        # DataFrames, hence the default. Set to "warn" from a notebook to inspect a
+        # scenario that does not converge yet.
+        self.on_mda_failure = "raise"
+        self._mda_context = ""
 
         custom_logger_config(logging.getLogger("gemseo.utils.source_parsing"))
 
@@ -490,6 +502,8 @@ class AeroMAPSProcess(object):
         # (doc_net_energy_per_rpk_mean <-> rpk). At 1e-5 the Gauss-Seidel solver
         # reports convergence while that coupling is still ~25% off in SAF-type
         # scenarios; max_mda_iter gives it room to reach the tighter tolerance.
+        # Tuning these from a notebook is a minefield -- assign on the chain, not on
+        # its inner MDAs, and see "Tuning an MDAChain" in aeromaps/core/gemseo.py.
         self.mda_chain = MDAChain(
             disciplines=self.disciplines,
             tolerance=1e-10,
@@ -582,6 +596,7 @@ class AeroMAPSProcess(object):
         updates the internal data structures with model outputs.
         """
         input_data = self._pre_compute()
+        ran_mda = False
         if hasattr(self, "scenario") and self.scenario:
             if hasattr(self, "scenario_adapted") and self.scenario_adapted:
                 if self.gemseo_settings.get("algorithm_outer") is None:
@@ -602,8 +617,16 @@ class AeroMAPSProcess(object):
             else:
                 logging.info("Running MDA")
                 self.mda_chain.execute(input_data=input_data)
+                ran_mda = True
 
         self._update_data_from_model()
+
+        # Checked after the outputs have been harvested, so that a failed run is still
+        # inspectable by whoever catches the error.
+        if ran_mda:
+            check_mda_convergence(
+                self.mda_chain, context=self._mda_context, on_failure=self.on_mda_failure
+            )
 
     def get_dataframes(self):
         """Return all main DataFrames as a dictionary, generated on demand.

@@ -17,7 +17,38 @@
 #                      initial documentation
 #        :author:  Francois Gallard
 #    OTHER AUTHORS   - MACROSCOPIC CHANGES
-"""A discipline interfacing a Python function."""
+"""A discipline interfacing a Python function.
+
+Tuning an ``MDAChain`` (three traps, all silent)
+------------------------------------------------
+
+1. ``tolerance``, ``max_mda_iter`` and ``log_convergence`` are tuned **on the chain**::
+
+       process.mda_chain.settings.tolerance = 1e-8
+
+   Never on an inner MDA. ``MDAChain_Settings`` cascades those three down to the inner
+   MDAs from a pydantic validator that re-runs on *any* assignment to the chain's
+   settings -- including the ``initialize_defaults = False`` that ``MDAChain.execute``
+   performs on its first run. A value written on ``inner_mdas[i].settings`` is therefore
+   reverted to the chain's the moment the chain executes.
+
+2. ``over_relaxation_factor`` and ``acceleration_method`` are the opposite case. They do
+   not belong to ``BaseMDASettings``, so the chain neither forwards nor cascades them:
+   passed as ``MDAChain`` kwargs they configure the outer chain alone and are ignored by
+   the solver that actually iterates. At construction they go through
+   ``inner_mda_settings``; afterwards, through the inner solver's *properties*::
+
+       process.mda_chain.inner_mdas[0].over_relaxation_factor = 0.7
+
+   ``BaseMDASolver.__init__`` builds its ``RelaxationAcceleration`` from the settings
+   once and never re-reads them, so assigning to ``inner_mdas[i].settings.*`` does
+   nothing at all.
+
+3. A chain that does not converge still returns a full set of outputs, and GEMSEO only
+   logs a warning. :func:`check_mda_convergence` turns that into an error -- including
+   the case where the residual *does* reach the tolerance because the coupling variables
+   have gone NaN and the NaN sentinel differences against itself to exactly zero.
+"""
 
 from __future__ import annotations
 
@@ -407,3 +438,148 @@ def build_namespaced_inputs(parameters, namespace: str) -> dict:
         input_data[namespaced_key] = value
 
     return input_data
+
+
+class MDAConvergenceError(RuntimeError):
+    """Raised when an MDA stopped before reaching its convergence tolerance.
+
+    The results of such a run are not a solution of the coupled system: the
+    coupling variables are still moving when the solver gives up. Reporting this
+    as an error rather than a warning is deliberate -- a silently unconverged run
+    is indistinguishable from a converged one in the output DataFrames.
+    """
+
+
+def _worst_residual_contributors(mda, count: int = 5) -> str:
+    """Best-effort list of the coupling variables holding the residual up.
+
+    Reads a private GEMSEO attribute, so it degrades to an empty string rather
+    than failing if GEMSEO renames it.
+    """
+    try:
+        residuals = mda._BaseMDASolver__current_residuals
+        ranked = sorted(
+            ((float(np.linalg.norm(value)), name) for name, value in residuals.items()),
+            reverse=True,
+        )[:count]
+    except Exception:  # noqa: BLE001 - diagnostics must never mask the real error
+        return ""
+    if not ranked:
+        return ""
+    listed = ", ".join(f"{name} ({norm:.2e})" for norm, name in ranked)
+    return f"\n  Largest residual contributors: {listed}."
+
+
+def _couplings_with_spread_nans(mda, count: int = 5) -> list[str]:
+    """Coupling variables holding a NaN *after* a real value, i.e. NaN that spread.
+
+    AeroMAPS series are legitimately NaN over the historical years, and a coupling
+    belonging to a pathway the scenario does not use is legitimately NaN throughout.
+    Neither produces a NaN after a real value; a variable blowing up during the solve
+    does, and that is the signature this looks for.
+    """
+    spread = []
+    for name in sorted(mda.coupling_structure.strong_couplings):
+        value = mda.io.data.get(name)
+        if value is None:
+            continue
+        try:
+            nans = np.isnan(np.asarray(value, dtype=float))
+        except (TypeError, ValueError):
+            continue
+        if not nans.any() or nans.all():
+            continue
+        if nans[int(np.argmax(~nans)) :].any():
+            spread.append(name)
+    return spread
+
+
+def check_mda_convergence(mda_chain, context: str = "", on_failure: str = "raise") -> list[str]:
+    """Check that every solver inside ``mda_chain`` reached its tolerance.
+
+    A chain with no strongly coupled disciplines has no solver to check and
+    always passes.
+
+    Parameters
+    ----------
+    mda_chain
+        The executed ``MDAChain`` whose ``inner_mdas`` are inspected.
+    context
+        Prefix identifying the run in the message, e.g. a region name.
+    on_failure
+        ``"raise"`` (default) to raise :class:`MDAConvergenceError`, ``"warn"``
+        to log a warning, ``"ignore"`` to only return the messages.
+
+    Returns
+    -------
+    failures
+        One message per solver that did not converge; empty if all did.
+    """
+    if on_failure not in ("raise", "warn", "ignore"):
+        raise ValueError(f"on_failure must be 'raise', 'warn' or 'ignore', got {on_failure!r}.")
+
+    failures = []
+    for mda in getattr(mda_chain, "inner_mdas", []):
+        history = list(getattr(mda, "residual_history", []))
+        if not history:
+            # The solver never ran: nothing was asked of it.
+            continue
+        residual = float(history[-1])
+        tolerance = float(mda.settings.tolerance)
+
+        # A converged residual is not by itself proof of a solution. NaN converts to the
+        # -999999 sentinel, so once a coupling variable has gone NaN it differences
+        # against itself to exactly zero and the solver reports convergence on a state
+        # that carries no values at all. Checked first: it explains the residual, rather
+        # than the other way round.
+        spread = _couplings_with_spread_nans(mda)
+        if spread:
+            failures.append(
+                f"{context}{mda.name} converged on NaN: {len(spread)} of "
+                f"{len(mda.coupling_structure.strong_couplings)} coupling variables hold "
+                f"a NaN after a real value, so the residual ({residual:.3e}) is measuring "
+                f"the NaN sentinel differencing against itself, not a solution. First "
+                f"few: {', '.join(spread[:5])}."
+            )
+            continue
+
+        if residual <= tolerance:
+            continue
+
+        iterations = len(history)
+        max_iterations = mda.settings.max_mda_iter
+        # Whether more iterations would help is what separates the two fixes, and it is
+        # not the same question as whether the iteration cap was reached.
+        recent = history[-min(iterations, 10) :]
+        still_decreasing = recent[-1] < recent[0]
+        if iterations >= max_iterations and still_decreasing:
+            cause = (
+                f"it ran out of iterations ({iterations}/{max_iterations}) with the "
+                "residual still decreasing; raise max_mda_iter"
+            )
+        elif still_decreasing:
+            cause = (
+                f"it stopped after {iterations} of {max_iterations} iterations with the "
+                "residual still decreasing, which is GEMSEO's divergence guard "
+                "(max_consecutive_unsuccessful_iterations)"
+            )
+        else:
+            cause = (
+                f"the residual stopped decreasing after {iterations} of "
+                f"{max_iterations} iterations; damping (over_relaxation_factor) or an "
+                "acceleration_method is what this needs, not more iterations"
+            )
+        failures.append(
+            f"{context}{mda.name} did not converge: residual {residual:.3e} is above "
+            f"the requested tolerance {tolerance:.1e} over {len(mda.disciplines)} "
+            f"strongly coupled disciplines -- {cause}."
+            f"{_worst_residual_contributors(mda)}"
+        )
+
+    if failures:
+        message = "\n".join(failures)
+        if on_failure == "raise":
+            raise MDAConvergenceError(message)
+        if on_failure == "warn":
+            logging.warning(message)
+    return failures
