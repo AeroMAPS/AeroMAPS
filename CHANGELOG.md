@@ -23,6 +23,8 @@ Fixed:
 - Fixed multi-regional outputs being duplicated on every repeated `compute()`. (#157)
 - An MDA that stops before reaching its convergence tolerance, or that reaches it only because its coupling variables have gone NaN, now raises instead of silently returning results that are not a solution of the coupled system. Set `process.on_mda_failure = "warn"` to keep the old behaviour. (#157)
 - Multi-regional `unified_mda` mode now solves with the same MDA settings as a single-region process (`tolerance=1e-10`, `max_mda_iter=200`) instead of `tolerance=1e-5` and GEMSEO's default of 20 iterations. (#157)
+- `RPKElasticity` no longer returns NaN when handed a non-positive airfare. It raises the airfare ratio to a fractional price elasticity, which numpy evaluates to NaN on a negative base; the airfare is now bounded into a wide band around the 2019 reference first, so the demand response saturates instead. A warning naming the old and the new airfare is raised whenever the bound engages. The band is inactive at any converged solution, so scenario results are unchanged. (#157)
+- The global ASK-weighted DOC means no longer return NaN in a year where no market has any traffic, where they computed `0/0`. Such years now take the unweighted mean of the per-market cost intensities, which stay well defined; years where only some markets are empty are unaffected. (#157)
 
 
 ## Version 1.0.0
