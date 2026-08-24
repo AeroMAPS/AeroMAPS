@@ -20,14 +20,14 @@ methodology behind reproduction is described, scenarios are simulated using the 
 framework, and extensions of the Waypoint scope is presented by: coupling traffic growth to rising
 energy costs, and incorporating contrails avoidance.
  {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">The three published scenarios reproduce to 
-well-to-wake residuals of about 1,800, 640 and 520 MtCO₂ in 2050, above the reports' tank-to-wake headlines as the 
-change of accounting scope requires. Sweeping the full lever grid places those three points inside a range spanning 343
-to 2,164 Mt, so the published scenarios are a sparse sample of their own design space rather than its bounds. Closing 
-the demand–price loop the reports leave open reduces 2050 traffic by 11 to 20 % depending on the carbon price, 
-recovering the magnitudes they cite from other studies but decline to model. Extending the climate accounting shows the
-sharper result: the non-CO₂ uncertainty band on a single scenario is about 3.4 times wider than the entire spread 
-between the published scenarios, so the choice between them is currently a smaller question than the uncertainty each 
-carries.</span>{raw:typst}`]`
+well-to-wake residuals of about 1,820, 420 and 360 MtCO₂ in 2050, and to 1,510, 350 and 260 Mt on the tank-to-wake 
+basis the reports headline. Sweeping the full lever grid places those three points inside a range spanning 208 to 
+2,164 Mt, so the published scenarios are a sparse sample of their own design space rather than its bounds. Closing the 
+demand–price loop the reports leave open reduces 2050 traffic by 2 to 12 % depending on the carbon price, less than the
+14 to 16 % the reports themselves quote from other studies before setting the question aside. Extending the climate 
+accounting shows the sharper result: the non-CO₂ uncertainty band on a single scenario is about 3.2 times wider than 
+the entire spread between the published scenarios, so the choice between them is currently a smaller question than the 
+uncertainty each carries.</span>{raw:typst}`]`
 While the ATAG reports address the modeling methods used for the quantification of aviation
 emissions, there is limited transparency in the provenance of data, calibration methodology, and
 mathematical formulation, which further difficult comparisons and their overall impact for policy
@@ -241,13 +241,13 @@ cost {cite:p}`salgas_techno-economic_2025`, abatement cost {cite:p}`salgas_macc_
 reproduction exercise. First, modules are declared with explicit inputs and outputs and assembled into a computation 
 graph, which is resolved by a multidisciplinary analysis (MDA) solver rather than executed in a fixed order. Feedback 
 loops are therefore expressible: the demand–price coupling used later in this paper is a fixed point that the solver 
-converges, not a post-processing correction. Second, several modules are available at more than one fidelity — energy 
+converges, not a post-processing correction. Second, several modules are available at more than one fidelity: energy 
 carriers, for instance, can be described top-down by an aggregate cost and emission factor per unit energy, or bottom-up
 from plant capital expenditure, operating costs and construction lead times. The reproduction here uses the top-down 
 formulation throughout, because that is the resolution at which the reports themselves publish.</span>{raw:typst}`]`
 
 {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">The scenario definition lives entirely in 
-declarative files — a YAML configuration selecting the module chain and its data files, a JSON file of parameter 
+declarative files: a YAML configuration selecting the module chain and its data files, a JSON file of parameter 
 trajectories, and YAML descriptions of energy carriers, processes and resources. No scenario in this paper required 
 modifying model code, which is what allows the full lever grid to be swept by generating configurations 
 programmatically.</span>{raw:typst}`]`
@@ -294,7 +294,7 @@ of five levers, and each maps onto a single knob in AeroMAPS. That correspondenc
 |---|---|---|
 | Traffic | low / central / high | `markets/markets_{low,central,high}.yaml` |
 | Technology | T0–T4 | efficiency series in `*_inputs.json` |
-| Operations | O1 / O2 / O3 — 0.00 / 0.10 / 0.20 %/yr | `operations_gain_reference_years_values` |
+| Operations | O1 / O2 / O3: 0.00 / 0.10 / 0.20 %/yr | `operations_gain_reference_years_values` |
 | SAF | F1 / F2 / F3 | `energy_carriers_model_data_file` |
 | Market-based measures | M1 / M2 / M3 | computed as the residual to the target |
 
@@ -314,6 +314,18 @@ elasticity; and the resulting traffic feeds back into fuel burn, energy demand a
 closed by the model's MDA solver as a fixed point, so the reported traffic is self-consistent with the cost of achieving
 the scenario's own abatement.</span>{raw:typst}`]`
 
+### Climate response and contrail representation
+
+{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">Emissions are converted to warming by a reduced-complexity climate model of the FaIR family, run per forcing mechanism rather than on CO2 alone, so that CO2, contrail cirrus, the four NOx pathways, water vapour, soot and sulfur each yield their own effective radiative forcing and their own contribution to the temperature response. The decomposition is checked rather than assumed: the sum of the mechanism groups reproduces the reported total to machine precision in every scenario, which is asserted in `climate_analysis/climate_analysis.ipynb`.</span>{raw:typst}`]`
+
+{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">Contrail forcing is driven by distance flown rather than by fuel burn, which is what makes contrail avoidance representable at all: a strategy that lengthens routes to avoid ice-supersaturated regions reduces forcing while increasing fuel consumption, and the two effects must be able to move in opposite directions. A mitigation lever scales that forcing by a final gain phased in on a logistic ramp from a start year, with a paired overconsumption penalty, both parameterised from Teoh et al. {cite:p}`teoh2020` in `contrail_variants.yaml`.</span>{raw:typst}`]`
+
+{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">Fuel composition enters through soot. Cleaner fuels emit fewer non-volatile particles, seeding fewer and larger ice crystals, and the model represents this as a scaling of contrail forcing with the square root of the particle number emission index, weighted by the massic share of each pathway. The square-root form is what lets the literature's percentage reductions in contrail forcing be mapped onto an emission index directly.</span>{raw:typst}`]`
+
+{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">Two uncertainties are propagated rather than fixed, and they are independent. The first is how strongly contrails warm at all: Lee et al. {cite:p}`lee2021` give a 2018 contrail radiative forcing whose 95 % interval spans roughly a factor of six, while Teoh et al. {cite:p}`teoh2024` simulate actual trajectories and obtain a 2019 central value well below it, with a sensitivity range of 34.8 to 74.8 mW m⁻². The second is how much cleaner fuel reduces that forcing: the modelling literature surveyed by Teoh et al. {cite:p}`teoh2022` spans a 15 % reduction at one end and 50 % at the other for fleet-wide adoption. Both bounds are recorded with their sources in `climate_analysis/non_co2_uncertainty.yaml` and combined into three bands named by climate impact, so that the high band pairs the largest contrail sensitivity with the weakest fuel benefit and the low band the reverse. The central band is left at the repository's calibrated values on both axes, so every band's centre reproduces the published scenarios exactly.</span>{raw:typst}`]`
+
+{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">The wider context for treating this as a first-order question rather than a refinement is set by the ICCT's *Aviation Vision 2050* {cite:p}`icct_vision2050_2022` and by {cite:p}`arriolabengoa_climate_2024`: on their accounting the majority of the warming aviation can still avoid between now and 2050 is short-lived, and contrail avoidance rather than fuel substitution is the largest single contributor to it.</span>{raw:typst}`]`
+
 ## Results
 
 {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">The reproduction is presented lever by lever, in 
@@ -326,7 +338,7 @@ remarkably little while the accounting around them moved a great deal. Traffic f
 shape, differing mainly in where the COVID recovery is anchored. Technology and operations were revised *downwards* 
 between the first and second editions and then held roughly constant into the third. What changed is the allocation of 
 the residual: as the target was raised from halving 2005 emissions to net zero, the additional burden fell almost 
-entirely on SAF and on market-based measures — the two levers whose feasibility depends least on aircraft engineering 
+entirely on SAF and on market-based measures, the two levers whose feasibility depends least on aircraft engineering 
 and most on energy supply, capital and policy. A roadmap that redraws its baseline while holding its terminal target 
 will report shifting lever contributions even when nothing physical has changed, so cross-edition comparisons are 
 comparisons between accounting conventions at least as much as between technical expectations.</span>{raw:typst}`]`
@@ -334,18 +346,25 @@ comparisons between accounting conventions at least as much as between technical
 ```{important}
 **Read the accounting scope before comparing residuals.** The reports headline *tank-to-wake*
 emissions, following the CORSIA methodology: SAF is credited through a lower life-cycle factor, but
-the figure quoted is combustion. The scenarios reproduced here are *well-to-wake* — they carry each
-pathway's full life-cycle emission factor — so their residuals are **expected to sit above** the
-report's numbers, not alongside them. S1 reproduces at about 640 Mt in 2050 against a reported
-~400 Mt tank-to-wake; S0 at about 1,800 Mt against ~1,150–1,350 Mt.
+the figure quoted is combustion. The scenarios reproduced here are *well-to-wake*: they carry each
+pathway's full life-cycle emission factor, so their residuals are **expected to sit above** the
+report's numbers, not alongside them. Both scopes are now available from committed outputs, so the
+comparison can be made directly rather than argued: S1 reproduces at 424 Mt well-to-wake and 352 Mt
+tank-to-wake in 2050, against a reported ~400 Mt; S0 at 1,816 Mt and 1,511 Mt against
+~1,150–1,350 Mt. The tank-to-wake twins are derived from the well-to-wake files by
+`make_ttw_twins.py`, following the CORSIA accounting the reports describe.
 
 This is worth stating explicitly because the opposite pattern was, for a while, exactly what this
 reproduction produced. A misspelled key (`co2_emission_factor_without_resource` where the model
 reads `mean_co2_emission_factor_without_resource`) meant every biomass SAF pathway was silently
-assigned a **zero** emission factor — the model resolves a missing key to a null series rather than
+assigned a **zero** emission factor, the model resolving a missing key to a null series rather than
 raising. S1 then read 386 Mt, which sat comfortably next to the reported ~400 Mt and looked like
 agreement. It was not: a well-to-wake figure matching a tank-to-wake one is the anomaly, and it went
-unremarked because the number looked right.
+unremarked because the number looked right. The same class of defect was found twice more while
+this document was being written, both in electrofuel and both in the same direction: its
+report-derived cost and its report-derived emission factor are life-cycle figures that already
+include the green electricity and DAC-CO2 behind them, and the model was charging for both a second
+time. Correcting the emission factor alone removes about a third of the 2050 residual of S1 and S2.
 ```
 
 ```{code-cell} python
@@ -365,6 +384,8 @@ if plots:
         p.ax.set_ylim(0, y_max)
         save_fig(p.ax.figure)
 ```
+
+*Annual CO2 emissions from aviation for the three reproduced scenarios, one panel each, on a shared vertical axis so the panels can be read against one another. Each band is what one lever removes from the baseline; the area left under the top line is the residual the scenario does not abate. The shared axis is the point of the figure: S0's residual is roughly four times S1's, and separate axes would hide that.*
 
 ```{important}
 **A tank-to-wake companion panel is not shown, and that gap is deliberate rather than an
@@ -408,6 +429,8 @@ else:
           "3rd_edition_full/validation.ipynb.")
 ```
 
+*The five technology-only scenarios, well-to-wake on the left and tank-to-wake on the right, sharing a vertical axis. The two panels run identical scenarios, so the gap between them is the accounting scope alone: the right-hand panel counts combustion and credits each SAF pathway's upstream reduction as a tank-to-wake reduction, and it is the one comparable with the figures the reports publish.*
+
 {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">Each scenario is drawn as the reports draw it: a 
 rising frozen-technology baseline, then successive wedges for fleet renewal, next-generation technology, operations and 
 load factor, SAF, and finally market-based measures closing the gap to the target. The share each wedge carries is the 
@@ -423,8 +446,10 @@ for view in (S1, S2):
         save_fig(plot.ax.figure)
 ```
 
+*The reports' own lever decomposition, reproduced for S1 and S2. Each band is the emissions avoided by one lever relative to the baseline, stacked in the order the reports use. What matters here is the relative width of the SAF band against the technology and operations bands, since that is the allocation which moves most between editions.*
+
 {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">Two things follow directly. The energy lever 
-dominates, carrying several times the combined technology, operations and load-factor wedges — a statement about fuel 
+dominates, carrying several times the combined technology, operations and load-factor wedges, a statement about fuel 
 supply and capital rather than about aircraft engineering. And the technology, operations and load-factor wedges are 
 near-identical between S1 and S2, confirming that the two published scenarios differ almost exclusively in how much SAF
 is deployed and how fast. The nominal distinction between a "SAF-focused" and a "technology-centric" scenario is, in the
@@ -438,6 +463,8 @@ if scenarios:
     comparison.plot("co2_emissions_comparison")
     save_fig()
 ```
+
+*Residual CO2 for the three scenarios on one axis, one line each. The vertical distance between the lines at 2050 is the entire spread the published scenario set covers, and it is the quantity the lever sweep and the climate bands below are each compared against.*
 
 ```{code-cell} python
 :tags: [hide-input]
@@ -474,7 +501,7 @@ lever.</span>{raw:typst}`]`
 handful of named scenarios to a systematic sweep. A named scenario communicates a narrative and hides the sensitivity; 
 a sweep exposes the sensitivity and loses the narrative. The reports need the narrative, but a reader forming policy 
 expectations needs to know that the difference between the published scenarios is small compared with the range their 
-own levers can produce — and, as the climate results below show, small compared with the uncertainty attached to any one
+own levers can produce; and, as the climate results below show, small compared with the uncertainty attached to any one
 of them.</span>{raw:typst}`]`
 
 ### Traffic, technology, operations and SAF, in detail
@@ -502,6 +529,8 @@ if traffic:
     save_fig()
 ```
 
+*Residual CO2 under the low, central and high traffic forecasts, holding every other lever at S1. The spread is the sensitivity of the result to a variable the reports treat as given, and it is wide enough that the traffic assumption competes with the mitigation levers for influence on the 2050 outcome.*
+
 {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">Low and high are not digitised report curves -- the
 third edition does not publish separate traffic trajectories the way the second edition did -- but a reconstruction 
 anchored to the second edition's 2050 low/high figures (Phase 2 of this reproduction), diverging from the same 2024 
@@ -514,6 +543,8 @@ if tech_wtw:
     assemble_processes(tech_wtw).plot("co2_per_rpk_comparison")
     save_fig()
 ```
+
+*CO2 per revenue passenger-kilometre for the five technology scenarios. Normalising by traffic isolates what the aircraft themselves deliver, so the lines separate by fleet assumption alone and the traffic growth common to all five drops out.*
 
 {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">Technology is the one lever with a full digitised 
 report comparison already built into `3rd_edition_full/validation.ipynb` (dotted lines against each T0-T4 trajectory); 
@@ -533,6 +564,8 @@ if operations:
     save_fig()
 ```
 
+*Residual CO2 under the three operational-improvement levels, O1 to O3, holding every other lever at S1. The lines are close together by construction: the operations lever spans 0.00 to 0.20 % per year, which is the narrowest range of any lever in the reports.*
+
 {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">Operations is read directly from the report text --
 0.00, 0.10 and 0.20 %/yr cumulative gains to 2050, the highest-confidence provenance tier -- so O1 and O2 above are not 
 calibrated, only computed. S1 already runs at O3; O1 and O2 are added for comparison.</span>{raw:typst}`]`
@@ -544,6 +577,8 @@ if scenarios:
     comparison.plot("biofuel_mix_comparison")
     save_fig()
 ```
+
+*The biomass SAF mix by pathway, as deployed in each scenario. The bands are the individual production pathways, and their relative shares set the fleet-average carbon intensity that drives the residuals above, since the pathways differ by roughly a factor of eight in life-cycle emissions.*
 
 {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">SAF is shown as the biofuel mix reached under each
 of F1, F2 and F3 -- S0's single generic carrier against S1 and S2's per-pathway breakdown, the resolution difference 
@@ -566,6 +601,8 @@ ax.legend()
 ax.grid(alpha=0.3)
 save_fig(fig)
 ```
+
+*Carbon offsets over time, one line per scenario. Offsets are not an independent assumption but a residual: they are whatever volume closes the gap between the other levers and the scenario's stated target, so the height of each line is a direct readout of how far the physical levers fall short of the goal.*
 
 {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">Offsets are the residual, not an independent 
 assumption: they are computed as whatever volume closes the gap between the other four levers' combined effect and the 
@@ -591,9 +628,9 @@ $$
 *volume*, and never says what would happen to that volume if traffic grew more slowly. Two readings
 are defensible, and once demand responds to price they diverge:
 
-- **fixed volume** — the mandated SAF quantity is unchanged when demand falls, so the blend share
+- **fixed volume**: the mandated SAF quantity is unchanged when demand falls, so the blend share
   rises on its own, by more the harder demand is hit;
-- **fixed share** — the blend percentage is held and SAF volume falls with demand. This is how real
+- **fixed share**: the blend percentage is held and SAF volume falls with demand. This is how real
   mandates (ReFuelEU Aviation, the UK and Brazilian schemes) are actually written.
 
 Both are run, in `ssp_comparison.ipynb` and `ssp_comparison_share.ipynb` respectively.
@@ -638,21 +675,23 @@ else:
     display(pd.DataFrame(rows).set_index("scenario").round(1))
 ```
 
-{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">Demand falls by 11 to 20 % by 2050, by more the 
-harder carbon is priced: −11.4 % under SSP2-4.5, −14.9 % under SSP2-2.6 and −19.8 % under SSP2-1.9. The middle of that 
-range is the meaningful comparison, because it is where the reports' own cited figures sit: Destination 2050 at about 
-−16 % and a national roadmap at −14 %, both quoted and then set aside as out of scope. Recovering those magnitudes from 
-an explicit coupling rather than assuming them is the closest thing to external corroboration available here, with the 
-caveat that the elasticity was calibrated jointly with a price reference that has since been re-anchored, so the 
-agreement is reassuring rather than independent.</span>{raw:typst}`]`
+{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">Demand falls by 2 to 12 % by 2050, by more the 
+harder carbon is priced: −2.5 % under SSP2-4.5, −6.7 % under SSP2-2.6 and −11.9 % under SSP2-1.9. That is below the 
+figures the reports themselves quote before setting the question aside, Destination 2050 at about −16 % and a national 
+roadmap at −14 %, and the gap is informative rather than a failure of the coupling. The response scales with how much 
+the transition raises the cost of flying, and correcting the electrofuel double-count lowered that cost substantially: 
+the same coupling run against the uncorrected fuel price gave 11 to 20 %, in apparent agreement with the cited studies 
+for the wrong reason. What survives is the direction and the ordering, not a match in magnitude, and the elasticity was 
+in any case calibrated jointly with a price reference that has since been re-anchored.</span>{raw:typst}`]`
 
 {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">The two mandate readings cross over, and the 
 crossing is the result. Under a strong carbon price the fixed volume covers a larger share of a reduced demand and 
-leaves *less* residual CO₂ than a fixed share — 483 against 577 Mt under SSP2-1.9, a 94 Mt advantage. Under weak carbon 
-prices the ordering reverses: 674 against 654 Mt under SSP2-2.6, and 774 against 682 Mt under SSP2-4.5, a 92 Mt penalty.
+leaves *less* residual CO₂ than a fixed share: 402 against 416 Mt under SSP2-1.9, a 14 Mt advantage. Under weak carbon 
+prices the ordering reverses, and by far more: 609 against 467 Mt under SSP2-2.6, and 727 against 486 Mt under 
+SSP2-4.5, a 241 Mt penalty.
 A fixed volume is a constraint of absolute size, so it tightens automatically as demand falls and slackens as demand 
 grows; a fixed share does neither. Which reading applies therefore decides whether a mandate becomes more or less 
-demanding exactly when the carbon price moves — and the reports do not say which they mean.</span>{raw:typst}`]`
+demanding exactly when the carbon price moves, and the reports do not say which they mean.</span>{raw:typst}`]`
 
 ```{code-cell} python
 :tags: [hide-input]
@@ -661,6 +700,8 @@ if coupled:
     assemble_processes(coupled).plot("rpk_comparison")
     save_fig()
 ```
+
+*Traffic under the demand-price coupling, one line per SSP pathway and mandate reading. Every line lies below the exogenous forecast the reports use, and the gap widens with the carbon price, which is the feedback the reports quote from other studies and then place out of scope.*
 
 Traffic, cost and CO2 for S1's three carbon-tax pathways, restricted to the fixed-volume
 reading -- the same three-line pattern used to build the SSP background series in
@@ -680,6 +721,8 @@ if volume_only:
         ax.set_title("")
     save_fig(fig)
 ```
+
+*The coupled runs under the fixed-volume reading, one colour per SSP pathway: traffic on the left, energy cost per revenue passenger-kilometre in the middle, residual CO2 on the right. Reading the three panels together gives the mechanism in order, since a higher carbon price raises the middle panel, which lowers the left, which lowers the right.*
 
 The panel above gives the total cost per revenue passenger-kilometre. What it does not show is
 what that total is made of, and the split matters: a carbon price and a fuel-price premium reach the
@@ -732,9 +775,11 @@ if scenarios:
     save_fig()
 ```
 
+*Warming from aviation decomposed by forcing mechanism, for each scenario. Each band is one mechanism's contribution to the temperature response, and the bands sum to the reported total exactly, which the producing notebook asserts. The figure's point is the proportion: CO2 is the minority of the total in 2050 in every scenario, and contrail cirrus the largest single term.*
+
 {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">Decarbonisation does not act on non-CO₂ in 
 proportion to its action on CO₂, and the two diverge sharply by 2050. Every reproduced scenario drives CO₂ emissions 
-steeply down, yet the warming each still causes remains dominated by non-CO₂ terms — principally contrail cirrus. A CO₂ 
+steeply down, yet the warming each still causes remains dominated by non-CO₂ terms, principally contrail cirrus. A CO₂ 
 target and a temperature target are therefore not interchangeable statements about the same trajectory: a scenario can 
 approach net-zero CO₂ while the majority of its contribution to warming is untouched by the levers that got it 
 there.</span>{raw:typst}`]`
@@ -749,8 +794,8 @@ possible *increase*.</span>{raw:typst}`]`
 
 {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">That uncertainty compounds with a larger one: how 
 much contrails warm at all. Lee et al. {cite:p}`lee2021` give a contrail radiative forcing for 2018 with a 95 % interval
-spanning roughly a factor of six, and Teoh et al. {cite:p}`teoh2024` — simulating actual trajectories rather than 
-extrapolating — obtain a 2019 central value 44 % below that estimate, with their own sensitivity analysis spanning 34.8
+spanning roughly a factor of six, and Teoh et al. {cite:p}`teoh2024`, simulating actual trajectories rather than 
+extrapolating, obtain a 2019 central value 44 % below that estimate, with their own sensitivity analysis spanning 34.8
 to 74.8 mW m⁻². Both uncertainties bear directly on scenario results, so `climate_analysis/baseline_uncertainty.ipynb` 
 propagates them jointly, as three bands named by climate impact: the high band pairs the largest contrail sensitivity 
 with the weakest fuel benefit, the low band the reverse, and the central band reproduces the published scenarios 
@@ -779,22 +824,24 @@ else:
           "climate_analysis/baseline_uncertainty.ipynb.")
 ```
 
+*Total warming from aviation for each scenario, with the non-CO2 uncertainty band shaded around the central line. The band combines the two independent uncertainties, how strongly contrails warm and how much cleaner fuel reduces that warming, so its width is the uncertainty a single scenario carries. Comparing that width with the distance between the three panels is the result: the band is the larger quantity.*
+
 {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">The result reframes the comparison between the 
-scenarios. In 2050 the central estimates of total warming from aviation are 105, 89 and 84 mK for S0, S1 and S2 — a 
+scenarios. In 2050 the central estimates of total warming from aviation are 105, 89 and 84 mK for S0, S1 and S2, a 
 spread of 21 mK between the most and least ambitious published scenario. The uncertainty band on any *single* one of
-them is about 70 mK, roughly 3.4 times wider. Decomposing it, the contrail sensitivity contributes about 54 mK and the 
+them is about 70 mK, roughly 3.2 times wider. Decomposing it, the contrail sensitivity contributes about 54 mK and the 
 SAF benefit about 15 mK, so the dominant term is how strongly contrails warm, not how much cleaner fuel helps. Choosing
 between the published scenarios is, on current knowledge, a smaller question than the uncertainty carried by whichever 
-one is chosen — which is an argument for reporting bands rather than points, not for delaying 
+one is chosen, which is an argument for reporting bands rather than points, not for delaying 
 action.</span>{raw:typst}`]`
 
 {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">Contrail mitigation is absent from all three 
 editions: every scenario runs with the contrail lever switched off, matching the reports' stated scope, and the third 
 edition is explicit that contrail quantification carries low confidence. Because contrails are nonetheless the largest 
 single warming term in 2050 in every reproduced scenario, the omission is worth quantifying rather than inheriting. 
-`climate_analysis/climate_analysis.ipynb` runs three strategy families parameterised on Teoh et al. {cite:p}`teoh2020` 
-— low-risk diversion, small-scale diversion of about 1.7 % of flights, and combustor technology reducing black carbon 
-emissions — each across the same three bands.</span>{raw:typst}`]`
+`climate_analysis/climate_analysis.ipynb` runs three strategy families parameterised on Teoh et al. {cite:p}`teoh2020` :
+low-risk diversion, small-scale diversion of about 1.7 % of flights, and combustor technology reducing black carbon 
+emissions, each across the same three bands.</span>{raw:typst}`]`
 
 {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">Three findings survive the checks in that notebook.
 **Diversion buys contrail reduction by burning more fuel**, and under a fixed-quantity SAF mandate the marginal fuel is
@@ -877,19 +924,29 @@ reports' accounting, but they act outside the sector's physical emissions: swapp
 offset treatment moves the modelled temperature trajectory by *exactly* zero. That is asserted, not
 asserted-in-passing, in the climate notebook.
 
+{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">A fourth critique belongs with the three above, and it is the one this reproduction is best placed to quantify: the scenarios do not model non-CO2 at all. The third edition states its position plainly, that</span>{raw:typst}`]`
+
+> Significant research to improve scientific understanding as well as understanding of the potential
+> mitigation options (operations, technologies, fuels) is currently ongoing.
+
+> The current priority for industry and government climate action should continue to be CO2
+> emissions reduction.
+
+{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">The first sentence is correct and the second does not follow from it. Uncertainty about a warming term is an argument for continued research and for reporting bands rather than points; it is not an argument for assigning that term the value zero, which is what leaving it out of a scenario does. The uncertainty is also not symmetric in consequence: the reproduction here finds that contrail avoidance is worth several times more warming avoided in the high band than in the low one, so the case for acting on contrails is strongest precisely in the cases where the science turns out worst. Nor is the sign of the benefit in doubt, only its magnitude. The ICCT reach the same conclusion from a different direction {cite:p}`icct_vision2050_2022`, attributing the majority of avoidable warming to short-lived effects and placing contrail mitigation ahead of fuel substitution on that basis, on the grounds that avoidance and hydrotreating are relatively mature while e-fuels are not and CO2 already emitted stays for centuries.</span>{raw:typst}`]`
+
 ## Discussion
 
 {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">The Paris Agreement sets a global temperature goal,
 not a sectoral one, and translating it into an expectation for aviation requires a choice that no amount of modelling 
 can make. Reproducing the scenarios makes the size of that choice explicit: a sector that reaches net-zero CO₂ by 2050 
 while its non-CO₂ warming continues largely unabated is not thereby consistent with any particular temperature outcome.
-The ICCT's framing — aviation's share of the remaining carbon budget — is more demanding than a net-zero CO₂ target and 
+The ICCT's framing, aviation's share of the remaining carbon budget, is more demanding than a net-zero CO₂ target and 
 produces a different ranking of levers, placing contrail avoidance ahead of fuel substitution on near-term warming 
 avoided per unit cost.</span>{raw:typst}`]`
 
 {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">Between the first and third editions the goal was 
-raised from a 50 % cut to net zero, the scenario set was reduced, and lever contributions were substantially reallocated
-— while the physical content moved little and, where it moved, moved downwards. The removal of the 
+raised from a 50 % cut to net zero, the scenario set was reduced, and lever contributions were substantially reallocated,
+while the physical content moved little and, where it moved, moved downwards. The removal of the 
 aspirational-technology scenario is an unusually explicit correction of technological optimism, but its accounting 
 counterpart is less visible: the abatement previously assigned to unconventional propulsion was not deleted, it was 
 reassigned to SAF and to market-based measures. Optimism was relocated rather than reduced, and relocated towards levers
@@ -928,7 +985,7 @@ they are what makes disagreement productive.</span>{raw:typst}`]`
 
 {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">The sequential structure these exercises share is
 itself a limitation, not merely a convention. Calibrating on the past, projecting drivers, applying levers and stopping 
-leaves out precisely the couplings that determine whether a scenario is self-consistent — most obviously that the 
+leaves out precisely the couplings that determine whether a scenario is self-consistent, most obviously that the 
 instruments delivering abatement also change the demand being abated. Treating the problem as a multidisciplinary 
 analysis, in which such loops are resolved to a fixed point, changes the answer by a margin comparable to whole 
 mitigation levers, and is computationally cheap enough that there is no longer a practical reason to avoid 
@@ -938,7 +995,7 @@ it.</span>{raw:typst}`]`
 trajectories misrepresent the state of knowledge they summarise. The non-CO₂ uncertainty band around any one scenario 
 reproduced here is several times wider than the difference between the published scenarios, and that uncertainty is 
 irreducible on policy-relevant timescales. Reporting bands rather than points does not weaken the case for action; it 
-relocates it, from choosing the right trajectory to choosing measures that perform acceptably across the range — which 
+relocates it, from choosing the right trajectory to choosing measures that perform acceptably across the range, which 
 is an argument for near-term, reversible, high-leverage measures such as contrail avoidance, whose value is greatest in
 exactly the futures where the uncertainty resolves badly.</span>{raw:typst}`]`
 
