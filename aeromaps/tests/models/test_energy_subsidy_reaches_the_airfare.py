@@ -219,3 +219,89 @@ def test_the_fare_subsidy_is_full_pass_through_not_partly_absorbed():
     assert via_subsidy == pytest.approx(0.01)
     # The cost route also moves C0, which re-anchors the curve; it is not 1:1.
     assert via_cost != pytest.approx(0.01, abs=1e-6)
+
+
+# ------------------------------------------------------- tax / subsidy symmetry
+
+
+def test_an_equal_tax_and_subsidy_cancel_exactly():
+    """Separate *categories* must not mean separate *positions* in the equation.
+
+    ``total_extra_tax_per_rpk`` and ``total_subsidy_per_rpk`` are both applied to
+    ``marginal_cost_per_rpk``, with opposite signs and at the same point -- outside the
+    supply function. So an energy tax ``t`` and a subsidy ``t`` on the same pathway
+    cancel to machine precision, and neither instrument gets a pass-through the other
+    does not. Upstream they are computed by structurally identical code as well:
+    ``doc = energy * unit_tax[et]`` and ``doc = energy * unit_subsidy[et]``
+    (``direct_operating_costs.py``), neither of which does the ``replace(0, NaN)`` that
+    the energy and carbon-tax models do.
+    """
+    baseline = _total_cost()
+    both = _total_cost(subsidy=0.007, energy_tax=0.007)
+
+    # The two decomposition series move -- that is what they are for.
+    assert both["total_extra_tax_per_ask"].to_numpy() == pytest.approx(
+        baseline["total_extra_tax_per_ask"].to_numpy() + 0.007
+    )
+    assert both["total_subsidy_per_ask"].to_numpy() == pytest.approx(0.007)
+
+    # Every *net* series -- the ones anything downstream consumes -- must not.
+    net = [
+        key for key in baseline if not key.startswith(("total_extra_tax_per", "total_subsidy_per"))
+    ]
+    assert net, "the net series must not all have been filtered out"
+    for key in net:
+        assert both[key].to_numpy() == pytest.approx(baseline[key].to_numpy()), key
+
+
+def test_the_fare_sees_an_equal_tax_and_subsidy_cancel_too():
+    base = _airfare(0.0)
+    model = PassengerAircraftMarginalCost(
+        "passenger_aircraft_marginal_cost", parameters=_Parameters()
+    )
+    _, _, both = model.compute(
+        rpk=_series(1.0e12),
+        rpk_no_elasticity=_series(1.0e12),
+        total_cost_per_rpk_without_extra_tax=_series(0.0775),
+        total_extra_tax_per_rpk=_series(0.0075 + 0.004),
+        total_subsidy_per_rpk=_series(0.004),
+    )
+    assert both.to_numpy() == pytest.approx(base.to_numpy(), nan_ok=True)
+
+
+def test_the_two_instruments_get_the_same_pass_through():
+    """d airfare / d (the instrument) must be the same magnitude for tax and subsidy."""
+    base = _airfare(0.0)
+    subsidised = _airfare(0.004)
+
+    model = PassengerAircraftMarginalCost(
+        "passenger_aircraft_marginal_cost", parameters=_Parameters()
+    )
+    _, _, taxed = model.compute(
+        rpk=_series(1.0e12),
+        rpk_no_elasticity=_series(1.0e12),
+        total_cost_per_rpk_without_extra_tax=_series(0.0775),
+        total_extra_tax_per_rpk=_series(0.0075 + 0.004),
+        total_subsidy_per_rpk=_series(0.0),
+    )
+
+    projected = slice(PROSPECTION_START, END)
+    d_subsidy = (subsidised.loc[projected] - base.loc[projected]).to_numpy()
+    d_tax = (taxed.loc[projected] - base.loc[projected]).to_numpy()
+    assert d_subsidy == pytest.approx(-d_tax)
+    assert d_tax == pytest.approx(0.004)
+
+
+def test_doubling_the_subsidy_lowers_the_fare_monotonically():
+    """Sign and linearity: no threshold, no saturation, twice the subsidy twice the move."""
+    base = _airfare(0.0)
+    single = _airfare(0.003)
+    double = _airfare(0.006)
+
+    projected = slice(PROSPECTION_START, END)
+    d_single = (single.loc[projected] - base.loc[projected]).to_numpy()
+    d_double = (double.loc[projected] - base.loc[projected]).to_numpy()
+
+    assert (d_single < 0).all()
+    assert (d_double < d_single).all()
+    assert d_double == pytest.approx(2.0 * d_single)
