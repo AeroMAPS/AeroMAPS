@@ -124,6 +124,10 @@ class PassengerAircraftTotalCost(AeroMAPSModel):
         - doc_energy_per_ask_<market>_mean: Mean DOC (energy) per ASK for a market [EUR/ASK].
         - doc_carbon_tax_lowering_offset_per_ask_mean: Mean carbon tax lowering offset per ASK [EUR/ASK].
         - doc_carbon_tax_lowering_offset_per_ask_<market>_mean: Mean carbon tax lowering offset per ASK for a market [EUR/ASK].
+        - doc_energy_tax_per_ask_mean: Mean DOC (energy tax, non-carbon) per ASK [EUR/ASK].
+        - doc_energy_tax_per_ask_<market>_mean: Mean DOC (energy tax, non-carbon) per ASK for a market [EUR/ASK].
+        - doc_energy_subsidy_per_ask_mean: Mean DOC (energy subsidy) per ASK [EUR/ASK].
+        - doc_energy_subsidy_per_ask_<market>_mean: Mean DOC (energy subsidy) per ASK for a market [EUR/ASK].
         - noc_carbon_offset_per_ask: Non-operating cost carbon offset per ASK [EUR/ASK].
         - non_operating_cost_per_ask: Non-operating cost per ASK [EUR/ASK].
         - indirect_operating_cost_per_ask: Indirect operating cost per ASK [EUR/ASK].
@@ -139,6 +143,10 @@ class PassengerAircraftTotalCost(AeroMAPSModel):
         - total_extra_tax_per_ask_<market>: Total extra tax per ASK for a market [EUR/ASK].
         - total_extra_tax_per_rpk: Total extra tax per RPK [EUR/RPK].
         - total_extra_tax_per_rpk_<market>: Total extra tax per RPK for a market [EUR/RPK].
+        - total_subsidy_per_ask: Total subsidy per ASK [EUR/ASK].
+        - total_subsidy_per_ask_<market>: Total subsidy per ASK for a market [EUR/ASK].
+        - total_subsidy_per_rpk: Total subsidy per RPK [EUR/RPK].
+        - total_subsidy_per_rpk_<market>: Total subsidy per RPK for a market [EUR/RPK].
         - total_cost_per_ask: Total cost per ASK [EUR/ASK].
         - total_cost_per_ask_<market>: Total cost per ASK for a market [EUR/ASK].
         - total_cost_per_rpk_without_extra_tax: Total cost per RPK excluding extra taxes [EUR/RPK].
@@ -147,6 +155,12 @@ class PassengerAircraftTotalCost(AeroMAPSModel):
         - total_cost_per_rpk_<market>: Total cost per RPK for a market [EUR/RPK].
     Notes
         - <market> is the MarketManager id (passenger markets).
+        - Energy taxes join the carbon tax and the passenger tax in the extra-tax
+          wedge; energy subsidies are their own category, ``total_subsidy_per_*``,
+          and are subtracted. Both sit outside ``*_without_extra_tax`` so they leave
+          the supply-function calibration of ``PassengerAircraftMarginalCost``
+          (anchored on the base-year ``total_cost_per_rpk_without_extra_tax``)
+          untouched, and both reach the airfare at full pass-through.
         - I/O names are generated from configuration and passed to GEMSEO via
           self.input_names and self.output_names grammars.
     """
@@ -160,6 +174,8 @@ class PassengerAircraftTotalCost(AeroMAPSModel):
             "doc_non_energy_per_ask_mean": pd.Series([0.0]),
             "doc_energy_per_ask_mean": pd.Series([0.0]),
             "doc_carbon_tax_lowering_offset_per_ask_mean": pd.Series([0.0]),
+            "doc_energy_tax_per_ask_mean": pd.Series([0.0]),
+            "doc_energy_subsidy_per_ask_mean": pd.Series([0.0]),
             "noc_carbon_offset_per_ask": pd.Series([0.0]),
             "non_operating_cost_per_ask": pd.Series([0.0]),
             "indirect_operating_cost_per_ask": pd.Series([0.0]),
@@ -172,6 +188,8 @@ class PassengerAircraftTotalCost(AeroMAPSModel):
             "total_cost_per_ask_without_extra_tax": pd.Series([0.0]),
             "total_extra_tax_per_ask": pd.Series([0.0]),
             "total_extra_tax_per_rpk": pd.Series([0.0]),
+            "total_subsidy_per_ask": pd.Series([0.0]),
+            "total_subsidy_per_rpk": pd.Series([0.0]),
             "total_cost_per_ask": pd.Series([0.0]),
             "total_cost_per_rpk_without_extra_tax": pd.Series([0.0]),
             "total_cost_per_rpk": pd.Series([0.0]),
@@ -184,11 +202,15 @@ class PassengerAircraftTotalCost(AeroMAPSModel):
             self.input_names[f"doc_carbon_tax_lowering_offset_per_ask_{mid}_mean"] = pd.Series(
                 [0.0]
             )
+            self.input_names[f"doc_energy_tax_per_ask_{mid}_mean"] = pd.Series([0.0])
+            self.input_names[f"doc_energy_subsidy_per_ask_{mid}_mean"] = pd.Series([0.0])
             self.input_names[f"load_factor_{mid}"] = pd.Series([0.0])
 
             self.output_names[f"total_cost_per_ask_without_extra_tax_{mid}"] = pd.Series([0.0])
             self.output_names[f"total_extra_tax_per_ask_{mid}"] = pd.Series([0.0])
             self.output_names[f"total_extra_tax_per_rpk_{mid}"] = pd.Series([0.0])
+            self.output_names[f"total_subsidy_per_ask_{mid}"] = pd.Series([0.0])
+            self.output_names[f"total_subsidy_per_rpk_{mid}"] = pd.Series([0.0])
             self.output_names[f"total_cost_per_ask_{mid}"] = pd.Series([0.0])
             self.output_names[f"total_cost_per_rpk_without_extra_tax_{mid}"] = pd.Series([0.0])
             self.output_names[f"total_cost_per_rpk_{mid}"] = pd.Series([0.0])
@@ -222,18 +244,27 @@ class PassengerAircraftTotalCost(AeroMAPSModel):
         total_extra_tax_per_ask = (
             input_data["doc_carbon_tax_lowering_offset_per_ask_mean"]
             + input_data["passenger_tax_per_ask"]
+            + input_data["doc_energy_tax_per_ask_mean"]
         )
-        total_cost_per_ask = total_cost_per_ask_without_extra_tax + total_extra_tax_per_ask
+        total_subsidy_per_ask = input_data["doc_energy_subsidy_per_ask_mean"]
+        total_cost_per_ask = (
+            total_cost_per_ask_without_extra_tax + total_extra_tax_per_ask - total_subsidy_per_ask
+        )
 
         total_cost_per_rpk_without_extra_tax = total_cost_per_ask_without_extra_tax / (
             load_factor / 100
         )
         total_extra_tax_per_rpk = total_extra_tax_per_ask / (load_factor / 100)
-        total_cost_per_rpk = total_cost_per_rpk_without_extra_tax + total_extra_tax_per_rpk
+        total_subsidy_per_rpk = total_subsidy_per_ask / (load_factor / 100)
+        total_cost_per_rpk = (
+            total_cost_per_rpk_without_extra_tax + total_extra_tax_per_rpk - total_subsidy_per_rpk
+        )
 
         output_data["total_cost_per_ask_without_extra_tax"] = total_cost_per_ask_without_extra_tax
         output_data["total_extra_tax_per_ask"] = total_extra_tax_per_ask
         output_data["total_extra_tax_per_rpk"] = total_extra_tax_per_rpk
+        output_data["total_subsidy_per_ask"] = total_subsidy_per_ask
+        output_data["total_subsidy_per_rpk"] = total_subsidy_per_rpk
         output_data["total_cost_per_ask"] = total_cost_per_ask
         output_data["total_cost_per_rpk_without_extra_tax"] = total_cost_per_rpk_without_extra_tax
         output_data["total_cost_per_rpk"] = total_cost_per_rpk
@@ -255,17 +286,24 @@ class PassengerAircraftTotalCost(AeroMAPSModel):
             total_extra_tax_per_ask_m = (
                 input_data[f"doc_carbon_tax_lowering_offset_per_ask_{mid}_mean"]
                 + input_data["passenger_tax_per_ask"]
+                + input_data[f"doc_energy_tax_per_ask_{mid}_mean"]
             )
+            total_subsidy_per_ask_m = input_data[f"doc_energy_subsidy_per_ask_{mid}_mean"]
             total_cost_per_ask_m = (
-                total_cost_per_ask_without_extra_tax_m + total_extra_tax_per_ask_m
+                total_cost_per_ask_without_extra_tax_m
+                + total_extra_tax_per_ask_m
+                - total_subsidy_per_ask_m
             )
 
             total_cost_per_rpk_without_extra_tax_m = total_cost_per_ask_without_extra_tax_m / (
                 load_factor_m / 100
             )
             total_extra_tax_per_rpk_m = total_extra_tax_per_ask_m / (load_factor_m / 100)
+            total_subsidy_per_rpk_m = total_subsidy_per_ask_m / (load_factor_m / 100)
             total_cost_per_rpk_m = (
-                total_cost_per_rpk_without_extra_tax_m + total_extra_tax_per_rpk_m
+                total_cost_per_rpk_without_extra_tax_m
+                + total_extra_tax_per_rpk_m
+                - total_subsidy_per_rpk_m
             )
 
             output_data[f"total_cost_per_ask_without_extra_tax_{mid}"] = (
@@ -273,6 +311,8 @@ class PassengerAircraftTotalCost(AeroMAPSModel):
             )
             output_data[f"total_extra_tax_per_ask_{mid}"] = total_extra_tax_per_ask_m
             output_data[f"total_extra_tax_per_rpk_{mid}"] = total_extra_tax_per_rpk_m
+            output_data[f"total_subsidy_per_ask_{mid}"] = total_subsidy_per_ask_m
+            output_data[f"total_subsidy_per_rpk_{mid}"] = total_subsidy_per_rpk_m
             output_data[f"total_cost_per_ask_{mid}"] = total_cost_per_ask_m
             output_data[f"total_cost_per_rpk_without_extra_tax_{mid}"] = (
                 total_cost_per_rpk_without_extra_tax_m
@@ -302,6 +342,7 @@ class PassengerAircraftMarginalCost(AeroMAPSModel):
         rpk_no_elasticity: pd.Series,
         total_cost_per_rpk_without_extra_tax: pd.Series,
         total_extra_tax_per_rpk: pd.Series,
+        total_subsidy_per_rpk: pd.Series,
     ) -> Tuple[
         pd.Series,
         pd.Series,
@@ -321,6 +362,8 @@ class PassengerAircraftMarginalCost(AeroMAPSModel):
             Total cost per revenue passenger kilometer (RPK) without extra tax [€/RPK].
         total_extra_tax_per_rpk
             Total extra tax per revenue passenger kilometer (RPK) [€/RPK].
+        total_subsidy_per_rpk
+            Total subsidy per revenue passenger kilometer (RPK) [€/RPK].
 
         Returns
         ---------
@@ -359,8 +402,13 @@ class PassengerAircraftMarginalCost(AeroMAPSModel):
             - intial_total_cost_per_rpk_without_extra_tax
         )
 
-        airfare_per_rpk_true = marginal_cost_per_rpk + total_extra_tax_per_rpk
-        airfare_per_rpk_true = airfare_per_rpk_true
+        # The extra-tax wedge and the subsidy are applied on top of the supply
+        # function, not inside it: they are policy transfers, not production costs,
+        # so they reach the fare in full rather than being partly absorbed by the
+        # airline through the a*rpk term above.
+        airfare_per_rpk_true = (
+            marginal_cost_per_rpk + total_extra_tax_per_rpk - total_subsidy_per_rpk
+        )
         airfare_per_rpk = airfare_per_rpk_true
 
         # ADD 2019 value to the airfare_per_rpk series
