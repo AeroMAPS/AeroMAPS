@@ -541,8 +541,8 @@
         "residual_carbon_offset_share_reference_years_values": [
             0.0
         ],
-        "prescribed_carbon_offset_reference_years": [],
-        "prescribed_carbon_offset_reference_years_values": [
+        "manual_carbon_offset_reference_years": [],
+        "manual_carbon_offset_reference_years_values": [
             0.0
         ],
         "hefa_fog_biomass_availability_global": 1000000000000.0,
@@ -15142,7 +15142,7 @@
             0.0,
             0.0
         ],
-        "prescribed_carbon_offset": [
+        "manual_carbon_offset": [
             0.0,
             0.0,
             0.0,

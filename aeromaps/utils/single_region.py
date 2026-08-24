@@ -39,6 +39,34 @@ def _resolve(base_dir, path):
     return os.path.normpath(os.path.join(base_dir, path))
 
 
+def _relativize(base_dir, path):
+    """Inverse of ``_resolve``: rewrite an absolute path as relative to ``base_dir``,
+    forward-slashed to match the convention every hand-written config in the repo uses.
+
+    Internally every path is resolved to absolute so that region configs living under
+    different directory trees can be combined against a common frame -- but writing that
+    absolute form into the generated config bakes in the machine it was built on. Without
+    this, the config resolves on the machine that generated it and nowhere else.
+    """
+    if path is None or path == "default" or not os.path.isabs(path):
+        return path
+    return os.path.relpath(path, base_dir).replace(os.sep, "/")
+
+
+def _relativize_model_paths(models, base_dir):
+    """Copy of a ``models`` block with all ``*_file`` paths relativized to ``base_dir``."""
+    relativized = {}
+    for group, value in models.items():
+        if isinstance(value, dict):
+            relativized[group] = {
+                k: (_relativize(base_dir, v) if k.endswith("_file") else v)
+                for k, v in value.items()
+            }
+        else:
+            relativized[group] = value
+    return relativized
+
+
 def _read_regionalisation(configuration_file):
     """Parse the ``regionalisation`` section (mirrors
     ``MultiRegionalProcess._read_regionalisation_config``): return ``region_id -> abs
@@ -67,8 +95,7 @@ def _resolve_model_paths(models, base_dir):
     for group, value in models.items():
         if isinstance(value, dict):
             resolved[group] = {
-                k: (_resolve(base_dir, v) if k.endswith("_file") else v)
-                for k, v in value.items()
+                k: (_resolve(base_dir, v) if k.endswith("_file") else v) for k, v in value.items()
             }
         else:
             resolved[group] = value
@@ -286,8 +313,7 @@ def aggregate_regions_to_single_process(
         reference_region = auto_reference
     elif reference_region not in region_configs:
         raise KeyError(
-            f"reference_region '{reference_region}' not found. "
-            f"Available: {list(region_configs)}"
+            f"reference_region '{reference_region}' not found. Available: {list(region_configs)}"
         )
 
     # --- assemble the aggregated energy-carriers file ----------------------------------
@@ -315,9 +341,9 @@ def aggregate_regions_to_single_process(
         "mandate_share": _custom_data_type(years, global_share),
     }
     aggregated_carrier["inputs"].setdefault("environmental", {})
-    aggregated_carrier["inputs"]["environmental"][
-        "mean_co2_emission_factor_without_resource"
-    ] = _custom_data_type(years, global_ef)
+    aggregated_carrier["inputs"]["environmental"]["mean_co2_emission_factor_without_resource"] = (
+        _custom_data_type(years, global_ef)
+    )
 
     aggregated_energy = {}
     if "fossil_kerosene" in reference_energy:
@@ -344,9 +370,7 @@ def aggregate_regions_to_single_process(
         models_base_dir = reference_dir
     models = _resolve_model_paths(models, models_base_dir)
 
-    reference_models = _resolve_model_paths(
-        reference_full_config.get("models", {}), reference_dir
-    )
+    reference_models = _resolve_model_paths(reference_full_config.get("models", {}), reference_dir)
     models.setdefault("energy", {})
     models["energy"]["energy_carriers_model_data_file"] = os.path.abspath(output_energy_file)
     for key in ("resources_model_data_file", "processes_model_data_file"):
@@ -365,12 +389,15 @@ def aggregate_regions_to_single_process(
     if output_json is None:
         output_json = os.path.join(out_dir, "outputs.json")
 
+    # Every path above is absolute -- needed internally to combine region configs living
+    # under different directory trees against a common frame. Relativize to out_dir before
+    # writing, or the generated config only resolves on the machine that built it.
     collapsed = {
         "data": {
-            "inputs": {"json_inputs_file": inputs_file},
-            "outputs": {"json_outputs_file": os.path.abspath(output_json)},
+            "inputs": {"json_inputs_file": _relativize(out_dir, inputs_file)},
+            "outputs": {"json_outputs_file": _relativize(out_dir, os.path.abspath(output_json))},
         },
-        "models": models,
+        "models": _relativize_model_paths(models, out_dir),
     }
     write_yaml_file(collapsed, output_config)
 

@@ -610,8 +610,8 @@
             20.0,
             50.0
         ],
-        "prescribed_carbon_offset_reference_years": [],
-        "prescribed_carbon_offset_reference_years_values": [
+        "manual_carbon_offset_reference_years": [],
+        "manual_carbon_offset_reference_years_values": [
             0.0
         ],
         "emission_index_nox_dropin_fuel_evolution": 0.0,
@@ -12969,7 +12969,7 @@
             272.17568702871694,
             263.1671382406512
         ],
-        "prescribed_carbon_offset": [
+        "manual_carbon_offset": [
             0.0,
             0.0,
             0.0,
