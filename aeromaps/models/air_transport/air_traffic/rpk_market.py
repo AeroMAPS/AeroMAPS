@@ -15,6 +15,8 @@ names are built from the market id at construction time, so no ``custom_setup``
 hook is required.
 """
 
+import warnings
+
 import numpy as np
 import pandas as pd
 from scipy.interpolate import interp1d
@@ -479,6 +481,12 @@ class RPKElasticity(AeroMAPSModel):
 
     MARKET_SCOPE = "cross_market"
 
+    # Bounds applied to ``airfare_per_rpk`` before the elasticity power, as multiples
+    # of ``initial_airfare_per_rpk``. A tenth of the 2019 airfare to twenty times it:
+    # wide enough to be inactive at any converged solution, so it guards the solver's
+    # transient without moving the answer. See ``compute`` for why the bound is needed.
+    AIRFARE_BOUNDS_RELATIVE = (0.1, 20.0)
+
     def __init__(self, name: str, passenger_market_ids: list, *args, **kwargs):
         super().__init__(name=name, model_type="custom", *args, **kwargs)
         self.passenger_market_ids = list(passenger_market_ids)
@@ -518,6 +526,30 @@ class RPKElasticity(AeroMAPSModel):
             )
         }
 
+    def _warn_if_bounded(self, raw, bounded, low, high):
+        """Warn when the airfare bound engages, naming the airfare it replaced.
+
+        The bound only ever fires on a value outside the physical domain, so it is
+        worth reporting: it means the solver handed this discipline an airfare no
+        discipline produced. One warning per ``compute()``, naming the worst year,
+        rather than one per year.
+        """
+        changed = raw.ne(bounded) & raw.notna()
+        if not changed.any():
+            return
+
+        years = changed[changed].index
+        worst_year = (raw[changed] - bounded[changed]).abs().idxmax()
+        warnings.warn(
+            f"\n[RPK Elasticity Model: {self.name} Warning]\n"
+            f"airfare_per_rpk left the [{low:.6g}, {high:.6g}] EUR/RPK band in "
+            f"{int(changed.sum())} year(s) ({years.min()}-{years.max()}) and was bounded.\n"
+            f"Worst year {worst_year}: {raw.loc[worst_year]:.6g} -> "
+            f"{bounded.loc[worst_year]:.6g} EUR/RPK.\n"
+            f"The elasticity multiplier saturates there instead of returning NaN. A bound "
+            f"still active at convergence means the solution is not trustworthy."
+        )
+
     def compute(self, input_data: dict) -> dict:
         """Apply the global elasticity multiplier to baseline RPK trajectories.
 
@@ -542,9 +574,23 @@ class RPKElasticity(AeroMAPSModel):
         )
 
         # Multiplier: 1 before elasticity_start, (airfare/airfare_init)**elasticity after.
-        multiplier = pd.Series(1.0, index=self.df.index)
+        #
+        # The airfare is bounded first. ``price_elasticity`` is fractional, and on a
+        # negative base numpy returns NaN -- silently, where plain Python would return a
+        # complex number -- while a zero base gives +inf. Neither a negative nor a zero
+        # airfare is physical, but this discipline can still be handed one: GEMSEO's
+        # acceleration methods extrapolate the coupling vector by unconstrained least
+        # squares, with no notion of variable bounds, so an iterate can carry a value no
+        # discipline ever produced. Bounding makes the demand response saturate there
+        # instead of poisoning the whole chain with a NaN.
         proj = slice(elasticity_start, self.end_year)
-        multiplier.loc[proj] = (airfare_per_rpk.loc[proj] / airfare_init) ** price_elasticity
+        low, high = (factor * airfare_init for factor in self.AIRFARE_BOUNDS_RELATIVE)
+        airfare_raw = airfare_per_rpk.loc[proj]
+        airfare_bounded = airfare_raw.clip(low, high)
+        self._warn_if_bounded(airfare_raw, airfare_bounded, low, high)
+
+        multiplier = pd.Series(1.0, index=self.df.index)
+        multiplier.loc[proj] = (airfare_bounded / airfare_init) ** price_elasticity
 
         total_rpk = rpk_no_elasticity * multiplier
         self.df.loc[:, "rpk"] = total_rpk
