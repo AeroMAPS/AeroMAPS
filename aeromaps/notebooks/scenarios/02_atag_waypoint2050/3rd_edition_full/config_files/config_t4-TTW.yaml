@@ -9,7 +9,7 @@ models:
   energy:
     energy_carriers_model_data_file: ../data_inputs/tech-TTW_energy.yaml
     resources_model_data_file: ../data_inputs/resources.yaml
-    processes_model_data_file: ../data_inputs/processes.yaml
+    processes_model_data_file: ../data_inputs/processes-TTW.yaml
   standards:
   - models_traffic
   - models_efficiency_top_down_interp
