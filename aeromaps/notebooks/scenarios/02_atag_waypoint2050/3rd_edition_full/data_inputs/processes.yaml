@@ -11,7 +11,8 @@ liquefaction:
     environmental:
       mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
         years: []
-        values: [0.0]
+        values: [3.925] # 0.25 x the green_electricity factor this process used to
+        # pay through the resource, which is now zero there; the total is unchanged.
         method: linear
     # Economics:
     economics:
@@ -37,7 +38,8 @@ electrolysis:
     environmental:
       mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
         years: []
-        values: [0.0]
+        values: [26.533] # 1.69 x the green_electricity factor this process used to
+        # pay through the resource, which is now zero there; the total is unchanged.
         method: linear
     # Economics:
     economics:

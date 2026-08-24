@@ -124,7 +124,14 @@ class TopDownEnvironmental(AeroMAPSModel):
                     # TODO initialize with zeros instead of actual val?
                     self.input_names[key] = val
 
-            for key, val in processes_data[process_key].get("inputs").get("economics", {}).items():
+            # environmental, not economics: this model reads the process's own
+            # emission factor below, and registering the cost block instead left
+            # that read missing from input_data, so .get() returned the null series
+            # and a process's own emissions were silently dropped. The cost model
+            # registers economics for the mirror-image reason.
+            for key, val in (
+                processes_data[process_key].get("inputs").get("environmental", {}).items()
+            ):
                 # TODO initialize with zeros instead of actual val?
                 self.input_names[key] = val
             self.output_names[

@@ -111,7 +111,14 @@ green_electricity:
   # Technical:
     co2_emission_factor: !AeroMapsCustomDataType
       years: [ ]
-      values: [ 15.7 ]
+      # Zero on purpose, for the same reason as the price below. The report's
+      # carbon-intensity table already states each pathway's factor on a life-cycle
+      # basis, electricity included, so charging this resource's carbon on top of
+      # it would count the same emissions twice. The consumers that are NOT
+      # report-derived (battery_electric, and the electrolysis/liquefaction
+      # processes) carry the former 15.7 folded into their own factor instead, so
+      # their totals are unchanged.
+      values: [ 0.0 ] # was [ 15.7 ] gCO2 / MJ
       method: linear
     availability:
       global: 224.1e+12 # [EJ]
@@ -124,8 +131,8 @@ green_electricity:
       # pricing it here too would count it twice. The carriers that are NOT
       # report-derived (battery_electric, and the electrolysis/liquefaction
       # processes) carry the former value folded into their own MFSP instead, so
-      # their totals are unchanged. Consumption, availability and the emission
-      # factor above are untouched -- only the price is neutralised.
+      # their totals are unchanged. Consumption and availability are
+      # untouched; the factor above is zeroed for the same reason, see above.
       values: [ 0.0, 0.0 ] # was [ 0.01597222222222222, 0.006944444444444444 ] $ / MWh
       method: linear
 

@@ -101,7 +101,8 @@ battery_electric:
     environmental:
       mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
         years: [ ]
-        values: [ 0.0 ]
+        values: [ 15.7 ] # 1.0 x the green_electricity factor this carrier used to
+        # pay through the resource, which is now zero there; the total is unchanged.
         method: linear
       emission_index: # CAUTION: INDEX PER KG, UNDIFINED FOR ELECTRIC!!
         h2o: 0.0
