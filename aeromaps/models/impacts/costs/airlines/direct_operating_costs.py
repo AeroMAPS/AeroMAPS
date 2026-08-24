@@ -11,6 +11,40 @@ import pandas as pd
 from aeromaps.models.base import AeroMAPSModel
 
 
+def _ask_weighted_mean(per_market_means, ask_per_market, index):
+    """Global mean of a per-ASK cost, weighted by each market's ASK.
+
+    In a year where *every* market has zero ASK the weighting is undefined: the
+    weighted mean is ``0/0``, and that NaN then spreads through every downstream cost
+    -- and, in a cost-feedback MDA, back around the coupling loop.
+
+    Zero is not the answer either. There is no *zero* cost per ASK where there is no
+    traffic; substituting one would report a cost that was never computed. What is
+    undefined in such a year is only the weighting: the quantity being averaged is an
+    intensity, not a volume, so each market's cost per ASK is still perfectly well
+    defined. Those years therefore take the unweighted mean of the per-market
+    intensities, which is the limit of the weighted mean as every weight goes to zero
+    together.
+
+    Years where only *some* markets have zero ASK need nothing special -- those
+    markets simply carry zero weight, which is already correct.
+
+    A pre-existing NaN in a per-market mean is left alone: this resolves an undefined
+    weighting, it does not fill in missing data.
+    """
+    if not per_market_means:
+        # No passenger markets — defensive default.
+        return pd.Series(0.0, index=index)
+
+    means = list(per_market_means.values())
+    ask_total = sum(ask_per_market[mid] for mid in per_market_means)
+    weighted_sum = sum(mean * ask_per_market[mid] for mid, mean in per_market_means.items())
+
+    no_traffic = ask_total == 0
+    weighted_mean = weighted_sum / ask_total.where(~no_traffic)
+    return weighted_mean.mask(no_traffic, sum(means) / len(means))
+
+
 class PassengerAircraftDocNonEnergyComplex(AeroMAPSModel):
     """
     Non energy DOC per ASK calculation using generic fleet model.
@@ -112,22 +146,9 @@ class PassengerAircraftDocNonEnergyComplex(AeroMAPSModel):
             output_data[f"doc_non_energy_per_ask_{mid}_mean"] = market_mean
 
         # Global mean: weighted by per-market ASK totals.
-        ask_weighted_doc_sum = None
-        ask_total = None
-        for mid, market_mean in doc_non_energy_mean.items():
-            ask_m = ask_per_market[mid]
-            num_term = market_mean * ask_m
-            den_term = ask_m
-            ask_weighted_doc_sum = (
-                num_term if ask_weighted_doc_sum is None else ask_weighted_doc_sum + num_term
-            )
-            ask_total = den_term if ask_total is None else ask_total + den_term
-
-        if ask_weighted_doc_sum is None:
-            # No passenger markets — defensive default.
-            doc_non_energy_per_ask_mean = pd.Series(0.0, index=self.df.index)
-        else:
-            doc_non_energy_per_ask_mean = ask_weighted_doc_sum / ask_total
+        doc_non_energy_per_ask_mean = _ask_weighted_mean(
+            doc_non_energy_mean, ask_per_market, self.df.index
+        )
 
         output_data["doc_non_energy_per_ask_mean"] = doc_non_energy_per_ask_mean
 
@@ -266,20 +287,7 @@ class PassengerAircraftDocNonEnergySimple(AeroMAPSModel):
             output_data[f"doc_non_energy_per_ask_{mid}_mean"] = total
 
         # Global mean: weighted by per-market ASK totals.
-        ask_weighted_doc_sum = None
-        ask_total = None
-        for mid, mm in doc_non_energy_mean.items():
-            ask_m = ask_per_market[mid]
-            num_term = mm * ask_m
-            ask_weighted_doc_sum = (
-                num_term if ask_weighted_doc_sum is None else ask_weighted_doc_sum + num_term
-            )
-            ask_total = ask_m if ask_total is None else ask_total + ask_m
-
-        if ask_weighted_doc_sum is None:
-            global_mean = pd.Series(0.0, index=self.df.index)
-        else:
-            global_mean = ask_weighted_doc_sum / ask_total
+        global_mean = _ask_weighted_mean(doc_non_energy_mean, ask_per_market, self.df.index)
 
         output_data["doc_non_energy_per_ask_mean"] = global_mean
 
@@ -393,20 +401,7 @@ class PassengerAircraftDocEnergy(AeroMAPSModel):
             output_data[f"doc_energy_per_ask_{mid}_mean"] = total
 
         # Global mean: weighted by per-market ASK totals.
-        ask_weighted_doc_sum = None
-        ask_total = None
-        for mid, mm in doc_energy_mean.items():
-            ask_m = ask_per_market[mid]
-            num_term = mm * ask_m
-            ask_weighted_doc_sum = (
-                num_term if ask_weighted_doc_sum is None else ask_weighted_doc_sum + num_term
-            )
-            ask_total = ask_m if ask_total is None else ask_total + ask_m
-
-        if ask_weighted_doc_sum is None:
-            global_mean = pd.Series(0.0, index=self.df.index)
-        else:
-            global_mean = ask_weighted_doc_sum / ask_total
+        global_mean = _ask_weighted_mean(doc_energy_mean, ask_per_market, self.df.index)
 
         output_data["doc_energy_per_ask_mean"] = global_mean
 
@@ -532,20 +527,7 @@ class PassengerAircraftDocEnergyCarbonTax(AeroMAPSModel):
             output_data[f"doc_energy_carbon_tax_per_ask_{mid}_mean"] = total
 
         # Global mean: weighted by per-market ASK totals.
-        ask_weighted_doc_sum = None
-        ask_total = None
-        for mid, mm in doc_carbon_tax_mean.items():
-            ask_m = ask_per_market[mid]
-            num_term = mm * ask_m
-            ask_weighted_doc_sum = (
-                num_term if ask_weighted_doc_sum is None else ask_weighted_doc_sum + num_term
-            )
-            ask_total = ask_m if ask_total is None else ask_total + ask_m
-
-        if ask_weighted_doc_sum is None:
-            global_mean = pd.Series(0.0, index=self.df.index)
-        else:
-            global_mean = ask_weighted_doc_sum / ask_total
+        global_mean = _ask_weighted_mean(doc_carbon_tax_mean, ask_per_market, self.df.index)
 
         output_data["doc_energy_carbon_tax_per_ask_mean"] = global_mean
 
@@ -675,20 +657,7 @@ class PassengerAircraftDocEnergySubsidy(AeroMAPSModel):
             output_data[f"doc_energy_subsidy_per_ask_{mid}_mean"] = total
 
         # Global mean: weighted by per-market ASK totals.
-        ask_weighted_doc_sum = None
-        ask_total = None
-        for mid, mm in doc_subsidy_mean.items():
-            ask_m = ask_per_market[mid]
-            num_term = mm * ask_m
-            ask_weighted_doc_sum = (
-                num_term if ask_weighted_doc_sum is None else ask_weighted_doc_sum + num_term
-            )
-            ask_total = ask_m if ask_total is None else ask_total + ask_m
-
-        if ask_weighted_doc_sum is None:
-            global_mean = pd.Series(0.0, index=self.df.index)
-        else:
-            global_mean = ask_weighted_doc_sum / ask_total
+        global_mean = _ask_weighted_mean(doc_subsidy_mean, ask_per_market, self.df.index)
 
         output_data["doc_energy_subsidy_per_ask_mean"] = global_mean
 
@@ -803,20 +772,7 @@ class PassengerAircraftDocEnergyTax(AeroMAPSModel):
             output_data[f"doc_energy_tax_per_ask_{mid}_mean"] = total
 
         # Global mean: weighted by per-market ASK totals.
-        ask_weighted_doc_sum = None
-        ask_total = None
-        for mid, mm in doc_tax_mean.items():
-            ask_m = ask_per_market[mid]
-            num_term = mm * ask_m
-            ask_weighted_doc_sum = (
-                num_term if ask_weighted_doc_sum is None else ask_weighted_doc_sum + num_term
-            )
-            ask_total = ask_m if ask_total is None else ask_total + ask_m
-
-        if ask_weighted_doc_sum is None:
-            global_mean = pd.Series(0.0, index=self.df.index)
-        else:
-            global_mean = ask_weighted_doc_sum / ask_total
+        global_mean = _ask_weighted_mean(doc_tax_mean, ask_per_market, self.df.index)
 
         output_data["doc_energy_tax_per_ask_mean"] = global_mean
 
