@@ -402,10 +402,20 @@ class PassengerAircraftMarginalCost(AeroMAPSModel):
             - intial_total_cost_per_rpk_without_extra_tax
         )
 
-        # The extra-tax wedge and the subsidy are applied on top of the supply
-        # function, not inside it: they are policy transfers, not production costs,
-        # so they reach the fare in full rather than being partly absorbed by the
-        # airline through the a*rpk term above.
+        # Which terms sit on which side of the supply function, and what pass-through
+        # each therefore receives. INSIDE (via total_cost_per_rpk_without_extra_tax,
+        # so damped to 1/(1 - a*eta), around 0.95 on the shipped calibration):
+        # energy DOC and hence the fuel price, non-energy DOC, NOC, IOC, the carbon
+        # offset, and the operational-efficiency and load-factor cost terms.
+        # OUTSIDE, at a pass-through of exactly 1.0: the carbon tax, the passenger tax,
+        # the energy tax, and the energy subsidy. The tax wedge and the subsidy are
+        # applied at the SAME point with opposite signs, so equal amounts of the two
+        # cancel exactly and neither instrument is privileged over the other.
+        #
+        # The carbon tax being outside is inherited, not chosen: it has always been
+        # summed after this point. Whether a per-unit energy cost *should* pass at
+        # 1/(1 - a*eta) rather than 1.0 is a live question, and moving the carbon tax
+        # is a behaviour change with a wider blast radius that needs its own decision.
         airfare_per_rpk_true = (
             marginal_cost_per_rpk + total_extra_tax_per_rpk - total_subsidy_per_rpk
         )
