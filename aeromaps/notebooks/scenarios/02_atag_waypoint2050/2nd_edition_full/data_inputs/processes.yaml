@@ -16,8 +16,11 @@ liquefaction:
     # Economics:
     economics:
       mean_mfsp_without_resource: !AeroMapsCustomDataType
+        # [1.378511,...]/120 plus 0.25 x the green_electricity price this process
+        # used to pay through the resource, which is now zero there; the total is
+        # unchanged. See the note in resources.yaml.
         years: [2020,2030,2040,2050]
-        values: [0.01148759, 0.01148759, 0.01148759, 0.01148759] # [1.378511,1.378511,1.378511,1.378511]/120,
+        values: [0.015480645555555556, 0.01472833074074074, 0.013976015925925928, 0.01322370111111111]
         method: linear
 
 
@@ -39,6 +42,9 @@ electrolysis:
     # Economics:
     economics:
       mean_mfsp_without_resource: !AeroMapsCustomDataType
+        # [5.047140, 4.994914, 4.949078, 4.924813]/120 (no liquefaction there) plus
+        # 1.69 x the green_electricity price this process used to pay through the
+        # resource, which is now zero there; the total is unchanged.
         years: [2020, 2030, 2040, 2050]
-        values: [0.0421, 0.0416, 0.0412, 0.0410] # [5.047140, 4.994914, 4.949078, 4.924813]/ 120 # caution no liquefaction there
+        values: [0.06909305555555555, 0.0635074074074074, 0.05802175925925926, 0.05273611111111111]
         method: linear

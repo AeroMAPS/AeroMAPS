@@ -119,7 +119,14 @@ green_electricity:
       aviation_allocated_share: 5 # [%] Share of the global availability
     cost: !AeroMapsCustomDataType
       years: [ 2020, 2050 ]
-      values: [ 0.01597222222222222, 0.006944444444444444 ] # $ / MWh : 3600 MJ / MWh
+      # Zero on purpose. The report-derived mean_mfsp_without_resource of every
+      # carrier that consumes this resource already includes its electricity, so
+      # pricing it here too would count it twice. The carriers that are NOT
+      # report-derived (battery_electric, and the electrolysis/liquefaction
+      # processes) carry the former value folded into their own MFSP instead, so
+      # their totals are unchanged. Consumption, availability and the emission
+      # factor above are untouched -- only the price is neutralised.
+      values: [ 0.0, 0.0 ] # was [ 0.01597222222222222, 0.006944444444444444 ] $ / MWh
       method: linear
 
 co2_dac:
@@ -129,7 +136,10 @@ co2_dac:
     #Economical
     cost: !AeroMapsCustomDataType
       years: [2020, 2050]
-      values: [0.4, 0.1] # $ / ton CO2 : 1000 kg / ton
+      # Zero on purpose, same reason as green_electricity: electrofuel is the only
+      # consumer of this resource and its report-derived MFSP already includes the
+      # DAC-CO2 feedstock.
+      values: [0.0, 0.0] # was [0.4, 0.1] $ / ton CO2 : 1000 kg / ton
       method: linear
 
 
