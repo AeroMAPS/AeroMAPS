@@ -7,6 +7,7 @@ Module to compute energy abatement costs for different pathways.
 
 from typing import Tuple
 import warnings
+import jax.numpy as jnp
 import numpy as np
 import pandas as pd
 
@@ -135,6 +136,52 @@ class EnergyAbatementCost(AeroMAPSModel):
 
         self._store_outputs(output_data)
         return output_data
+
+    def jax_compute(self, input_data) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        unitary_discounted_costs = jnp.asarray(
+            input_data[f"{self.pathway_name}_lifespan_unitary_discounted_costs"]
+        )
+        unitary_discounted_emissions = jnp.asarray(
+            input_data[f"{self.pathway_name}_lifespan_discounted_unitary_emissions"]
+        )
+        unitary_emissions = jnp.asarray(
+            input_data[f"{self.pathway_name}_lifespan_unitary_emissions"]
+        )
+        mfsp = jnp.asarray(input_data[f"{self.pathway_name}_mean_mfsp"])
+        co2_emission_factor = jnp.asarray(
+            input_data[f"{self.pathway_name}_mean_co2_emission_factor"]
+        )
+        fossil_mfsp = jnp.asarray(input_data["cac_reference_mfsp"])
+        fossil_ef = jnp.asarray(input_data["cac_reference_co2_emission_factor"])
+
+        reference_unitary_discounted_costs = jnp.asarray(
+            input_data["cac_reference_unitary_discounted_costs"]
+        )
+        reference_unitary_discounted_emissions = jnp.asarray(
+            input_data["cac_reference_unitary_discounted_emissions"]
+        )
+        reference_unitary_emissions = jnp.asarray(input_data["cac_reference_unitary_emissions"])
+
+        cost_difference = unitary_discounted_costs - reference_unitary_discounted_costs
+        # Unit conversion => from €/gCO2 to €/tCO2
+        generic_specific_carbon_abatement_cost = (
+            cost_difference
+            / (reference_unitary_discounted_emissions - unitary_discounted_emissions)
+            * 1000000.0
+        )
+        specific_carbon_abatement_cost = (
+            cost_difference / (reference_unitary_emissions - unitary_emissions) * 1000000.0
+        )
+        carbon_abatement_cost = (
+            (mfsp - fossil_mfsp) / (fossil_ef - co2_emission_factor) * 1000000.0
+        )
+
+        return {
+            f"{self.pathway_name}_specific_carbon_abatement_cost": specific_carbon_abatement_cost,
+            f"{self.pathway_name}_generic_specific_carbon_abatement_cost": generic_specific_carbon_abatement_cost,
+            f"{self.pathway_name}_carbon_abatement_cost": carbon_abatement_cost,
+        }
 
 
 class ReferenceAbatementCost(AeroMAPSModel):
@@ -275,6 +322,107 @@ class ReferenceAbatementCost(AeroMAPSModel):
 
         self._store_outputs(output_data)
         return output_data
+
+    def jax_compute(self, input_data) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        ref_mfsp = jnp.asarray(input_data[f"{self.pathway_name}_mean_mfsp"])
+        ref_ef = jnp.asarray(input_data[f"{self.pathway_name}_mean_co2_emission_factor"])
+
+        if self.bottom_up_cac:
+            reference_unitary_discounted_costs = jnp.asarray(
+                input_data[f"{self.pathway_name}_lifespan_unitary_discounted_costs"]
+            )
+            reference_unitary_discounted_emissions = jnp.asarray(
+                input_data[f"{self.pathway_name}_lifespan_discounted_unitary_emissions"]
+            )
+            reference_unitary_emissions = jnp.asarray(
+                input_data[f"{self.pathway_name}_lifespan_unitary_emissions"]
+            )
+        else:
+            # Not a declared GEMSEO input, so this is a plain Python constant.
+            reference_lifespan = int(
+                input_data.get(f"{self.pathway_name}_eis_plant_lifespan", 25.0)
+            )
+            social_discount_rate = input_data["social_discount_rate"]
+            exogenous_carbon_price_trajectory = jnp.asarray(
+                input_data["exogenous_carbon_price_trajectory"]
+            )
+
+            reference_unitary_discounted_costs = self._jax_unit_discounted_cumul_costs(
+                ref_mfsp, reference_lifespan, social_discount_rate
+            )
+            (reference_unitary_emissions, reference_unitary_discounted_emissions) = (
+                self._jax_unitary_cumul_emissions_vintage(
+                    ref_ef,
+                    exogenous_carbon_price_trajectory,
+                    reference_lifespan,
+                    social_discount_rate,
+                )
+            )
+
+        return {
+            "cac_reference_unitary_discounted_costs": reference_unitary_discounted_costs,
+            "cac_reference_unitary_discounted_emissions": reference_unitary_discounted_emissions,
+            "cac_reference_unitary_emissions": reference_unitary_emissions,
+            "cac_reference_co2_emission_factor": ref_ef,
+            "cac_reference_mfsp": ref_mfsp,
+        }
+
+    @staticmethod
+    def _jax_vintage_positions(n_years: int, plant_lifespan: int):
+        """Absolute/clamped positions of each vintage window, plus its age.
+
+        Vintage ``y`` runs over ``[y, y + plant_lifespan)``; years past the last
+        model year reuse the last year's value, which the clamped positions
+        express directly.
+        """
+        age = jnp.arange(plant_lifespan)
+        positions = jnp.arange(n_years)[:, None] + age[None, :]
+        return positions, jnp.minimum(positions, n_years - 1), age
+
+    def _jax_unit_discounted_cumul_costs(
+        self, kerosene_market_price, plant_lifespan: int, social_discount_rate
+    ):
+        """JAX form of :meth:`_unit_discounted_cumul_costs`."""
+        n_years = kerosene_market_price.shape[0]
+        _, clamped, age = self._jax_vintage_positions(n_years, plant_lifespan)
+        discount = (1.0 + social_discount_rate) ** (-age)
+        return jnp.sum(kerosene_market_price[clamped] * discount[None, :], axis=1)
+
+    def _jax_unitary_cumul_emissions_vintage(
+        self,
+        fossil_emission_factor,
+        exogenous_carbon_price_trajectory,
+        plant_lifespan: int,
+        social_discount_rate,
+    ):
+        """JAX form of :meth:`_unitary_cumul_emissions_vintage`."""
+        n_years = fossil_emission_factor.shape[0]
+        positions, clamped, age = self._jax_vintage_positions(n_years, plant_lifespan)
+        last = n_years - 1
+
+        emission_factor = fossil_emission_factor[clamped]
+        specific_em = jnp.sum(emission_factor, axis=1)
+
+        # Past the last model year the carbon price keeps growing at the rate of
+        # the last modelled year.
+        future_scc_growth = (
+            exogenous_carbon_price_trajectory[last] / exogenous_carbon_price_trajectory[last - 1]
+        )
+        carbon_price = jnp.where(
+            positions <= last,
+            exogenous_carbon_price_trajectory[clamped],
+            exogenous_carbon_price_trajectory[last] * future_scc_growth ** (positions - last),
+        )
+        discount = (1.0 + social_discount_rate) ** (-age)
+        generic_discounted_specific_em = jnp.sum(
+            emission_factor
+            * carbon_price
+            / exogenous_carbon_price_trajectory[:, None]
+            * discount[None, :],
+            axis=1,
+        )
+        return specific_em, generic_discounted_specific_em
 
     def _unitary_cumul_emissions_vintage(
         self,

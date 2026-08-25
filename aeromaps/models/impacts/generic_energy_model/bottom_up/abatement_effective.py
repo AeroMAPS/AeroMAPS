@@ -2,6 +2,7 @@
 Module to compute effective carbon abatement for each energy pathway.
 """
 
+import jax.numpy as jnp
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
@@ -76,3 +77,15 @@ class EnergyAbatementEffective(AeroMAPSModel):
 
         self._store_outputs(output_data)
         return output_data
+
+    def jax_compute(self, input_data) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        avoided_emission_factor = jnp.asarray(
+            input_data["cac_reference_co2_emission_factor"]
+        ) - jnp.asarray(input_data[f"{self.pathway_name}_mean_co2_emission_factor"])
+        abatement_effective = (
+            jnp.asarray(input_data[f"{self.pathway_name}_energy_consumption"])
+            * avoided_emission_factor
+            / 1000000.0
+        )  # Convert to tCO2
+        return {f"{self.pathway_name}_abatement_effective": abatement_effective}

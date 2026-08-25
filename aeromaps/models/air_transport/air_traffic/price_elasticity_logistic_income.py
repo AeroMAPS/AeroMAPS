@@ -11,10 +11,18 @@ only the per-segment split now iterates over the registry's passenger markets.
 Selected via ``global.demand.model: logistic_income`` in ``markets.yaml``.
 """
 
+import jax.numpy as jnp
 import pandas as pd
 from numpy import divide, exp
 
 from aeromaps.models.base import AeroMAPSModel
+from aeromaps.models.jax_helpers import (
+    hist_mask,
+    jax_first_order_lag,
+    jax_pct_change,
+    year_pos,
+    years_index,
+)
 
 
 def generalised_logistic_function(
@@ -26,6 +34,15 @@ def generalised_logistic_function(
     )
 
     return y
+
+
+def jax_generalised_logistic_function(
+    x, left_asymptote, capacity, growth_rate, logistic_nu, asymptote_coeff, x_lag
+):
+    """JAX counterpart of :func:`generalised_logistic_function`."""
+    return left_asymptote + (capacity - left_asymptote) / (
+        asymptote_coeff + jnp.exp(-growth_rate * (jnp.asarray(x) - x_lag))
+    ) ** (1.0 / logistic_nu)
 
 
 class RPKLogisticIncomePriceElasticity(AeroMAPSModel):
@@ -275,4 +292,122 @@ class RPKLogisticIncomePriceElasticity(AeroMAPSModel):
         )
 
         self._store_outputs(output_data)
+        return output_data
+
+    # The COVID end year is a static comparison bound, not a differentiable input.
+    jax_static_input_names = ("covid_end_year_passenger",)
+
+    def _jax_full_series(self, value, fill: float):
+        """JAX counterpart of :meth:`_full_series` (shapes are static at trace time)."""
+        n_years = len(years_index(self))
+        value = jnp.asarray(value)
+        if value.ndim == 1 and value.shape[0] == n_years:
+            return value
+        return jnp.full(n_years, fill)
+
+    def _jax_logistic(self, x, x_lag):
+        """Logistic income trend with this model's calibrated parameters."""
+        return jax_generalised_logistic_function(
+            x=x,
+            left_asymptote=self.left_asymptote,
+            capacity=self.capacity,
+            growth_rate=self.growth_rate,
+            logistic_nu=self.logistic_nu,
+            asymptote_coeff=self.asymptote_coeff,
+            x_lag=x_lag,
+        )
+
+    def jax_compute(self, input_data: dict) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        years = years_index(self)
+        n_years = len(years)
+        hist = hist_mask(self)
+
+        rpk_init = jnp.asarray(input_data["rpk_init"])
+        population = jnp.asarray(input_data["population"])
+        gdp_per_capita = jnp.asarray(input_data["gdp_per_capita"])
+        gdp_per_capita_last_historical_year = input_data["gdp_per_capita_last_historical_year"]
+        gdp_per_capita_covid_end = input_data["gdp_per_capita_covid_end"]
+        gdp_per_capita_init = jnp.asarray(input_data["gdp_per_capita_init"])
+        population_init = jnp.asarray(input_data["population_init"])
+
+        price_ref_eur = self.price_ref * self.eur_usd_exchange_rate
+        covid_end_year = int(input_data["covid_end_year_passenger"])
+        if self.prospection_start_year > covid_end_year:
+            covid_shift = 0.0
+        else:
+            covid_shift = gdp_per_capita_covid_end - gdp_per_capita_last_historical_year
+
+        rpk_per_capita_trend = self._jax_logistic(gdp_per_capita, self.x_lag + covid_shift)
+        rpk_per_capita_trend_no_covid = self._jax_logistic(gdp_per_capita, self.x_lag)
+        rpk_per_capita_trend_hist = self._jax_logistic(gdp_per_capita_init, self.x_lag)
+
+        doc_net_energy_per_rpk_delayed = jax_first_order_lag(
+            self, input_data["doc_net_energy_per_rpk_mean"], getattr(self, "price_delay", 0.0)
+        )
+        price_index = (doc_net_energy_per_rpk_delayed / price_ref_eur) ** self.price_elast
+        rpk_per_capita = rpk_per_capita_trend * price_index
+
+        rpk_model_total = population * rpk_per_capita
+        rpk_no_price_total = population * rpk_per_capita_trend
+
+        rpk_model_without_covid_raw = jnp.where(
+            hist,
+            population_init * rpk_per_capita_trend_hist,
+            population * (rpk_per_capita_trend_no_covid * price_index),
+        )
+
+        n_prospective = self.end_year - self.prospection_start_year
+        base_pos = year_pos(self, self.prospection_start_year - 1)
+        end_pos = year_pos(self, self.end_year)
+
+        output_data = {}
+        rpk = jnp.zeros(n_years)
+        rpk_reference = jnp.zeros(n_years)
+        weighted_measures = jnp.zeros(n_years)
+
+        for mid in self.passenger_market_ids:
+            share = input_data[f"{mid}_rpk_share_last_historical_year"] / 100.0
+            measures_impact = self._jax_full_series(input_data[f"rpk_{mid}_measures_impact"], 1.0)
+            weighted_measures = weighted_measures + share * measures_impact
+
+            rpk_m = jnp.where(hist, rpk_init * share, rpk_model_total * share) * measures_impact
+
+            rpk = rpk + rpk_m
+            rpk_reference = rpk_reference + self._jax_full_series(
+                input_data[f"rpk_reference_{mid}"], 0.0
+            )
+
+            output_data[f"rpk_{mid}"] = rpk_m
+            output_data[f"annual_growth_rate_rpk_{mid}"] = jax_pct_change(rpk_m)
+            output_data[f"cagr_rpk_{mid}"] = 100.0 * (
+                (rpk_m[end_pos] / rpk_m[base_pos]) ** (1.0 / n_prospective) - 1.0
+            )
+            output_data[f"prospective_evolution_rpk_{mid}"] = 100.0 * (
+                rpk_m[end_pos] / rpk_m[base_pos] - 1.0
+            )
+
+        rpk_no_elasticity = jnp.where(hist, rpk_init, rpk_no_price_total) * weighted_measures
+        rpk_model_without_covid = rpk_model_without_covid_raw * weighted_measures
+
+        # The reference growth rate is only defined from prospection_start_year + 1 on.
+        reference_growth = jnp.where(
+            years > self.prospection_start_year, jax_pct_change(rpk_reference), jnp.nan
+        )
+
+        output_data["rpk"] = rpk
+        output_data["rpk_no_elasticity"] = rpk_no_elasticity
+        output_data["rpk_per_capita"] = rpk_per_capita
+        output_data["rpk_per_capita_trend"] = rpk_per_capita_trend
+        output_data["price_index"] = price_index
+        output_data["rpk_model_without_covid"] = rpk_model_without_covid
+        output_data["rpk_reference"] = rpk_reference
+        output_data["doc_net_energy_per_rpk_delayed"] = doc_net_energy_per_rpk_delayed
+        output_data["annual_growth_rate_passenger"] = jax_pct_change(rpk)
+        output_data["reference_annual_growth_rate_passenger"] = reference_growth
+        output_data["cagr_rpk"] = 100.0 * (
+            (rpk[end_pos] / rpk[base_pos]) ** (1.0 / n_prospective) - 1.0
+        )
+        output_data["prospective_evolution_rpk"] = 100.0 * (rpk[end_pos] / rpk[base_pos] - 1.0)
+
         return output_data

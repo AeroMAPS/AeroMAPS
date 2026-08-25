@@ -163,6 +163,29 @@ def jax_interp_backfill(model, reference_years, reference_years_values, hist_val
     return jnp.where(hist, hist_value, out)
 
 
+def jax_first_order_lag(model, values, tau):
+    """First-order lag applied over the prospective years.
+
+    Mirrors the pandas recursion ``y[k] = a * y[k-1] + (1 - a) * x[k]`` with
+    ``a = exp(-1 / tau)`` (annual step), seeded at ``prospection_start_year`` and
+    leaving the historic years untouched. ``tau <= 0`` disables the lag.
+    """
+    values = jnp.asarray(values)
+    if not tau or tau <= 0.0:
+        return values
+
+    a = float(np.exp(-1.0 / tau))
+    start = year_pos(model, model.prospection_start_year)
+    seed = values[start]
+
+    def step(previous, value):
+        current = a * previous + (1.0 - a) * value
+        return current, current
+
+    _, tail = jax.lax.scan(step, seed, values[start + 1 :])
+    return jnp.concatenate([values[:start], jnp.array([seed]), tail])
+
+
 def jax_nan_add(a, b):
     """NaN-aware addition mirroring ``Series.add(..., fill_value=0)``.
 
