@@ -133,6 +133,13 @@ def jax_scalar_root(residual, x0, n_iter: int = 60):
     derivative comes from the implicit function theorem on ``residual``, which
     is both exact and independent of the iteration count.
     """
+    # GEMSEO may hand over size-1 arrays rather than scalars, and jax.grad needs
+    # a scalar-valued function.
+    original_residual = residual
+
+    def residual(x):
+        return jnp.reshape(original_residual(x), ())
+
     grad_residual = jax.grad(residual)
 
     def solve(fun, x_init):
@@ -184,6 +191,21 @@ def jax_first_order_lag(model, values, tau):
 
     _, tail = jax.lax.scan(step, seed, values[start + 1 :])
     return jnp.concatenate([values[:start], jnp.array([seed]), tail])
+
+
+def jax_scalar_value(value):
+    """Return ``value`` as a 0-d array when it holds a single number, else ``None``.
+
+    GEMSEO passes scalar variables as plain floats when executing but as size-1
+    arrays when linearizing, so models reading a per-year input have to accept
+    both spellings of "one value for every year".
+    """
+    value = jnp.asarray(value)
+    if value.ndim == 0:
+        return value
+    if value.size == 1:
+        return value.reshape(())
+    return None
 
 
 def jax_vintage_windows(n_years: int, duration: int):

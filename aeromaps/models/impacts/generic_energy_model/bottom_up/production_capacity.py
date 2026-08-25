@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 import warnings
 from aeromaps.models.base import AeroMAPSModel
-from aeromaps.models.jax_helpers import year_pos, years_index
+from aeromaps.models.jax_helpers import jax_scalar_value, year_pos, years_index
 from aeromaps.utils.functions import _get_value_for_year
 
 
@@ -298,9 +298,10 @@ class BottomUpCapacity(AeroMAPSModel):
         n_years = len(years_index(self))
         if value is None:
             return jnp.full(n_virtual + n_years, default)
+        scalar = jax_scalar_value(value)
+        if scalar is not None:
+            return jnp.full(n_virtual + n_years, scalar)
         value = jnp.asarray(value)
-        if value.ndim == 0:
-            return jnp.full(n_virtual + n_years, value)
         return jnp.concatenate(
             [jnp.full(n_virtual, default), jnp.where(jnp.isnan(value), default, value)]
         )

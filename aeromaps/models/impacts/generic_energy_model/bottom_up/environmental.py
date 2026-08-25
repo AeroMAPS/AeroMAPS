@@ -15,6 +15,7 @@ from aeromaps.models.base import AeroMAPSModel
 from aeromaps.models.jax_helpers import (
     jax_extended_carbon_price,
     jax_nan_add,
+    jax_scalar_value,
     year_pos,
     years_index,
 )
@@ -484,10 +485,10 @@ class BottomUpEnvironmental(AeroMAPSModel):
         n_vintages = vintage_positions.shape[0]
         if value is None:
             return None
-        value = jnp.asarray(value)
-        if value.ndim == 0:
-            return jnp.full(n_vintages, value)
-        picked = value[vintage_positions]
+        scalar = jax_scalar_value(value)
+        if scalar is not None:
+            return jnp.full(n_vintages, scalar)
+        picked = jnp.asarray(value)[vintage_positions]
         if default is None:
             return picked
         return jnp.where(jnp.isnan(picked), default, picked)

@@ -12,7 +12,12 @@ import numpy as np
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
-from aeromaps.models.jax_helpers import jax_nan_add, year_pos, years_index
+from aeromaps.models.jax_helpers import (
+    jax_nan_add,
+    jax_scalar_value,
+    year_pos,
+    years_index,
+)
 from aeromaps.utils.functions import _get_value_for_year, _custom_series_addition
 
 
@@ -696,10 +701,10 @@ class BottomUpCost(AeroMAPSModel):
         n_vintages = vintage_positions.shape[0]
         if value is None:
             return None if default is None else jnp.full(n_vintages, float(default))
-        value = jnp.asarray(value)
-        if value.ndim == 0:
-            return jnp.full(n_vintages, value)
-        picked = value[vintage_positions]
+        scalar = jax_scalar_value(value)
+        if scalar is not None:
+            return jnp.full(n_vintages, scalar)
+        picked = jnp.asarray(value)[vintage_positions]
         if default is None:
             return picked
         return jnp.where(jnp.isnan(picked), default, picked)
