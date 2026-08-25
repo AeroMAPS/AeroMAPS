@@ -350,9 +350,7 @@ class TopDownCost(AeroMAPSModel):
             return default if value is None else jnp.asarray(value)
 
         pathway_mfsp = get(f"{self.pathway_name}_mean_mfsp_without_resource", zeros)
-        pathway_unit_subsidy = get(
-            f"{self.pathway_name}_mean_unit_subsidy_without_resource", zeros
-        )
+        pathway_unit_subsidy = get(f"{self.pathway_name}_mean_unit_subsidy_without_resource", zeros)
         pathway_unit_tax = get(f"{self.pathway_name}_mean_unit_tax_without_resource", zeros)
 
         for key in self.resource_keys:
@@ -434,9 +432,7 @@ class TopDownCost(AeroMAPSModel):
         )
         pathway_unit_carbon_tax = carbon_tax * emission_factor
 
-        pathway_net_mfsp = jax_nan_add(
-            pathway_net_mfsp_without_carbon_tax, pathway_unit_carbon_tax
-        )
+        pathway_net_mfsp = jax_nan_add(pathway_net_mfsp_without_carbon_tax, pathway_unit_carbon_tax)
 
         output_data.update(
             {

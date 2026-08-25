@@ -420,9 +420,7 @@ class RTKAggregator(AeroMAPSModel):
     def jax_compute(self, input_data: dict) -> dict:
         """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
         years = years_index(self)
-        total_rtk = sum(
-            jnp.asarray(input_data[f"rtk_{mid}"]) for mid in self.freight_market_ids
-        )
+        total_rtk = sum(jnp.asarray(input_data[f"rtk_{mid}"]) for mid in self.freight_market_ids)
         total_rtk_reference = sum(
             jnp.asarray(input_data[f"rtk_reference_{mid}"]) for mid in self.freight_market_ids
         )

@@ -319,8 +319,8 @@ class PassengerAircraftTotalCost(AeroMAPSModel):
         total_cost_per_ask_without_extra_tax = (
             get("doc_non_energy_per_ask_mean") + get("doc_energy_per_ask_mean") + common
         )
-        total_extra_tax_per_ask = (
-            get("doc_carbon_tax_lowering_offset_per_ask_mean") + get("passenger_tax_per_ask")
+        total_extra_tax_per_ask = get("doc_carbon_tax_lowering_offset_per_ask_mean") + get(
+            "passenger_tax_per_ask"
         )
         total_cost_per_ask = total_cost_per_ask_without_extra_tax + total_extra_tax_per_ask
         total_cost_per_rpk_without_extra_tax = total_cost_per_ask_without_extra_tax / (
@@ -345,9 +345,8 @@ class PassengerAircraftTotalCost(AeroMAPSModel):
                 + get(f"doc_energy_per_ask_{mid}_mean")
                 + common
             )
-            extra_m = (
-                get(f"doc_carbon_tax_lowering_offset_per_ask_{mid}_mean")
-                + get("passenger_tax_per_ask")
+            extra_m = get(f"doc_carbon_tax_lowering_offset_per_ask_{mid}_mean") + get(
+                "passenger_tax_per_ask"
             )
             without_extra_rpk_m = without_extra_m / (load_factor_m / 100.0)
             extra_rpk_m = extra_m / (load_factor_m / 100.0)
@@ -483,15 +482,19 @@ class PassengerAircraftMarginalCost(AeroMAPSModel):
         # so the historic years come out as NaN through index alignment.
         marginal_cost_per_rpk = jnp.where(
             prosp_mask(self),
-            a * rpk + b + total_cost_per_rpk_without_extra_tax
+            a * rpk
+            + b
+            + total_cost_per_rpk_without_extra_tax
             - intial_total_cost_per_rpk_without_extra_tax,
             jnp.nan,
         )
 
         # `airfare_per_rpk` and `airfare_per_rpk_true` are the same Series in the
         # pandas version, so the prospection_start_year - 1 value is set on both.
-        airfare_per_rpk = (marginal_cost_per_rpk + total_extra_tax_per_rpk).at[base_pos].set(
-            initial_price_per_rpk_corrected
+        airfare_per_rpk = (
+            (marginal_cost_per_rpk + total_extra_tax_per_rpk)
+            .at[base_pos]
+            .set(initial_price_per_rpk_corrected)
         )
         airfare_per_rpk_true = airfare_per_rpk
 

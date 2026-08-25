@@ -722,15 +722,13 @@ class BottomUpCost(AeroMAPSModel):
         safe_rate = jnp.where(non_zero, rate, 1.0)
         term = 1.0 / (1.0 + safe_rate)
 
-        capital_cost_npv = capex / construction_time * (1.0 - term**construction_time) / (
-            1.0 - term
+        capital_cost_npv = (
+            capex / construction_time * (1.0 - term**construction_time) / (1.0 - term)
         )
         total_actualised_production = (
             term**construction_time * (1.0 - term**lifespan) / (1.0 - term)
         )
-        return jnp.where(
-            non_zero, capital_cost_npv / total_actualised_production, capex / lifespan
-        )
+        return jnp.where(non_zero, capital_cost_npv / total_actualised_production, capex / lifespan)
 
     def jax_compute(self, input_data) -> dict:
         """JAX version of :meth:`compute` (same contract, pure jax.numpy).
@@ -761,9 +759,7 @@ class BottomUpCost(AeroMAPSModel):
 
         def static_year_value(name, default):
             """Plant design parameter frozen over the horizon (window lengths)."""
-            return _get_value_for_year(
-                input_data.get(name), self.prospection_start_year, default
-            )
+            return _get_value_for_year(input_data.get(name), self.prospection_start_year, default)
 
         lifespan = int(static_year_value(f"{pathway}_eis_plant_lifespan", 25))
         construction_time = static_year_value(f"{pathway}_eis_construction_time", 3)
@@ -789,12 +785,12 @@ class BottomUpCost(AeroMAPSModel):
             """NaN-aware accumulation of a (vintage, age) grid onto the model years."""
             contributing = valid & ~jnp.isnan(grid)
             flat = positions.ravel()
-            total = jnp.zeros(n_years).at[flat].add(
-                jnp.where(contributing, jnp.nan_to_num(grid), 0.0).ravel()
+            total = (
+                jnp.zeros(n_years)
+                .at[flat]
+                .add(jnp.where(contributing, jnp.nan_to_num(grid), 0.0).ravel())
             )
-            count = jnp.zeros(n_years).at[flat].add(
-                contributing.ravel().astype(jnp.float64)
-            )
+            count = jnp.zeros(n_years).at[flat].add(contributing.ravel().astype(jnp.float64))
             return jnp.where(count > 0, total, jnp.nan)
 
         def scatter_operating(grid):
@@ -828,9 +824,7 @@ class BottomUpCost(AeroMAPSModel):
                 )
 
         mfsp_capex = (
-            self._jax_spread_capital(
-                capex, private_discount_rate, lifespan, construction_time
-            )
+            self._jax_spread_capital(capex, private_discount_rate, lifespan, construction_time)
             / main_process_load_factor
         )
 
@@ -862,9 +856,7 @@ class BottomUpCost(AeroMAPSModel):
         output_data[f"{pathway}_mean_unit_variable_opex"] = scatter_operating(
             variable_opex[:, None] * relative_share
         )
-        output_data[f"{pathway}_vintage_unit_variable_opex"] = on_commissioning_year(
-            variable_opex
-        )
+        output_data[f"{pathway}_vintage_unit_variable_opex"] = on_commissioning_year(variable_opex)
 
         fixed_opex = vintage_values(f"{pathway}_eis_fixed_opex", 0.0) / main_process_load_factor
         output_data[f"{pathway}_mean_unit_fixed_opex"] = scatter_operating(
@@ -952,12 +944,9 @@ class BottomUpCost(AeroMAPSModel):
                 jnp.where(
                     active[:, None],
                     jnp.broadcast_to(
-                        (
-                            process_capex
-                            * needed_capacity
-                            / construction_time
-                            / process_load_factor
-                        )[:, None],
+                        (process_capex * needed_capacity / construction_time / process_load_factor)[
+                            :, None
+                        ],
                         process_construction_target.shape,
                     ),
                     jnp.nan,
@@ -985,9 +974,7 @@ class BottomUpCost(AeroMAPSModel):
                 jnp.nan,
             )
             output_data[f"{pathway}_{process_key}_mean_unit_cost_without_resources"] = scatter(
-                jnp.where(
-                    active[:, None], mfsp_process[:, None] * process_relative_share, jnp.nan
-                ),
+                jnp.where(active[:, None], mfsp_process[:, None] * process_relative_share, jnp.nan),
                 process_target_clamped,
                 process_inside,
             )
@@ -1001,8 +988,8 @@ class BottomUpCost(AeroMAPSModel):
             output_data[f"{pathway}_{process_key}_mean_unit_fixed_opex"] = scatter_operating(
                 fixed_opex_process[:, None] * relative_share
             )
-            output_data[f"{pathway}_{process_key}_vintage_unit_fixed_opex"] = (
-                on_commissioning_year(fixed_opex_process)
+            output_data[f"{pathway}_{process_key}_vintage_unit_fixed_opex"] = on_commissioning_year(
+                fixed_opex_process
             )
             output_data[f"{pathway}_{process_key}_mean_unit_variable_opex"] = scatter_operating(
                 variable_opex_process[:, None] * relative_share
@@ -1018,8 +1005,10 @@ class BottomUpCost(AeroMAPSModel):
         marginal_grid = masked(jnp.where(inside, vintage_mfsp, jnp.nan))
         marginal_contributing = ~jnp.isnan(marginal_grid)
         marginal_flat = target_clamped.ravel()
-        marginal_max = jnp.full(n_years, -jnp.inf).at[marginal_flat].max(
-            jnp.where(marginal_contributing, marginal_grid, -jnp.inf).ravel()
+        marginal_max = (
+            jnp.full(n_years, -jnp.inf)
+            .at[marginal_flat]
+            .max(jnp.where(marginal_contributing, marginal_grid, -jnp.inf).ravel())
         )
         output_data[f"{pathway}_marginal_mfsp"] = jnp.where(
             jnp.isfinite(marginal_max), marginal_max, jnp.nan
@@ -1057,9 +1046,7 @@ class BottomUpCost(AeroMAPSModel):
         else:
             carbon_tax = jnp.asarray(input_data["carbon_tax"]) / 1000.0
 
-        emission_factor = (
-            jnp.asarray(input_data[f"{pathway}_mean_co2_emission_factor"]) / 1000.0
-        )
+        emission_factor = jnp.asarray(input_data[f"{pathway}_mean_co2_emission_factor"]) / 1000.0
         pathway_unit_carbon_tax = carbon_tax * emission_factor
 
         if f"{pathway}_vintage_eis_co2_emission_factor" in input_data:

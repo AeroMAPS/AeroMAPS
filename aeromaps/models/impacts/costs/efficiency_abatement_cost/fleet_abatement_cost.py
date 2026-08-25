@@ -964,9 +964,7 @@ class FleetTopDownCarbonAbatementCost(AeroMAPSModel):
     ):
         """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
         years = years_index(self)
-        energy_per_ask_mean_without_operations = jnp.asarray(
-            energy_per_ask_mean_without_operations
-        )
+        energy_per_ask_mean_without_operations = jnp.asarray(energy_per_ask_mean_without_operations)
         ask = jnp.asarray(ask)
         doc_non_energy_per_ask_mean = jnp.asarray(doc_non_energy_per_ask_mean)
         cac_reference_mfsp = jnp.asarray(cac_reference_mfsp)

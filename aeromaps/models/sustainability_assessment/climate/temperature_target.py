@@ -18,6 +18,7 @@ class TemperatureTarget(AeroMAPSModel):
     name : str, optional
         Name of the model instance, by default "temperature_target"
     """
+
     def __init__(self, name="temperature_target", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -47,8 +48,10 @@ class TemperatureTarget(AeroMAPSModel):
             Aviation temperature target (°C).
         """
 
-        world_temperature_target = temperature_target-historical_temperature_increase
-        aviation_temperature_target = world_temperature_target * aviation_temperature_target_allocated_share / 100
+        world_temperature_target = temperature_target - historical_temperature_increase
+        aviation_temperature_target = (
+            world_temperature_target * aviation_temperature_target_allocated_share / 100
+        )
 
         self.float_outputs["world_temperature_target"] = world_temperature_target
         self.float_outputs["aviation_temperature_target"] = aviation_temperature_target
@@ -67,4 +70,3 @@ class TemperatureTarget(AeroMAPSModel):
             world_temperature_target * aviation_temperature_target_allocated_share / 100.0
         )
         return world_temperature_target, aviation_temperature_target
-

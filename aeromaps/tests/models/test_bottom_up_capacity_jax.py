@@ -97,9 +97,7 @@ def test_virtual_history_is_reconstructed():
 
 
 def test_declining_demand_leaves_capacity_unused():
-    demand = _demand(
-        np.concatenate([np.linspace(1e10, 6e10, 16), np.linspace(6e10, 2e10, 15)])
-    )
+    demand = _demand(np.concatenate([np.linspace(1e10, 6e10, 16), np.linspace(6e10, 2e10, 15)]))
     model = _build_model({"px_eis_plant_lifespan": 30, "px_eis_plant_load_factor": 1.0})
     output = _assert_paths_agree(
         model,

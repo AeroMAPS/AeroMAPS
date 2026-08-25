@@ -3,7 +3,7 @@
 ## Unreleased
 
 Changed:
-- Added a JAX execution path: `create_process(..., use_jax=True)` wraps the models providing a `jax_compute` method in gemseo-jax disciplines, giving the MDA and the optimiser analytic derivatives by automatic differentiation. Ported most models, so the tested configurations run with 0 to 9 pandas disciplines left, all of them either fleet-model-coupled or delegating to an external package. Results are identical on both paths, locked by `aeromaps/tests/core/test_jax_parity.py`.
+- Added a JAX execution path: `create_process(..., use_jax=True)` wraps the models providing a `jax_compute` method in gemseo-jax disciplines, giving the MDA and the optimiser analytic derivatives by automatic differentiation. Ported most models, so the tested configurations keep between 0 and 9 pandas disciplines (out of 119 to 223), all of them either fleet-model-coupled or delegating to an external package (AeroCM, brightway). Results are identical on both paths — same variables, same values, same NaN patterns — locked by `aeromaps/tests/core/test_jax_parity.py`.
 - Added the `jax` install extra for `gemseo-jax`.
 
 

@@ -1,5 +1,4 @@
 from typing import Tuple
-import jax.numpy as jnp
 import pandas as pd
 from aeromaps.models.base import (
     AeroMAPSModel,

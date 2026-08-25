@@ -450,9 +450,7 @@ class TopDownEnvironmental(AeroMAPSModel):
             # each vintage keeps its commissioning-year emission factor over the
             # whole lifespan, so the cumulated emissions are just ef * lifespan
             # and only the carbon-price weighting varies with the window.
-            exogenous_carbon_price_trajectory = get(
-                "exogenous_carbon_price_trajectory", zeros
-            )
+            exogenous_carbon_price_trajectory = get("exogenous_carbon_price_trajectory", zeros)
             social_discount_rate = input_data.get("social_discount_rate", 0.0)
             lifespan = 25
 

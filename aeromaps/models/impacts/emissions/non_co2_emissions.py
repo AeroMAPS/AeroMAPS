@@ -13,8 +13,6 @@ from aeromaps.models.base import AeroMAPSModel
 from aeromaps.utils.defaults import get_default_series
 
 
-
-
 def _jax_mean_emission_index(model, input_data, species, with_growth):
     """Shared JAX pattern of the simple mean emission-index models."""
     n = model.end_year - model.historic_start_year + 1
@@ -23,7 +21,9 @@ def _jax_mean_emission_index(model, input_data, species, with_growth):
 
     for aircraft_type in model.pathways_manager.get_all_types("aircraft_type"):
         if with_growth:
-            cagr_aircraft = input_data.get(f"emission_index_{species}_{aircraft_type}_evolution", 0.0)
+            cagr_aircraft = input_data.get(
+                f"emission_index_{species}_{aircraft_type}_evolution", 0.0
+            )
             growth = jnp.concatenate(
                 [
                     jnp.ones(n_hist),

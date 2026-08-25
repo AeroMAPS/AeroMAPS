@@ -63,6 +63,8 @@ Three class attributes on `AeroMAPSModel` declare what the wrapper cannot infer:
   `df_climate` rather than `df`.
 * `jax_extra_output_names` — intermediates the pandas `compute` writes straight
   into `self.df` without declaring them as GEMSEO variables.
+* `jax_df_output_names` — outputs the pandas `compute` files in `self.df` under
+  a different column name than the returned variable.
 * `jax_output_indexes` (a property) — outputs whose index is not the model year
   index.
 

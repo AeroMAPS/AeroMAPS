@@ -173,9 +173,7 @@ class EnergyAbatementCost(AeroMAPSModel):
         specific_carbon_abatement_cost = (
             cost_difference / (reference_unitary_emissions - unitary_emissions) * 1000000.0
         )
-        carbon_abatement_cost = (
-            (mfsp - fossil_mfsp) / (fossil_ef - co2_emission_factor) * 1000000.0
-        )
+        carbon_abatement_cost = (mfsp - fossil_mfsp) / (fossil_ef - co2_emission_factor) * 1000000.0
 
         return {
             f"{self.pathway_name}_specific_carbon_abatement_cost": specific_carbon_abatement_cost,

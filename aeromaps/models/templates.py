@@ -2,6 +2,7 @@
 Template classes to implement models in AeroMAPS.
 """
 
+import jax.numpy as jnp
 import pandas as pd
 from aeromaps.models.base import AeroMAPSModel
 import numpy as np
@@ -100,6 +101,26 @@ class CustomTemplate(AeroMAPSModel):
         # return output data
         return {name: output_data[name] for name in self.output_names}
 
+    def jax_compute(self, input_data) -> dict:
+        """Optional JAX twin of :meth:`compute`, same contract, pure ``jax.numpy``.
+
+        Providing it lets ``create_process(..., use_jax=True)`` wrap this model
+        in a gemseo-jax discipline, so the MDA and the optimiser get analytic
+        derivatives instead of finite differences. ``compute`` stays untouched
+        and is still used when ``use_jax`` is False; both must return the same
+        values, NaN cells included.
+
+        Inputs that are loop bounds or interpolation knots rather than
+        differentiable quantities belong in ``jax_static_input_names``; see
+        ``aeromaps/models/jax_helpers.py`` for the JAX counterparts of the
+        pandas helpers.
+        """
+        input1 = jnp.asarray(input_data["input1"])
+        input2 = jnp.asarray(input_data["input2"])
+
+        output_data = {"output1": input1 + input2, "output2": input1 * input2}
+        return {name: output_data[name] for name in self.output_names}
+
 
 class AutoTemplate(AeroMAPSModel):
     """
@@ -146,6 +167,22 @@ class AutoTemplate(AeroMAPSModel):
             Second output variable.
 
         """
+        output_1 = input1 * input2
+        output_2 = input2**2
+
+        return output_1, output_2
+
+    def jax_compute(self, input1, input2) -> Tuple[pd.Series, float]:
+        """Optional JAX twin of :meth:`compute`, same signature, pure ``jax.numpy``.
+
+        For an auto model the output names are read off the ``return``
+        statement, so every returned element must be a plain name — and any
+        helper with its own ``return`` must live at module level, because the
+        parser walks the whole source of this method.
+        """
+        input1 = jnp.asarray(input1)
+        input2 = jnp.asarray(input2)
+
         output_1 = input1 * input2
         output_2 = input2**2
 

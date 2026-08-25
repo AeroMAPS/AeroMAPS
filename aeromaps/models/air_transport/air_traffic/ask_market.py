@@ -126,7 +126,5 @@ class ASKAggregator(AeroMAPSModel):
 
     def jax_compute(self, input_data: dict) -> dict:
         """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
-        total_ask = sum(
-            jnp.asarray(input_data[f"ask_{mid}"]) for mid in self.passenger_market_ids
-        )
+        total_ask = sum(jnp.asarray(input_data[f"ask_{mid}"]) for mid in self.passenger_market_ids)
         return {"ask": total_ask}

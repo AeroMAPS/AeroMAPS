@@ -357,13 +357,9 @@ class OperationsAbatementCost(AeroMAPSModel):
         operations_gain = jnp.asarray(operations_gain)
         cac_reference_mfsp = jnp.asarray(cac_reference_mfsp)
         cac_reference_co2_emission_factor = jnp.asarray(cac_reference_co2_emission_factor)
-        energy_per_ask_mean_without_operations = jnp.asarray(
-            energy_per_ask_mean_without_operations
-        )
+        energy_per_ask_mean_without_operations = jnp.asarray(energy_per_ask_mean_without_operations)
         energy_per_ask_mean = jnp.asarray(energy_per_ask_mean)
-        energy_per_rtk_mean_without_operations = jnp.asarray(
-            energy_per_rtk_mean_without_operations
-        )
+        energy_per_rtk_mean_without_operations = jnp.asarray(energy_per_rtk_mean_without_operations)
         rpk = jnp.asarray(rpk)
         rtk = jnp.asarray(rtk)
         load_factor = jnp.asarray(load_factor)

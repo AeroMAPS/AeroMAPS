@@ -10,9 +10,7 @@ import numpy as np
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
-from aeromaps.models.jax_helpers import hist_mask, year_pos
-
-
+from aeromaps.models.jax_helpers import hist_mask
 
 
 def _jax_doc_energy_family(model, input_data, unit_prices, out_prefix, zero_to_nan):

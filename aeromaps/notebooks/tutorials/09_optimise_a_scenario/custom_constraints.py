@@ -100,6 +100,8 @@ class BiomassAvailabilityConstraintTrajectory(AeroMAPSModel):
         return biomass_trajectory_constraint, biomass_violation_viz
 
     jax_static_input_names = {"generic_biomass_availability_constraint_enforcement_years"}
+    # ``compute`` files the viz series under another column name.
+    jax_df_output_names = {"biomass_violation_viz": "biomass_availability_violation_viz"}
 
     def jax_compute(
         self,
@@ -163,6 +165,10 @@ class GridElectricityAvailabilityConstraintTrajectory(AeroMAPSModel):
         return grid_electricity_trajectory_constraint, electricity_violation_viz
 
     jax_static_input_names = {"grid_electricity_constraint_enforcement_years"}
+    # ``compute`` files the viz series under another column name.
+    jax_df_output_names = {
+        "electricity_violation_viz": "grid_electricity_availability_violation_viz"
+    }
 
     def jax_compute(
         self,

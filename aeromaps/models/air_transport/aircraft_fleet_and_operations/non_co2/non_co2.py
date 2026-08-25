@@ -97,9 +97,7 @@ class OperationsContrailsSimple(AeroMAPSModel):
         operations_contrails_duration,
     ):
         """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
-        transition_year = (
-            operations_contrails_start_year + operations_contrails_duration / 2.0
-        )
+        transition_year = operations_contrails_start_year + operations_contrails_duration / 2.0
         limit = 0.02 * operations_contrails_final_gain
         parameter = jnp.log(100.0 / 2.0 - 1.0) / (operations_contrails_duration / 2.0)
 

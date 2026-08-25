@@ -666,9 +666,7 @@ class RPKElasticity(AeroMAPSModel):
             self.output_names[f"cagr_rpk_{mid}"] = 0.0
             self.output_names[f"prospective_evolution_rpk_{mid}"] = 0.0
         # COVID end years bound the elasticity start year (static for JAX).
-        self.jax_static_input_names = {
-            f"{mid}_covid_end_year" for mid in self.passenger_market_ids
-        }
+        self.jax_static_input_names = {f"{mid}_covid_end_year" for mid in self.passenger_market_ids}
 
     def _initialize_df(self):
         super()._initialize_df()
@@ -779,12 +777,7 @@ class RPKElasticity(AeroMAPSModel):
         airfare_init = input_data["initial_airfare_per_rpk"]
 
         elasticity_start = max(
-            int(
-                max(
-                    int(input_data[f"{mid}_covid_end_year"])
-                    for mid in self.passenger_market_ids
-                )
-            )
+            int(max(int(input_data[f"{mid}_covid_end_year"]) for mid in self.passenger_market_ids))
             + 1,
             self.prospection_start_year,
         )

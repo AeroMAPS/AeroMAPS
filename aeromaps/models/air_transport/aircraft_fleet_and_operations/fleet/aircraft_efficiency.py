@@ -315,9 +315,7 @@ class PassengerAircraftEfficiencySimpleShares(AeroMAPSModel):
 
             # Compounded efficiency gains from the last historical value.
             factors = jnp.where(~hist, 1.0 - gain / 100.0, 1.0)
-            dropin = jnp.where(
-                hist, dropin_hist, dropin_hist[lhy_pos] * jnp.cumprod(factors)
-            )
+            dropin = jnp.where(hist, dropin_hist, dropin_hist[lhy_pos] * jnp.cumprod(factors))
             if self.prospection_start_year <= 2020:
                 dropin = dropin.at[year_pos(self, 2020)].set(
                     dropin[lhy_pos] * (1.0 + covid_increase / 100.0)
@@ -1191,19 +1189,15 @@ class FreightAircraftEfficiency(AeroMAPSModel):
         hist = hist_mask(self)
         lhy_pos = year_pos(self, self.last_historical_year)
 
-        ask_per_market = {
-            m.id: jnp.asarray(input_data[f"ask_{m.id}"]) for m in passenger_markets
-        }
+        ask_per_market = {m.id: jnp.asarray(input_data[f"ask_{m.id}"]) for m in passenger_markets}
         ask_dropin_per_market = {
             m.id: jnp.asarray(input_data[f"ask_{m.id}_dropin_fuel"]) for m in passenger_markets
         }
         h2_share_per_market = {
-            m.id: jnp.asarray(input_data[f"ask_{m.id}_hydrogen_share"])
-            for m in passenger_markets
+            m.id: jnp.asarray(input_data[f"ask_{m.id}_hydrogen_share"]) for m in passenger_markets
         }
         el_share_per_market = {
-            m.id: jnp.asarray(input_data[f"ask_{m.id}_electric_share"])
-            for m in passenger_markets
+            m.id: jnp.asarray(input_data[f"ask_{m.id}_electric_share"]) for m in passenger_markets
         }
         eff_dropin_per_market = {
             m.id: jnp.asarray(input_data[f"energy_per_ask_without_operations_{m.id}_dropin_fuel"])
@@ -1257,9 +1251,7 @@ class FreightAircraftEfficiency(AeroMAPSModel):
         for mid in ask_per_market:
             eff = eff_dropin_per_market[mid]
             prev = jnp.concatenate([jnp.array([jnp.nan]), eff[:-1]])
-            ratio = jnp.where(
-                (prev != 0) & jnp.isfinite(prev) & jnp.isfinite(eff), eff / prev, 1.0
-            )
+            ratio = jnp.where((prev != 0) & jnp.isfinite(prev) & jnp.isfinite(eff), eff / prev, 1.0)
             factors = jnp.where(~hist, ratio, 1.0)
             ratio_cumprod_per_market[mid] = jnp.cumprod(factors)
 
@@ -1296,16 +1288,12 @@ class FreightAircraftEfficiency(AeroMAPSModel):
             h2 = jnp.where(
                 hydrogen_zero,
                 dropin,
-                dropin
-                * hydrogen_weighted_sum
-                / jnp.where(hydrogen_zero, 1.0, rtk_hydrogen_share),
+                dropin * hydrogen_weighted_sum / jnp.where(hydrogen_zero, 1.0, rtk_hydrogen_share),
             )
             el = jnp.where(
                 electric_zero,
                 dropin,
-                dropin
-                * electric_weighted_sum
-                / jnp.where(electric_zero, 1.0, rtk_electric_share),
+                dropin * electric_weighted_sum / jnp.where(electric_zero, 1.0, rtk_electric_share),
             )
 
             rtk_hydrogen = rtk * rtk_hydrogen_share / 100.0
@@ -1334,7 +1322,6 @@ class FreightAircraftEfficiency(AeroMAPSModel):
         output_data["rtk_hydrogen_share"] = total_rtk_hydrogen / rtk_total * 100.0
         output_data["rtk_electric_share"] = total_rtk_electric / rtk_total * 100.0
         return output_data
-
 
 
 class FreightAircraftEfficiencySimple(AeroMAPSModel):
@@ -1422,6 +1409,11 @@ class FreightAircraftEfficiencySimple(AeroMAPSModel):
             self.input_names[f"{mid}_energy_per_rtk_dropin_fuel_gain_reference_years_values"] = [
                 0.0
             ]
+
+        # Interpolation reference years are static knots for the JAX path.
+        self.jax_static_input_names = {
+            f"{m.id}_energy_per_rtk_dropin_fuel_gain_reference_years" for m in freight_markets
+        }
 
         self.output_names = {}
         for m in freight_markets:
@@ -1539,4 +1531,70 @@ class FreightAircraftEfficiencySimple(AeroMAPSModel):
         output_data["rtk_electric_share"] = (total_rtk_electric / rtk_total) * 100
 
         self._store_outputs(output_data)
+        return output_data
+
+    def jax_compute(self, input_data: dict) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        freight_markets = self.markets.get(traffic_type="freight")
+
+        energy_consumption_init = jnp.asarray(input_data["energy_consumption_init"])
+        covid_increase = input_data["covid_energy_intensity_per_rtk_increase_2020"]
+
+        n_years = len(years_index(self))
+        hist = hist_mask(self)
+        lhy_pos = year_pos(self, self.last_historical_year)
+
+        output_data = {}
+        total_rtk_dropin_fuel = jnp.zeros(n_years)
+        total_rtk_hydrogen = jnp.zeros(n_years)
+        total_rtk_electric = jnp.zeros(n_years)
+
+        for freight_market in freight_markets:
+            mid = freight_market.id
+            rtk = jnp.asarray(input_data[f"rtk_{mid}"])
+            energy_share = input_data[f"{mid}_energy_share_last_historical_year"]
+
+            dropin_hist = energy_consumption_init / rtk * energy_share / 100.0
+
+            gain = jax_interpolation_function(
+                self,
+                input_data[f"{mid}_energy_per_rtk_dropin_fuel_gain_reference_years"],
+                input_data[f"{mid}_energy_per_rtk_dropin_fuel_gain_reference_years_values"],
+            )
+
+            # Compounded efficiency gains from the last historical value.
+            factors = jnp.where(~hist, 1.0 - gain / 100.0, 1.0)
+            energy_per_rtk_dropin = jnp.where(
+                hist, dropin_hist, dropin_hist[lhy_pos] * jnp.cumprod(factors)
+            )
+            if self.prospection_start_year <= 2020:
+                energy_per_rtk_dropin = energy_per_rtk_dropin.at[year_pos(self, 2020)].set(
+                    energy_per_rtk_dropin[lhy_pos] * (1.0 + covid_increase / 100.0)
+                )
+
+            zeros = jnp.zeros(n_years)
+            # No alternative propulsion for freight in this model.
+            output_data[f"energy_per_rtk_without_operations_{mid}_dropin_fuel"] = (
+                energy_per_rtk_dropin
+            )
+            output_data[f"energy_per_rtk_without_operations_{mid}_hydrogen"] = energy_per_rtk_dropin
+            output_data[f"energy_per_rtk_without_operations_{mid}_electric"] = energy_per_rtk_dropin
+            output_data[f"rtk_{mid}_dropin_fuel_share"] = jnp.full(n_years, 100.0)
+            output_data[f"rtk_{mid}_hydrogen_share"] = zeros
+            output_data[f"rtk_{mid}_electric_share"] = zeros
+            output_data[f"rtk_{mid}_dropin_fuel"] = rtk
+            output_data[f"rtk_{mid}_hydrogen"] = rtk * 0.0
+            output_data[f"rtk_{mid}_electric"] = rtk * 0.0
+
+            total_rtk_dropin_fuel = total_rtk_dropin_fuel + rtk
+            total_rtk_hydrogen = total_rtk_hydrogen + rtk * 0.0
+            total_rtk_electric = total_rtk_electric + rtk * 0.0
+
+        rtk_total = jnp.asarray(input_data["rtk"])
+        output_data["rtk_dropin_fuel"] = total_rtk_dropin_fuel
+        output_data["rtk_hydrogen"] = total_rtk_hydrogen
+        output_data["rtk_electric"] = total_rtk_electric
+        output_data["rtk_dropin_fuel_share"] = total_rtk_dropin_fuel / rtk_total * 100.0
+        output_data["rtk_hydrogen_share"] = total_rtk_hydrogen / rtk_total * 100.0
+        output_data["rtk_electric_share"] = total_rtk_electric / rtk_total * 100.0
         return output_data

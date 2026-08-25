@@ -341,9 +341,7 @@ class BottomUpCapacity(AeroMAPSModel):
             # virtual history (no plant is commissioned), as in the pandas branch.
             has_history = historic_demand > 1e-9
             safe_demand = jnp.where(has_history, historic_demand, 1.0)
-            virtual_cagr = (safe_demand / technology_introduction_volume) ** (
-                1.0 / n_virtual
-            ) - 1.0
+            virtual_cagr = (safe_demand / technology_introduction_volume) ** (1.0 / n_virtual) - 1.0
             virtual_years = jnp.arange(n_virtual)
             virtual_demand = jnp.where(
                 has_history,
@@ -399,9 +397,7 @@ class BottomUpCapacity(AeroMAPSModel):
 
         output_data.update(
             {
-                f"{self.pathway_name}_plant_building_scenario": plant_building_scenario[
-                    start:stop
-                ],
+                f"{self.pathway_name}_plant_building_scenario": plant_building_scenario[start:stop],
                 f"{self.pathway_name}_energy_production_commissioned": energy_production_commissioned[
                     start:stop
                 ],

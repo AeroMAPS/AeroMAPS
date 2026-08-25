@@ -52,9 +52,7 @@ class EmissionsPerRPK(AeroMAPSModel):
 
     def jax_compute(self, co2_emissions_passenger, rpk):
         """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
-        co2_emissions_per_rpk = (
-            jnp.asarray(co2_emissions_passenger) * 1e6 * 1e6 / jnp.asarray(rpk)
-        )
+        co2_emissions_per_rpk = jnp.asarray(co2_emissions_passenger) * 1e6 * 1e6 / jnp.asarray(rpk)
         return co2_emissions_per_rpk
 
 

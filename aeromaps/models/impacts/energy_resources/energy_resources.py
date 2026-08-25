@@ -8,13 +8,11 @@ import jax.numpy as jnp
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
-from aeromaps.models.jax_helpers import prosp_mask, year_pos
+from aeromaps.models.jax_helpers import year_pos
 from aeromaps.models.impacts.generic_energy_model.common.energy_carriers_manager import (
     EnergyCarrierManager,
 )
 from aeromaps.utils.functions import _custom_series_addition
-
-
 
 
 class EnergyResourceConsumption(AeroMAPSModel):
@@ -182,10 +180,8 @@ class EnergyResourceConsumption(AeroMAPSModel):
     def jax_compute(self, input_data) -> dict:
         """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
         output_data = {}
-        n = len(self.df.index)
         prosp = ~jnp.asarray(
-            jnp.arange(self.historic_start_year, self.end_year + 1)
-            < self.prospection_start_year
+            jnp.arange(self.historic_start_year, self.end_year + 1) < self.prospection_start_year
         )
 
         def _nan_add(a, b):
@@ -233,7 +229,6 @@ class EnergyResourceConsumption(AeroMAPSModel):
                 total_consumption / (availability * allocated_share / 100.0) * 100.0
             )
         return output_data
-
 
 
 class OverallResourcesConsumption(AeroMAPSModel):
@@ -429,8 +424,7 @@ class OverallResourcesConsumption(AeroMAPSModel):
         output_data = {}
         ps_pos = year_pos(self, self.prospection_start_year)
         prosp = ~jnp.asarray(
-            jnp.arange(self.historic_start_year, self.end_year + 1)
-            < self.prospection_start_year
+            jnp.arange(self.historic_start_year, self.end_year + 1) < self.prospection_start_year
         )
 
         def _nan_add(a, b):
@@ -491,8 +485,7 @@ class OverallResourcesConsumption(AeroMAPSModel):
                 total_consumption / total_availability_allocated * 100.0
             )
             output_data[f"{origin}_availability_global"] = total_availability[ps_pos:]
-            output_data[f"{origin}_availability_aviation_allocated"] = (
-                total_availability_allocated[ps_pos:]
-            )
+            output_data[f"{origin}_availability_aviation_allocated"] = total_availability_allocated[
+                ps_pos:
+            ]
         return output_data
-

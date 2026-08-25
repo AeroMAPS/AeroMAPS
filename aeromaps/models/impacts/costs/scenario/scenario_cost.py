@@ -196,7 +196,8 @@ class NonDiscountedScenarioCost(AeroMAPSModel):
         for pathway in self.pathways_manager.get_all():
             energy_consumption = get(f"{pathway.name}_energy_consumption")
             non_discounted_energy_expenses = jax_nan_add(
-                non_discounted_energy_expenses, get(f"{pathway.name}_mean_mfsp") * energy_consumption
+                non_discounted_energy_expenses,
+                get(f"{pathway.name}_mean_mfsp") * energy_consumption,
             )
             non_discounted_net_energy_expenses = jax_nan_add(
                 non_discounted_net_energy_expenses,
@@ -566,9 +567,7 @@ class TotalAirlineCost(AeroMAPSModel):
             cumulative_total_airline_cost_discounted_obj,
         )
 
-    def jax_compute(
-        self, total_cost_per_rpk, rpk, rpk_no_elasticity, social_discount_rate
-    ):
+    def jax_compute(self, total_cost_per_rpk, rpk, rpk_no_elasticity, social_discount_rate):
         """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
         total_cost_per_rpk = jnp.asarray(total_cost_per_rpk)
         rpk = jnp.asarray(rpk)
@@ -618,6 +617,9 @@ class TotalSurplusLoss(AeroMAPSModel):
     name : str
         Name of the model instance ('total_surplus_loss' by default).
     """
+
+    # Written to ``self.df`` by ``compute`` without being a GEMSEO output.
+    jax_extra_output_names = ("area_loss_discounted",)
 
     def __init__(self, name="total_surplus_loss", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
@@ -714,6 +716,63 @@ class TotalSurplusLoss(AeroMAPSModel):
             cumulative_total_surplus_loss_discounted_obj,
         )
 
+    def jax_compute(
+        self,
+        rpk,
+        rpk_no_elasticity,
+        cumulative_total_airline_cost_increase,
+        cumulative_total_airline_cost_increase_discounted,
+        airfare_per_rpk,
+        price_elasticity,
+        social_discount_rate,
+    ):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        rpk = jnp.asarray(rpk)
+        rpk_no_elasticity = jnp.asarray(rpk_no_elasticity)
+        airfare_per_rpk = jnp.asarray(airfare_per_rpk)
+        cumulative_total_airline_cost_increase_discounted = jnp.asarray(
+            cumulative_total_airline_cost_increase_discounted
+        )
+        years = jnp.asarray(years_index(self), dtype=jnp.float64)
+
+        beta = airfare_per_rpk[year_pos(self, 2025)] / (
+            rpk_no_elasticity ** (1.0 / price_elasticity)
+        )
+
+        # Unit elasticity makes the integrated demand curve logarithmic; the
+        # elasticity is a discipline input, so the case is selected by value on a
+        # guarded exponent rather than by a Python branch.
+        unit_elasticity = price_elasticity == -1.0
+        exponent = 1.0 + 1.0 / jnp.where(unit_elasticity, -2.0, price_elasticity)
+        area_loss = jnp.where(
+            unit_elasticity,
+            beta * jnp.log(rpk_no_elasticity / rpk),
+            beta / exponent * (rpk_no_elasticity**exponent - rpk**exponent),
+        )
+
+        discount = (1.0 + social_discount_rate) ** (years - self.prospection_start_year)
+        area_loss_discounted = area_loss / discount
+
+        cumulative_total_surplus_loss = (
+            jnp.cumsum(area_loss) + cumulative_total_airline_cost_increase
+        )
+        cumulative_total_surplus_loss_discounted = (
+            jnp.cumsum(area_loss_discounted)
+            + cumulative_total_airline_cost_increase_discounted[year_pos(self, self.end_year)]
+            - cumulative_total_airline_cost_increase_discounted[year_pos(self, 2025)]
+        )
+        cumulative_total_surplus_loss_discounted_obj = cumulative_total_surplus_loss_discounted[
+            year_pos(self, self.end_year)
+        ]
+
+        return (
+            area_loss,
+            cumulative_total_surplus_loss,
+            cumulative_total_surplus_loss_discounted,
+            cumulative_total_surplus_loss_discounted_obj,
+            area_loss_discounted,
+        )
+
 
 class ConsumerSurplusLoss(AeroMAPSModel):
     """
@@ -793,6 +852,42 @@ class ConsumerSurplusLoss(AeroMAPSModel):
         cumulative_delta_consumer_surplus_obj = (
             delta_consumer_surplus_discounted.cumsum()[self.end_year]
             - delta_consumer_surplus_discounted.cumsum()[2025]
+        )
+
+        return (
+            delta_consumer_surplus,
+            delta_consumer_surplus_discounted,
+            cumulative_delta_consumer_surplus_obj,
+        )
+
+    def jax_compute(
+        self, rpk, rpk_no_elasticity, airfare_per_rpk, price_elasticity, social_discount_rate
+    ):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        rpk = jnp.asarray(rpk)
+        rpk_no_elasticity = jnp.asarray(rpk_no_elasticity)
+        airfare_per_rpk = jnp.asarray(airfare_per_rpk)
+        years = jnp.asarray(years_index(self), dtype=jnp.float64)
+
+        beta = airfare_per_rpk[year_pos(self, 2025)] / (
+            rpk_no_elasticity ** (1.0 / price_elasticity)
+        )
+
+        unit_elasticity = price_elasticity == -1.0
+        safe_elasticity = jnp.where(unit_elasticity, -2.0, price_elasticity)
+        exponent = 1.0 + 1.0 / safe_elasticity
+        delta_consumer_surplus = jnp.where(
+            unit_elasticity,
+            beta * jnp.log(rpk_no_elasticity / rpk),
+            beta * (-1.0 / (1.0 + safe_elasticity)) * (rpk_no_elasticity**exponent - rpk**exponent),
+        )
+
+        discount = (1.0 + social_discount_rate) ** (years - self.prospection_start_year)
+        delta_consumer_surplus_discounted = delta_consumer_surplus / discount
+
+        cumulated = jnp.cumsum(delta_consumer_surplus_discounted)
+        cumulative_delta_consumer_surplus_obj = (
+            cumulated[year_pos(self, self.end_year)] - cumulated[year_pos(self, 2025)]
         )
 
         return (
@@ -885,6 +980,38 @@ class AirlineSurplusLoss(AeroMAPSModel):
             cumulative_delta_airline_surplus_obj,
         )
 
+    def jax_compute(
+        self, total_cost_per_rpk, rpk, rpk_no_elasticity, social_discount_rate, airfare_per_rpk
+    ):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        total_cost_per_rpk = jnp.asarray(total_cost_per_rpk)
+        rpk = jnp.asarray(rpk)
+        rpk_no_elasticity = jnp.asarray(rpk_no_elasticity)
+        airfare_per_rpk = jnp.asarray(airfare_per_rpk)
+        years = jnp.asarray(years_index(self), dtype=jnp.float64)
+        base_pos = year_pos(self, self.prospection_start_year - 1)
+
+        total_airline_surplus = (airfare_per_rpk - total_cost_per_rpk) * rpk
+        initial_airline_surplus = (
+            airfare_per_rpk[base_pos] - total_cost_per_rpk[base_pos]
+        ) * rpk_no_elasticity
+
+        delta_airline_surplus = initial_airline_surplus - total_airline_surplus
+        discount = (1.0 + social_discount_rate) ** (years - self.prospection_start_year)
+        delta_airline_surplus_discounted = delta_airline_surplus / discount
+
+        cumulated = jnp.cumsum(delta_airline_surplus_discounted)
+        cumulative_delta_airline_surplus_obj = (
+            cumulated[year_pos(self, self.end_year)] - cumulated[year_pos(self, 2025)]
+        )
+
+        return (
+            delta_airline_surplus,
+            delta_airline_surplus_discounted,
+            total_airline_surplus,
+            cumulative_delta_airline_surplus_obj,
+        )
+
 
 class TaxRevenueLoss(AeroMAPSModel):
     """
@@ -964,6 +1091,31 @@ class TaxRevenueLoss(AeroMAPSModel):
             cumulative_delta_tax_revenue_obj,
         )
 
+    def jax_compute(self, total_extra_tax_per_rpk, rpk, rpk_no_elasticity, social_discount_rate):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        total_extra_tax_per_rpk = jnp.asarray(total_extra_tax_per_rpk)
+        years = jnp.asarray(years_index(self), dtype=jnp.float64)
+        base_pos = year_pos(self, self.prospection_start_year - 1)
+
+        total_tax_revenue = total_extra_tax_per_rpk * jnp.asarray(rpk)
+        initial_tax_revenue = total_extra_tax_per_rpk[base_pos] * jnp.asarray(rpk_no_elasticity)
+        delta_tax_revenue = initial_tax_revenue - total_tax_revenue
+
+        discount = (1.0 + social_discount_rate) ** (years - self.prospection_start_year)
+        delta_tax_revenue_discounted = delta_tax_revenue / discount
+
+        cumulated = jnp.cumsum(delta_tax_revenue_discounted)
+        cumulative_delta_tax_revenue_obj = (
+            cumulated[year_pos(self, self.end_year)] - cumulated[year_pos(self, 2025)]
+        )
+
+        return (
+            total_tax_revenue,
+            delta_tax_revenue,
+            delta_tax_revenue_discounted,
+            cumulative_delta_tax_revenue_obj,
+        )
+
 
 class TotalWelfareLoss(AeroMAPSModel):
     """
@@ -1027,6 +1179,37 @@ class TotalWelfareLoss(AeroMAPSModel):
         self.df.loc[:, "total_welfare_loss_discounted"] = total_welfare_loss_discounted
         self.df.loc[:, "cumulative_total_welfare_loss_discounted"] = (
             cumulative_total_welfare_loss_discounted
+        )
+
+        return (
+            total_welfare_loss,
+            total_welfare_loss_discounted,
+            cumulative_total_welfare_loss_discounted,
+            cumulative_total_welfare_loss_obj,
+        )
+
+    def jax_compute(
+        self,
+        delta_tax_revenue,
+        delta_consumer_surplus,
+        delta_airline_surplus,
+        social_discount_rate,
+    ):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        years = jnp.asarray(years_index(self), dtype=jnp.float64)
+
+        total_welfare_loss = (
+            jnp.asarray(delta_consumer_surplus)
+            + jnp.asarray(delta_airline_surplus)
+            + jnp.asarray(delta_tax_revenue)
+        )
+        discount = (1.0 + social_discount_rate) ** (years - self.prospection_start_year)
+        total_welfare_loss_discounted = total_welfare_loss / discount
+        cumulative_total_welfare_loss_discounted = jnp.cumsum(total_welfare_loss_discounted)
+
+        cumulative_total_welfare_loss_obj = (
+            cumulative_total_welfare_loss_discounted[year_pos(self, self.end_year)]
+            - cumulative_total_welfare_loss_discounted[year_pos(self, 2025)]
         )
 
         return (

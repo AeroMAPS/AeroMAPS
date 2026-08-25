@@ -214,6 +214,11 @@ class _AeroMAPSJAXWrapperMixin:
             # ``jax_climate_output_names``; the others are stored in ``model.df``
             # and must be truncated back to the model year index, exactly as the
             # pandas assignment ``self.df.loc[:, name] = series`` does.
+            # Outputs the pandas compute files under another column name.
+            for name, column in getattr(self.model, "jax_df_output_names", {}).items():
+                if name in storable:
+                    storable[column] = storable.pop(name)
+
             climate_names = set(getattr(self.model, "jax_climate_output_names", ()))
             climate_keys = [key for key in storable if key in climate_names] or None
             for key, value in storable.items():
@@ -248,7 +253,9 @@ class AeroMAPSJAXModelWrapper(_AeroMAPSJAXWrapperMixin, JAXDiscipline):
         # Intermediates the pandas compute only writes to ``model.df`` are
         # declared as outputs here so ``jax_compute`` can return them and
         # ``sync_model_df`` can store them (see ``jax_extra_output_names``).
-        extra_names = [n for n in getattr(model, "jax_extra_output_names", ()) if n not in model.output_names]
+        extra_names = [
+            n for n in getattr(model, "jax_extra_output_names", ()) if n not in model.output_names
+        ]
         output_names = list(model.output_names) + extra_names
 
         # Static configuration inputs are frozen at build time and re-injected

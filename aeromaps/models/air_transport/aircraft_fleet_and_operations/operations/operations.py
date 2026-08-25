@@ -91,9 +91,7 @@ class OperationsLogistic(AeroMAPSModel):
         )
         gain = jnp.where(sigmoid_val < operations_limit, 0.0, sigmoid_val)
         # The sigmoid is applied from prospection_start_year - 1.
-        operations_gain = jnp.where(
-            years_index(self) < self.prospection_start_year - 1, 0.0, gain
-        )
+        operations_gain = jnp.where(years_index(self) < self.prospection_start_year - 1, 0.0, gain)
         return operations_gain
 
 

@@ -215,7 +215,8 @@ class EnergyUseChoice(AeroMAPSModel):
                                 ).fillna(0)
 
                                 modified_years = pathway_consumption.loc[original.index][
-                                    pathway_consumption.loc[original.index] != original.loc[original.index]
+                                    pathway_consumption.loc[original.index]
+                                    != original.loc[original.index]
                                 ]
 
                                 if not modified_years.empty:
@@ -419,9 +420,7 @@ class EnergyUseChoice(AeroMAPSModel):
 
         for aircraft_type in self.pathways_manager.get_all_types("aircraft_type"):
             try:
-                energy_consumption = jnp.asarray(
-                    input_data[f"energy_consumption_{aircraft_type}"]
-                )
+                energy_consumption = jnp.asarray(input_data[f"energy_consumption_{aircraft_type}"])
             except KeyError:
                 raise KeyError(
                     f"Aircraft type <{aircraft_type}> specified in energy_carriers_data.yaml not supported by AeroMAPS aircraft models."
@@ -514,9 +513,7 @@ class EnergyUseChoice(AeroMAPSModel):
 
         for pathway in self.pathways_manager.get_all():
             output_data[f"{pathway.name}_share_total_energy"] = (
-                output_data[f"{pathway.name}_energy_consumption"]
-                / total_energy_consumption
-                * 100.0
+                output_data[f"{pathway.name}_energy_consumption"] / total_energy_consumption * 100.0
             )
 
         def _zero_to_nan(x):

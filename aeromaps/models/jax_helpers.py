@@ -88,9 +88,7 @@ def jax_leveling_function(model, reference_periods, reference_periods_values):
         return jnp.where(years >= model.prospection_start_year, out, jnp.nan)
 
     periods = np.asarray(reference_periods, dtype=np.float64)
-    idx = np.clip(
-        np.searchsorted(periods, years, side="right") - 1, 0, len(reference_periods) - 2
-    )
+    idx = np.clip(np.searchsorted(periods, years, side="right") - 1, 0, len(reference_periods) - 2)
     out = values[idx]
     return jnp.where(years >= periods[0], out, jnp.nan)
 
@@ -283,9 +281,7 @@ def jax_discounted_abatement_vals(
     )
     cumul_em = jnp.sum(emission_ratio, axis=1)
 
-    carbon_price = jax_extended_carbon_price(
-        exogenous_carbon_price_trajectory, positions, clamped
-    )
+    carbon_price = jax_extended_carbon_price(exogenous_carbon_price_trajectory, positions, clamped)
     generic_discounted_cumul_em = jnp.sum(
         emission_ratio
         * carbon_price

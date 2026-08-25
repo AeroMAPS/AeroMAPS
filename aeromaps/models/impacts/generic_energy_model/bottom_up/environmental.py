@@ -546,12 +546,12 @@ class BottomUpEnvironmental(AeroMAPSModel):
             """NaN-aware accumulation of a (vintage, age) grid onto the model years."""
             contributing = inside & ~jnp.isnan(grid)
             positions = target_clamped.ravel()
-            total = jnp.zeros(n_years).at[positions].add(
-                jnp.where(contributing, jnp.nan_to_num(grid), 0.0).ravel()
+            total = (
+                jnp.zeros(n_years)
+                .at[positions]
+                .add(jnp.where(contributing, jnp.nan_to_num(grid), 0.0).ravel())
             )
-            count = jnp.zeros(n_years).at[positions].add(
-                contributing.ravel().astype(jnp.float64)
-            )
+            count = jnp.zeros(n_years).at[positions].add(contributing.ravel().astype(jnp.float64))
             return jnp.where(count > 0, total, jnp.nan)
 
         def vintage_values(name, default):
@@ -603,9 +603,9 @@ class BottomUpEnvironmental(AeroMAPSModel):
                 vintage_emission_factor = jax_nan_add(
                     vintage_emission_factor, co2_emission_factor_resource
                 )
-                output_data[
-                    f"{pathway}_excluding_processes_{key}_mean_co2_emission_factor"
-                ] = scatter(masked(co2_emission_factor_resource * relative_share))
+                output_data[f"{pathway}_excluding_processes_{key}_mean_co2_emission_factor"] = (
+                    scatter(masked(co2_emission_factor_resource * relative_share))
+                )
 
             for process_key in self.process_keys:
                 process_specific_consumption = vintage_values(
@@ -619,7 +619,9 @@ class BottomUpEnvironmental(AeroMAPSModel):
                 resource_consumption_with_selectivity = resource_consumption * kerosene_selectivity
 
                 unit_emissions = resource_emission_factor(key)
-                co2_emission_factor_resource = process_specific_consumption[:, None] * unit_emissions
+                co2_emission_factor_resource = (
+                    process_specific_consumption[:, None] * unit_emissions
+                )
                 vintage_emission_factor = jax_nan_add(
                     vintage_emission_factor, co2_emission_factor_resource
                 )
@@ -645,9 +647,9 @@ class BottomUpEnvironmental(AeroMAPSModel):
             vintage_emission_factor = jax_nan_add(
                 vintage_emission_factor, process_emission_factor[:, None]
             )
-            output_data[
-                f"{pathway}_{process_key}_without_resources_mean_co2_emission_factor"
-            ] = scatter(masked(process_emission_factor[:, None] * relative_share))
+            output_data[f"{pathway}_{process_key}_without_resources_mean_co2_emission_factor"] = (
+                scatter(masked(process_emission_factor[:, None] * relative_share))
+            )
 
         co2_emission_factor = scatter(masked(vintage_emission_factor * relative_share))
 

@@ -404,9 +404,7 @@ class EnergyCarriersMeans(AeroMAPSModel):
                 output_data[f"{prefix}_mean_carbon_tax_supplement"] = (
                     origin_mean_carbon_tax_supplement * origin_valid
                 )
-                output_data[f"{prefix}_marginal_net_mfsp"] = (
-                    origin_marginal_net_mfsp * origin_valid
-                )
+                output_data[f"{prefix}_marginal_net_mfsp"] = origin_marginal_net_mfsp * origin_valid
 
             valid = jnp.where(cumulative_share == 0.0, jnp.nan, cumulative_share)
             for _, out_key in fields:
@@ -566,9 +564,9 @@ class EnergyCarriersMassicShares(AeroMAPSModel):
                     )
 
                     output_data[f"{pathway.name}_mass_consumption"] = pathway_mass_consumption
-                    output_data[
-                        f"{pathway.name}_massic_share_{aircraft_type}_{energy_origin}"
-                    ] = origin_massic_share
+                    output_data[f"{pathway.name}_massic_share_{aircraft_type}_{energy_origin}"] = (
+                        origin_massic_share
+                    )
                     output_data[f"{pathway.name}_massic_share_{aircraft_type}"] = massic_share
 
         return output_data

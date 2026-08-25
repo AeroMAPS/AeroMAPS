@@ -161,6 +161,9 @@ class AeroMAPSModel(object):
     # and the wrapper stores them in ``model.df`` so both paths expose the same
     # columns in ``process.data["vector_outputs"]``.
     jax_extra_output_names: tuple = ()
+    # Outputs the pandas ``compute`` stores in ``self.df`` under a different name
+    # than the returned variable, as ``{output name: dataframe column}``.
+    jax_df_output_names: dict = {}
 
     def __init__(self, name, parameters=None, model_type="auto"):
         self.name = name

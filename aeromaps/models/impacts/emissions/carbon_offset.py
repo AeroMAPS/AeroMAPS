@@ -19,7 +19,6 @@ from aeromaps.models.jax_helpers import (
     hist_mask,
     jax_interpolation_function,
     jax_leveling_function,
-    year_pos,
     years_index,
 )
 
@@ -366,7 +365,6 @@ class CumulativeCarbonOffset(AeroMAPSModel):
     def jax_compute(self, carbon_offset):
         """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
         years = years_index(self)
-        ps_pos = year_pos(self, self.prospection_start_year)
         increments = jnp.where(years >= self.prospection_start_year, carbon_offset / 1000.0, 0.0)
         cumulative = jnp.cumsum(increments)
         cumulative_carbon_offset = jnp.where(

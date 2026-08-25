@@ -13,10 +13,7 @@ import pandas as pd
 from aeromaps.models.base import AeroMAPSModel, aeromaps_interpolation_function
 from aeromaps.models.jax_helpers import (
     hist_mask,
-    jax_interp_backfill,
     jax_interpolation_function,
-    year_pos,
-    years_index,
 )
 
 

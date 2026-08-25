@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
-from aeromaps.models.jax_helpers import hist_mask, year_pos, years_index
+from aeromaps.models.jax_helpers import hist_mask, year_pos
 
 
 class KayaFactors(AeroMAPSModel):
@@ -404,9 +404,7 @@ class CO2Emissions(AeroMAPSModel):
 
     @property
     def jax_output_indexes(self):
-        return {
-            "co2_emissions": pd.RangeIndex(self.climate_historic_start_year, self.end_year + 1)
-        }
+        return {"co2_emissions": pd.RangeIndex(self.climate_historic_start_year, self.end_year + 1)}
 
     def jax_compute(self, input_data) -> dict:
         """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
@@ -1093,9 +1091,7 @@ class DetailedCumulativeCO2Emissions(AeroMAPSModel):
         cumulative_co2_emissions_including_aircraft_efficiency = cumulate(
             co2_emissions_including_aircraft_efficiency
         )
-        cumulative_co2_emissions_including_operations = cumulate(
-            co2_emissions_including_operations
-        )
+        cumulative_co2_emissions_including_operations = cumulate(co2_emissions_including_operations)
         cumulative_co2_emissions_including_load_factor = cumulate(
             co2_emissions_including_load_factor
         )
@@ -1192,4 +1188,42 @@ class SimpleCO2Emissions(AeroMAPSModel):
 
         co2_emissions = self.df_climate.loc[:, "co2_emissions"]
 
+        return co2_emissions
+
+    jax_climate_output_names = ("co2_emissions",)
+
+    @property
+    def jax_output_indexes(self):
+        return {"co2_emissions": pd.RangeIndex(self.climate_historic_start_year, self.end_year + 1)}
+
+    def jax_compute(
+        self,
+        energy_consumption_init,
+        dropin_fuel_mean_co2_emission_factor,
+        hydrogen_mean_co2_emission_factor,
+        electric_mean_co2_emission_factor,
+        energy_consumption_dropin_fuel,
+        energy_consumption_hydrogen,
+        energy_consumption_electricity,
+    ):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        offset = self.historic_start_year - self.climate_historic_start_year
+        historical = jnp.asarray(
+            np.asarray(self.climate_historical_data[:offset, 1], dtype=np.float64)
+        )
+
+        dropin_fuel_factor = jnp.asarray(dropin_fuel_mean_co2_emission_factor) / 10**12
+        historic_model_years = dropin_fuel_factor * jnp.asarray(energy_consumption_init)
+        prospective = (
+            dropin_fuel_factor * jnp.asarray(energy_consumption_dropin_fuel)
+            + jnp.asarray(electric_mean_co2_emission_factor)
+            / 10**12
+            * jnp.asarray(energy_consumption_electricity)
+            + jnp.asarray(hydrogen_mean_co2_emission_factor)
+            / 10**12
+            * jnp.asarray(energy_consumption_hydrogen)
+        )
+
+        model_years = jnp.where(hist_mask(self), historic_model_years, prospective)
+        co2_emissions = jnp.concatenate([historical, model_years])
         return co2_emissions
