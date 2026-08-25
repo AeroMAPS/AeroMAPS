@@ -99,6 +99,45 @@ def test_compute(config_file):
     assert len(vector_outputs) > 0
 
 
+def test_get_variable_information():
+    """Test the public metadata lookup API (lazy loading included)."""
+    config_file = CONFIG_DIR / "config_basic.yaml"
+    proc = create_process(configuration_file=str(config_file))
+
+    # Exact entry, resolved through the lazily loaded registry
+    info = proc.get_variable_information("co2_emissions")
+    assert info == {
+        "Unit": "MtCO2",
+        "Description": "CO2 emissions from all commercial air transport",
+        "Source": "",
+    }
+    # Pattern-resolved name (market ids are user-defined, so this must
+    # work for names absent from the file)
+    assert proc.get_variable_information("cagr_rpk_short_range")["Unit"] == "%"
+    # Unknown variable
+    assert proc.get_variable_information("definitely_not_a_variable") is None
+
+
+def test_data_information_legacy_csv_config_key(tmp_path):
+    """Test that the deprecated csv_data_information_file key still works."""
+    csv_file = tmp_path / "data_information.csv"
+    csv_file.write_text(
+        "Name;Type;Unit;Description;Reference for default input value (if applicable)\n"
+        "co2_emissions;Vector;MtCO2;CO2 emissions;\n",
+        encoding="utf-8",
+    )
+    config_file = CONFIG_DIR / "config_basic.yaml"
+    proc = create_process(configuration_file=str(config_file))
+    proc._user_config.setdefault("data", {}).setdefault("inputs", {})[
+        "csv_data_information_file"
+    ] = str(csv_file)
+
+    with pytest.warns(DeprecationWarning):
+        df = proc._read_data_information()
+    assert proc.get_variable_information("co2_emissions")["Unit"] == "MtCO2"
+    assert not df.empty
+
+
 def test_process_models_are_independent():
     """Test that model instances are independent between processes."""
     # Build two processes from a valid config. (The no-argument default path is a
