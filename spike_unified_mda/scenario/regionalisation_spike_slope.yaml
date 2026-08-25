@@ -1,0 +1,30 @@
+# Spike scenario: two regions coupled through ONE global, non-namespaced discipline.
+regionalisation:
+  execution_mode: "unified_mda"
+  global_namespace: "overall"
+
+  # The spike's reason to exist: a discipline that is NOT namespaced and whose
+  # grammar spans every region ({r}:spike_fuel_demand -> {r}:spike_fuel_price).
+  global_models:
+    customs:
+      spike_fuel_market: "./spike_market_models.py::SpikeFuelMarket"
+
+  # MDA settings are NOT configured here: see spike_unified_mda/mda_settings.py.
+  # They are applied to the GEMSEO objects after the process is built, which is the
+  # pattern AeroMAPSProcess uses (a regionalisation.mda block was rejected in #157).
+
+  regions:
+    region_A:
+      config_file: "region_A/config_slope.yaml"
+    region_B:
+      config_file: "region_B/config_slope.yaml"
+
+  aggregation:
+    sum:
+      - co2_emissions
+      - rpk
+      - ask
+      - energy_consumption
+    weighted_average:
+      - variable: airfare_per_rpk
+        weight_by: rpk

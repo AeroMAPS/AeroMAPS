@@ -1,0 +1,30 @@
+# Spike region config: the elasticity tutorial wiring (rpk <-> airfare_per_rpk loop
+# via RPKElasticity), with `models_energy_cost` replaced by the spike's own
+# market-driven carbon tax so the global fuel market can write into the cost chain.
+data:
+  inputs:
+    json_inputs_file: "./parameters.json"
+  outputs:
+    json_outputs_file: "./outputs.json"
+
+models:
+  markets:
+    markets_data_file: "./markets.yaml"
+
+  energy:
+    energy_carriers_model_data_file: default
+    resources_model_data_file: default
+    processes_model_data_file: default
+
+  standards:
+    - models_traffic
+    - models_efficiency_top_down
+    - models_energy_without_fuel_effect
+    - models_offset
+    - models_emissions
+    - models_operation_cost_top_down_feedback
+
+  customs:
+    spike_fuel_demand: "../spike_market_models.py::SpikeFuelDemand"
+    spike_market_carbon_tax: "../spike_market_models.py::SpikeMarketCarbonTax"
+    demand_slope: "../demand_slope_model.py::DemandSlope"
