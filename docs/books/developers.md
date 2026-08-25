@@ -51,6 +51,14 @@ Two options, in order of precedence:
 The special unit `N/A` marks variables whose unit cannot be expressed
 statically (e.g. LCA impacts, whose unit depends on the LCIA method).
 
+Prefer a pattern whenever the variable name embeds something the user chooses —
+an energy pathway, a resource, or a **market id**. Market ids come from the
+markets yaml file, so market-scoped variables (`<market_id>_covid_end_year`,
+`cagr_rpk_<market_id>`, ...) can never be enumerated exhaustively and are
+documented by the rules of the *Market-scoped* sections of
+`data_information.yaml`. Adding a market to a scenario then requires no change
+to the metadata file.
+
 ### The unit vocabulary
 
 Unit strings are validated when the file is loaded, against the controlled

@@ -657,21 +657,24 @@ variables:
   carbon_budget_consumed_share:
     unit: "%"
     description: "Share of carbon budget consumed by aviation over 2020-2050"
+  carbon_budget_reference_year:
+    unit: "yr"
+    description: "Reference year of the world carbon budget used for the sustainability assessment"
   carbon_dioxyde_removal_2100:
     unit: "GtCO2"
     description: "Cumulative Carbon Dioxide Removal (CDR) over 2020-2100"
   carbon_offset:
     unit: "MtCO2"
     description: "Total annual carbon offset"
-  carbon_offset_baseline_level_vs_2019:
+  carbon_offset_baseline_level_vs_corsia_reference_year:
     unit: "%"
-    description: "Carbon offsetting baseline level with respect to 2019 emissions"
-  carbon_offset_baseline_level_vs_2019_reference_periods:
+    description: "Carbon offsetting baseline level with respect to the emissions of the CORSIA reference year"
+  carbon_offset_baseline_level_vs_corsia_reference_year_reference_periods:
     unit: "yr"
-    description: "Reference periods for the level of CO2 emissions relative to 2019 from which higher emissions are offset"
-  carbon_offset_baseline_level_vs_2019_reference_periods_values:
+    description: "Reference periods for the level of CO2 emissions, relative to the CORSIA reference year, from which higher emissions are offset"
+  carbon_offset_baseline_level_vs_corsia_reference_year_reference_periods_values:
     unit: "%"
-    description: "Level of CO2 emissions relative to 2019 from which higher emissions are offset for the reference periods"
+    description: "Level of CO2 emissions, relative to the CORSIA reference year, from which higher emissions are offset for the reference periods"
   carbon_offset_baseline_share_total_emissions_reference_periods:
     unit: "yr"
     description: "Reference periods for the share of total emissions used as carbon offsetting baseline"
@@ -741,12 +744,6 @@ variables:
   co2_emissions:
     unit: "MtCO2"
     description: "CO2 emissions from all commercial air transport"
-  co2_emissions_2019technology:
-    unit: "MtCO2"
-    description: "CO2 emissions from all commercial air transport based on 2019 technological level"
-  co2_emissions_2019technology_baseline3:
-    unit: "MtCO2"
-    description: "CO2 emissions from all commercial air transport based on 2019 technological level with a baseline air traffic growth"
   co2_emissions_freight:
     unit: "MtCO2"
     description: "CO2 emissions from freight air transport"
@@ -762,6 +759,12 @@ variables:
   co2_emissions_including_operations:
     unit: "MtCO2"
     description: "CO2 emissions from all commercial air transport including aircraft efficiency and operation improvements"
+  co2_emissions_last_historical_year_technology:
+    unit: "MtCO2"
+    description: "CO2 emissions from all commercial air transport based on the technological level of the last historical year"
+  co2_emissions_last_historical_year_technology_baseline3:
+    unit: "MtCO2"
+    description: "CO2 emissions from all commercial air transport based on the technological level of the last historical year with a baseline air traffic growth"
   co2_emissions_long_range:
     unit: "MtCO2"
     description: "CO2 emissions from passenger air transport for long-range market"
@@ -953,6 +956,9 @@ variables:
   contrails_erf:
     unit: "W/m²"
     description: "Effective radiative forcing due to contrails"
+  corsia_reference_year:
+    unit: "yr"
+    description: "Reference year of the CORSIA carbon offsetting scheme"
   covid_end_year:
     unit: "yr"
     description: "Covid-19 end year"
@@ -999,18 +1005,18 @@ variables:
   cumulative_co2_emissions:
     unit: "GtCO2"
     description: "Cumulative CO2 emissions from all commercial air transport"
-  cumulative_co2_emissions_2019technology:
-    unit: "GtCO2"
-    description: "Cumulative CO2 emissions from all commercial air transport based on 2019 technological level"
-  cumulative_co2_emissions_2019technology_baseline3:
-    unit: "GtCO2"
-    description: "CumulativeCO2 emissions from all commercial air transport based on 2019 technological level with a baseline air traffic growth"
   cumulative_co2_emissions_including_energy:
     unit: "GtCO2"
     description: "Cumulative CO2 emissions from all commercial air transport including aircraft efficiency, operation and load factor improvements and energy decarbonization"
   cumulative_co2_emissions_including_load_factor:
     unit: "GtCO2"
     description: "Cumulative CO2 emissions from all commercial air transport including aircraft efficiency, operation and load factor improvements"
+  cumulative_co2_emissions_last_historical_year_technology:
+    unit: "GtCO2"
+    description: "Cumulative CO2 emissions from all commercial air transport based on the technological level of the last historical year"
+  cumulative_co2_emissions_last_historical_year_technology_baseline3:
+    unit: "GtCO2"
+    description: "Cumulative CO2 emissions from all commercial air transport based on the technological level of the last historical year with a baseline air traffic growth"
   cumulative_co2_emissions_smooth:
     unit: "GtCO2-we"
     description: "Cumulative CO2 emissions from all commercial air transport smoothed over 5 years"
@@ -2968,15 +2974,104 @@ variables:
     unit: "EJ"
     description: "Available biomass in the form of waste in 2050"
     source: "Statistical analysis of a literature review (see resources/energy_data)"
-  world_co2_emissions_2019:
+  world_co2_emissions_carbon_budget_reference_year:
     unit: "GtCO2"
-    description: "World CO2 emissions in 2019"
+    description: "World CO2 emissions in the carbon budget reference year"
     source: "Global Carbon Project - https://www.globalcarbonproject.org/"
   world_temperature_target:
     unit: "°C"
     description: "World temperature target"
 
 patterns:
+
+  # --- Market-scoped inputs (`<market_id>_<leaf>`; market ids are defined in
+  # the markets yaml file, so these families cannot be listed exhaustively) ---
+  - match: "*_reference_cagr_reference_periods_values"
+    unit: "%"
+    description: "Reference compound annual growth rate of the `{prefix}` market for the reference periods"
+  - match: "*_cagr_reference_periods_values"
+    unit: "%"
+    description: "Compound annual growth rate of the `{prefix}` market for the reference periods"
+  - match: "*_covid_drop_start_year"
+    unit: "%"
+    description: "Traffic drop due to Covid-19 in the start year for the `{prefix}` market"
+  - match: "*_covid_end_year_reference_ratio"
+    unit: "%"
+    description: "Traffic level reached in the Covid-19 end year, relative to the reference, for the `{prefix}` market"
+  - match: "*_covid_end_year"
+    unit: "yr"
+    description: "End year of the Covid-19 effect on the traffic of the `{prefix}` market"
+  - match: "*_covid_load_factor_2020"
+    unit: "%"
+    description: "Load factor in 2020 due to Covid-19 for the `{prefix}` market"
+  - match: "*_load_factor_end_year"
+    unit: "%"
+    description: "Mean aircraft load factor in the end year for the `{prefix}` market"
+  - match: "*_measures_final_impact"
+    unit: "%"
+    description: "Final impact of specific measures, as a percentage reduction in traffic, for the `{prefix}` market"
+  - match: "*_measures_start_year"
+    unit: "yr"
+    description: "Start year for implementing specific measures to reduce the traffic of the `{prefix}` market"
+  - match: "*_measures_duration"
+    unit: "yr"
+    description: "Duration for implementing 98% of the specific measures to reduce the traffic of the `{prefix}` market"
+  - match: "*_doc_non_energy_per_ask_dropin_fuel_init"
+    unit: "€/ASK"
+    description: "Initial non-energy direct operating cost per Available Seat Kilometer of drop-in fuel aircraft for the `{prefix}` market"
+  - match: "*_doc_non_energy_per_ask_dropin_fuel_gain"
+    unit: "%"
+    description: "Annual gain in non-energy direct operating cost per Available Seat Kilometer of drop-in fuel aircraft for the `{prefix}` market"
+  - match: "*_relative_doc_non_energy_per_ask_hydrogen_wrt_dropin"
+    unit: "-"
+    description: "Non-energy direct operating cost per Available Seat Kilometer of hydrogen aircraft, relative to drop-in fuel aircraft, for the `{prefix}` market"
+  - match: "*_relative_doc_non_energy_per_ask_electric_wrt_dropin"
+    unit: "-"
+    description: "Non-energy direct operating cost per Available Seat Kilometer of electric aircraft, relative to drop-in fuel aircraft, for the `{prefix}` market"
+  - match: "*_hydrogen_introduction_year"
+    unit: "yr"
+    description: "Introduction year of hydrogen aircraft in the `{prefix}` market"
+  - match: "*_electric_introduction_year"
+    unit: "yr"
+    description: "Introduction year of electric aircraft in the `{prefix}` market"
+  - match: "*_energy_per_ask_dropin_fuel_gain_reference_years_values"
+    unit: "%"
+    description: "Annual gain in energy consumption per Available Seat Kilometer of drop-in fuel aircraft, for the reference years, in the `{prefix}` market"
+  - match: "*_energy_per_rtk_dropin_fuel_gain_reference_years_values"
+    unit: "%"
+    description: "Annual gain in energy consumption per Revenue Tonne Kilometer of drop-in fuel aircraft, for the reference years, in the `{prefix}` market"
+  - match: "*_relative_energy_per_ask_hydrogen_wrt_dropin_reference_years_values"
+    unit: "-"
+    description: "Energy consumption per Available Seat Kilometer of hydrogen aircraft, relative to drop-in fuel aircraft, for the reference years, in the `{prefix}` market"
+  - match: "*_relative_energy_per_ask_electric_wrt_dropin_reference_years_values"
+    unit: "-"
+    description: "Energy consumption per Available Seat Kilometer of electric aircraft, relative to drop-in fuel aircraft, for the reference years, in the `{prefix}` market"
+
+  # --- Market-scoped traffic outputs (`<name>_<market_id>`) ---
+  - match: "cagr_rpk_*"
+    unit: "%"
+    description: "Compound annual growth rate of the Revenue Passenger Kilometer (RPK) of the `{prefix}` market over the simulation"
+  - match: "cagr_rtk_*"
+    unit: "%"
+    description: "Compound annual growth rate of the Revenue Tonne Kilometer (RTK) of the `{prefix}` market over the simulation"
+  - match: "prospective_evolution_rpk_*"
+    unit: "%"
+    description: "Evolution of the Revenue Passenger Kilometer (RPK) of the `{prefix}` market over the simulation"
+  - match: "prospective_evolution_rtk_*"
+    unit: "%"
+    description: "Evolution of the Revenue Tonne Kilometer (RTK) of the `{prefix}` market over the simulation"
+  - match: "reference_annual_growth_rate_rpk_*"
+    unit: "%"
+    description: "Reference annual growth rate of the Revenue Passenger Kilometer (RPK) of the `{prefix}` market"
+  - match: "reference_annual_growth_rate_rtk_*"
+    unit: "%"
+    description: "Reference annual growth rate of the Revenue Tonne Kilometer (RTK) of the `{prefix}` market"
+  - match: "rpk_reference_*"
+    unit: "RPK"
+    description: "Number of Revenue Passenger Kilometer (RPK) of the `{prefix}` market with a baseline air traffic growth"
+  - match: "rtk_reference_*"
+    unit: "RTK"
+    description: "Number of Revenue Tonne Kilometer (RTK) of the `{prefix}` market with a baseline air traffic growth"
 
   # --- Reference years and values of interpolated inputs ---
   - match: "*_mfsp_without_resource_values"
@@ -3309,6 +3404,12 @@ patterns:
     description: "Life cycle assessment impact `{prefix}`. The unit depends on the LCIA method and impact category; see the LCA model configuration."
 
   # --- Fallbacks (keep these rules last) ---
+  - match: "load_factor_*"
+    unit: "%"
+    description: "Mean aircraft load factor of the `{prefix}` market"
+  - match: "rtk_*"
+    unit: "RTK"
+    description: "Number of Revenue Tonne Kilometer (RTK) of `{prefix}`"
   - match: "*_cost"
     unit: "€/MJ"
     description: "Cost of the `{prefix}` energy resource"
