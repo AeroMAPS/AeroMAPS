@@ -179,6 +179,10 @@ theme:
   logo: assets/logo_white.png
 
 
+# Internal working notes, kept in the repository but not published to the site.
+exclude_docs: |
+  fuel_market_spike/
+
 plugins:
   - search
   - mike
