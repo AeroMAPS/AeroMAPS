@@ -2026,10 +2026,17 @@ class AeroMAPSProcess(object):
                             and hasattr(model, "jax_compute")
                             and getattr(model, "jax_ready", True)
                         ):
-                            from aeromaps.core.jax_wrapper import (
-                                AeroMAPSAutoJAXModelWrapper,
-                                AeroMAPSJAXModelWrapper,
-                            )
+                            try:
+                                from aeromaps.core.jax_wrapper import (
+                                    AeroMAPSAutoJAXModelWrapper,
+                                    AeroMAPSJAXModelWrapper,
+                                )
+                            except ImportError as error:
+                                raise ImportError(
+                                    "use_jax=True requires the gemseo-jax package, which is "
+                                    "not part of the default install. Install it with "
+                                    "`pip install aeromaps[jax]` (or `poetry install -E jax`)."
+                                ) from error
 
                             if getattr(model, "model_type") == "custom":
                                 model = AeroMAPSJAXModelWrapper(model=model)

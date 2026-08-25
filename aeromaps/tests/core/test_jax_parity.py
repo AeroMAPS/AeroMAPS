@@ -55,7 +55,8 @@ def _assert_frames_match(pandas_frame, jax_frame, label):
     "config_name",
     [
         "config_basic",
-        "config_advanced_simplified",
+        # Exercises the bottom-up energy models (capacity, cost, environmental).
+        "config_advanced",
         "config_elasticity_demand",
     ],
 )
