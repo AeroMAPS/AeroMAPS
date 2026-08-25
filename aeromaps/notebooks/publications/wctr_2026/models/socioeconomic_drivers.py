@@ -1,9 +1,11 @@
 from typing import Tuple
+import jax.numpy as jnp
 import pandas as pd
 from aeromaps.models.base import (
     AeroMAPSModel,
     aeromaps_interpolation_function,
 )
+from aeromaps.models.jax_helpers import jax_interpolation_function, year_pos
 
 
 class SocioeconomicDrivers(AeroMAPSModel):
@@ -81,5 +83,43 @@ class SocioeconomicDrivers(AeroMAPSModel):
         # GDP per capita at COVID end year
         gdp_per_capita_covid_end = self.df.loc[covid_end_year_passenger, "gdp_per_capita"]
         self.float_outputs["gdp_per_capita_covid_end"] = gdp_per_capita_covid_end
+
+        return (population, gdp_per_capita, gdp_per_capita_covid_end)
+
+    # Interpolation knots and COVID end years are static, not differentiable.
+    jax_static_input_names = (
+        "population_reference_years",
+        "gdp_per_capita_reference_years",
+        "short_range_covid_end_year",
+        "medium_range_covid_end_year",
+        "long_range_covid_end_year",
+    )
+
+    def jax_compute(
+        self,
+        population_reference_years,
+        population_reference_years_values,
+        gdp_per_capita_reference_years,
+        gdp_per_capita_reference_years_values,
+        short_range_covid_end_year,
+        medium_range_covid_end_year,
+        long_range_covid_end_year,
+    ):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        population = jax_interpolation_function(
+            self, population_reference_years, population_reference_years_values
+        )
+        gdp_per_capita = jax_interpolation_function(
+            self, gdp_per_capita_reference_years, gdp_per_capita_reference_years_values
+        )
+
+        covid_end_year_passenger = int(
+            max(
+                short_range_covid_end_year,
+                medium_range_covid_end_year,
+                long_range_covid_end_year,
+            )
+        )
+        gdp_per_capita_covid_end = gdp_per_capita[year_pos(self, covid_end_year_passenger)]
 
         return (population, gdp_per_capita, gdp_per_capita_covid_end)

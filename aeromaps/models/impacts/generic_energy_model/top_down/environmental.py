@@ -10,7 +10,11 @@ import jax.numpy as jnp
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
-from aeromaps.models.jax_helpers import jax_nan_add
+from aeromaps.models.jax_helpers import (
+    jax_extended_carbon_price,
+    jax_nan_add,
+    jax_vintage_windows,
+)
 
 
 class TopDownEnvironmental(AeroMAPSModel):
@@ -340,11 +344,6 @@ class TopDownEnvironmental(AeroMAPSModel):
 
         return output_data
 
-    @property
-    def jax_ready(self):
-        # The per-vintage abatement-cost loop is not ported to JAX.
-        return not self.compute_abatement_cost
-
     def jax_compute(self, input_data) -> dict:
         """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
         output_data = {}
@@ -445,6 +444,34 @@ class TopDownEnvironmental(AeroMAPSModel):
             co2_emission_factor = co2_emission_factor + co2_emission_factor_process
 
         output_data[f"{self.pathway_name}_mean_co2_emission_factor"] = co2_emission_factor
+
+        if self.compute_abatement_cost:
+            # Vectorised form of the per-vintage loop in _unitary_cumul_emissions:
+            # each vintage keeps its commissioning-year emission factor over the
+            # whole lifespan, so the cumulated emissions are just ef * lifespan
+            # and only the carbon-price weighting varies with the window.
+            exogenous_carbon_price_trajectory = get(
+                "exogenous_carbon_price_trajectory", zeros
+            )
+            social_discount_rate = input_data.get("social_discount_rate", 0.0)
+            lifespan = 25
+
+            positions, clamped, age = jax_vintage_windows(n, lifespan)
+            discount = (1.0 + social_discount_rate) ** (-age)
+            carbon_price = jax_extended_carbon_price(
+                exogenous_carbon_price_trajectory, positions, clamped
+            )
+            weighting = jnp.sum(
+                carbon_price / exogenous_carbon_price_trajectory[:, None] * discount[None, :],
+                axis=1,
+            )
+
+            output_data[f"{self.pathway_name}_lifespan_unitary_emissions"] = (
+                co2_emission_factor * lifespan
+            )
+            output_data[f"{self.pathway_name}_lifespan_discounted_unitary_emissions"] = (
+                co2_emission_factor * weighting
+            )
 
         total_co2_emissions = energy_consumption * co2_emission_factor
         output_data[f"{self.pathway_name}_total_co2_emissions"] = total_co2_emissions
