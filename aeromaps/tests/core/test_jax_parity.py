@@ -16,7 +16,7 @@ CONFIG_DIR = "aeromaps/tests/tested_configs"
 
 # Columns the JAX path stores in ``model.df`` although the pandas ``compute``
 # only returns them without writing them to the dataframe.
-JAX_ONLY_COLUMNS = {"operational_profit_per_rpk"}
+JAX_ONLY_COLUMNS = {"operational_profit_per_rpk", "airfare_per_rpk_true"}
 
 
 def _drop_duplicate_columns(frame):

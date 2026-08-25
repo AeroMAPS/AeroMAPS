@@ -6,9 +6,15 @@
 Module to compute aircraft efficiency-related carbon abatement costs.
 """
 
+import jax.numpy as jnp
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
+from aeromaps.models.jax_helpers import (
+    jax_discounted_abatement_vals,
+    year_pos,
+    years_index,
+)
 from typing import Tuple
 
 
@@ -625,6 +631,114 @@ class CargoEfficiencyCarbonAbatementCosts(AeroMAPSModel):
             aircraft_carbon_abatement_volume_freight_electric,
         )
 
+    @property
+    def jax_output_indexes(self):
+        # The specific abatement costs are only built over the prospective years.
+        prospective_index = pd.RangeIndex(self.prospection_start_year, self.end_year + 1)
+        return {
+            f"aircraft_{kind}carbon_abatement_cost_freight_{energy}": prospective_index
+            for kind in ("specific_", "generic_specific_")
+            for energy in ("dropin", "hydrogen", "electric")
+        }
+
+    def jax_compute(
+        self,
+        energy_per_rtk_without_operations_freight_dropin_fuel,
+        energy_per_rtk_without_operations_freight_hydrogen,
+        energy_per_rtk_without_operations_freight_electric,
+        rtk_dropin_fuel,
+        rtk_hydrogen,
+        rtk_electric,
+        cac_reference_mfsp,
+        cac_reference_co2_emission_factor,
+        exogenous_carbon_price_trajectory,
+        social_discount_rate,
+    ):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        n_years = len(years_index(self))
+        prospective_start = year_pos(self, self.prospection_start_year)
+        base_pos = year_pos(self, self.prospection_start_year - 1)
+
+        cac_reference_mfsp = jnp.asarray(cac_reference_mfsp)
+        cac_reference_co2_emission_factor = jnp.asarray(cac_reference_co2_emission_factor)
+        energy_dropin = jnp.asarray(energy_per_rtk_without_operations_freight_dropin_fuel)
+        energy_hydrogen = jnp.asarray(energy_per_rtk_without_operations_freight_hydrogen)
+        energy_electric = jnp.asarray(energy_per_rtk_without_operations_freight_electric)
+
+        freight_reference_energy = energy_dropin[base_pos]
+
+        # Cargo non-energy DOC are not modelled, so their delta is zero.
+        aircraft_doc_ne_delta = jnp.zeros(n_years)
+        aircraft_life = 25
+
+        deltas = {
+            "dropin": energy_dropin - freight_reference_energy,
+            "hydrogen": energy_hydrogen - freight_reference_energy,
+            "electric": energy_electric - freight_reference_energy,
+        }
+        rtks = {
+            "dropin": jnp.asarray(rtk_dropin_fuel),
+            "hydrogen": jnp.asarray(rtk_hydrogen),
+            "electric": jnp.asarray(rtk_electric),
+        }
+
+        costs, generic_specific, specific, volumes = {}, {}, {}, {}
+        for energy, delta in deltas.items():
+            extra_cost_fuel = delta * cac_reference_mfsp
+            extra_emissions = (-delta * cac_reference_co2_emission_factor) / 1000000.0
+
+            costs[energy] = extra_cost_fuel / extra_emissions  # €/ton
+
+            scac, scac_prime = jax_discounted_abatement_vals(
+                n_years,
+                social_discount_rate,
+                aircraft_life,
+                aircraft_doc_ne_delta,
+                extra_cost_fuel,
+                cac_reference_mfsp,
+                cac_reference_co2_emission_factor,
+                extra_emissions,
+                exogenous_carbon_price_trajectory,
+            )
+            specific[energy] = scac[prospective_start:]
+            generic_specific[energy] = scac_prime[prospective_start:]
+
+            volumes[energy] = -(
+                rtks[energy] * delta * cac_reference_co2_emission_factor / 1000000.0
+            )
+
+        aircraft_carbon_abatement_cost_freight_dropin = costs["dropin"]
+        aircraft_carbon_abatement_cost_freight_hydrogen = costs["hydrogen"]
+        aircraft_carbon_abatement_cost_freight_electric = costs["electric"]
+        aircraft_generic_specific_carbon_abatement_cost_freight_dropin = generic_specific["dropin"]
+        aircraft_generic_specific_carbon_abatement_cost_freight_hydrogen = generic_specific[
+            "hydrogen"
+        ]
+        aircraft_generic_specific_carbon_abatement_cost_freight_electric = generic_specific[
+            "electric"
+        ]
+        aircraft_specific_carbon_abatement_cost_freight_dropin = specific["dropin"]
+        aircraft_specific_carbon_abatement_cost_freight_hydrogen = specific["hydrogen"]
+        aircraft_specific_carbon_abatement_cost_freight_electric = specific["electric"]
+        aircraft_carbon_abatement_volume_freight_dropin = volumes["dropin"]
+        aircraft_carbon_abatement_volume_freight_hydrogen = volumes["hydrogen"]
+        aircraft_carbon_abatement_volume_freight_electric = volumes["electric"]
+
+        return (
+            aircraft_carbon_abatement_cost_freight_dropin,
+            aircraft_carbon_abatement_cost_freight_hydrogen,
+            aircraft_carbon_abatement_cost_freight_electric,
+            aircraft_generic_specific_carbon_abatement_cost_freight_dropin,
+            aircraft_generic_specific_carbon_abatement_cost_freight_hydrogen,
+            aircraft_generic_specific_carbon_abatement_cost_freight_electric,
+            aircraft_specific_carbon_abatement_cost_freight_dropin,
+            aircraft_specific_carbon_abatement_cost_freight_hydrogen,
+            aircraft_specific_carbon_abatement_cost_freight_electric,
+            aircraft_carbon_abatement_volume_freight_dropin,
+            aircraft_carbon_abatement_volume_freight_hydrogen,
+            aircraft_carbon_abatement_volume_freight_electric,
+        )
+
     def _get_discounted_vals(
         self,
         year,
@@ -829,6 +943,77 @@ class FleetTopDownCarbonAbatementCost(AeroMAPSModel):
 
         self.df.loc[:, "aircraft_carbon_abatement_volume_passenger_mean"] = (
             aircraft_carbon_abatement_volume_passenger_mean
+        )
+
+        return (
+            aircraft_carbon_abatement_cost_passenger_mean,
+            aircraft_generic_specific_carbon_abatement_cost_passenger_mean,
+            aircraft_specific_carbon_abatement_cost_passenger_mean,
+            aircraft_carbon_abatement_volume_passenger_mean,
+        )
+
+    def jax_compute(
+        self,
+        energy_per_ask_mean_without_operations,
+        ask,
+        doc_non_energy_per_ask_mean,
+        cac_reference_mfsp,
+        cac_reference_co2_emission_factor,
+        exogenous_carbon_price_trajectory,
+        social_discount_rate,
+    ):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        years = years_index(self)
+        energy_per_ask_mean_without_operations = jnp.asarray(
+            energy_per_ask_mean_without_operations
+        )
+        ask = jnp.asarray(ask)
+        doc_non_energy_per_ask_mean = jnp.asarray(doc_non_energy_per_ask_mean)
+        cac_reference_mfsp = jnp.asarray(cac_reference_mfsp)
+        cac_reference_co2_emission_factor = jnp.asarray(cac_reference_co2_emission_factor)
+
+        base_pos = year_pos(self, self.prospection_start_year - 1)
+        aircraft_reference_energy = energy_per_ask_mean_without_operations[base_pos]
+        category_reference_doc_ne = doc_non_energy_per_ask_mean[base_pos]
+
+        aircraft_energy_delta_mean = (
+            energy_per_ask_mean_without_operations - aircraft_reference_energy
+        )
+        aircraft_doc_ne_delta_mean = doc_non_energy_per_ask_mean - category_reference_doc_ne
+
+        extra_cost_fuel_mean = aircraft_energy_delta_mean * cac_reference_mfsp
+        extra_emissions_dropin = (
+            -aircraft_energy_delta_mean * cac_reference_co2_emission_factor
+        ) / 1000000.0
+
+        aircraft_carbon_abatement_cost_passenger_mean = (
+            extra_cost_fuel_mean + aircraft_doc_ne_delta_mean
+        ) / extra_emissions_dropin  # €/ton
+
+        aircraft_life = 25
+
+        scac, scac_prime = jax_discounted_abatement_vals(
+            len(years),
+            social_discount_rate,
+            aircraft_life,
+            aircraft_doc_ne_delta_mean,
+            extra_cost_fuel_mean,
+            cac_reference_mfsp,
+            cac_reference_co2_emission_factor,
+            extra_emissions_dropin,
+            exogenous_carbon_price_trajectory,
+        )
+        # Only prospective years are filled by the pandas loop.
+        prospective = years >= self.prospection_start_year
+        aircraft_specific_carbon_abatement_cost_passenger_mean = jnp.where(
+            prospective, scac, jnp.nan
+        )
+        aircraft_generic_specific_carbon_abatement_cost_passenger_mean = jnp.where(
+            prospective, scac_prime, jnp.nan
+        )
+
+        aircraft_carbon_abatement_volume_passenger_mean = -(
+            ask * aircraft_energy_delta_mean * cac_reference_co2_emission_factor / 1000000.0
         )
 
         return (

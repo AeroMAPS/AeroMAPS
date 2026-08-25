@@ -186,6 +186,107 @@ def jax_first_order_lag(model, values, tau):
     return jnp.concatenate([values[:start], jnp.array([seed]), tail])
 
 
+def jax_vintage_windows(n_years: int, duration: int):
+    """Index grids of the ``duration``-year window opened by each vintage year.
+
+    Returns ``(positions, clamped, age)`` where ``positions[y, j] = y + j`` are
+    the absolute positions of vintage ``y``'s window, ``clamped`` caps them at
+    the last modelled year (the pandas loops reuse the last year's value beyond
+    the horizon) and ``age`` is ``j``, the number of years since commissioning.
+    """
+    age = jnp.arange(duration)
+    positions = jnp.arange(n_years)[:, None] + age[None, :]
+    return positions, jnp.minimum(positions, n_years - 1), age
+
+
+def jax_extended_carbon_price(carbon_price, positions, clamped):
+    """Carbon price over vintage windows, extrapolated past the last model year.
+
+    Beyond ``end_year`` the pandas models keep the growth rate of the last
+    modelled year, which is what the ``future_scc_growth`` branch expresses.
+    """
+    carbon_price = jnp.asarray(carbon_price)
+    last = carbon_price.shape[0] - 1
+    future_growth = carbon_price[last] / carbon_price[last - 1]
+    return jnp.where(
+        positions <= last,
+        carbon_price[clamped],
+        carbon_price[last] * future_growth ** (positions - last),
+    )
+
+
+def jax_discounted_abatement_vals(
+    n_years: int,
+    discount_rate,
+    duration: int,
+    extra_cost_non_fuel,
+    extra_cost_fuel,
+    cac_reference_mfsp,
+    cac_reference_co2_emission_factor,
+    emissions_reduction,
+    exogenous_carbon_price_trajectory,
+    zero_guard: bool = False,
+):
+    """Specific / generic specific abatement cost of every vintage year at once.
+
+    Vectorised form of the ``_get_discounted_vals`` loops shared by the
+    operations and fleet abatement-cost models: each vintage year discounts its
+    costs and avoided emissions over a ``duration``-year window, reusing the last
+    modelled year's values beyond ``end_year`` and extrapolating the carbon price
+    at the last modelled growth rate.
+
+    ``zero_guard`` mirrors the NaN the operations model returns on a null
+    cumulated abatement; the fleet models divide unguarded.
+    """
+    positions, clamped, age = jax_vintage_windows(n_years, int(duration))
+    discount = (1.0 + discount_rate) ** (-age)
+
+    extra_cost_non_fuel = jnp.asarray(extra_cost_non_fuel)
+    extra_cost_fuel = jnp.asarray(extra_cost_fuel)
+    cac_reference_mfsp = jnp.asarray(cac_reference_mfsp)
+    cac_reference_co2_emission_factor = jnp.asarray(cac_reference_co2_emission_factor)
+    emissions_reduction = jnp.asarray(emissions_reduction)
+    exogenous_carbon_price_trajectory = jnp.asarray(exogenous_carbon_price_trajectory)
+
+    mfsp_ratio = cac_reference_mfsp[clamped] / cac_reference_mfsp[:, None]
+    discounted_cumul_cost = jnp.sum(
+        (extra_cost_non_fuel[:, None] + extra_cost_fuel[:, None] * mfsp_ratio) * discount[None, :],
+        axis=1,
+    )
+
+    emission_ratio = (
+        emissions_reduction[:, None]
+        * cac_reference_co2_emission_factor[clamped]
+        / cac_reference_co2_emission_factor[:, None]
+    )
+    cumul_em = jnp.sum(emission_ratio, axis=1)
+
+    carbon_price = jax_extended_carbon_price(
+        exogenous_carbon_price_trajectory, positions, clamped
+    )
+    generic_discounted_cumul_em = jnp.sum(
+        emission_ratio
+        * carbon_price
+        / exogenous_carbon_price_trajectory[:, None]
+        * discount[None, :],
+        axis=1,
+    )
+
+    if not zero_guard:
+        return (
+            discounted_cumul_cost / cumul_em,
+            discounted_cumul_cost / generic_discounted_cumul_em,
+        )
+    return (
+        jnp.where(cumul_em == 0, jnp.nan, discounted_cumul_cost / cumul_em),
+        jnp.where(
+            generic_discounted_cumul_em == 0,
+            jnp.nan,
+            discounted_cumul_cost / generic_discounted_cumul_em,
+        ),
+    )
+
+
 def jax_nan_add(a, b):
     """NaN-aware addition mirroring ``Series.add(..., fill_value=0)``.
 

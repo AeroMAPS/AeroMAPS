@@ -8,9 +8,15 @@ Module to compute operations efficiency-related carbon abatement costs.
 
 from typing import Tuple
 
+import jax.numpy as jnp
 import numpy as np
 import pandas as pd
 from aeromaps.models.base import AeroMAPSModel
+from aeromaps.models.jax_helpers import (
+    jax_discounted_abatement_vals,
+    year_pos,
+    years_index,
+)
 
 
 class OperationsAbatementCost(AeroMAPSModel):
@@ -278,6 +284,196 @@ class OperationsAbatementCost(AeroMAPSModel):
         load_factor_generic_specific_abatement_cost = self.df[
             "load_factor_generic_specific_abatement_cost"
         ]
+
+        return (
+            operations_abatement_cost,
+            operations_abatement_effective,
+            operations_specific_abatement_cost,
+            operations_generic_specific_abatement_cost,
+            operations_abatement_cost_freight,
+            operations_abatement_effective_freight,
+            operations_specific_abatement_cost_freight,
+            operations_generic_specific_abatement_cost_freight,
+            load_factor_abatement_cost,
+            load_factor_abatement_effective,
+            load_factor_specific_abatement_cost,
+            load_factor_generic_specific_abatement_cost,
+        )
+
+    # Loop bounds of the vintage windows: static, not differentiable.
+    jax_static_input_names = ("operations_duration", "operations_start_year")
+
+    def _jax_get_discounted_vals(
+        self,
+        discount_rate,
+        measure_duration,
+        extra_cost_non_fuel,
+        extra_cost_fuel,
+        cac_reference_mfsp,
+        cac_reference_co2_emission_factor,
+        emissions_reduction,
+        exogenous_carbon_price_trajectory,
+    ):
+        """Vectorised JAX form of :meth:`_get_discounted_vals`, for every vintage year."""
+        return jax_discounted_abatement_vals(
+            len(years_index(self)),
+            discount_rate,
+            measure_duration,
+            extra_cost_non_fuel,
+            extra_cost_fuel,
+            cac_reference_mfsp,
+            cac_reference_co2_emission_factor,
+            emissions_reduction,
+            exogenous_carbon_price_trajectory,
+            zero_guard=True,
+        )
+
+    def jax_compute(
+        self,
+        operational_efficiency_cost_non_energy_per_ask,
+        operations_gain,
+        cac_reference_mfsp,
+        cac_reference_co2_emission_factor,
+        energy_per_ask_mean_without_operations,
+        energy_per_ask_mean,
+        energy_per_rtk_mean_without_operations,
+        energy_per_rtk_mean,
+        rpk,
+        rtk,
+        load_factor,
+        load_factor_cost_non_energy_per_ask,
+        exogenous_carbon_price_trajectory,
+        social_discount_rate,
+        operations_duration,
+        operations_start_year,
+    ):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        years = years_index(self)
+        n_years = len(years)
+
+        operational_efficiency_cost_non_energy_per_ask = jnp.asarray(
+            operational_efficiency_cost_non_energy_per_ask
+        )
+        operations_gain = jnp.asarray(operations_gain)
+        cac_reference_mfsp = jnp.asarray(cac_reference_mfsp)
+        cac_reference_co2_emission_factor = jnp.asarray(cac_reference_co2_emission_factor)
+        energy_per_ask_mean_without_operations = jnp.asarray(
+            energy_per_ask_mean_without_operations
+        )
+        energy_per_ask_mean = jnp.asarray(energy_per_ask_mean)
+        energy_per_rtk_mean_without_operations = jnp.asarray(
+            energy_per_rtk_mean_without_operations
+        )
+        rpk = jnp.asarray(rpk)
+        rtk = jnp.asarray(rtk)
+        load_factor = jnp.asarray(load_factor)
+        load_factor_cost_non_energy_per_ask = jnp.asarray(load_factor_cost_non_energy_per_ask)
+        exogenous_carbon_price_trajectory = jnp.asarray(exogenous_carbon_price_trajectory)
+
+        base_pos = year_pos(self, self.prospection_start_year - 1)
+
+        ############### PASSENGER OPERATIONS #############
+        emissions_reduction_operations = (
+            energy_per_ask_mean_without_operations
+            * operations_gain
+            / 100.0
+            * cac_reference_co2_emission_factor
+            / 1000000.0
+        )
+        extra_cost_operations_non_fuel = operational_efficiency_cost_non_energy_per_ask
+        extra_cost_operations_fuel = (
+            -energy_per_ask_mean_without_operations * operations_gain / 100.0 * cac_reference_mfsp
+        )
+        operations_abatement_cost = (
+            extra_cost_operations_non_fuel + extra_cost_operations_fuel
+        ) / emissions_reduction_operations
+        operations_abatement_effective = (
+            emissions_reduction_operations * rpk / load_factor[base_pos] * 100.0
+        )
+
+        # Only years from operations_start_year on are filled by the pandas loop.
+        operations_window = years >= int(operations_start_year)
+        scac, scac_prime = self._jax_get_discounted_vals(
+            social_discount_rate,
+            operations_duration,
+            extra_cost_operations_non_fuel,
+            extra_cost_operations_fuel,
+            cac_reference_mfsp,
+            cac_reference_co2_emission_factor,
+            emissions_reduction_operations,
+            exogenous_carbon_price_trajectory,
+        )
+        operations_specific_abatement_cost = jnp.where(operations_window, scac, jnp.nan)
+        operations_generic_specific_abatement_cost = jnp.where(
+            operations_window, scac_prime, jnp.nan
+        )
+
+        ################ FREIGHT OPERATIONS ################
+        emissions_reduction_operations_freight = (
+            energy_per_rtk_mean_without_operations
+            * operations_gain
+            / 100.0
+            * cac_reference_co2_emission_factor
+            / 1000000.0
+        )
+        extra_cost_operations_non_fuel_freight = jnp.zeros(n_years)
+        extra_cost_operations_fuel_freight = (
+            -energy_per_rtk_mean_without_operations * operations_gain / 100.0 * cac_reference_mfsp
+        )
+        operations_abatement_cost_freight = (
+            extra_cost_operations_non_fuel_freight + extra_cost_operations_fuel_freight
+        ) / emissions_reduction_operations_freight
+        operations_abatement_effective_freight = emissions_reduction_operations_freight * rtk
+
+        scac, scac_prime = self._jax_get_discounted_vals(
+            social_discount_rate,
+            operations_duration,
+            extra_cost_operations_non_fuel_freight,
+            extra_cost_operations_fuel_freight,
+            cac_reference_mfsp,
+            cac_reference_co2_emission_factor,
+            emissions_reduction_operations_freight,
+            exogenous_carbon_price_trajectory,
+        )
+        operations_specific_abatement_cost_freight = jnp.where(operations_window, scac, jnp.nan)
+        operations_generic_specific_abatement_cost_freight = jnp.where(
+            operations_window, scac_prime, jnp.nan
+        )
+
+        ############### PASSENGER LOAD FACTOR ########################
+        energy_per_rpk_base = energy_per_ask_mean / load_factor[base_pos] * 100.0
+        energy_per_rpk_real = energy_per_ask_mean / load_factor * 100.0
+
+        emissions_reduction_load_factor = (
+            (energy_per_rpk_base - energy_per_rpk_real)
+            * cac_reference_co2_emission_factor
+            / 1000000.0
+        )
+        extra_cost_load_factor_fuel = (
+            -(energy_per_rpk_base - energy_per_rpk_real) * cac_reference_mfsp
+        )
+        extra_cost_load_factor_non_fuel = load_factor_cost_non_energy_per_ask
+
+        load_factor_abatement_cost = (
+            extra_cost_load_factor_fuel + extra_cost_load_factor_non_fuel
+        ) / emissions_reduction_load_factor
+        load_factor_abatement_effective = emissions_reduction_load_factor * rpk
+
+        scac, scac_prime = self._jax_get_discounted_vals(
+            social_discount_rate,
+            self.end_year - self.prospection_start_year,
+            extra_cost_load_factor_non_fuel,
+            extra_cost_load_factor_fuel,
+            cac_reference_mfsp,
+            cac_reference_co2_emission_factor,
+            emissions_reduction_load_factor,
+            exogenous_carbon_price_trajectory,
+        )
+        load_factor_window = years >= self.prospection_start_year
+        load_factor_specific_abatement_cost = jnp.where(load_factor_window, scac, jnp.nan)
+        load_factor_generic_specific_abatement_cost = jnp.where(
+            load_factor_window, scac_prime, jnp.nan
+        )
 
         return (
             operations_abatement_cost,

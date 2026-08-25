@@ -265,6 +265,58 @@ class FuelEffectCorrectionContrails(AeroMAPSModel):
         self._store_outputs(output_data)
         return output_data
 
+    def jax_compute(self, input_data) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy).
+
+        The aircraft-distance couplings arrive on the climate index while the
+        result lives on the model index; the pandas version relies on ``+=``
+        keeping the left operand's index, which is the slice taken here.
+        """
+        n_years = len(years_index(self))
+        # Offset of the model years inside the climate-indexed inputs.
+        offset = self.historic_start_year - self.climate_historic_start_year
+        model_slice = slice(offset, offset + n_years)
+
+        total_aircraft_distance = jnp.asarray(input_data["total_aircraft_distance"])[model_slice]
+        fuel_effect_correction_contrails = jnp.zeros(n_years)
+
+        for aircraft_type in self.pathways_manager.get_all_types("aircraft_type"):
+            if aircraft_type == "dropin_fuel":
+                distance_share_dropin_fuel = (
+                    jnp.asarray(input_data["total_aircraft_distance_dropin_fuel"])[model_slice]
+                    / total_aircraft_distance
+                )
+                default_pathway = self.pathways_manager.get(
+                    aircraft_type=aircraft_type, default=True
+                )[0]
+                default_emission_index_number_particles = input_data[
+                    f"{default_pathway.name}_emission_index_particles_number"
+                ]
+
+                relative_particles_number = jnp.zeros(n_years)
+                for pathway in self.pathways_manager.get(aircraft_type=aircraft_type):
+                    relative_particles_number = relative_particles_number + jnp.nan_to_num(
+                        jnp.asarray(input_data[f"{pathway.name}_massic_share_{aircraft_type}"])
+                        / 100.0
+                        * jnp.sqrt(
+                            input_data[f"{pathway.name}_emission_index_particles_number"]
+                            / default_emission_index_number_particles
+                        )
+                    )
+
+                fuel_effect_correction_contrails = (
+                    fuel_effect_correction_contrails
+                    + distance_share_dropin_fuel * relative_particles_number
+                )
+            elif aircraft_type == "hydrogen":
+                fuel_effect_correction_contrails = fuel_effect_correction_contrails + (
+                    jnp.asarray(input_data["total_aircraft_distance_hydrogen"])[model_slice]
+                    / total_aircraft_distance
+                    * input_data["contrails_relative_effect_hydrogen_wrt_kerosene"]
+                )
+
+        return {"fuel_effect_correction_contrails": fuel_effect_correction_contrails}
+
 
 class WithoutFuelEffectCorrectionContrails(AeroMAPSModel):
     """Model returning a unitary correction (no fuel effect) for contrails.
