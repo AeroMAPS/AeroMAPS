@@ -11,6 +11,7 @@ Changed:
 - Full metadata coverage: every variable of the tested configurations is now documented (previously ~1350 variables had no unit/description), enforced by the test suite.
 - New config key `data.inputs.data_information_file`; `csv_data_information_file` is deprecated but still read.
 - New API: `process.get_variable_information(name)` to query the unit/description of a variable.
+- Units and metadata exposed to users: `aeromaps.utils.units` added to the API reference, and the basic example notebook shows `get_variable_information` and checked conversions.
 - Metadata realigned on the generic markets refactoring (#145): market-scoped variables (`<market_id>_<leaf>`, `cagr_rpk_<market_id>`, ...) are now covered by pattern rules instead of hard-coded per-market entries, so user-defined markets are documented automatically.
 
 Fixed:

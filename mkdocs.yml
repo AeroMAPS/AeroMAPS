@@ -25,6 +25,7 @@ nav:
           - Process: api/aeromaps.core.process.md
       - Helper functions:
           - Functions: api/aeromaps.utils.functions.md
+          - Units: api/aeromaps.utils.units.md
   - AeroMAPS Code and Models:
       - Overview: full_doc/index.md
       - Package:
@@ -44,6 +45,8 @@ nav:
           - Defaults: full_doc/aeromaps.utils.defaults.md
           - Functions: full_doc/aeromaps.utils.functions.md
           - YAML helpers: full_doc/aeromaps.utils.yaml.md
+          - Units: full_doc/aeromaps.utils.units.md
+          - Variable metadata: full_doc/aeromaps.utils.data_information.md
       - AeroMAPS Models:
         - Base classes: full_doc/aeromaps.models.base.md
         - YAML interpolator: full_doc/aeromaps.models.yaml_interpolator.md
