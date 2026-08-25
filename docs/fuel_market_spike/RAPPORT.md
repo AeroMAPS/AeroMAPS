@@ -41,7 +41,7 @@ couplages forts        : {EU,US,APAC}:spike_demand, {EU,US,APAC}:spike_price
 
 ```
 disciplines dans la chaîne    : 304
-composante fortement connexe  : 109 disciplines
+composante fortement connexe  : 113 disciplines
 SpikeFuelMarket dans la CFC   : oui
 disciplines spike dans la CFC : region_{A,B}_SpikeFuelDemand, region_{A,B}_SpikeMarketCarbonTax,
                                 SpikeFuelMarket
@@ -49,6 +49,12 @@ RPKElasticity dans la même CFC: region_A_RPKElasticity, region_B_RPKElasticity
 couplages forts spike         : region_{A,B}:spike_fuel_demand, region_{A,B}:spike_fuel_price
 couplages forts de référence  : region_{A,B}:rpk, region_{A,B}:airfare_per_rpk
 ```
+
+> Re-mesuré sur la base actuelle, après rebasage : la CFC est passée de **109 à 113**
+> disciplines quand les subventions et taxes carburant ont rejoint le tarif
+> (`fix(costs): make fuel subsidies and fuel taxes reach the airfare`) — ce correctif
+> crée de nouveaux couplages coût → tarif. Le reste est inchangé : 18 itérations
+> Gauss-Seidel, résidu 6,424e-11. Les briefs, mesurés avant ce correctif, citent 109.
 
 Le cycle bouclé est bien celui visé :
 

@@ -32,6 +32,15 @@ d'`exclude_docs` suffit à les publier.
   indéfini, c'est la pondération, pas l'intensité ; ces années prennent la moyenne non
   pondérée.
 
+## Base de mesure
+
+La branche du spike est rebasée sur `fix/mda-convergence-strictness`, c'est-à-dire sur
+les correctifs qu'elle a elle-même fait remonter. Un chiffre a bougé avec cette base :
+la composante fortement connexe de l'étape 2 compte **113** disciplines et non 109,
+parce que le passage des subventions et taxes carburant au tarif crée de nouveaux
+couplages. Convergence inchangée (18 itérations, résidu 6,4e-11). Les briefs, mesurés
+avant ce correctif, citent 109.
+
 ## Où vit le code
 
 - `spike_unified_mda/` — le code du spike, jetable, aucune modification d'AeroMAPS :
