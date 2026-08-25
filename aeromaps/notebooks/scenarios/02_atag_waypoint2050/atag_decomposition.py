@@ -125,14 +125,22 @@ def atag_wedges(view, t0_view, t1_view, start_year=2024, first_year=2000):
 
     _, alternative_fraction = _energy_split(view, start_index)
     energy_term = after_operations - net
-    after_alternative = after_operations - alternative_fraction * energy_term
+    alternative_term = alternative_fraction * energy_term
+    operations_term = scenario_technology - after_operations
+
+    # Alternative aircraft are part of the technology pillar, so they are stacked
+    # directly under the efficiency gain rather than below operations. Ordering a
+    # nested decomposition is a choice, not a fact; taking it in ATAG's order is
+    # what keeps the pillar contiguous instead of splitting the band in two.
+    after_alternative = scenario_technology - alternative_term
+    after_operations_reordered = after_alternative - operations_term
 
     return years, [
         frozen,
         renewal_only,
         scenario_technology,
-        after_operations,
         after_alternative,
+        after_operations_reordered,
         net,
         net - offset,
     ]
@@ -149,8 +157,8 @@ def plot_atag_decomposition(
     fills = [
         (0, 1, "fleet_renewal", True),
         (1, 2, "next_generation", True),
-        (2, 3, "operations", True),
-        (3, 4, "next_generation", False),
+        (2, 3, "next_generation", False),
+        (3, 4, "operations", True),
         (4, 5, "saf", True),
         (5, 6, "market_based", True),
     ]
@@ -194,7 +202,6 @@ def plot_atag_decomposition(
     )
 
     ax.set_xlim(years[0], years[-1])
-    ax.set_ylim(bottom=0)
     ax.set_xlabel("Year")
     ax.set_ylabel("Annual CO$_2$ emissions [MtCO$_2$]")
     ax.grid(alpha=0.3)

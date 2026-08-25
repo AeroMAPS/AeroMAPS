@@ -192,7 +192,8 @@ def save_fig(fig=None, name=None):
     fig.savefig(out / f"fig_{len(FIGURES)}.pdf", bbox_inches="tight")
     if name:
         fig.savefig(out / f"{name}.pdf", bbox_inches="tight")
-    return fig
+    # Deliberately returns nothing: a cell whose last statement is a bare
+    # save_fig call would echo the figure and render it a second time.
 
 
 def results(edition, scenario, label, produced_by):
@@ -414,8 +415,10 @@ for slug, ttw, wtw in TRIPLETS:
     axes[1].set_ylabel("")
     decomposition.append((slug, fig, axes))
 
-# The common scale has to be set before anything is written to disk, or the
-# exported PDFs disagree with what the page shows.
+# One scale for all six panels, taken from the drawn data and applied before
+# anything is written, so no curve is clipped and the exported PDFs agree with
+# the page. Reading the limits back only works because the helper leaves
+# autoscaling alone.
 if decomposition:
     top = max(ax.get_ylim()[1] for _, _, axes in decomposition for ax in axes)
     for _, _, axes in decomposition:
@@ -725,10 +728,17 @@ if share_only:
             curves.append(series)
         years = np.arange(2000, 2000 + len(curves[0]))
         band = np.vstack(curves)
-        window = years >= 2024
-        ax.fill_between(years[window], band.min(axis=0)[window], band.max(axis=0)[window],
+        # The observed period is shown as well as the forecast: the three
+        # pathways coincide there by construction, so the envelope collapses to
+        # a single line and the reader can see where the projection departs from
+        # history rather than having to take the starting point on trust.
+        history = years < 2024
+        ax.plot(years[history], np.median(band, axis=0)[history], color="black", linewidth=2,
+                label="Observed")
+        forecast = years >= 2023
+        ax.fill_between(years[forecast], band.min(axis=0)[forecast], band.max(axis=0)[forecast],
                         color="#4C72B0", alpha=0.25, label="Across SSP pathways")
-        ax.plot(years[window], np.median(band, axis=0)[window], color="#4C72B0", linewidth=2,
+        ax.plot(years[forecast], np.median(band, axis=0)[forecast], color="#4C72B0", linewidth=2,
                 label="Median pathway")
         ax.set_title(title)
         ax.set_xlabel("Year")
@@ -832,6 +842,15 @@ for column, scenario in enumerate(band_scenarios):
     if column == 0:
         ax.set_ylabel("Warming [mK]")
         ax.legend(fontsize=6, loc="upper left")
+
+# One scale across all nine panels. The bottom is left free rather than pinned
+# at zero, because the mechanism decomposition carries genuinely negative terms
+# and clipping them would misreport the stack.
+flat_axes = [ax for row in axes for ax in row]
+low = min(ax.get_ylim()[0] for ax in flat_axes)
+high = max(ax.get_ylim()[1] for ax in flat_axes)
+for ax in flat_axes:
+    ax.set_ylim(low, high)
 save_fig(fig, name="climate_bands_and_decomposition")
 ```
 
@@ -942,6 +961,13 @@ for column, family in enumerate(mitigating):
 axes[0, 0].set_ylabel("Total warming from aviation [mK]")
 axes[0, 0].legend(fontsize=8)
 axes[1, 0].set_ylabel("Contrail warming avoided [%]")
+
+# Each row on its own common scale, so the families are comparable across the
+# row; the share row starts at zero, since a share below it has no meaning here.
+for row, bottom in ((0, 0.0), (1, 0.0)):
+    top = max(axes[row, column].get_ylim()[1] for column in range(len(mitigating)))
+    for column in range(len(mitigating)):
+        axes[row, column].set_ylim(bottom, top)
 save_fig(fig, name="contrail_strategies")
 ```
 
