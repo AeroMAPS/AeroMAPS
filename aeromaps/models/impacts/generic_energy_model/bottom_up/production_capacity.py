@@ -5,11 +5,47 @@ production_capacity
 Computes annual capacity additions required to follow an energy consumption trajectory.
 """
 
+import jax
+import jax.numpy as jnp
 import numpy as np
 import pandas as pd
 import warnings
 from aeromaps.models.base import AeroMAPSModel
+from aeromaps.models.jax_helpers import year_pos, years_index
 from aeromaps.utils.functions import _get_value_for_year
+
+
+def _jax_commissioning_scan(energy_required, plant_load_factor, plant_lifespan: int):
+    """Replay the greedy plant-commissioning loop with :func:`jax.lax.scan`.
+
+    Each year commissions just enough capacity to cover the production its
+    already-running plants cannot supply; that capacity then produces for
+    ``plant_lifespan`` years. The scan carries the rolling window of production
+    and capacity already committed to the next ``plant_lifespan`` years, which
+    is what the pandas ``.loc[year : year + lifespan - 1] +=`` slices build.
+    """
+    window = jnp.zeros((2, plant_lifespan))
+
+    def step(carry, inputs):
+        required, load_factor = inputs
+        missing = required - carry[0, 0]
+        commissioning = missing > 0.0
+        commissioned = jnp.where(commissioning, missing, 0.0)
+        unused = jnp.where(commissioning, 0.0, missing)
+        required_capacity = jnp.where(commissioning, missing / load_factor, 0.0)
+
+        updated = carry + jnp.stack(
+            [
+                jnp.full(plant_lifespan, commissioned),
+                jnp.full(plant_lifespan, required_capacity),
+            ]
+        )
+        # Slide the window one year forward.
+        next_carry = jnp.concatenate([updated[:, 1:], jnp.zeros((2, 1))], axis=1)
+        return next_carry, (required_capacity, commissioned, updated[1, 0], unused)
+
+    _, outputs = jax.lax.scan(step, window, (energy_required, plant_load_factor))
+    return outputs
 
 
 class BottomUpCapacity(AeroMAPSModel):
@@ -241,4 +277,137 @@ class BottomUpCapacity(AeroMAPSModel):
 
         self._store_outputs(output_data)
 
+        return output_data
+
+    # Loop bounds and window lengths: static, not differentiable.
+    jax_static_input_names = ()
+
+    @property
+    def jax_output_indexes(self):
+        # Every output is restricted to the prospective years.
+        prospective_index = pd.RangeIndex(self.prospection_start_year, self.end_year + 1)
+        return {name: prospective_index for name in self.output_names}
+
+    def _jax_year_values(self, value, n_virtual: int, default: float):
+        """Per-year array of a technical input over the virtual + model years.
+
+        Mirrors :func:`_get_value_for_year`: a scalar applies to every year, and
+        a Series falls back to ``default`` on the years it does not cover (which
+        the JAX wrapper marks with NaN when it pads a partial series).
+        """
+        n_years = len(years_index(self))
+        if value is None:
+            return jnp.full(n_virtual + n_years, default)
+        value = jnp.asarray(value)
+        if value.ndim == 0:
+            return jnp.full(n_virtual + n_years, value)
+        return jnp.concatenate(
+            [jnp.full(n_virtual, default), jnp.where(jnp.isnan(value), default, value)]
+        )
+
+    def jax_compute(self, input_data) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy).
+
+        Unlike the pandas version this does not raise when a pathway has energy
+        consumption before ``historic_start_year`` without technology
+        introduction data: the check is on a coupling value, unavailable at
+        trace time. Such a pathway silently gets no virtual history, exactly as
+        if its historic consumption were zero.
+        """
+        output_data = {}
+        n_years = len(years_index(self))
+        energy_required = jnp.nan_to_num(
+            jnp.asarray(input_data[f"{self.pathway_name}_energy_consumption"])
+        )
+
+        # Reconstruct the pre-scenario commissioning history, when the pathway
+        # declares when and at which volume the technology was introduced.
+        technology_introduction = input_data.get(
+            f"{self.pathway_name}_technology_introduction_year"
+        )
+        technology_introduction_volume = input_data.get(
+            f"{self.pathway_name}_technology_introduction_volume"
+        )
+        n_virtual = 0
+        if technology_introduction and technology_introduction_volume is not None:
+            first_plant_year = int(technology_introduction)
+            # A technology introduced at or after historic_start_year needs no
+            # reconstructed history.
+            n_virtual = max(self.historic_start_year - first_plant_year, 0)
+        if n_virtual > 0:
+            historic_demand = energy_required[0]
+            # Guarded so a pathway without historic consumption gets a flat zero
+            # virtual history (no plant is commissioned), as in the pandas branch.
+            has_history = historic_demand > 1e-9
+            safe_demand = jnp.where(has_history, historic_demand, 1.0)
+            virtual_cagr = (safe_demand / technology_introduction_volume) ** (
+                1.0 / n_virtual
+            ) - 1.0
+            virtual_years = jnp.arange(n_virtual)
+            virtual_demand = jnp.where(
+                has_history,
+                technology_introduction_volume * (1.0 + virtual_cagr) ** virtual_years,
+                0.0,
+            )
+            energy_required = jnp.concatenate([virtual_demand, energy_required])
+
+        plant_load_factor = self._jax_year_values(
+            input_data.get(f"{self.pathway_name}_eis_plant_load_factor"), n_virtual, 1.0
+        )
+        for key in self.resource_keys:
+            if f"{key}_load_factor" in input_data:
+                plant_load_factor = jnp.minimum(
+                    plant_load_factor,
+                    self._jax_year_values(input_data[f"{key}_load_factor"], n_virtual, 1.0),
+                )
+
+        plant_lifespan = int(
+            _get_value_for_year(
+                input_data.get(f"{self.pathway_name}_eis_plant_lifespan"),
+                self.historic_start_year,
+                25,
+            )
+        )
+
+        (
+            plant_building_scenario,
+            energy_production_commissioned,
+            plant_available_scenario,
+            energy_unused,
+        ) = _jax_commissioning_scan(energy_required, plant_load_factor, plant_lifespan)
+
+        # Restrict the outputs to the prospective years.
+        start = n_virtual + year_pos(self, self.prospection_start_year)
+        stop = n_virtual + n_years
+
+        for process_key in self.process_keys:
+            process_load_factor = self._jax_year_values(
+                input_data.get(f"{process_key}_load_factor"), n_virtual, 1.0
+            )
+            for resource in self.process_resource_keys[process_key]:
+                if f"{resource}_load_factor" in input_data:
+                    process_load_factor = jnp.minimum(
+                        process_load_factor,
+                        self._jax_year_values(
+                            input_data[f"{resource}_load_factor"], n_virtual, 1.0
+                        ),
+                    )
+            output_data[f"{self.pathway_name}_{process_key}_plant_building_scenario"] = (
+                energy_production_commissioned / process_load_factor
+            )[start:stop]
+
+        output_data.update(
+            {
+                f"{self.pathway_name}_plant_building_scenario": plant_building_scenario[
+                    start:stop
+                ],
+                f"{self.pathway_name}_energy_production_commissioned": energy_production_commissioned[
+                    start:stop
+                ],
+                f"{self.pathway_name}_plant_operating_capacity": plant_available_scenario[
+                    start:stop
+                ],
+                f"{self.pathway_name}_energy_unused": -energy_unused[start:stop],
+            }
+        )
         return output_data
