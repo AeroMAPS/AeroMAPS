@@ -65,6 +65,12 @@ class TestNormalization:
         for text in ["MJ/ASK", "gCO2/MJ", "€/tCO2e", "W/m²"]:
             assert normalize_unit(text) == text
 
+    def test_normalization_is_idempotent_and_preserves_dimension(self):
+        for text in ["Years", "€/ton", "kgCO2/kgfuel", "€/(kg/day)/year"]:
+            normalized = normalize_unit(text)
+            assert normalize_unit(normalized) == normalized
+            assert parse_unit(normalized).dims == parse_unit(text).dims
+
 
 class TestConversion:
     def test_simple_factors(self):
@@ -98,3 +104,16 @@ class TestConversion:
         assert units_compatible("MJ", "EJ")
         assert units_compatible("gCO2/MJ", "MtCO2/EJ")
         assert not units_compatible("MJ", "MJ/ASK")
+
+    def test_dimension_cancellation(self):
+        # Identical dimensions cancel out to dimensionless
+        assert parse_unit("MJ/MJ").dims == ()
+        assert units_compatible("MJ/MJ", "-")
+
+    def test_dimensionless_factor_in_compound(self):
+        # The 0.01 factor of % must survive inside a compound expression
+        assert convert_factor("%/yr", "-/yr") == pytest.approx(0.01)
+
+    def test_nested_parentheses_conversion(self):
+        # €/(MJ/yr) -> €/(EJ/yr): 1 € per MJ/yr of capacity = 1e12 € per EJ/yr
+        assert convert_factor("€/(MJ/yr)", "€/(EJ/yr)") == pytest.approx(1e12)
