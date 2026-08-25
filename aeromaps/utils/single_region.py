@@ -21,6 +21,8 @@ central-traffic demand, T2 efficiency and top-down model chain.
 """
 
 import copy
+import io
+import json
 import os
 import warnings
 
@@ -108,6 +110,56 @@ def _region_energy_file(region_config_path):
     region_config = read_yaml_file(region_config_path)
     energy = region_config.get("models", {}).get("energy", {})
     return _resolve(region_dir, energy.get("energy_carriers_model_data_file"))
+
+
+def _rebaselined_region_configs(region_configs, baseline, work_dir):
+    """Write a copy of each region config whose inputs carry ``baseline``.
+
+    A region's historic window is consumed when its process is built: the ``*_init``
+    vectors are turned into Series indexed by
+    ``[historic_start_year, prospection_start_year)`` before any model runs, so the
+    baseline cannot be pushed in after ``create_process`` returns. It has to reach the
+    inputs file the region loads.
+
+    The regions of a multi-regional publication typically pin no baseline of their own
+    and inherit whatever the packaged ``parameters.json`` carries, which means a caller
+    that wants them on a different one has no way to say so without editing the
+    publication. That is what this does instead: it copies each region's inputs file with
+    ``baseline`` merged in, and a config pointing at the copy, leaving the publication
+    untouched. Every other path in the copied config is resolved to absolute so it still
+    finds its data from the new location.
+    """
+    os.makedirs(work_dir, exist_ok=True)
+    rebaselined = {}
+    for region_id, region_config_path in region_configs.items():
+        region_dir = os.path.dirname(region_config_path)
+        config = copy.deepcopy(read_yaml_file(region_config_path))
+
+        data = config.setdefault("data", {})
+        inputs = data.setdefault("inputs", {})
+        inputs_path = _resolve(region_dir, inputs.get("json_inputs_file"))
+        with io.open(inputs_path, encoding="utf-8") as handle:
+            region_inputs = json.load(handle)
+        region_inputs.update(baseline)
+
+        new_inputs_path = os.path.join(work_dir, f"{region_id}_inputs.json")
+        with io.open(new_inputs_path, "w", encoding="utf-8") as handle:
+            json.dump(region_inputs, handle, indent=4)
+
+        for key, value in list(inputs.items()):
+            if key.endswith("_file"):
+                inputs[key] = _resolve(region_dir, value)
+        inputs["json_inputs_file"] = new_inputs_path
+        for key, value in list(data.get("outputs", {}).items()):
+            if key.endswith("_file"):
+                data["outputs"][key] = _resolve(region_dir, value)
+        if "models" in config:
+            config["models"] = _resolve_model_paths(config["models"], region_dir)
+
+        new_config_path = os.path.join(work_dir, f"{region_id}_config.yaml")
+        write_yaml_file(config, new_config_path)
+        rebaselined[region_id] = new_config_path
+    return rebaselined
 
 
 def _aggregate_fuel_policy(region_configs, fuel_carrier, year_range):
@@ -255,6 +307,7 @@ def aggregate_regions_to_single_process(
     reference_region=None,
     output_json=None,
     year_range=None,
+    region_baseline=None,
     **create_process_kwargs,
 ):
     """
@@ -288,6 +341,14 @@ def aggregate_regions_to_single_process(
         defines ``fuel_carrier``.
     output_json : str, optional
         Path for the process JSON outputs. Defaults to ``<output_config_dir>/outputs.json``.
+    region_baseline : dict, optional
+        Parameters to merge into every region's inputs before it is computed, for
+        callers whose scenario sits on a different historic baseline than the regions
+        do. Typically ``prospection_start_year``, ``historic_start_year`` and the
+        ``*_init`` vectors. The regions of a multi-regional publication usually pin no
+        baseline of their own and inherit the packaged defaults, so without this the
+        only way to move them is to edit the publication. The copies are written under
+        ``<output_config_dir>/_rebaselined`` and the publication is left untouched.
     year_range : tuple of int, optional
         Inclusive ``(start, end)`` yearly grid for the aggregated mandate/emission series.
         Defaults to ``None``, meaning the grid is derived from the regions themselves --
@@ -305,6 +366,13 @@ def aggregate_regions_to_single_process(
     from aeromaps import create_process  # local import: avoids circular import at load time
 
     region_configs = _read_regionalisation(configuration_file)
+
+    if region_baseline:
+        region_configs = _rebaselined_region_configs(
+            region_configs,
+            region_baseline,
+            os.path.join(os.path.dirname(os.path.abspath(output_config)), "_rebaselined"),
+        )
 
     years, global_share, global_ef, auto_reference = _aggregate_fuel_policy(
         region_configs, fuel_carrier, year_range
