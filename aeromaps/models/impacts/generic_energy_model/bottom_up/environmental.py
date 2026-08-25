@@ -7,10 +7,17 @@ Module to compute pathway emissions based on bottom-up plant descriptions (EIS a
 
 import warnings
 
+import jax.numpy as jnp
 import numpy as np
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
+from aeromaps.models.jax_helpers import (
+    jax_extended_carbon_price,
+    jax_nan_add,
+    year_pos,
+    years_index,
+)
 from aeromaps.utils.functions import _get_value_for_year, _custom_series_addition
 
 
@@ -465,6 +472,231 @@ class BottomUpEnvironmental(AeroMAPSModel):
         output_data[f"{self.pathway_name}_total_co2_emissions"] = total_co2_emissions
 
         self._store_outputs(output_data)
+        return output_data
+
+    def _jax_vintage_values(self, value, vintage_positions, default):
+        """Per-vintage value of a technical input, mirroring :func:`_get_value_for_year`.
+
+        A scalar applies to every vintage; a series is read at the commissioning
+        year, falling back to ``default`` on the years it does not cover (which
+        the JAX wrapper marks with NaN when it pads a partial series).
+        """
+        n_vintages = vintage_positions.shape[0]
+        if value is None:
+            return None
+        value = jnp.asarray(value)
+        if value.ndim == 0:
+            return jnp.full(n_vintages, value)
+        picked = value[vintage_positions]
+        if default is None:
+            return picked
+        return jnp.where(jnp.isnan(picked), default, picked)
+
+    def jax_compute(self, input_data) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy).
+
+        The pandas version walks one vintage at a time and writes into
+        ``.loc[year : year + lifespan - 1]`` slices; here the whole
+        (vintage, age) grid is built at once and scattered back onto the model
+        years. ``_custom_series_addition`` — NaN meaning "this vintage said
+        nothing" rather than zero — becomes a NaN-aware scatter, so the NaN
+        pattern of every output is preserved.
+        """
+        pathway = self.pathway_name
+        n_years = len(years_index(self))
+        nan_series = jnp.full(n_years, jnp.nan)
+        output_data = {name: nan_series for name in self.output_names}
+
+        energy_production_commissioned = jnp.asarray(
+            input_data[f"{pathway}_energy_production_commissioned"]
+        )
+        energy_consumption = jnp.asarray(input_data[f"{pathway}_energy_consumption"])
+        energy_unused = jnp.asarray(input_data[f"{pathway}_energy_unused"])
+
+        # Vintages are the years the capacity model commissions plants in, i.e.
+        # the prospective years.
+        first_vintage = year_pos(self, self.prospection_start_year)
+        vintage_positions = jnp.arange(first_vintage, n_years)
+        n_vintages = n_years - first_vintage
+        needed_capacity = energy_production_commissioned[first_vintage:]
+
+        lifespan = int(
+            _get_value_for_year(
+                input_data.get(f"{pathway}_eis_plant_lifespan"), self.prospection_start_year, 25
+            )
+        )
+
+        # (vintage, age) grid of the operating years of each vintage.
+        ages = jnp.arange(lifespan)
+        target = vintage_positions[:, None] + ages[None, :]
+        inside = target < n_years
+        target_clamped = jnp.minimum(target, n_years - 1)
+
+        if self.compute_all_years:
+            active = jnp.ones(n_vintages, dtype=bool)
+        else:
+            active = needed_capacity > 0
+
+        def masked(grid):
+            """Blank out the vintages the pandas loop skips entirely."""
+            return jnp.where(active[:, None], grid, jnp.nan)
+
+        def scatter(grid):
+            """NaN-aware accumulation of a (vintage, age) grid onto the model years."""
+            contributing = inside & ~jnp.isnan(grid)
+            positions = target_clamped.ravel()
+            total = jnp.zeros(n_years).at[positions].add(
+                jnp.where(contributing, jnp.nan_to_num(grid), 0.0).ravel()
+            )
+            count = jnp.zeros(n_years).at[positions].add(
+                contributing.ravel().astype(jnp.float64)
+            )
+            return jnp.where(count > 0, total, jnp.nan)
+
+        def vintage_values(name, default):
+            return self._jax_vintage_values(input_data.get(name), vintage_positions, default)
+
+        def resource_emission_factor(key):
+            """Resource CO2 factor over each vintage window, held flat past end_year."""
+            value = input_data.get(f"{key}_co2_emission_factor")
+            if value is None:
+                return jnp.full(target.shape, jnp.nan)
+            return jnp.asarray(value)[target_clamped]
+
+        # Share of the annual production carried by each vintage.
+        relative_share = jnp.where(
+            inside,
+            needed_capacity[:, None] / (energy_consumption + energy_unused)[target_clamped],
+            jnp.nan,
+        )
+
+        core_emission_factor = vintage_values(
+            f"{pathway}_eis_co2_emission_factor_without_resource", 0.0
+        )
+        if core_emission_factor is None:
+            core_emission_factor = jnp.zeros(n_vintages)
+        kerosene_selectivity = vintage_values(f"{pathway}_eis_kerosene_selectivity", 1.0)
+        if kerosene_selectivity is None:
+            kerosene_selectivity = jnp.ones(n_vintages)
+
+        vintage_emission_factor = jnp.broadcast_to(
+            core_emission_factor[:, None], target.shape
+        ).astype(jnp.float64)
+        output_data[f"{pathway}_mean_co2_emission_factor_without_resource"] = scatter(
+            masked(core_emission_factor[:, None] * relative_share)
+        )
+
+        for key in self.resource_keys:
+            specific_consumption = vintage_values(
+                f"{pathway}_eis_resource_specific_consumption_{key}", None
+            )
+            resource_consumption = None
+            resource_consumption_with_selectivity = None
+
+            if specific_consumption is not None:
+                resource_consumption = needed_capacity * specific_consumption
+                resource_consumption_with_selectivity = resource_consumption * kerosene_selectivity
+
+                unit_emissions = resource_emission_factor(key)
+                co2_emission_factor_resource = specific_consumption[:, None] * unit_emissions
+                vintage_emission_factor = jax_nan_add(
+                    vintage_emission_factor, co2_emission_factor_resource
+                )
+                output_data[
+                    f"{pathway}_excluding_processes_{key}_mean_co2_emission_factor"
+                ] = scatter(masked(co2_emission_factor_resource * relative_share))
+
+            for process_key in self.process_keys:
+                process_specific_consumption = vintage_values(
+                    f"{process_key}_eis_resource_specific_consumption_{key}", None
+                )
+                if process_specific_consumption is None:
+                    continue
+                # The pandas version assigns (not adds) to the running resource
+                # totals, so a process consumption overrides the pathway one.
+                resource_consumption = needed_capacity * process_specific_consumption
+                resource_consumption_with_selectivity = resource_consumption * kerosene_selectivity
+
+                unit_emissions = resource_emission_factor(key)
+                co2_emission_factor_resource = process_specific_consumption[:, None] * unit_emissions
+                vintage_emission_factor = jax_nan_add(
+                    vintage_emission_factor, co2_emission_factor_resource
+                )
+                output_data[f"{pathway}_{process_key}_{key}_mean_co2_emission_factor"] = scatter(
+                    masked(co2_emission_factor_resource * relative_share)
+                )
+
+            if resource_consumption is not None:
+                spread = jnp.where(inside, 1.0, jnp.nan)
+                output_data[f"{pathway}_{key}_total_consumption"] = scatter(
+                    masked(resource_consumption[:, None] * spread)
+                )
+                output_data[f"{pathway}_{key}_total_mobilised_with_selectivity"] = scatter(
+                    masked(resource_consumption_with_selectivity[:, None] * spread)
+                )
+
+        for process_key in self.process_keys:
+            process_emission_factor = vintage_values(
+                f"{process_key}_eis_co2_emission_factor_without_resources", 0.0
+            )
+            if process_emission_factor is None:
+                process_emission_factor = jnp.zeros(n_vintages)
+            vintage_emission_factor = jax_nan_add(
+                vintage_emission_factor, process_emission_factor[:, None]
+            )
+            output_data[
+                f"{pathway}_{process_key}_without_resources_mean_co2_emission_factor"
+            ] = scatter(masked(process_emission_factor[:, None] * relative_share))
+
+        co2_emission_factor = scatter(masked(vintage_emission_factor * relative_share))
+
+        # The vintage's own emission factor, reported on its commissioning year.
+        vintage_eis = jnp.where(active, vintage_emission_factor[:, 0], jnp.nan)
+        output_data[f"{pathway}_vintage_eis_co2_emission_factor"] = jnp.concatenate(
+            [jnp.full(first_vintage, jnp.nan), vintage_eis]
+        )
+
+        if self.compute_abatement_cost:
+            exogenous_carbon_price_trajectory = jnp.asarray(
+                input_data["exogenous_carbon_price_trajectory"]
+            )
+            social_discount_rate = input_data.get("social_discount_rate", 0.0)
+
+            # Past end_year the vintage keeps its last modelled emission factor
+            # and the carbon price keeps the last modelled growth rate.
+            held_emission_factor = jnp.take_along_axis(
+                vintage_emission_factor,
+                jnp.minimum(ages[None, :], (n_years - 1 - vintage_positions)[:, None]),
+                axis=1,
+            )
+            carbon_price = jax_extended_carbon_price(
+                exogenous_carbon_price_trajectory, target, target_clamped
+            )
+            discount = (1.0 + social_discount_rate) ** (-ages)
+
+            has_value = jnp.any(~jnp.isnan(vintage_emission_factor), axis=1) & active
+            cumul_em = jnp.where(has_value, jnp.sum(held_emission_factor, axis=1), jnp.nan)
+            generic_discounted_cumul_em = jnp.where(
+                has_value,
+                jnp.sum(
+                    held_emission_factor
+                    * carbon_price
+                    / exogenous_carbon_price_trajectory[vintage_positions][:, None]
+                    * discount[None, :],
+                    axis=1,
+                ),
+                jnp.nan,
+            )
+            padding = jnp.full(first_vintage, jnp.nan)
+            output_data[f"{pathway}_lifespan_unitary_emissions"] = jnp.concatenate(
+                [padding, cumul_em]
+            )
+            output_data[f"{pathway}_lifespan_discounted_unitary_emissions"] = jnp.concatenate(
+                [padding, generic_discounted_cumul_em]
+            )
+
+        output_data[f"{pathway}_mean_co2_emission_factor"] = co2_emission_factor
+        output_data[f"{pathway}_total_co2_emissions"] = energy_consumption * co2_emission_factor
         return output_data
 
     def _unitary_cumul_emissions_vintage(
