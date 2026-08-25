@@ -7,7 +7,7 @@ import jax.numpy as jnp
 import pandas as pd
 import warnings
 from aeromaps.models.base import AeroMAPSModel
-from aeromaps.models.jax_helpers import year_pos
+from aeromaps.models.jax_helpers import climate_year_pos, year_pos
 
 
 class CarbonBudgetConsumedShare(AeroMAPSModel):
@@ -112,4 +112,23 @@ class TemperatureTargetConsumedShare(AeroMAPSModel):
 
         self.float_outputs["temperature_target_consumed_share"] = temperature_target_consumed_share
 
+        return temperature_target_consumed_share
+
+    def jax_compute(
+        self,
+        historical_temperature_increase,
+        temperature_target,
+        temperature_increase_from_aviation,
+    ):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        # temperature_increase_from_aviation is indexed on the climate years.
+        temperature = jnp.asarray(temperature_increase_from_aviation)
+        temperature_target_consumed_share = (
+            (
+                temperature[climate_year_pos(self, self.end_year)]
+                - temperature[climate_year_pos(self, self.prospection_start_year)]
+            )
+            / (temperature_target - historical_temperature_increase)
+            * 100.0
+        )
         return temperature_target_consumed_share

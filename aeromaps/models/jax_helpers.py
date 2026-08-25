@@ -111,6 +111,44 @@ def year_pos(model, year) -> int:
     return int(year) - model.historic_start_year
 
 
+def climate_years_index(model) -> np.ndarray:
+    """Return the model's climate year index as a static numpy array."""
+    return np.arange(model.climate_historic_start_year, model.end_year + 1)
+
+
+def climate_year_pos(model, year) -> int:
+    """Static position of ``year`` in the model's climate year index.
+
+    Climate-indexed series start at ``climate_historic_start_year``, earlier
+    than the model index, so they need their own offset.
+    """
+    return int(year) - model.climate_historic_start_year
+
+
+def jax_scalar_root(residual, x0, n_iter: int = 60):
+    """Differentiable scalar root find, JAX counterpart of ``scipy.optimize.fsolve``.
+
+    Newton iterations (fixed count, so the loop is traceable) wrapped in
+    :func:`jax.lax.custom_root`: the forward pass is the Newton solve and the
+    derivative comes from the implicit function theorem on ``residual``, which
+    is both exact and independent of the iteration count.
+    """
+    grad_residual = jax.grad(residual)
+
+    def solve(fun, x_init):
+        def step(_, x):
+            step_size = fun(x) / grad_residual(x)
+            # Guard against a vanishing derivative stalling or blowing up the step.
+            return x - jnp.where(jnp.isfinite(step_size), step_size, 0.0)
+
+        return jax.lax.fori_loop(0, n_iter, step, x_init)
+
+    def tangent_solve(g, y):
+        return y / jax.grad(g)(0.0)
+
+    return jax.lax.custom_root(residual, jnp.asarray(x0, dtype=jnp.float64), solve, tangent_solve)
+
+
 def jax_interp_backfill(model, reference_years, reference_years_values, hist_value=None):
     """Interpolation with historic years backfilled.
 

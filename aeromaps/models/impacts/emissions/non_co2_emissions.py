@@ -1064,3 +1064,59 @@ class NonCO2Emissions(AeroMAPSModel):
         self.df_climate.loc[:, "sulfur_emissions"] = sulfur_emissions
 
         return output_data
+
+    jax_climate_output_names = (
+        "soot_emissions",
+        "h2o_emissions",
+        "nox_emissions",
+        "sulfur_emissions",
+    )
+
+    @property
+    def jax_output_indexes(self):
+        climate_index = pd.RangeIndex(self.climate_historic_start_year, self.end_year + 1)
+        return {name: climate_index for name in self.jax_climate_output_names}
+
+    def jax_compute(self, input_data) -> dict:
+        """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
+        # Climate years [climate_historic_start_year .. historic_start_year] are
+        # filled from the historical record; the model-year contributions start
+        # one year after historic_start_year (the pandas `.loc[hsy + 1:]` slice).
+        n_hist = self.historic_start_year - self.climate_historic_start_year + 1
+        n_model = self.end_year - self.historic_start_year + 1
+
+        species_columns = {"nox": 2, "h2o": 3, "soot": 4, "sulfur": 5}
+        emissions = {
+            species: jnp.concatenate(
+                [
+                    jnp.asarray(
+                        np.asarray(self.climate_historical_data[:n_hist, column], dtype=np.float64)
+                    ),
+                    jnp.zeros(n_model - 1),
+                ]
+            )
+            for species, column in species_columns.items()
+        }
+
+        for aircraft_type in ["dropin_fuel", "hydrogen"]:
+            for energy_origin in self.pathways_manager.get_all_types("energy_origin"):
+                if not self.pathways_manager.get(
+                    aircraft_type=aircraft_type, energy_origin=energy_origin
+                ):
+                    continue
+                prefix = f"{aircraft_type}_{energy_origin}"
+                mass_consumption = (
+                    jnp.asarray(input_data[f"{prefix}_energy_consumption"])
+                    / jnp.asarray(input_data[f"{prefix}_mean_lhv"])
+                    / 10**9  # convert MJ to Mt
+                )
+                for species in species_columns:
+                    contribution = jnp.nan_to_num(
+                        jnp.asarray(input_data[f"{prefix}_mean_emission_index_{species}"])
+                        * mass_consumption
+                    )
+                    emissions[species] = emissions[species] + jnp.concatenate(
+                        [jnp.zeros(n_hist), contribution[1:]]
+                    )
+
+        return {f"{species}_emissions": value for species, value in emissions.items()}

@@ -5,8 +5,6 @@ Module to compute global world and aviation temperature targets.
 """
 
 from typing import Tuple
-from scipy.optimize import fsolve
-
 
 from aeromaps.models.base import AeroMAPSModel
 
@@ -55,5 +53,18 @@ class TemperatureTarget(AeroMAPSModel):
         self.float_outputs["world_temperature_target"] = world_temperature_target
         self.float_outputs["aviation_temperature_target"] = aviation_temperature_target
 
+        return world_temperature_target, aviation_temperature_target
+
+    def jax_compute(
+        self,
+        historical_temperature_increase,
+        temperature_target,
+        aviation_temperature_target_allocated_share,
+    ):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        world_temperature_target = temperature_target - historical_temperature_increase
+        aviation_temperature_target = (
+            world_temperature_target * aviation_temperature_target_allocated_share / 100.0
+        )
         return world_temperature_target, aviation_temperature_target
 

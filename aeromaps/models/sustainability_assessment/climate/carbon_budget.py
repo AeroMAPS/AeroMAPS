@@ -4,9 +4,24 @@ carbon_budgets
 This module contains models to compute gross carbon budget related metrics.
 """
 
+from functools import partial
 from typing import Tuple
+
+import jax.numpy as jnp
 from scipy.optimize import fsolve
+
 from aeromaps.models.base import AeroMAPSModel
+from aeromaps.models.jax_helpers import jax_scalar_root
+
+
+def _jax_decline_rate_residual(x, n_years_to_2100, budget_ratio):
+    """JAX form of :meth:`GrossCarbonBudget._compute_average_co2_emissions_decline_rate`.
+
+    Kept at module level because ``AutoJAXDiscipline`` parses every ``return``
+    statement in the source of ``jax_compute`` to name the outputs, so the
+    method must not contain a nested function with its own ``return``.
+    """
+    return ((1.0 - x) - (1.0 - x) ** n_years_to_2100) / x - budget_ratio
 
 
 class GrossCarbonBudget(AeroMAPSModel):
@@ -82,6 +97,59 @@ class GrossCarbonBudget(AeroMAPSModel):
         self.float_outputs["aviation_carbon_budget"] = aviation_carbon_budget
 
         return gross_carbon_budget, gross_carbon_budget_2050, aviation_carbon_budget
+
+    # The reference year is a static loop/exponent bound, not a differentiable input.
+    jax_static_input_names = ("carbon_budget_reference_year",)
+
+    def jax_compute(
+        self,
+        net_carbon_budget,
+        carbon_dioxyde_removal_2100,
+        world_co2_emissions_carbon_budget_reference_year,
+        aviation_carbon_budget_allocated_share,
+        carbon_budget_reference_year,
+    ):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy).
+
+        ``fsolve`` is replaced by :func:`jax_scalar_root`, which solves the same
+        scalar equation and differentiates it implicitly.
+        """
+        # AutoJAXDiscipline reads the output names off the return statement, so
+        # every returned element must be a plain name.
+        gross_carbon_budget = jnp.asarray(net_carbon_budget + carbon_dioxyde_removal_2100)
+
+        n_years_to_2100 = 2100 - int(carbon_budget_reference_year) + 1
+        n_years_to_2050 = 2050 - int(carbon_budget_reference_year) + 1
+
+        budget_ratio = gross_carbon_budget / world_co2_emissions_carbon_budget_reference_year
+
+        average_co2_emissions_decline_rate = jax_scalar_root(
+            partial(
+                _jax_decline_rate_residual,
+                n_years_to_2100=n_years_to_2100,
+                budget_ratio=budget_ratio,
+            ),
+            -0.02,
+        )
+
+        gross_carbon_budget_2050 = (
+            world_co2_emissions_carbon_budget_reference_year
+            * (
+                (1.0 - average_co2_emissions_decline_rate)
+                - (1.0 - average_co2_emissions_decline_rate) ** n_years_to_2050
+            )
+            / average_co2_emissions_decline_rate
+        )
+
+        aviation_carbon_budget = (
+            aviation_carbon_budget_allocated_share / 100.0 * gross_carbon_budget_2050
+        )
+
+        return (
+            gross_carbon_budget,
+            gross_carbon_budget_2050,
+            aviation_carbon_budget,
+        )
 
     @staticmethod
     def _compute_average_co2_emissions_decline_rate(x, data):

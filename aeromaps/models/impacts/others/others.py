@@ -50,6 +50,13 @@ class EmissionsPerRPK(AeroMAPSModel):
 
         return co2_emissions_per_rpk
 
+    def jax_compute(self, co2_emissions_passenger, rpk):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        co2_emissions_per_rpk = (
+            jnp.asarray(co2_emissions_passenger) * 1e6 * 1e6 / jnp.asarray(rpk)
+        )
+        return co2_emissions_per_rpk
+
 
 class EmissionsPerRTK(AeroMAPSModel):
     """
@@ -82,6 +89,11 @@ class EmissionsPerRTK(AeroMAPSModel):
         self.df["co2_emissions_per_rtk"] = co2_emissions_freight * 1e6 * 1e6 / rtk
         co2_emissions_per_rtk = self.df["co2_emissions_per_rtk"]
 
+        return co2_emissions_per_rtk
+
+    def jax_compute(self, co2_emissions_freight, rtk):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        co2_emissions_per_rtk = jnp.asarray(co2_emissions_freight) * 1e6 * 1e6 / jnp.asarray(rtk)
         return co2_emissions_per_rtk
 
 
