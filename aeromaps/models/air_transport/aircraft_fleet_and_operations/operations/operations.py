@@ -16,7 +16,7 @@ import pandas as pd
 import jax.numpy as jnp
 
 from aeromaps.models.base import AeroMAPSModel, aeromaps_interpolation_function
-from aeromaps.models.jax_helpers import years_index
+from aeromaps.models.jax_helpers import hist_mask, jax_interpolation_function, years_index
 
 
 class OperationsLogistic(AeroMAPSModel):
@@ -140,4 +140,19 @@ class OperationsInterpolation(AeroMAPSModel):
             self.df.loc[k, "operations_gain"] = 0
         operations_gain = self.df["operations_gain"]
 
+        return operations_gain
+
+    # Interpolation reference years are static knots for the JAX path.
+    jax_static_input_names = ("operations_gain_reference_years",)
+
+    def jax_compute(
+        self,
+        operations_gain_reference_years,
+        operations_gain_reference_years_values,
+    ):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        operations_gain_prospective = jax_interpolation_function(
+            self, operations_gain_reference_years, operations_gain_reference_years_values
+        )
+        operations_gain = jnp.where(hist_mask(self), 0.0, operations_gain_prospective)
         return operations_gain

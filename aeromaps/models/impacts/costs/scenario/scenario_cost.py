@@ -467,6 +467,9 @@ class TotalAirlineCost(AeroMAPSModel):
         Name of the model instance ('total_airline_cost' by default).
     """
 
+    # Written to ``self.df`` by ``compute`` without being a GEMSEO output.
+    jax_extra_output_names = ("total_airline_cost_increase",)
+
     def __init__(self, name="total_airline_cost", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -561,6 +564,47 @@ class TotalAirlineCost(AeroMAPSModel):
             cumulative_total_airline_cost_increase,
             cumulative_total_airline_cost_increase_discounted,
             cumulative_total_airline_cost_discounted_obj,
+        )
+
+    def jax_compute(
+        self, total_cost_per_rpk, rpk, rpk_no_elasticity, social_discount_rate
+    ):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        total_cost_per_rpk = jnp.asarray(total_cost_per_rpk)
+        rpk = jnp.asarray(rpk)
+        rpk_no_elasticity = jnp.asarray(rpk_no_elasticity)
+        years = jnp.asarray(years_index(self), dtype=jnp.float64)
+
+        initial_airline_cost = (
+            total_cost_per_rpk[year_pos(self, self.prospection_start_year - 1)] * rpk_no_elasticity
+        )
+        total_airline_cost = total_cost_per_rpk * rpk
+        total_airline_cost_increase = total_airline_cost - initial_airline_cost
+
+        discount = (1.0 + social_discount_rate) ** (years - self.prospection_start_year)
+        total_airline_cost_discounted = total_airline_cost / discount
+        total_airline_cost_increase_discounted = total_airline_cost_increase / discount
+
+        cumulative_total_airline_cost = jnp.cumsum(total_airline_cost)
+        cumulative_total_airline_cost_discounted = jnp.cumsum(total_airline_cost_discounted)
+        cumulative_total_airline_cost_increase = jnp.cumsum(total_airline_cost_increase)
+        cumulative_total_airline_cost_increase_discounted = jnp.cumsum(
+            total_airline_cost_increase_discounted
+        )
+
+        cumulative_total_airline_cost_discounted_obj = (
+            cumulative_total_airline_cost_increase_discounted[year_pos(self, self.end_year)]
+            - cumulative_total_airline_cost_increase_discounted[year_pos(self, 2025)]
+        )
+
+        return (
+            total_airline_cost,
+            cumulative_total_airline_cost,
+            cumulative_total_airline_cost_discounted,
+            cumulative_total_airline_cost_increase,
+            cumulative_total_airline_cost_increase_discounted,
+            cumulative_total_airline_cost_discounted_obj,
+            total_airline_cost_increase,
         )
 
 

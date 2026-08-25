@@ -17,6 +17,7 @@ import pandas as pd
 # from scipy.interpolate import interp1d
 
 from aeromaps.models.base import AeroMAPSModel  # , aeromaps_interpolation_function
+from aeromaps.models.jax_helpers import prosp_mask, year_pos
 
 
 class PassengerAircraftSimpleAirfare(AeroMAPSModel):
@@ -445,6 +446,54 @@ class PassengerAircraftMarginalCost(AeroMAPSModel):
 
         self.df.loc[:, "marginal_cost_per_rpk"] = marginal_cost_per_rpk
         self.df.loc[:, "airfare_per_rpk"] = airfare_per_rpk
+
+        return (
+            marginal_cost_per_rpk,
+            airfare_per_rpk_true,
+            airfare_per_rpk,
+        )
+
+    def jax_compute(
+        self,
+        rpk,
+        rpk_no_elasticity,
+        total_cost_per_rpk_without_extra_tax,
+        total_extra_tax_per_rpk,
+    ):
+        """JAX version of :meth:`compute` (same signature, pure jax.numpy)."""
+        rpk = jnp.asarray(rpk)
+        rpk_no_elasticity = jnp.asarray(rpk_no_elasticity)
+        total_cost_per_rpk_without_extra_tax = jnp.asarray(total_cost_per_rpk_without_extra_tax)
+        total_extra_tax_per_rpk = jnp.asarray(total_extra_tax_per_rpk)
+
+        base_pos = year_pos(self, self.prospection_start_year - 1)
+        intial_total_cost_per_rpk_without_extra_tax = total_cost_per_rpk_without_extra_tax[base_pos]
+
+        # initial price => Same markup as iata stats, but using aeromaps cost (~ +0.01 €/RPK)
+        initial_price_per_rpk_corrected = 0.09236379319842411
+
+        b = 2.0 * intial_total_cost_per_rpk_without_extra_tax - initial_price_per_rpk_corrected
+        a = (
+            2.0
+            * (initial_price_per_rpk_corrected - intial_total_cost_per_rpk_without_extra_tax)
+            / rpk_no_elasticity
+        )
+
+        # The pandas version slices rpk / total cost from prospection_start_year,
+        # so the historic years come out as NaN through index alignment.
+        marginal_cost_per_rpk = jnp.where(
+            prosp_mask(self),
+            a * rpk + b + total_cost_per_rpk_without_extra_tax
+            - intial_total_cost_per_rpk_without_extra_tax,
+            jnp.nan,
+        )
+
+        # `airfare_per_rpk` and `airfare_per_rpk_true` are the same Series in the
+        # pandas version, so the prospection_start_year - 1 value is set on both.
+        airfare_per_rpk = (marginal_cost_per_rpk + total_extra_tax_per_rpk).at[base_pos].set(
+            initial_price_per_rpk_corrected
+        )
+        airfare_per_rpk_true = airfare_per_rpk
 
         return (
             marginal_cost_per_rpk,
