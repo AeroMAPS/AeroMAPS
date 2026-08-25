@@ -48,6 +48,14 @@ Tuning an ``MDAChain`` (three traps, all silent)
    logs a warning. :func:`check_mda_convergence` turns that into an error -- including
    the case where the residual *does* reach the tolerance because the coupling variables
    have gone NaN and the NaN sentinel differences against itself to exactly zero.
+
+Damping and acceleration are worth reaching for: on
+``tests/tested_configs/config_elasticity_demand.yaml`` the same solution is reached in 109
+iterations by default, 65 at ``over_relaxation_factor=0.7`` and 46 with
+``acceleration_method="Alternate2Delta"``. What is *not* available is
+``BaseMDASolver.set_bounds()``, GEMSEO's native way to hold an iterate inside a physical
+domain: it is incompatible with any coupling carrying a NaN. See
+:class:`CustomDataConverter` for that, and for what the NaN sentinel costs.
 """
 
 from __future__ import annotations
@@ -158,6 +166,76 @@ class ExtendedJSONGrammar(JSONGrammar):
 
 
 class CustomDataConverter(SimpleGrammarDataConverter):
+    """Converts ``pd.Series`` couplings to/from the flat arrays GEMSEO iterates on.
+
+    The ``-999999`` sentinel
+    ------------------------
+
+    GEMSEO has **no** notion of a missing value: there is no NaN handling anywhere in
+    ``gemseo/mda``, ``gemseo/core/grammars`` or ``gemseo/core/data_converters``, and the
+    converter API is a pure value/array shim with no place to declare one. A NaN reaching
+    the residual is therefore fatal to the whole convergence machinery, not merely to its
+    reporting::
+
+        norm([1e-12, nan, 3e-12])   -> nan
+        nan <= tolerance            -> False   # convergence can never be declared
+        nan >= previous_residual    -> False   # nor can the divergence guard ever fire
+
+    Hence the sentinel. NaN is mapped to ``-999999`` on the way in and back to NaN on the
+    way out, so the mask travels *inside* the data and survives the slicing, concatenation
+    and reassembly GEMSEO performs on the coupling vector. Two NaN then difference to
+    exactly zero and the variable contributes nothing to the residual, which is the
+    intended behaviour: AeroMAPS series are legitimately NaN over the historical years and
+    for pathways a scenario does not use.
+
+    What it costs, measured on ``config_elasticity_demand.yaml`` (186 couplings, 13166
+    residual components): 2994 components (22.7%) are NaN on both sides and therefore
+    identically zero at every iteration. A further 7343 (55.8%) are zero because the
+    coupling genuinely does not move -- the ASK of an aircraft type absent from the
+    scenario, or the years before the price-elasticity loop starts. Only 21.5% of the
+    residual vector describes a system that is actually coupled.
+
+    That dilution is harmless with the default ``INITIAL_RESIDUAL_NORM`` scaling, which is
+    a ratio: a dead component drops out of the numerator and the denominator alike. It is
+    **not** harmless under ``N_COUPLING_VARIABLES``, which divides by ``sqrt(n)`` over the
+    full vector and would therefore loosen the criterion by a factor of about 2.2 here.
+
+    Two traps
+    ---------
+
+    1. ``BaseMDASolver.set_bounds()`` -- GEMSEO's native way to keep an iterate inside a
+       physical domain -- is **incompatible with any coupling that carries a NaN**. Bounds
+       are enforced by projecting the whole iterate (``SequenceTransformer._project``), so
+       ``-999999`` is clipped up to the lower bound, stops matching ``== -999999``, and is
+       fed to the disciplines as a real value. Measured on the scenario above, bounding one
+       NaN-carrying coupling takes the solve from 109 iterations at 6.2e-11 to 200
+       iterations at 1.4e-07, i.e. to non-convergence -- while the output DataFrames look
+       untouched, because each discipline recomputes its NaN output every iteration. Bound
+       a coupling only if it is NaN-free; otherwise clip inside the model, as
+       ``RPKElasticity`` does for the airfare.
+
+    2. Blending is safe only while the NaN *pattern* is stable. Damping and acceleration
+       recombine successive iterates, and mixing a sentinel with a real value yields an
+       arbitrary number of order 1e5-1e6 that no longer maps back to NaN. In the nominal
+       regime the pattern does not move, ``old == new == -999999``, and the blend is the
+       identity -- damping and acceleration are then not merely safe but markedly faster
+       (109 iterations, versus 65 at ``over_relaxation_factor=0.7`` and 46 with
+       ``acceleration_method="Alternate2Delta"``, for identical results). A pattern that
+       *does* move is precisely what :func:`check_mda_convergence` reports as "converged on
+       NaN", so the two coincide and no separate guard is needed.
+
+    Known limitations
+    -----------------
+
+    ``_series_names``, ``_series_indexes`` and ``_list_names`` are **class** attributes
+    mutated through ``self``, so they are shared by every converter instance in the
+    interpreter and keyed by bare variable name. Two processes with different horizons in
+    one session overwrite each other's index; if the lengths match, the years are silently
+    mislabelled rather than raising.
+
+    A genuine value of exactly ``-999999.0`` is read back as NaN.
+    """
+
     _IS_CONTINUOUS_TYPES: ClassVar[tuple[type, ...]] = (float, complex, pd.Series, list)
     _IS_NUMERIC_TYPES: ClassVar[tuple[type, ...]] = (int, *_IS_CONTINUOUS_TYPES)
 
