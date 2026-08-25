@@ -258,6 +258,9 @@ class CO2Emissions(AeroMAPSModel):
           self.input_names and self.output_names grammars.
     """
 
+    # ``co2_emissions`` spans the climate index and is kept in ``df_climate``.
+    jax_climate_output_names = ("co2_emissions",)
+
     def __init__(self, name="co2_emissions", *args, **kwargs):
         super().__init__(name=name, model_type="custom", *args, **kwargs)
         self.climate_historical_data = None

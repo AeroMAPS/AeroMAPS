@@ -96,6 +96,12 @@ class PassengerAircraftEfficiencySimpleShares(AeroMAPSModel):
             self.input_names[f"{mid}_electric_final_market_share"] = 0.0
             self.input_names[f"{mid}_electric_introduction_year"] = 2051.0
 
+        # ``energy_per_ask_<market>_dropin_fuel_gain`` is written straight to
+        # ``self.df`` by the pandas compute without being a GEMSEO variable.
+        self.jax_extra_output_names = tuple(
+            f"energy_per_ask_{m.id}_dropin_fuel_gain" for m in passenger_markets
+        )
+
         # Interpolation reference years are static knots for the JAX path.
         self.jax_static_input_names = {
             f"{m.id}_{key}"
@@ -356,6 +362,7 @@ class PassengerAircraftEfficiencySimpleShares(AeroMAPSModel):
             output_data[f"ask_{mid}_dropin_fuel_share"] = 100.0 - h2_share - el_share
             output_data[f"ask_{mid}_hydrogen_share"] = h2_share
             output_data[f"ask_{mid}_electric_share"] = el_share
+            output_data[f"energy_per_ask_{mid}_dropin_fuel_gain"] = gain
 
         return output_data
 

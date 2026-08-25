@@ -41,6 +41,10 @@ class NonDiscountedScenarioCost(AeroMAPSModel):
     - Detailed i/o documentation is not yet provided for models defined wityh generic .yaml files?
     """
 
+    # Returned by ``compute`` and stored in ``self.df``, but not declared as
+    # GEMSEO outputs; the plots read them from ``vector_outputs``.
+    jax_extra_output_names = ("carbon_tax_full_kero", "carbon_tax_bau")
+
     def __init__(self, name="non_discounted_scenario_cost", *args, **kwargs):
         super().__init__(name=name, model_type="custom", *args, **kwargs)
         self.pathways_manager = None
@@ -176,6 +180,7 @@ class NonDiscountedScenarioCost(AeroMAPSModel):
 
         self._store_outputs(output_data)
 
+        return output_data
 
     def jax_compute(self, input_data) -> dict:
         """JAX version of :meth:`compute` (same contract, pure jax.numpy)."""
@@ -244,7 +249,6 @@ class NonDiscountedScenarioCost(AeroMAPSModel):
             "carbon_tax_full_kero": carbon_tax_full_kero,
             "carbon_tax_bau": carbon_tax_bau,
         }
-        return output_data
 
 
 class DicountedScenarioCost(AeroMAPSModel):
@@ -319,6 +323,9 @@ class TotalAirlineCostNoElast(AeroMAPSModel):
     name : str
         Name of the model instance ('total_airline_cost_no_elast' by default).
     """
+
+    # Written to ``self.df`` by ``compute`` without being a GEMSEO output.
+    jax_extra_output_names = ("total_airline_cost_increase",)
 
     def __init__(self, name="total_airline_cost_no_elast", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
@@ -446,6 +453,7 @@ class TotalAirlineCostNoElast(AeroMAPSModel):
             cumulative_total_airline_cost_increase,
             cumulative_total_airline_cost_increase_discounted,
             cumulative_total_airline_cost_discounted_obj,
+            total_airline_cost_increase,
         )
 
 

@@ -208,7 +208,22 @@ class _AeroMAPSJAXWrapperMixin:
                 for key, value in self._latest_outputs.items()
                 if isinstance(value, (pd.Series, float))
             }
-            self.model._store_outputs(storable)
+            # ``jax_compute`` returns climate-indexed Series for every output the
+            # pandas ``compute`` builds on the climate index. Only the outputs
+            # the pandas version actually keeps in ``df_climate`` are declared in
+            # ``jax_climate_output_names``; the others are stored in ``model.df``
+            # and must be truncated back to the model year index, exactly as the
+            # pandas assignment ``self.df.loc[:, name] = series`` does.
+            climate_names = set(getattr(self.model, "jax_climate_output_names", ()))
+            climate_keys = [key for key in storable if key in climate_names] or None
+            for key, value in storable.items():
+                if (
+                    key not in climate_names
+                    and isinstance(value, pd.Series)
+                    and not value.index.equals(self._full_index)
+                ):
+                    storable[key] = value.reindex(self._full_index)
+            self.model._store_outputs(storable, climate_outputs_keys=climate_keys)
 
     def _get_static_input_data(self):
         """Values of the static configuration inputs, frozen at build time."""
@@ -230,7 +245,11 @@ class AeroMAPSJAXModelWrapper(_AeroMAPSJAXWrapperMixin, JAXDiscipline):
     def __init__(self, model: AeroMAPSModel, differentiation_method="auto"):
         static_names = set(getattr(model, "jax_static_input_names", ()))
         input_names = [n for n in model.input_names if n not in static_names]
-        output_names = list(model.output_names)
+        # Intermediates the pandas compute only writes to ``model.df`` are
+        # declared as outputs here so ``jax_compute`` can return them and
+        # ``sync_model_df`` can store them (see ``jax_extra_output_names``).
+        extra_names = [n for n in getattr(model, "jax_extra_output_names", ()) if n not in model.output_names]
+        output_names = list(model.output_names) + extra_names
 
         # Static configuration inputs are frozen at build time and re-injected
         # into every jax_compute call without being traced.
@@ -260,7 +279,7 @@ class AeroMAPSJAXModelWrapper(_AeroMAPSJAXWrapperMixin, JAXDiscipline):
             )
             if isinstance(value, pd.Series)
         ]
-        self._init_common(model, series_output_names)
+        self._init_common(model, series_output_names + extra_names)
 
 
 class AeroMAPSAutoJAXModelWrapper(_AeroMAPSJAXWrapperMixin, AutoJAXDiscipline):
@@ -304,8 +323,9 @@ class AeroMAPSAutoJAXModelWrapper(_AeroMAPSJAXWrapperMixin, AutoJAXDiscipline):
         args = typing.get_args(ret)
         if not args:
             args = (ret,)
+        extra_names = set(getattr(model, "jax_extra_output_names", ()))
         return [
             name
             for name, ann in zip(output_names, args)
             if ann is pd.Series or getattr(ann, "__origin__", None) is pd.Series
-        ]
+        ] + [name for name in output_names if name in extra_names]

@@ -148,6 +148,20 @@ class AeroMAPSModel(object):
     # None when approach-agnostic (shared across both wirings, or outside the split).
     MODEL_APPROACH = None
 
+    # --- JAX path declarations (see aeromaps.core.jax_wrapper) -----------------
+    # Inputs frozen at discipline-build time (loop bounds, interpolation knots):
+    # they are passed to ``jax_compute`` untraced and are not differentiable.
+    jax_static_input_names: tuple = ()
+    # Outputs of ``jax_compute`` that the pandas ``compute`` keeps in
+    # ``df_climate`` rather than ``df``. Every other climate-indexed output is
+    # truncated back to the model year index when synced.
+    jax_climate_output_names: tuple = ()
+    # Intermediate series the pandas ``compute`` writes straight into ``self.df``
+    # without declaring them as GEMSEO outputs. ``jax_compute`` returns them too,
+    # and the wrapper stores them in ``model.df`` so both paths expose the same
+    # columns in ``process.data["vector_outputs"]``.
+    jax_extra_output_names: tuple = ()
+
     def __init__(self, name, parameters=None, model_type="auto"):
         self.name = name
         self.parameters = parameters

@@ -24,6 +24,10 @@ class TotalAircraftDistance(AeroMAPSModel):
         Name of the model instance ('total_aircraft_distance' by default).
     """
 
+    # Only the total is kept on the climate index by the pandas compute; the
+    # per-energy splits are stored in ``df``.
+    jax_climate_output_names = ("total_aircraft_distance",)
+
     def __init__(self, name="total_aircraft_distance", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
         self.climate_historical_data = None
