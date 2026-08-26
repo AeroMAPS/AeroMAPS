@@ -59,6 +59,36 @@ LABELS = {
 # drop-in is an alternative aircraft and belongs in the technology pillar.
 ALTERNATIVE = ("hydrogen", "electric")
 
+# Read this before quoting a wedge as a lever's contribution.
+ORDER_DEPENDENCE = """
+A wedge chart does not measure what each lever contributed. It measures what
+each lever contributed *given an order*, and the order is chosen by whoever
+draws it. The levers overlap: SAF and a battery-electric fleet both decarbonise
+the same joule, so whichever is peeled off first is credited with it and the
+other is credited with what is left.
+
+Measured here, on the third edition's S2 at 2050, where the energy term is
+1475.1 MtCO2:
+
+    ordering                        SAF          alternative aircraft
+    SAF first                    1468.9 Mt                    6.3 Mt
+    alternative aircraft first   1257.1 Mt                  218.1 Mt
+    Shapley value                1363.0 Mt                  112.2 Mt
+
+The fleet is identical in all three rows. Nothing physical distinguishes them;
+only the order does, and it moves the alternative-aircraft pillar by a factor of
+35. The same fleet change in T4, where no SAF competes for the credit, is worth
+246.3 Mt.
+
+This module takes the alternative leg first, because the figure stacks
+alternative aircraft above SAF and an attribution that contradicts its own
+drawing order is simply wrong. That makes the choice defensible, not canonical.
+The total is determinate; the split is not, and a single quoted percentage is
+meaningless without the ordering that produced it. The reports' own headline
+lever percentages are produced by this construction and inherit the same
+indeterminacy.
+"""
+
 
 def _series(view, name):
     """One vector output as a float array."""
@@ -77,6 +107,10 @@ def _energy_split(view, start_index):
 
     Returns ``(saf_fraction, alternative_fraction)``, each a share of the total
     intensity reduction, summing to one wherever that reduction is non-zero.
+
+    **The result depends on the order, and the order is a choice.** See
+    ORDER_DEPENDENCE at the top of this module before quoting any wedge as a
+    lever's contribution.
     """
     dropin = _series(view, "energy_consumption_dropin_fuel")
     alternative = sum(_series(view, "energy_consumption_%s" % kind) for kind in ALTERNATIVE)
@@ -86,24 +120,28 @@ def _energy_split(view, start_index):
     mean_factor = _series(view, "co2_per_energy_mean")
 
     with np.errstate(invalid="ignore", divide="ignore"):
-        start_share = dropin[start_index] / total[start_index]
         start_factor = mean_factor[start_index]
-
-        # Only the drop-in factor moves; the mix stays where it started. The
-        # non-drop-in leg keeps the intensity the start-year average implies for
-        # it, so that saf_only reduces to start_factor in the start year.
-        residual = max(1.0 - start_share, 1e-12)
-        alternative_start_intensity = (
-            start_factor - start_share * dropin_factor[start_index]
-        ) / residual
-        saf_only = start_share * dropin_factor + (1.0 - start_share) * alternative_start_intensity
-
         total_change = start_factor - mean_factor
-        saf_change = start_factor - saf_only
-        saf_fraction = np.where(np.abs(total_change) > 1e-12, saf_change / total_change, 1.0)
 
-    saf_fraction = np.clip(np.nan_to_num(saf_fraction, nan=1.0), 0.0, 1.0)
-    return saf_fraction, 1.0 - saf_fraction
+        # The alternative leg is evaluated first, against the start-year
+        # intensity, so that it is credited with displacing the fuel that was
+        # actually being burned rather than whatever SAF had already replaced.
+        # Its own factor is recovered from the fleet average rather than assumed:
+        # mean = (dropin * factor_dropin + alternative * factor_alt) / total.
+        alternative_share = np.divide(alternative, total, out=np.zeros_like(total), where=total > 0)
+        factor_alt = np.divide(
+            mean_factor * total - dropin_factor * dropin,
+            alternative,
+            out=np.full_like(total, start_factor),
+            where=alternative > 0,
+        )
+        alternative_change = alternative_share * (start_factor - factor_alt)
+        alternative_fraction = np.where(
+            np.abs(total_change) > 1e-12, alternative_change / total_change, 0.0
+        )
+
+    alternative_fraction = np.clip(np.nan_to_num(alternative_fraction, nan=0.0), 0.0, 1.0)
+    return 1.0 - alternative_fraction, alternative_fraction
 
 
 def atag_wedges(view, t0_view, t1_view, start_year=2024, first_year=2000):

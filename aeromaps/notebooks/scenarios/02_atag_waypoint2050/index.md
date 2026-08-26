@@ -145,15 +145,21 @@ revised upwards and with more detailed modeling to reflect current policies: reg
 offsets are estimated based on the implementation of CORSIA for international aviation until 2035,
 and an extra policy is assumed to be put in place after that to allow for reaching net-zero by 2050.
 
-{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">Two features of that trajectory deserve to be named
-as critiques rather than described as revisions. The first is that SAF's assigned role *grows* in each edition while the
-evidence for delivering it weakens: the third edition documents policy coordination failures and investment bottlenecks,
-delays the ramp accordingly, and then compensates by assuming a steeper subsequent climb to the same or a larger 2050 
-volume. Delay is absorbed by optimism about the recovery rather than propagated into the outcome. The second is that 
-traffic is exogenous in all three editions. Demand follows central industry forecasts unaffected by transition costs, 
-even though the same reports assume an energy carrier several times costlier than kerosene and a carbon price rising to 
-hundreds of dollars per tonne. Each lever is scored against a traffic volume it would itself help suppress, which 
-systematically overstates the abatement the levers must deliver.</span>{raw:typst}`]`
+The figure below shows the contribution of each of the modeled mitigation levers for the S0
+baseline scenario for each of the three editions of the report. Overall, with every new edition the
+expected emissions reductions attributable to fleet renewal, next generation aircraft technology,
+and operational efficiency are revised downwards, while the attributable to SAF is revised upwards.
+The second edition increased expected baseline emissions, while increasing ambition regarding
+emissions reductions, for which the role of SAF increased (both in low and high SAF cases). The
+third edition, also increased the role of SAF in the low case, but revised the high SAF back to
+expectations of the first edition.
+
+Besides this critique of the Waypoint scenarios, two methodological critiques are also made
+regarding the analysis carried by ATAG:
+
+- **Exogenous demand:** {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">traffic is exogenous in all three editions. Demand follows central industry forecasts unaffected by transition costs, even though the same reports assume an energy carrier several times costlier than kerosene and a carbon price rising to hundreds of dollars per tonne. Each lever is therefore scored against a traffic volume it would itself help suppress, which overstates the abatement the levers must deliver. The reports quote demand responses of about 16 % and 14 % from other studies before placing the question out of scope; closing the loop here gives 2 to 12 % by 2050, smaller than those figures but the same order as the technology and operations levers combined.</span>{raw:typst}`]`
+- **Climate impacts:** {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">the scenarios account for CO2 alone. Non-CO2 effects, which carry the majority of aviation's historical forcing and are dominated by contrail cirrus, are absent from every scenario, and contrail mitigation is absent from the lever set. The third edition states that the priority should remain CO2 because the science is still developing, but uncertainty about a warming term is an argument for reporting a range rather than for assigning it zero. Quantified here, the non-CO2 uncertainty band on a single scenario is about 3.2 times wider than the entire spread between the published scenarios.</span>{raw:typst}`]`
+
 
 ```{code-cell} python
 :tags: [hide-input]
@@ -255,28 +261,36 @@ certain to be incorrect" {cite:p}`sterman2000`.
 
 ### AeroMAPS
 
-{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">AeroMAPS {cite:p}`planes_aeromaps_2023` is an 
-open-source sectoral integrated assessment model for air transport, distributed under an open licence with its input 
-data. It is organised as a set of interconnected modules rather than a single monolithic calculation: air traffic and 
-its market segmentation; the aircraft fleet and its operations; energy carriers, their production processes and the 
-resources those consume; and downstream impact modules for emissions, life-cycle assessment {cite:p}`pollet_lca_2024`, 
-cost {cite:p}`salgas_techno-economic_2025`, abatement cost {cite:p}`salgas_macc_2024` and climate 
-{cite:p}`arriolabengoa_climate_2024`.</span>{raw:typst}`]`
+Employing open-source tools to simulate policy scenarios can be highly beneficial for making
+modelling assumptions explicit, improving the reproducibility of policy objectives, and supporting a
+common ground for high-level decision-making. In this context, the present work uses AeroMAPS
+{cite:p}`planes_aeromaps_2023`, an open-source sectoral integrated assessment framework for air transport designed to
+represent prospective aviation scenarios and their environmental impacts across multiple
+disciplinary fields.
 
-{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">Two architectural properties matter for a 
-reproduction exercise. First, modules are declared with explicit inputs and outputs and assembled into a computation 
-graph, which is resolved by a multidisciplinary analysis (MDA) solver rather than executed in a fixed order. Feedback 
-loops are therefore expressible: the demand–price coupling used later in this paper is a fixed point that the solver 
-converges, not a post-processing correction. Second, several modules are available at more than one fidelity: energy 
-carriers, for instance, can be described top-down by an aggregate cost and emission factor per unit energy, or bottom-up
-from plant capital expenditure, operating costs and construction lead times. The reproduction here uses the top-down 
-formulation throughout, because that is the resolution at which the reports themselves publish.</span>{raw:typst}`]`
+AeroMAPS is organised as a graph of small declarative modules that are solved together based on the
+GEMSEO library {cite:p}`gemseo`: modules explicitly define their inputs and outputs through
+variable names, allowing the solver to automatically handle model integration, execution sequence,
+numerical couplings and feedback loops (necessary features for the demand-price coupling showcased
+later). The framework was developed to be relatively easy to use and widely distributable among
+academic, institutional, and industrial stakeholders, while enabling sectoral environmental
+sustainability assessments and the evaluation of transition strategies. Its modular architecture
+also facilitates the integration of models from different disciplinary fields, furthermore it is
+also responsible for allowing for dynamic model assemble, which means simulation can be tailored to
+analysis of different scopes regarding:
 
-{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">The scenario definition lives entirely in 
-declarative files: a YAML configuration selecting the module chain and its data files, a JSON file of parameter 
-trajectories, and YAML descriptions of energy carriers, processes and resources. No scenario in this paper required 
-modifying model code, which is what allows the full lever grid to be swept by generating configurations 
-programmatically.</span>{raw:typst}`]`
+- **Geographic coverage:** {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">a scenario runs either as one global region or as several regions solved together, each carrying its own traffic, fleet and fuel policy, with an aggregation step that collapses a multi-regional run into the equivalent single-region process. Both are used here: the third-edition scenarios are global, while the S0 reference of the light edition is aggregated from a twenty-region run whose regional SAF mandates differ.</span>{raw:typst}`]`
+- **Market segmentation:** {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">markets are declared rather than hard-coded, each with its own traffic driver, energy intensity and, where the coupling is active, its own price elasticity. The reproduction uses four: short, medium and long range passenger traffic in revenue passenger-kilometres, and freight in revenue tonne-kilometres.</span>{raw:typst}`]`
+- **Energy production pathways:** {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">each carrier is resolved into named production pathways carrying their own cost, emission factor and upstream resource demand, so the fleet-average carbon intensity follows the mix and not a single assumed value. The full edition deploys seven biomass pathways, spanning roughly a factor of eight in life-cycle emissions, alongside electrofuel, fossil kerosene, liquid hydrogen and battery-electric aircraft; the light edition collapses the biomass pathways into one generic carrier, which is the resolution that edition publishes.</span>{raw:typst}`]`
+- **Emission scopes:** {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">the same scenario can be accounted tank-to-wake, as the reports headline, or well-to-wake, which is what a fuel-switching scenario has to be measured in if the upstream emissions of the replacement fuel are to appear anywhere. Every scenario here is run in both, as a pair of otherwise identical configurations. Beyond CO₂, the emissions modules carry the non-CO₂ species and feed a climate module returning effective radiative forcing and temperature.</span>{raw:typst}`]`
+- **Cost analysis:** {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">fuel production costs, aircraft direct operating costs, carbon prices and marginal abatement costs are all available, at a top-down resolution taking an aggregate cost per unit energy or a bottom-up one built from plant capital expenditure, operating costs and construction lead times. This reproduction uses the top-down formulation throughout, because that is the resolution at which the reports themselves publish, and the cost chain is what makes the demand response of the coupled scenarios computable at all.</span>{raw:typst}`]`
+
+For more details on the software architecture, simulation workflow, and some model components
+readers are referred to {cite:p}`planes_aeromaps_2023`. New developments have been carried since then to
+keep up with and advance the state-of-the-art regarding modeling: energy economics
+{cite:p}`salgas_techno-economic_2025,salgas_macc_2024`, fleet renewal, temperature impacts {cite:p}`arriolabengoa_climate_2024`, prospective life-cycle assessment {cite:p}`pollet_lca_2024`, and long-term behavioral impacts of policies on traffic demand {cite:p}`costa-alves_modeling_2026`.
+
+{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">The scenario definition lives entirely in declarative files: a YAML configuration selecting the module chain and its data files, a JSON file of parameter trajectories, and YAML descriptions of energy carriers, processes and resources. No scenario in this paper required writing model code, which is what makes the lever-by-lever reproduction auditable: every number quoted below is traceable to a committed input file and a committed output file.</span>{raw:typst}`]`
 
 ### Validation
 
@@ -428,7 +442,7 @@ if decomposition:
         save_fig(fig, name=f"atag_decomposition_{slug}")
 ```
 
-*Annual CO2 emissions decomposed by mitigation lever, following the pillars and colours ATAG uses, for each reproduced scenario: tank-to-wake on the left, well-to-wake on the right. All six panels share one vertical axis, so both the gap between the two accounting scopes and the gap between scenarios read as distances. Each band is what one pillar removes from the frozen-fleet baseline (dotted). Fleet renewal is the T0-to-T1 distance and next generation technology everything below it, which is where battery-electric aircraft sit rather than in the fuel band; the dashed line is emissions net of market-based measures, and it reaches zero in 2050 in all three scenarios because that is what the reports assume offsets are for.*
+*Annual CO2 emissions decomposed by mitigation lever, following the pillars and colours ATAG uses, for each reproduced scenario: tank-to-wake on the left, well-to-wake on the right. All six panels share one vertical axis, so both the gap between the two accounting scopes and the gap between scenarios read as distances. Each band is what one pillar removes from the frozen-fleet baseline (dotted). Fleet renewal is the T0-to-T1 distance and next generation technology everything below it, which is where battery-electric aircraft sit rather than in the fuel band; the dashed line is emissions net of market-based measures. Its step at 2036, where CORSIA-derived offsets hand over to the prescribed residual shares, is an artefact of that handover: the assumption adopted here is that 2036 offsetting levels net emissions with 2019, which halves the discontinuity without removing it. One caveat on reading the bands: the wedges sum to a determinate total, but how that total divides between the technology and fuel pillars depends on the order they are peeled off in, by a factor of 35 on S2. See the Discussion.*
 
 ```{important}
 **How the tank-to-wake panels are built.** The reports headline tank-to-wake emissions, and the
@@ -716,15 +730,47 @@ share_only = {k: v for k, v in coupled.items() if "(fixed share)" in k}
 SHARE_PANELS = [
     ("rpk", "Traffic [RPK]", 1e-12, "Revenue passenger-kilometres [trillion]"),
     ("doc_net_energy_per_rpk_mean", "Energy DOC per RPK", 1.0, "Energy DOC per RPK [EUR/RPK]"),
-    ("co2_emissions_including_energy", "Residual CO2", 1.0, "Annual CO2 [MtCO2]"),
+    # CO2 from the climate outputs, not the vector ones: the vector series is
+    # prospective-only and NaN before 2023, which is why this panel used to start
+    # where the other two did not. Its index runs from 1940, not 2000.
+    ("co2_emissions", "Residual CO2", 1.0, "Annual CO2 [MtCO2]"),
+]
+CLIMATE_START = 1940
+
+# The background the three pathways share, and the one thing that separates
+# them. SSP2 is a single socioeconomic pathway, so population is identical
+# across the three and GDP per capita nearly so; only the carbon price differs,
+# and it differs by a factor of 24 by 2050. Drawn as one line per pathway rather
+# than an envelope, which on two of these panels would collapse to a line and
+# hide the variable that actually drives the row below.
+BACKGROUND_PANELS = [
+    ("population", "Population", 1e-9, "Population [billion]"),
+    ("gdp_per_capita", "GDP per capita", 1.0, "GDP per capita [USD]"),
+    ("exogenous_carbon_price_trajectory", "Carbon price", 1.0, "Carbon price [USD/tCO2]"),
 ]
 
 if share_only:
-    fig, axes = plt.subplots(1, 3, figsize=(15.6, 4.2), layout="constrained")
+    fig, all_axes = plt.subplots(2, 3, figsize=(15.6, 8.4), layout="constrained")
+
+    for ax, (column, title, scale, ylabel) in zip(all_axes[0], BACKGROUND_PANELS):
+        for offset, (label, view) in enumerate(sorted(share_only.items())):
+            series = np.asarray(view.data["vector_outputs"][column], dtype=float) * scale
+            years = np.arange(2000, 2000 + len(series))
+            ax.plot(years, series, color=f"C{offset}", linewidth=1.8,
+                    label=label.split(" ")[0])
+        ax.set_title(title)
+        ax.set_ylabel(ylabel)
+        ax.grid(alpha=0.3)
+    all_axes[0][2].legend(fontsize=8)
+
+    axes = all_axes[1]
     for ax, (column, title, scale, ylabel) in zip(axes, SHARE_PANELS):
         curves = []
         for view in share_only.values():
-            series = np.asarray(view.data["vector_outputs"][column], dtype=float) * scale
+            block = "climate_outputs" if column == "co2_emissions" else "vector_outputs"
+            series = np.asarray(view.data[block][column], dtype=float) * scale
+            if block == "climate_outputs":
+                series = series[2000 - CLIMATE_START :]
             curves.append(series)
         years = np.arange(2000, 2000 + len(curves[0]))
         band = np.vstack(curves)
@@ -748,7 +794,7 @@ if share_only:
     save_fig(fig, name="coupled_demand_share")
 ```
 
-*The coupled runs **under the fixed-share reading only**, drawn as an envelope across the three SSP carbon-price pathways rather than one line each: traffic on the left, energy cost per revenue passenger-kilometre in the middle, residual CO2 on the right, with the median pathway picked out. Reading the three panels together gives the mechanism in order, since a higher carbon price raises the middle panel, which lowers the left, which lowers the right. The envelope is the spread the carbon price alone produces once demand is allowed to respond.*
+*The coupled runs **under the fixed-share reading only**. The top row is the background the three SSP pathways run on, one line each: population and GDP per capita are near-identical across them, since SSP2 is a single socioeconomic pathway, and the carbon price is what actually separates them, by a factor of 24 at 2050. The bottom row is what follows, drawn as an envelope across the three: traffic on the left, energy cost per revenue passenger-kilometre in the middle, residual CO2 on the right, with the median picked out. Reading the bottom row in order gives the mechanism, since a higher carbon price raises the middle panel, which lowers the left, which lowers the right. All six panels carry the observed period as well as the projection.*
 
 The panel above gives the total cost per revenue passenger-kilometre. What it does not show is
 what that total is made of, and the split matters: a carbon price and a fuel-price premium reach the
@@ -788,7 +834,7 @@ if share_only:
 demand response possible. Energy expenses rise steeply as the SAF mandate ramps, because the mandated fuel is several 
 times costlier per unit energy than the kerosene it displaces, and that increase reaches the traveller through direct 
 operating cost. This is the mechanism the reports leave unmodelled, and it is not a second-order correction: a demand 
-reduction of 11 to 20 % by 2050 is comparable in magnitude to what the technology and operations levers together are 
+reduction of 2 to 12 % by 2050 is comparable in magnitude to what the technology and operations levers together are 
 assumed to deliver.</span>{raw:typst}`]`
 
 ### Temperature impacts and contrail avoidance strategies
@@ -1032,8 +1078,11 @@ their inputs.</span>{raw:typst}`]`
 scrutiny, because the demand coupling quantifies its central weakness. When each lever is credited against a 
 counterfactual traffic volume that the levers themselves would have suppressed, the credited abatement is inflated: the
 fuel that a carbon price prevents from being burned is counted as abated by the SAF that was never needed to replace it.
-Closing the loop moves 2050 traffic down by 11 to 20 %, which is the same order as the technology and operations levers 
-combined, so the double-count is not a rounding error.</span>{raw:typst}`]`
+Closing the loop moves 2050 traffic down by 2 to 12 %, which is the same order as the technology and operations levers combined, so the double-count is not a rounding error.</span>{raw:typst}`]`
+
+{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">A second and sharper form of the same fallacy is built into the wedge chart itself. A decomposition of this kind does not measure what each lever contributed; it measures what each lever contributed *given an order*, and the order is chosen by whoever draws it. The levers overlap, because SAF and a battery-electric fleet decarbonise the same joule, so whichever is peeled off first is credited with it and the other is credited with what remains. Measured on S2 at 2050, where the energy term is 1,475 MtCO2: taking SAF first gives SAF 1,469 Mt and alternative aircraft 6 Mt; taking alternative aircraft first gives 1,257 and 218 Mt; a Shapley value, the symmetric attribution that averages over orders, gives 1,363 and 112 Mt. The fleet is identical in all three, and nothing physical distinguishes them. The alternative-aircraft pillar moves by a factor of 35 on the strength of a presentational choice, and the same fleet change in the T4 technology scenario, where no SAF competes for the credit, is worth 246 Mt.</span>{raw:typst}`]`
+
+{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">The conclusion is not that the decomposition is worthless. The total is determinate: whatever the order, the wedges sum to the same distance between the frozen-fleet baseline and the realised trajectory, and that distance is a physical statement. What is indeterminate is the split, and therefore any single quoted percentage. The figures in this document take alternative aircraft before SAF, because the chart stacks them in the technology pillar above the fuel pillar and an attribution that contradicts its own drawing order would be indefensible; the choice is stated in `atag_decomposition.py` rather than left for a reader to infer. The reports' own headline lever contributions are produced by exactly this construction and inherit exactly this indeterminacy, which is worth keeping in view when a single number is quoted as the share of abatement one lever delivers.</span>{raw:typst}`]`
 
 {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">Finally, the reproduction inherits limits from its
 sources and should be read with them. Digitisation error is bounded but not eliminated; calibrated parameters 

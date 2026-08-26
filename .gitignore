@@ -19,6 +19,10 @@ __pycache__/
 /aeromaps/notebooks/scenarios/02_atag_waypoint2050/_build/
 /aeromaps/notebooks/scenarios/02_atag_waypoint2050/exports/
 /aeromaps/notebooks/scenarios/02_atag_waypoint2050/3rd_edition_variants/_generated/
+# The avoided-emissions paper is a second MyST project in the same tree,
+# with its own build and export directories.
+/aeromaps/notebooks/scenarios/02_atag_waypoint2050/avoided_emissions/_build/
+/aeromaps/notebooks/scenarios/02_atag_waypoint2050/avoided_emissions/exports/
 # Region configs rebaselined onto this scenario's own historic window by
 # aggregate_regions_to_single_process; regenerated on every run.
 /aeromaps/notebooks/scenarios/02_atag_waypoint2050/3rd_edition_light/config_files/_rebaselined/
