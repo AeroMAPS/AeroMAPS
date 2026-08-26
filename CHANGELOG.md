@@ -1,5 +1,57 @@
 # Changelog
 
+## Unreleased
+
+Changed:
+- Reproduced the ATAG Waypoint 2050 scenarios lever by lever across the three editions of the
+  report, with a MyST document that reads only committed outputs and names the notebook behind
+  each result. (#TBD)
+- Added a CO2 decomposition following the reports' own pillars: fleet renewal, next generation
+  aircraft technology, operations and infrastructure, SAF, and market-based measures. Alternative
+  aircraft are counted as technology rather than as fuel, and the technology split is anchored on
+  the report's own T0 frozen-fleet and T1 renewal-only scenarios. (#TBD)
+- Added tank-to-wake twins for the reported scenarios, derived from the well-to-wake files by the
+  CORSIA scaling the reports describe, so both accounting scopes are available from committed
+  outputs. Agreement with the report's published technology curves is 0.3 % to 2.6 % at 2050.
+  (#TBD)
+- Added demand-price coupling for the ATAG scenarios, closing the feedback the reports leave out,
+  under both fixed-volume and fixed-share readings of a SAF mandate. (#TBD)
+- Added a full lever sweep over traffic, technology, operations and fuel, placing the three
+  published scenarios inside the range their own levers can produce. (#TBD)
+- Added climate analysis for the ATAG scenarios: per-mechanism temperature decomposition, non-CO2
+  uncertainty bands from the contrail-sensitivity and fuel-effect literature, and contrail
+  avoidance strategies parameterised on Teoh et al. (2020). (#TBD)
+- Re-baselined the third-edition scenarios on observed traffic through 2023, kept inside those
+  scenarios' own inputs rather than in the packaged defaults. (#TBD)
+- Made the scenario-comparison utilities usable against committed JSON, so results can be plotted
+  without re-running a process. (#TBD)
+- Stripped outputs from every tracked notebook and enforced the existing nbstripout hook. (#TBD)
+
+Fixed:
+- Corrected a family of silent-zero defects in the generic energy model, where a misspelled or
+  unregistered key resolved to a null series instead of raising: emission factors missing the
+  `mean_` prefix, a plural `resources_names`, subsidy and tax lookups, and a process's own
+  emission factor, which was read from `input_data` but never registered. (#TBD)
+- Corrected intensity curves reading as zero before their first reference year. Emission factors
+  and fuel prices are properties of a fuel and now clamp backwards, while mandates, which are
+  quantities, still truncate. (#TBD)
+- Corrected a double-count of electrofuel's green electricity and DAC-CO2, present in both its
+  cost and its emission factor. The report-derived values are life-cycle figures that already
+  include those resources, and charging for them again overstated the 2050 fuel price by 84 % and
+  roughly a third of the third edition's 2050 residual. (#TBD)
+- Corrected `aggregate_regions_to_single_process` writing machine-absolute paths into the
+  configuration it generates, which resolved on one machine only. (#TBD)
+- Corrected the ATAG re-baseline having been applied to `resources/data/parameters.json` and
+  `partitioning_inputs.json`, which silently moved the baseline of every other scenario in the
+  repository; no publication or tutorial output had been regenerated against it. The scenarios
+  that want that baseline now state it themselves, and
+  `aggregate_regions_to_single_process` takes a `region_baseline` so a caller can rebaseline a
+  multi-regional publication without editing it. (#TBD)
+- Corrected `compare_json_files` raising `IndexError` from inside its own tolerance filter when
+  two JSON files held lists of different lengths, instead of reporting them as different. (#TBD)
+- Corrected historic contrail forcing being zeroed, and ERF unit labels. (#TBD)
+
+
 ## Version 1.1.0
 
 Changed:
