@@ -116,6 +116,8 @@ Derived inputs are generated rather than hand-edited, and each script says what 
   gross trajectory; run it after the scenarios exist, then re-run them
 - `make_tables.py` — the manuscript's two LaTeX tables, read from the committed outputs;
   `--write DIR` emits `table.tex`
+- `report_data/digitise_scenarios.py` — traces the report's own S0-S2 curves out of its
+  charts, per pixel; `--write` merges them into `atag_3rd_edition_figures.yaml`
 - `../../../resources/historical_data/extend_atag_baseline.py` — the observed-through-2023 baseline
   in the third-edition inputs
 

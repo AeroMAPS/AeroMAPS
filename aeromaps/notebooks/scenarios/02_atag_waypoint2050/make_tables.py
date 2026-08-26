@@ -6,10 +6,11 @@ in the paper cannot drift from the numbers in the figures.
 
 Table 1 is the external validation: the reproduced trajectories against the
 report's own published curves, as a relative error at 2030, 2040 and 2050 and
-over the cumulative period. Only the technology scenarios T0-T4 appear, because
-they are the only curves the third edition publishes at a resolution that can be
-read off a chart. The S0-S2 rows are left as placeholders until those curves are
-digitised; the report draws them, but this repository does not yet carry them.
+over the cumulative period. The technology scenarios T0-T4 are compared against
+the hand-digitised curves, and S0-S2 against the curves traced by
+report_data/digitise_scenarios.py. Both sides are gross, that is, before any
+offsetting: `co2_emissions_including_energy` on ours, and the upper boundary of
+the market-based band on theirs.
 
 Table 2 is the internal decomposition: what each mitigation pillar removes from
 the frozen-fleet baseline in 2050. The three headline scenarios come from their
@@ -70,33 +71,59 @@ def at(values, year, first_year=FIRST_YEAR):
 # --------------------------------------------------------------------------- 1
 
 
+def _errors(ours, years, values):
+    """Relative error at each reporting year, then over the cumulative span."""
+    errors = [
+        100.0 * (at(ours, year) / float(np.interp(year, years, values)) - 1.0)
+        for year in ERROR_YEARS
+    ]
+    # Cumulative: integrate both on the same yearly grid.
+    span = np.arange(CUMULATIVE_SPAN[0], CUMULATIVE_SPAN[1] + 1)
+    published = np.interp(span, years, values)
+    reproduced = np.array([at(ours, year) for year in span])
+    errors.append(100.0 * (reproduced.sum() / published.sum() - 1.0))
+    return errors
+
+
 def validation_rows():
-    """Reproduced tank-to-wake trajectories against the report's own curves."""
+    """Reproduced tank-to-wake trajectories against the report's own curves.
+
+    Both sides are gross. Ours is ``co2_emissions_including_energy``, which is
+    emissions before any offsetting, and the traced curve is the top of the
+    report's market-based band, which is the same quantity on its side. The
+    dashed line in the report's charts is net of offsets and reaches zero in
+    2050, so comparing against it would compare two different things.
+    """
     report = yaml.safe_load(
         (HERE / "report_data" / "atag_3rd_edition_figures.yaml").read_text(encoding="utf-8")
-    )["technology_scenarios"]
+    )
 
     rows = []
-    for name in sorted(report):
+    for name in sorted(report["technology_scenarios"]):
         path = HERE / "3rd_edition_full" / "data_outputs" / f"{name.lower()}-TTW.json"
         if not path.exists():
             rows.append((name, None))
             continue
+        curve = report["technology_scenarios"][name]
         ours = series(View(path), "co2_emissions_including_energy")
-        curve = report[name]
+        rows.append((name, _errors(ours, curve["years"], curve["values"])))
 
-        errors = []
-        for year in ERROR_YEARS:
-            published = float(np.interp(year, curve["years"], curve["values"]))
-            errors.append(100.0 * (at(ours, year) / published - 1.0))
-
-        # Cumulative: integrate both on the same yearly grid.
-        span = np.arange(CUMULATIVE_SPAN[0], CUMULATIVE_SPAN[1] + 1)
-        published_span = np.interp(span, curve["years"], curve["values"])
-        ours_span = np.array([at(ours, year) for year in span])
-        errors.append(100.0 * (ours_span.sum() / published_span.sum() - 1.0))
-
-        rows.append((name, errors))
+    # The scenarios sit in a different edition folder from the technology runs,
+    # and S0 only exists in the light edition.
+    locations = {
+        "S0": ("3rd_edition_light", "s0-TTW.json"),
+        "S1": ("3rd_edition_full", "s1-TTW.json"),
+        "S2": ("3rd_edition_full", "s2-TTW.json"),
+    }
+    for name in sorted(report.get("scenarios", {})):
+        edition, filename = locations[name]
+        path = HERE / edition / "data_outputs" / filename
+        if not path.exists():
+            rows.append((name, None))
+            continue
+        curve = report["scenarios"][name]
+        ours = series(View(path), "co2_emissions_including_energy")
+        rows.append((name, _errors(ours, curve["years"], curve["mbm_top"])))
     return rows
 
 
@@ -198,7 +225,6 @@ def print_tables():
             print(f"  {name:<9}  PENDING, no committed tank-to-wake output")
             continue
         print(f"  {name:<9}  " + "  ".join(f"{value:+6.1f}" for value in errors))
-    print("\n  S0-S2: PENDING, the report's own S0-S2 curves are not digitised yet.")
 
     print("\n\nTable 2 - 2050 pillar contributions [MtCO2]\n")
     print(
@@ -218,35 +244,44 @@ def print_tables():
 TABLE1_CAPTION = (
     r"\textcolor{Highlight}{Reproduction against the report's own published curves.} "
     r"\textcolor{red}{Relative error in annual CO$_2$ emissions between this reproduction and the "
-    r"third edition's own trajectories, in \%, in the tank-to-wake scope the report publishes. A "
-    r"positive value is an overestimate by the reproduction. T0 is the notional frozen-fleet "
-    r"trajectory and T1 is where emissions sit with no improvement beyond ongoing fleet renewal; "
-    r"none of the five includes reductions from operations, fuels or market-based measures. The "
-    r"report column is digitised from its charts and interpolated onto a yearly grid. The "
-    r"cumulative column runs from @START@ rather than 2019 because that is where the published curves "
-    r"begin; the earlier years are observed and identical on both sides. These are the only curves "
-    r"the third edition publishes at a resolution that can be read off, so they carry the external "
-    r"validation of the reproduction. The S0--S2 rows await a digitisation of the corresponding "
-    r"published curves.}"
+    r"third edition's own trajectories, in \%, in the tank-to-wake scope adopted by the report. A "
+    r"positive value indicates an overestimate by the reproduction. The technology scenarios T0 to "
+    r"T4 are compared against curves digitised by hand, whereas S0 to S2 are compared against "
+    r"curves traced per pixel from the published charts. T0 is the notional frozen-fleet "
+    r"trajectory and T1 corresponds to emissions with no improvement beyond ongoing fleet renewal, "
+    r"neither of which includes reductions from operations, fuels or market-based measures. "
+    r"Both sides of the comparison are gross, that is, before any offsetting: the reproduction "
+    r"reports \texttt{co2\_emissions\_including\_energy}, and the traced curve is the upper "
+    r"boundary of the market-based band, which represents the emissions remaining once every "
+    r"physical lever has acted. The dashed line drawn on the same charts is net of offsets and "
+    r"reaches zero in 2050, and is therefore not used. Regarding S0 and S2, a hatched band lies "
+    r"above that boundary, labelled as an increment to be covered by carbon removals should "
+    r"sustainable aviation fuel not deliver it. Taking the increment as delivered by fuel instead "
+    r"moves the 2050 error from $+32.4$~\% to $+12.6$~\% for S0, and from $-27.3$~\% to "
+    r"$-58.7$~\% for S2. The cumulative column starts in @START@ rather than in 2019 because the "
+    r"published curves begin there, the preceding years being observed and therefore identical on "
+    r"both sides.}"
 ).replace("@START@", str(CUMULATIVE_SPAN[0]))
 
 TABLE2_CAPTION = (
     r"\textcolor{Highlight}{Reproduced 2050 lever contributions.} "
     r"\textcolor{red}{What each mitigation pillar removes from the frozen-fleet baseline in 2050, "
-    r"in MtCO$_2$. The pillars follow the reports' own decomposition, so next generation technology "
-    r"carries the battery-electric contribution rather than the fuel column, and operations carries "
-    r"load factor. The first three rows are the published scenarios. The remaining rows are "
-    r"individual lever levels, each read at central traffic with the two levers not being varied "
-    r"held at their least ambitious setting, so T1, O1 and F1 are the same reference cell and "
-    r"appear three times by construction. Every row closes on the common frozen-fleet baseline of "
-    r"2835.0~Mt, which is the check that the decomposition is a partition rather than an "
-    r"attribution. Two cautions in reading across rows: the market-based column is the gross "
-    r"residual the measures are assumed to remove, not an independent lever; and a pillar's value "
-    r"depends on what else is deployed alongside it, which is why next generation technology is "
-    r"worth 563.8~Mt at T4 alone and 500.2~Mt in S2, where SAF competes for the same joules. Gross "
-    r"residuals are given in both accounting scopes for the published scenarios: the reports "
-    r"headline the tank-to-wake figure and this reproduction runs well-to-wake, so the difference "
-    r"between those two columns is the scope alone.}"
+    r"in MtCO$_2$. The pillars follow the decomposition adopted by the reports, so that next "
+    r"generation technology carries the battery-electric contribution rather than the fuel column, "
+    r"and operations carries load factor. The first three rows correspond to the published "
+    r"scenarios. The remaining rows correspond to individual lever levels, each evaluated at "
+    r"central traffic with the two levers not being varied held at their least ambitious setting, "
+    r"so that T1, O1 and F1 designate the same reference cell and appear three times by "
+    r"construction. Every row closes on the common frozen-fleet baseline of 2835.0~Mt, which "
+    r"verifies that the decomposition constitutes a partition rather than an attribution. Two "
+    r"cautions apply when reading across rows. First, the market-based column reports the gross "
+    r"residual that these measures are assumed to remove, and is therefore not an independent "
+    r"lever. Second, the value of a given pillar depends on what else is deployed alongside it, "
+    r"which explains why next generation technology amounts to 563.8~Mt under T4 alone and to "
+    r"500.2~Mt under S2, where sustainable aviation fuel competes for the same joules. Gross "
+    r"residuals are reported in both accounting scopes for the published scenarios, the reports "
+    r"headlining tank-to-wake emissions while this reproduction is run well-to-wake, so that the "
+    r"difference between those two columns is attributable to the accounting scope alone.}"
 )
 
 
@@ -274,12 +309,14 @@ def _latex_tables():
     out.append(r"\midrule")
     out.append(r"        &     &    &    &    \\")
     for name, errors in validation_rows():
+        # The two blocks are validated against differently sourced curves, so they
+        # are separated rather than run together.
+        if name == "S0":
+            out.append(r"        &     &    &    &    \\")
         if errors is None:
             out.append(r"%-6s & \multicolumn{4}{c}{pending} \\" % name)
             continue
         out.append("%-6s & " % name + " & ".join("$%+.1f$" % value for value in errors) + r" \\")
-    out.append(r"\midrule")
-    out.append(r"S0--S2 & \multicolumn{4}{c}{published curves not digitised} \\")
     out.append(r"\bottomrule")
     out.append(r"\end{tabular}")
     out.append(r"\end{small}")

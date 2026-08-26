@@ -12,31 +12,36 @@ from aeromaps.plots.single_scenario_plot import plot_1_x, plot_1_y
 
 # Default color palette for scenario groups
 DEFAULT_COLORS = [
-    '#1f77b4',  # blue
-    '#ff7f0e',  # orange
-    '#2ca02c',  # green
-    '#d62728',  # red
-    '#9467bd',  # purple
-    '#8c564b',  # brown
-    '#e377c2',  # pink
-    '#7f7f7f',  # gray
-    '#bcbd22',  # olive
-    '#17becf',  # cyan
+    "#1f77b4",  # blue
+    "#ff7f0e",  # orange
+    "#2ca02c",  # green
+    "#d62728",  # red
+    "#9467bd",  # purple
+    "#8c564b",  # brown
+    "#e377c2",  # pink
+    "#7f7f7f",  # gray
+    "#bcbd22",  # olive
+    "#17becf",  # cyan
 ]
 
 # Default line styles for scenarios within a group
-DEFAULT_LINESTYLES = ['-', ':', '-.', '--']
+DEFAULT_LINESTYLES = ["-", ":", "-.", "--"]
 
 # Color palette for energy origins (used by energy/fuel supply plots)
 ENERGY_ORIGIN_COLORS = {
-    'fossil': '#d62728',      # red
-    'biomass': '#2ca02c',     # green
-    'electricity': '#1f77b4', # blue
+    "fossil": "#d62728",  # red
+    "biomass": "#2ca02c",  # green
+    "electricity": "#1f77b4",  # blue
 }
 
 # Fallback colors when energy_origin is not in the map above
 ENERGY_ORIGIN_FALLBACK_COLORS = [
-    '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf',
+    "#9467bd",
+    "#8c564b",
+    "#e377c2",
+    "#7f7f7f",
+    "#bcbd22",
+    "#17becf",
 ]
 
 
@@ -46,21 +51,33 @@ class MultiScenarioPlot(ABC):
 
     This class handles common initialization and update patterns for plots
     that compare or visualize data from multiple processes/scenarios.
-    
+
     Attributes
     ----------
     required_outputs : list of str
         List of output field names required for this plot. Subclasses should
         override this to specify their data requirements.
     """
-    
+
     # Default: no required outputs (subclasses should override)
     required_outputs = []
 
-    def __init__(self, processes, figsize=None, check_outputs=True, required_outputs=None,
-                 scenario_groups=None, fig=None, ax=None, legend=True, colors=None,
-                 group_display="lines", group_envelope_middle="median",
-                 group_envelope_alpha=0.25, group_envelope_show_members=True):
+    def __init__(
+        self,
+        processes,
+        figsize=None,
+        check_outputs=True,
+        required_outputs=None,
+        scenario_groups=None,
+        fig=None,
+        ax=None,
+        legend=True,
+        colors=None,
+        group_display="lines",
+        group_envelope_middle="median",
+        group_envelope_alpha=0.25,
+        group_envelope_show_members=True,
+    ):
         """
         Initialize the plot with data from multiple processes.
 
@@ -126,9 +143,7 @@ class MultiScenarioPlot(ABC):
             Default ``0.25``.
         """
         if group_display not in ("lines", "envelope"):
-            raise ValueError(
-                f"group_display must be 'lines' or 'envelope', got {group_display!r}"
-            )
+            raise ValueError(f"group_display must be 'lines' or 'envelope', got {group_display!r}")
         self.group_display = group_display
         self.group_envelope_middle = group_envelope_middle
         self.group_envelope_alpha = group_envelope_alpha
@@ -141,29 +156,35 @@ class MultiScenarioPlot(ABC):
             self.required_outputs = required_outputs
         else:
             # Use class attribute - create instance copy to avoid mutation
-            self.required_outputs = self.__class__.required_outputs.copy() if self.__class__.required_outputs else []
-        
+            self.required_outputs = (
+                self.__class__.required_outputs.copy() if self.__class__.required_outputs else []
+            )
+
         # Store custom colors
         self._custom_colors = colors
 
         # Store scenario grouping configuration
         self.scenario_groups = scenario_groups
-        
+
         # Store processes
         self.processes = processes
-        
+
         # Extract pathways_manager from first process (all should have same pathways)
         if isinstance(processes, dict):
             first_process = next(iter(processes.values()))
         else:
             first_process = processes[0] if processes else None
-        
-        self.pathways_manager = first_process.pathways_manager if first_process and hasattr(first_process, 'pathways_manager') else None
-        
+
+        self.pathways_manager = (
+            first_process.pathways_manager
+            if first_process and hasattr(first_process, "pathways_manager")
+            else None
+        )
+
         # Validate and filter processes if requested
         if check_outputs and self.required_outputs:
             self.processes = self._filter_processes_by_outputs(self.required_outputs)
-        
+
         # Setup scenario styles AFTER filtering so styles match the actual scenarios being plotted
         self._setup_scenario_styles(self.processes, scenario_groups, colors)
 
@@ -190,7 +211,7 @@ class MultiScenarioPlot(ABC):
     def _setup_scenario_styles(self, processes, scenario_groups, colors=None):
         """
         Setup color and line style mapping for scenarios.
-        
+
         Parameters
         ----------
         processes : list or dict
@@ -202,13 +223,13 @@ class MultiScenarioPlot(ABC):
             a dict maps group names to colors when *scenario_groups* is used.
         """
         self.scenario_styles = {}
-        
+
         # Get scenario names
         if isinstance(processes, dict):
             scenario_names = list(processes.keys())
         else:
             scenario_names = [f"scenario_{i}" for i in range(len(processes))]
-        
+
         if scenario_groups is None:
             # No grouping - each scenario gets its own color, solid line style
             if isinstance(colors, list):
@@ -218,9 +239,9 @@ class MultiScenarioPlot(ABC):
                 color_cycle = itertools.cycle(DEFAULT_COLORS)
             for scenario_name in scenario_names:
                 self.scenario_styles[scenario_name] = {
-                    'color': next(color_cycle),
-                    'linestyle': '-',
-                    'group': None
+                    "color": next(color_cycle),
+                    "linestyle": "-",
+                    "group": None,
                 }
         else:
             # With grouping - assign colors to groups, line styles within groups
@@ -239,47 +260,49 @@ class MultiScenarioPlot(ABC):
             else:
                 color_cycle = itertools.cycle(DEFAULT_COLORS)
                 group_colors = {g: next(color_cycle) for g in group_names}
-            
+
             # Assign styles to scenarios within groups
             for group_name, group_scenarios in scenario_groups.items():
                 color = group_colors[group_name]
                 linestyle_cycle = itertools.cycle(DEFAULT_LINESTYLES)
-                
+
                 for scenario_name in group_scenarios:
                     if scenario_name in scenario_names:
                         self.scenario_styles[scenario_name] = {
-                            'color': color,
-                            'linestyle': next(linestyle_cycle),
-                            'group': group_name
+                            "color": color,
+                            "linestyle": next(linestyle_cycle),
+                            "group": group_name,
                         }
-            
+
             # Handle ungrouped scenarios (if any)
             grouped_scenarios = set()
             for group_scenarios in scenario_groups.values():
                 grouped_scenarios.update(group_scenarios)
-            
+
             ungrouped = set(scenario_names) - grouped_scenarios
             if ungrouped:
                 if isinstance(colors, list):
-                    ungrouped_color_cycle = itertools.cycle(colors[len(scenario_groups):] or colors)
+                    ungrouped_color_cycle = itertools.cycle(
+                        colors[len(scenario_groups) :] or colors
+                    )
                 else:
-                    ungrouped_color_cycle = itertools.cycle(DEFAULT_COLORS[len(scenario_groups):])
+                    ungrouped_color_cycle = itertools.cycle(DEFAULT_COLORS[len(scenario_groups) :])
                 for scenario_name in ungrouped:
                     self.scenario_styles[scenario_name] = {
-                        'color': next(ungrouped_color_cycle),
-                        'linestyle': '-',
-                        'group': None
+                        "color": next(ungrouped_color_cycle),
+                        "linestyle": "-",
+                        "group": None,
                     }
-    
+
     def get_scenario_style(self, scenario_name):
         """
         Get the color and line style for a scenario.
-        
+
         Parameters
         ----------
         scenario_name : str
             Name of the scenario
-            
+
         Returns
         -------
         dict
@@ -289,7 +312,7 @@ class MultiScenarioPlot(ABC):
             return self.scenario_styles[scenario_name]
         else:
             # Default style if not found
-            return {'color': DEFAULT_COLORS[0], 'linestyle': '-', 'group': None}
+            return {"color": DEFAULT_COLORS[0], "linestyle": "-", "group": None}
 
     # ------------------------------------------------------------------
     # Group-aware drawing helpers (envelope mode support)
@@ -312,14 +335,14 @@ class MultiScenarioPlot(ABC):
             for group_name, group_scenarios in self.scenario_groups.items():
                 members = [s for s in group_scenarios if s in self.scenario_styles]
                 if members:
-                    group_color = self.scenario_styles[members[0]]['color']
+                    group_color = self.scenario_styles[members[0]]["color"]
                     seen.update(members)
                     yield group_name, group_color, members
 
         # Ungrouped scenarios become singleton groups
         for scenario_name, style in self.scenario_styles.items():
             if scenario_name not in seen:
-                yield scenario_name, style['color'], [scenario_name]
+                yield scenario_name, style["color"], [scenario_name]
 
     def _resolve_middle_index(self, group_name, scenario_names):
         """
@@ -355,10 +378,7 @@ class MultiScenarioPlot(ABC):
             return scenario_names.index(picked)
         if mode in ("median", "mean"):
             return None
-        raise ValueError(
-            f"group_envelope_middle must be 'median', 'mean' or a dict, "
-            f"got {mode!r}"
-        )
+        raise ValueError(f"group_envelope_middle must be 'median', 'mean' or a dict, got {mode!r}")
 
     def _scenario_xy(self, scenario_name, data):
         """
@@ -382,8 +402,7 @@ class MultiScenarioPlot(ABC):
         column = getattr(self, "column_name", None)
         if column is None:
             raise NotImplementedError(
-                f"{type(self).__name__} must either set `column_name` "
-                f"or override _scenario_xy()."
+                f"{type(self).__name__} must either set `column_name` or override _scenario_xy()."
             )
         df = data[getattr(self, "data_source", "df")]
         x = data[getattr(self, "years_source", "years")]
@@ -420,15 +439,15 @@ class MultiScenarioPlot(ABC):
                 x, y = self._scenario_xy(scenario_name, data)
                 style = self.get_scenario_style(scenario_name)
                 self.ax.plot(
-                    x, y,
-                    label=f"Scenario {idx+1}",
-                    color=style['color'],
-                    linestyle=style['linestyle'],
+                    x,
+                    y,
+                    label=f"Scenario {idx + 1}",
+                    color=style["color"],
+                    linestyle=style["linestyle"],
                     linewidth=linewidth,
                 )
 
-    def _draw_group_curve(self, group_name, x, series_by_scenario, *,
-                          label=None, linewidth=2):
+    def _draw_group_curve(self, group_name, x, series_by_scenario, *, label=None, linewidth=2):
         """
         Draw one scenario group on ``self.ax`` honouring ``self.group_display``.
 
@@ -462,18 +481,20 @@ class MultiScenarioPlot(ABC):
             for scenario_name, y in series_by_scenario.items():
                 style = self.get_scenario_style(scenario_name)
                 self.ax.plot(
-                    x, y,
+                    x,
+                    y,
                     label=scenario_name,
-                    color=style['color'],
-                    linestyle=style['linestyle'],
+                    color=style["color"],
+                    linestyle=style["linestyle"],
                     linewidth=linewidth,
                 )
             return
 
         # Envelope mode with >=2 scenarios
-        group_color = self.scenario_styles[scenario_names[0]]['color']
-        arr = np.column_stack([np.asarray(series_by_scenario[s], dtype=float)
-                               for s in scenario_names])
+        group_color = self.scenario_styles[scenario_names[0]]["color"]
+        arr = np.column_stack(
+            [np.asarray(series_by_scenario[s], dtype=float) for s in scenario_names]
+        )
         y_min = np.nanmin(arr, axis=1)
         y_max = np.nanmax(arr, axis=1)
 
@@ -487,10 +508,13 @@ class MultiScenarioPlot(ABC):
             y_mid = arr[:, picked]
 
         self.ax.fill_between(
-            x, y_min, y_max,
+            x,
+            y_min,
+            y_max,
             color=group_color,
             alpha=self.group_envelope_alpha,
             linewidth=0,
+            label=label or group_name,
         )
         # Always resolve to a concrete scenario index (closest to computed median/mean
         # when group_envelope_middle is "median"/"mean", or the user-picked index).
@@ -503,26 +527,37 @@ class MultiScenarioPlot(ABC):
         mid_scenario = scenario_names[effective_picked]
         # With the members hidden the middle line carries the group on its own,
         # so it takes a plain solid stroke rather than its index-based dash.
-        mid_ls = ("-" if not self.group_envelope_show_members
-                  else self.get_scenario_style(mid_scenario)['linestyle'])
+        mid_ls = (
+            "-"
+            if not self.group_envelope_show_members
+            else self.get_scenario_style(mid_scenario)["linestyle"]
+        )
 
-        # Background lines: all scenarios except the last and the mid scenario,
-        # each using its pre-assigned index-based linestyle from scenario_styles.
-        # Skipped entirely when the caller wants band + middle line only.
-        for scenario_name in ([] if not self.group_envelope_show_members
-                              else scenario_names[:-1]):
+        # Background lines: every scenario except the mid one, which is drawn
+        # below as y_mid, each using its pre-assigned index-based linestyle from
+        # scenario_styles. Skipped entirely when the caller wants band + middle
+        # line only. Members are labelled with their scenario name so the legend
+        # says which line is which; without that the legend carries the band
+        # alone and the line styles are unreadable.
+        for scenario_name in [] if not self.group_envelope_show_members else scenario_names:
             if scenario_name == mid_scenario:
                 continue
             style = self.get_scenario_style(scenario_name)
             self.ax.plot(
-                x, series_by_scenario[scenario_name],
+                x,
+                series_by_scenario[scenario_name],
+                label=scenario_name,
                 color=group_color,
-                linestyle=style['linestyle'],
+                linestyle=style["linestyle"],
                 linewidth=linewidth,
             )
-        # y_mid uses the mid scenario's pre-assigned linestyle.
+        # y_mid uses the mid scenario's pre-assigned linestyle. It is labelled
+        # with the scenario it resolves to, except when the members are hidden
+        # and it stands for the group's middle rather than for one scenario.
         self.ax.plot(
-            x, y_mid,
+            x,
+            y_mid,
+            label=mid_scenario if self.group_envelope_show_members else None,
             color=group_color,
             linestyle=mid_ls,
             linewidth=linewidth,
@@ -531,7 +566,7 @@ class MultiScenarioPlot(ABC):
     def _filter_processes_by_outputs(self, required_outputs):
         """
         Filter processes to only include those with all required outputs.
-        
+
         Issues warnings for scenarios with missing outputs and excludes them.
 
         Parameters
@@ -543,7 +578,7 @@ class MultiScenarioPlot(ABC):
         -------
         dict or list
             Filtered processes (same type as input)
-            
+
         Raises
         ------
         ValueError
@@ -559,14 +594,12 @@ class MultiScenarioPlot(ABC):
                     warnings.warn(
                         f"Scenario '{scenario_name}' is missing required outputs: {missing}. "
                         f"It will be excluded from the plot.",
-                        UserWarning
+                        UserWarning,
                     )
-            
+
             if len(filtered) == 0:
-                raise ValueError(
-                    f"No scenarios have all required outputs: {required_outputs}"
-                )
-            
+                raise ValueError(f"No scenarios have all required outputs: {required_outputs}")
+
             return filtered
         else:
             # List of processes
@@ -579,87 +612,85 @@ class MultiScenarioPlot(ABC):
                     warnings.warn(
                         f"Scenario at index {idx} is missing required outputs: {missing}. "
                         f"It will be excluded from the plot.",
-                        UserWarning
+                        UserWarning,
                     )
-            
+
             if len(filtered) == 0:
-                raise ValueError(
-                    f"No scenarios have all required outputs: {required_outputs}"
-                )
-            
+                raise ValueError(f"No scenarios have all required outputs: {required_outputs}")
+
             return filtered
-    
+
     def _check_missing_outputs(self, data, required_outputs):
         """
         Check which required outputs are missing from a scenario's data.
-        
+
         Checks in both vector_outputs and climate_outputs, as different
         outputs may be stored in different places.
-        
+
         Parameters
         ----------
         data : dict
             Data dictionary from a process
         required_outputs : list of str
             List of output field names to check for
-            
+
         Returns
         -------
         list of str
             List of missing output names (empty if all present)
         """
         missing = []
-        
+
         # Get the data frames
         vector_df = data.get("vector_outputs")
         climate_df = data.get("climate_outputs")
-        
+
         # Check each required output
         for output in required_outputs:
             found = False
-            
+
             # Check in vector_outputs
             if vector_df is not None and output in vector_df.columns:
                 found = True
-            
+
             # Check in climate_outputs
             if climate_df is not None and output in climate_df.columns:
                 found = True
-            
+
             if not found:
                 missing.append(output)
-        
+
         return missing
-    
+
     @classmethod
     def get_required_outputs(cls):
         """
         Get the list of required outputs for this plot class.
-        
+
         This returns the class-level default. Individual instances may override
         this via the required_outputs parameter in __init__().
-        
+
         Returns
         -------
         list of str
             List of output field names required by this plot class
         """
         return cls.required_outputs
-    
+
     def get_instance_required_outputs(self):
         """
         Get the list of required outputs for this plot instance.
-        
+
         This returns the instance-level required outputs, which may differ
         from the class default if overridden at initialization.
-        
+
         Returns
         -------
         list of str
             List of output field names required by this plot instance
         """
         return self.required_outputs
-    
+
     def _extract_all_data(self):
         """
         Extract and store data from all processes.
@@ -668,14 +699,10 @@ class MultiScenarioPlot(ABC):
         """
         if isinstance(self.processes, dict):
             self.scenario_data = {
-                key: self._extract_scenario_data(proc.data)
-                for key, proc in self.processes.items()
+                key: self._extract_scenario_data(proc.data) for key, proc in self.processes.items()
             }
         else:
-            self.scenario_data = [
-                self._extract_scenario_data(proc.data)
-                for proc in self.processes
-            ]
+            self.scenario_data = [self._extract_scenario_data(proc.data) for proc in self.processes]
 
     def _extract_scenario_data(self, data):
         """
@@ -744,10 +771,9 @@ class MultiScenarioPlot(ABC):
         # --- Left column: colored patches, one per group ---
         group_handles, group_labels = [], []
         for group_name, _, members in all_groups:
-            color = self.scenario_styles[members[0]]['color']
+            color = self.scenario_styles[members[0]]["color"]
             group_handles.append(
-                mpatches.Patch(facecolor=color,
-                               alpha=min(1.0, self.group_envelope_alpha + 0.4))
+                mpatches.Patch(facecolor=color, alpha=min(1.0, self.group_envelope_alpha + 0.4))
             )
             group_labels.append(group_name)
 
@@ -767,17 +793,13 @@ class MultiScenarioPlot(ABC):
 
         if not self.group_envelope_show_members:
             # Only the middle line is drawn, so advertise that and nothing else.
-            style_handles.append(
-                mlines.Line2D([], [], color="grey", linestyle="-", linewidth=2)
-            )
+            style_handles.append(mlines.Line2D([], [], color="grey", linestyle="-", linewidth=2))
             style_labels.append(self._middle_legend_label(first_group_name, first_members))
         else:
             # One grey line per plotted variant (all except the last)
             for i, member in enumerate(first_members[:-1]):
                 ls = DEFAULT_LINESTYLES[i % len(DEFAULT_LINESTYLES)]
-                style_handles.append(
-                    mlines.Line2D([], [], color="grey", linestyle=ls, linewidth=2)
-                )
+                style_handles.append(mlines.Line2D([], [], color="grey", linestyle=ls, linewidth=2))
                 style_labels.append(self._variant_label(first_group_name, member))
 
         # --- Put all group entries first, then all style entries ---
@@ -824,16 +846,16 @@ class MultiScenarioPlot(ABC):
         >>> _variant_label("MyGroup", "other")  # → "other"
         """
         if scenario_name.startswith(group_name):
-            suffix = scenario_name[len(group_name):].lstrip('-_ ')
-            return suffix.replace('_', ' ') if suffix else scenario_name
-        return scenario_name.replace('_', ' ')
+            suffix = scenario_name[len(group_name) :].lstrip("-_ ")
+            return suffix.replace("_", " ") if suffix else scenario_name
+        return scenario_name.replace("_", " ")
 
     def _configure_canvas(self):
         """Configure matplotlib canvas properties."""
         # These attributes only exist for ipywidgets/jupyter backends
-        if hasattr(self.fig.canvas, 'header_visible'):
+        if hasattr(self.fig.canvas, "header_visible"):
             self.fig.canvas.header_visible = False
-        if hasattr(self.fig.canvas, 'toolbar_position'):
+        if hasattr(self.fig.canvas, "toolbar_position"):
             self.fig.canvas.toolbar_position = "bottom"
 
     def _get_default_figsize(self):
@@ -988,5 +1010,4 @@ class MultiScenarioPlot(ABC):
     @staticmethod
     def _readable_label(raw_name):
         """Turn a snake_case pathway / origin name into a readable label."""
-        return raw_name.replace('_', ' ').title()
-
+        return raw_name.replace("_", " ").title()

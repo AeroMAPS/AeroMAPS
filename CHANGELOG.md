@@ -65,6 +65,16 @@ Fixed:
   schedule to another is what caused the defect. (#144)
 - Corrected the coupled-demand figure starting its CO2 panel at 2023, and added a background row
   showing the population, GDP per capita and carbon price behind each SSP pathway. (#144)
+- Corrected envelope mode of the multi-scenario comparison plots dropping one member scenario
+  and labelling none of them, so a grouped envelope drew n-1 lines under an empty legend.
+  Members are now all drawn and labelled with their scenario name. (#144)
+- Added a per-pixel digitisation of the third edition's own S0-S2 charts, tracing the boundary
+  between the SAF and market-based bands, which is emissions before offsetting and therefore
+  comparable with `co2_emissions_including_energy`. The validation table now covers the three
+  headline scenarios as well as T0-T4. (#144)
+- Replaced the hand-written bibliography, whose keys were invented locally and which cited no
+  reference for GEMSEO or for fleet renewal, with entries taken from the author's own
+  libraries. (#144)
 
 
 ## Version 1.1.0
