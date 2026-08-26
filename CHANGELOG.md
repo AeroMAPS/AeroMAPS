@@ -57,9 +57,12 @@ Fixed:
   ordering of a nested decomposition is canonical, the module documents the measured
   indeterminacy rather than presenting the new order as correct. (#144)
 - Corrected the discontinuity where CORSIA-derived offsets stop in 2035 and the prescribed
-  residual shares begin in 2036. The 2036 share is now computed per scenario as the level that
-  puts net emissions back at the 2019 value, which halves the step rather than removing it.
-  (#144)
+  residual shares begin in 2036. The prescribed shares were also too small for the scenarios with
+  higher gross emissions, so net emissions rose between 2036 and 2040 before falling. Post-2035
+  offsetting is now stated as a target on net emissions instead: a linear decline from the 2035
+  level to zero at 2050, which is the shape all three published scenarios draw. `make_offset_glide.py`
+  derives the schedule from each scenario's own gross trajectory, since copying one scenario's
+  schedule to another is what caused the defect. (#144)
 - Corrected the coupled-demand figure starting its CO2 panel at 2023, and added a background row
   showing the population, GDP per capita and carbon price behind each SSP pathway. (#144)
 
