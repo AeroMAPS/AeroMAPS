@@ -6,7 +6,8 @@
 # SAF pathway's upstream reduction as a tank-to-wake reduction. So they belong
 # beside the `*-TTW.json` runs, not the well-to-wake ones. Against the committed
 # tank-to-wake technology runs at 2050 they agree to within 0.3 % (T2) and
-# 2.7 % (T0).
+# 2.6 % (T4). make_tables.py reports the same comparison at 2030 and 2040 and
+# over the cumulative period.
 #
 # Years are fractional because they come from digitising a chart; interpolate
 # onto a yearly grid before use rather than rounding them. Values are written at

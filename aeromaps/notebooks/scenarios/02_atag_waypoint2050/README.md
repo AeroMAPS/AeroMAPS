@@ -114,6 +114,8 @@ Derived inputs are generated rather than hand-edited, and each script says what 
 - `retime_mandates.py` — re-anchors mandate curves on the prospection start year
 - `make_offset_glide.py` — the post-CORSIA offset schedule, derived per scenario from its own
   gross trajectory; run it after the scenarios exist, then re-run them
+- `make_tables.py` — the manuscript's two LaTeX tables, read from the committed outputs;
+  `--write DIR` emits `table.tex`
 - `../../../resources/historical_data/extend_atag_baseline.py` — the observed-through-2023 baseline
   in the third-edition inputs
 

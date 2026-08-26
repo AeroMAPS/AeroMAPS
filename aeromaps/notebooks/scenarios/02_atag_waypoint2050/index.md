@@ -507,7 +507,7 @@ else:
           "3rd_edition_full/validation.ipynb.")
 ```
 
-*The five technology-only scenarios, tank-to-wake on the left and well-to-wake on the right, sharing a vertical axis. Both panels run identical scenarios, so the distance between them is the accounting scope alone. The dotted curves on the left are the report's own published trajectories, digitised from its charts; they are tank-to-wake, which is why they appear on that panel and not the other. Agreement at 2050 runs from 0.3 % on T2 to 2.7 % on T0, and it is the closest thing to an external check this reproduction has, since these are the only curves the report publishes at a resolution that can be read off.*
+*The five technology-only scenarios, tank-to-wake on the left and well-to-wake on the right, sharing a vertical axis. Both panels run identical scenarios, so the distance between them is the accounting scope alone. The dotted curves on the left are the report's own published trajectories, digitised from its charts; they are tank-to-wake, which is why they appear on that panel and not the other. Agreement at 2050 runs from 0.3 % on T2 to 2.6 % on T4, and it is the closest thing to an external check this reproduction has, since these are the only curves the report publishes at a resolution that can be read off. `make_tables.py` gives the same comparison at 2030 and 2040 and over the cumulative period.*
 
 {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">Each scenario is drawn as the reports draw it: a 
 rising frozen-technology baseline, then successive wedges for fleet renewal, next-generation technology, operations and 
@@ -541,7 +541,10 @@ try:
     print(f"  max    {residual.max():8.0f}   ({residual.idxmax()})")
     for name, cell in sweep.PUBLISHED_CELLS.items():
         print(f"  {name}     {residual.loc[cell]:8.0f}   ({cell})")
-    sweep.plot_grid(tidy)
+    # Coloured by technology rather than SAF: SAF separates the two carbon panels
+    # but does nothing to the two energy panels, because substituting the fuel changes
+    # what a joule emits, not how many are burned. Technology separates all four.
+    sweep.plot_grid(tidy, color_by="technology")
     save_fig(name="lever_sweep")
 except FileNotFoundError:
     print("PENDING: the sweep results have not been generated yet.\n"
@@ -553,7 +556,10 @@ lever grid is unexplored by the reports. Sweeping all 108 combinations of traffi
 the published scenarios inside a far wider range, and the position they occupy within it is itself informative: they are
 neither the optimistic nor the pessimistic corner, but they are also not a designed sample of the space. Three scenarios
 cannot express which combinations are jointly plausible, nor how much of the spread comes from each 
-lever.</span>{raw:typst}`]`
+lever. Colouring the bundle by technology rather than by SAF is what makes the energy panels readable at all, since 
+substituting the fuel changes what a joule emits and not how many are burned; and even so those panels resolve only 
+three bands from four technology levels, because T3 and T4 consume identical energy and differ only in what carries 
+it.</span>{raw:typst}`]`
 
 {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">This is the practical argument for moving from a 
 handful of named scenarios to a systematic sweep. A named scenario communicates a narrative and hides the sensitivity; 

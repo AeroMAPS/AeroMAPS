@@ -146,6 +146,15 @@ SERIES_COLUMNS = {
         "co2_emissions_including_aircraft_efficiency",
         "co2_emissions_including_load_factor",
         "co2_emissions_including_energy",
+        # Needed to split the energy term into its SAF and alternative-aircraft
+        # parts, the way atag_decomposition does for the headline scenarios.
+        # Absent arms are skipped by the `column in vector` guard above: only the
+        # T4 technology level flies anything that is not a drop-in.
+        "energy_consumption_dropin_fuel",
+        "energy_consumption_hydrogen",
+        "energy_consumption_electric",
+        "dropin_fuel_mean_co2_emission_factor",
+        "co2_per_energy_mean",
     ),
 }
 
@@ -216,20 +225,41 @@ def extract(process, traffic, technology, operations, saf):
     frames = []
     for column in SERIES_COLUMNS["climate"]:
         if column in climate:
-            frames.append(pd.DataFrame({"year": years, "variable": column,
-                                        "value": climate.loc[years, column].to_numpy()}))
+            frames.append(
+                pd.DataFrame(
+                    {
+                        "year": years,
+                        "variable": column,
+                        "value": climate.loc[years, column].to_numpy(),
+                    }
+                )
+            )
     for column in SERIES_COLUMNS["vector"]:
         if column in vector:
-            frames.append(pd.DataFrame({"year": years, "variable": column,
-                                        "value": vector.loc[years, column].to_numpy()}))
+            frames.append(
+                pd.DataFrame(
+                    {
+                        "year": years,
+                        "variable": column,
+                        "value": vector.loc[years, column].to_numpy(),
+                    }
+                )
+            )
 
     # Drop-in energy by origin, so the SAF share can be recomputed downstream.
     # Collected dynamically because the F1 arm carries a different carrier set
     # from the F2/F3 arms.
     for column in vector.columns:
         if column.startswith("dropin_fuel_") and column.endswith("_energy_consumption"):
-            frames.append(pd.DataFrame({"year": years, "variable": column,
-                                        "value": vector.loc[years, column].to_numpy()}))
+            frames.append(
+                pd.DataFrame(
+                    {
+                        "year": years,
+                        "variable": column,
+                        "value": vector.loc[years, column].to_numpy(),
+                    }
+                )
+            )
 
     tidy = pd.concat(frames, ignore_index=True)
     tidy.insert(0, "traffic", traffic)
@@ -241,11 +271,7 @@ def extract(process, traffic, technology, operations, saf):
 
 def grid():
     """The 108 cells, in a stable order."""
-    return list(
-        itertools.product(
-            TRAFFIC_LEVELS, TECHNOLOGY_LEVELS, OPERATIONS_LEVELS, SAF_LEVELS
-        )
-    )
+    return list(itertools.product(TRAFFIC_LEVELS, TECHNOLOGY_LEVELS, OPERATIONS_LEVELS, SAF_LEVELS))
 
 
 def run_sweep(cells=None, progress=True):
@@ -355,8 +381,7 @@ def plot_grid(tidy=None, color_by="saf", first_year=2023, alpha=0.18, figsize=(1
 
     levels = sorted(frame[color_by].unique())
     colors = {
-        level: DEFAULT_COLORS[index % len(DEFAULT_COLORS)]
-        for index, level in enumerate(levels)
+        level: DEFAULT_COLORS[index % len(DEFAULT_COLORS)] for index, level in enumerate(levels)
     }
 
     figure, axes = plt.subplots(2, 2, figsize=figsize, layout="constrained")
