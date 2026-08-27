@@ -514,10 +514,10 @@ try:
     print(f"  max    {residual.max():8.0f}   ({residual.idxmax()})")
     for name, cell in sweep.PUBLISHED_CELLS.items():
         print(f"  {name}     {residual.loc[cell]:8.0f}   ({cell})")
-    # Coloured by technology rather than SAF: SAF separates the two carbon panels
-    # but does nothing to the two energy panels, because substituting the fuel changes
-    # what a joule emits, not how many are burned. Technology separates all four.
-    sweep.plot_grid(tidy, color_by="technology")
+    # Coloured by traffic, which is the only lever separating all five panels and
+    # the one the reports hold exogenous, so the fan it opens is the range their
+    # own scenarios cannot express.
+    sweep.plot_grid(tidy, color_by="traffic")
     save_fig(name="lever_sweep")
 except FileNotFoundError:
     print("PENDING: the sweep results have not been generated yet.\n"
@@ -694,6 +694,16 @@ PANEL_ROWS = [
     ],
 ]
 
+# The reports' own traffic forecasts, drawn on the traffic panel as the exogenous
+# reference the coupling departs from. They are the same three variants the sweep
+# uses, and they carry no demand response at all.
+EXOGENOUS_TRAFFIC = {
+    "ATAG low": "3rd_edition_full/data_outputs/s1-traffic-low.json",
+    "ATAG central": "3rd_edition_full/data_outputs/s1.json",
+    "ATAG high": "3rd_edition_full/data_outputs/s1-traffic-high.json",
+}
+EXOGENOUS_STYLE = {"ATAG low": ":", "ATAG central": "-", "ATAG high": "--"}
+
 if share_only:
     fig, all_axes = plt.subplots(2, 3, figsize=(15.6, 8.4), layout="constrained")
     comparison = assemble_processes(share_only)
@@ -709,12 +719,29 @@ if share_only:
                 group_display="envelope",
                 group_envelope_show_members=True,
                 legend=False,
+                # The cost plots default to the projection alone. Here the
+                # historic part is populated, and it is what the elasticity was
+                # calibrated against, so it belongs on the page.
+                years_source="years",
             )
             ax.set_title(title)
             ax.set_ylabel(ylabel)
             ax.set_xlabel("Year")
             ax.set_xlim(2000, 2050)
+
+    # The coupled pathways are drawn thicker than the exogenous references, so
+    # that the reference reads as background and the result as foreground.
+    for line in all_axes[1][0].lines:
+        line.set_linewidth(2.6)
+    for label, path in EXOGENOUS_TRAFFIC.items():
+        exogenous = load_results(HERE / path, name=label)
+        series = np.asarray(exogenous.data["vector_outputs"]["rpk"], dtype=float) * 1e-12
+        years = np.arange(2000, 2000 + len(series))
+        all_axes[1][0].plot(years, series, color="black", linewidth=1.4,
+                            linestyle=EXOGENOUS_STYLE[label], label=label, zorder=5)
+
     all_axes[0][0].legend(fontsize=8)
+    all_axes[1][0].legend(fontsize=7, loc="upper left")
     save_fig(fig, name="coupled_demand_share")
 ```
 
@@ -723,9 +750,12 @@ three SSP pathways with each pathway named inside it. The top row is the backgro
 are given, and the bottom row is what follows from it. Population is identical across the three and
 GDP per capita nearly so, since SSP2 is a single socioeconomic pathway, so their bands collapse to a
 line and the carbon price is left as the only driver separating the pathways below, by a factor of
-24 at 2050. Reading the bottom row in order gives the mechanism, since a higher carbon price raises
-the middle panel, which lowers the left, which lowers the right. All six panels carry the observed
-period as well as the projection.*
+24 at 2050. The traffic panel also carries the reports' own three exogenous forecasts in black, at
+the thinner weight, against which the coupled pathways are drawn thicker: those forecasts carry no
+demand response at all, and the coupled central case runs above ATAG central under a weak carbon
+price and below it under a strong one. Reading the bottom row in order gives the mechanism, since a
+higher carbon price raises the middle panel, which lowers the left, which lowers the right. All six
+panels carry the observed period as well as the projection.*
 
 The panel above gives the total cost per revenue passenger-kilometre. What it does not show is
 what that total is made of, and the split matters: a carbon price and a fuel-price premium reach the
@@ -735,72 +765,109 @@ components separately, so the breakdown is read from them directly.
 ```{code-cell} python
 :tags: [hide-input]
 
-# One panel per pathway rather than one grouped bar chart: the question here is
-# what the cost of a given scenario is made of, which is a single-scenario
-# breakdown, and three of them side by side compare more readably than three
-# stacks interleaved on shared ticks.
-#
-# The single-scenario doc_net_energy_per_rpk_breakdown plot would draw this
-# directly, but it resolves its carriers through a live pathways_manager, which a
-# view loaded from committed JSON does not carry. The components are committed
-# individually, so they are stacked here from those series instead.
-DOC_COMPONENTS = [
-    ("doc_energy_per_ask_mean", "Energy cost", "#4C72B0", "", 1.0),
-    ("doc_energy_carbon_tax_per_ask_mean", "Carbon tax", "#C44E52", "..", 1.0),
-    ("doc_energy_tax_per_ask_mean", "Energy taxes", "#DD8452", "//", 1.0),
-    # Subsidies reduce the cost, so they are drawn below the axis rather than
-    # netted silently into the energy cost above it.
-    ("doc_energy_subsidy_per_ask_mean", "Subsidies", "#55A868", "xx", -1.0),
+# Two readings of the same cost, one above the other. The top row compares the
+# scenarios on the two quantities a fuel-switching lever acts on directly, the
+# price of a megajoule and what emitting it costs the atmosphere, both of which
+# move for reasons the DOC below then combines. The bottom row is the resulting
+# cost, one panel per scenario, resolved into the pathways that make it up.
+INTENSITY_PANELS = [
+    (
+        "dropin_mfsp_without_carbon_tax_comparison",
+        "Fuel price, excluding carbon tax",
+        "Drop-in fuel price [EUR/MJ]",
+    ),
+    ("co2_per_energy_comparison", "Carbon intensity of energy", "gCO2 / MJ"),
 ]
 
+# Pathway shares are used to split the committed DOC total rather than to rebuild
+# it: energy consumption covers freight as well, whereas the DOC is reported per
+# revenue passenger-kilometre, so a direct product of the two overstates it by
+# about 16 %. Splitting the reported total keeps the stack closing on the line.
+PATHWAY_COLORS = plt.get_cmap("tab20").colors
+
+
+def pathway_costs(vectors):
+    """Per-pathway energy expenditure, and the part of it that is carbon tax."""
+    carriers = sorted(
+        name[: -len("_energy_consumption")]
+        for name in vectors.columns
+        if name.endswith("_energy_consumption")
+        and not name.startswith("dropin_fuel_")
+        and name[: -len("_energy_consumption")] + "_net_mfsp" in vectors.columns
+    )
+    spend, taxed = {}, np.zeros(len(vectors))
+    for carrier in carriers:
+        energy = np.asarray(vectors[carrier + "_energy_consumption"], dtype=float)
+        total = energy * np.asarray(vectors[carrier + "_net_mfsp"], dtype=float)
+        if not np.any(np.abs(np.nan_to_num(total)) > 0):
+            continue
+        without = energy * np.asarray(
+            vectors[carrier + "_net_mfsp_without_carbon_tax"], dtype=float
+        )
+        spend[carrier] = np.nan_to_num(without)
+        taxed = taxed + np.nan_to_num(total - without)
+    return spend, taxed
+
+
 if share_only:
-    fig, axes = plt.subplots(1, len(share_only), figsize=(15.6, 4.6), sharey=True,
-                             layout="constrained")
-    for ax, (label, view) in zip(axes, sorted(share_only.items())):
+    fig = plt.figure(figsize=(15.6, 9.6), layout="constrained")
+    top, bottom = fig.subfigures(2, 1, height_ratios=[1, 1.15])
+
+    comparison = assemble_processes(share_only)
+    groups = {"Across SSP pathways": sorted(share_only)}
+    top_axes = top.subplots(1, 2)
+    for ax, (plot_name, title, ylabel) in zip(top_axes, INTENSITY_PANELS):
+        comparison.plot(
+            plot_name, fig=top, ax=ax, scenario_groups=groups, group_display="envelope",
+            group_envelope_show_members=True, legend=False, years_source="years",
+        )
+        ax.set_title(title)
+        ax.set_ylabel(ylabel)
+        ax.set_xlabel("Year")
+        ax.set_xlim(2000, 2050)
+    top_axes[0].legend(fontsize=8)
+
+    bottom_axes = bottom.subplots(1, len(share_only), sharey=True)
+    for ax, (label, view) in zip(bottom_axes, sorted(share_only.items())):
         vectors = view.data["vector_outputs"]
-        years = np.asarray(vectors["load_factor"].index, dtype=float)
-        # The committed components are per available seat-kilometre; the total
-        # they must close on is per revenue passenger-kilometre.
-        load_factor = np.asarray(vectors["load_factor"], dtype=float) / 100.0
-
-        positive = np.zeros_like(load_factor)
-        negative = np.zeros_like(load_factor)
-        for column, name, color, hatch, sign in DOC_COMPONENTS:
-            series = sign * np.asarray(vectors[column], dtype=float) / load_factor
-            # A component that is identically zero is left out rather than drawn
-            # as an invisible band with a legend entry, which would suggest it is
-            # present. These scenarios levy no energy tax and pay no subsidy.
-            if not np.any(np.abs(series) > 1e-12):
-                continue
-            base = positive if sign > 0 else negative
-            ax.fill_between(years, base, base + series, color=color, hatch=hatch,
-                            edgecolor="white", linewidth=0.0, label=name)
-            if sign > 0:
-                positive = positive + series
-            else:
-                negative = negative + series
-
+        years = np.asarray(vectors.index, dtype=float)
         total = np.asarray(vectors["doc_net_energy_per_rpk_mean"], dtype=float)
+
+        spend, taxed = pathway_costs(vectors)
+        gross = sum(spend.values()) + taxed
+        scale = np.divide(total, gross, out=np.zeros_like(total), where=gross > 0)
+
+        base = np.zeros_like(total)
+        for index, (carrier, series) in enumerate(sorted(spend.items())):
+            band = series * scale
+            ax.fill_between(years, base, base + band, linewidth=0,
+                            color=PATHWAY_COLORS[index % len(PATHWAY_COLORS)],
+                            label=carrier.replace("_", " "))
+            base = base + band
+        ax.fill_between(years, base, base + taxed * scale, linewidth=0,
+                        color="#C44E52", hatch="..", edgecolor="white", label="Carbon tax")
         ax.plot(years, total, color="black", linewidth=2, label="Net energy DOC")
         ax.set_title(label)
         ax.set_xlabel("Year")
-        ax.set_xlim(2020, 2050)
+        ax.set_xlim(2000, 2050)
         ax.grid(alpha=0.3)
-    axes[0].set_ylabel("Energy DOC per RPK [EUR/RPK]")
-    axes[0].legend(fontsize=8, loc="upper left")
+    bottom_axes[0].set_ylabel("Energy DOC per RPK [EUR/RPK]")
+    bottom_axes[-1].legend(fontsize=6, loc="upper left", ncol=2)
     save_fig(fig, name="doc_breakdown")
 ```
 
-*Energy direct operating cost per revenue passenger-kilometre under the fixed-share mandate, broken
-down by component, one panel per SSP pathway on a shared vertical axis. The stack carries the energy
-cost itself and the carbon tax levied on the residual emissions, the black line being the net total
-they compose. Energy taxes and subsidies are also available as components and are omitted here
-because they are identically zero in these scenarios, rather than being netted silently into the
-cost above them. The energy cost grows because the mandate displaces kerosene with a fuel several times
-costlier per unit energy, whereas the carbon tax grows with the carbon price and then shrinks as the
-residual emissions it is levied on fall, which is why the total peaks around 2040 under SSP2-1.9 and
-not at all under SSP2-4.5. This is the same fixed-share reading drawn above, so the two figures
-decompose one trajectory rather than two.*
+*Two readings of the same cost. The top row compares the scenarios on the two quantities a
+fuel-switching lever acts on directly, the price of a megajoule excluding the carbon tax and the
+carbon intensity of that megajoule. Both bands collapse to a line, and exactly so: under a
+fixed-share mandate the blend is set by the mandate rather than by the carbon price, so all three
+pathways deliver identical fuel at identical cost, 0.0231 EUR/MJ and 20.5 gCO2/MJ in 2050. The
+bottom row is the resulting energy direct operating cost per revenue passenger-kilometre, one panel
+per pathway on a shared vertical axis, resolved into the production pathways that make it up with
+the carbon tax hatched on top and the net total drawn in black. The entire spread between the three
+panels is therefore carbon tax: 0.0345 EUR/RPK in 2050 under SSP2-1.9 against 0.0187 under
+SSP2-4.5, a factor of 1.8 on identical fuel. Pathway shares are used to split the reported total
+rather than to rebuild it, since energy consumption covers freight while the cost is reported per
+revenue passenger-kilometre.*
 
 {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">The demand response operates through the cost side of the same loop. Energy expenses rise steeply as the SAF mandate ramps, since the mandated fuel is several times costlier per unit energy than the kerosene it displaces, and that increase reaches the traveller through direct operating cost. This is the mechanism left unmodelled by the reports, and it does not constitute a second-order correction, a demand reduction of 2 to 12 % by 2050 being comparable in magnitude to what the technology and operations levers are together assumed to deliver.</span>{raw:typst}`]`
 

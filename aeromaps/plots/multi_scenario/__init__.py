@@ -22,6 +22,7 @@ from aeromaps.plots.multi_scenario.background import (
 )
 from aeromaps.plots.multi_scenario.intensities import (
     CO2PerRPKComparisonPlot,
+    CO2PerEnergyComparisonPlot,
     CO2PerRTKComparisonPlot,
     EnergyPerASKComparisonPlot,
     EnergyPerRTKComparisonPlot,
@@ -51,6 +52,7 @@ from aeromaps.plots.multi_scenario.costs import (
     DOCEnergyComparisonPlot,
     AirfareComparisonPlot,
     DocNetEnergyPerRPKComparisonPlot,
+    DropInMFSPWithoutCarbonTaxComparisonPlot,
 )
 
 # Dictionary of available multi-scenario plots
@@ -69,6 +71,7 @@ available_multi_plots = {
     "load_factor_comparison": LoadFactorComparisonPlot,
     # Intensities
     "co2_per_rpk_comparison": CO2PerRPKComparisonPlot,
+    "co2_per_energy_comparison": CO2PerEnergyComparisonPlot,
     "co2_per_rtk_comparison": CO2PerRTKComparisonPlot,
     "energy_per_ask_comparison": EnergyPerASKComparisonPlot,
     "energy_per_rtk_comparison": EnergyPerRTKComparisonPlot,
@@ -95,4 +98,5 @@ available_multi_plots = {
     "doc_energy_comparison": DOCEnergyComparisonPlot,
     "airfare_comparison": AirfareComparisonPlot,
     "doc_net_energy_per_rpk_comparison": DocNetEnergyPerRPKComparisonPlot,
+    "dropin_mfsp_without_carbon_tax_comparison": DropInMFSPWithoutCarbonTaxComparisonPlot,
 }

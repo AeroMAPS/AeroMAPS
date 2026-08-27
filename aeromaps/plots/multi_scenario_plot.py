@@ -77,6 +77,7 @@ class MultiScenarioPlot(ABC):
         group_envelope_middle="median",
         group_envelope_alpha=0.25,
         group_envelope_show_members=True,
+        years_source=None,
     ):
         """
         Initialize the plot with data from multiple processes.
@@ -141,9 +142,19 @@ class MultiScenarioPlot(ABC):
         group_envelope_alpha : float, optional
             Transparency of the ``fill_between`` band in envelope mode.
             Default ``0.25``.
+        years_source : str, optional
+            Overrides the class-level year range: ``"years"`` for the whole
+            period or ``"prospective_years"`` for the projection alone. The cost
+            plots default to the projection, which is right where a scenario only
+            models cost forward, and wrong where the historic part is populated
+            and carries the calibration the projection starts from.
         """
         if group_display not in ("lines", "envelope"):
             raise ValueError(f"group_display must be 'lines' or 'envelope', got {group_display!r}")
+        if years_source is not None:
+            # Instance attribute, so _scenario_xy's getattr picks it up ahead of
+            # the class default without the subclass knowing about it.
+            self.years_source = years_source
         self.group_display = group_display
         self.group_envelope_middle = group_envelope_middle
         self.group_envelope_alpha = group_envelope_alpha

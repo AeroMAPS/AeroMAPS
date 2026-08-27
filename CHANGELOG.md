@@ -81,6 +81,11 @@ Fixed:
   behaviour. These carry outputs that only exist under an income-driven demand model, so the
   registry test now skips a plot whose required outputs no test scenario produces, instead of
   failing it. (#144)
+- Added `dropin_mfsp_without_carbon_tax_comparison` and `co2_per_energy_comparison`, which are
+  the two quantities a fuel-switching lever acts on directly, and made `years_source`
+  overridable per call. The cost plots default to the projection alone, which is right where a
+  scenario only models cost forward and wrong where the historic part is populated and carries
+  the calibration the projection starts from. (#144)
 
 
 ## Version 1.1.0
