@@ -75,6 +75,12 @@ Fixed:
 - Replaced the hand-written bibliography, whose keys were invented locally and which cited no
   reference for GEMSEO or for fleet renewal, with entries taken from the author's own
   libraries. (#144)
+- Added comparison plots for the background-scenario drivers, `population_comparison`,
+  `gdp_per_capita_comparison` and `carbon_price_comparison`, so a figure mixing drivers with
+  results can draw every panel through the same code path and share the grouping and envelope
+  behaviour. These carry outputs that only exist under an income-driven demand model, so the
+  registry test now skips a plot whose required outputs no test scenario produces, instead of
+  failing it. (#144)
 
 
 ## Version 1.1.0

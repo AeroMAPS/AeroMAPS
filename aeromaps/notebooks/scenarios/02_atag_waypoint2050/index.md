@@ -68,7 +68,7 @@ are currently being formulated for monitoring these effects {cite:p}`euets_nonco
 allowing airlines to claim carbon allowances from contrail avoidance strategies
 {cite:p}`teoh_mitigating_2020,euets_contrails_2026`.
 
-Among the numerous industrial {cite:p}`gifas_2022,atag2026_waypoint,iata2024,airbus2025gmf,boeing2025cmo`, institutional {cite:p}`icao_ltag_2022,icct_vision_2022`, and academic
+Among the numerous industrial {cite:p}`gifas_2022,atag2026_waypoint,iata2024,airbus2025gmf,boeing2025cmo`, institutional {cite:p}`icao_ltag_2022,iea_netzero_2021,icct_vision_2022`, and academic
 {cite:p}`sgouridis_air_2011,terrenoire_contribution_2019,grewe_evaluating_2021,klower_quantifying_2021,gossling_net-zero_2024,dray_aim_2019,franz_wide_2022,brazzola_definitions_2022,bergero_pathways_2023,sacchi_how_2023,costa-alves_numerical_2026` scenarios that have been made for aviation, the Air Transport Action Group (ATAG) Waypoint
 2050 stands as the industry vision of the transition of the sector up until 2050. While the three
 different editions of the report {cite:p}`atag2020_waypoint,atag2021_waypoint,atag2026_waypoint`
@@ -673,64 +673,59 @@ share_only = {
     label.split(" (")[0]: view for label, view in coupled.items() if "(fixed share)" in label
 }
 
-# The background the three pathways share, and the one thing that separates
-# them. SSP2 is a single socioeconomic pathway, so population is identical
-# across the three and GDP per capita nearly so; only the carbon price differs,
-# and it differs by a factor of 24 by 2050. Drawn as one line per pathway rather
-# than an envelope, which on two of these panels would collapse to a line and
-# hide the variable that actually drives the row below.
-BACKGROUND_PANELS = [
-    ("population", "Population", 1e-9, "Population [billion]"),
-    ("gdp_per_capita", "GDP per capita", 1.0, "GDP per capita [USD]"),
-    ("exogenous_carbon_price_trajectory", "Carbon price", 1.0, "Carbon price [USD/tCO2]"),
-]
-
-# The bottom row is drawn by the framework's own comparison plots in envelope
-# mode rather than by hand. The band is the spread across the three pathways and
-# the member lines are the pathways themselves, labelled from the scenario keys,
-# so the legend states which line is which SSP. co2_emissions_comparison reads
-# the climate outputs, which run from 1940, so the observed period comes along
-# without the special-casing the hand-drawn version needed.
-SHARE_PANELS = [
-    ("rpk_comparison", "Traffic", "Revenue passenger-kilometres [trillion]"),
-    ("doc_net_energy_per_rpk_comparison", "Energy DOC per RPK", "Energy DOC per RPK [EUR/RPK]"),
-    ("co2_emissions_comparison", "Residual CO2", "Annual CO2 [MtCO2]"),
+# Every panel is drawn by the framework's own comparison plots in envelope mode:
+# a band spanning the three pathways, with each pathway drawn inside it and named
+# in the legend. The top row is the background the scenarios are given and the
+# bottom row is what follows from it, so drawing both the same way is what lets
+# the two be read against each other. Population is identical across the three
+# and GDP per capita nearly so, since SSP2 is a single socioeconomic pathway, so
+# their bands collapse; that collapse is the point of the row, since it leaves
+# the carbon price as the only driver that separates the pathways below.
+PANEL_ROWS = [
+    [
+        ("population_comparison", "Population", "Population [billion]"),
+        ("gdp_per_capita_comparison", "GDP per capita", "GDP per capita [USD]"),
+        ("carbon_price_comparison", "Carbon price", "Carbon price [USD/tCO2]"),
+    ],
+    [
+        ("rpk_comparison", "Traffic", "Revenue passenger-kilometres [trillion]"),
+        ("doc_net_energy_per_rpk_comparison", "Energy DOC per RPK", "Energy DOC per RPK [EUR/RPK]"),
+        ("co2_emissions_comparison", "Residual CO2", "Annual CO2 [MtCO2]"),
+    ],
 ]
 
 if share_only:
     fig, all_axes = plt.subplots(2, 3, figsize=(15.6, 8.4), layout="constrained")
-
-    for ax, (column, title, scale, ylabel) in zip(all_axes[0], BACKGROUND_PANELS):
-        for offset, (label, view) in enumerate(sorted(share_only.items())):
-            series = np.asarray(view.data["vector_outputs"][column], dtype=float) * scale
-            years = np.arange(2000, 2000 + len(series))
-            ax.plot(years, series, color=f"C{offset}", linewidth=1.8, label=label)
-        ax.set_title(title)
-        ax.set_ylabel(ylabel)
-        ax.grid(alpha=0.3)
-    all_axes[0][2].legend(fontsize=8)
-
     comparison = assemble_processes(share_only)
     groups = {"Across SSP pathways": sorted(share_only)}
-    for ax, (plot_name, title, ylabel) in zip(all_axes[1], SHARE_PANELS):
-        comparison.plot(
-            plot_name,
-            fig=fig,
-            ax=ax,
-            scenario_groups=groups,
-            group_display="envelope",
-            group_envelope_show_members=True,
-            legend=False,
-        )
-        ax.set_title(title)
-        ax.set_ylabel(ylabel)
-        ax.set_xlabel("Year")
-        ax.set_xlim(2000, 2050)
-    all_axes[1][0].legend(fontsize=8)
+
+    for axes, panels in zip(all_axes, PANEL_ROWS):
+        for ax, (plot_name, title, ylabel) in zip(axes, panels):
+            comparison.plot(
+                plot_name,
+                fig=fig,
+                ax=ax,
+                scenario_groups=groups,
+                group_display="envelope",
+                group_envelope_show_members=True,
+                legend=False,
+            )
+            ax.set_title(title)
+            ax.set_ylabel(ylabel)
+            ax.set_xlabel("Year")
+            ax.set_xlim(2000, 2050)
+    all_axes[0][0].legend(fontsize=8)
     save_fig(fig, name="coupled_demand_share")
 ```
 
-*The coupled runs **under the fixed-share reading only**. The top row is the background the three SSP pathways run on, one line each: population and GDP per capita are near-identical across them, since SSP2 is a single socioeconomic pathway, and the carbon price is what actually separates them, by a factor of 24 at 2050. The bottom row is what follows, drawn as an envelope across the three: traffic on the left, energy cost per revenue passenger-kilometre in the middle, residual CO2 on the right, with the median picked out. Reading the bottom row in order gives the mechanism, since a higher carbon price raises the middle panel, which lowers the left, which lowers the right. All six panels carry the observed period as well as the projection.*
+*The coupled runs **under the fixed-share reading only**, every panel drawn as a band across the
+three SSP pathways with each pathway named inside it. The top row is the background the scenarios
+are given, and the bottom row is what follows from it. Population is identical across the three and
+GDP per capita nearly so, since SSP2 is a single socioeconomic pathway, so their bands collapse to a
+line and the carbon price is left as the only driver separating the pathways below, by a factor of
+24 at 2050. Reading the bottom row in order gives the mechanism, since a higher carbon price raises
+the middle panel, which lowers the left, which lowers the right. All six panels carry the observed
+period as well as the projection.*
 
 The panel above gives the total cost per revenue passenger-kilometre. What it does not show is
 what that total is made of, and the split matters: a carbon price and a fuel-price premium reach the
@@ -740,31 +735,72 @@ components separately, so the breakdown is read from them directly.
 ```{code-cell} python
 :tags: [hide-input]
 
+# One panel per pathway rather than one grouped bar chart: the question here is
+# what the cost of a given scenario is made of, which is a single-scenario
+# breakdown, and three of them side by side compare more readably than three
+# stacks interleaved on shared ticks.
+#
+# The single-scenario doc_net_energy_per_rpk_breakdown plot would draw this
+# directly, but it resolves its carriers through a live pathways_manager, which a
+# view loaded from committed JSON does not carry. The components are committed
+# individually, so they are stacked here from those series instead.
+DOC_COMPONENTS = [
+    ("doc_energy_per_ask_mean", "Energy cost", "#4C72B0", "", 1.0),
+    ("doc_energy_carbon_tax_per_ask_mean", "Carbon tax", "#C44E52", "..", 1.0),
+    ("doc_energy_tax_per_ask_mean", "Energy taxes", "#DD8452", "//", 1.0),
+    # Subsidies reduce the cost, so they are drawn below the axis rather than
+    # netted silently into the energy cost above it.
+    ("doc_energy_subsidy_per_ask_mean", "Subsidies", "#55A868", "xx", -1.0),
+]
+
 if share_only:
-    fig, ax = plt.subplots(figsize=(7.6, 4.2), layout="constrained")
-    width = 0.6 / max(len(share_only), 1)
-    for offset, (label, view) in enumerate(sorted(share_only.items())):
+    fig, axes = plt.subplots(1, len(share_only), figsize=(15.6, 4.6), sharey=True,
+                             layout="constrained")
+    for ax, (label, view) in zip(axes, sorted(share_only.items())):
         vectors = view.data["vector_outputs"]
-        base = vectors["doc_energy_per_ask_mean"]
-        tax = vectors["doc_energy_carbon_tax_per_ask_mean"]
-        position = [year + (offset - 1) * width for year in (2030, 2040, 2050)]
-        pathway = label.split(" ")[0]
-        ax.bar(position, [base.loc[y] for y in (2030, 2040, 2050)], width=width,
-               color=f"C{offset}", label=f"{pathway}, fuel")
-        ax.bar(position, [tax.loc[y] for y in (2030, 2040, 2050)], width=width,
-               bottom=[base.loc[y] for y in (2030, 2040, 2050)],
-               color=f"C{offset}", alpha=0.45, hatch="//",
-               label=f"{pathway}, carbon price")
-    ax.set_xticks([2030, 2040, 2050])
-    ax.set_xlabel("Year")
-    ax.set_ylabel("Energy DOC per ASK [EUR/ASK]")
-    ax.set_title("Energy cost per seat-kilometre, fuel against carbon price")
-    ax.legend(fontsize=8, ncol=3)
-    ax.grid(axis="y", alpha=0.3)
+        years = np.asarray(vectors["load_factor"].index, dtype=float)
+        # The committed components are per available seat-kilometre; the total
+        # they must close on is per revenue passenger-kilometre.
+        load_factor = np.asarray(vectors["load_factor"], dtype=float) / 100.0
+
+        positive = np.zeros_like(load_factor)
+        negative = np.zeros_like(load_factor)
+        for column, name, color, hatch, sign in DOC_COMPONENTS:
+            series = sign * np.asarray(vectors[column], dtype=float) / load_factor
+            # A component that is identically zero is left out rather than drawn
+            # as an invisible band with a legend entry, which would suggest it is
+            # present. These scenarios levy no energy tax and pay no subsidy.
+            if not np.any(np.abs(series) > 1e-12):
+                continue
+            base = positive if sign > 0 else negative
+            ax.fill_between(years, base, base + series, color=color, hatch=hatch,
+                            edgecolor="white", linewidth=0.0, label=name)
+            if sign > 0:
+                positive = positive + series
+            else:
+                negative = negative + series
+
+        total = np.asarray(vectors["doc_net_energy_per_rpk_mean"], dtype=float)
+        ax.plot(years, total, color="black", linewidth=2, label="Net energy DOC")
+        ax.set_title(label)
+        ax.set_xlabel("Year")
+        ax.set_xlim(2020, 2050)
+        ax.grid(alpha=0.3)
+    axes[0].set_ylabel("Energy DOC per RPK [EUR/RPK]")
+    axes[0].legend(fontsize=8, loc="upper left")
     save_fig(fig, name="doc_breakdown")
 ```
 
-*Energy direct operating cost per available seat-kilometre under the fixed-share mandate, split into the fuel price itself (solid) and the carbon price levied on the residual emissions (hatched), at 2030, 2040 and 2050. One colour per SSP pathway. The solid part grows because the mandate displaces kerosene with a fuel several times costlier per unit energy; the hatched part grows with the carbon price and shrinks as the residual emissions it is levied on fall. This is the same fixed-share reading drawn above, so the two figures decompose one trajectory rather than two.*
+*Energy direct operating cost per revenue passenger-kilometre under the fixed-share mandate, broken
+down by component, one panel per SSP pathway on a shared vertical axis. The stack carries the energy
+cost itself and the carbon tax levied on the residual emissions, the black line being the net total
+they compose. Energy taxes and subsidies are also available as components and are omitted here
+because they are identically zero in these scenarios, rather than being netted silently into the
+cost above them. The energy cost grows because the mandate displaces kerosene with a fuel several times
+costlier per unit energy, whereas the carbon tax grows with the carbon price and then shrinks as the
+residual emissions it is levied on fall, which is why the total peaks around 2040 under SSP2-1.9 and
+not at all under SSP2-4.5. This is the same fixed-share reading drawn above, so the two figures
+decompose one trajectory rather than two.*
 
 {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">The demand response operates through the cost side of the same loop. Energy expenses rise steeply as the SAF mandate ramps, since the mandated fuel is several times costlier per unit energy than the kerosene it displaces, and that increase reaches the traveller through direct operating cost. This is the mechanism left unmodelled by the reports, and it does not constitute a second-order correction, a demand reduction of 2 to 12 % by 2050 being comparable in magnitude to what the technology and operations levers are together assumed to deliver.</span>{raw:typst}`]`
 

@@ -120,9 +120,14 @@ TECHNOLOGY_KEYS = (
 # third-edition headline scenarios; the sweep reproduces them exactly, which is
 # what makes them usable as a correctness check.
 PUBLISHED_CELLS = {
+    "S0": ("central", "T2", "O2", "F1"),
     "S1": ("central", "T3", "O3", "F2"),
     "S2": ("central", "T4", "O3", "F3"),
 }
+
+# Line style per published scenario, so the three are told apart in a legend that
+# is otherwise all black.
+PUBLISHED_STYLES = {"S0": ":", "S1": "-", "S2": "--"}
 
 # Annual series kept for every run. Anything else can be recomputed from the
 # committed scenario outputs, so the sweep file stays small enough to commit.
@@ -326,11 +331,20 @@ def read_results(path=None):
 # Panels: (column, title, y label, scale applied to the stored value).
 # Stored units are Mt CO2, MJ and RPK, so energy becomes EJ by 1e-12 and carbon
 # intensity becomes g/RPK by 1e12 (Mt -> g).
+# Traffic leads, since it is the quantity the reports hold exogenous and the one
+# the colouring separates: the three traffic levels fan out here and carry that
+# fan into every panel below.
+#
+# CO2 and the carbon intensity are gross, that is, before any offsetting.
+# ``co2_emissions`` and ``carbon_offset`` are separate series and the former is
+# never net of the latter, which is checked in the notebook by the fact that
+# ``co2_emissions`` equals ``co2_emissions_including_energy`` in every cell.
 PANELS = (
-    ("co2_emissions", "CO$_2$ emissions", "Mt CO$_2$ / yr", 1.0),
+    ("rpk", "Air traffic", "trillion RPK / yr", 1e-12),
+    ("co2_emissions", "CO$_2$ emissions, before offsetting", "Mt CO$_2$ / yr", 1.0),
     ("energy_consumption", "Final energy", "EJ / yr", 1e-12),
     ("energy_per_rpk", "Energy intensity", "MJ / RPK", 1.0),
-    ("co2_per_rpk", "Carbon intensity", "g CO$_2$ / RPK", 1.0),
+    ("co2_per_rpk", "Carbon intensity, before offsetting", "g CO$_2$ / RPK", 1.0),
 )
 
 CELL_KEYS = ["traffic", "technology", "operations", "saf"]
@@ -348,7 +362,7 @@ def wide(tidy=None):
     return frame
 
 
-def plot_grid(tidy=None, color_by="saf", first_year=2023, alpha=0.18, figsize=(11, 8)):
+def plot_grid(tidy=None, color_by="traffic", first_year=2023, alpha=0.18, figsize=(8, 18)):
     """Every cell of the grid, one translucent line each, over four metrics.
 
     One line per scenario at low opacity, so the density of the bundle carries the
@@ -357,10 +371,14 @@ def plot_grid(tidy=None, color_by="saf", first_year=2023, alpha=0.18, figsize=(1
     which matters here because 108 cells do not form a single ordered family.
 
     ``color_by`` picks which lever separates the colours; the remaining three vary
-    inside each colour. Choose it to match the question: SAF separates the two carbon
-    panels but does nothing to the two energy panels, because substituting the fuel
-    changes what a joule emits, not how many joules are burned. Traffic and technology
-    are what separate energy.
+    inside each colour. Choose it to match the question. Traffic is the default,
+    because it is the only lever that separates all five panels, and because it is
+    the one the reports hold exogenous, so the fan it opens is the range their own
+    scenarios cannot express. SAF separates the two carbon panels but does nothing
+    to the energy ones, since substituting the fuel changes what a joule emits
+    rather than how many are burned; technology separates the energy panels but
+    resolves only three bands out of four levels, T3 and T4 consuming identical
+    energy and differing only in what carries it.
 
     ``first_year`` defaults to the last observed year rather than 2019, because the
     COVID collapse drives RPK down without a matching drop in energy: 2020 reads about
@@ -384,7 +402,7 @@ def plot_grid(tidy=None, color_by="saf", first_year=2023, alpha=0.18, figsize=(1
         level: DEFAULT_COLORS[index % len(DEFAULT_COLORS)] for index, level in enumerate(levels)
     }
 
-    figure, axes = plt.subplots(2, 2, figsize=figsize, layout="constrained")
+    figure, axes = plt.subplots(len(PANELS), 1, figsize=figsize, layout="constrained")
     published = {cell: name for name, cell in PUBLISHED_CELLS.items()}
 
     for axis, (column, title, ylabel, scale) in zip(axes.ravel(), PANELS):
@@ -411,7 +429,7 @@ def plot_grid(tidy=None, color_by="saf", first_year=2023, alpha=0.18, figsize=(1
                 group[column] * scale,
                 color="black",
                 linewidth=2.0,
-                linestyle="-" if name == "S1" else "--",
+                linestyle=PUBLISHED_STYLES.get(name, "-"),
                 zorder=5,
                 label=name,
             )
@@ -426,8 +444,8 @@ def plot_grid(tidy=None, color_by="saf", first_year=2023, alpha=0.18, figsize=(1
         for level in levels
     ]
     handles += [
-        plt.Line2D([], [], color="black", linewidth=2, linestyle=style, label=name)
-        for name, style in (("S1", "-"), ("S2", "--"))
+        plt.Line2D([], [], color="black", linewidth=2, linestyle=PUBLISHED_STYLES[name], label=name)
+        for name in sorted(PUBLISHED_CELLS)
     ]
     figure.legend(
         handles=handles,
