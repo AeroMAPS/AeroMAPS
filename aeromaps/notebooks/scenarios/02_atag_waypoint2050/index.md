@@ -395,39 +395,43 @@ time. Correcting the emission factor alone removes about a third of the 2050 res
 ```{code-cell} python
 :tags: [hide-input]
 
-# One figure per scenario, tank-to-wake on the left and well-to-wake on the
-# right. Every panel shares one y-axis, across the pair and across the three
-# scenarios, so both the scope difference and the scenario difference are
+# One figure for the three scenarios: a row each, tank-to-wake on the left and
+# well-to-wake on the right. Every panel shares one y-axis, across the pair and
+# down the column, so both the scope difference and the scenario difference are
 # readable as distances rather than inferred from tick labels.
 TRIPLETS = [
-    ("s0", S0_TTW, S0), ("s1", S1_TTW, S1), ("s2", S2_TTW, S2),
+    ("S0", S0_TTW, S0), ("S1", S1_TTW, S1), ("S2", S2_TTW, S2),
 ]
-decomposition = []
-for slug, ttw, wtw in TRIPLETS:
-    if ttw is None or wtw is None:
-        continue
-    fig, axes = plt.subplots(1, 2, figsize=(13.0, 4.4), sharey=True, layout="constrained")
-    plot_atag_decomposition(ttw, T0_TTW, T1_TTW, ax=axes[0], legend=True,
-                            title=f"{wtw.name} - tank-to-wake")
-    plot_atag_decomposition(wtw, T0, T1, ax=axes[1], legend=False,
-                            title=f"{wtw.name} - well-to-wake")
-    axes[1].set_ylabel("")
-    decomposition.append((slug, fig, axes))
+available = [(name, ttw, wtw) for name, ttw, wtw in TRIPLETS if ttw is not None and wtw is not None]
 
-# One scale for all six panels, taken from the drawn data and applied before
-# anything is written, so no curve is clipped and the exported PDFs agree with
-# the page. Reading the limits back only works because the helper leaves
-# autoscaling alone.
-if decomposition:
-    top = max(ax.get_ylim()[1] for _, _, axes in decomposition for ax in axes)
-    for _, _, axes in decomposition:
+if available:
+    fig, all_axes = plt.subplots(len(available), 2, figsize=(13.0, 12.6), sharey=True,
+                                 sharex=True, layout="constrained")
+    all_axes = np.atleast_2d(all_axes)
+    for (name, ttw, wtw), axes in zip(available, all_axes):
+        # The legend goes on the first row only: the bands are the same in all
+        # three, and repeating it would cover the wedges it describes.
+        plot_atag_decomposition(ttw, T0_TTW, T1_TTW, ax=axes[0],
+                                legend=name == available[0][0],
+                                title=f"{name} - tank-to-wake")
+        plot_atag_decomposition(wtw, T0, T1, ax=axes[1], legend=False,
+                                title=f"{name} - well-to-wake")
+        axes[1].set_ylabel("")
+
+    # One scale for all six panels, taken from the drawn data and applied before
+    # anything is written, so no curve is clipped and the exported PDF agrees
+    # with the page. Reading the limits back only works because the helper
+    # leaves autoscaling alone.
+    top = max(ax.get_ylim()[1] for axes in all_axes for ax in axes)
+    for axes in all_axes:
         for ax in axes:
             ax.set_ylim(0, top)
-    for slug, fig, _ in decomposition:
-        save_fig(fig, name=f"atag_decomposition_{slug}")
+    for ax in all_axes[:-1].ravel():
+        ax.set_xlabel("")
+    save_fig(fig, name="atag_decomposition")
 ```
 
-*Annual CO2 emissions decomposed by mitigation lever, following the pillars and colours ATAG uses, for each reproduced scenario: tank-to-wake on the left, well-to-wake on the right. All six panels share one vertical axis, so both the gap between the two accounting scopes and the gap between scenarios read as distances. Each band is what one pillar removes from the frozen-fleet baseline (dotted). Fleet renewal is the T0-to-T1 distance and next generation technology everything below it, which is where battery-electric aircraft sit rather than in the fuel band; the dashed line is emissions net of market-based measures. Offsetting after 2035 is an assumption rather than a reproduction, because the policy the reports invoke to reach net zero does not exist: CORSIA-derived offsets are modelled through 2035, and from 2036 net emissions are taken to fall linearly to zero at 2050 from wherever 2035 leaves them. That is the shape all three published scenarios draw, and it is what makes the dashed line continuous at the handover. One caveat on reading the bands: the wedges sum to a determinate total, but how that total divides between the technology and fuel pillars depends on the order they are peeled off in, by a factor of 35 on S2. See the Discussion.*
+*Annual CO2 emissions decomposed by mitigation lever, following the pillars and colours ATAG uses. One row per reproduced scenario, tank-to-wake on the left and well-to-wake on the right, with all six panels on one vertical axis so that both the gap between scopes and the gap between scenarios read as distances.. All six panels share one vertical axis, so both the gap between the two accounting scopes and the gap between scenarios read as distances. Each band is what one pillar removes from the frozen-fleet baseline (dotted). Fleet renewal is the T0-to-T1 distance and next generation technology everything below it, which is where battery-electric aircraft sit rather than in the fuel band; the dashed line is emissions net of market-based measures. Offsetting after 2035 is an assumption rather than a reproduction, because the policy the reports invoke to reach net zero does not exist: CORSIA-derived offsets are modelled through 2035, and from 2036 net emissions are taken to fall linearly to zero at 2050 from wherever 2035 leaves them. That is the shape all three published scenarios draw, and it is what makes the dashed line continuous at the handover. One caveat on reading the bands: the wedges sum to a determinate total, but how that total divides between the technology and fuel pillars depends on the order they are peeled off in, by a factor of 35 on S2. See the Discussion.*
 
 ```{important}
 **How the tank-to-wake panels are built.** The reports headline tank-to-wake emissions, and the
