@@ -3,6 +3,17 @@
 ## Version 1.2.0
 
 Changed:
+- Corrected the first-order delay on the price demand responds to, which ran only from the
+  prospection start year and entered the projection from that year's raw price. Every historic
+  year was left unfiltered, so the effective price was not delayed at all over the period the
+  model was calibrated against. This was not a transient: the price index is anchored on the
+  same series at a reference year sitting on that boundary, so the cold start landed in the
+  denominator and shifted projected demand permanently, by -2.6 % of 2050 traffic under
+  SSP2-1.9 and +3.3 % under SSP2-4.5, in opposite directions. The recursion now starts at the
+  first year of the series, which is the convention the calibration used. Because the memory is
+  about 1.26 years the result does not depend on where the series begins: 2000, 2010, 2015 and
+  2019 give the same effective price at 2024 to four decimals. The function was duplicated
+  verbatim in the two demand models and now lives in one place. (#144)
 - Reproduced the ATAG Waypoint 2050 scenarios lever by lever across the three editions of the
   report, with a MyST document that reads only committed outputs and names the notebook behind
   each result. (#144)

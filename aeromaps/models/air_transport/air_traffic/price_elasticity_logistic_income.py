@@ -16,6 +16,9 @@ import pandas as pd
 from numpy import divide, exp, log
 
 from aeromaps.models.base import AeroMAPSModel
+from aeromaps.models.air_transport.air_traffic.price_delay import (
+    apply_price_delay,
+)
 
 
 def generalised_logistic_function(
@@ -153,17 +156,18 @@ class RPKLogisticIncomePriceElasticity(AeroMAPSModel):
         return pd.Series(fill, index=self.df.index)
 
     def _apply_price_delay(self, price):
-        delayed = price.copy()
-        tau = getattr(self, "price_delay", 0.0)
-        if not tau or tau <= 0.0:
-            return delayed
-        a = float(exp(-1.0 / tau))  # annual step, dt = 1 year
-        prev = float(price.loc[self.prospection_start_year])
-        delayed.loc[self.prospection_start_year] = prev
-        for year in range(self.prospection_start_year + 1, self.end_year + 1):
-            prev = a * prev + (1.0 - a) * float(price.loc[year])
-            delayed.loc[year] = prev
-        return delayed
+        """Effective price the demand model responds to.
+
+        Filtered from the first year of the series rather than from the first
+        projected one, so the recursion reaches the projection carrying its
+        memory. See ``price_delay.apply_price_delay`` for why that matters.
+        """
+        return apply_price_delay(
+            price,
+            getattr(self, "price_delay", 0.0),
+            self.historic_start_year,
+            self.end_year,
+        )
 
     def _price_reference(self, price, fallback: float, reference_year) -> float:
         """Cost per RPK the price index is measured against.
