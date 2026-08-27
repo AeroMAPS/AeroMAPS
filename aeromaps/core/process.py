@@ -57,8 +57,7 @@ from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet_push.airc
 
 # Generic energy models imports
 from aeromaps.models.impacts.generic_energy_model.common.energy_carriers_manager import (
-    EnergyCarrierManager,
-    EnergyCarrierMetadata,
+    build_pathways_manager,
 )
 from aeromaps.models.impacts.generic_energy_model.common.energy_carriers_factory import (
     AviationEnergyCarriersFactory,
@@ -1665,44 +1664,21 @@ class AeroMAPSProcess(object):
         # The first level of the yaml conf file contains all the pathways
         pathways = list(self.energy_carriers_data.keys())
 
-        # create a metadata manager for the pathways to easily sort them later
-        self.pathways_manager = EnergyCarrierManager()
-
+        # create a metadata manager for the pathways to easily sort them later.
+        # Built by the shared helper, so results loaded from committed JSON can
+        # reconstruct the same manager from the same YAML.
         for pathway in pathways:
             pathway_data = self.energy_carriers_data[pathway]
             if "name" not in pathway_data:
                 raise ValueError("The pathway configuration file should contain its name")
             if "inputs" not in pathway_data:
                 raise ValueError("The pathway configuration file should contain inputs")
-            self.pathways_manager.add(
-                EnergyCarrierMetadata(
-                    name=pathway,
-                    aircraft_type=pathway_data.get("aircraft_type"),
-                    default=pathway_data.get("default"),
-                    mandate_type=pathway_data.get("inputs").get("mandate", {}).get("mandate_type"),
-                    energy_origin=pathway_data.get("energy_origin"),
-                    resources_used=pathway_data.get("inputs")
-                    .get("technical", {})
-                    .get("resource_names", []),
-                    resources_used_processes={
-                        el: (
-                            list(
-                                self.energy_processes_data.get(el, {})
-                                .get("inputs", {})
-                                .get("technical", {})
-                                .get(f"{el}_resource_names", [])
-                            )
-                            or [None]
-                        )[0]
-                        for el in pathway_data.get("inputs", {})
-                        .get("technical", {})
-                        .get("processes_names", [])
-                    },
-                    cost_model=pathway_data.get("cost_model"),
-                    environmental_model=pathway_data.get("environmental_model"),
-                )
-            )
+        self.pathways_manager = build_pathways_manager(
+            self.energy_carriers_data, self.energy_processes_data
+        )
 
+        for pathway in pathways:
+            pathway_data = self.energy_carriers_data[pathway]
             inputs = pathway_data["inputs"]
             # Flatten the inputs dictionary and interpolate the necessary values
             for key, value in inputs.items():

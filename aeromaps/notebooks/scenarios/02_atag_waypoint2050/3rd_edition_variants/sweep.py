@@ -339,12 +339,15 @@ def read_results(path=None):
 # ``co2_emissions`` and ``carbon_offset`` are separate series and the former is
 # never net of the latter, which is checked in the notebook by the fact that
 # ``co2_emissions`` equals ``co2_emissions_including_energy`` in every cell.
+# Two columns over three rows, which fits a portrait page: the two extensive
+# quantities first, then the two intensities, then the emissions they multiply
+# out to. The sixth cell is left free and carries the legend.
 PANELS = (
     ("rpk", "Air traffic", "trillion RPK / yr", 1e-12),
-    ("co2_emissions", "CO$_2$ emissions, before offsetting", "Mt CO$_2$ / yr", 1.0),
     ("energy_consumption", "Final energy", "EJ / yr", 1e-12),
     ("energy_per_rpk", "Energy intensity", "MJ / RPK", 1.0),
     ("co2_per_rpk", "Carbon intensity, before offsetting", "g CO$_2$ / RPK", 1.0),
+    ("co2_emissions", "CO$_2$ emissions, before offsetting", "Mt CO$_2$ / yr", 1.0),
 )
 
 CELL_KEYS = ["traffic", "technology", "operations", "saf"]
@@ -362,7 +365,7 @@ def wide(tidy=None):
     return frame
 
 
-def plot_grid(tidy=None, color_by="traffic", first_year=2023, alpha=0.18, figsize=(8, 18)):
+def plot_grid(tidy=None, color_by="traffic", first_year=2023, alpha=0.18, figsize=(11, 12)):
     """Every cell of the grid, one translucent line each, over four metrics.
 
     One line per scenario at low opacity, so the density of the bundle carries the
@@ -402,10 +405,13 @@ def plot_grid(tidy=None, color_by="traffic", first_year=2023, alpha=0.18, figsiz
         level: DEFAULT_COLORS[index % len(DEFAULT_COLORS)] for index, level in enumerate(levels)
     }
 
-    figure, axes = plt.subplots(len(PANELS), 1, figsize=figsize, layout="constrained")
+    figure, axes = plt.subplots(3, 2, figsize=figsize, layout="constrained")
+    axes = axes.ravel()
+    # The last cell holds the legend rather than a sixth panel.
+    axes[-1].axis("off")
     published = {cell: name for name, cell in PUBLISHED_CELLS.items()}
 
-    for axis, (column, title, ylabel, scale) in zip(axes.ravel(), PANELS):
+    for axis, (column, title, ylabel, scale) in zip(axes, PANELS):
         for cell, group in frame.groupby(CELL_KEYS, sort=False):
             group = group.sort_values("year")
             axis.plot(
@@ -447,12 +453,7 @@ def plot_grid(tidy=None, color_by="traffic", first_year=2023, alpha=0.18, figsiz
         plt.Line2D([], [], color="black", linewidth=2, linestyle=PUBLISHED_STYLES[name], label=name)
         for name in sorted(PUBLISHED_CELLS)
     ]
-    figure.legend(
-        handles=handles,
-        loc="outside lower center",
-        ncol=len(handles),
-        frameon=False,
-    )
+    axes[-1].legend(handles=handles, loc="center", frameon=False, fontsize=11)
     figure.suptitle(
         f"All {frame.groupby(CELL_KEYS).ngroups} lever combinations, coloured by {color_by}"
     )

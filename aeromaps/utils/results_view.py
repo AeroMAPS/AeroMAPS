@@ -85,7 +85,15 @@ class ResultsView:
         return self
 
     def plot(
-        self, name, save=False, size_inches=None, remove_title=False, fig=None, ax=None, legend=True
+        self,
+        name,
+        save=False,
+        size_inches=None,
+        remove_title=False,
+        fig=None,
+        ax=None,
+        legend=True,
+        **kwargs,
     ):
         """Generate a predefined AeroMAPS plot from the stored results.
 
@@ -103,7 +111,9 @@ class ResultsView:
                 f"{list(available_plots.keys())}"
             )
 
-        plot_object = available_plots[name](self, fig=fig, ax=ax, legend=legend)
+        # Extra keywords reach the plot class, so options a plot exposes on its
+        # constructor (mfsp_type, for one) can be set from a static document.
+        plot_object = available_plots[name](self, fig=fig, ax=ax, legend=legend, **kwargs)
         if save:
             if size_inches is not None:
                 plot_object.fig.set_size_inches(size_inches)

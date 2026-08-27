@@ -2842,11 +2842,22 @@ class DetailledMFSPBreakdown(SingleScenarioPlot):
 class SimpleMFSP(SingleScenarioPlot):
     required_outputs = []
 
-    def __init__(self, process, figsize=None, **kwargs):
+    def __init__(self, process, figsize=None, mfsp_type=None, **kwargs):
+        """Minimum fuel selling price per pathway.
+
+        ``mfsp_type`` selects ``"net_mfsp"``, which includes the carbon tax, or
+        ``"mean_mfsp"``, which is the production cost alone. Passing it draws
+        that variant directly and skips the toggle, which is what a document
+        built without a live kernel needs: the widget renders as a stray repr
+        there rather than as a control.
+        """
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize, **kwargs)
         self.pathways_manager = self.process.pathways_manager
-        self.plot_interact()
+        if mfsp_type is None:
+            self.plot_interact()
+        else:
+            self.create_plot(mfsp_type)
 
     def _get_default_figsize(self):
         return (plot_1_x, plot_1_y)
@@ -3200,8 +3211,17 @@ class NetEnergyDOCPerRPKBreakdown(SingleScenarioPlot):
                 )
 
     def _draw_legends(self, pathways, pathway_colors):
-        """Add two legends: one for carrier colours, one for component hatches."""
+        """Add two legends: one for carrier colours, one for component hatches.
+
+        Both are drawn with explicit handles rather than from the artists, so the
+        base class's ``_apply_legend_setting`` cannot remove them afterwards. The
+        setting is therefore honoured here instead, which is what lets several of
+        these panels sit side by side carrying one legend between them.
+        """
         from matplotlib.lines import Line2D
+
+        if self._legend_setting is False:
+            return
 
         # Left legend – active energy carriers
         carrier_handles = [

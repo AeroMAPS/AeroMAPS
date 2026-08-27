@@ -131,3 +131,57 @@ class EnergyCarrierManager:
                 if getattr(carrier, parameter, None) is not None
             }
         )
+
+
+def build_pathways_manager(energy_carriers_data, energy_processes_data=None):
+    """Build a manager from the raw contents of the energy-carrier YAML.
+
+    Split out of ``AeroMAPSProcess`` so that results loaded from committed JSON
+    can carry a manager too. The pathway metadata the plots need is entirely
+    declared in the YAML, so it does not require running the model, and without
+    it every pathway-aware plot falls back to an empty figure.
+
+    Parameters
+    ----------
+    energy_carriers_data : dict
+        Parsed energy-carrier YAML, one entry per pathway.
+    energy_processes_data : dict, optional
+        Parsed processes YAML, used to map each pathway's processes onto the
+        resource each of them consumes.
+
+    Returns
+    -------
+    EnergyCarrierManager
+        Manager holding one metadata entry per declared pathway.
+    """
+    processes = energy_processes_data or {}
+    manager = EnergyCarrierManager()
+    for pathway, pathway_data in energy_carriers_data.items():
+        if "name" not in pathway_data or "inputs" not in pathway_data:
+            raise ValueError(f"pathway {pathway!r} must declare both a name and inputs")
+        technical = pathway_data.get("inputs", {}).get("technical", {})
+        manager.add(
+            EnergyCarrierMetadata(
+                name=pathway,
+                aircraft_type=pathway_data.get("aircraft_type"),
+                default=pathway_data.get("default"),
+                mandate_type=pathway_data.get("inputs").get("mandate", {}).get("mandate_type"),
+                energy_origin=pathway_data.get("energy_origin"),
+                resources_used=technical.get("resource_names", []),
+                resources_used_processes={
+                    name: (
+                        list(
+                            processes.get(name, {})
+                            .get("inputs", {})
+                            .get("technical", {})
+                            .get(f"{name}_resource_names", [])
+                        )
+                        or [None]
+                    )[0]
+                    for name in technical.get("processes_names", [])
+                },
+                cost_model=pathway_data.get("cost_model"),
+                environmental_model=pathway_data.get("environmental_model"),
+            )
+        )
+    return manager

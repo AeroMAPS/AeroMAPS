@@ -183,6 +183,10 @@ import pandas as pd
 from aeromaps import assemble_processes
 from aeromaps.plots.climate_mechanisms import MECHANISM_COLORS, MECHANISM_GROUPS, group_temperature
 from aeromaps.utils.results_view import load_results
+from aeromaps.utils.yaml import read_yaml_file
+from aeromaps.models.impacts.generic_energy_model.common.energy_carriers_manager import (
+    build_pathways_manager,
+)
 
 HERE = Path.cwd()
 
@@ -765,109 +769,71 @@ components separately, so the breakdown is read from them directly.
 ```{code-cell} python
 :tags: [hide-input]
 
-# Two readings of the same cost, one above the other. The top row compares the
-# scenarios on the two quantities a fuel-switching lever acts on directly, the
-# price of a megajoule and what emitting it costs the atmosphere, both of which
-# move for reasons the DOC below then combines. The bottom row is the resulting
-# cost, one panel per scenario, resolved into the pathways that make it up.
-INTENSITY_PANELS = [
-    (
-        "dropin_mfsp_without_carbon_tax_comparison",
-        "Fuel price, excluding carbon tax",
-        "Drop-in fuel price [EUR/MJ]",
-    ),
-    ("co2_per_energy_comparison", "Carbon intensity of energy", "gCO2 / MJ"),
-]
-
-# Pathway shares are used to split the committed DOC total rather than to rebuild
-# it: energy consumption covers freight as well, whereas the DOC is reported per
-# revenue passenger-kilometre, so a direct product of the two overstates it by
-# about 16 %. Splitting the reported total keeps the stack closing on the line.
-PATHWAY_COLORS = plt.get_cmap("tab20").colors
-
-
-def pathway_costs(vectors):
-    """Per-pathway energy expenditure, and the part of it that is carbon tax."""
-    carriers = sorted(
-        name[: -len("_energy_consumption")]
-        for name in vectors.columns
-        if name.endswith("_energy_consumption")
-        and not name.startswith("dropin_fuel_")
-        and name[: -len("_energy_consumption")] + "_net_mfsp" in vectors.columns
-    )
-    spend, taxed = {}, np.zeros(len(vectors))
-    for carrier in carriers:
-        energy = np.asarray(vectors[carrier + "_energy_consumption"], dtype=float)
-        total = energy * np.asarray(vectors[carrier + "_net_mfsp"], dtype=float)
-        if not np.any(np.abs(np.nan_to_num(total)) > 0):
-            continue
-        without = energy * np.asarray(
-            vectors[carrier + "_net_mfsp_without_carbon_tax"], dtype=float
-        )
-        spend[carrier] = np.nan_to_num(without)
-        taxed = taxed + np.nan_to_num(total - without)
-    return spend, taxed
-
+# Two readings of the same cost, one above the other. The top row resolves the
+# two quantities a fuel-switching lever acts on directly into the individual
+# production pathways: what a megajoule of each costs to make, and what emitting
+# it releases. The bottom row is the resulting cost per passenger-kilometre, one
+# panel per scenario, broken down by the same pathways.
+#
+# Both rows are drawn by the framework's own pathway-aware plots rather than by
+# hand. Those resolve their carriers through a pathways_manager, which a view
+# loaded from committed JSON does not carry, so one is rebuilt here from the same
+# YAML the scenarios were run against. The metadata the plots need is declared in
+# that file, so it does not require re-running the model.
+COUPLED_INPUTS = HERE / "3rd_edition_full_coupled_demand" / "data_inputs"
+pathways_manager = build_pathways_manager(
+    read_yaml_file(str(COUPLED_INPUTS / "s1_energy_share.yaml")),
+    read_yaml_file(str(COUPLED_INPUTS / "processes.yaml")),
+)
+for view in share_only.values():
+    view.pathways_manager = pathways_manager
 
 if share_only:
-    fig = plt.figure(figsize=(15.6, 9.6), layout="constrained")
-    top, bottom = fig.subfigures(2, 1, height_ratios=[1, 1.15])
+    fig = plt.figure(figsize=(15.6, 10.4), layout="constrained")
+    top, bottom = fig.subfigures(2, 1, height_ratios=[1, 1.25])
 
-    comparison = assemble_processes(share_only)
-    groups = {"Across SSP pathways": sorted(share_only)}
+    # One scenario suffices for the top row: under a fixed-share mandate the
+    # blend follows the mandate rather than the carbon price, so every pathway
+    # costs and emits the same across the three, which the caption states and the
+    # committed outputs confirm to the last digit.
+    reference = sorted(share_only)[0]
     top_axes = top.subplots(1, 2)
-    for ax, (plot_name, title, ylabel) in zip(top_axes, INTENSITY_PANELS):
-        comparison.plot(
-            plot_name, fig=top, ax=ax, scenario_groups=groups, group_display="envelope",
-            group_envelope_show_members=True, legend=False, years_source="years",
-        )
-        ax.set_title(title)
-        ax.set_ylabel(ylabel)
-        ax.set_xlabel("Year")
-        ax.set_xlim(2000, 2050)
-    top_axes[0].legend(fontsize=8)
+    # mean_mfsp rather than net_mfsp: the production cost alone, with the carbon
+    # tax left to the row below where it is stacked separately.
+    share_only[reference].plot("energy_mfsp", fig=top, ax=top_axes[0], mfsp_type="mean_mfsp")
+    share_only[reference].plot("emission_factor_per_fuel", fig=top, ax=top_axes[1])
+    for ax in top_axes:
+        ax.set_xlim(2020, 2050)
 
+    # One legend for the row, on the last panel: the carriers and the cost
+    # components are the same in all three, so repeating them three times would
+    # cover the stacks they describe.
     bottom_axes = bottom.subplots(1, len(share_only), sharey=True)
-    for ax, (label, view) in zip(bottom_axes, sorted(share_only.items())):
-        vectors = view.data["vector_outputs"]
-        years = np.asarray(vectors.index, dtype=float)
-        total = np.asarray(vectors["doc_net_energy_per_rpk_mean"], dtype=float)
-
-        spend, taxed = pathway_costs(vectors)
-        gross = sum(spend.values()) + taxed
-        scale = np.divide(total, gross, out=np.zeros_like(total), where=gross > 0)
-
-        base = np.zeros_like(total)
-        for index, (carrier, series) in enumerate(sorted(spend.items())):
-            band = series * scale
-            ax.fill_between(years, base, base + band, linewidth=0,
-                            color=PATHWAY_COLORS[index % len(PATHWAY_COLORS)],
-                            label=carrier.replace("_", " "))
-            base = base + band
-        ax.fill_between(years, base, base + taxed * scale, linewidth=0,
-                        color="#C44E52", hatch="..", edgecolor="white", label="Carbon tax")
-        ax.plot(years, total, color="black", linewidth=2, label="Net energy DOC")
+    last = sorted(share_only)[-1]
+    for ax, label in zip(bottom_axes, sorted(share_only)):
+        share_only[label].plot("doc_net_energy_per_rpk_breakdown", fig=bottom, ax=ax,
+                               legend=label == last)
         ax.set_title(label)
-        ax.set_xlabel("Year")
-        ax.set_xlim(2000, 2050)
-        ax.grid(alpha=0.3)
-    bottom_axes[0].set_ylabel("Energy DOC per RPK [EUR/RPK]")
-    bottom_axes[-1].legend(fontsize=6, loc="upper left", ncol=2)
+        ax.set_xlim(2020, 2050)
+    for ax in bottom_axes[1:]:
+        ax.set_ylabel("")
     save_fig(fig, name="doc_breakdown")
 ```
 
-*Two readings of the same cost. The top row compares the scenarios on the two quantities a
-fuel-switching lever acts on directly, the price of a megajoule excluding the carbon tax and the
-carbon intensity of that megajoule. Both bands collapse to a line, and exactly so: under a
-fixed-share mandate the blend is set by the mandate rather than by the carbon price, so all three
-pathways deliver identical fuel at identical cost, 0.0231 EUR/MJ and 20.5 gCO2/MJ in 2050. The
-bottom row is the resulting energy direct operating cost per revenue passenger-kilometre, one panel
-per pathway on a shared vertical axis, resolved into the production pathways that make it up with
-the carbon tax hatched on top and the net total drawn in black. The entire spread between the three
-panels is therefore carbon tax: 0.0345 EUR/RPK in 2050 under SSP2-1.9 against 0.0187 under
-SSP2-4.5, a factor of 1.8 on identical fuel. Pathway shares are used to split the reported total
-rather than to rebuild it, since energy consumption covers freight while the cost is reported per
-revenue passenger-kilometre.*
+*Two readings of the same cost, resolved into production pathways throughout. The top row gives what
+a megajoule of each pathway costs to produce, excluding the carbon tax, and what emitting it
+releases; pathways the scenario does not deploy are drawn dotted and labelled as unused. Fossil
+kerosene is the cheapest and the dirtiest of them, at 88.7 gCO2/MJ in 2050 against 5.2 to 48.8 for
+the alternative pathways, a spread of roughly a factor of nine among the alternatives themselves,
+and the mandate is what displaces it. Only one scenario is shown, because under a
+fixed-share mandate the blend follows the mandate rather than the carbon price, so all three deliver
+identical fuel at identical cost, 0.0231 EUR/MJ and 20.459 gCO2/MJ in 2050, bit-identical across the
+three. The bottom row is the resulting energy direct operating cost per revenue passenger-kilometre,
+one panel per pathway on a shared vertical axis, stacked by carrier with the cost components
+distinguished by hatch and the total drawn in black over a dashed line for the delayed cost
+travellers actually perceive. The entire spread between the three panels is therefore carbon tax:
+0.0345 EUR/RPK in 2050 under SSP2-1.9 against 0.0187 under SSP2-4.5, a factor of 1.8 on the same
+fuel.*
 
 {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">The demand response operates through the cost side of the same loop. Energy expenses rise steeply as the SAF mandate ramps, since the mandated fuel is several times costlier per unit energy than the kerosene it displaces, and that increase reaches the traveller through direct operating cost. This is the mechanism left unmodelled by the reports, and it does not constitute a second-order correction, a demand reduction of 2 to 12 % by 2050 being comparable in magnitude to what the technology and operations levers are together assumed to deliver.</span>{raw:typst}`]`
 

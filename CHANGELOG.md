@@ -86,6 +86,12 @@ Fixed:
   overridable per call. The cost plots default to the projection alone, which is right where a
   scenario only models cost forward and wrong where the historic part is populated and carries
   the calibration the projection starts from. (#144)
+- Extracted `build_pathways_manager` from `AeroMAPSProcess`, so results loaded from committed
+  JSON can reconstruct the pathway metadata from the same YAML the scenario ran against. Every
+  pathway-aware plot previously fell back to an empty figure against stored results. `SimpleMFSP`
+  takes an `mfsp_type` that skips its toggle, `ResultsView.plot` forwards keywords to the plot
+  class, and the per-RPK cost breakdown honours `legend=False`, which together let those plots be
+  used in a document built without a live kernel. (#144)
 
 
 ## Version 1.1.0
