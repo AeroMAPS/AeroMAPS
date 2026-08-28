@@ -11,38 +11,24 @@ import pandas as pd
 from aeromaps.models.base import AeroMAPSModel
 
 
-def _ask_weighted_mean(per_market_means, ask_per_market, index):
-    """Global mean of a per-ASK cost, weighted by each market's ASK.
+def _ask_share_weighted_mean(per_market_means, ask_share_per_market, index):
+    """Global mean of a per-ASK cost, weighted by each market's share of total ASK.
 
-    In a year where *every* market has zero ASK the weighting is undefined: the
-    weighted mean is ``0/0``, and that NaN then spreads through every downstream cost
-    -- and, in a cost-feedback MDA, back around the coupling loop.
+    The quantity being averaged is an *intensity* -- a cost per ASK -- so the weight is
+    a share, and the mean is ``sum(share_m * mean_m)``. It is the same operation the
+    per-market means one level down already perform across energy types, with
+    ``ask_<mid>_<et>_share``.
 
-    Zero is not the answer either. There is no *zero* cost per ASK where there is no
-    traffic; substituting one would report a cost that was never computed. What is
-    undefined in such a year is only the weighting: the quantity being averaged is an
-    intensity, not a volume, so each market's cost per ASK is still perfectly well
-    defined. Those years therefore take the unweighted mean of the per-market
-    intensities, which is the limit of the weighted mean as every weight goes to zero
-    together.
-
-    Years where only *some* markets have zero ASK need nothing special -- those
-    markets simply carry zero weight, which is already correct.
-
-    A pre-existing NaN in a per-market mean is left alone: this resolves an undefined
-    weighting, it does not fill in missing data.
+    Weighting by the volumes instead, as ``sum(ask_m * mean_m) / sum(ask_m)``, is the
+    same number wherever there is traffic and ``0/0`` in a year where no market flies.
+    ``ask_<mid>_share`` is published by ``ASKAggregator``, which is where the split is
+    known even in that year; see ``_ask_shares`` there.
     """
     if not per_market_means:
         # No passenger markets — defensive default.
         return pd.Series(0.0, index=index)
 
-    means = list(per_market_means.values())
-    ask_total = sum(ask_per_market[mid] for mid in per_market_means)
-    weighted_sum = sum(mean * ask_per_market[mid] for mid, mean in per_market_means.items())
-
-    no_traffic = ask_total == 0
-    weighted_mean = weighted_sum / ask_total.where(~no_traffic)
-    return weighted_mean.mask(no_traffic, sum(means) / len(means))
+    return sum(mean * ask_share_per_market[mid] / 100 for mid, mean in per_market_means.items())
 
 
 class PassengerAircraftDocNonEnergyComplex(AeroMAPSModel):
@@ -94,7 +80,7 @@ class PassengerAircraftDocNonEnergyComplex(AeroMAPSModel):
 
         for market in self.markets.get(traffic_type="passenger"):
             mid = market.id
-            self.input_names[f"ask_{mid}"] = pd.Series([0.0])
+            self.input_names[f"ask_{mid}_share"] = pd.Series([0.0])
             for et in energy_types:
                 self.input_names[f"ask_{mid}_{et}_share"] = pd.Series([0.0])
                 self.output_names[f"doc_non_energy_per_ask_{mid}_{et}"] = pd.Series([0.0])
@@ -113,12 +99,12 @@ class PassengerAircraftDocNonEnergyComplex(AeroMAPSModel):
 
         # First pass: extract per-market per-energy-type DOC values from fleet df.
         doc_non_energy_per_market_energy_type = {}  # (mid, et) -> pd.Series (per-market per-energy-type DOC per ASK)
-        ask_per_market = {}  # mid -> pd.Series (per-market total ASK)
+        ask_share_per_market = {}  # mid -> pd.Series (market share of total ASK [%])
         ask_market_energy_type_share = {}  # (mid, et) -> pd.Series (ASK share per energy type on a given market [%].)
 
         for market in self.markets.get(traffic_type="passenger"):
             mid = market.id
-            ask_per_market[mid] = input_data[f"ask_{mid}"]
+            ask_share_per_market[mid] = input_data[f"ask_{mid}_share"]
             for et in energy_types:
                 doc_non_energy_per_market_energy_type[(mid, et)] = self.fleet_model.df[
                     f"{market.name}:doc_non_energy:{et}"
@@ -145,9 +131,9 @@ class PassengerAircraftDocNonEnergyComplex(AeroMAPSModel):
             doc_non_energy_mean[mid] = market_mean
             output_data[f"doc_non_energy_per_ask_{mid}_mean"] = market_mean
 
-        # Global mean: weighted by per-market ASK totals.
-        doc_non_energy_per_ask_mean = _ask_weighted_mean(
-            doc_non_energy_mean, ask_per_market, self.df.index
+        # Global mean: weighted by each market's share of total ASK.
+        doc_non_energy_per_ask_mean = _ask_share_weighted_mean(
+            doc_non_energy_mean, ask_share_per_market, self.df.index
         )
 
         output_data["doc_non_energy_per_ask_mean"] = doc_non_energy_per_ask_mean
@@ -210,7 +196,7 @@ class PassengerAircraftDocNonEnergySimple(AeroMAPSModel):
             self.input_names[f"{mid}_relative_doc_non_energy_per_ask_hydrogen_wrt_dropin"] = 0.0
             self.input_names[f"{mid}_relative_doc_non_energy_per_ask_electric_wrt_dropin"] = 0.0
             # Series: per-market ASK + per-energy-type ASK shares.
-            self.input_names[f"ask_{mid}"] = pd.Series([0.0])
+            self.input_names[f"ask_{mid}_share"] = pd.Series([0.0])
             for et in energy_types:
                 self.input_names[f"ask_{mid}_{et}_share"] = pd.Series([0.0])
                 self.output_names[f"doc_non_energy_per_ask_{mid}_{et}"] = pd.Series([0.0])
@@ -230,7 +216,7 @@ class PassengerAircraftDocNonEnergySimple(AeroMAPSModel):
 
         # Per-market per-energy-type series store.
         doc_non_energy_per_market_energy_type = {}  # (mid, et) -> pd.Series (per-market per-energy-type non-energy DOC per ASK)
-        ask_per_market = {}  # mid -> pd.Series (per-market total ASK)
+        ask_share_per_market = {}  # mid -> pd.Series (market share of total ASK [%])
         ask_market_energy_type_share = {}  # (mid, et) -> pd.Series (ASK share per energy type on a given market [%])
 
         for market in self.markets.get(traffic_type="passenger"):
@@ -240,7 +226,7 @@ class PassengerAircraftDocNonEnergySimple(AeroMAPSModel):
             rel_h = float(input_data[f"{mid}_relative_doc_non_energy_per_ask_hydrogen_wrt_dropin"])
             rel_e = float(input_data[f"{mid}_relative_doc_non_energy_per_ask_electric_wrt_dropin"])
 
-            ask_per_market[mid] = input_data[f"ask_{mid}"]
+            ask_share_per_market[mid] = input_data[f"ask_{mid}_share"]
             for et in energy_types:
                 ask_market_energy_type_share[(mid, et)] = input_data[f"ask_{mid}_{et}_share"]
 
@@ -286,8 +272,10 @@ class PassengerAircraftDocNonEnergySimple(AeroMAPSModel):
             doc_non_energy_mean[mid] = total
             output_data[f"doc_non_energy_per_ask_{mid}_mean"] = total
 
-        # Global mean: weighted by per-market ASK totals.
-        global_mean = _ask_weighted_mean(doc_non_energy_mean, ask_per_market, self.df.index)
+        # Global mean: weighted by each market's share of total ASK.
+        global_mean = _ask_share_weighted_mean(
+            doc_non_energy_mean, ask_share_per_market, self.df.index
+        )
 
         output_data["doc_non_energy_per_ask_mean"] = global_mean
 
@@ -344,7 +332,7 @@ class PassengerAircraftDocEnergy(AeroMAPSModel):
 
         for market in self.markets.get(traffic_type="passenger"):
             mid = market.id
-            self.input_names[f"ask_{mid}"] = pd.Series([0.0])
+            self.input_names[f"ask_{mid}_share"] = pd.Series([0.0])
             for et in energy_types:
                 self.input_names[f"energy_per_ask_{mid}_{et}"] = pd.Series([0.0])
                 self.input_names[f"ask_{mid}_{et}_share"] = pd.Series([0.0])
@@ -370,13 +358,13 @@ class PassengerAircraftDocEnergy(AeroMAPSModel):
         }
 
         doc_energy_per_market_energy_type = {}  # (mid, et) -> pd.Series (per-market per-energy-type energy DOC per ASK)
-        ask_per_market = {}  # mid -> pd.Series (per-market total ASK)
+        ask_share_per_market = {}  # mid -> pd.Series (market share of total ASK [%])
         ask_market_energy_type_share = {}  # (mid, et) -> pd.Series (ASK share per energy type on a given market [%])
         doc_energy_mean = {}  # mid -> pd.Series (per-market ASK-weighted mean energy DOC)
 
         for market in self.markets.get(traffic_type="passenger"):
             mid = market.id
-            ask_per_market[mid] = input_data[f"ask_{mid}"]
+            ask_share_per_market[mid] = input_data[f"ask_{mid}_share"]
             for et in energy_types:
                 energy = input_data[f"energy_per_ask_{mid}_{et}"]
                 ask_market_energy_type_share[(mid, et)] = input_data[f"ask_{mid}_{et}_share"]
@@ -400,8 +388,8 @@ class PassengerAircraftDocEnergy(AeroMAPSModel):
             doc_energy_mean[mid] = total
             output_data[f"doc_energy_per_ask_{mid}_mean"] = total
 
-        # Global mean: weighted by per-market ASK totals.
-        global_mean = _ask_weighted_mean(doc_energy_mean, ask_per_market, self.df.index)
+        # Global mean: weighted by each market's share of total ASK.
+        global_mean = _ask_share_weighted_mean(doc_energy_mean, ask_share_per_market, self.df.index)
 
         output_data["doc_energy_per_ask_mean"] = global_mean
 
@@ -465,7 +453,7 @@ class PassengerAircraftDocEnergyCarbonTax(AeroMAPSModel):
 
         for market in self.markets.get(traffic_type="passenger"):
             mid = market.id
-            self.input_names[f"ask_{mid}"] = pd.Series([0.0])
+            self.input_names[f"ask_{mid}_share"] = pd.Series([0.0])
             for et in energy_types:
                 self.input_names[f"energy_per_ask_{mid}_{et}"] = pd.Series([0.0])
                 self.input_names[f"ask_{mid}_{et}_share"] = pd.Series([0.0])
@@ -496,13 +484,13 @@ class PassengerAircraftDocEnergyCarbonTax(AeroMAPSModel):
         }
 
         doc_carbon_tax_per_market_energy_type = {}  # (mid, et) -> pd.Series (per-market per-energy-type carbon tax DOC per ASK)
-        ask_per_market = {}  # mid -> pd.Series (per-market total ASK)
+        ask_share_per_market = {}  # mid -> pd.Series (market share of total ASK [%])
         ask_market_energy_type_share = {}  # (mid, et) -> pd.Series (ASK share per energy type on a given market [%])
         doc_carbon_tax_mean = {}  # mid -> pd.Series (per-market ASK-weighted mean carbon tax DOC)
 
         for market in self.markets.get(traffic_type="passenger"):
             mid = market.id
-            ask_per_market[mid] = input_data[f"ask_{mid}"]
+            ask_share_per_market[mid] = input_data[f"ask_{mid}_share"]
             for et in energy_types:
                 energy = input_data[f"energy_per_ask_{mid}_{et}"]
                 ask_market_energy_type_share[(mid, et)] = input_data[f"ask_{mid}_{et}_share"]
@@ -526,8 +514,10 @@ class PassengerAircraftDocEnergyCarbonTax(AeroMAPSModel):
             doc_carbon_tax_mean[mid] = total
             output_data[f"doc_energy_carbon_tax_per_ask_{mid}_mean"] = total
 
-        # Global mean: weighted by per-market ASK totals.
-        global_mean = _ask_weighted_mean(doc_carbon_tax_mean, ask_per_market, self.df.index)
+        # Global mean: weighted by each market's share of total ASK.
+        global_mean = _ask_share_weighted_mean(
+            doc_carbon_tax_mean, ask_share_per_market, self.df.index
+        )
 
         output_data["doc_energy_carbon_tax_per_ask_mean"] = global_mean
 
@@ -599,7 +589,7 @@ class PassengerAircraftDocEnergySubsidy(AeroMAPSModel):
 
         for market in self.markets.get(traffic_type="passenger"):
             mid = market.id
-            self.input_names[f"ask_{mid}"] = pd.Series([0.0])
+            self.input_names[f"ask_{mid}_share"] = pd.Series([0.0])
             for et in energy_types:
                 self.input_names[f"energy_per_ask_{mid}_{et}"] = pd.Series([0.0])
                 self.input_names[f"ask_{mid}_{et}_share"] = pd.Series([0.0])
@@ -626,13 +616,13 @@ class PassengerAircraftDocEnergySubsidy(AeroMAPSModel):
         }
 
         doc_subsidy_per_market_energy_type = {}  # (mid, et) -> pd.Series (per-market per-energy-type subsidy DOC per ASK)
-        ask_per_market = {}  # mid -> pd.Series (per-market total ASK)
+        ask_share_per_market = {}  # mid -> pd.Series (market share of total ASK [%])
         ask_market_energy_type_share = {}  # (mid, et) -> pd.Series (ASK share per energy type on a given market [%])
         doc_subsidy_mean = {}  # mid -> pd.Series (per-market ASK-weighted mean subsidy DOC)
 
         for market in self.markets.get(traffic_type="passenger"):
             mid = market.id
-            ask_per_market[mid] = input_data[f"ask_{mid}"]
+            ask_share_per_market[mid] = input_data[f"ask_{mid}_share"]
             for et in energy_types:
                 energy = input_data[f"energy_per_ask_{mid}_{et}"]
                 ask_market_energy_type_share[(mid, et)] = input_data[f"ask_{mid}_{et}_share"]
@@ -656,8 +646,10 @@ class PassengerAircraftDocEnergySubsidy(AeroMAPSModel):
             doc_subsidy_mean[mid] = total
             output_data[f"doc_energy_subsidy_per_ask_{mid}_mean"] = total
 
-        # Global mean: weighted by per-market ASK totals.
-        global_mean = _ask_weighted_mean(doc_subsidy_mean, ask_per_market, self.df.index)
+        # Global mean: weighted by each market's share of total ASK.
+        global_mean = _ask_share_weighted_mean(
+            doc_subsidy_mean, ask_share_per_market, self.df.index
+        )
 
         output_data["doc_energy_subsidy_per_ask_mean"] = global_mean
 
@@ -714,7 +706,7 @@ class PassengerAircraftDocEnergyTax(AeroMAPSModel):
 
         for market in self.markets.get(traffic_type="passenger"):
             mid = market.id
-            self.input_names[f"ask_{mid}"] = pd.Series([0.0])
+            self.input_names[f"ask_{mid}_share"] = pd.Series([0.0])
             for et in energy_types:
                 self.input_names[f"energy_per_ask_{mid}_{et}"] = pd.Series([0.0])
                 self.input_names[f"ask_{mid}_{et}_share"] = pd.Series([0.0])
@@ -741,13 +733,13 @@ class PassengerAircraftDocEnergyTax(AeroMAPSModel):
         }
 
         doc_tax_per_market_energy_type = {}  # (mid, et) -> pd.Series (per-market per-energy-type tax DOC per ASK)
-        ask_per_market = {}  # mid -> pd.Series (per-market total ASK)
+        ask_share_per_market = {}  # mid -> pd.Series (market share of total ASK [%])
         ask_market_energy_type_share = {}  # (mid, et) -> pd.Series (ASK share per energy type on a given market [%])
         doc_tax_mean = {}  # mid -> pd.Series (per-market ASK-weighted mean tax DOC)
 
         for market in self.markets.get(traffic_type="passenger"):
             mid = market.id
-            ask_per_market[mid] = input_data[f"ask_{mid}"]
+            ask_share_per_market[mid] = input_data[f"ask_{mid}_share"]
             for et in energy_types:
                 energy = input_data[f"energy_per_ask_{mid}_{et}"]
                 ask_market_energy_type_share[(mid, et)] = input_data[f"ask_{mid}_{et}_share"]
@@ -771,8 +763,8 @@ class PassengerAircraftDocEnergyTax(AeroMAPSModel):
             doc_tax_mean[mid] = total
             output_data[f"doc_energy_tax_per_ask_{mid}_mean"] = total
 
-        # Global mean: weighted by per-market ASK totals.
-        global_mean = _ask_weighted_mean(doc_tax_mean, ask_per_market, self.df.index)
+        # Global mean: weighted by each market's share of total ASK.
+        global_mean = _ask_share_weighted_mean(doc_tax_mean, ask_share_per_market, self.df.index)
 
         output_data["doc_energy_tax_per_ask_mean"] = global_mean
 

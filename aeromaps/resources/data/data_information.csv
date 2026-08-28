@@ -200,6 +200,7 @@ world_co2_emissions_2019;Float;GtCO2;World CO2 emissions in 2019;Global Carbon P
 aerosol_erf;Vector;mW/m²;Effective radiative forcing due to aerosol (soot and sulfur)
 ask;Vector;ASK;Number of Available Seat Kilometer (ASK) for all commercial air transport
 ask_long_range;Vector;ASK;Number of Available Seat Kilometer (ASK) for passenger long-range market
+ask_long_range_share;Vector;%;Share of total passenger Available Seat Kilometer (ASK) carried by the long-range market (not to be confused with ask_long_range_<energy>_share, the split by aircraft energy within that market)
 ask_long_range_dropin_fuel;Vector;ASK;Number of Available Seat Kilometer (ASK) for passenger long-range market from drop-in fuel aircraft
 ask_long_range_dropin_fuel_share;Vector;%;Share of Available Seat Kilometer (ASK) for passenger long-range market from drop-in fuel aircraft
 ask_long_range_hydrogen;Vector;ASK;Number of Available Seat Kilometer (ASK) for passenger long-range market from hydrogen aircraft
@@ -207,6 +208,7 @@ ask_long_range_hydrogen_share;Vector;%;Share of Available Seat Kilometer (ASK) f
 ask_long_range_electric;Vector;ASK;Number of Available Seat Kilometer (ASK) for passenger long-range market from electric aircraft
 ask_long_range_electric_share;Vector;%;Share of Available Seat Kilometer (ASK) for passenger long-range market from electric aircraft
 ask_medium_range;Vector;ASK;Number of Available Seat Kilometer (ASK) for passenger medium-range market
+ask_medium_range_share;Vector;%;Share of total passenger Available Seat Kilometer (ASK) carried by the medium-range market (not to be confused with ask_medium_range_<energy>_share, the split by aircraft energy within that market)
 ask_medium_range_dropin_fuel;Vector;ASK;Number of Available Seat Kilometer (ASK) for passenger medium-range market from drop-in fuel aircraft
 ask_medium_range_dropin_fuel_share;Vector;%;Share of Available Seat Kilometer (ASK) for passenger medium-range market from drop-in fuel aircraft
 ask_medium_range_hydrogen;Vector;ASK;Number of Available Seat Kilometer (ASK) for passenger medium-range market from hydrogen aircraft
@@ -214,6 +216,7 @@ ask_medium_range_hydrogen_share;Vector;%;Share of Available Seat Kilometer (ASK)
 ask_medium_range_electric;Vector;ASK;Number of Available Seat Kilometer (ASK) for passenger medium-range market from electric aircraft
 ask_medium_range_electric_share;Vector;%;Share of Available Seat Kilometer (ASK) for passenger medium-range market from electric aircraft
 ask_short_range;Vector;ASK;Number of Available Seat Kilometer (ASK) for passenger short-range market
+ask_short_range_share;Vector;%;Share of total passenger Available Seat Kilometer (ASK) carried by the short-range market (not to be confused with ask_short_range_<energy>_share, the split by aircraft energy within that market)
 ask_short_range_dropin_fuel;Vector;ASK;Number of Available Seat Kilometer (ASK) for passenger short-range market from drop-in fuel aircraft
 ask_short_range_dropin_fuel_share;Vector;%;Share of Available Seat Kilometer (ASK) for passenger short-range market from drop-in fuel aircraft
 ask_short_range_hydrogen;Vector;ASK;Number of Available Seat Kilometer (ASK) for passenger short-range market from hydrogen aircraft
