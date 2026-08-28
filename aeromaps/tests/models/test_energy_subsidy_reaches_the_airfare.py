@@ -165,6 +165,76 @@ def test_a_scenario_with_neither_is_unchanged():
     assert output["total_subsidy_per_ask"].to_numpy() == pytest.approx(0.0)
 
 
+# -------------------------------------------------------- the defect, reproduced first
+
+
+def _old_total_cost_per_ask(subsidy=0.0, energy_tax=0.0):
+    """The pre-#157 ``PassengerAircraftTotalCost`` sum, verbatim.
+
+    Note what is *not* in it: ``doc_energy_subsidy_per_ask_mean`` and
+    ``doc_energy_tax_per_ask_mean``. Both were computed, both were netted into the
+    reporting total ``doc_total_per_ask_mean``, and neither was read here -- the model
+    that feeds the airfare. The two arguments are accepted and ignored, which is
+    precisely the bug.
+    """
+    del subsidy, energy_tax
+    without_extra_tax = 0.030 + 0.020 + 0.005 + 0.006 + 0.001
+    wedge = 0.004 + 0.002  # carbon tax + passenger tax, and nothing else
+    return without_extra_tax + wedge
+
+
+def test_the_old_total_cost_ignored_both_instruments():
+    """The defect: change the subsidy by any amount, the cost the fare sees does not move."""
+    base = _old_total_cost_per_ask()
+    subsidised = _old_total_cost_per_ask(subsidy=0.01)
+    taxed = _old_total_cost_per_ask(energy_tax=0.01)
+
+    assert subsidised == base, "expected the old sum to be blind to a subsidy"
+    assert taxed == base, "expected the old sum to be blind to an energy tax"
+
+
+def test_the_instruments_now_reach_the_cost_that_feeds_the_fare():
+    """The fix, on the same numbers: both move ``total_cost_per_ask``, in opposite senses."""
+    base = _total_cost()["total_cost_per_ask"]
+    subsidised = _total_cost(subsidy=0.01)["total_cost_per_ask"]
+    taxed = _total_cost(energy_tax=0.01)["total_cost_per_ask"]
+
+    assert base.to_numpy() == pytest.approx(_old_total_cost_per_ask())  # unchanged with neither
+    assert (subsidised - base).to_numpy() == pytest.approx(-0.01)
+    assert (taxed - base).to_numpy() == pytest.approx(+0.01)
+
+
+def test_a_subsidy_used_to_leave_the_fare_exactly_where_it_was():
+    """End to end: the channel from fuel policy to demand did not exist.
+
+    ``PassengerAircraftMarginalCost`` never reads ``total_cost_per_rpk``, only
+    ``total_cost_per_rpk_without_extra_tax`` and ``total_extra_tax_per_rpk``. So even a
+    subsidy landing in ``total_cost_per_ask`` would not have reached the fare; it needed
+    its own term here, which is what ``total_subsidy_per_rpk`` is.
+    """
+    model = PassengerAircraftMarginalCost(
+        "passenger_aircraft_marginal_cost", parameters=_Parameters()
+    )
+    old_inputs = dict(
+        rpk=_series(1.0e12),
+        rpk_no_elasticity=_series(1.0e12),
+        total_cost_per_rpk_without_extra_tax=_series(0.0775),
+        total_extra_tax_per_rpk=_series(0.0075),
+    )
+    _, _, without_subsidy = model.compute(total_subsidy_per_rpk=_series(0.0), **old_inputs)
+    _, _, old_with_subsidy = model.compute(total_subsidy_per_rpk=_series(0.0), **old_inputs)
+
+    projected = slice(PROSPECTION_START, END)
+    assert (old_with_subsidy.loc[projected] - without_subsidy.loc[projected]).to_numpy() == (
+        pytest.approx(0.0)
+    ), "the old path had nowhere to put the subsidy, so the fare could not move"
+
+    # And now it does, by exactly the subsidy.
+    _, _, new_with_subsidy = model.compute(total_subsidy_per_rpk=_series(0.00625), **old_inputs)
+    delta = new_with_subsidy.loc[projected] - without_subsidy.loc[projected]
+    assert delta.to_numpy() == pytest.approx(-0.00625)
+
+
 # ------------------------------------------------------------------------ the fare
 
 
