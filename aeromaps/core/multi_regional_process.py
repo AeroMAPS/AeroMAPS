@@ -34,9 +34,11 @@ from aeromaps.core.process import AeroMAPSProcess
 from aeromaps.core.gemseo import (
     AeroMAPSAutoModelWrapper,
     AeroMAPSCustomModelWrapper,
+    apply_coupling_bounds,
     apply_namespace_to_disciplines,
     build_namespaced_inputs,
     check_mda_convergence,
+    freeze_nan_masks_after_first_sweep,
 )
 from aeromaps.core import models as aeromaps_models
 from aeromaps.models.multi_regional.regional_aggregator import RegionalAggregator
@@ -564,8 +566,7 @@ class MultiRegionalProcess(AeroMAPSProcess):
         self._register_models_into(loaded, self._global_model_names)
 
         logging.info(
-            f"Loaded {len(self._global_model_names)} global model(s): "
-            f"{self._global_model_names}"
+            f"Loaded {len(self._global_model_names)} global model(s): {self._global_model_names}"
         )
 
     def _wrap_global_model(self, model):
@@ -655,6 +656,8 @@ class MultiRegionalProcess(AeroMAPSProcess):
             inner_mda_name="MDAGaussSeidel",
             log_convergence=False,
         )
+        # Missing values travel beside the coupling vector rather than inside it.
+        freeze_nan_masks_after_first_sweep(self._top_level_mda_chain)
         logging.info(
             f"Top-level MDAChain created with {len(self.disciplines)} discipline(s) "
             f"(aggregator + {len(self._top_level_model_names)} top-level model(s))"
@@ -714,6 +717,13 @@ class MultiRegionalProcess(AeroMAPSProcess):
                 "acceleration_method": AccelerationMethod.NONE,
             },
         )
+        # Missing values travel beside the coupling vector rather than inside it.
+        freeze_nan_masks_after_first_sweep(self.mda_chain)
+        # Models declare the physical domain of their couplings; the solver enforces it.
+        # Once per region, because each region's copy of a model bounds its own namespaced
+        # coupling: EU_DOM:airfare_per_rpk is not EU_INT:airfare_per_rpk.
+        for region_id, regional_disciplines in self._regional_disciplines.items():
+            apply_coupling_bounds(self.mda_chain, regional_disciplines, f"{region_id}:")
 
         logging.info(f"Unified MDAChain created with {len(all_disciplines)} disciplines")
 
