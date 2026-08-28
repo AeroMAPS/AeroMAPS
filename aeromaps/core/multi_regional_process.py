@@ -704,7 +704,8 @@ class MultiRegionalProcess(AeroMAPSProcess):
         # acceleration) explicitly, because it is the only route to those two knobs.
         self.mda_chain = MDAChain(
             disciplines=all_disciplines,
-            tolerance=1e-5,
+            tolerance=1e-10,
+            max_mda_iter=200,
             initialize_defaults=True,
             inner_mda_name="MDAGaussSeidel",
             log_convergence=True,
