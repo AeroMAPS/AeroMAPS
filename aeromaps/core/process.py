@@ -35,7 +35,9 @@ from aeromaps.models.base import AeroMAPSModel, AeroMapsCustomDataType
 from aeromaps.core.gemseo import (
     AeroMAPSAutoModelWrapper,
     AeroMAPSCustomModelWrapper,
+    apply_coupling_bounds,
     check_mda_convergence,
+    freeze_nan_masks_after_first_sweep,
 )
 from aeromaps.core import models as aeromaps_models
 
@@ -512,6 +514,10 @@ class AeroMAPSProcess(object):
             inner_mda_name="MDAGaussSeidel",
             log_convergence=True,
         )
+        # Missing values travel beside the coupling vector rather than inside it.
+        freeze_nan_masks_after_first_sweep(self.mda_chain)
+        # Models declare the physical domain of their couplings; the solver enforces it.
+        apply_coupling_bounds(self.mda_chain, self.disciplines)
 
     def setup_optimisation(self):
         """Configure the process for GEMSEO-based optimization.

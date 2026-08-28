@@ -52,10 +52,16 @@ Tuning an ``MDAChain`` (three traps, all silent)
 Damping and acceleration are worth reaching for: on
 ``tests/tested_configs/config_elasticity_demand.yaml`` the same solution is reached in 109
 iterations by default, 65 at ``over_relaxation_factor=0.7`` and 46 with
-``acceleration_method="Alternate2Delta"``. What is *not* available is
-``BaseMDASolver.set_bounds()``, GEMSEO's native way to hold an iterate inside a physical
-domain: it is incompatible with any coupling carrying a NaN. See
-:class:`CustomDataConverter` for that, and for what the NaN sentinel costs.
+``acceleration_method="Alternate2Delta"``.
+
+``BaseMDASolver.set_bounds()`` -- GEMSEO's native way to hold an iterate inside a physical
+domain -- used to be unusable here, because it is incompatible with any coupling carrying a
+NaN. :func:`freeze_nan_masks_after_first_sweep` fixed that, and models now declare their
+domain through ``_coupling_bounds`` for :func:`apply_coupling_bounds` to hand over. Note
+what it governs: the iterate carried *between* iterations, not a value a producer passes
+straight to a consumer within one Gauss-Seidel sweep. See
+``RPKElasticity.AIRFARE_BOUNDS_RELATIVE`` for the measurement, and
+:class:`CustomDataConverter` for what the NaN sentinel cost.
 """
 
 from __future__ import annotations
@@ -64,6 +70,7 @@ import inspect
 import logging
 import sys
 import traceback
+from contextvars import ContextVar
 from numbers import Number
 from typing import TYPE_CHECKING, ClassVar
 from typing import Final
@@ -165,8 +172,207 @@ class ExtendedJSONGrammar(JSONGrammar):
 #        return super().convert_value_to_array(name, value)
 
 
+# =============================================================================
+# Missing values: the frozen mask that replaces the in-band sentinel
+# =============================================================================
+
+# The masks in force for the solve running in this thread, keyed by variable name, and
+# the NaN intrusions observed against them. A ContextVar rather than a module global:
+# ``MultiRegionalProcess._compute_separate_processes(parallel=True)`` runs regional
+# solves in a ThreadPoolExecutor, and each thread starts with its own empty context, so
+# one region cannot see another's masks. (``CustomDataConverter._series_indexes`` is a
+# class attribute and *does* race that way -- a known limitation recorded below.)
+_ACTIVE_MASKS: ContextVar[dict[str, ndarray] | None] = ContextVar(
+    "aeromaps_active_nan_masks", default=None
+)
+_ACTIVE_INTRUSIONS: ContextVar[dict[str, int] | None] = ContextVar(
+    "aeromaps_active_nan_intrusions", default=None
+)
+
+
+def nan_mask(name: str, shape: tuple) -> ndarray | None:
+    """The mask in force for ``name``, or None to fall back to the sentinel.
+
+    A shape mismatch also returns None: a coupling whose length changed mid-solve is a
+    different bug (see ``tests/core/test_mda_input_mutation.py``) and must not be
+    silently re-masked here.
+    """
+    masks = _ACTIVE_MASKS.get()
+    if masks is None:
+        return None
+    mask = masks.get(name)
+    if mask is None or mask.shape != shape:
+        return None
+    return mask
+
+
+def record_nan_intrusion(name: str, count: int) -> None:
+    """Note a NaN at a position the frozen mask says carries a value.
+
+    That is precisely the "converged on NaN" condition: a coupling that held a value
+    after the first sweep no longer does, so the state the solver is measuring is not a
+    solution. It is *recorded* rather than raised, so that
+    :func:`check_mda_convergence` reports it under the process' ``on_mda_failure``
+    policy like every other convergence failure in this module, instead of throwing from
+    inside a data converter.
+    """
+    intrusions = _ACTIVE_INTRUSIONS.get()
+    if intrusions is not None:
+        intrusions[name] = intrusions.get(name, 0) + count
+
+
+def nan_intrusions(mda) -> dict[str, int]:
+    """The NaN intrusions recorded during ``mda``'s last solve."""
+    return dict(getattr(mda, "_aeromaps_nan_intrusions", {}) or {})
+
+
+def _masks_from_local_data(mda) -> dict[str, ndarray]:
+    """Which positions of each resolved coupling carry a value, after the first sweep.
+
+    Called once per solve, from ``_pre_solve``, at the only moment when every coupling
+    has been produced by its real producer and no residual has yet been taken.
+    """
+    masks = {}
+    for name in getattr(mda, "_resolved_variable_names", ()):
+        value = mda.io.data.get(name)
+        if isinstance(value, pd.Series):
+            masks[name] = ~value.isna().to_numpy()
+    return masks
+
+
+def freeze_nan_masks_after_first_sweep(mda_chain) -> None:
+    """Make every solver in ``mda_chain`` carry a frozen missing-value mask.
+
+    Why a mask at all, and why frozen
+    ---------------------------------
+
+    AeroMAPS series are legitimately undefined over the historical years, and a coupling
+    belonging to a pathway a scenario does not use is undefined throughout. GEMSEO has no
+    notion of a missing value, so those NaNs used to travel *inside* the coupling vector
+    as ``-999999``. That works, but it puts a flag in the numeric channel: the solver is
+    entitled to blend, scale, project and normalise that vector, and every one of those
+    operations can destroy the flag without anything noticing. The projection performed by
+    ``set_bounds`` is the worst case -- see ``RPKElasticity.AIRFARE_BOUNDS_RELATIVE``,
+    which also records what that mechanism does and does not reach.
+
+    The mask holds the same information out of band, so the vector carries only real
+    numbers. It is established **after the solver's first complete sweep** and held fixed
+    for the rest of that solve:
+
+    * ``MDAGaussSeidel._pre_solve`` runs every discipline once, before ``_solve`` and
+      therefore before any residual is taken. That is the first and only moment at which
+      every coupling has been written by its real producer.
+    * Earlier moments do not work. The first value a coupling is converted from is usually
+      the length-1 grammar placeholder, and the first full-length one may be a
+      ``_coupling_defaults`` seed that is NaN-free where the real series is not.
+    * The process horizon does not work either: measured on the tutorial-08 scenario, the
+      undefined prefix is 19, 20 or 21 years depending on the variable, so the window is
+      per variable, not per process.
+
+    Frozen *per solve*, not per session: a later ``compute()`` may be a different
+    scenario, so each solve re-derives its own masks. Any solver whose ``_pre_solve``
+    does not sweep simply keeps the sentinel behaviour, which is what the pre-mask code
+    did everywhere.
+    """
+    for mda in getattr(mda_chain, "inner_mdas", []):
+        _install_mask_hooks(mda)
+
+
+def apply_coupling_bounds(mda_chain, disciplines, namespace: str = "") -> dict[str, tuple]:
+    """Hand the solver the physical domain of every coupling that declares one.
+
+    A model declares its domain as ``self._coupling_bounds = {name: (low, high)}`` in
+    ``_initialize_df``, next to ``_coupling_defaults``, and nothing else in the model
+    refers to it again. Enforcement belongs to the algorithm:
+    ``BaseMDASolver.set_bounds`` projects the iterate, so the value a discipline receives
+    is the value the residual is formed on. A model that clipped its own input instead
+    would compute something other than what the solver believes it asked for -- see
+    ``RPKElasticity.AIRFARE_BOUNDS_RELATIVE`` for the full argument.
+
+    Bounds are silently ignored for any name the solver is not actually resolving
+    (``BaseMDASolver.set_bounds`` filters on ``_resolved_variable_names``), so a scenario
+    whose chain does not contain the coupling is unaffected.
+
+    Parameters
+    ----------
+    mda_chain
+        The chain to configure.
+    disciplines
+        The wrapped disciplines to collect declarations from.
+    namespace
+        Prefix applied to the variable names, for multi-regional chains where the same
+        model appears once per region as ``{region}:{name}``.
+
+    Returns
+    -------
+    bounds
+        What was handed to the chain, for logging and testing.
+    """
+    bounds = {}
+    for discipline in disciplines:
+        model = getattr(discipline, "model", None)
+        for name, (low, high) in getattr(model, "_coupling_bounds", {}).items():
+            key = f"{namespace}{name}" if namespace else name
+            bounds[key] = (
+                None if low is None else np.array([float(low)]),
+                None if high is None else np.array([float(high)]),
+            )
+    if bounds:
+        mda_chain.set_bounds(bounds)
+    return bounds
+
+
+def _install_mask_hooks(mda) -> None:
+    """Scope a mask set to one solve of ``mda``.
+
+    ``_execute`` opens the scope (unmasked, so the first sweep behaves exactly as
+    before) and closes it in a ``finally``; ``_pre_solve`` fills it once the sweep is
+    done. Conversions outside a solve therefore never see a stale mask.
+    """
+    if getattr(mda, "_aeromaps_masks_installed", False):
+        return
+
+    original_execute = mda._execute
+    original_pre_solve = mda._pre_solve
+
+    def _pre_solve():
+        started = original_pre_solve()
+        _ACTIVE_MASKS.set(_masks_from_local_data(mda))
+        return started
+
+    def _execute():
+        mask_token = _ACTIVE_MASKS.set(None)
+        intrusions: dict[str, int] = {}
+        intrusion_token = _ACTIVE_INTRUSIONS.set(intrusions)
+        try:
+            original_execute()
+        finally:
+            mda._aeromaps_nan_intrusions = intrusions
+            _ACTIVE_MASKS.reset(mask_token)
+            _ACTIVE_INTRUSIONS.reset(intrusion_token)
+
+    mda._pre_solve = _pre_solve
+    mda._execute = _execute
+    mda._aeromaps_masks_installed = True
+
+
 class CustomDataConverter(SimpleGrammarDataConverter):
     """Converts ``pd.Series`` couplings to/from the flat arrays GEMSEO iterates on.
+
+    Missing values travel in a frozen mask, not in the vector
+    ---------------------------------------------------------
+
+    While a mask is in force for the running solve (see
+    :func:`freeze_nan_masks_after_first_sweep`) an undefined position is written as
+    ``DEAD_FILL`` and restored to NaN on the way out. Both sides of the residual carry
+    the same constant, so it differences to exactly zero -- the same contribution the
+    sentinel made -- with nothing of magnitude 1e6 in a vector the solver may blend,
+    project or normalise. A NaN appearing where the mask says a value is defined is
+    recorded via :func:`record_nan_intrusion` and reported by
+    :func:`check_mda_convergence`.
+
+    Everywhere else -- before the first sweep, outside a solve, or for a coupling whose
+    length changed -- the sentinel below is still what happens.
 
     The ``-999999`` sentinel
     ------------------------
@@ -200,19 +406,21 @@ class CustomDataConverter(SimpleGrammarDataConverter):
     **not** harmless under ``N_COUPLING_VARIABLES``, which divides by ``sqrt(n)`` over the
     full vector and would therefore loosen the criterion by a factor of about 2.2 here.
 
-    Two traps
-    ---------
+    The two traps it used to set, both closed by the mask
+    -----------------------------------------------------
+
+    Both are consequences of the same thing -- a flag riding in the numeric channel -- and
+    both are why the mask exists. They still apply wherever no mask is in force.
 
     1. ``BaseMDASolver.set_bounds()`` -- GEMSEO's native way to keep an iterate inside a
        physical domain -- is **incompatible with any coupling that carries a NaN**. Bounds
        are enforced by projecting the whole iterate (``SequenceTransformer._project``), so
        ``-999999`` is clipped up to the lower bound, stops matching ``== -999999``, and is
-       fed to the disciplines as a real value. Measured on the scenario above, bounding one
-       NaN-carrying coupling takes the solve from 109 iterations at 6.2e-11 to 200
-       iterations at 1.4e-07, i.e. to non-convergence -- while the output DataFrames look
-       untouched, because each discipline recomputes its NaN output every iteration. Bound
-       a coupling only if it is NaN-free; otherwise clip inside the model, as
-       ``RPKElasticity`` does for the airfare.
+       fed to the disciplines as a real value. On tutorial 08, bounding the airfare took
+       the solve from 9 iterations at 1.27e-11 to 20 at 6.88e-07 -- non-convergence, on a
+       scenario that makes no excursion and had nothing to bound -- while the output
+       DataFrames looked untouched, because each discipline recomputes its NaN output every
+       iteration. With the mask the same bound is harmless: 9 iterations at 1.27e-11.
 
     2. Blending is safe only while the NaN *pattern* is stable. Damping and acceleration
        recombine successive iterates, and mixing a sentinel with a real value yields an
@@ -220,9 +428,17 @@ class CustomDataConverter(SimpleGrammarDataConverter):
        regime the pattern does not move, ``old == new == -999999``, and the blend is the
        identity -- damping and acceleration are then not merely safe but markedly faster
        (109 iterations, versus 65 at ``over_relaxation_factor=0.7`` and 46 with
-       ``acceleration_method="Alternate2Delta"``, for identical results). A pattern that
-       *does* move is precisely what :func:`check_mda_convergence` reports as "converged on
-       NaN", so the two coincide and no separate guard is needed.
+       ``acceleration_method="Alternate2Delta"``, for identical results). Under the mask
+       there is nothing of that magnitude to blend and the caveat disappears.
+
+    What it was never guilty of
+    ---------------------------
+
+    Being slow. Profiled on tutorial 08 and on the WCTR price-2019 scenario,
+    ``_iterate_once`` -- running the disciplines -- is 67% and 84% of wall clock while all
+    conversion together is 2.7% and 0.9%. Dead components are 12.4% and 15.0% of the
+    resolved vector. Dropping them entirely would save a fraction of an already small
+    number; the mask is a correctness change, not a performance one.
 
     Known limitations
     -----------------
@@ -231,9 +447,12 @@ class CustomDataConverter(SimpleGrammarDataConverter):
     mutated through ``self``, so they are shared by every converter instance in the
     interpreter and keyed by bare variable name. Two processes with different horizons in
     one session overwrite each other's index; if the lengths match, the years are silently
-    mislabelled rather than raising.
+    mislabelled rather than raising. (The masks do *not* share this defect -- see
+    :func:`freeze_nan_masks_after_first_sweep` -- but fixing these three would be the
+    natural next step.)
 
-    A genuine value of exactly ``-999999.0`` is read back as NaN.
+    Where no mask is in force, a genuine value of exactly ``-999999.0`` is read back as
+    NaN.
     """
 
     _IS_CONTINUOUS_TYPES: ClassVar[tuple[type, ...]] = (float, complex, pd.Series, list)
@@ -243,6 +462,17 @@ class CustomDataConverter(SimpleGrammarDataConverter):
     _series_names = set()
     _series_indexes = {}
 
+    NAN_SENTINEL = -999999.0
+    """The in-band sentinel, used only where no frozen mask is available."""
+
+    DEAD_FILL = 0.0
+    """What a masked-out position carries in the vector.
+
+    Any constant works: both sides of the residual carry the same one, so a masked
+    position differences to exactly zero -- the same contribution the sentinel made,
+    without a 1e6-magnitude number in a vector the solver may blend or project.
+    """
+
     def convert_value_to_array(self, name: str, value: Any) -> ndarray:
         if isinstance(value, (list, tuple)):
             # print(name, value)
@@ -250,16 +480,27 @@ class CustomDataConverter(SimpleGrammarDataConverter):
             value = np.array(value, dtype=float)
 
         if isinstance(value, pd.Series):
-            value = value.fillna(-999999)
             self._series_names.add(name)
             self._series_indexes[name] = value.index
-            return value.values
+            values = value.to_numpy(dtype=float)
+            mask = nan_mask(name, values.shape)
+            if mask is None:
+                # No mask for this solve: the pre-mask behaviour, unchanged.
+                return np.where(np.isnan(values), self.NAN_SENTINEL, values)
+            is_nan = np.isnan(values)
+            intruding = is_nan & mask
+            if intruding.any():
+                record_nan_intrusion(name, int(intruding.sum()))
+            return np.where(is_nan, self.DEAD_FILL, values)
         return super().convert_value_to_array(name, value)
 
     def convert_array_to_value(self, name: str, array_: Any) -> Any:
         array_ = np.asarray(array_, dtype=float)
-        array_ = np.where(array_ == -999999, np.nan, array_)
-        # TODO check if we shoudl keep large value or nan
+        mask = nan_mask(name, array_.shape)
+        if mask is None:
+            array_ = np.where(array_ == self.NAN_SENTINEL, np.nan, array_)
+        else:
+            array_ = np.where(mask, array_, np.nan)
         if isinstance(array_, ndarray) and name in self._series_names:
             return pd.Series(array_, index=self._series_indexes[name], name=name)  # very provisory
         if name in self._list_names and not isinstance(array_, list):
@@ -605,11 +846,28 @@ def check_mda_convergence(mda_chain, context: str = "", on_failure: str = "raise
         residual = float(history[-1])
         tolerance = float(mda.settings.tolerance)
 
-        # A converged residual is not by itself proof of a solution. NaN converts to the
-        # -999999 sentinel, so once a coupling variable has gone NaN it differences
-        # against itself to exactly zero and the solver reports convergence on a state
-        # that carries no values at all. Checked first: it explains the residual, rather
-        # than the other way round.
+        # A converged residual is not by itself proof of a solution. A coupling that has
+        # gone NaN differences against itself to exactly zero -- as the sentinel, or as
+        # the mask's dead fill -- and the solver reports convergence on a state that
+        # carries no values at all. Checked first: it explains the residual, rather than
+        # the other way round.
+        #
+        # With a frozen mask this is exact rather than heuristic: the mask records which
+        # positions held a value after the first sweep, so a NaN anywhere else is a
+        # coupling that died during the solve, with no inference required.
+        intrusions = nan_intrusions(mda)
+        if intrusions:
+            worst = sorted(intrusions.items(), key=lambda item: -item[1])
+            failures.append(
+                f"{context}{mda.name} converged on NaN: {len(intrusions)} coupling "
+                f"variable(s) went NaN at a position that held a value after the first "
+                f"sweep, so the residual ({residual:.3e}) is measuring a dead component "
+                f"differencing against itself, not a solution. Worst: "
+                + ", ".join(f"{name} ({count})" for name, count in worst[:5])
+                + "."
+            )
+            continue
+
         spread = _couplings_with_spread_nans(mda)
         if spread:
             failures.append(
