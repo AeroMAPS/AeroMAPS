@@ -44,6 +44,8 @@ from pathlib import Path
 
 import numpy as np
 
+from aeromaps.utils.offsets import residual_share_for_net_target
+
 FIRST_YEAR = 2000
 HANDOVER = 2035  # last year covered by the CORSIA-derived manual offsets
 NET_ZERO = 2050
@@ -81,16 +83,15 @@ def _find(node, key):
 
 def glide(outputs):
     """The annual share schedule, plus the net trajectory it produces."""
-    gross = _series(outputs, "co2_emissions_including_energy")
-    offset = _series(outputs, "carbon_offset")
-    net_handover = gross[HANDOVER - FIRST_YEAR] - np.nan_to_num(offset)[HANDOVER - FIRST_YEAR]
-
-    years = list(range(HANDOVER + 1, NET_ZERO + 1))
+    years, shares, net_handover = residual_share_for_net_target(
+        _series(outputs, "co2_emissions_including_energy"),
+        _series(outputs, "carbon_offset"),
+        handover_year=HANDOVER,
+        net_zero_year=NET_ZERO,
+        first_year=FIRST_YEAR,
+    )
     span = NET_ZERO - HANDOVER
     target = [net_handover * (NET_ZERO - year) / span for year in years]
-    shares = [
-        round(100.0 * (1.0 - net / gross[year - FIRST_YEAR]), 4) for year, net in zip(years, target)
-    ]
     return net_handover, years, shares, target
 
 

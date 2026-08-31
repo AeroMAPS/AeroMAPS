@@ -7,6 +7,15 @@ from aeromaps.plots.multi_scenario.emissions import (
     CO2EmissionsComparisonPlot,
     CumulativeCO2EmissionsComparisonPlot,
 )
+
+# Imported for direct use rather than registered in ``available_plots`` below.
+# The assembly's plot() overlays series on one axis and passes grouping and
+# envelope options that a stack of filled bands has no use for, and it has no way
+# to pass the counterfactual anchors this decomposition needs. Construct it
+# directly instead: MitigationWedgeComparison({"S1": s1, ...}, anchors=(t0, t1)).
+from aeromaps.plots.multi_scenario.decomposition import (  # noqa: F401
+    MitigationWedgeComparison,
+)
 from aeromaps.plots.multi_scenario.energy import (
     EnergyConsumptionComparisonPlot,
     EnergyMixComparisonPlot,

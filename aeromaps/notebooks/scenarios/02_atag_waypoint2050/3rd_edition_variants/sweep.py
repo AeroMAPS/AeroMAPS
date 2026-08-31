@@ -7,12 +7,12 @@ deployment. Market-based measures are not swept -- they are computed as the
 residual needed to reach the target, so they follow from the other four rather
 than varying independently.
 
-    3 traffic x 4 technology x 3 operations x 3 SAF = 108 runs
+    3 traffic x 4 technology x 3 operations x 4 SAF = 144 runs
 
-Processes are built on the fly rather than from 108 committed configuration
+Processes are built on the fly rather than from 144 committed configuration
 files. Only traffic and SAF need to differ at configuration level (they select
-data files, which are read at construction), so nine scratch configurations are
-generated into ``_generated/`` and reused; technology and operations are applied
+data files, which are read at construction), so twelve scratch configurations
+are generated into ``_generated/`` and reused; technology and operations are applied
 afterwards as parameter overrides. Each run is computed, reduced to the series
 and scalars worth keeping, and then discarded, so memory stays flat regardless
 of grid size.
@@ -25,8 +25,17 @@ Lever definitions follow the report:
               energies. T0 (frozen fleet efficiency) is excluded: it is a
               notional counterfactual, not a scenario.
 * operations  O1 / O2 / O3 at 0.00 / 0.10 / 0.20 %/yr, entered as the
-              cumulative gain over 2020-2050 (0 / 3 / 6 %).
-* SAF         F1 stated policies (~150 Mt), F2 (~430 Mt), F3 (~280-380 Mt).
+              cumulative gain over 2020-2050 (0 / 3 / 6 %). Note that the
+              sweep varies the gain alone: every cell inherits S1's load
+              factor, which rises to 88.389 % by 2050. Table 2's operations
+              axis instead varies gain and load factor together, as the
+              reports bundle them, so a sweep O1 cell is not the same run as
+              the O1 row of that table -- it carries a load-factor gain the
+              table row does not. Reconciling the two would move the quoted
+              grid range, so it is left as a known difference rather than
+              changed silently.
+* SAF         F0 no drop-in SAF at all, F1 stated policies (~150 Mt), F2 (~430 Mt),
+              F3 (~280-380 Mt).
 
 A note on SAF resolution. F2 and F3 are published as quantities *per pathway*,
 so they map onto the eleven-carrier energy files of the full edition. F1
@@ -34,12 +43,13 @@ publishes only a total volume with no pathway breakdown, so it is modelled as a
 single generic SAF carrier, reusing the light edition's S0 energy file rather
 than inventing a pathway split. Consequently pathway-level outputs (biofuel
 mix, per-pathway resource use) are not defined for the F1 arm, and comparisons
-across the SAF axis must stay on totals.
+across the SAF axis must stay on totals. F0 is not published at all; it is a
+counterfactual added to give the fuel axis a floor, so that F1-F3 can be read
+as reductions from a stated reference rather than as absolute levels.
 """
 
 from __future__ import annotations
 
-import itertools
 import json
 from pathlib import Path
 
@@ -47,6 +57,7 @@ import pandas as pd
 import yaml
 
 from aeromaps import create_process
+from aeromaps.utils import sweep as sweep_utils
 
 HERE = Path(__file__).resolve().parent
 ATAG = HERE.parent
@@ -78,9 +89,20 @@ OPERATIONS_LEVELS = {
     "O3": [0, 6],
 }
 
-# F1 reuses the light edition's single-carrier setup, which draws its feedstock
-# from the packaged default resources rather than an edition-local file.
 SAF_LEVELS = {
+    # No drop-in SAF at all: fossil kerosene plus the two alternative-aircraft
+    # carriers, the same file the technology-only T0-T4 runs use. This isolates
+    # the drop-in fuel lever from the technology one, since T4's battery-electric
+    # and liquid-hydrogen fleet is still available under F0 and does not depend
+    # on any of F1-F3 being present.
+    "F0": {
+        "energy_carriers_model_data_file": f"{FULL_INPUTS}/tech_energy.yaml",
+        "resources_model_data_file": f"{FULL_INPUTS}/resources.yaml",
+        "processes_model_data_file": f"{FULL_INPUTS}/processes.yaml",
+    },
+    # F1 reuses the light edition's single-carrier setup, which draws its
+    # feedstock from the packaged default resources rather than an
+    # edition-local file.
     "F1": {
         "energy_carriers_model_data_file": f"{LIGHT_INPUTS}/s0_energy.yaml",
         "resources_model_data_file": "default",
@@ -274,54 +296,49 @@ def extract(process, traffic, technology, operations, saf):
     return tidy
 
 
+# The lever axes, in the order a cell tuple carries them.
+AXES = {
+    "traffic": TRAFFIC_LEVELS,
+    "technology": TECHNOLOGY_LEVELS,
+    "operations": OPERATIONS_LEVELS,
+    "saf": SAF_LEVELS,
+}
+
+CELL_KEYS = list(AXES)
+
+
 def grid():
-    """The 108 cells, in a stable order."""
-    return list(itertools.product(TRAFFIC_LEVELS, TECHNOLOGY_LEVELS, OPERATIONS_LEVELS, SAF_LEVELS))
+    """The 144 cells, in a stable order."""
+    return sweep_utils.grid(AXES)
 
 
 def run_sweep(cells=None, progress=True):
-    """Run the grid and return one tidy frame of annual series.
-
-    Each process is discarded as soon as it has been reduced, so peak memory is
-    one process regardless of how many cells are run.
-    """
-    cells = cells if cells is not None else grid()
-    results = []
-    for index, (traffic, technology, operations, saf) in enumerate(cells, start=1):
-        if progress:
-            print(f"[{index:3d}/{len(cells)}] {traffic:7s} {technology} {operations} {saf}")
-        process = build_process(traffic, technology, operations, saf)
-        process.compute()
-        results.append(extract(process, traffic, technology, operations, saf))
-        del process
-    return pd.concat(results, ignore_index=True)
+    """Run the grid and return one tidy frame of annual series."""
+    return sweep_utils.run_grid(
+        cells if cells is not None else grid(),
+        build=lambda cell: build_process(*cell),
+        extract=lambda process, cell: extract(process, *cell),
+        progress=progress,
+        label=lambda cell: "%-7s %s %s %s" % cell,
+    )
 
 
 def summarise(tidy, year=2050):
     """One row per cell: the headline quantities in a given year."""
-    keys = ["traffic", "technology", "operations", "saf"]
-    snapshot = tidy[tidy["year"] == year]
-    wide = snapshot.pivot_table(index=keys, columns="variable", values="value").reset_index()
-    return wide
+    return sweep_utils.summarise(tidy, CELL_KEYS, year)
 
 
-# Gzipped CSV rather than parquet: it is ~1 MB instead of ~6.6 MB raw, and unlike
-# parquet it needs nothing beyond the standard library, so the committed results stay
-# readable in the default environment (pyarrow ships only with the optional lca extra).
 RESULTS = HERE / "data_outputs" / "sweep_results.csv.gz"
 
 
 def write_results(tidy, path=None):
     """Persist the sweep as a gzipped tidy CSV."""
-    path = Path(path) if path else RESULTS
-    path.parent.mkdir(parents=True, exist_ok=True)
-    tidy.to_csv(path, index=False, compression="gzip")
-    return path
+    return sweep_utils.write_results(tidy, path or RESULTS)
 
 
 def read_results(path=None):
     """Read a persisted sweep."""
-    return pd.read_csv(Path(path) if path else RESULTS)
+    return sweep_utils.read_results(path or RESULTS)
 
 
 # ---------------------------------------------------------------------------
@@ -350,28 +367,27 @@ PANELS = (
     ("co2_emissions", "CO$_2$ emissions, before offsetting", "Mt CO$_2$ / yr", 1.0),
 )
 
-CELL_KEYS = ["traffic", "technology", "operations", "saf"]
+# Derived intensities. Stored as functions rather than as series, since a ratio
+# committed alongside its own numerator invites the two to disagree.
+DERIVED = {
+    "energy_per_rpk": lambda frame: frame["energy_consumption"] / frame["rpk"],
+    # Mt -> g so the intensity reads in grams per RPK.
+    "co2_per_rpk": lambda frame: frame["co2_emissions"] * 1e12 / frame["rpk"],
+}
 
 
 def wide(tidy=None):
     """Grid results as one row per (cell, year), with the two intensities derived."""
-    tidy = read_results() if tidy is None else tidy
-    frame = tidy.pivot_table(
-        index=CELL_KEYS + ["year"], columns="variable", values="value"
-    ).reset_index()
-    frame["energy_per_rpk"] = frame["energy_consumption"] / frame["rpk"]
-    # Mt -> g so the intensity reads in grams per RPK.
-    frame["co2_per_rpk"] = frame["co2_emissions"] * 1e12 / frame["rpk"]
-    return frame
+    return sweep_utils.tidy_to_wide(read_results() if tidy is None else tidy, CELL_KEYS, DERIVED)
 
 
 def plot_grid(tidy=None, color_by="traffic", first_year=2023, alpha=0.18, figsize=(11, 12)):
-    """Every cell of the grid, one translucent line each, over four metrics.
+    """Every cell of the grid, one translucent line each, over five metrics.
 
     One line per scenario at low opacity, so the density of the bundle carries the
     message rather than any single trajectory -- the same reading as the envelope
     comparison plots, but showing the individual runs instead of a min/max band,
-    which matters here because 108 cells do not form a single ordered family.
+    which matters here because 144 cells do not form a single ordered family.
 
     ``color_by`` picks which lever separates the colours; the remaining three vary
     inside each colour. Choose it to match the question. Traffic is the default,
@@ -388,73 +404,21 @@ def plot_grid(tidy=None, color_by="traffic", first_year=2023, alpha=0.18, figsiz
     2.3 MJ/RPK against a 1.4 trend, and that spike compresses both intensity panels
     into illegibility.
 
-    The two published scenarios are drawn on top in black so the reported cases can be
-    located inside the spread they belong to.
+    The three published scenarios are drawn on top in black so the reported cases can
+    be located inside the spread they belong to.
     """
-    import matplotlib.pyplot as plt
-
-    from aeromaps.plots.multi_scenario_plot import DEFAULT_COLORS
-
     frame = wide(tidy)
-    frame = frame[frame["year"] >= first_year]
-    if color_by not in CELL_KEYS:
-        raise ValueError(f"color_by must be one of {CELL_KEYS}, got {color_by!r}")
-
-    levels = sorted(frame[color_by].unique())
-    colors = {
-        level: DEFAULT_COLORS[index % len(DEFAULT_COLORS)] for index, level in enumerate(levels)
-    }
-
-    figure, axes = plt.subplots(3, 2, figsize=figsize, layout="constrained")
-    axes = axes.ravel()
-    # The last cell holds the legend rather than a sixth panel.
-    axes[-1].axis("off")
-    published = {cell: name for name, cell in PUBLISHED_CELLS.items()}
-
-    for axis, (column, title, ylabel, scale) in zip(axes, PANELS):
-        for cell, group in frame.groupby(CELL_KEYS, sort=False):
-            group = group.sort_values("year")
-            axis.plot(
-                group["year"],
-                group[column] * scale,
-                color=colors[cell[CELL_KEYS.index(color_by)]],
-                linewidth=1.0,
-                alpha=alpha,
-                zorder=1,
-            )
-        # Published scenarios last, so they sit above the bundle.
-        for cell, name in published.items():
-            group = frame
-            for key, value in zip(CELL_KEYS, cell):
-                group = group[group[key] == value]
-            if group.empty:
-                continue
-            group = group.sort_values("year")
-            axis.plot(
-                group["year"],
-                group[column] * scale,
-                color="black",
-                linewidth=2.0,
-                linestyle=PUBLISHED_STYLES.get(name, "-"),
-                zorder=5,
-                label=name,
-            )
-        axis.set_title(title)
-        axis.set_ylabel(ylabel)
-        axis.set_xlabel("Year")
-        axis.grid(True, alpha=0.3)
-
-    # One legend for the whole figure: the colour groups, then the published cases.
-    handles = [
-        plt.Line2D([], [], color=colors[level], linewidth=2, label=f"{color_by} = {level}")
-        for level in levels
-    ]
-    handles += [
-        plt.Line2D([], [], color="black", linewidth=2, linestyle=PUBLISHED_STYLES[name], label=name)
-        for name in sorted(PUBLISHED_CELLS)
-    ]
-    axes[-1].legend(handles=handles, loc="center", frameon=False, fontsize=11)
-    figure.suptitle(
-        f"All {frame.groupby(CELL_KEYS).ngroups} lever combinations, coloured by {color_by}"
+    figure = sweep_utils.plot_grid(
+        frame,
+        cell_keys=CELL_KEYS,
+        panels=PANELS,
+        color_by=color_by,
+        first_year=first_year,
+        alpha=alpha,
+        figsize=figsize,
+        highlight=PUBLISHED_CELLS,
+        highlight_styles=PUBLISHED_STYLES,
+        suptitle="All %d lever combinations, coloured by %s"
+        % (frame[frame["year"] >= first_year].groupby(CELL_KEYS).ngroups, color_by),
     )
-    return figure, axes
+    return figure, figure.axes

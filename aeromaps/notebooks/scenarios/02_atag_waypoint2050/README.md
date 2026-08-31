@@ -94,7 +94,7 @@ Order matters, because later steps read what earlier ones write:
    their tank-to-wake twins)
 2. `3rd_edition_light/`: `s0.ipynb` first, since it aggregates the regional publication, then
    `s1.ipynb` and `s2.ipynb`, which aggregate the full edition
-3. `3rd_edition_full_coupled_demand/`: `make_share_mandates.py`, then `s1_coupled.ipynb`,
+3. `3rd_edition_full_coupled_demand/`: `make_energy_files.py`, then `s1_coupled.ipynb`,
    `ssp_comparison.ipynb`, `ssp_comparison_share.ipynb`
 4. `3rd_edition_variants/sweep.ipynb`
 5. `climate_analysis/`: `climate_analysis.ipynb`, then `baseline_uncertainty.ipynb`
@@ -107,13 +107,24 @@ cd 3rd_edition_full
 python -m jupyter nbconvert --to notebook --execute --inplace s1.ipynb
 ```
 
-Derived inputs are generated rather than hand-edited, and each script says what it writes:
+Derived inputs are generated rather than hand-edited, and each script says what it writes.
+The transforms themselves live in `aeromaps.utils`, so what is left in this folder is the
+configuration that says which files feed which:
 
-- `make_ttw_twins.py` — the tank-to-wake energy and process files
-- `make_share_mandates.py` — the coupled scenario's share-mandate energy file
-- `retime_mandates.py` — re-anchors mandate curves on the prospection start year
+- the tank-to-wake energy and process files, from `aeromaps.utils.emission_scopes`
+  (`lifecycle_to_corsia`), called by each scenario notebook for its own twin. The same
+  module can convert a built process in place instead, via `apply_corsia_scope`
+- `3rd_edition_full_coupled_demand/make_energy_files.py` — the coupled scenario's
+  share-mandate and no-SAF energy files, via `aeromaps.utils.mandates`
 - `make_offset_glide.py` — the post-CORSIA offset schedule, derived per scenario from its own
-  gross trajectory; run it after the scenarios exist, then re-run them
+  gross trajectory via `aeromaps.utils.offsets`; run it after the scenarios exist, then
+  re-run them. The share is scenario-specific: copying one scenario's schedule onto another
+  makes net emissions rise after the handover rather than fall
+- `make_lever_rows.py` — the standalone single-lever runs Table 2 reads
+- `3rd_edition_variants/sweep.py` — the lever grid: axes, callbacks and published cells,
+  run and plotted by `aeromaps.utils.sweep`
+- `3rd_edition_variants/make_traffic_variants.py` — the low/high market files, solved onto
+  the published 2050 endpoints via `aeromaps.utils.traffic_variants`
 - `make_tables.py` — the manuscript's two LaTeX tables, read from the committed outputs;
   `--write DIR` emits `table.tex`
 - `report_data/digitise_scenarios.py` — traces the report's own S0-S2 curves out of its

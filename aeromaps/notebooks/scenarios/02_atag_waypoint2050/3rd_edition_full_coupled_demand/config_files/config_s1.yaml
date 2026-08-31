@@ -26,7 +26,5 @@ models:
   # actually reach the ticket price. Without it the price-elastic demand loop is
   # driven only by the energy term and understates the response.
   - models_operation_cost_top_down_feedback
-  customs:
-    socioeconomic_drivers: ../models/socioeconomic_drivers.py::SocioeconomicDrivers
   markets:
     markets_data_file: ../../markets/markets_coupled.yaml

@@ -17,6 +17,14 @@ Both are defensible readings of *Waypoint 2050*, which reports SAF as a 2050 vol
 without stating what would happen to it under lower traffic. They give materially
 different answers once demand is price-elastic, so both are carried explicitly rather
 than one being chosen silently.
+
+A third entry, ``nosaf``, is not another reading of the same question -- it is a
+fuel-only counterfactual paired against ``share``: the same demand model and the
+same background pathway, with every drop-in SAF mandate zeroed by
+``make_energy_files.py`` so fossil kerosene supplies the whole drop-in fleet. It
+lets the demand response be read against its own fuel baseline, which is a
+sharper comparison than against the exogenous forecast alone, since the
+exogenous forecast is not run under the same cost model at all.
 """
 
 from pathlib import Path
@@ -45,6 +53,17 @@ MANDATES = {
         "config": "./config_files/config_s1_share.yaml",
         "suffix": "_share",
         "label": "fixed SAF share",
+    },
+    # Not a third mandate reading -- the fuel-only counterfactual paired
+    # against "share": same demand model, same background pathway, same
+    # everything except the energy carrier file, where make_energy_files.py
+    # has zeroed every drop-in SAF mandate. Comparing the demand response
+    # against this rather than only against the exogenous forecast isolates
+    # what SAF's own cost does to traffic.
+    "nosaf": {
+        "config": "./config_files/config_s1_nosaf.yaml",
+        "suffix": "_nosaf",
+        "label": "no SAF",
     },
 }
 
@@ -98,13 +117,15 @@ def summarise(processes, mandate="quantity"):
         exogenous = vector.loc[2050, "rpk_no_elasticity"]
         dropin = vector.loc[2050, "energy_consumption_dropin_fuel"]
         fossil = vector.loc[2050, "dropin_fuel_fossil_energy_consumption"]
-        rows.append({
-            "pathway": pathway,
-            "mandate": MANDATES[mandate]["label"],
-            "2050 RPK [T]": coupled / 1e12,
-            "exogenous RPK [T]": exogenous / 1e12,
-            "demand response [%]": 100 * (coupled / exogenous - 1),
-            "2050 SAF share [%]": 100 * (1 - fossil / dropin) if dropin else float("nan"),
-            "2050 CO2 [Mt]": climate.loc[2050, "co2_emissions"],
-        })
+        rows.append(
+            {
+                "pathway": pathway,
+                "mandate": MANDATES[mandate]["label"],
+                "2050 RPK [T]": coupled / 1e12,
+                "exogenous RPK [T]": exogenous / 1e12,
+                "demand response [%]": 100 * (coupled / exogenous - 1),
+                "2050 SAF share [%]": 100 * (1 - fossil / dropin) if dropin else float("nan"),
+                "2050 CO2 [Mt]": climate.loc[2050, "co2_emissions"],
+            }
+        )
     return pd.DataFrame(rows).set_index("pathway")

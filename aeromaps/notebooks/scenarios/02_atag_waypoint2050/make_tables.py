@@ -13,10 +13,12 @@ offsetting: `co2_emissions_including_energy` on ours, and the upper boundary of
 the market-based band on theirs.
 
 Table 2 is the internal decomposition: what each mitigation pillar removes from
-the frozen-fleet baseline in 2050. The three headline scenarios come from their
-own runs. The individual lever levels come from the sweep grid, at central
-traffic, with the two levers not being varied held at their least ambitious
-setting, so each row isolates one lever.
+the frozen-fleet baseline in 2050. Every row, headline scenarios and individual
+lever levels alike, is read from a standalone run rather than from the sweep
+grid: the sweep's cells inherit S1's full configuration, load factor included,
+so a lever level read from it carries S1's load-factor gain on top of whatever
+the lever itself varies. make_lever_rows.py builds the levels that do not
+already exist as a scenario or a technology run.
 
 Run from this directory::
 
@@ -25,18 +27,16 @@ Run from this directory::
 """
 
 import argparse
-import json
-import sys
 from pathlib import Path
 
 import numpy as np
 import yaml
 
-HERE = Path(__file__).parent
-sys.path.insert(0, str(HERE))
-sys.path.insert(0, str(HERE / "3rd_edition_variants"))
+from aeromaps.utils.decomposition import pillar_totals
+from aeromaps.utils.results_view import load_results
+from aeromaps.utils.scenario_tables import latex_table, relative_errors
 
-from atag_decomposition import ALTERNATIVE, atag_wedges  # noqa: E402
+HERE = Path(__file__).parent
 
 FIRST_YEAR = 2000
 ERROR_YEARS = (2030, 2040, 2050)
@@ -48,20 +48,9 @@ ERROR_YEARS = (2030, 2040, 2050)
 CUMULATIVE_SPAN = (2024, 2050)
 
 
-class View:
-    """Minimal stand-in for a process, holding one committed output file."""
-
-    def __init__(self, path):
-        self.data = json.loads(Path(path).read_text(encoding="utf-8"))
-
-
-def series(view, name, default=None):
-    raw = view.data["vector_outputs"].get(name)
-    if raw is None:
-        if default is None:
-            raise KeyError(name)
-        return np.full(default, 0.0)
-    return np.asarray(list(raw.values()) if isinstance(raw, dict) else raw, dtype=float)
+def series(view, name):
+    """One vector output as a float array."""
+    return np.asarray(view.data["vector_outputs"][name], dtype=float)
 
 
 def at(values, year, first_year=FIRST_YEAR):
@@ -73,16 +62,7 @@ def at(values, year, first_year=FIRST_YEAR):
 
 def _errors(ours, years, values):
     """Relative error at each reporting year, then over the cumulative span."""
-    errors = [
-        100.0 * (at(ours, year) / float(np.interp(year, years, values)) - 1.0)
-        for year in ERROR_YEARS
-    ]
-    # Cumulative: integrate both on the same yearly grid.
-    span = np.arange(CUMULATIVE_SPAN[0], CUMULATIVE_SPAN[1] + 1)
-    published = np.interp(span, years, values)
-    reproduced = np.array([at(ours, year) for year in span])
-    errors.append(100.0 * (reproduced.sum() / published.sum() - 1.0))
-    return errors
+    return relative_errors(ours, years, values, ERROR_YEARS, CUMULATIVE_SPAN, FIRST_YEAR)
 
 
 def validation_rows():
@@ -105,7 +85,7 @@ def validation_rows():
             rows.append((name, None))
             continue
         curve = report["technology_scenarios"][name]
-        ours = series(View(path), "co2_emissions_including_energy")
+        ours = series(load_results(path), "co2_emissions_including_energy")
         rows.append((name, _errors(ours, curve["years"], curve["values"])))
 
     # The scenarios sit in a different edition folder from the technology runs,
@@ -122,7 +102,7 @@ def validation_rows():
             rows.append((name, None))
             continue
         curve = report["scenarios"][name]
-        ours = series(View(path), "co2_emissions_including_energy")
+        ours = series(load_results(path), "co2_emissions_including_energy")
         rows.append((name, _errors(ours, curve["years"], curve["mbm_top"])))
     return rows
 
@@ -140,40 +120,27 @@ def decompose(view, t0, t1, year=2050):
     is how the reports draw it. So it appears twice, once as a pillar and once as
     the residual, and the five pillars close on the frozen-fleet baseline.
     """
-    years, boundaries = atag_wedges(view, t0, t1)
-    index = int(np.where(years == year)[0][0])
-    wedges = [boundaries[k][index] - boundaries[k + 1][index] for k in range(len(boundaries) - 2)]
-    gross = boundaries[len(boundaries) - 2][index]
-    # The figure draws next-generation technology in two pieces, efficiency and
-    # alternative aircraft; the table carries the pillar, so they are added back.
-    merged = [wedges[0], wedges[1] + wedges[2], wedges[3], wedges[4], gross]
-    return merged, gross
-
-
-class GridView:
-    """One sweep cell, shaped like a committed output so atag_decomposition reads it."""
-
-    def __init__(self, wide, cell, years):
-        frame = wide
-        for key, value in zip(("traffic", "technology", "operations", "saf"), cell):
-            frame = frame[frame[key] == value]
-        frame = frame.sort_values("year").set_index("year")
-        columns = {}
-        for column in frame.columns:
-            if frame[column].dtype.kind in "fi":
-                columns[column] = frame[column].reindex(years).to_numpy(dtype=float).tolist()
-        # The energy split needs these three; arms without alternative aircraft
-        # never wrote them, and zero is the right reading there, not a KeyError.
-        for column in ("energy_consumption_%s" % kind for kind in ALTERNATIVE):
-            columns.setdefault(column, [0.0] * len(years))
-        self.data = {"vector_outputs": columns}
+    pillars, gross = pillar_totals(view, anchors=(t0, t1), year=year)
+    # The market-based column repeats the gross residual: what the physical levers
+    # leave is what those measures are assumed to remove, which is how the reports
+    # draw it. It is dropped from the LaTeX table and kept in the console one.
+    return pillars + [gross], gross
 
 
 def lever_rows():
-    """The headline scenarios, then one row per individual lever level."""
+    """The headline scenarios, then one row per individual lever level.
+
+    Every row is read from a standalone run rather than from the sweep grid.
+    The sweep's cells inherit S1's full configuration -- load factor included --
+    so its "T1" carried 5.8 points of load-factor gain that the standalone T1
+    run does not, and its operations column read that drift rather than the
+    operations lever. O1 and F0 coincide with T1 exactly (zero operations gain,
+    no drop-in SAF), so only O2, O3, F1, F2 and F3 needed dedicated runs; see
+    make_lever_rows.py for how those five were built.
+    """
     full = HERE / "3rd_edition_full" / "data_outputs"
     light = HERE / "3rd_edition_light" / "data_outputs"
-    t0, t1 = View(full / "t0.json"), View(full / "t1.json")
+    t0, t1 = load_results(full / "t0.json"), load_results(full / "t1.json")
 
     rows = []
     for label, path, ttw_path in [
@@ -181,31 +148,26 @@ def lever_rows():
         ("S1 SAF-focused", full / "s1.json", full / "s1-TTW.json"),
         ("S2 technology-centric", full / "s2.json", full / "s2-TTW.json"),
     ]:
-        pillars, gross = decompose(View(path), t0, t1)
-        gross_ttw = at(series(View(ttw_path), "co2_emissions_including_energy"), 2050)
+        pillars, gross = decompose(load_results(path), t0, t1)
+        gross_ttw = at(series(load_results(ttw_path), "co2_emissions_including_energy"), 2050)
         rows.append((label, pillars, gross, gross_ttw))
 
-    import sweep
-
-    tidy = sweep.read_results()
-    wide = sweep.wide(tidy)
-    years = np.arange(FIRST_YEAR, 2051)
-
-    # Each lever level is read with the other two at their least ambitious
-    # setting, so the row is that lever alone rather than a scenario.
-    reference = {"traffic": "central", "technology": "T1", "operations": "O1", "saf": "F1"}
-    for key, levels in [
-        ("technology", ("T1", "T2", "T3", "T4")),
-        ("operations", ("O1", "O2", "O3")),
-        ("saf", ("F1", "F2", "F3")),
+    for label, filename in [
+        ("T0", "t0.json"),
+        ("T1", "t1.json"),
+        ("T2", "t2.json"),
+        ("T3", "t3.json"),
+        ("T4", "t4.json"),
+        ("O1", "t1.json"),
+        ("O2", "o2.json"),
+        ("O3", "o3.json"),
+        ("F0", "t1.json"),
+        ("F1", "f1.json"),
+        ("F2", "f2.json"),
+        ("F3", "f3.json"),
     ]:
-        for level in levels:
-            cell = dict(reference, **{key: level})
-            view = GridView(
-                wide, tuple(cell[k] for k in ("traffic", "technology", "operations", "saf")), years
-            )
-            pillars, gross = decompose(view, t0, t1)
-            rows.append((level, pillars, gross, None))
+        pillars, gross = decompose(load_results(full / filename), t0, t1)
+        rows.append((label, pillars, gross, None))
     return rows
 
 
@@ -269,15 +231,29 @@ TABLE2_CAPTION = (
     r"in MtCO$_2$. The pillars follow the decomposition adopted by the reports, so that next "
     r"generation technology carries the battery-electric contribution rather than the fuel column, "
     r"and operations carries load factor. The first three rows correspond to the published "
-    r"scenarios. The remaining rows correspond to individual lever levels, each evaluated at "
-    r"central traffic with the two levers not being varied held at their least ambitious setting, "
-    r"so that T1, O1 and F1 designate the same reference cell and appear three times by "
-    r"construction. Every row closes on the common frozen-fleet baseline of 2835.0~Mt, which "
-    r"verifies that the decomposition constitutes a partition rather than an attribution. Two "
-    r"cautions apply when reading across rows. First, the market-based column reports the gross "
-    r"residual that these measures are assumed to remove, and is therefore not an independent "
-    r"lever. Second, the value of a given pillar depends on what else is deployed alongside it, "
-    r"which explains why next generation technology amounts to 563.8~Mt under T4 alone and to "
+    r"scenarios. The remaining rows correspond to standalone single-lever runs, each starting from "
+    r"the technology-only T1 configuration (zero operations gain, no drop-in SAF) and varying "
+    r"exactly one lever, so that T1, O1 and F0 designate the same run and appear three times by "
+    r"construction; O2 and O3 vary the operations gain and load factor together, since the reports "
+    r"bundle both into that pillar, and F1 to F3 vary the energy carrier file alone. Every "
+    r"row closes on the common frozen-fleet baseline of 2835.0~Mt once the gross residual is "
+    r"added to the four pillars, which verifies that the "
+    r"decomposition constitutes a partition rather than an attribution; T0 is included as an "
+    r"ordinary row and closes the same way, every one of its pillars being zero since it is "
+    r"the baseline the other columns are measured against. The rows carrying no operations lever "
+    r"report exactly zero for it because the load factor is held at its last observed value, "
+    r"82.116~\% in 2023, rather than at the 82.4~\% the reports state: 82.4~\% is the pre-COVID "
+    r"2019 value, so reaching it by 2050 is a small recovery rather than no change, and booking "
+    r"that recovery as an operations gain would credit the pillar in rows built to exclude it. "
+    r"The operations axis proper stays anchored on the reports' own published pair, O3 at "
+    r"88.389~\% and O2 interpolated midway between it and 82.4~\%, the reports giving no "
+    r"intermediate value. Two "
+    r"cautions apply when reading across rows. First, market-based measures carry no column of "
+    r"their own, since the reports define them as removing whatever gross residual the physical "
+    r"levers leave: their contribution is the Gross WtW column read a second time, rather than an "
+    r"independent lever. Second, the value of a given pillar depends on what else is deployed "
+    r"alongside it, "
+    r"which explains why next generation technology amounts to 529.1~Mt under T4 alone and to "
     r"500.2~Mt under S2, where sustainable aviation fuel competes for the same joules. Gross "
     r"residuals are reported in both accounting scopes for the published scenarios, the reports "
     r"headlining tank-to-wake emissions while this reproduction is run well-to-wake, so that the "
@@ -287,80 +263,78 @@ TABLE2_CAPTION = (
 
 def _latex_tables():
     """Both tables as one LaTeX fragment."""
-    out = []
+    # Blank separator rows are passed through verbatim, so the widths of the two
+    # tables can differ without the emitter having to guess how many columns a
+    # spacer needs.
+    blank1 = r"        &     &    &    &    \\"
+    blank2 = r"        &     &    &    &    &    &    \\"
 
-    out.append(r"\begin{table}")
-    out.append(r"\captionsetup{margin={0.5in,0in}}")
-    out.append(r"\caption{%s}" % TABLE1_CAPTION)
-    out.append(r"\centering")
-    out.append(r"\begin{small}")
-    out.append(
-        r"\begin{tabular}{p{0.18\textwidth}M{0.12\textwidth}M{0.12\textwidth}"
-        r"M{0.12\textwidth}M{0.15\textwidth}}"
-    )
-    out.append("")
-    out.append(r"\toprule")
-    out.append("")
-    out.append(
-        r"\textbf{Scenario}  & "
-        + " & ".join(r"\textbf{%d}" % year for year in ERROR_YEARS)
-        + r" & \textbf{%d--%d} \\" % CUMULATIVE_SPAN
-    )
-    out.append(r"\midrule")
-    out.append(r"        &     &    &    &    \\")
+    rows1 = [blank1]
     for name, errors in validation_rows():
         # The two blocks are validated against differently sourced curves, so they
         # are separated rather than run together.
         if name == "S0":
-            out.append(r"        &     &    &    &    \\")
+            rows1.append(blank1)
         if errors is None:
-            out.append(r"%-6s & \multicolumn{4}{c}{pending} \\" % name)
+            rows1.append(r"%-6s & \multicolumn{4}{c}{pending} \\" % name)
             continue
-        out.append("%-6s & " % name + " & ".join("$%+.1f$" % value for value in errors) + r" \\")
-    out.append(r"\bottomrule")
-    out.append(r"\end{tabular}")
-    out.append(r"\end{small}")
-    out.append(r"\label{tab:validation}")
-    out.append(r"\end{table}")
-    out.append("")
+        rows1.append(["%-6s" % name] + ["$%+.1f$" % value for value in errors])
 
-    out.append(r"\begin{table}")
-    out.append(r"\captionsetup{margin={0.5in,0in}}")
-    out.append(r"\caption{%s}" % TABLE2_CAPTION)
-    out.append(r"\centering")
-    out.append(r"\begin{small}")
-    out.append(
-        r"\begin{tabular}{p{0.18\textwidth}M{0.09\textwidth}M{0.12\textwidth}"
-        r"M{0.11\textwidth}M{0.10\textwidth}M{0.10\textwidth}M{0.09\textwidth}M{0.09\textwidth}}"
+    table1 = latex_table(
+        headers=["Scenario"] + [str(year) for year in ERROR_YEARS] + ["%d--%d" % CUMULATIVE_SPAN],
+        rows=rows1,
+        # m{} in the label column rather than p{}: p is top-aligned while M is
+        # vertically centred, so a heading wrapping to two lines left "Scenario"
+        # riding above the others in the header row.
+        widths=["0.18", "0.12", "0.12", "0.12", "0.15"],
+        caption=TABLE1_CAPTION,
+        label="tab:validation",
     )
-    out.append("")
-    out.append(r"\toprule")
-    out.append("")
-    out.append(
-        r"\textbf{Scenario}  & \textbf{Fleet renewal} & \textbf{Next gen. technology} & "
-        r"\textbf{Operations, infra.} & \textbf{SAF} & \textbf{Market-based} & "
-        r"\textbf{Gross WtW} & \textbf{Gross TtW} \\"
-    )
-    out.append(r"\midrule")
-    out.append(r"        &     &    &    &    &    &    &    \\")
-    rows = lever_rows()
-    for index, (label, pillars, gross, gross_ttw) in enumerate(rows):
-        if index in (3, 7, 10):  # between the published block and each lever block
-            out.append(r"        &     &    &    &    &    &    &    \\")
-        out.append(
-            "%-22s & " % label
-            + " & ".join("%.1f" % value for value in pillars)
-            + " & %.1f & %s \\\\" % (gross, "%.1f" % gross_ttw if gross_ttw is not None else "--")
+
+    # Seven columns, not eight: the market-based pillar is numerically identical
+    # to Gross WtW in every row, being defined as the gross residual the measures
+    # are assumed to remove, so printing it twice spent a column on a duplicate.
+    #
+    # Widths sum to 0.82	extwidth rather than the 0.88 the eight-column version
+    # used. With 	abcolsep at 6pt each of the seven columns also carries 12pt of
+    # padding, or 84pt over the row, and the text block is 7.2in (letterpaper less
+    # the 0.65in margins), so anything above roughly 0.84 overflows. The old
+    # layout did overflow; this one leaves a little room, and the width freed by
+    # dropping the column goes to the two headings that wrap worst.
+    rows2 = [blank2]
+    # Blank separator before each block: the published scenarios, the five
+    # technology runs T0-T4, the three operations runs O1-O3, and the four
+    # fuel runs F0-F3.
+    for index, (label, pillars, gross, gross_ttw) in enumerate(lever_rows()):
+        if index in (3, 8, 11):
+            rows2.append(blank2)
+        rows2.append(
+            ["%-22s" % label]
+            # pillars[:-1] drops the market-based entry; it is kept in PILLARS and
+            # in decompose() because the console table still shows it and the sum
+            # check needs it to close on the frozen-fleet baseline.
+            + ["%.1f" % value for value in pillars[:-1]]
+            + ["%.1f" % gross, "%.1f" % gross_ttw if gross_ttw is not None else "--"]
         )
-    out.append(r" &     &    &    &    &    &    &    \\")
-    out.append(r"\midrule")
-    out.append(r"Baseline (T0, frozen fleet) & \multicolumn{7}{c}{2835.0} \\")
-    out.append(r"\bottomrule")
-    out.append(r"\end{tabular}")
-    out.append(r"\end{small}")
-    out.append(r"\label{tab:levers}")
-    out.append(r"\end{table}")
-    return "\n".join(out) + "\n"
+    rows2.append(r" &     &    &    &    &    &    \\")
+
+    table2 = latex_table(
+        headers=[
+            "Scenario",
+            "Fleet renewal",
+            "Next gen. technology",
+            "Operations, infra.",
+            "SAF",
+            "Gross WtW",
+            "Gross TtW",
+        ],
+        rows=rows2,
+        widths=["0.17", "0.10", "0.13", "0.12", "0.10", "0.10", "0.10"],
+        caption=TABLE2_CAPTION,
+        label="tab:levers",
+    )
+
+    return table1 + "\n" + table2
 
 
 if __name__ == "__main__":

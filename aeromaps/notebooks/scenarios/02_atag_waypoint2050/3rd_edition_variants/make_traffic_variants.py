@@ -24,13 +24,13 @@ Run from this directory::
     python make_traffic_variants.py
 """
 
-import copy
 from pathlib import Path
 
 import yaml
 
 import aeromaps.utils.yaml  # noqa: F401  (registers the !AeroMapsCustomDataType tag)
 from aeromaps import create_process
+from aeromaps.utils.traffic_variants import scale_growth_after, solve_scale_for_target
 
 HERE = Path(__file__).resolve().parent
 ATAG = HERE.parent
@@ -62,27 +62,7 @@ HEADER = """\
 def scaled_markets(alpha: float, pivot: int) -> dict:
     """Central markets with growth scaled by ``alpha`` after ``pivot``."""
     document = yaml.load(CENTRAL.read_text(), Loader=yaml.Loader)
-    document = copy.deepcopy(document)
-
-    for market in GROWTH_MARKETS:
-        growth = document[market]["inputs"].get("growth")
-        if not growth:
-            continue
-        years = growth["cagr_reference_periods"]
-        growth["cagr_reference_periods_values"] = [
-            value * alpha if year > pivot else value
-            for year, value in zip(years, growth["cagr_reference_periods_values"])
-        ]
-
-    # Keep the reference line consistent with the scenario it describes.
-    for traffic_type in ("passenger", "freight"):
-        reference = document["defaults"][traffic_type]["inputs"]["reference"]
-        years = reference["reference_cagr_reference_periods"]
-        reference["reference_cagr_reference_periods_values"] = [
-            value * alpha if year > pivot else value
-            for year, value in zip(years, reference["reference_cagr_reference_periods_values"])
-        ]
-    return document
+    return scale_growth_after(document, alpha, pivot, markets=GROWTH_MARKETS)
 
 
 def write_markets(document: dict, path: Path, variant: str, alpha: float, pivot: int) -> Path:
@@ -113,9 +93,7 @@ def rpk_2050(markets_path: Path) -> float:
                     "standards": yaml.safe_load(
                         (ATAG / "3rd_edition_full/config_files/config_s1.yaml").read_text()
                     )["models"]["standards"],
-                    "markets": {
-                        "markets_data_file": f"../../markets/{markets_path.name}"
-                    },
+                    "markets": {"markets_data_file": f"../../markets/{markets_path.name}"},
                 },
             },
             sort_keys=False,
@@ -131,24 +109,21 @@ def solve_alpha(variant: str, pivot: int, tol: float = 5e-4, max_iter: int = 12)
     target = TARGETS[variant]
     path = MARKETS / f"markets_{variant}_3rd.yaml"
 
-    def error(alpha: float) -> float:
+    def evaluate(alpha: float) -> float:
+        # Each candidate is written before it is run, since the scenario reads
+        # its markets from disk; the winning file is therefore already in place
+        # except when the search stops on a factor it did not evaluate last.
         write_markets(scaled_markets(alpha, pivot), path, variant, alpha, pivot)
         value = rpk_2050(path)
-        print(f"    alpha={alpha:.6f} -> 2050 RPK {value / 1e12:6.3f} T "
-              f"(target {target / 1e12:.2f})")
-        return value - target
+        print(
+            f"    alpha={alpha:.6f} -> 2050 RPK {value / 1e12:6.3f} T (target {target / 1e12:.2f})"
+        )
+        return value
 
-    a, b = (0.65, 1.05) if variant == "low" else (1.05, 1.40)
-    fa, fb = error(a), error(b)
-    for _ in range(max_iter):
-        if abs(fb) / target < tol:
-            break
-        if fb == fa:
-            break
-        a, b = b, b - fb * (b - a) / (fb - fa)
-        fa, fb = fb, error(b)
-    write_markets(scaled_markets(b, pivot), path, variant, b, pivot)
-    return b
+    bracket = (0.65, 1.05) if variant == "low" else (1.05, 1.40)
+    alpha = solve_scale_for_target(evaluate, target, bracket, tol=tol, max_iter=max_iter)
+    write_markets(scaled_markets(alpha, pivot), path, variant, alpha, pivot)
+    return alpha
 
 
 def main():
