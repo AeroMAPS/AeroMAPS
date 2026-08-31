@@ -3,24 +3,18 @@
 A converging fixed-point solver does not only evaluate models at plausible points.
 GEMSEO's acceleration methods extrapolate the coupling vector by unconstrained least
 squares, so this discipline can be handed an airfare no discipline ever produced -- a
-negative one, for instance.
+negative one, for instance. That matters because the multiplier raises the airfare ratio
+to ``price_elasticity``, which is fractional: ``numpy`` returns ``nan`` for a negative
+float64 base, silently, where plain Python would return a complex number, and the residual
+then reports the resulting chain-wide NaN as *convergence*.
 
-That matters because the multiplier raises the airfare ratio to ``price_elasticity``,
-which is fractional. ``numpy`` returns ``nan`` for a negative float64 base, silently,
-where plain Python would return a complex number. In the unified-MDA spike this single
-operation turned a solver excursion into a chain-wide NaN that the residual then reported
-as *convergence*.
-
-**Where that is fixed is the point of this module.** The model does not defend itself.
-It declares its physical domain in ``AIRFARE_BOUNDS_RELATIVE`` / ``_coupling_bounds``,
-and the process hands that to ``MDAChain.set_bounds``; the solver projects its own
-iterate, so wherever the bound applies, the value a discipline receives is the value the
-residual is formed on.
-
-The earlier version clipped the airfare at the top of ``compute``. These tests keep that
-version around, as ``_clipping_compute``, to show what was wrong with it: a model that
-silently substitutes its input computes something other than what the solver believes it
-asked for, and the residual cannot tell.
+Where that is handled is what this module pins. The model does not defend itself: it
+declares its physical domain in ``AIRFARE_BOUNDS_RELATIVE`` / ``_coupling_bounds``, and
+the process hands that to ``MDAChain.set_bounds``, so wherever the bound applies the value
+a discipline receives is the value the residual is formed on. ``_clipping_compute`` keeps
+a self-clipping model alongside, to pin the difference: a model that silently substitutes
+its input computes something other than what the solver believes it asked for, and the
+residual cannot tell.
 
 The last two tests pin what the bound does *not* reach. Gauss-Seidel projects the
 transformed iterate after the sweep, so a value the producer hands straight to the
@@ -358,9 +352,9 @@ def test_the_bound_reaches_the_model_when_it_reads_the_carried_iterate():
     unbounded = _loop(bounded=False, consumer_first=True)
     bounded = _loop(bounded=True, consumer_first=True)
 
-    assert unbounded.min() < LOW - 1e-9 or unbounded.max() > HIGH + 1e-9, (
-        "the unbounded loop stayed in band; this no longer reproduces anything"
-    )
+    assert (
+        unbounded.min() < LOW - 1e-9 or unbounded.max() > HIGH + 1e-9
+    ), "the unbounded loop stayed in band; this no longer reproduces anything"
     assert bounded.min() >= LOW - 1e-9
     assert bounded.max() <= HIGH + 1e-9
 
@@ -381,6 +375,6 @@ def test_the_bound_does_not_reach_the_model_when_the_producer_runs_first():
     unbounded = _loop(bounded=False, consumer_first=False)
     bounded = _loop(bounded=True, consumer_first=False)
 
-    assert np.array_equal(unbounded, bounded), (
-        "the bound changed what the model received; the sweep order assumption is stale"
-    )
+    assert np.array_equal(
+        unbounded, bounded
+    ), "the bound changed what the model received; the sweep order assumption is stale"

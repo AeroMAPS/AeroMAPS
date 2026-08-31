@@ -483,80 +483,40 @@ class RPKElasticity(AeroMAPSModel):
     """The 2019 airfare [EUR/RPK], matching ``global.elasticity.initial_airfare_per_rpk``."""
 
     # The physical domain of ``airfare_per_rpk``, as multiples of the 2019 reference: a
-    # tenth of it to twenty times it. Declared here, enforced by the solver.
+    # tenth of it to twenty times it. Declared here as ``_coupling_bounds`` and enforced by
+    # the solver, via ``apply_coupling_bounds``.
     #
-    # Why the domain is *declared* and not clipped inside ``compute``
-    # ---------------------------------------------------------------
+    # A bound is needed because ``compute`` raises the airfare ratio to a fractional
+    # exponent, and numpy returns NaN for a negative base -- silently, where plain Python
+    # returns a complex number. No discipline produces a negative airfare, but an MDA does
+    # not only evaluate plausible points: GEMSEO's acceleration methods extrapolate the
+    # coupling vector by unconstrained least squares, and have handed this model
+    # -2.11 EUR/RPK.
     #
-    # The multiplier raises the airfare ratio to a fractional exponent, and numpy returns
-    # NaN for a negative base -- silently, where plain Python returns a complex number.
-    # Neither a negative nor a zero airfare is physical, but an MDA does not evaluate
-    # models only at plausible points: GEMSEO's acceleration methods extrapolate the
-    # coupling vector by unconstrained least squares. In the spike that produced
-    # -2.11 EUR/RPK, a value no discipline computed.
+    # The domain is declared rather than clipped inside ``compute`` because a clip makes
+    # the model compute something other than what the solver believes it asked for: the
+    # iterate says x, the residual is formed on x, the physics runs on clip(x), so where
+    # the clip is active ``r(x) = 0`` no longer means equilibrium at x. A clip is also
+    # invisible in every output variable, discontinuous where a gradient-based scenario
+    # (``create_gemseo_scenario``) would read a zero Jacobian, and ad hoc -- each model
+    # reinventing its own band and warning. ``BaseMDASolver.set_bounds`` projects the
+    # iterate itself, so solver and physics agree on what was evaluated.
     #
-    # This model used to defend itself, clipping the airfare into the band at the top of
-    # ``compute``. That is the wrong place, for a reason worth stating plainly: **it makes
-    # the model compute something other than what the solver believes it asked for.** The
-    # solver's iterate says the airfare is x; the residual is formed on x; but the physics
-    # ran on clip(x). If the clip is ever active at convergence, ``r(x) = 0`` no longer
-    # means the model is at equilibrium at x -- the fixed point found is the fixed point
-    # of a different function, and nothing in the residual can tell. Four consequences:
+    # What the bound reaches: ``MDAGaussSeidel._iterate_once`` projects the transformed
+    # iterate *after* the sweep, so the bound governs the iterate carried between
+    # iterations -- including anything the sequence transformer extrapolated -- but not a
+    # value a producer hands straight to a consumer inside one sweep. In this chain the
+    # cost models produce ``airfare_per_rpk`` before this discipline consumes it, so that
+    # second case is the normal path, and a band far tighter than the airfares a scenario
+    # produces changes nothing. The division is deliberate: a value the solver invented is
+    # the solver's to fix, while a negative airfare the cost chain genuinely computed is a
+    # modelling result, whose honest outcome is NaN and a failed run -- which
+    # ``check_mda_convergence`` reports -- rather than a plausible-looking saturated number.
     #
-    # 1. The solver cannot account for what it cannot see. Damping, acceleration and the
-    #    divergence guard all reason about a function that is not the one being evaluated.
-    # 2. The correction is invisible in the outputs. A clip inside ``compute`` leaves no
-    #    trace in any coupling variable, so a warning is the only evidence it happened --
-    #    and warnings are lost in a notebook that produces thousands.
-    # 3. It is discontinuous where a gradient-based scenario (``create_gemseo_scenario``)
-    #    would silently read a zero Jacobian, rather than a bound the algorithm respects.
-    # 4. It is ad hoc. Every model needing this reimplements its own band, its own
-    #    warning and its own semantics, and none of them compose.
-    #
-    # ``BaseMDASolver.set_bounds`` has none of those properties. It projects the iterate
-    # itself, so wherever it applies, the value a discipline receives *is* the value the
-    # residual is formed on: solver and physics agree on what was evaluated, and the fixed
-    # point is the fixed point of this model. Bounding becomes a property of the
-    # *algorithm*, which is where it belongs, and the model expresses only the model.
-    #
-    # What it does and does not reach, measured rather than assumed
-    # -------------------------------------------------------------
-    #
-    # ``MDAGaussSeidel._iterate_once`` runs the whole sweep and projects the transformed
-    # iterate *afterwards*. So the bound governs the iterate carried between iterations --
-    # including everything the sequence transformer extrapolates, which is what produced
-    # the -2.11 EUR/RPK -- but *not* a value a producer hands straight to a consumer
-    # inside one sweep.
-    #
-    # In this chain the cost models produce ``airfare_per_rpk`` before this discipline
-    # consumes it, so that second case is the normal one. Measured on tutorial 08: a band
-    # of (0.099, 0.101), far tighter than the airfares the scenario produces, changed
-    # nothing at all -- this model received exactly the same [0.08925, 0.11199] with and
-    # without it, and the solve was bit-identical.
-    #
-    # That is deliberate, not a gap being papered over. A value the solver invented is the
-    # solver's to fix, and it fixes it. A value a discipline genuinely computed is a
-    # modelling result: if the cost chain really produces a negative airfare, the honest
-    # outcome is NaN and a failed run -- which ``check_mda_convergence`` now reports
-    # exactly, via the frozen NaN mask -- and not a saturated number that looks plausible
-    # and hides it.
-    #
-    # This was not usable until recently. Bounds project the *whole* resolved-variable
-    # vector (``SequenceTransformer._project``), and ``airfare_per_rpk`` is NaN over the
-    # historical years -- 19 of its 51 elements on tutorial 08. While NaN travelled as the
-    # in-band ``-999999`` sentinel, the projection clipped it to the lower bound, after
-    # which it no longer matched ``== -999999`` and never converted back. Measured on
-    # ``08_use_variable_demand/data_elasticity/config_elasticity.yaml``:
-    #
-    #                              with the sentinel          with the frozen mask
-    #   no bound             9 iterations 1.27e-11 ok     9 iterations 1.27e-11 ok
-    #   set_bounds          20 iters 6.88e-07 FAILED      9 iterations 1.27e-11 ok
-    #
-    # ``freeze_nan_masks_after_first_sweep`` moved the missing-value flag out of the
-    # vector, so the projection has nothing left to corrupt.
-    #
-    # NaN is still deliberately left as NaN: a missing value is not a value to invent, and
-    # the mask carries it around the projection untouched.
+    # The projection covers the whole resolved-variable vector, so a bound is only safe
+    # while missing values travel outside it: ``airfare_per_rpk`` is NaN over the
+    # historical years, and the in-band ``-999999`` sentinel would be clipped to the lower
+    # bound and never converted back. See ``freeze_nan_masks_after_first_sweep``.
     AIRFARE_BOUNDS_RELATIVE = (0.1, 20.0)
 
     def __init__(self, name: str, passenger_market_ids: list, *args, **kwargs):
@@ -598,7 +558,7 @@ class RPKElasticity(AeroMAPSModel):
             )
         }
         # The solver is told the domain; this model does not police it. See
-        # AIRFARE_BOUNDS_RELATIVE for why that distinction matters.
+        # AIRFARE_BOUNDS_RELATIVE.
         low, high = (
             factor * self.REFERENCE_AIRFARE_PER_RPK for factor in self.AIRFARE_BOUNDS_RELATIVE
         )
@@ -629,11 +589,9 @@ class RPKElasticity(AeroMAPSModel):
 
         # Multiplier: 1 before elasticity_start, (airfare/airfare_init)**elasticity after.
         #
-        # The airfare is used exactly as handed in. ``price_elasticity`` is fractional and
-        # numpy returns NaN on a negative base, so a non-physical airfare would poison the
-        # chain -- but keeping the iterate physical is the solver's job, not this model's,
-        # and it is done through ``AIRFARE_BOUNDS_RELATIVE``, which the process hands to
-        # ``MDAChain.set_bounds``. See that constant for why clipping here was wrong.
+        # The airfare is used exactly as handed in: ``price_elasticity`` is fractional and
+        # numpy returns NaN on a negative base, but keeping the iterate inside its physical
+        # domain is the solver's job, through ``AIRFARE_BOUNDS_RELATIVE``.
         proj = slice(elasticity_start, self.end_year)
 
         multiplier = pd.Series(1.0, index=self.df.index)

@@ -2,20 +2,17 @@
 
 AeroMAPS series are legitimately undefined over the historical years, and a coupling
 belonging to a pathway a scenario does not use is undefined throughout. GEMSEO has no
-notion of a missing value, so those NaNs used to travel *inside* the vector as
-``-999999``. That works, but it puts a flag in the numeric channel: the solver is
-entitled to blend, scale, project and normalise that vector, and every one of those
-operations can destroy the flag with nothing noticing.
+notion of a missing value, so the alternative to a mask is the in-band ``-999999``
+sentinel: a flag in the numeric channel, which the solver is entitled to blend, scale,
+project and normalise away. The projection performed by ``set_bounds`` is the worst case,
+and the first test is that argument in one place -- the same bound, on the same scenario,
+with each representation in turn.
 
-The projection performed by ``set_bounds`` is the worst case, and the first test below
-is the whole argument in one place: the same bound, on the same scenario, breaks a
-converging solve while the sentinel is in charge and is harmless once the mask is.
-
-Everything else here pins the properties the mask has to have to be safe:
+The rest pins the properties the mask must have to be safe:
 
 * it changes representation, not arithmetic -- results bit-identical to the sentinel;
-* it is established after the solver's first complete sweep, which is the earliest
-  moment every coupling has been written by its real producer;
+* it is established after the solver's first complete sweep, the earliest moment every
+  coupling has been written by its real producer;
 * it is scoped to one solve, so a second ``compute()`` re-derives it and nothing leaks
   between the regional solves that ``separate_processes`` runs in parallel;
 * a NaN at a position it says carries a value is reported, not absorbed.
@@ -133,9 +130,9 @@ def test_bounds_and_the_sentinel_break_a_solve_that_converged_without_them():
 
     _chain_, _mda, bounded = _solve(masked=False, bounds=(0.0, 1e6))
 
-    assert bounded[-1] > 1e-12, (
-        "expected the bound to break the sentinel solve; this no longer reproduces"
-    )
+    assert (
+        bounded[-1] > 1e-12
+    ), "expected the bound to break the sentinel solve; this no longer reproduces"
 
 
 def test_the_mask_makes_the_same_bound_harmless():
