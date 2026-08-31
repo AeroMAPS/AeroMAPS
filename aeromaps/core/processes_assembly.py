@@ -164,6 +164,7 @@ class AeroMAPSProcessesAssembly:
         group_display: str = "lines",
         group_envelope_middle="median",
         group_envelope_alpha: float = 0.25,
+        group_envelope_linewidth=None,
         group_envelope_show_members: bool = True,
         years_source: str = None,
     ):
@@ -213,9 +214,12 @@ class AeroMAPSProcessesAssembly:
             pointwise mean. A dict ``{group_name: scenario_name}`` lets the
             caller pin a specific scenario as the middle line per group;
             groups omitted from the dict fall back to ``"median"``.
-        group_envelope_alpha : float, optional
-            Transparency of the ``fill_between`` band in envelope mode.
-            Default ``0.25``.
+        group_envelope_alpha : float or dict, optional
+            Transparency of the ``fill_between`` band in envelope mode. Default
+            ``0.25``. A dict maps group names to values, as *colors* does.
+        group_envelope_linewidth : float or dict, optional
+            Line width for a group's member and middle lines, as a scalar or a
+            ``{group name: width}`` dict. ``None`` keeps the default width.
         group_envelope_show_members : bool, optional
             In envelope mode, whether to draw the individual member scenarios as
             lines inside the band. Default ``True``. Set ``False`` for band plus
@@ -255,6 +259,7 @@ class AeroMAPSProcessesAssembly:
             group_display=group_display,
             group_envelope_middle=group_envelope_middle,
             group_envelope_alpha=group_envelope_alpha,
+            group_envelope_linewidth=group_envelope_linewidth,
             group_envelope_show_members=group_envelope_show_members,
             years_source=years_source,
         )

@@ -2858,6 +2858,10 @@ class SimpleMFSP(SingleScenarioPlot):
             self.plot_interact()
         else:
             self.create_plot(mfsp_type)
+            # create_plot clears the axes and draws a fresh legend, so the
+            # setting the base class applied on the way out of __init__ has
+            # already been undone by the time we get here.
+            self._apply_legend_setting()
 
     def _get_default_figsize(self):
         return (plot_1_x, plot_1_y)

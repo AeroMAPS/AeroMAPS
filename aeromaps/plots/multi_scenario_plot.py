@@ -76,6 +76,7 @@ class MultiScenarioPlot(ABC):
         group_display="lines",
         group_envelope_middle="median",
         group_envelope_alpha=0.25,
+        group_envelope_linewidth=None,
         group_envelope_show_members=True,
         years_source=None,
     ):
@@ -139,9 +140,16 @@ class MultiScenarioPlot(ABC):
             behaviour. ``False`` draws only the band and its middle line, which
             reads better when the band itself is the message and the members are
             uncertainty bounds rather than scenarios of independent interest.
-        group_envelope_alpha : float, optional
-            Transparency of the ``fill_between`` band in envelope mode.
-            Default ``0.25``.
+        group_envelope_alpha : float or dict, optional
+            Transparency of the ``fill_between`` band in envelope mode. Default
+            ``0.25``. A dict maps *group names* to values, the same form
+            *colors* takes, so one band can be pushed into the background while
+            another stays prominent; groups it omits keep the default.
+        group_envelope_linewidth : float or dict, optional
+            Line width for a group's member and middle lines in envelope mode,
+            as a scalar or a ``{group name: width}`` dict. ``None`` (default)
+            keeps the width the plot would otherwise use, so existing figures
+            are unchanged.
         years_source : str, optional
             Overrides the class-level year range: ``"years"`` for the whole
             period or ``"prospective_years"`` for the projection alone. The cost
@@ -158,6 +166,7 @@ class MultiScenarioPlot(ABC):
         self.group_display = group_display
         self.group_envelope_middle = group_envelope_middle
         self.group_envelope_alpha = group_envelope_alpha
+        self.group_envelope_linewidth = group_envelope_linewidth
         self.group_envelope_show_members = group_envelope_show_members
 
         # Store legend preference
@@ -518,12 +527,24 @@ class MultiScenarioPlot(ABC):
         else:
             y_mid = arr[:, picked]
 
+        # Both accept a scalar or a {group name: value} mapping, matching how
+        # *colors* is specified, so a group can be styled to recede without
+        # changing the others.
+        alpha = self.group_envelope_alpha
+        if isinstance(alpha, dict):
+            alpha = alpha.get(group_name, 0.25)
+        group_linewidth = self.group_envelope_linewidth
+        if isinstance(group_linewidth, dict):
+            group_linewidth = group_linewidth.get(group_name)
+        if group_linewidth is not None:
+            linewidth = group_linewidth
+
         self.ax.fill_between(
             x,
             y_min,
             y_max,
             color=group_color,
-            alpha=self.group_envelope_alpha,
+            alpha=alpha,
             linewidth=0,
             label=label or group_name,
         )
