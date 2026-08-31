@@ -243,11 +243,13 @@ class CO2Emissions(AeroMAPSModel):
         energy_types = ["dropin_fuel", "hydrogen", "electric"]
 
         # Locally fill incomplete emission factors with zeros so that sums are not nan.
-        co2_emission_factor_by_energy_type = {}
-        for energy_type in energy_types:
-            co2_emission_factor = input_data[f"{energy_type}_mean_co2_emission_factor"]
-            co2_emission_factor.fillna(0, inplace=True)
-            co2_emission_factor_by_energy_type[energy_type] = co2_emission_factor
+        # ``fillna`` must NOT be in place: input_data holds the very Series objects the
+        # MDA snapshotted as its previous iterate, so mutating one silently rewrites
+        # that snapshot and corrupts the residual of this coupling variable.
+        co2_emission_factor_by_energy_type = {
+            energy_type: input_data[f"{energy_type}_mean_co2_emission_factor"].fillna(0)
+            for energy_type in energy_types
+        }
 
         load_factor = input_data["load_factor"]
         output_data = {}

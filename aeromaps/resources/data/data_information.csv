@@ -200,6 +200,7 @@ world_co2_emissions_2019;Float;GtCO2;World CO2 emissions in 2019;Global Carbon P
 aerosol_erf;Vector;mW/m²;Effective radiative forcing due to aerosol (soot and sulfur)
 ask;Vector;ASK;Number of Available Seat Kilometer (ASK) for all commercial air transport
 ask_long_range;Vector;ASK;Number of Available Seat Kilometer (ASK) for passenger long-range market
+ask_long_range_share;Vector;%;Share of total passenger Available Seat Kilometer (ASK) carried by the long-range market (not to be confused with ask_long_range_<energy>_share, the split by aircraft energy within that market)
 ask_long_range_dropin_fuel;Vector;ASK;Number of Available Seat Kilometer (ASK) for passenger long-range market from drop-in fuel aircraft
 ask_long_range_dropin_fuel_share;Vector;%;Share of Available Seat Kilometer (ASK) for passenger long-range market from drop-in fuel aircraft
 ask_long_range_hydrogen;Vector;ASK;Number of Available Seat Kilometer (ASK) for passenger long-range market from hydrogen aircraft
@@ -207,6 +208,7 @@ ask_long_range_hydrogen_share;Vector;%;Share of Available Seat Kilometer (ASK) f
 ask_long_range_electric;Vector;ASK;Number of Available Seat Kilometer (ASK) for passenger long-range market from electric aircraft
 ask_long_range_electric_share;Vector;%;Share of Available Seat Kilometer (ASK) for passenger long-range market from electric aircraft
 ask_medium_range;Vector;ASK;Number of Available Seat Kilometer (ASK) for passenger medium-range market
+ask_medium_range_share;Vector;%;Share of total passenger Available Seat Kilometer (ASK) carried by the medium-range market (not to be confused with ask_medium_range_<energy>_share, the split by aircraft energy within that market)
 ask_medium_range_dropin_fuel;Vector;ASK;Number of Available Seat Kilometer (ASK) for passenger medium-range market from drop-in fuel aircraft
 ask_medium_range_dropin_fuel_share;Vector;%;Share of Available Seat Kilometer (ASK) for passenger medium-range market from drop-in fuel aircraft
 ask_medium_range_hydrogen;Vector;ASK;Number of Available Seat Kilometer (ASK) for passenger medium-range market from hydrogen aircraft
@@ -214,6 +216,7 @@ ask_medium_range_hydrogen_share;Vector;%;Share of Available Seat Kilometer (ASK)
 ask_medium_range_electric;Vector;ASK;Number of Available Seat Kilometer (ASK) for passenger medium-range market from electric aircraft
 ask_medium_range_electric_share;Vector;%;Share of Available Seat Kilometer (ASK) for passenger medium-range market from electric aircraft
 ask_short_range;Vector;ASK;Number of Available Seat Kilometer (ASK) for passenger short-range market
+ask_short_range_share;Vector;%;Share of total passenger Available Seat Kilometer (ASK) carried by the short-range market (not to be confused with ask_short_range_<energy>_share, the split by aircraft energy within that market)
 ask_short_range_dropin_fuel;Vector;ASK;Number of Available Seat Kilometer (ASK) for passenger short-range market from drop-in fuel aircraft
 ask_short_range_dropin_fuel_share;Vector;%;Share of Available Seat Kilometer (ASK) for passenger short-range market from drop-in fuel aircraft
 ask_short_range_hydrogen;Vector;ASK;Number of Available Seat Kilometer (ASK) for passenger short-range market from hydrogen aircraft
@@ -838,8 +841,10 @@ operational_profit_reference_years;List;yr;Reference years for airline operating
 operational_profit_reference_years_values;List;€/ASK;Reference years values for airline operating profits; cost_data/IATA_cost_data.xlsx
 operational_profit_per_ask;Vector;€/ASK;Values for airlines operating profits
 total_cost_per_ask_without_extra_tax;Vector;€/ASK;Total costs without new taxes (DOC+NOC+IOC+Offsets)
-total_extra_tax_per_ask;Vector;€/ASK;Total new taxes levied (Carbon tax + passenger tax per ask)
-total_cost_per_ask;Vector;€/ASK;Total cost per ask (DOC+NOC+IOC+Offsets+Taxes)
+total_extra_tax_per_ask;Vector;€/ASK;Total new taxes levied (Carbon tax + passenger tax + energy tax per ask)
+total_subsidy_per_ask;Vector;€/ASK;Total subsidies received per ask (energy subsidy)
+total_subsidy_per_rpk;Vector;€/RPK;Total subsidies received per rpk (energy subsidy)
+total_cost_per_ask;Vector;€/ASK;Total cost per ask (DOC+NOC+IOC+Offsets+Taxes-Subsidies)
 airfare_per_ask;Vector;€/ASK;Airfare (Total costs + operational profits)
 operational_efficiency_cost_non_energy_per_ask_final_value;Vector;€/ASK;extra cost related to implementation of operational efficiency measures
 load_factor_cost_non_energy_per_ask_final_value;Vector;€/ASK;extra cost related to implementation of load factor measures

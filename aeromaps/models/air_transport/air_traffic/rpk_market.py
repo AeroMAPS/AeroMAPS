@@ -479,6 +479,46 @@ class RPKElasticity(AeroMAPSModel):
 
     MARKET_SCOPE = "cross_market"
 
+    REFERENCE_AIRFARE_PER_RPK = 0.09236379319842411
+    """The 2019 airfare [EUR/RPK], matching ``global.elasticity.initial_airfare_per_rpk``."""
+
+    # The physical domain of ``airfare_per_rpk``, as multiples of the 2019 reference: a
+    # tenth of it to twenty times it. Declared here as ``_coupling_bounds`` and enforced by
+    # the solver, via ``apply_coupling_bounds``.
+    #
+    # A bound is needed because ``compute`` raises the airfare ratio to a fractional
+    # exponent, and numpy returns NaN for a negative base -- silently, where plain Python
+    # returns a complex number. No discipline produces a negative airfare, but an MDA does
+    # not only evaluate plausible points: GEMSEO's acceleration methods extrapolate the
+    # coupling vector by unconstrained least squares, and have handed this model
+    # -2.11 EUR/RPK.
+    #
+    # The domain is declared rather than clipped inside ``compute`` because a clip makes
+    # the model compute something other than what the solver believes it asked for: the
+    # iterate says x, the residual is formed on x, the physics runs on clip(x), so where
+    # the clip is active ``r(x) = 0`` no longer means equilibrium at x. A clip is also
+    # invisible in every output variable, discontinuous where a gradient-based scenario
+    # (``create_gemseo_scenario``) would read a zero Jacobian, and ad hoc -- each model
+    # reinventing its own band and warning. ``BaseMDASolver.set_bounds`` projects the
+    # iterate itself, so solver and physics agree on what was evaluated.
+    #
+    # What the bound reaches: ``MDAGaussSeidel._iterate_once`` projects the transformed
+    # iterate *after* the sweep, so the bound governs the iterate carried between
+    # iterations -- including anything the sequence transformer extrapolated -- but not a
+    # value a producer hands straight to a consumer inside one sweep. In this chain the
+    # cost models produce ``airfare_per_rpk`` before this discipline consumes it, so that
+    # second case is the normal path, and a band far tighter than the airfares a scenario
+    # produces changes nothing. The division is deliberate: a value the solver invented is
+    # the solver's to fix, while a negative airfare the cost chain genuinely computed is a
+    # modelling result, whose honest outcome is NaN and a failed run -- which
+    # ``check_mda_convergence`` reports -- rather than a plausible-looking saturated number.
+    #
+    # The projection covers the whole resolved-variable vector, so a bound is only safe
+    # while missing values travel outside it: ``airfare_per_rpk`` is NaN over the
+    # historical years, and the in-band ``-999999`` sentinel would be clipped to the lower
+    # bound and never converted back. See ``freeze_nan_masks_after_first_sweep``.
+    AIRFARE_BOUNDS_RELATIVE = (0.1, 20.0)
+
     def __init__(self, name: str, passenger_market_ids: list, *args, **kwargs):
         super().__init__(name=name, model_type="custom", *args, **kwargs)
         self.passenger_market_ids = list(passenger_market_ids)
@@ -513,10 +553,16 @@ class RPKElasticity(AeroMAPSModel):
         # ``process.parameters.airfare_per_rpk`` before the first MDA iteration.
         self._coupling_defaults = {
             "airfare_per_rpk": pd.Series(
-                0.09236379319842411,  # EUR/RPK
+                self.REFERENCE_AIRFARE_PER_RPK,
                 index=range(self.historic_start_year, self.end_year + 1),
             )
         }
+        # The solver is told the domain; this model does not police it. See
+        # AIRFARE_BOUNDS_RELATIVE.
+        low, high = (
+            factor * self.REFERENCE_AIRFARE_PER_RPK for factor in self.AIRFARE_BOUNDS_RELATIVE
+        )
+        self._coupling_bounds = {"airfare_per_rpk": (low, high)}
 
     def compute(self, input_data: dict) -> dict:
         """Apply the global elasticity multiplier to baseline RPK trajectories.
@@ -542,8 +588,13 @@ class RPKElasticity(AeroMAPSModel):
         )
 
         # Multiplier: 1 before elasticity_start, (airfare/airfare_init)**elasticity after.
-        multiplier = pd.Series(1.0, index=self.df.index)
+        #
+        # The airfare is used exactly as handed in: ``price_elasticity`` is fractional and
+        # numpy returns NaN on a negative base, but keeping the iterate inside its physical
+        # domain is the solver's job, through ``AIRFARE_BOUNDS_RELATIVE``.
         proj = slice(elasticity_start, self.end_year)
+
+        multiplier = pd.Series(1.0, index=self.df.index)
         multiplier.loc[proj] = (airfare_per_rpk.loc[proj] / airfare_init) ** price_elasticity
 
         total_rpk = rpk_no_elasticity * multiplier
