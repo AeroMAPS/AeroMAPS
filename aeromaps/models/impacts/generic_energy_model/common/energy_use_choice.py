@@ -34,6 +34,16 @@ class EnergyUseChoice(AeroMAPSModel):
         Dictionary of output variable names populated at model initialisation before MDA chain creation.
     """
 
+    #: The mandate types this model dispatches on.
+    MANDATE_TYPES = ("share", "quantity")
+
+    #: Keys this model takes from each block of a pathway's ``inputs``. Collected by
+    #: ``common/yaml_schema.py`` to validate the energy YAML files; a key belongs to exactly
+    #: one block, and models declaring the same key must agree on it.
+    PATHWAY_INPUT_KEYS = {
+        "mandate": ("mandate_type", "mandate_share", "mandate_quantity"),
+    }
+
     def __init__(
         self,
         name,
@@ -73,6 +83,14 @@ class EnergyUseChoice(AeroMAPSModel):
                     {
                         f"{name}_mandate_share": pd.Series([0.0]),
                     }
+                )
+            elif pathway.mandate_type is not None:
+                # Without this, an unrecognised type would silently give a pathway no mandate
+                # at all: it would simply never deploy.
+                raise ValueError(
+                    f"Unsupported mandate type for pathway '{name}': "
+                    f"'{pathway.mandate_type}'. Accepted: "
+                    f"{', '.join(repr(t) for t in self.MANDATE_TYPES)}."
                 )
 
         # Fill and initialize inputs not defined in the yaml file (either user inputs or other models outputs)
@@ -214,7 +232,8 @@ class EnergyUseChoice(AeroMAPSModel):
                                 ).fillna(0)
 
                                 modified_years = pathway_consumption.loc[original.index][
-                                    pathway_consumption.loc[original.index] != original.loc[original.index]
+                                    pathway_consumption.loc[original.index]
+                                    != original.loc[original.index]
                                 ]
 
                                 if not modified_years.empty:
