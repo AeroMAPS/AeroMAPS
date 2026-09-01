@@ -47,6 +47,40 @@ class BottomUpCost(AeroMAPSModel):
 
     MODEL_APPROACH = "bottom_up"
 
+    #: Blocks of a pathway's ``inputs`` this model registers, and the keys it takes from them.
+    #: Collected by ``common/yaml_schema.py`` to validate the energy YAML files.
+    PATHWAY_INPUT_BLOCKS = ("economics", "technical")
+    PATHWAY_INPUT_KEYS = (
+        "eis_capex",
+        "eis_fixed_opex",
+        "eis_variable_opex",
+        "eis_construction_time",
+        "mean_unit_subsidy_without_resource",
+        "mean_unit_tax_without_resource",
+        "resource_names",
+        "processes_names",
+        "eis_resource_specific_consumption",
+        "eis_plant_lifespan",
+        "eis_plant_load_factor",
+        "lhv",
+    )
+
+    #: Same, for the processes a pathway declares.
+    PROCESS_INPUT_BLOCKS = ("economics", "technical")
+    PROCESS_INPUT_KEYS = (
+        "eis_capex",
+        "eis_fixed_opex",
+        "eis_variable_opex",
+        "eis_construction_time",
+        "resource_names",
+        "eis_resource_specific_consumption",
+        "eis_plant_lifespan",
+        "eis_plant_load_factor",
+    )
+
+    #: Keys of a resource's ``specifications`` this model reads.
+    RESOURCE_INPUT_KEYS = ("cost", "load_factor")
+
     def __init__(self, name, configuration_data, resources_data, processes_data, *args, **kwargs):
         super().__init__(
             name=name,

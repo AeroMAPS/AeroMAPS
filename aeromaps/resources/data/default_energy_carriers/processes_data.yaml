@@ -23,7 +23,7 @@
 #         years: [2020, 2030, 2040, 2050]
 #         values: [0.01, 0.011, 0.012, 0.013]
 #         method: linear
-#       mean_unit_subsidies_without_resource: !AeroMapsCustomDataType # Subsidies (€/MJ) of the process : these can also be part of core/resource depending on user's choices
+#       mean_unit_subsidy_without_resource: !AeroMapsCustomDataType # Subsidy (€/MJ) of the process : these can also be part of core/resource depending on user's choices
 #         years: [2020, 2030, 2040, 2050]
 #         values: [0.0, 0.0, 0.0, 0.0]
 #         method: linear

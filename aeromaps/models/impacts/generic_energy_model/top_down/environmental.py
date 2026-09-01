@@ -29,6 +29,33 @@ class TopDownEnvironmental(AeroMAPSModel):
 
     MODEL_APPROACH = "top_down"
 
+    #: Blocks of a pathway's ``inputs`` this model registers, and the keys it takes from them.
+    #: Collected by ``common/yaml_schema.py`` to validate the energy YAML files.
+    PATHWAY_INPUT_BLOCKS = ("environmental", "technical")
+    PATHWAY_INPUT_KEYS = (
+        "mean_co2_emission_factor_without_resource",
+        "emission_index",
+        "kerosene_selectivity",
+        "resource_names",
+        "processes_names",
+        "resource_specific_consumption",
+        "lhv",
+        "plant_lifespan",
+        "plant_load_factor",
+    )
+
+    #: Same, for the processes a pathway declares. ``economics`` is registered wholesale
+    #: although this model reads nothing from it.
+    PROCESS_INPUT_BLOCKS = ("environmental", "technical", "economics")
+    PROCESS_INPUT_KEYS = (
+        "mean_co2_emission_factor_without_resource",
+        "resource_names",
+        "resource_specific_consumption",
+    )
+
+    #: Keys of a resource's ``specifications`` this model reads.
+    RESOURCE_INPUT_KEYS = ("co2_emission_factor",)
+
     def __init__(
         self,
         name,
@@ -123,6 +150,12 @@ class TopDownEnvironmental(AeroMAPSModel):
                 else:
                     # TODO initialize with zeros instead of actual val?
                     self.input_names[key] = val
+
+            for key, val in (
+                processes_data[process_key].get("inputs").get("environmental", {}) or {}
+            ).items():
+                # TODO initialize with zeros instead of actual val?
+                self.input_names[key] = val
 
             for key, val in processes_data[process_key].get("inputs").get("economics", {}).items():
                 # TODO initialize with zeros instead of actual val?
@@ -284,7 +317,7 @@ class TopDownEnvironmental(AeroMAPSModel):
         # 3 ) --> pathway gets a process that makes own emissions (besides resources)
         for process_key in self.process_keys:
             co2_emission_factor_process = input_data.get(
-                f"{process_key}_co2_emission_factor_without_resource", optional_null_series
+                f"{process_key}_mean_co2_emission_factor_without_resource", optional_null_series
             )
             output_data[
                 f"{self.pathway_name}_{process_key}_without_resources_mean_co2_emission_factor"
