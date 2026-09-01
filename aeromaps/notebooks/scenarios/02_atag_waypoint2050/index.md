@@ -920,7 +920,10 @@ if share_only and nosaf_only:
             ax.set_title(title)
             ax.set_ylabel(ylabel)
             ax.set_xlabel("Year")
-            ax.set_xlim(2000, 2050)
+            # 2010 rather than 2000: the AR6 background pathways only begin
+            # there, so the earlier decade is blank in the top row and carries
+            # nothing in the bottom one.
+            ax.set_xlim(2010, 2050)
 
     # The exogenous references are drawn thinner than the coupled pathways, so
     # that the reference reads as background and the result as foreground. This
