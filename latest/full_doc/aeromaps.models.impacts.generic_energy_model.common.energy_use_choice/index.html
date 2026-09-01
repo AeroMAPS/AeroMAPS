@@ -5951,17 +5951,7 @@ Central module with a model to handle pathways interaction.</p>
 
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/impacts/generic_energy_model/common/energy_use_choice.py</code></summary>
-                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 37</span>
-<span class="normal"> 38</span>
-<span class="normal"> 39</span>
-<span class="normal"> 40</span>
-<span class="normal"> 41</span>
-<span class="normal"> 42</span>
-<span class="normal"> 43</span>
-<span class="normal"> 44</span>
-<span class="normal"> 45</span>
-<span class="normal"> 46</span>
-<span class="normal"> 47</span>
+                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 47</span>
 <span class="normal"> 48</span>
 <span class="normal"> 49</span>
 <span class="normal"> 50</span>
@@ -6041,7 +6031,25 @@ Central module with a model to handle pathways interaction.</p>
 <span class="normal">124</span>
 <span class="normal">125</span>
 <span class="normal">126</span>
-<span class="normal">127</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">name</span><span class="p">,</span>
     <span class="n">configuration_data</span><span class="p">,</span>
@@ -6080,6 +6088,14 @@ Central module with a model to handle pathways interaction.</p>
                 <span class="p">{</span>
                     <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">_mandate_share&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
                 <span class="p">}</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">pathway</span><span class="o">.</span><span class="n">mandate_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Without this, an unrecognised type would silently give a pathway no mandate</span>
+            <span class="c1"># at all: it would simply never deploy.</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Unsupported mandate type for pathway &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;: &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">mandate_type</span><span class="si">}</span><span class="s2">&#39;. Accepted: &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">MANDATE_TYPES</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
             <span class="p">)</span>
 
     <span class="c1"># Fill and initialize inputs not defined in the yaml file (either user inputs or other models outputs)</span>
@@ -6220,25 +6236,7 @@ yaml files and outputs of other models.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/models/impacts/generic_energy_model/common/energy_use_choice.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">129</span>
-<span class="normal">130</span>
-<span class="normal">131</span>
-<span class="normal">132</span>
-<span class="normal">133</span>
-<span class="normal">134</span>
-<span class="normal">135</span>
-<span class="normal">136</span>
-<span class="normal">137</span>
-<span class="normal">138</span>
-<span class="normal">139</span>
-<span class="normal">140</span>
-<span class="normal">141</span>
-<span class="normal">142</span>
-<span class="normal">143</span>
-<span class="normal">144</span>
-<span class="normal">145</span>
-<span class="normal">146</span>
-<span class="normal">147</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">147</span>
 <span class="normal">148</span>
 <span class="normal">149</span>
 <span class="normal">150</span>
@@ -6496,7 +6494,26 @@ yaml files and outputs of other models.</p>
 <span class="normal">402</span>
 <span class="normal">403</span>
 <span class="normal">404</span>
-<span class="normal">405</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="normal">405</span>
+<span class="normal">406</span>
+<span class="normal">407</span>
+<span class="normal">408</span>
+<span class="normal">409</span>
+<span class="normal">410</span>
+<span class="normal">411</span>
+<span class="normal">412</span>
+<span class="normal">413</span>
+<span class="normal">414</span>
+<span class="normal">415</span>
+<span class="normal">416</span>
+<span class="normal">417</span>
+<span class="normal">418</span>
+<span class="normal">419</span>
+<span class="normal">420</span>
+<span class="normal">421</span>
+<span class="normal">422</span>
+<span class="normal">423</span>
+<span class="normal">424</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the energy consumption of each energy carrier based on the defined pathways and mandates and priority rules.</span>
 
@@ -6584,7 +6601,8 @@ yaml files and outputs of other models.</p>
                             <span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
                             <span class="n">modified_years</span> <span class="o">=</span> <span class="n">pathway_consumption</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">original</span><span class="o">.</span><span class="n">index</span><span class="p">][</span>
-                                <span class="n">pathway_consumption</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">original</span><span class="o">.</span><span class="n">index</span><span class="p">]</span> <span class="o">!=</span> <span class="n">original</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">original</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
+                                <span class="n">pathway_consumption</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">original</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
+                                <span class="o">!=</span> <span class="n">original</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">original</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
                             <span class="p">]</span>
 
                             <span class="k">if</span> <span class="ow">not</span> <span class="n">modified_years</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
