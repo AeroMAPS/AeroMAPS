@@ -922,15 +922,16 @@ if share_only and nosaf_only:
             ax.set_xlabel("Year")
             ax.set_xlim(2000, 2050)
 
-    # The coupled pathways are drawn thicker than the exogenous references, so
-    # that the reference reads as background and the result as foreground.
-    for line in all_axes[1][0].lines:
-        line.set_linewidth(2.6)
+    # The exogenous references are drawn thinner than the coupled pathways, so
+    # that the reference reads as background and the result as foreground. This
+    # is done by keeping them thin rather than by thickening the coupled lines
+    # in this panel alone, which would have given a group two different widths
+    # depending on which panel it was read in.
     for label, path in EXOGENOUS_TRAFFIC.items():
         exogenous = load_results(HERE / path, name=label)
         series = np.asarray(exogenous.data["vector_outputs"]["rpk"], dtype=float) * 1e-12
         years = np.arange(2000, 2000 + len(series))
-        all_axes[1][0].plot(years, series, color="black", linewidth=1.4,
+        all_axes[1][0].plot(years, series, color="black", linewidth=1.0,
                             linestyle=EXOGENOUS_STYLE[label], label=label, zorder=5)
 
     all_axes[0][0].legend(fontsize=8)
@@ -945,8 +946,10 @@ follows from it. Population is identical across the three and across both famili
 capita nearly so, since SSP2 is a single socioeconomic pathway and neither family touches the
 background; the two bands collapse onto one line there, leaving the carbon price, which spans a
 factor of 24 at 2050, as the only driver separating the six pathways below. The traffic panel also
-carries the reports' own three exogenous forecasts in black, at the thinner weight, against which
-both coupled families are drawn thicker: those forecasts carry no demand response at all. The gap
+carries the reports' own three exogenous forecasts as thin black lines, which carry no demand
+response at all. Line weight ranks the three: the SAF mandate heaviest, the exogenous
+forecasts next, and the no-SAF counterfactual lightest, each keeping its weight in every
+panel so a family reads the same wherever it is met. The gap
 between the two bands is what the SAF mandate's own cost does to traffic, and it grows with the
 carbon price precisely because fossil kerosene is both the cheapest and the dirtiest pathway
 available: at 2050, removing SAF turns a 15.0 % demand reduction into a 35.6 % one under SSP2-1.9,
@@ -1034,20 +1037,45 @@ if share_only and nosaf_only:
     # sharey=True, not "row": scaling the two rows independently would make the
     # SAF and no-SAF panels look more alike than they are, and the distance
     # between them is the whole point of the figure.
-    fig, axes = plt.subplots(2, len(ssp_columns), figsize=(15.6, 8.4),
+    fig, axes = plt.subplots(2, len(ssp_columns), figsize=(17.4, 8.4),
                              sharey=True, layout="constrained")
-    last_col = len(ssp_columns) - 1
+    # Only the leftmost panel of each row keeps its legend; the others would
+    # repeat it over the stacks they describe.
     for col, pathway in enumerate(ssp_columns):
         nosaf_only[pathway].plot("doc_net_energy_per_rpk_breakdown", fig=fig, ax=axes[0, col],
-                                 legend=col == last_col)
+                                 legend=col == 0)
         share_only[pathway].plot("doc_net_energy_per_rpk_breakdown", fig=fig, ax=axes[1, col],
-                                 legend=False)
+                                 legend=col == 0)
         axes[0, col].set_title(f"{with_warming(pathway)} -- no SAF")
         axes[1, col].set_title(f"{with_warming(pathway)} -- SAF (fixed share)")
         for ax in (axes[0, col], axes[1, col]):
             ax.set_xlim(2020, 2050)
     for ax in axes[:, 1:].ravel():
         ax.set_ylabel("")
+
+    # One legend per row, both outside to the left. Each row needs its own: the
+    # no-SAF row burns fossil kerosene alone, so a single shared legend would
+    # name pathways that half the figure never draws. The plot class puts two
+    # legends inside the axes, the carriers and the hatch keys, and both are
+    # built from proxy handles that get_legend_handles_labels does not see, so
+    # they are read off the legend artists themselves and merged into one.
+    from matplotlib.legend import Legend
+
+    for row in (0, 1):
+        ax = axes[row, 0]
+        existing, seen = [], set()
+        for artist in [*ax.artists, ax.get_legend()]:
+            if isinstance(artist, Legend) and id(artist) not in seen:
+                seen.add(id(artist))
+                existing.append(artist)
+        handles, names = [], []
+        for legend in existing:
+            handles += list(getattr(legend, "legend_handles", None)
+                            or getattr(legend, "legendHandles", []))
+            names += [text.get_text() for text in legend.get_texts()]
+            legend.remove()
+        ax.legend(handles, names, loc="center right", bbox_to_anchor=(-0.20, 0.5),
+                  frameon=False, fontsize=7)
     save_fig(fig, name="doc_breakdown")
 ```
 
