@@ -1037,10 +1037,13 @@ if share_only and nosaf_only:
     # sharey=True, not "row": scaling the two rows independently would make the
     # SAF and no-SAF panels look more alike than they are, and the distance
     # between them is the whole point of the figure.
-    fig, axes = plt.subplots(2, len(ssp_columns), figsize=(17.4, 8.4),
+    fig, axes = plt.subplots(2, len(ssp_columns), figsize=(15.6, 8.4),
                              sharey=True, layout="constrained")
-    # Only the leftmost panel of each row keeps its legend; the others would
-    # repeat it over the stacks they describe.
+    # Only the leftmost panel of each row keeps its legends, drawn as the plot
+    # class draws them: the carriers, and the hatched cost components. Each row
+    # needs its own pair, since the no-SAF row burns fossil kerosene alone and a
+    # shared legend would name pathways half the figure never draws. The other
+    # columns would only repeat them over the stacks they describe.
     for col, pathway in enumerate(ssp_columns):
         nosaf_only[pathway].plot("doc_net_energy_per_rpk_breakdown", fig=fig, ax=axes[0, col],
                                  legend=col == 0)
@@ -1052,30 +1055,6 @@ if share_only and nosaf_only:
             ax.set_xlim(2020, 2050)
     for ax in axes[:, 1:].ravel():
         ax.set_ylabel("")
-
-    # One legend per row, both outside to the left. Each row needs its own: the
-    # no-SAF row burns fossil kerosene alone, so a single shared legend would
-    # name pathways that half the figure never draws. The plot class puts two
-    # legends inside the axes, the carriers and the hatch keys, and both are
-    # built from proxy handles that get_legend_handles_labels does not see, so
-    # they are read off the legend artists themselves and merged into one.
-    from matplotlib.legend import Legend
-
-    for row in (0, 1):
-        ax = axes[row, 0]
-        existing, seen = [], set()
-        for artist in [*ax.artists, ax.get_legend()]:
-            if isinstance(artist, Legend) and id(artist) not in seen:
-                seen.add(id(artist))
-                existing.append(artist)
-        handles, names = [], []
-        for legend in existing:
-            handles += list(getattr(legend, "legend_handles", None)
-                            or getattr(legend, "legendHandles", []))
-            names += [text.get_text() for text in legend.get_texts()]
-            legend.remove()
-        ax.legend(handles, names, loc="center right", bbox_to_anchor=(-0.20, 0.5),
-                  frameon=False, fontsize=7)
     save_fig(fig, name="doc_breakdown")
 ```
 
