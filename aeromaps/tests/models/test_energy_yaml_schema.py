@@ -110,7 +110,7 @@ def test_emission_factor_under_economics_is_rejected():
     data["pw"]["inputs"]["environmental"] = {}
     data["pw"]["inputs"]["economics"]["mean_co2_emission_factor_without_resource"] = 20.0
 
-    with pytest.raises(ValueError, match="do not register the 'economics' block"):
+    with pytest.raises(ValueError, match="belongs under 'environmental', not 'economics'"):
         validate_energy_carriers_data(data, "carriers.yaml")
 
 
@@ -120,7 +120,7 @@ def test_mfsp_under_environmental_is_rejected():
     data["pw"]["inputs"]["economics"] = {}
     data["pw"]["inputs"]["environmental"]["mean_mfsp_without_resource"] = 0.02
 
-    with pytest.raises(ValueError, match="do not register the 'environmental' block"):
+    with pytest.raises(ValueError, match="belongs under 'economics', not 'environmental'"):
         validate_energy_carriers_data(data, "carriers.yaml")
 
 
@@ -190,17 +190,27 @@ def test_optional_inputs_may_simply_be_absent():
     validate_energy_carriers_data(data, "carriers.yaml")
 
 
-def test_technical_block_accepts_keys_of_both_readers():
-    """``technical`` is registered by every model, so a key sitting there is still read.
+@pytest.mark.parametrize(
+    "key, belongs_under",
+    [
+        ("mean_co2_emission_factor_without_resource", "environmental"),
+        ("mean_mfsp_without_resource", "economics"),
+    ],
+)
+def test_a_key_under_technical_is_rejected_even_though_it_would_be_read(key, belongs_under):
+    """Placement is exact, not merely workable.
 
-    Three ``icas_2024`` pathways put ``mean_co2_emission_factor_without_resource`` under
-    ``technical``. That is harmless and must not be "fixed".
+    ``technical`` happens to be registered by every model, so these keys would still reach
+    their reader from there -- three ``icas_2024`` pathways relied on that, and have been
+    moved. Tolerating it would leave the files without a single answer to "where does this
+    belong", so it is rejected.
     """
-    data = _pathway(mean_co2_emission_factor_without_resource=88.7, mean_mfsp_without_resource=0.01)
+    data = _pathway(**{key: 1.0})
     data["pw"]["inputs"]["environmental"] = {}
     data["pw"]["inputs"]["economics"] = {}
 
-    validate_energy_carriers_data(data, "carriers.yaml")
+    with pytest.raises(ValueError, match=f"belongs under '{belongs_under}', not 'technical'"):
+        validate_energy_carriers_data(data, "carriers.yaml")
 
 
 @pytest.mark.parametrize("mandate_type", EnergyUseChoice.MANDATE_TYPES)
@@ -259,17 +269,32 @@ def test_energy_use_choice_refuses_an_unknown_mandate_type():
 
 def test_vocabulary_is_collected_from_the_models():
     """The allow-list is derived, not transcribed: the templates disagree with the code."""
-    assert PATHWAY_KEY_BLOCKS["mandate_type"] == frozenset({"mandate"})
-    # Read by the environmental models only, which register 'environmental' and 'technical'.
-    assert PATHWAY_KEY_BLOCKS["mean_co2_emission_factor_without_resource"] == frozenset(
-        {"environmental", "technical"}
-    )
-    # Read by the cost models only.
-    assert PATHWAY_KEY_BLOCKS["mean_mfsp_without_resource"] == frozenset({"economics", "technical"})
-    # Read by models registering different blocks, so only their intersection is left.
-    assert PATHWAY_KEY_BLOCKS["eis_plant_lifespan"] == frozenset({"technical"})
-    assert PROCESS_KEY_BLOCKS["resource_names"] == frozenset({"technical"})
+    assert PATHWAY_KEY_BLOCKS["mandate_type"] == "mandate"
+    assert PATHWAY_KEY_BLOCKS["mean_co2_emission_factor_without_resource"] == "environmental"
+    assert PATHWAY_KEY_BLOCKS["mean_mfsp_without_resource"] == "economics"
+    assert PATHWAY_KEY_BLOCKS["eis_plant_lifespan"] == "technical"
+    assert PROCESS_KEY_BLOCKS["resource_names"] == "technical"
     assert {"cost", "subsidy", "tax", "availability"} <= RESOURCE_SPECIFICATION_KEYS
+
+
+def test_models_agree_on_where_every_shared_key_belongs():
+    """Several models declare the same key; the collection refuses a disagreement."""
+    shared = ("resource_names", "eis_plant_lifespan", "kerosene_selectivity")
+    for key in shared:
+        assert isinstance(PATHWAY_KEY_BLOCKS[key], str)
+
+    class _Dissenter:
+        PATHWAY_INPUT_KEYS = {"economics": ("resource_names",)}
+
+    import aeromaps.models.impacts.generic_energy_model.common.yaml_schema as schema
+
+    original = schema.ENERGY_MODELS
+    schema.ENERGY_MODELS = original + (_Dissenter,)
+    try:
+        with pytest.raises(ValueError, match="declares 'resource_names' under 'economics'"):
+            schema._key_blocks("PATHWAY_INPUT_KEYS")
+    finally:
+        schema.ENERGY_MODELS = original
 
 
 def _referenced_energy_files():

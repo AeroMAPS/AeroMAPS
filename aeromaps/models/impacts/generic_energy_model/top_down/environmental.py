@@ -29,29 +29,30 @@ class TopDownEnvironmental(AeroMAPSModel):
 
     MODEL_APPROACH = "top_down"
 
-    #: Blocks of a pathway's ``inputs`` this model registers, and the keys it takes from them.
-    #: Collected by ``common/yaml_schema.py`` to validate the energy YAML files.
-    PATHWAY_INPUT_BLOCKS = ("environmental", "technical")
-    PATHWAY_INPUT_KEYS = (
-        "mean_co2_emission_factor_without_resource",
-        "emission_index",
-        "kerosene_selectivity",
-        "resource_names",
-        "processes_names",
-        "resource_specific_consumption",
-        "lhv",
-        "plant_lifespan",
-        "plant_load_factor",
-    )
+    #: Keys this model takes from each block of a pathway's ``inputs``. Collected by
+    #: ``common/yaml_schema.py`` to validate the energy YAML files; a key belongs to exactly
+    #: one block, and models declaring the same key must agree on it.
+    PATHWAY_INPUT_KEYS = {
+        "environmental": (
+            "mean_co2_emission_factor_without_resource",
+            "emission_index",
+        ),
+        "technical": (
+            "kerosene_selectivity",
+            "resource_names",
+            "processes_names",
+            "resource_specific_consumption",
+            "lhv",
+            "plant_lifespan",
+            "plant_load_factor",
+        ),
+    }
 
-    #: Same, for the processes a pathway declares. ``economics`` is registered wholesale
-    #: although this model reads nothing from it.
-    PROCESS_INPUT_BLOCKS = ("environmental", "technical", "economics")
-    PROCESS_INPUT_KEYS = (
-        "mean_co2_emission_factor_without_resource",
-        "resource_names",
-        "resource_specific_consumption",
-    )
+    #: Same, for the processes a pathway declares.
+    PROCESS_INPUT_KEYS = {
+        "environmental": ("mean_co2_emission_factor_without_resource",),
+        "technical": ("resource_names", "resource_specific_consumption"),
+    }
 
     #: Keys of a resource's ``specifications`` this model reads.
     RESOURCE_INPUT_KEYS = ("co2_emission_factor",)
@@ -323,7 +324,11 @@ class TopDownEnvironmental(AeroMAPSModel):
                 f"{self.pathway_name}_{process_key}_without_resources_mean_co2_emission_factor"
             ] = co2_emission_factor_process
 
-            co2_emission_factor = co2_emission_factor.add(co2_emission_factor_process)
+            # fill_value=0 for the same reason as every other addition in this method: a
+            # process factor declared with an empty `years:` list is interpolated from the
+            # prospection start year only, and its shorter index must not poison the
+            # pathway emission factor over the historical years.
+            co2_emission_factor = co2_emission_factor.add(co2_emission_factor_process, fill_value=0)
 
         # Store the total CO2 emission factor in the dataframe
         output_data[f"{self.pathway_name}_mean_co2_emission_factor"] = co2_emission_factor

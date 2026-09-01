@@ -36,30 +36,34 @@ class TopDownCost(AeroMAPSModel):
 
     MODEL_APPROACH = "top_down"
 
-    #: Blocks of a pathway's ``inputs`` this model registers, and the keys it takes from them.
-    #: Collected by ``common/yaml_schema.py`` to validate the energy YAML files.
-    PATHWAY_INPUT_BLOCKS = ("economics", "technical")
-    PATHWAY_INPUT_KEYS = (
-        "mean_mfsp_without_resource",
-        "mean_unit_subsidy_without_resource",
-        "mean_unit_tax_without_resource",
-        "resource_names",
-        "processes_names",
-        "resource_specific_consumption",
-        "lhv",
-        "plant_lifespan",
-        "plant_load_factor",
-    )
+    #: Keys this model takes from each block of a pathway's ``inputs``. Collected by
+    #: ``common/yaml_schema.py`` to validate the energy YAML files; a key belongs to exactly
+    #: one block, and models declaring the same key must agree on it.
+    PATHWAY_INPUT_KEYS = {
+        "economics": (
+            "mean_mfsp_without_resource",
+            "mean_unit_subsidy_without_resource",
+            "mean_unit_tax_without_resource",
+        ),
+        "technical": (
+            "resource_names",
+            "processes_names",
+            "resource_specific_consumption",
+            "lhv",
+            "plant_lifespan",
+            "plant_load_factor",
+        ),
+    }
 
     #: Same, for the processes a pathway declares.
-    PROCESS_INPUT_BLOCKS = ("economics", "technical")
-    PROCESS_INPUT_KEYS = (
-        "mean_mfsp_without_resource",
-        "mean_unit_subsidy_without_resource",
-        "mean_unit_tax_without_resource",
-        "resource_names",
-        "resource_specific_consumption",
-    )
+    PROCESS_INPUT_KEYS = {
+        "economics": (
+            "mean_mfsp_without_resource",
+            "mean_unit_subsidy_without_resource",
+            "mean_unit_tax_without_resource",
+        ),
+        "technical": ("resource_names", "resource_specific_consumption"),
+    }
 
     #: Keys of a resource's ``specifications`` this model reads.
     RESOURCE_INPUT_KEYS = ("cost", "subsidy", "tax")

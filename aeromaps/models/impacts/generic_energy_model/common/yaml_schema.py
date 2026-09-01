@@ -15,13 +15,14 @@ distinguishing signal is that a misspelling produces an *unknown* key, whereas a
 absent optional input produces *no* key at all. Those two cases are separable at load time,
 which a strict lookup cannot do.
 
-The accepted vocabulary is not written down here. Each energy model declares the ``inputs``
-blocks it registers and the keys it consumes from them, and this module collects those
-declarations:
+The accepted vocabulary is not written down here. Each energy model declares, per ``inputs``
+block, the keys it consumes from that block, and this module collects those declarations: a key
+is known only under the one block it is declared in. Models must agree on that block, which
+:func:`_key_blocks` checks at import.
 
-* a key is **known** if some model declares it;
-* a key may sit in a **block** only if every model that reads it registers that block, since a
-  model only ever sees the blocks it registers — hence the intersection in :func:`_key_blocks`.
+Placement is exact. Several blocks happen to be registered by more than one model, so a key
+written under the wrong one would still be read — but relying on that would leave the files
+without a single answer to "where does this belong", so it is rejected all the same.
 """
 
 from aeromaps.models.impacts.energy_resources.energy_resources import (
@@ -88,34 +89,42 @@ NESTED_KEYS = {
 RESOURCE_KEYED_MAPPINGS = ("resource_specific_consumption", "eis_resource_specific_consumption")
 
 
-def _key_blocks(blocks_attribute, keys_attribute):
-    """Map each declared key to the ``inputs`` blocks it may be written in.
+def _key_blocks(attribute):
+    """Map each declared key to the one ``inputs`` block it must be written in.
 
     Parameters
     ----------
-    blocks_attribute : str
-        Name of the model attribute listing the blocks the model registers.
-    keys_attribute : str
-        Name of the model attribute listing the keys the model consumes.
+    attribute : str
+        Name of the model attribute mapping a block to the keys the model consumes from it.
 
     Returns
     -------
     dict
-        Key to the frozen set of blocks it may sit in. A key must be visible to *every* model
-        that reads it, and a model only sees the blocks it registers, so the blocks a key may
-        sit in are the intersection over its readers.
+        Key to its block.
+
+    Raises
+    ------
+    ValueError
+        If two models place the same key in different blocks. There would then be no single
+        right answer for a configuration file to give.
     """
-    allowed = {}
+    blocks = {}
+    origin = {}
     for model in ENERGY_MODELS:
-        blocks = frozenset(getattr(model, blocks_attribute, ()))
-        for key in getattr(model, keys_attribute, ()):
-            allowed[key] = allowed[key] & blocks if key in allowed else blocks
-    return allowed
+        for block, keys in getattr(model, attribute, {}).items():
+            for key in keys:
+                if blocks.setdefault(key, block) != block:
+                    raise ValueError(
+                        f"{model.__name__} declares '{key}' under '{block}' while "
+                        f"{origin[key]} declares it under '{blocks[key]}'."
+                    )
+                origin[key] = model.__name__
+    return blocks
 
 
-PATHWAY_KEY_BLOCKS = _key_blocks("PATHWAY_INPUT_BLOCKS", "PATHWAY_INPUT_KEYS")
+PATHWAY_KEY_BLOCKS = _key_blocks("PATHWAY_INPUT_KEYS")
 
-PROCESS_KEY_BLOCKS = _key_blocks("PROCESS_INPUT_BLOCKS", "PROCESS_INPUT_KEYS")
+PROCESS_KEY_BLOCKS = _key_blocks("PROCESS_INPUT_KEYS")
 
 #: Resources have no blocks: their ``specifications`` mapping is flattened as a whole.
 RESOURCE_SPECIFICATION_KEYS = frozenset().union(
@@ -124,13 +133,13 @@ RESOURCE_SPECIFICATION_KEYS = frozenset().union(
 
 
 def _known_blocks(key_blocks):
-    """Return the set of block names any model registers."""
-    return frozenset().union(*key_blocks.values()) if key_blocks else frozenset()
+    """Return the set of block names any model declares keys in."""
+    return frozenset(key_blocks.values())
 
 
 def _accepted_in(block, key_blocks):
-    """Return the sorted keys accepted in ``block``."""
-    return sorted(key for key, blocks in key_blocks.items() if block in blocks)
+    """Return the sorted keys that belong in ``block``."""
+    return sorted(key for key, declared in key_blocks.items() if declared == block)
 
 
 def _check_entry_keys(entry, accepted, location, problems):
@@ -192,17 +201,16 @@ def _check_blocks(entry, entry_name, key_blocks, file_name, problems):
             problems.append(f"{location}: expected a mapping, got {type(content).__name__}.")
             continue
         for key, value in content.items():
-            blocks = key_blocks.get(key)
-            if blocks is None:
+            declared_block = key_blocks.get(key)
+            if declared_block is None:
                 problems.append(
                     f"{location}.{key}: unknown key, no energy model reads it. Accepted in "
                     f"'{block}': {', '.join(_accepted_in(block, key_blocks))}."
                 )
-            elif block not in blocks:
+            elif declared_block != block:
                 problems.append(
-                    f"{location}.{key}: the models that read this key do not register the "
-                    f"'{block}' block, so it would be read as zero. Write it under "
-                    f"{' or '.join(repr(name) for name in sorted(blocks))}."
+                    f"{location}.{key}: this key belongs under '{declared_block}', not "
+                    f"'{block}'."
                 )
             else:
                 _check_nested(key, value, entry_name, location, resource_names, problems)

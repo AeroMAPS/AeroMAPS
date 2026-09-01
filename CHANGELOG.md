@@ -3,7 +3,8 @@
 ## Unreleased
 
 Changed:
-- Energy carriers, processes and resources yaml files are validated at load time: a key no energy model reads is now rejected instead of silently resolving to zero. The accepted vocabulary is collected from the energy models themselves. (#158)
+- Energy carriers, processes and resources yaml files are validated at load time: a key no energy model reads is now rejected instead of silently resolving to zero. The accepted vocabulary is collected from the energy models themselves, each key belonging to exactly one `inputs` block. (#158)
+- Moved `fossil_kerosene`'s emission factor from `technical:` to `environmental:` in the three `icas_2024` energy carriers files. It was read from either block, so no result changes. (#158)
 - Documented `mandate_type: "quantity"` and `mandate_quantity`, and corrected the subsidy keys, in the shipped energy templates. (#158)
 
 Fixed:

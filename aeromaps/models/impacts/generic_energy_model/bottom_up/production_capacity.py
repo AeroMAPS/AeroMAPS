@@ -35,22 +35,25 @@ class BottomUpCapacity(AeroMAPSModel):
 
     MODEL_APPROACH = "bottom_up"
 
-    #: Blocks of a pathway's ``inputs`` this model registers, and the keys it takes from them.
-    #: Collected by ``common/yaml_schema.py`` to validate the energy YAML files.
-    PATHWAY_INPUT_BLOCKS = ("technical",)
-    PATHWAY_INPUT_KEYS = (
-        "technology_introduction_year",
-        "technology_introduction_volume",
-        "eis_plant_lifespan",
-        "eis_plant_load_factor",
-        "resource_names",
-        "processes_names",
-        "eis_resource_specific_consumption",
-    )
+    #: Keys this model takes from each block of a pathway's ``inputs``. Collected by
+    #: ``common/yaml_schema.py`` to validate the energy YAML files; a key belongs to exactly
+    #: one block, and models declaring the same key must agree on it.
+    PATHWAY_INPUT_KEYS = {
+        "technical": (
+            "technology_introduction_year",
+            "technology_introduction_volume",
+            "eis_plant_lifespan",
+            "eis_plant_load_factor",
+            "resource_names",
+            "processes_names",
+            "eis_resource_specific_consumption",
+        ),
+    }
 
     #: Same, for the processes a pathway declares.
-    PROCESS_INPUT_BLOCKS = ("technical",)
-    PROCESS_INPUT_KEYS = ("resource_names", "eis_resource_specific_consumption", "load_factor")
+    PROCESS_INPUT_KEYS = {
+        "technical": ("resource_names", "eis_resource_specific_consumption", "load_factor"),
+    }
 
     #: Keys of a resource's ``specifications`` this model reads.
     RESOURCE_INPUT_KEYS = ("load_factor",)
