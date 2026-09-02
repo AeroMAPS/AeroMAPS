@@ -30,6 +30,10 @@ __pycache__/
 /aeromaps/notebooks/private/
 /aeromaps/notebooks/tutorials/07_life_cycle_assessment/data/config_files/lca/tmp/
 /aeromaps/notebooks/publications/ecats_2026/data/config_files/lca/tmp/
+# The LCA cache the process writes and re-reads; 49 MB rewritten by every suite run.
+/aeromaps/tests/tested_configs/tmp/
+# Written by regions_scaleup_time.ipynb, which calls it TMP_YAML.
+/aeromaps/notebooks/publications/_a_r_m/_tmp_scaling_run.yaml
 aeromaps/notebooks/tutorials/11_custom_markets_multi_regions/custom_data_excel/~$Classeur1.xlsx
 aeromaps/notebooks/tutorials/11_custom_markets_multi_regions/custom_data_excel/Classeur1.xlsx
 aeromaps/notebooks/tutorials/11_custom_markets_multi_regions/custom_data_excel/aeromaps_custom_inputs.xlsx
