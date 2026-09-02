@@ -194,6 +194,15 @@ def test_solver_stops_on_a_flat_response():
     assert len(calls) == 2
 
 
+def test_solver_handles_a_zero_target():
+    """A zero target has no relative scale, so the tolerance must read as absolute.
+
+    Dividing by the target instead raises, the same failure the flat-response case
+    above guards against. The root of ``a - 3`` at a target of zero is a = 3.
+    """
+    assert solve_scale_for_target(lambda a: a - 3.0, 0.0, (1.0, 5.0)) == pytest.approx(3.0)
+
+
 def test_solver_respects_the_iteration_cap():
     calls = []
 

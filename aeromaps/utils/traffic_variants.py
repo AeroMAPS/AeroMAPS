@@ -90,7 +90,8 @@ def solve_scale_for_target(evaluate, target, bracket, tol=5e-4, max_iter=12):
         Two starting factors. They need not bracket the root -- the secant method
         does not require it -- but a pair straddling it converges fastest.
     tol : float, optional
-        Relative tolerance on ``target``.
+        Relative tolerance on ``target``, or absolute when ``target`` is zero,
+        which has no relative scale to be measured against.
     max_iter : int, optional
         Cap on iterations. Secant can stall on a flat or noisy response, so this
         bounds the work rather than promising convergence.
@@ -103,8 +104,12 @@ def solve_scale_for_target(evaluate, target, bracket, tol=5e-4, max_iter=12):
     """
     a, b = bracket
     fa, fb = evaluate(a) - target, evaluate(b) - target
+    # A zero target has no relative scale, so tol reads as absolute there. Dividing
+    # by it instead would raise, which is the same failure the flat-secant guard
+    # below already takes care to avoid. For any other target this is unchanged.
+    scale = abs(target) or 1.0
     for _ in range(max_iter):
-        if abs(fb) / abs(target) < tol:
+        if abs(fb) / scale < tol:
             break
         if fb == fa:
             # A flat secant cannot propose a next point; stop rather than divide

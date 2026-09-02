@@ -1,5 +1,4 @@
 import yaml
-import warnings
 from aeromaps.models.base import AeroMapsCustomDataType
 
 
@@ -41,6 +40,12 @@ def aeromaps_custom_data_type_representer(dumper, data):
 
 
 yaml.add_representer(AeroMapsCustomDataType, aeromaps_custom_data_type_representer)
+# add_representer registers on yaml.Dumper only, which is what write_yaml_file uses.
+# Registering on SafeDumper too costs nothing and keeps safe_dump working for any
+# caller that reaches for it, rather than failing with a RepresenterError.
+yaml.add_representer(
+    AeroMapsCustomDataType, aeromaps_custom_data_type_representer, Dumper=yaml.SafeDumper
+)
 
 
 def read_yaml_file(file_name="parameters.yaml"):
@@ -76,9 +81,7 @@ def read_yaml_file(file_name="parameters.yaml"):
     except yaml.YAMLError as e:
         raise yaml.YAMLError(f"Invalid YAML in '{file_name}': {e}") from e
     if not isinstance(data, dict):
-        raise ValueError(
-            f"Expected a YAML mapping in '{file_name}', got {type(data).__name__}"
-        )
+        raise ValueError(f"Expected a YAML mapping in '{file_name}', got {type(data).__name__}")
     return data
 
 
