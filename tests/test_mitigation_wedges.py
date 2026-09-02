@@ -18,8 +18,8 @@ ATAG = (
     Path(__file__).resolve().parents[1]
     / "aeromaps"
     / "notebooks"
-    / "scenarios"
-    / "02_atag_waypoint2050"
+    / "publications"
+    / "atag_scenarios"
 )
 FULL = ATAG / "3rd_edition_full" / "data_outputs"
 

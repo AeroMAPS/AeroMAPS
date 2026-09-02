@@ -39,22 +39,15 @@ What is tested
 """
 
 import os
-from pathlib import Path
 
 import pytest
 
 from aeromaps import create_process
+from aeromaps.utils.scenarios import find_scenario
 
-ATAG = (
-    Path(__file__).resolve().parents[1]
-    / "aeromaps"
-    / "notebooks"
-    / "scenarios"
-    / "02_atag_waypoint2050"
-)
 # The third-edition S1 energy file is the repository's richest quantity-mandate
 # case: eight drop-in pathways, all mandated by volume.
-EDITION = ATAG / "3rd_edition_full"
+EDITION = find_scenario("atag_3rd_edition_full").path
 CONFIG = "./config_files/config_s1.yaml"
 
 

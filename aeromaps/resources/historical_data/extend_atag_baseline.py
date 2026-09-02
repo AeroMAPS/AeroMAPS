@@ -62,14 +62,19 @@ import json
 import sys
 from pathlib import Path
 
+from aeromaps.utils.scenarios import find_scenario, scenarios_root
+
 HERE = Path(__file__).parent
 REPO = HERE.parents[2]
 
 TIDY_CSV = HERE / "world_air_transport_traffic_1929_2024.csv"
 PARTITIONING = REPO / "aeromaps" / "resources" / "data" / "partitioning_inputs.json"
 PARAMETERS = REPO / "aeromaps" / "resources" / "data" / "parameters.json"
-ATAG = REPO / "aeromaps" / "notebooks" / "scenarios" / "02_atag_waypoint2050"
-ATAG_S1 = ATAG / "3rd_edition_full" / "data_outputs" / "s1.json"
+# The scenario inputs this script rewrites ship with the package; the S1 result it
+# reads is a published one and lives with the publication that reports it.
+ATAG_PUBLICATION = REPO / "aeromaps" / "notebooks" / "publications" / "atag_scenarios"
+ATAG_S1 = ATAG_PUBLICATION / "3rd_edition_full" / "data_outputs" / "s1.json"
+
 
 # The third-edition scenarios, the only ones that take the extended baseline. The
 # second edition deliberately stays on its 2020 baseline and says so in its own
@@ -77,13 +82,17 @@ ATAG_S1 = ATAG / "3rd_edition_full" / "data_outputs" / "s1.json"
 # rpk_init and both year bounds, but drew the other six series from the defaults,
 # so on its own it would run 2020-2023 with no observed capacity and FaIR would
 # be handed NaN emissions.
+def _inputs(scenario):
+    return find_scenario(scenario).path / "data_inputs"
+
+
 TARGETS = (
     [
-        ATAG / "3rd_edition_full" / "data_inputs" / f"{s}_inputs.json"
+        _inputs("atag_3rd_edition_full") / f"{s}_inputs.json"
         for s in ("s1", "s2", "t0", "t1", "t2", "t3", "t4")
     ]
-    + [ATAG / "3rd_edition_light" / "data_inputs" / f"{s}_inputs.json" for s in ("s0", "s1", "s2")]
-    + [ATAG / "3rd_edition_full_coupled_demand" / "data_inputs" / "s1_inputs.json"]
+    + [_inputs("atag_3rd_edition_light") / f"{s}_inputs.json" for s in ("s0", "s1", "s2")]
+    + [_inputs("atag_3rd_edition_coupled_demand") / "s1_inputs.json"]
 )
 
 # The coupled-demand scenario supplies its own historical RPK, an AR6-consistent
@@ -91,7 +100,7 @@ TARGETS = (
 # deliberate scenario choice, so this script fills its six missing series and
 # leaves rpk_init to it.
 KEEP_EXISTING = {
-    ATAG / "3rd_edition_full_coupled_demand" / "data_inputs" / "s1_inputs.json": {"rpk_init"},
+    _inputs("atag_3rd_edition_coupled_demand") / "s1_inputs.json": {"rpk_init"},
 }
 
 PROSPECTION_START_YEAR = 2024
@@ -188,7 +197,7 @@ def build(check=False):
         ]
         print(
             f"out of date: {len(stale)}"
-            + ("".join(f"\n  {t.relative_to(ATAG)}" for t in stale) if stale else "")
+            + ("".join(f"\n  {t.relative_to(scenarios_root())}" for t in stale) if stale else "")
         )
         return
 
@@ -197,7 +206,7 @@ def build(check=False):
         keep = KEEP_EXISTING.get(target, set())
         doc.update({k: v for k, v in block.items() if k not in keep})
         target.write_text(json.dumps(doc, indent=4).replace("\n", "\r\n") + "\r\n", newline="")
-        print(f"stamped {target.relative_to(ATAG)}")
+        print(f"stamped {target.relative_to(scenarios_root())}")
     print(
         f"{len(TARGETS)} scenario inputs now observed through {NEW_LAST_YEAR}, "
         f"prospection start {PROSPECTION_START_YEAR}; rtk level correction {rtk_factor:.4f}"

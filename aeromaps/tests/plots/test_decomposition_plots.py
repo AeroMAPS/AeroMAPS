@@ -15,7 +15,7 @@ from aeromaps.plots.multi_scenario import MitigationWedgeComparison
 from aeromaps.utils.results_view import load_results
 
 # parents[2] is the aeromaps package directory: .../aeromaps/tests/plots/<this>
-ATAG = Path(__file__).resolve().parents[2] / "notebooks" / "scenarios" / "02_atag_waypoint2050"
+ATAG = Path(__file__).resolve().parents[2] / "notebooks" / "publications" / "atag_scenarios"
 FULL = ATAG / "3rd_edition_full" / "data_outputs"
 
 pytestmark = pytest.mark.skipif(

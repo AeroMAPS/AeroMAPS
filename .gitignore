@@ -16,18 +16,21 @@ __pycache__/
 
 # MyST build output and the sweep's throwaway configurations, which are
 # regenerated on every run and must never be committed.
-/aeromaps/notebooks/scenarios/02_atag_waypoint2050/_build/
-/aeromaps/notebooks/scenarios/02_atag_waypoint2050/exports/
-/aeromaps/notebooks/scenarios/02_atag_waypoint2050/3rd_edition_variants/_generated/
+/aeromaps/notebooks/publications/atag_scenarios/_build/
+/aeromaps/notebooks/publications/atag_scenarios/exports/
+/aeromaps/notebooks/publications/atag_scenarios/3rd_edition_variants/_generated/
 # The avoided-emissions paper is a second MyST project in the same tree,
 # with its own build and export directories.
-/aeromaps/notebooks/scenarios/02_atag_waypoint2050/avoided_emissions/_build/
-/aeromaps/notebooks/scenarios/02_atag_waypoint2050/avoided_emissions/exports/
+/aeromaps/notebooks/publications/atag_scenarios/avoided_emissions/_build/
+/aeromaps/notebooks/publications/atag_scenarios/avoided_emissions/exports/
 # Region configs rebaselined onto this scenario's own historic window by
 # aggregate_regions_to_single_process; regenerated on every run.
-/aeromaps/notebooks/scenarios/02_atag_waypoint2050/3rd_edition_light/config_files/_rebaselined/
+/aeromaps/resources/scenarios/atag_3rd_edition_light/config_files/_rebaselined/
 
 /aeromaps/notebooks/private/
+# The sandbox prepare_scenario copies a reference scenario into, so a notebook
+# run never edits the packaged originals.
+/workdir/
 /aeromaps/notebooks/tutorials/07_life_cycle_assessment/data/config_files/lca/tmp/
 /aeromaps/notebooks/publications/ecats_2026/data/config_files/lca/tmp/
 # The LCA cache the process writes and re-reads; 49 MB rewritten by every suite run.

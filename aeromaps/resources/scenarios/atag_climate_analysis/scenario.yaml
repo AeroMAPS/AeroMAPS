@@ -1,0 +1,6 @@
+name: "ATAG Waypoint 2050, climate analysis"
+category: academic
+tags: ["atag variants", "climate", "exogenous demand"]
+description: >-
+  Per-mechanism temperature decomposition of the ATAG scenarios, with non-CO2
+  uncertainty bands and contrail-avoidance variants.

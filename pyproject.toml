@@ -79,7 +79,7 @@ mkdocstrings = { version = "^0.30.0", extras = ["python"] }
 mike = "^2.0.0"
 
 [tool.poetry.group.paper.dependencies]
-# MyST project under aeromaps/notebooks/scenarios/02_atag_waypoint2050/.
+# MyST project under aeromaps/notebooks/publications/atag_scenarios/.
 # Kept out of the `doc` group because MyST and MkDocs are different markdown
 # dialects and are built separately.
 mystmd = "^1.3"

@@ -11,8 +11,6 @@ well-to-wake value instead, which is the method the third edition adopted
 precisely to avoid importing that rounding.
 """
 
-from pathlib import Path
-
 import pytest
 
 from aeromaps.models.base import AeroMapsCustomDataType
@@ -26,17 +24,13 @@ from aeromaps.utils.emission_scopes import (
     lifecycle_to_corsia,
     processes_to_corsia,
 )
+from aeromaps.utils.scenarios import find_scenario
 from aeromaps.utils.yaml import read_yaml_file
 
-ATAG = (
-    Path(__file__).resolve().parents[1]
-    / "aeromaps"
-    / "notebooks"
-    / "scenarios"
-    / "02_atag_waypoint2050"
-)
-FULL = ATAG / "3rd_edition_full" / "data_inputs"
-LIGHT = ATAG / "3rd_edition_light" / "data_inputs"
+# The scenario definitions ship with the package; their results stay with the
+# publication that reports them, so only the inputs are needed here.
+FULL = find_scenario("atag_3rd_edition_full").path / "data_inputs"
+LIGHT = find_scenario("atag_3rd_edition_light").path / "data_inputs"
 
 pytestmark = pytest.mark.skipif(
     not (FULL / "s1_energy.yaml").exists(),
@@ -141,7 +135,7 @@ def test_both_routes_agree():
     """
     from aeromaps import create_process
 
-    config = ATAG / "3rd_edition_full" / "config_files" / "config_s1.yaml"
+    config = find_scenario("atag_3rd_edition_full").config_dir / "config_s1.yaml"
     process = create_process(configuration_file=str(config))
     apply_corsia_scope(process)
 
