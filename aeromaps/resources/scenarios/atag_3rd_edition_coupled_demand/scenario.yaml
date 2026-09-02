@@ -1,0 +1,7 @@
+name: "ATAG Waypoint 2050, coupled demand"
+category: academic
+tags: ["atag variants", "coupled demand"]
+description: >-
+  The third edition's S1 with price-elastic demand, closing the feedback the
+  report leaves out. SAF mandates are read as shares rather than volumes, since a
+  quantity mandate makes the blend share depend on the demand it is coupled to.

@@ -204,13 +204,24 @@ class EnergyUseChoice(AeroMAPSModel):
                         if (total_quantity <= energy_consumption.fillna(0)).all():
                             # If the sum of quantities is less than or equal to the total, keep the quantities as output
                             for pathway in type_quantity_pathways:
-                                pathway_consumption = input_data[f"{pathway.name}_mandate_quantity"]
+                                # Reindex onto the full horizon before publishing. A mandate
+                                # curve only spans the prospective years, while the branch
+                                # below emits a full-horizon series, so without this the
+                                # output length depends on which branch runs. That is stable
+                                # under exogenous demand but not under price-elastic demand,
+                                # where total energy moves between MDA iterations and can flip
+                                # the branch: the coupling variable then changes size mid-solve
+                                # and GEMSEO, which fixes its slices on first resolution,
+                                # fails with a shape mismatch.
+                                pathway_consumption = (
+                                    input_data[f"{pathway.name}_mandate_quantity"]
+                                    .reindex(energy_consumption.index)
+                                    .fillna(0)
+                                )
                                 output_data[f"{pathway.name}_energy_consumption"] = (
                                     pathway_consumption
                                 )
-                                remaining_energy_consumption -= pathway_consumption.reindex(
-                                    energy_consumption.index
-                                ).fillna(0)
+                                remaining_energy_consumption -= pathway_consumption
                         else:
                             # If the sum exceeds the total, decrease them homogeneously
                             scaling_factor = pd.Series(

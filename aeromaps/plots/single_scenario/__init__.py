@@ -44,6 +44,9 @@ from aeromaps.plots.single_scenario.emissions import (
     CarbonOffsetPlot,
     CumulativeCarbonOffsetPlot,
 )
+from aeromaps.plots.single_scenario.decomposition import (
+    MitigationWedgeDecomposition,
+)
 from aeromaps.plots.single_scenario.climate import (
     FinalEffectiveRadiativeForcingPlot,
     DistributionEffectiveRadiativeForcingPlot,
@@ -124,6 +127,7 @@ available_plots = {
     "direct_soot_emissions": DirectSootEmissionsPlot,
     "carbon_offset": CarbonOffsetPlot,
     "cumulative_carbon_offset": CumulativeCarbonOffsetPlot,
+    "mitigation_wedges": MitigationWedgeDecomposition,
     "final_effective_radiative_forcing": FinalEffectiveRadiativeForcingPlot,
     "distribution_effective_radiative_forcing": DistributionEffectiveRadiativeForcingPlot,
     "energy_capex": ScenarioEnergyCapitalPlot,

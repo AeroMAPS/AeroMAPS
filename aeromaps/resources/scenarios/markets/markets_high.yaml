@@ -1,0 +1,437 @@
+# ATAG high traffic group. Shared by 3 scenarios.
+# Derived from aeromaps/resources/data/default_markets/markets.yaml.
+# load_factor_end_year and energy_per_ask_* are intentionally absent:
+# they differ per scenario and are supplied by each scenario's inputs.json.
+global:
+  demand:
+    model: cagr
+  elasticity:
+    use_elasticity: false
+    price_elasticity: -0.9
+    initial_airfare_per_rpk: 0.09236379319842411
+defaults:
+  passenger:
+    inputs:
+      growth:
+        cagr_reference_periods: []
+        cagr_reference_periods_values:
+        - 3.0
+      covid:
+        covid_drop_start_year: 66.0
+        covid_end_year: 2023
+        covid_end_year_reference_ratio: 100.0
+      load_factor:
+        covid_load_factor_2020: 65.2
+      measures:
+        measures_final_impact: 0.0
+        measures_start_year: 2051
+        measures_duration: 5.0
+      efficiency_simple:
+        relative_energy_per_ask_hydrogen_wrt_dropin_reference_years: []
+        relative_energy_per_ask_hydrogen_wrt_dropin_reference_years_values:
+        - 1.0
+        relative_energy_per_ask_electric_wrt_dropin_reference_years: []
+        relative_energy_per_ask_electric_wrt_dropin_reference_years_values:
+        - 1.0
+      costs:
+        doc_non_energy_per_ask_dropin_fuel_gain: 0.0
+        relative_doc_non_energy_per_ask_hydrogen_wrt_dropin: 1.1
+        relative_doc_non_energy_per_ask_electric_wrt_dropin: 1.0
+      reference:
+        reference_cagr_reference_periods:
+        - 2023
+        - 2024
+        - 2025
+        - 2026
+        - 2027
+        - 2028
+        - 2029
+        - 2030
+        - 2031
+        - 2032
+        - 2033
+        - 2034
+        - 2035
+        - 2036
+        - 2037
+        - 2038
+        - 2039
+        - 2040
+        - 2041
+        - 2042
+        - 2043
+        - 2044
+        - 2045
+        - 2046
+        - 2047
+        - 2048
+        - 2049
+        - 2050
+        reference_cagr_reference_periods_values:
+        - 21.16130154
+        - 9.07474878
+        - 5.41195389
+        - 4.87347884
+        - 4.60792842
+        - 4.44100942
+        - 4.21740062
+        - 4.00889133
+        - 3.81279843
+        - 3.63121543
+        - 3.50645925
+        - 3.40971569
+        - 3.33011643
+        - 3.31170882
+        - 3.30341148
+        - 3.29275565
+        - 3.33499465
+        - 3.37223578
+        - 3.39577866
+        - 3.32720119
+        - 3.31401209
+        - 3.33192881
+        - 3.33610462
+        - 3.34256845
+        - 3.3486404
+        - 3.35165128
+        - 3.056814
+        - 3.056814
+  freight:
+    inputs:
+      growth:
+        cagr_reference_periods:
+        - 2023
+        - 2024
+        - 2025
+        - 2026
+        - 2027
+        - 2028
+        - 2029
+        - 2030
+        - 2031
+        - 2032
+        - 2033
+        - 2034
+        - 2035
+        - 2036
+        - 2037
+        - 2038
+        - 2039
+        - 2040
+        - 2041
+        - 2042
+        - 2043
+        - 2044
+        - 2045
+        - 2046
+        - 2047
+        - 2048
+        - 2049
+        - 2050
+        cagr_reference_periods_values:
+        - 21.16130154
+        - 9.07474878
+        - 5.41195389
+        - 4.87347884
+        - 4.60792842
+        - 4.44100942
+        - 4.21740062
+        - 4.00889133
+        - 3.81279843
+        - 3.63121543
+        - 3.50645925
+        - 3.40971569
+        - 3.33011643
+        - 3.31170882
+        - 3.30341148
+        - 3.29275565
+        - 3.33499465
+        - 3.37223578
+        - 3.39577866
+        - 3.32720119
+        - 3.31401209
+        - 3.33192881
+        - 3.33610462
+        - 3.34256845
+        - 3.3486404
+        - 3.35165128
+        - 3.056814
+        - 3.056814
+      covid:
+        covid_drop_start_year: 66.0
+        covid_end_year: 2023
+        covid_end_year_reference_ratio: 100.0
+      reference:
+        reference_cagr_reference_periods:
+        - 2023
+        - 2024
+        - 2025
+        - 2026
+        - 2027
+        - 2028
+        - 2029
+        - 2030
+        - 2031
+        - 2032
+        - 2033
+        - 2034
+        - 2035
+        - 2036
+        - 2037
+        - 2038
+        - 2039
+        - 2040
+        - 2041
+        - 2042
+        - 2043
+        - 2044
+        - 2045
+        - 2046
+        - 2047
+        - 2048
+        - 2049
+        - 2050
+        reference_cagr_reference_periods_values:
+        - 21.16130154
+        - 9.07474878
+        - 5.41195389
+        - 4.87347884
+        - 4.60792842
+        - 4.44100942
+        - 4.21740062
+        - 4.00889133
+        - 3.81279843
+        - 3.63121543
+        - 3.50645925
+        - 3.40971569
+        - 3.33011643
+        - 3.31170882
+        - 3.30341148
+        - 3.29275565
+        - 3.33499465
+        - 3.37223578
+        - 3.39577866
+        - 3.32720119
+        - 3.31401209
+        - 3.33192881
+        - 3.33610462
+        - 3.34256845
+        - 3.3486404
+        - 3.35165128
+        - 3.056814
+        - 3.056814
+short_range:
+  name: Short Range
+  traffic_type: passenger
+  traffic_unit: RPK
+  inputs:
+    initial:
+      rpk_share_last_historical_year: 27.2
+      energy_share_last_historical_year: 26.01
+    costs:
+      doc_non_energy_per_ask_dropin_fuel_init: 0.048375
+    growth:
+      cagr_reference_periods:
+      - 2023
+      - 2024
+      - 2025
+      - 2026
+      - 2027
+      - 2028
+      - 2029
+      - 2030
+      - 2031
+      - 2032
+      - 2033
+      - 2034
+      - 2035
+      - 2036
+      - 2037
+      - 2038
+      - 2039
+      - 2040
+      - 2041
+      - 2042
+      - 2043
+      - 2044
+      - 2045
+      - 2046
+      - 2047
+      - 2048
+      - 2049
+      - 2050
+      cagr_reference_periods_values:
+      - 21.16130154
+      - 9.07474878
+      - 5.41195389
+      - 4.87347884
+      - 4.60792842
+      - 4.44100942
+      - 4.21740062
+      - 4.00889133
+      - 3.81279843
+      - 3.63121543
+      - 3.50645925
+      - 3.40971569
+      - 3.33011643
+      - 3.31170882
+      - 3.30341148
+      - 3.29275565
+      - 3.33499465
+      - 3.37223578
+      - 3.39577866
+      - 3.32720119
+      - 3.31401209
+      - 3.33192881
+      - 3.33610462
+      - 3.34256845
+      - 3.3486404
+      - 3.35165128
+      - 3.056814
+      - 3.056814
+medium_range:
+  name: Medium Range
+  traffic_type: passenger
+  traffic_unit: RPK
+  inputs:
+    initial:
+      rpk_share_last_historical_year: 35.1
+      energy_share_last_historical_year: 26.18
+    costs:
+      doc_non_energy_per_ask_dropin_fuel_init: 0.0301
+    growth:
+      cagr_reference_periods:
+      - 2023
+      - 2024
+      - 2025
+      - 2026
+      - 2027
+      - 2028
+      - 2029
+      - 2030
+      - 2031
+      - 2032
+      - 2033
+      - 2034
+      - 2035
+      - 2036
+      - 2037
+      - 2038
+      - 2039
+      - 2040
+      - 2041
+      - 2042
+      - 2043
+      - 2044
+      - 2045
+      - 2046
+      - 2047
+      - 2048
+      - 2049
+      - 2050
+      cagr_reference_periods_values:
+      - 21.16130154
+      - 9.07474878
+      - 5.41195389
+      - 4.87347884
+      - 4.60792842
+      - 4.44100942
+      - 4.21740062
+      - 4.00889133
+      - 3.81279843
+      - 3.63121543
+      - 3.50645925
+      - 3.40971569
+      - 3.33011643
+      - 3.31170882
+      - 3.30341148
+      - 3.29275565
+      - 3.33499465
+      - 3.37223578
+      - 3.39577866
+      - 3.32720119
+      - 3.31401209
+      - 3.33192881
+      - 3.33610462
+      - 3.34256845
+      - 3.3486404
+      - 3.35165128
+      - 3.056814
+      - 3.056814
+long_range:
+  name: Long Range
+  traffic_type: passenger
+  traffic_unit: RPK
+  inputs:
+    initial:
+      rpk_share_last_historical_year: 37.7
+      energy_share_last_historical_year: 32.81
+    costs:
+      doc_non_energy_per_ask_dropin_fuel_init: 0.024725
+    growth:
+      cagr_reference_periods:
+      - 2023
+      - 2024
+      - 2025
+      - 2026
+      - 2027
+      - 2028
+      - 2029
+      - 2030
+      - 2031
+      - 2032
+      - 2033
+      - 2034
+      - 2035
+      - 2036
+      - 2037
+      - 2038
+      - 2039
+      - 2040
+      - 2041
+      - 2042
+      - 2043
+      - 2044
+      - 2045
+      - 2046
+      - 2047
+      - 2048
+      - 2049
+      - 2050
+      cagr_reference_periods_values:
+      - 21.16130154
+      - 9.07474878
+      - 5.41195389
+      - 4.87347884
+      - 4.60792842
+      - 4.44100942
+      - 4.21740062
+      - 4.00889133
+      - 3.81279843
+      - 3.63121543
+      - 3.50645925
+      - 3.40971569
+      - 3.33011643
+      - 3.31170882
+      - 3.30341148
+      - 3.29275565
+      - 3.33499465
+      - 3.37223578
+      - 3.39577866
+      - 3.32720119
+      - 3.31401209
+      - 3.33192881
+      - 3.33610462
+      - 3.34256845
+      - 3.3486404
+      - 3.35165128
+      - 3.056814
+      - 3.056814
+freight:
+  name: Freight
+  traffic_type: freight
+  traffic_unit: RTK
+  inputs:
+    initial:
+      rtk_share_last_historical_year: 100.0
+      energy_share_last_historical_year: 15.0

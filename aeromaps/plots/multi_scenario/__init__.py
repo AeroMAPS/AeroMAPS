@@ -7,6 +7,15 @@ from aeromaps.plots.multi_scenario.emissions import (
     CO2EmissionsComparisonPlot,
     CumulativeCO2EmissionsComparisonPlot,
 )
+
+# Imported for direct use rather than registered in ``available_plots`` below.
+# The assembly's plot() overlays series on one axis and passes grouping and
+# envelope options that a stack of filled bands has no use for, and it has no way
+# to pass the counterfactual anchors this decomposition needs. Construct it
+# directly instead: MitigationWedgeComparison({"S1": s1, ...}, anchors=(t0, t1)).
+from aeromaps.plots.multi_scenario.decomposition import (  # noqa: F401
+    MitigationWedgeComparison,
+)
 from aeromaps.plots.multi_scenario.energy import (
     EnergyConsumptionComparisonPlot,
     EnergyMixComparisonPlot,
@@ -15,8 +24,14 @@ from aeromaps.plots.multi_scenario.traffic import (
     RPKComparisonPlot,
     LoadFactorComparisonPlot,
 )
+from aeromaps.plots.multi_scenario.background import (
+    PopulationComparisonPlot,
+    GDPPerCapitaComparisonPlot,
+    CarbonPriceComparisonPlot,
+)
 from aeromaps.plots.multi_scenario.intensities import (
     CO2PerRPKComparisonPlot,
+    CO2PerEnergyComparisonPlot,
     CO2PerRTKComparisonPlot,
     EnergyPerASKComparisonPlot,
     EnergyPerRTKComparisonPlot,
@@ -34,6 +49,10 @@ from aeromaps.plots.multi_scenario.climate import (
     TemperatureIncreaseComparisonPlot,
     CO2ERFComparisonPlot,
     NonCO2ERFComparisonPlot,
+    ContrailsTemperatureComparisonPlot,
+    ContrailsERFComparisonPlot,
+    TemperatureDecompositionComparisonPlot,
+    ERFDecompositionComparisonPlot,
 )
 from aeromaps.plots.multi_scenario.costs import (
     EnergyExpensesComparisonPlot,
@@ -42,6 +61,7 @@ from aeromaps.plots.multi_scenario.costs import (
     DOCEnergyComparisonPlot,
     AirfareComparisonPlot,
     DocNetEnergyPerRPKComparisonPlot,
+    DropInMFSPWithoutCarbonTaxComparisonPlot,
 )
 
 # Dictionary of available multi-scenario plots
@@ -49,21 +69,21 @@ available_multi_plots = {
     # Emissions
     "co2_emissions_comparison": CO2EmissionsComparisonPlot,
     "cumulative_co2_emissions_comparison": CumulativeCO2EmissionsComparisonPlot,
-    
     # Energy
     "energy_consumption_comparison": EnergyConsumptionComparisonPlot,
     "energy_mix_comparison": EnergyMixComparisonPlot,
-    
     # Traffic
     "rpk_comparison": RPKComparisonPlot,
+    "population_comparison": PopulationComparisonPlot,
+    "gdp_per_capita_comparison": GDPPerCapitaComparisonPlot,
+    "carbon_price_comparison": CarbonPriceComparisonPlot,
     "load_factor_comparison": LoadFactorComparisonPlot,
-    
     # Intensities
     "co2_per_rpk_comparison": CO2PerRPKComparisonPlot,
+    "co2_per_energy_comparison": CO2PerEnergyComparisonPlot,
     "co2_per_rtk_comparison": CO2PerRTKComparisonPlot,
     "energy_per_ask_comparison": EnergyPerASKComparisonPlot,
     "energy_per_rtk_comparison": EnergyPerRTKComparisonPlot,
-    
     # Fuel Supply
     "drop_in_supply_breakdown": DropInSupplyBreakdownPlot,
     "hydrogen_supply_comparison": HydrogenSupplyComparisonPlot,
@@ -71,13 +91,15 @@ available_multi_plots = {
     "biofuel_production_comparison": BiofuelProductionComparisonPlot,
     "electrofuel_production_comparison": ElectrofuelProductionComparisonPlot,
     "biofuel_mix_comparison": BiofuelMixComparisonPlot,
-
     # Climate
     "total_erf_comparison": TotalERFComparisonPlot,
     "temperature_increase_comparison": TemperatureIncreaseComparisonPlot,
     "co2_erf_comparison": CO2ERFComparisonPlot,
     "non_co2_erf_comparison": NonCO2ERFComparisonPlot,
-
+    "contrails_temperature_comparison": ContrailsTemperatureComparisonPlot,
+    "contrails_erf_comparison": ContrailsERFComparisonPlot,
+    "temperature_decomposition_comparison": TemperatureDecompositionComparisonPlot,
+    "erf_decomposition_comparison": ERFDecompositionComparisonPlot,
     # Costs
     "energy_expenses_comparison": EnergyExpensesComparisonPlot,
     "net_energy_expenses_comparison": NetEnergyExpensesComparisonPlot,
@@ -85,4 +107,5 @@ available_multi_plots = {
     "doc_energy_comparison": DOCEnergyComparisonPlot,
     "airfare_comparison": AirfareComparisonPlot,
     "doc_net_energy_per_rpk_comparison": DocNetEnergyPerRPKComparisonPlot,
+    "dropin_mfsp_without_carbon_tax_comparison": DropInMFSPWithoutCarbonTaxComparisonPlot,
 }

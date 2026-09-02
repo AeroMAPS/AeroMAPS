@@ -1,0 +1,121 @@
+# Non-CO2 uncertainty bands for the ATAG Waypoint 2050 scenarios
+# ===============================================================
+#
+# The Waypoint 2050 reports quantify CO2 only. AeroMAPS computes the non-CO2
+# terms as well, but every scenario in this reproduction runs on a single
+# central set of climate coefficients, so nothing in the published figures
+# shows how wide the non-CO2 answer actually is.
+#
+# Two distinct uncertainties are missing, and they are not the same question:
+#
+#   1. HOW LARGE the non-CO2 effect is. Contrail forcing is the largest single
+#      warming term in 2050 and the least well constrained.
+#   2. HOW MUCH DECARBONISATION REDUCES IT. Cleaner fuels emit fewer soot
+#      particles, which reduces contrail forcing -- but by how much is itself
+#      an open question, and the modelling literature disagrees by a factor of
+#      three.
+#
+# Both are represented here. Bands are named by CLIMATE IMPACT, not by
+# parameter magnitude: `high` is the worst outcome (largest contrail impact AND
+# the weakest reduction from measures), `low` the best. Read `high` as "high
+# warming", never as "high mitigation".
+#
+# Axis 1 -- contrail sensitivity_rf
+# ---------------------------------
+# Passed to AeroCM through the climate model's species settings. The three
+# values are taken verbatim from the configurations the repository already
+# ships and has published with:
+#
+#   aeromaps/notebooks/publications/ecats_2026/data/climate_data/
+#       climate_model_fair_lowcontrails.yaml    0.92e-12
+#       (packaged default: climate_model_fair.yaml)  2.23e-12
+#       climate_model_fair_highcontrails.yaml   3.54e-12
+#
+# They span 0.41x to 1.59x the central value. For scale, Lee et al. (2021) give
+# a contrail RF of 111 [33, 189] mW/m2 for 2018 (0.30x-1.70x), while Teoh et
+# al. (2024) simulate 62.1 mW/m2 for 2019 with a model-sensitivity range of
+# 34.8-74.8 (0.56x-1.20x). This band therefore sits between the two: wider than
+# one study's sensitivity analysis, narrower than the older extrapolated 95%
+# interval.
+#
+# Axis 2 -- SAF particle number emission index
+# --------------------------------------------
+# FuelEffectCorrectionContrails (non_co2.py:218) scales contrail forcing by
+#
+#     sum over pathways of  massic_share * sqrt(EIn_pathway / EIn_default)
+#
+# so a target percentage reduction R at 100% SAF maps onto an emission index of
+#
+#     EIn_SAF = EIn_kerosene * (1 - R)^2        with EIn_kerosene = 2.0e14
+#
+# The bounds are the spread of the modelling literature as surveyed by Teoh et
+# al. (2022): Bock & Burkhardt find 15% and Burkhardt et al. 50% for fleet-wide
+# SAF; Schumann et al. compute 39% for a 50% cut in nvPM; Teoh et al. measure
+# 44% at 100% SAF. Caiazzo et al. report -4% to +18% over the United States --
+# i.e. SAF could make contrails worse -- but that is a regional result and is
+# deliberately left outside this band.
+#
+# The central value is the repository's existing 8.0e13, which implies 36.8%
+# and sits inside that literature range. It is left untouched on purpose: every
+# band's centre must still reproduce the committed scenarios exactly, which is
+# what the notebooks' drift guards check.
+#
+# References
+# ----------
+# Teoh et al. (2024), Global aviation contrail climate effects from 2019 to
+#   2021, Atmos. Chem. Phys. 24, 6071-6093. doi:10.5194/acp-24-6071-2024
+# Teoh et al. (2022), Targeted Use of Sustainable Aviation Fuel to Maximize
+#   Climate Benefits, Environ. Sci. Technol. 56, 17246-17255.
+#   doi:10.1021/acs.est.2c05781
+# Lee et al. (2021), The contribution of global aviation to anthropogenic
+#   climate forcing for 2000 to 2018, Atmos. Environ. 244, 117834.
+
+reference:
+  citation: >-
+    Contrail sensitivity band as shipped in the repository's ecats_2026 climate
+    configurations; SAF particle-number band from the modelling literature
+    surveyed by Teoh et al. (2022).
+  dois:
+    - 10.5194/acp-24-6071-2024
+    - 10.1021/acs.est.2c05781
+
+# Emission index of the default drop-in pathway (fossil kerosene) in the ATAG
+# energy files, used to express the SAF bounds as percentage reductions.
+kerosene_emission_index_particles_number: 2.0e+14
+
+bands:
+
+  low:
+    label: Low non-CO2
+    description: >-
+      Smallest contrail forcing and the strongest reduction from cleaner fuel:
+      the optimistic end for climate outcomes.
+    sensitivity_rf: 0.92e-12
+    saf_emission_index_particles_number: 5.0e+13   # -50 %, Burkhardt et al.
+    implied_saf_contrail_reduction_percent: 50.0
+
+  central:
+    label: Central
+    description: >-
+      The packaged defaults on both axes. Reproduces the committed scenarios
+      exactly.
+    sensitivity_rf: 2.23e-12
+    saf_emission_index_particles_number: 8.0e+13   # -36.8 %, repository default
+    implied_saf_contrail_reduction_percent: 36.8
+
+  high:
+    label: High non-CO2
+    description: >-
+      Largest contrail forcing and the weakest reduction from cleaner fuel: the
+      pessimistic end for climate outcomes.
+    sensitivity_rf: 3.54e-12
+    saf_emission_index_particles_number: 1.445e+14  # -15 %, Bock & Burkhardt
+    implied_saf_contrail_reduction_percent: 15.0
+
+# Which mitigation-gain bound in contrail_variants.yaml each band pairs with,
+# when the avoidance scenarios are run under these bands. The pairing follows
+# the same rule: the high-warming band takes the weakest mitigation.
+mitigation_pairing:
+  low: strongest
+  central: central
+  high: weakest
