@@ -59,6 +59,11 @@ from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet_push.airc
 from aeromaps.models.impacts.generic_energy_model.common.energy_carriers_manager import (
     build_pathways_manager,
 )
+from aeromaps.models.impacts.generic_energy_model.common.yaml_schema import (
+    validate_energy_carriers_data,
+    validate_processes_data,
+    validate_resources_data,
+)
 from aeromaps.models.impacts.generic_energy_model.common.energy_carriers_factory import (
     AviationEnergyCarriersFactory,
 )
@@ -1589,6 +1594,7 @@ class AeroMAPSProcess(object):
         )
 
         self.energy_resources_data = read_yaml_file(str(resources_data_file_path))
+        validate_resources_data(self.energy_resources_data, str(resources_data_file_path))
 
         # The first level of the yaml conf file contains all the pathways
         resources = list(self.energy_resources_data.keys())
@@ -1631,6 +1637,7 @@ class AeroMAPSProcess(object):
         )
 
         self.energy_processes_data = read_yaml_file(str(processes_data_path))
+        validate_processes_data(self.energy_processes_data, str(processes_data_path))
 
         # The first level of the yaml conf file contains all the pathways
         processes = list(self.energy_processes_data.keys())
@@ -1671,6 +1678,9 @@ class AeroMAPSProcess(object):
         )
 
         self.energy_carriers_data = read_yaml_file(str(energy_carriers_data_file_path))
+        validate_energy_carriers_data(
+            self.energy_carriers_data, str(energy_carriers_data_file_path)
+        )
 
         # The first level of the yaml conf file contains all the pathways
         pathways = list(self.energy_carriers_data.keys())

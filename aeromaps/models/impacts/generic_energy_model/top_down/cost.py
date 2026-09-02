@@ -36,6 +36,38 @@ class TopDownCost(AeroMAPSModel):
 
     MODEL_APPROACH = "top_down"
 
+    #: Keys this model takes from each block of a pathway's ``inputs``. Collected by
+    #: ``common/yaml_schema.py`` to validate the energy YAML files; a key belongs to exactly
+    #: one block, and models declaring the same key must agree on it.
+    PATHWAY_INPUT_KEYS = {
+        "economics": (
+            "mean_mfsp_without_resource",
+            "mean_unit_subsidy_without_resource",
+            "mean_unit_tax_without_resource",
+        ),
+        "technical": (
+            "resource_names",
+            "processes_names",
+            "resource_specific_consumption",
+            "lhv",
+            "plant_lifespan",
+            "plant_load_factor",
+        ),
+    }
+
+    #: Same, for the processes a pathway declares.
+    PROCESS_INPUT_KEYS = {
+        "economics": (
+            "mean_mfsp_without_resource",
+            "mean_unit_subsidy_without_resource",
+            "mean_unit_tax_without_resource",
+        ),
+        "technical": ("resource_names", "resource_specific_consumption"),
+    }
+
+    #: Keys of a resource's ``specifications`` this model reads.
+    RESOURCE_INPUT_KEYS = ("cost", "subsidy", "tax")
+
     def __init__(
         self,
         name,
@@ -284,7 +316,7 @@ class TopDownCost(AeroMAPSModel):
             )
 
             subsidy_process = input_data.get(
-                f"{process_key}_mean_unit_subsidy_without_resources", optional_null_series.copy()
+                f"{process_key}_mean_unit_subsidy_without_resource", optional_null_series.copy()
             )
             pathway_unit_subsidy = pathway_unit_subsidy.add(subsidy_process, fill_value=0)
             output_data[
@@ -292,7 +324,7 @@ class TopDownCost(AeroMAPSModel):
             ] = subsidy_process
 
             tax_process = input_data.get(
-                f"{process_key}_mean_unit_tax_without_resources", optional_null_series.copy()
+                f"{process_key}_mean_unit_tax_without_resource", optional_null_series.copy()
             )
             pathway_unit_tax = pathway_unit_tax.add(tax_process, fill_value=0)
             output_data[f"{self.pathway_name}_{process_key}_mean_unit_tax_without_resources"] = (

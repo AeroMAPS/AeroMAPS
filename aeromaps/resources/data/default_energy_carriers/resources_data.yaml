@@ -20,7 +20,7 @@
 #       years: [2020, 2030, 2040, 2050]
 #       values: [0.01, 0.012, 0.013, 0.014] # €/MJ
 #       method: linear
-#     subsidies: !AeroMapsCustomDataType              # €/MJ, additional to process/pathways' subsidies
+#     subsidy: !AeroMapsCustomDataType                # €/MJ, additional to process/pathways' subsidy
 #       years: [2020, 2030, 2040, 2050]
 #       values: [0.0, 0.0, 0.0, 0.0] # €/MJ
 #       method: linear

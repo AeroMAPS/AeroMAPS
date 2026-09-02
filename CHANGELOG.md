@@ -37,6 +37,9 @@ Changed:
 - Made the scenario-comparison utilities usable against committed JSON, so results can be plotted
   without re-running a process. (#144)
 - Stripped outputs from every tracked notebook and enforced the existing nbstripout hook. (#144)
+- Energy carriers, processes and resources yaml files are validated at load time: a key no energy model reads is now rejected instead of silently resolving to zero. The accepted vocabulary is collected from the energy models themselves, each key belonging to exactly one `inputs` block. (#158)
+- Moved `fossil_kerosene`'s emission factor from `technical:` to `environmental:` in the three `icas_2024` energy carriers files. It was read from either block, so no result changes. (#158)
+- Documented `mandate_type: "quantity"` and `mandate_quantity`, and corrected the subsidy keys, in the shipped energy templates. (#158)
 
 Fixed:
 - Corrected a family of silent-zero defects in the generic energy model, where a misspelled or
@@ -103,6 +106,10 @@ Fixed:
   takes an `mfsp_type` that skips its toggle, `ResultsView.plot` forwards keywords to the plot
   class, and the per-RPK cost breakdown honours `legend=False`, which together let those plots be
   used in a document built without a live kernel. (#144)
+- Fixed kerosene selectivity being ignored, and inverted, in the bottom-up model. (#158)
+- An unrecognised `mandate_type` now raises instead of giving a pathway no mandate at all. (#158)
+- Process emission factors are now read: the environmental models registered no process `environmental` block and looked the factor up under a name no configuration writes, so hydrogen liquefaction and electrolysis emissions read exactly zero. Every process emission factor in the repository is 0.0, so no committed result moves. (#158)
+- Corrected `resources_names` in the `mea_2024` energy carriers file, which silently dropped `hydrogen_electrolysis`'s `transport` resource from cost and emissions. (#158)
 
 
 ## Version 1.1.0
@@ -260,7 +267,7 @@ Fixed:
 
 - Changed:
     - Updated JOAS publication notebook with reviewers feedback. (#37)
-    - Updated voilà minimum version. (#38)
+    - Updated voilÃ  minimum version. (#38)
 
 - Fixed:
     - Corrected soot calculation. (#36)

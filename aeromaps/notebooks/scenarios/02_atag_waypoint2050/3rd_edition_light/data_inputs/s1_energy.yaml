@@ -421,7 +421,7 @@ electrofuel:
         co2_dac: 0.1015
       lhv: 44
       technology_introduction_year: 2020
-      technology_introduction_quantity: 400000000000.0
+      technology_introduction_volume: 400000000000.0
       plant_load_factor: 0.95
       plant_lifespan: 25
     environmental:
