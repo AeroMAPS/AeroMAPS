@@ -3209,6 +3209,9 @@ patterns:
     description: "Operational lifespan of a `{prefix}` plant"
 
   # --- Environmental outputs of the generic energy model ---
+  - match: "*_mean_co2_emission_factor_without_resource"
+    unit: "gCO2/MJ"
+    description: "Mean CO2 emission factor of `{prefix}` excluding resources"
   - match: "*_co2_emission_factor_without_resource"
     unit: "gCO2/MJ"
     description: "CO2 emission factor of `{prefix}` excluding resources"
