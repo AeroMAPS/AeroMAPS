@@ -1,0 +1,22 @@
+# RTE paper resource availabilities (paper section 3.4 / Figure 5, IEA NZE).
+generic_biomass:
+  name: "generic_biomass"
+  origin: "biomass"
+  specifications:
+    availability:
+      global: !AeroMapsCustomDataType
+        years: [2020, 2030, 2040, 2050]
+        values: [62.8e+12, 72.1e+12, 97.8e+12, 101.8e+12]
+        method: linear
+      aviation_allocated_share: 1.533510   # 9.90% of global x 15.49% EU traffic share
+
+generic_electricity:
+  name: "generic_electricity"
+  origin: "electricity"
+  specifications:
+    availability:
+      global: !AeroMapsCustomDataType
+        years: [2020, 2030, 2040, 2050]
+        values: [102.0456e+12, 137.5452e+12, 212.7996e+12, 276.6168e+12]
+        method: linear
+      aviation_allocated_share: 0.774500    # 5.0% of global x 15.49% EU traffic share

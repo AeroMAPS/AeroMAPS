@@ -1,0 +1,26 @@
+# RTE optimisation paper - single aggregated passenger market variant.
+data:
+  inputs:
+    json_inputs_file: "./data/partitioned_inputs_merged.json"
+    partitioning_data_file: "./data/partitioned_inputs.json"
+    partitioning_climate_data_file: "./data/partitioned_temperature_historical_dataset.csv"
+  outputs:
+    json_outputs_file: "./outputs_1m.json"
+
+models:
+  markets:
+    markets_data_file: "./markets_1m.yaml"
+  energy:
+    energy_carriers_model_data_file: "./energy_rte.yaml"
+    resources_model_data_file: "./resources_rte.yaml"
+    processes_model_data_file: default
+  standards:
+    - models_optim_complex
+
+  customs:
+    reduced_mandate: "./constraints_rte.py::ReducedMandate"
+    blend_completeness_constraint: "./constraints_rte.py::BlendCompletenessConstraint"
+    biomass_availability_constraint_trajectory: "./constraints_rte.py::BiomassAvailabilityConstraintTrajectory"
+    electricity_availability_constraint_trajectory: "./constraints_rte.py::ElectricityAvailabilityConstraintTrajectory"
+    biofuel_use_growth_constraint: "./constraints_rte.py::BiofuelUseGrowthConstraint"
+    electrofuel_use_growth_constraint: "./constraints_rte.py::ElectrofuelUseGrowthConstraint"
