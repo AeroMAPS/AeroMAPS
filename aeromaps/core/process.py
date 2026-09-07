@@ -545,9 +545,9 @@ class AeroMAPSProcess(object):
             formulation_name=self.gemseo_settings["formulation"],
             main_mda_settings={
                 "inner_mda_name": "MDAGaussSeidel",
-                "max_mda_iter": 12,
+                "max_mda_iter": 50,
                 "initialize_defaults": True,
-                "tolerance": 1e-4,
+                "tolerance": 1e-10,
             },
             # grammar_type=self.gemseo_settings["grammar_type"],
             # input_data=self.input_data,
