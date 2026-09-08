@@ -209,8 +209,10 @@ COLD_START = {
     "electrofuel": [EPSILON_SHARE, 5.78, 15.03, 39.12, 55.41],
 }
 
-# The min-CO2 problem sits well beyond the budget-constrained optima, so it gets its
-# own start point rather than continuing the ladder.
+# Fallback start for a min-CO2 run launched on its own. Inside a sweep it is not used:
+# min-CO2 comes last and inherits the tightest feasible budget's optimum, which is the
+# nearest point there is -- squeezing the budget drives the mandate towards the same
+# resource and ramp-up limits that bind the min-CO2 solution.
 MIN_CARBON_START = {
     "biofuel": [9.54, 27.04, 50.68, 47.96, 49.99],
     "electrofuel": [9.54, 27.04, 49.32, 52.04, 50.01],
@@ -232,9 +234,16 @@ def setup_optimisation(process, x0=None, max_iter=50, objective="surplus", warm_
     design space, the objective and the constraints.
 
     ``objective="surplus"`` minimises the discounted total surplus loss subject to
-    G1-G6, which is the published problem. ``objective="carbon"`` minimises the
-    carbon budget consumed subject to G2-G6 only, giving the left-hand end of every
-    trade-off curve: the least CO2 the system can reach at any cost.
+    G1-G6, which is the published problem. ``objective="carbon"`` is the paper's
+    ``optim_setup_min_carb``: minimise the carbon budget consumed, subject to G2-G6
+    only -- the budget constraint becomes the objective, so it is dropped from the
+    constraint set. That gives the left-hand end of every trade-off curve, the least
+    CO2 the system can reach at any cost, and it is what ``run_sweep`` runs last for
+    each case as ``opt_<case>_mincarb``.
+
+    The published notebooks solved the min-CO2 problem with NLOPT's MMA; nlopt is not
+    installed here, so both objectives use SLSQP. Scaling differs to keep each in a
+    range the solver is comfortable with (1e-10 on the surplus, 10 on the budget).
 
     ``warm_start`` trades reproducibility for speed and is off by default -- see the
     comment at the bottom of this function.
@@ -468,8 +477,7 @@ def run_sweep(
             f"{'feasible' if row['feasible'] else 'INFEASIBLE'}  "
             f"{row['evaluations']} evals  {row['seconds']} s"
         )
-        # min-CO2 is the last entry and starts from its own point, so it never feeds
-        # the chain.
+        # min-CO2 is the last entry, so it consumes the chain but never feeds it.
         if row["feasible"] and budget is not None:
             x0 = row["x"]
 
