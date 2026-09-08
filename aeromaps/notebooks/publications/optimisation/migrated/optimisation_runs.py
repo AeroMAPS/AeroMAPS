@@ -17,6 +17,7 @@ is already on disk, so an interrupted sweep resumes where it stopped.
 from __future__ import annotations
 
 import json
+import sys
 import time
 from collections import OrderedDict
 from pathlib import Path
@@ -559,6 +560,58 @@ def load(path):
     return pd.DataFrame(vectors), data.get("float_outputs", {})
 
 
+DEFAULT_BUDGETS = [3.8, 3.6, 3.4, 3.2, 3.0, 2.8, 2.6, 2.4, 2.2, 2.0]
+
+
+def status(cases=None, budgets=None):
+    """What is on disk, as a case-by-budget grid, with the age of each result.
+
+    The terminal view of a sweep in progress. It reads ``results/`` rather than any
+    log, so it reports a sweep running in a notebook kernel -- whose output goes to
+    the cell, not to any terminal -- exactly as well as one started from a shell.
+
+    Cells are ``ok`` / ``INFEAS`` plus how long ago the file was written, so the run
+    in progress is the one whose case has a result a few minutes old.
+    """
+    cases = list(cases or CASES)
+    budgets = DEFAULT_BUDGETS if budgets is None else list(budgets)
+    now = time.time()
+
+    def cell(stem):
+        result = stem.with_suffix(".json")
+        if not result.exists():
+            return "-"
+        age = (now - result.stat().st_mtime) / 60
+        age_text = f"{age:.0f}m" if age < 90 else f"{age / 60:.1f}h"
+        saved = read_run(stem.with_suffix(".hdf"))
+        if saved is None:  # a reference MDA has no history
+            return f"ok {age_text}"
+        return f"{'ok' if saved['feasible'] else 'INFEAS'} {age_text}"
+
+    rows = []
+    for label, tag in [(f"{b:.1f}", budget_tag(b)) for b in budgets] + [("min CO2", "mincarb")]:
+        rows.append(
+            {
+                "budget": label,
+                **{case: cell(RESULTS_DIR / f"opt_{case}_{tag}") for case in cases},
+            }
+        )
+    for kind in ("fossil", "refueleu"):
+        rows.append(
+            {
+                "budget": kind,
+                **{case: cell(RESULTS_DIR / f"{kind}_{case}") for case in cases},
+            }
+        )
+
+    frame = pd.DataFrame(rows).set_index("budget")
+    print(f"results in {RESULTS_DIR.resolve()}")
+    print(frame.to_string())
+    done = (frame != "-").sum().sum()
+    print(f"\n{done} of {frame.size} runs on disk")
+    return frame
+
+
 # --------------------------------------------------------------------------- #
 # Command line: one case per process
 # --------------------------------------------------------------------------- #
@@ -589,11 +642,39 @@ def main(argv=None):
     import argparse
 
     parser = argparse.ArgumentParser(description="Run one case of the ReFuelEU sweep.")
-    parser.add_argument("case", choices=sorted(CASES), help="which published variant")
+    parser.add_argument(
+        "case", nargs="?", choices=sorted(CASES), help="which published variant to run"
+    )
+    parser.add_argument(
+        "--status",
+        action="store_true",
+        help="print what is on disk for every case and exit; works while sweeps are running",
+    )
     parser.add_argument("--max-iter", type=int, default=50)
     parser.add_argument("--config", default="config_rte.yaml")
     parser.add_argument("--no-resume", action="store_true", help="re-run budgets already on disk")
     args = parser.parse_args(argv)
+
+    if args.status:
+        return status()
+    if args.case is None:
+        parser.error("give a case to run, or --status")
+
+    # Make the log worth tailing. Three separate problems, all of them silent:
+    #   - stdout is block-buffered when redirected to a file, so the per-run lines sit
+    #     in a 8 kB buffer for hours. Line buffering puts them in the log as they print.
+    #   - GEMSEO logs at INFO, including the SLSQP iteration lines, but only once a
+    #     handler exists; without configure_logger() the run is completely quiet.
+    #   - the yaml interpolation UserWarnings otherwise bury everything else.
+    import warnings
+
+    import gemseo
+
+    from aeromaps.utils.functions import custom_logger_config
+
+    sys.stdout.reconfigure(line_buffering=True)
+    warnings.filterwarnings("ignore")
+    custom_logger_config(gemseo.configure_logger())
 
     for kind in ("fossil", "refueleu"):
         run_reference(args.case, kind=kind, config=args.config)
