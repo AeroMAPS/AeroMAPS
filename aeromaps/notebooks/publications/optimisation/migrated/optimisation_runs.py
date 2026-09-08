@@ -193,11 +193,20 @@ def share_mda_across_functions(process, size=16):
     return process
 
 
+# Smallest electrofuel share the optimiser may ask for. A pathway share returning to
+# exactly zero after being positive gives 0/0 in its own share variable and the MDA dies
+# with "converged on NaN", so the design space is held off zero rather than at it. This
+# is numerics, not policy: 1e-6 % of the drop-in blend is seven orders of magnitude below
+# the 1.2 % ReFuelEU 2030 sub-mandate, so it binds on nothing of interest and reads as
+# zero in every figure.
+EPSILON_SHARE = 1e-6
+
 # Start point of the very first optimisation of a sweep, i.e. the largest carbon
-# budget. Every later run starts from its predecessor's optimum instead.
+# budget. Every later run starts from its predecessor's optimum instead. Electrofuel
+# starts at the floor in 2030, as the published notebooks did (they used 2.7e-11).
 COLD_START = {
     "biofuel": [8.35, 21.24, 41.05, 43.81, 43.95],
-    "electrofuel": [0.5, 5.78, 15.03, 39.12, 55.41],
+    "electrofuel": [EPSILON_SHARE, 5.78, 15.03, 39.12, 55.41],
 }
 
 # The min-CO2 problem sits well beyond the budget-constrained optima, so it gets its
@@ -238,15 +247,13 @@ def setup_optimisation(process, x0=None, max_iter=50, objective="surplus", warm_
     design_space = DesignSpace()
     design_space.add_variable(
         "generic_electrofuel_mandate_share_values_optim",
-        # Lower bound held off zero: a pathway share returning to zero after being
-        # positive gives 0/0 in its own share variable and the MDA dies with
-        # "converged on NaN". This is the same reason biofuel carries a lower bound
-        # of 2 -- numerics, not policy. The bound sits below the 1.2 % ReFuelEU 2030
-        # sub-mandate, so it does not bind on any scenario of interest.
+        # Floored at EPSILON_SHARE rather than at zero -- see its definition above.
+        # Biofuel's lower bound of 2 comes from the policy instead: ReFuelEU mandates
+        # 2 % from 2025 and the paper never relaxes it.
         size=5,
-        lower_bound=[1e-5] * 5,
+        lower_bound=[EPSILON_SHARE] * 5,
         upper_bound=[100] * 5,
-        value=np.clip(x0["electrofuel"], 1e-5, 100),
+        value=np.clip(x0["electrofuel"], EPSILON_SHARE, 100),
     )
     design_space.add_variable(
         "generic_biofuel_mandate_share_values_optim",
