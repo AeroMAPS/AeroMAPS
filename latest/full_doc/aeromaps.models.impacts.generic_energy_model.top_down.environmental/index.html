@@ -6069,7 +6069,13 @@ Module to compute pathway environmental parameters using the top-down techno-eco
 <span class="normal">195</span>
 <span class="normal">196</span>
 <span class="normal">197</span>
-<span class="normal">198</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">name</span><span class="p">,</span>
     <span class="n">configuration_data</span><span class="p">,</span>
@@ -6164,6 +6170,12 @@ Module to compute pathway environmental parameters using the top-down techno-eco
                 <span class="c1"># TODO initialize with zeros instead of actual val?</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
 
+        <span class="c1"># The environmental block has to be registered here: this model reads</span>
+        <span class="c1"># the process&#39;s own emission factor below, and registering only the</span>
+        <span class="c1"># cost block left that read missing from input_data, so .get()</span>
+        <span class="c1"># returned the null series and a process&#39;s own emissions were</span>
+        <span class="c1"># silently dropped. Economics stays registered alongside it, since a</span>
+        <span class="c1"># process may declare either block and the cost model reads that one.</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="p">(</span>
             <span class="n">processes_data</span><span class="p">[</span><span class="n">process_key</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;inputs&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;environmental&quot;</span><span class="p">,</span> <span class="p">{})</span> <span class="ow">or</span> <span class="p">{}</span>
         <span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -6295,13 +6307,7 @@ Module to compute pathway environmental parameters using the top-down techno-eco
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/models/impacts/generic_energy_model/top_down/environmental.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">200</span>
-<span class="normal">201</span>
-<span class="normal">202</span>
-<span class="normal">203</span>
-<span class="normal">204</span>
-<span class="normal">205</span>
-<span class="normal">206</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">206</span>
 <span class="normal">207</span>
 <span class="normal">208</span>
 <span class="normal">209</span>
@@ -6472,7 +6478,18 @@ Module to compute pathway environmental parameters using the top-down techno-eco
 <span class="normal">374</span>
 <span class="normal">375</span>
 <span class="normal">376</span>
-<span class="normal">377</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="normal">377</span>
+<span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span>
+<span class="normal">383</span>
+<span class="normal">384</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span>
+<span class="normal">388</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Execute the top-down environmental computations for the energy pathway.</span>
 
@@ -6592,6 +6609,11 @@ Module to compute pathway environmental parameters using the top-down techno-eco
 
     <span class="c1"># 3 ) --&gt; pathway gets a process that makes own emissions (besides resources)</span>
     <span class="k">for</span> <span class="n">process_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_keys</span><span class="p">:</span>
+        <span class="c1"># The key carries the mean_ prefix, matching the pathway lookup above, the</span>
+        <span class="c1"># cost model&#39;s process lookup and every processes file in the repository,</span>
+        <span class="c1"># the packaged default included. Without the prefix the lookup missed and</span>
+        <span class="c1"># .get() returned the null series, so a process&#39;s own emissions were</span>
+        <span class="c1"># silently dropped from the pathway&#39;s emission factor.</span>
         <span class="n">co2_emission_factor_process</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">process_key</span><span class="si">}</span><span class="s2">_mean_co2_emission_factor_without_resource&quot;</span><span class="p">,</span> <span class="n">optional_null_series</span>
         <span class="p">)</span>

@@ -6513,7 +6513,18 @@ yaml files and outputs of other models.</p>
 <span class="normal">421</span>
 <span class="normal">422</span>
 <span class="normal">423</span>
-<span class="normal">424</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="normal">424</span>
+<span class="normal">425</span>
+<span class="normal">426</span>
+<span class="normal">427</span>
+<span class="normal">428</span>
+<span class="normal">429</span>
+<span class="normal">430</span>
+<span class="normal">431</span>
+<span class="normal">432</span>
+<span class="normal">433</span>
+<span class="normal">434</span>
+<span class="normal">435</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the energy consumption of each energy carrier based on the defined pathways and mandates and priority rules.</span>
 
@@ -6573,13 +6584,24 @@ yaml files and outputs of other models.</p>
                     <span class="k">if</span> <span class="p">(</span><span class="n">total_quantity</span> <span class="o">&lt;=</span> <span class="n">energy_consumption</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
                         <span class="c1"># If the sum of quantities is less than or equal to the total, keep the quantities as output</span>
                         <span class="k">for</span> <span class="n">pathway</span> <span class="ow">in</span> <span class="n">type_quantity_pathways</span><span class="p">:</span>
-                            <span class="n">pathway_consumption</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_mandate_quantity&quot;</span><span class="p">]</span>
+                            <span class="c1"># Reindex onto the full horizon before publishing. A mandate</span>
+                            <span class="c1"># curve only spans the prospective years, while the branch</span>
+                            <span class="c1"># below emits a full-horizon series, so without this the</span>
+                            <span class="c1"># output length depends on which branch runs. That is stable</span>
+                            <span class="c1"># under exogenous demand but not under price-elastic demand,</span>
+                            <span class="c1"># where total energy moves between MDA iterations and can flip</span>
+                            <span class="c1"># the branch: the coupling variable then changes size mid-solve</span>
+                            <span class="c1"># and GEMSEO, which fixes its slices on first resolution,</span>
+                            <span class="c1"># fails with a shape mismatch.</span>
+                            <span class="n">pathway_consumption</span> <span class="o">=</span> <span class="p">(</span>
+                                <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_mandate_quantity&quot;</span><span class="p">]</span>
+                                <span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">energy_consumption</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+                                <span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                            <span class="p">)</span>
                             <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_energy_consumption&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
                                 <span class="n">pathway_consumption</span>
                             <span class="p">)</span>
-                            <span class="n">remaining_energy_consumption</span> <span class="o">-=</span> <span class="n">pathway_consumption</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span>
-                                <span class="n">energy_consumption</span><span class="o">.</span><span class="n">index</span>
-                            <span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                            <span class="n">remaining_energy_consumption</span> <span class="o">-=</span> <span class="n">pathway_consumption</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="c1"># If the sum exceeds the total, decrease them homogeneously</span>
                         <span class="n">scaling_factor</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>

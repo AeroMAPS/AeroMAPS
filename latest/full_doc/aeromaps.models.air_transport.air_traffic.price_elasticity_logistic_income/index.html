@@ -5903,33 +5903,7 @@ the same global cycle N times.</p>
 
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/air_transport/air_traffic/price_elasticity_logistic_income.py</code></summary>
-                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 56</span>
-<span class="normal"> 57</span>
-<span class="normal"> 58</span>
-<span class="normal"> 59</span>
-<span class="normal"> 60</span>
-<span class="normal"> 61</span>
-<span class="normal"> 62</span>
-<span class="normal"> 63</span>
-<span class="normal"> 64</span>
-<span class="normal"> 65</span>
-<span class="normal"> 66</span>
-<span class="normal"> 67</span>
-<span class="normal"> 68</span>
-<span class="normal"> 69</span>
-<span class="normal"> 70</span>
-<span class="normal"> 71</span>
-<span class="normal"> 72</span>
-<span class="normal"> 73</span>
-<span class="normal"> 74</span>
-<span class="normal"> 75</span>
-<span class="normal"> 76</span>
-<span class="normal"> 77</span>
-<span class="normal"> 78</span>
-<span class="normal"> 79</span>
-<span class="normal"> 80</span>
-<span class="normal"> 81</span>
-<span class="normal"> 82</span>
+                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 82</span>
 <span class="normal"> 83</span>
 <span class="normal"> 84</span>
 <span class="normal"> 85</span>
@@ -5955,7 +5929,34 @@ the same global cycle N times.</p>
 <span class="normal">105</span>
 <span class="normal">106</span>
 <span class="normal">107</span>
-<span class="normal">108</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">passenger_market_ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">passenger_market_ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">passenger_market_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">passenger_market_ids</span><span class="p">)</span>
     <span class="c1"># Calibrated logistic parameters (fixed at class level)</span>
@@ -5983,6 +5984,7 @@ the same global cycle N times.</p>
         <span class="s2">&quot;covid_end_year_passenger&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
         <span class="s2">&quot;gdp_per_capita_init&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
         <span class="s2">&quot;population_init&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="s2">&quot;price_reference_year&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">PRICE_REFERENCE_YEAR</span><span class="p">),</span>
     <span class="p">}</span>
     <span class="k">for</span> <span class="n">mid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">passenger_market_ids</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_rpk_share_last_historical_year&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
@@ -6046,108 +6048,7 @@ are pinned to the exogenous <code>rpk_init</code> split.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/models/air_transport/air_traffic/price_elasticity_logistic_income.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">144</span>
-<span class="normal">145</span>
-<span class="normal">146</span>
-<span class="normal">147</span>
-<span class="normal">148</span>
-<span class="normal">149</span>
-<span class="normal">150</span>
-<span class="normal">151</span>
-<span class="normal">152</span>
-<span class="normal">153</span>
-<span class="normal">154</span>
-<span class="normal">155</span>
-<span class="normal">156</span>
-<span class="normal">157</span>
-<span class="normal">158</span>
-<span class="normal">159</span>
-<span class="normal">160</span>
-<span class="normal">161</span>
-<span class="normal">162</span>
-<span class="normal">163</span>
-<span class="normal">164</span>
-<span class="normal">165</span>
-<span class="normal">166</span>
-<span class="normal">167</span>
-<span class="normal">168</span>
-<span class="normal">169</span>
-<span class="normal">170</span>
-<span class="normal">171</span>
-<span class="normal">172</span>
-<span class="normal">173</span>
-<span class="normal">174</span>
-<span class="normal">175</span>
-<span class="normal">176</span>
-<span class="normal">177</span>
-<span class="normal">178</span>
-<span class="normal">179</span>
-<span class="normal">180</span>
-<span class="normal">181</span>
-<span class="normal">182</span>
-<span class="normal">183</span>
-<span class="normal">184</span>
-<span class="normal">185</span>
-<span class="normal">186</span>
-<span class="normal">187</span>
-<span class="normal">188</span>
-<span class="normal">189</span>
-<span class="normal">190</span>
-<span class="normal">191</span>
-<span class="normal">192</span>
-<span class="normal">193</span>
-<span class="normal">194</span>
-<span class="normal">195</span>
-<span class="normal">196</span>
-<span class="normal">197</span>
-<span class="normal">198</span>
-<span class="normal">199</span>
-<span class="normal">200</span>
-<span class="normal">201</span>
-<span class="normal">202</span>
-<span class="normal">203</span>
-<span class="normal">204</span>
-<span class="normal">205</span>
-<span class="normal">206</span>
-<span class="normal">207</span>
-<span class="normal">208</span>
-<span class="normal">209</span>
-<span class="normal">210</span>
-<span class="normal">211</span>
-<span class="normal">212</span>
-<span class="normal">213</span>
-<span class="normal">214</span>
-<span class="normal">215</span>
-<span class="normal">216</span>
-<span class="normal">217</span>
-<span class="normal">218</span>
-<span class="normal">219</span>
-<span class="normal">220</span>
-<span class="normal">221</span>
-<span class="normal">222</span>
-<span class="normal">223</span>
-<span class="normal">224</span>
-<span class="normal">225</span>
-<span class="normal">226</span>
-<span class="normal">227</span>
-<span class="normal">228</span>
-<span class="normal">229</span>
-<span class="normal">230</span>
-<span class="normal">231</span>
-<span class="normal">232</span>
-<span class="normal">233</span>
-<span class="normal">234</span>
-<span class="normal">235</span>
-<span class="normal">236</span>
-<span class="normal">237</span>
-<span class="normal">238</span>
-<span class="normal">239</span>
-<span class="normal">240</span>
-<span class="normal">241</span>
-<span class="normal">242</span>
-<span class="normal">243</span>
-<span class="normal">244</span>
-<span class="normal">245</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">245</span>
 <span class="normal">246</span>
 <span class="normal">247</span>
 <span class="normal">248</span>
@@ -6180,7 +6081,105 @@ are pinned to the exogenous <code>rpk_init</code> split.</p>
 <span class="normal">275</span>
 <span class="normal">276</span>
 <span class="normal">277</span>
-<span class="normal">278</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span>
+<span class="normal">338</span>
+<span class="normal">339</span>
+<span class="normal">340</span>
+<span class="normal">341</span>
+<span class="normal">342</span>
+<span class="normal">343</span>
+<span class="normal">344</span>
+<span class="normal">345</span>
+<span class="normal">346</span>
+<span class="normal">347</span>
+<span class="normal">348</span>
+<span class="normal">349</span>
+<span class="normal">350</span>
+<span class="normal">351</span>
+<span class="normal">352</span>
+<span class="normal">353</span>
+<span class="normal">354</span>
+<span class="normal">355</span>
+<span class="normal">356</span>
+<span class="normal">357</span>
+<span class="normal">358</span>
+<span class="normal">359</span>
+<span class="normal">360</span>
+<span class="normal">361</span>
+<span class="normal">362</span>
+<span class="normal">363</span>
+<span class="normal">364</span>
+<span class="normal">365</span>
+<span class="normal">366</span>
+<span class="normal">367</span>
+<span class="normal">368</span>
+<span class="normal">369</span>
+<span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span>
+<span class="normal">376</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute prospective RPK using a generalised logistic income trend adjusted for price.</span>
 
 <span class="sd">    The global per-capita income trend is multiplied by the price index; the result is</span>
@@ -6191,23 +6190,13 @@ are pinned to the exogenous <code>rpk_init</code> split.</p>
     <span class="n">rpk_init</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;rpk_init&quot;</span><span class="p">]</span>
     <span class="n">population</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;population&quot;</span><span class="p">]</span>
     <span class="n">gdp_per_capita</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;gdp_per_capita&quot;</span><span class="p">]</span>
+    <span class="c1"># (COVID handling lives in _covid_shift, below.)</span>
     <span class="n">doc_net_energy_per_rpk_mean</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;doc_net_energy_per_rpk_mean&quot;</span><span class="p">]</span>
-    <span class="n">gdp_per_capita_last_historical_year</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span>
-        <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;gdp_per_capita_last_historical_year&quot;</span><span class="p">]</span>
-    <span class="p">)</span>
-    <span class="n">gdp_per_capita_covid_end</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;gdp_per_capita_covid_end&quot;</span><span class="p">])</span>
     <span class="n">gdp_per_capita_init</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;gdp_per_capita_init&quot;</span><span class="p">]</span>
     <span class="n">population_init</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;population_init&quot;</span><span class="p">]</span>
 
     <span class="n">price_ref_eur</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">price_ref</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">eur_usd_exchange_rate</span>
-    <span class="n">covid_end_year</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;covid_end_year_passenger&quot;</span><span class="p">])</span>
-    <span class="c1"># When the prospective window starts after COVID (prospection_start_year &gt;</span>
-    <span class="c1"># covid_end_year), the GDP series already reflects the post-COVID level, so</span>
-    <span class="c1"># re-applying covid_shift would double-count the COVID dampening.</span>
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span> <span class="o">&gt;</span> <span class="n">covid_end_year</span><span class="p">:</span>
-        <span class="n">covid_shift</span> <span class="o">=</span> <span class="mf">0.0</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">covid_shift</span> <span class="o">=</span> <span class="n">gdp_per_capita_covid_end</span> <span class="o">-</span> <span class="n">gdp_per_capita_last_historical_year</span>
+    <span class="n">covid_shift</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_covid_shift</span><span class="p">(</span><span class="n">rpk_init</span><span class="p">,</span> <span class="n">population_init</span><span class="p">,</span> <span class="n">gdp_per_capita</span><span class="p">)</span>
     <span class="n">hist_slice</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">historic_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
 
     <span class="c1"># --- Logistic trends ---</span>
@@ -6240,7 +6229,14 @@ are pinned to the exogenous <code>rpk_init</code> split.</p>
     <span class="p">)</span>
 
     <span class="n">doc_net_energy_per_rpk_delayed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_price_delay</span><span class="p">(</span><span class="n">doc_net_energy_per_rpk_mean</span><span class="p">)</span>
-    <span class="n">price_index</span> <span class="o">=</span> <span class="p">(</span><span class="n">doc_net_energy_per_rpk_delayed</span> <span class="o">/</span> <span class="n">price_ref_eur</span><span class="p">)</span> <span class="o">**</span> <span class="bp">self</span><span class="o">.</span><span class="n">price_elast</span>
+    <span class="n">price_index</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">doc_net_energy_per_rpk_delayed</span>
+        <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_price_reference</span><span class="p">(</span>
+            <span class="n">doc_net_energy_per_rpk_delayed</span><span class="p">,</span>
+            <span class="n">price_ref_eur</span><span class="p">,</span>
+            <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;price_reference_year&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+    <span class="p">)</span> <span class="o">**</span> <span class="bp">self</span><span class="o">.</span><span class="n">price_elast</span>
     <span class="n">rpk_per_capita</span> <span class="o">=</span> <span class="n">rpk_per_capita_trend</span> <span class="o">*</span> <span class="n">price_index</span>
 
     <span class="c1"># --- Total RPK (model, no measures yet) ---</span>

@@ -5907,10 +5907,7 @@ the same global cycle N times.</p>
 
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/air_transport/air_traffic/price_and_income_elasticity.py</code></summary>
-                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
+                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">54</span>
 <span class="normal">55</span>
 <span class="normal">56</span>
 <span class="normal">57</span>
@@ -5951,7 +5948,10 @@ the same global cycle N times.</p>
 <span class="normal">92</span>
 <span class="normal">93</span>
 <span class="normal">94</span>
-<span class="normal">95</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">passenger_market_ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="normal">95</span>
+<span class="normal">96</span>
+<span class="normal">97</span>
+<span class="normal">98</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">passenger_market_ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">passenger_market_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">passenger_market_ids</span><span class="p">)</span>
     <span class="c1"># Calibrated constant-elasticity parameters (fixed at class level)</span>
@@ -6034,11 +6034,7 @@ are pinned to the exogenous <code>rpk_init</code> split.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/models/air_transport/air_traffic/price_and_income_elasticity.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">131</span>
-<span class="normal">132</span>
-<span class="normal">133</span>
-<span class="normal">134</span>
-<span class="normal">135</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">135</span>
 <span class="normal">136</span>
 <span class="normal">137</span>
 <span class="normal">138</span>
@@ -6147,7 +6143,11 @@ are pinned to the exogenous <code>rpk_init</code> split.</p>
 <span class="normal">241</span>
 <span class="normal">242</span>
 <span class="normal">243</span>
-<span class="normal">244</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute prospective RPK from population, GDP per capita and energy cost per RPK.</span>
 
 <span class="sd">    The global per-capita demand uses the constant-elasticity model; it is then</span>

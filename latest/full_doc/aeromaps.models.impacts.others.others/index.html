@@ -6417,7 +6417,7 @@ This module contains models for various KPI computations.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Mean Lower Heating Value for drop-in fuels [MJ/liter].</p>
+                <p>Mean Lower Heating Value for drop-in fuels [MJ/kg].</p>
               </div>
             </td>
             <td>
@@ -6469,16 +6469,7 @@ This module contains models for various KPI computations.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/models/impacts/others/others.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span>
-<span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">109</span>
 <span class="normal">110</span>
 <span class="normal">111</span>
 <span class="normal">112</span>
@@ -6501,7 +6492,16 @@ This module contains models for various KPI computations.</p>
 <span class="normal">129</span>
 <span class="normal">130</span>
 <span class="normal">131</span>
-<span class="normal">132</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">energy_consumption_passenger_dropin_fuel</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
     <span class="n">dropin_fuel_mean_lhv</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
@@ -6515,7 +6515,7 @@ This module contains models for various KPI computations.</p>
 <span class="sd">    energy_consumption_passenger_dropin_fuel</span>
 <span class="sd">        Energy consumption in the form of drop-in fuels from passenger air transport [MJ].</span>
 <span class="sd">    dropin_fuel_mean_lhv</span>
-<span class="sd">        Mean Lower Heating Value for drop-in fuels [MJ/liter].</span>
+<span class="sd">        Mean Lower Heating Value for drop-in fuels [MJ/kg].</span>
 <span class="sd">    rpk</span>
 <span class="sd">        Revenue Passenger Kilometer [RPK].</span>
 

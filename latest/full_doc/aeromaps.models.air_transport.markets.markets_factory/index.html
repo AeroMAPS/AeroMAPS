@@ -5629,10 +5629,7 @@ Creates <code>RPKReferenceMarket</code> only when reference inputs are present.<
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/models/air_transport/markets/markets_factory.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">42</span>
 <span class="normal">43</span>
 <span class="normal">44</span>
 <span class="normal">45</span>
@@ -5664,7 +5661,10 @@ Creates <code>RPKReferenceMarket</code> only when reference inputs are present.<
 <span class="normal">71</span>
 <span class="normal">72</span>
 <span class="normal">73</span>
-<span class="normal">74</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_market_rpk_models</span><span class="p">(</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_market_rpk_models</span><span class="p">(</span>
     <span class="n">markets</span><span class="p">,</span> <span class="n">markets_data</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">with_elasticity</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create per-market RPK models from the market registry and raw YAML data.</span>
@@ -5728,27 +5728,27 @@ own the unsuffixed names.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/models/air_transport/markets/markets_factory.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span>
-<span class="normal">87</span>
-<span class="normal">88</span>
-<span class="normal">89</span>
-<span class="normal">90</span>
-<span class="normal">91</span>
-<span class="normal">92</span>
-<span class="normal">93</span>
-<span class="normal">94</span>
-<span class="normal">95</span>
-<span class="normal">96</span>
-<span class="normal">97</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_market_rpk_aggregator</span><span class="p">(</span><span class="n">markets</span><span class="p">,</span> <span class="n">with_elasticity</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_market_rpk_aggregator</span><span class="p">(</span><span class="n">markets</span><span class="p">,</span> <span class="n">with_elasticity</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create an RPKAggregator that sums per-market rpk into the total ``rpk``.</span>
 
 <span class="sd">    When ``with_elasticity`` is True, the aggregator consumes / emits names with</span>
@@ -5794,10 +5794,7 @@ own the unsuffixed names.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/models/air_transport/markets/markets_factory.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span>
-<span class="normal">103</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">103</span>
 <span class="normal">104</span>
 <span class="normal">105</span>
 <span class="normal">106</span>
@@ -5806,7 +5803,10 @@ own the unsuffixed names.</p>
 <span class="normal">109</span>
 <span class="normal">110</span>
 <span class="normal">111</span>
-<span class="normal">112</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_market_rpk_elasticity</span><span class="p">(</span><span class="n">markets</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_market_rpk_elasticity</span><span class="p">(</span><span class="n">markets</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create the global ``RPKElasticity`` discipline for cost-feedback mode.</span>
 
 <span class="sd">    Returns an empty mapping when no passenger markets are configured.</span>
@@ -5854,10 +5854,7 @@ into the total <code>rpk_reference</code>.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/models/air_transport/markets/markets_factory.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">118</span>
 <span class="normal">119</span>
 <span class="normal">120</span>
 <span class="normal">121</span>
@@ -5906,7 +5903,16 @@ into the total <code>rpk_reference</code>.</p>
 <span class="normal">164</span>
 <span class="normal">165</span>
 <span class="normal">166</span>
-<span class="normal">167</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_market_rpk_demand_model</span><span class="p">(</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_market_rpk_demand_model</span><span class="p">(</span>
     <span class="n">markets</span><span class="p">,</span> <span class="n">markets_data</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">demand_model</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;constant_elasticity&quot;</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a price-coupled demand-model chain for the passenger markets.</span>
@@ -5958,6 +5964,12 @@ into the total <code>rpk_reference</code>.</p>
             <span class="n">models</span><span class="p">[</span><span class="n">reference_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">RPKReferenceMarket</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">reference_name</span><span class="p">,</span> <span class="n">market_id</span><span class="o">=</span><span class="n">mid</span><span class="p">)</span>
 
     <span class="n">models</span><span class="p">[</span><span class="s2">&quot;rpk_demand&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">demand_class</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;rpk_demand&quot;</span><span class="p">,</span> <span class="n">passenger_market_ids</span><span class="o">=</span><span class="n">passenger_ids</span><span class="p">)</span>
+    <span class="c1"># Both demand classes read ``population`` and ``gdp_per_capita``, and nothing</span>
+    <span class="c1"># else in the package produces them, so the driver belongs with them rather</span>
+    <span class="c1"># than in a bundle every scenario loads: ``parameters.json`` ships no defaults</span>
+    <span class="c1"># for the reference-year inputs, so a CAGR scenario that acquired this model</span>
+    <span class="c1"># would start failing on inputs it has no reason to declare.</span>
+    <span class="n">models</span><span class="p">[</span><span class="s2">&quot;socioeconomic_drivers&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">SocioeconomicDrivers</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;socioeconomic_drivers&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">models</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -5984,16 +5996,7 @@ into the total <code>rpk_reference</code>.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/models/air_transport/markets/markets_factory.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">170</span>
-<span class="normal">171</span>
-<span class="normal">172</span>
-<span class="normal">173</span>
-<span class="normal">174</span>
-<span class="normal">175</span>
-<span class="normal">176</span>
-<span class="normal">177</span>
-<span class="normal">178</span>
-<span class="normal">179</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">179</span>
 <span class="normal">180</span>
 <span class="normal">181</span>
 <span class="normal">182</span>
@@ -6001,7 +6004,16 @@ into the total <code>rpk_reference</code>.</p>
 <span class="normal">184</span>
 <span class="normal">185</span>
 <span class="normal">186</span>
-<span class="normal">187</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_market_ask_models</span><span class="p">(</span><span class="n">markets</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_market_ask_models</span><span class="p">(</span><span class="n">markets</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create per-market ASKMarket models and one ASKAggregator.</span>
 
 <span class="sd">    Returns an empty mapping when no markets registry is available.</span>
@@ -6149,16 +6161,7 @@ passenger markets are configured.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/models/air_transport/markets/markets_factory.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">190</span>
-<span class="normal">191</span>
-<span class="normal">192</span>
-<span class="normal">193</span>
-<span class="normal">194</span>
-<span class="normal">195</span>
-<span class="normal">196</span>
-<span class="normal">197</span>
-<span class="normal">198</span>
-<span class="normal">199</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">199</span>
 <span class="normal">200</span>
 <span class="normal">201</span>
 <span class="normal">202</span>
@@ -6205,7 +6208,16 @@ passenger markets are configured.</p>
 <span class="normal">243</span>
 <span class="normal">244</span>
 <span class="normal">245</span>
-<span class="normal">246</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_market_load_factor_models</span><span class="p">(</span><span class="n">markets</span><span class="p">,</span> <span class="n">load_factor_model</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;quadratic&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_market_load_factor_models</span><span class="p">(</span><span class="n">markets</span><span class="p">,</span> <span class="n">load_factor_model</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;quadratic&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create per-market load factor models and one LoadFactorAggregator.</span>
 
 <span class="sd">    Always creates one load factor model per passenger market (load_factor</span>
@@ -6290,16 +6302,7 @@ present in the freight market's inputs.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/models/air_transport/markets/markets_factory.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">249</span>
-<span class="normal">250</span>
-<span class="normal">251</span>
-<span class="normal">252</span>
-<span class="normal">253</span>
-<span class="normal">254</span>
-<span class="normal">255</span>
-<span class="normal">256</span>
-<span class="normal">257</span>
-<span class="normal">258</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">258</span>
 <span class="normal">259</span>
 <span class="normal">260</span>
 <span class="normal">261</span>
@@ -6319,7 +6322,16 @@ present in the freight market's inputs.</p>
 <span class="normal">275</span>
 <span class="normal">276</span>
 <span class="normal">277</span>
-<span class="normal">278</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_market_rtk_models</span><span class="p">(</span><span class="n">markets</span><span class="p">,</span> <span class="n">markets_data</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_market_rtk_models</span><span class="p">(</span><span class="n">markets</span><span class="p">,</span> <span class="n">markets_data</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create per-market RTK models for all freight markets.</span>
 
 <span class="sd">    Always creates one ``RTKMarket`` per freight market.</span>
@@ -6374,18 +6386,18 @@ present in the freight market's inputs.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/models/air_transport/markets/markets_factory.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">281</span>
-<span class="normal">282</span>
-<span class="normal">283</span>
-<span class="normal">284</span>
-<span class="normal">285</span>
-<span class="normal">286</span>
-<span class="normal">287</span>
-<span class="normal">288</span>
-<span class="normal">289</span>
-<span class="normal">290</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">290</span>
 <span class="normal">291</span>
-<span class="normal">292</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_market_rtk_aggregator</span><span class="p">(</span><span class="n">markets</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_market_rtk_aggregator</span><span class="p">(</span><span class="n">markets</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create an RTKAggregator that sums per-market rtk into the total ``rtk``.</span>
 
 <span class="sd">    Returns an empty mapping when no freight markets are configured.</span>

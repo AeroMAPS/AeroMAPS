@@ -2027,10 +2027,32 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#aeromaps.utils.yaml.aeromaps_custom_data_type_representer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        aeromaps_custom_data_type_representer
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#aeromaps.utils.yaml.read_yaml_file" class="md-nav__link">
     <span class="md-ellipsis">
       
         read_yaml_file
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aeromaps.utils.yaml.write_yaml_file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        write_yaml_file
       
     </span>
   </a>
@@ -5819,7 +5841,8 @@
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/utils/yaml.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 6</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 5</span>
+<span class="normal"> 6</span>
 <span class="normal"> 7</span>
 <span class="normal"> 8</span>
 <span class="normal"> 9</span>
@@ -5830,8 +5853,7 @@
 <span class="normal">14</span>
 <span class="normal">15</span>
 <span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">aeromaps_custom_data_type_constructor</span><span class="p">(</span><span class="n">loader</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">aeromaps_custom_data_type_constructor</span><span class="p">(</span><span class="n">loader</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Custom constructor to handle specific interpolation input types in yaml files.</span>
 
@@ -5844,6 +5866,112 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">value</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">construct_mapping</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">AeroMapsCustomDataType</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="aeromaps.utils.yaml.aeromaps_custom_data_type_representer" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">aeromaps_custom_data_type_representer</span>
+
+
+<a href="#aeromaps.utils.yaml.aeromaps_custom_data_type_representer" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">aeromaps_custom_data_type_representer</span><span class="p">(</span><span class="n">dumper</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Custom representer to serialise an AeroMapsCustomDataType back to YAML with
+its <code>!AeroMapsCustomDataType</code> tag, mirroring
+:func:<code>aeromaps_custom_data_type_constructor</code>.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>dumper</code>
+            </td>
+            <td>
+                  <code><span title="yaml.Dumper">Dumper</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The YAML dumper instance.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>data</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="AeroMapsCustomDataType (aeromaps.models.base.AeroMapsCustomDataType)" href="../aeromaps.models.base/#aeromaps.models.base.AeroMapsCustomDataType">AeroMapsCustomDataType</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The object to be represented.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>aeromaps/utils/yaml.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">aeromaps_custom_data_type_representer</span><span class="p">(</span><span class="n">dumper</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Custom representer to serialise an AeroMapsCustomDataType back to YAML with</span>
+<span class="sd">    its ``!AeroMapsCustomDataType`` tag, mirroring</span>
+<span class="sd">    :func:`aeromaps_custom_data_type_constructor`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dumper : yaml.Dumper</span>
+<span class="sd">        The YAML dumper instance.</span>
+<span class="sd">    data : AeroMapsCustomDataType</span>
+<span class="sd">        The object to be represented.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mapping</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;years&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">years</span><span class="p">),</span> <span class="s2">&quot;values&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">),</span> <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">method</span><span class="p">}</span>
+    <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;positive_constraint&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="n">mapping</span><span class="p">[</span><span class="s2">&quot;positive_constraint&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">positive_constraint</span>
+    <span class="k">return</span> <span class="n">dumper</span><span class="o">.</span><span class="n">represent_mapping</span><span class="p">(</span><span class="s2">&quot;!AeroMapsCustomDataType&quot;</span><span class="p">,</span> <span class="n">mapping</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -5965,34 +6093,7 @@
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/utils/yaml.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">51</span>
 <span class="normal">52</span>
 <span class="normal">53</span>
 <span class="normal">54</span>
@@ -6001,7 +6102,32 @@
 <span class="normal">57</span>
 <span class="normal">58</span>
 <span class="normal">59</span>
-<span class="normal">60</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">read_yaml_file</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;parameters.yaml&quot;</span><span class="p">):</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">read_yaml_file</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;parameters.yaml&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Read a YAML file and return its contents as a dictionary.</span>
 
@@ -6034,10 +6160,107 @@
     <span class="k">except</span> <span class="n">yaml</span><span class="o">.</span><span class="n">YAMLError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">yaml</span><span class="o">.</span><span class="n">YAMLError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid YAML in &#39;</span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s2">&#39;: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Expected a YAML mapping in &#39;</span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s2">&#39;, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected a YAML mapping in &#39;</span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s2">&#39;, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">data</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="aeromaps.utils.yaml.write_yaml_file" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">write_yaml_file</span>
+
+
+<a href="#aeromaps.utils.yaml.write_yaml_file" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">write_yaml_file</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="s1">&#39;parameters.yaml&#39;</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Write a dictionary to a YAML file, preserving <code>!AeroMapsCustomDataType</code>
+blocks via their registered representer.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>data</code>
+            </td>
+            <td>
+                  <code><span title="dict">dict</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The contents to serialise.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>file_name</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The path to the YAML file to write.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;parameters.yaml&#39;</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>aeromaps/utils/yaml.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">write_yaml_file</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;parameters.yaml&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write a dictionary to a YAML file, preserving ``!AeroMapsCustomDataType``</span>
+<span class="sd">    blocks via their registered representer.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : dict</span>
+<span class="sd">        The contents to serialise.</span>
+<span class="sd">    file_name : str</span>
+<span class="sd">        The path to the YAML file to write.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">file</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default_flow_style</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">allow_unicode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>

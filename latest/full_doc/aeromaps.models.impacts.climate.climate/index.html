@@ -6233,7 +6233,12 @@ This method is a wrapper for the <code>AviationClimateSimulation</code> class fr
 <span class="normal">206</span>
 <span class="normal">207</span>
 <span class="normal">208</span>
-<span class="normal">209</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Run the climate simulation for aviation emissions.</span>
 <span class="sd">    This method is a wrapper for the `AviationClimateSimulation` class from AeroCM.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -6244,7 +6249,12 @@ This method is a wrapper for the <code>AviationClimateSimulation</code> class fr
     <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx1</span><span class="p">,</span> <span class="s2">&quot;contrails_distance_corrected&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;total_aircraft_distance&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx1</span><span class="p">]</span>
     <span class="p">)</span>
-    <span class="n">idx2</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">historic_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">)</span>
+    <span class="c1"># The fuel-effect correction is built from pathway massic shares, which only</span>
+    <span class="c1"># exist from the prospection start year onwards; it is zero over the historic</span>
+    <span class="c1"># period. Applying it there would wipe out the historic contrail distance (and</span>
+    <span class="c1"># with it all historic contrail forcing), so the correction is restricted to</span>
+    <span class="c1"># the prospective years and the historic years keep the raw distance above.</span>
+    <span class="n">idx2</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx2</span><span class="p">,</span> <span class="s2">&quot;contrails_distance_corrected&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;total_aircraft_distance&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx2</span><span class="p">]</span>
             <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;operations_contrails_gain&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx2</span><span class="p">]</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span>
