@@ -535,12 +535,31 @@ def _constraint_frame(values):
     return pd.DataFrame(columns, index=OPTIM_YEARS)
 
 
-def read_constraints(hdf_path):
-    """Constraint values at a saved run's optimum.
+def _mandate_frame(x):
+    """The design vector as a year x pathway frame, in design-space order."""
+    x = np.ravel(np.asarray(x, dtype=float))
+    return pd.DataFrame(
+        {"electrofuel": x[:5], "biofuel": x[5:]},
+        index=OPTIM_YEARS,
+    )
 
-    Returns ``(frame, carbon, feasible)``: the five vector constraints as a
-    year x constraint frame, the scalar carbon-budget constraint (NaN for a min-CO2
-    run, where it is the objective), and whether the optimum satisfied them all.
+
+def _evaluation(values, x):
+    """One point of a run: what it asked for, and what that violated."""
+    carbon = values.get(CARBON_CONSTRAINT)
+    return {
+        "constraints": _constraint_frame(values),
+        "carbon": float(np.ravel(carbon)[0]) if carbon is not None else np.nan,
+        "mandate": _mandate_frame(x),
+    }
+
+
+def read_constraints(hdf_path):
+    """A saved run's optimum, as ``constraints`` / ``carbon`` / ``mandate`` / ``feasible``.
+
+    ``constraints`` is the five vector constraints as a year x constraint frame,
+    ``carbon`` the scalar carbon-budget constraint (NaN for a min-CO2 run, where it
+    is the objective) and ``mandate`` the design variables the optimiser settled on.
     Negative is slack, zero is active, positive is violated.
     """
     from gemseo.algos.optimization_problem import OptimizationProblem
@@ -549,21 +568,17 @@ def read_constraints(hdf_path):
         optimum = OptimizationProblem.from_hdf(str(hdf_path)).optimum
     except Exception:
         return None
-    values = optimum.constraints or {}
-    carbon = values.get(CARBON_CONSTRAINT)
-    return (
-        _constraint_frame(values),
-        float(np.ravel(carbon)[0]) if carbon is not None else np.nan,
-        bool(optimum.is_feasible),
-    )
+    evaluation = _evaluation(optimum.constraints or {}, optimum.design)
+    evaluation["feasible"] = bool(optimum.is_feasible)
+    return evaluation
 
 
 def read_constraint_history(hdf_path):
-    """Every iterate of a saved run, as a list of ``(frame, carbon)`` pairs.
+    """Every iterate of a saved run, in the same shape ``read_constraints`` returns.
 
     Line-search points carry the objective alone and are dropped; so are the points
     a hair away from their predecessor, which are finite-difference perturbations
-    rather than steps. The last pair returned is the optimum.
+    rather than steps. The last entry is the optimum.
     """
     from gemseo.algos.optimization_problem import OptimizationProblem
 
@@ -577,13 +592,7 @@ def read_constraint_history(hdf_path):
         if previous is not None and np.linalg.norm(x - previous) < 1e-5:
             continue
         previous = x
-        carbon = values.get(CARBON_CONSTRAINT)
-        history.append(
-            (
-                _constraint_frame(values),
-                float(np.ravel(carbon)[0]) if carbon is not None else np.nan,
-            )
-        )
+        history.append(_evaluation(values, x))
     return history
 
 
