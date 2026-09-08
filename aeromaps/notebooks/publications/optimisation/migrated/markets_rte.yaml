@@ -61,7 +61,7 @@ global:
   elasticity:
     use_elasticity: true
     price_elasticity: -0.9
-    initial_airfare_per_rpk: 0.09251431471704129
+    initial_airfare_per_rpk: 0.09236379319842411
 
 # Per-market input templates, keyed by traffic_type. Deep-merged into every
 # market's ``inputs`` before flattening; any leaf set on a market wins.
