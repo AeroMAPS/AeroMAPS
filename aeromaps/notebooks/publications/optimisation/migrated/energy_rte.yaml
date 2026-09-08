@@ -21,11 +21,15 @@ generic_biofuel:
       resource_specific_consumption:
         generic_biomass: 2.104355
       kerosene_selectivity: 1.0
+      # 44 MJ/kg is the mass basis (massic shares, non-CO2 fuel mass), matching
+      # optim_backwards' lhv_kerosene. The mean_mfsp values below are EUR/MJ obtained
+      # by dividing the paper's EUR/L by 35.3 MJ/L, which is the volumetric basis its
+      # cost models hardcoded -- not 0.8 x 44 = 35.2. Reproducing the paper needs 35.3.
       lhv: 44
     environmental:
       mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
         years: [2000, 2050]
-        values: [20.8, 20.8]
+        values: [20.8269, 20.8269]
         method: linear
       emission_index:
         h2o: 1.231
@@ -36,7 +40,7 @@ generic_biofuel:
     economics:
       mean_mfsp_without_resource: !AeroMapsCustomDataType
         years: [2000, 2050]
-        values: [0.0374847, 0.0374847]  # 1.3195 EUR/L, blend-weighted from the 5 pathways
+        values: [0.03737851105, 0.03737851105]  # 1.3195 EUR/L / 35.3, blend-weighted from the 5 pathways
         method: linear
   outputs:
 
@@ -74,7 +78,7 @@ generic_electrofuel:
     economics:
       mean_mfsp_without_resource: !AeroMapsCustomDataType
         years: [2000, 2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035, 2036, 2037, 2038, 2039, 2040, 2041, 2042, 2043, 2044, 2045, 2046, 2047, 2048, 2049, 2050]
-        values: [0.1056973, 0.1056973, 0.1056973, 0.1056973, 0.1056973, 0.1056973, 0.1056973, 0.1056973, 0.1015244, 0.0973573, 0.0931053, 0.0889205, 0.0879465, 0.0869957, 0.0860705, 0.0851961, 0.0844281, 0.0837174, 0.0830476, 0.0824186, 0.0818856, 0.0814336, 0.0810476, 0.0807202, 0.0803933, 0.0797445, 0.0788278, 0.0777602, 0.0766564, 0.0755786, 0.0745548, 0.0735931]
+        values: [0.1053978742, 0.1053978742, 0.1053978742, 0.1053978742, 0.1053978742, 0.1053978742, 0.1053978742, 0.1053978742, 0.1012367955, 0.09708150028, 0.09284154561, 0.08866860057, 0.08769735977, 0.08674925326, 0.08582667422, 0.08495475127, 0.08418892691, 0.08348024023, 0.08281233768, 0.08218511955, 0.08165362946, 0.08120290992, 0.0808180034, 0.08049153088, 0.08016555694, 0.0795185949, 0.07860449178, 0.07753991615, 0.07643924306, 0.07536449632, 0.0743435966, 0.07338462096]
         method: linear
   outputs:
 
@@ -91,7 +95,7 @@ fossil_kerosene:
     environmental:
       mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
         years: [2000, 2050]
-        values: [89.0, 89.0]
+        values: [88.7, 88.7]
         method: linear
       emission_index:
         h2o: 1.231
@@ -102,6 +106,6 @@ fossil_kerosene:
     economics:
       mean_mfsp_without_resource: !AeroMapsCustomDataType
         years: [2000, 2050]
-        values: [0.0116477, 0.0116477]  # 0.41 EUR/L
+        values: [0.01161470368, 0.01161470368]  # 0.41 EUR/L / 35.3
         method: linear
   outputs:
