@@ -507,6 +507,86 @@ def read_run(hdf_path):
     }
 
 
+# Display order and labels of the five vector constraints, all enforced on
+# OPTIM_YEARS, so their five components read as one row per reference year.
+CONSTRAINT_LABELS = OrderedDict(
+    [
+        ("blend_completeness_constraint", "Blend\ncompleteness"),
+        ("biomass_trajectory_constraint", "Biomass\navailability"),
+        ("electricity_trajectory_constraint", "Electricity\navailability"),
+        ("biofuel_use_growth_constraint", "Biofuel\nramp-up"),
+        ("electrofuel_use_growth_constraint", "Electrofuel\nramp-up"),
+    ]
+)
+
+CARBON_CONSTRAINT = "aviation_carbon_budget_constraint"
+
+
+def _constraint_frame(values):
+    """One evaluation's constraint values as a frame indexed by enforcement year."""
+    columns = {}
+    for name in CONSTRAINT_LABELS:
+        component = values.get(name)
+        if component is None:
+            continue
+        component = np.ravel(np.asarray(component, dtype=float))
+        if component.size == len(OPTIM_YEARS):
+            columns[name] = component
+    return pd.DataFrame(columns, index=OPTIM_YEARS)
+
+
+def read_constraints(hdf_path):
+    """Constraint values at a saved run's optimum.
+
+    Returns ``(frame, carbon, feasible)``: the five vector constraints as a
+    year x constraint frame, the scalar carbon-budget constraint (NaN for a min-CO2
+    run, where it is the objective), and whether the optimum satisfied them all.
+    Negative is slack, zero is active, positive is violated.
+    """
+    from gemseo.algos.optimization_problem import OptimizationProblem
+
+    try:
+        optimum = OptimizationProblem.from_hdf(str(hdf_path)).optimum
+    except Exception:
+        return None
+    values = optimum.constraints or {}
+    carbon = values.get(CARBON_CONSTRAINT)
+    return (
+        _constraint_frame(values),
+        float(np.ravel(carbon)[0]) if carbon is not None else np.nan,
+        bool(optimum.is_feasible),
+    )
+
+
+def read_constraint_history(hdf_path):
+    """Every iterate of a saved run, as a list of ``(frame, carbon)`` pairs.
+
+    Line-search points carry the objective alone and are dropped; so are the points
+    a hair away from their predecessor, which are finite-difference perturbations
+    rather than steps. The last pair returned is the optimum.
+    """
+    from gemseo.algos.optimization_problem import OptimizationProblem
+
+    problem = OptimizationProblem.from_hdf(str(hdf_path))
+    history, previous = [], None
+    for x in problem.database.get_x_vect_history():
+        values = problem.database[x]
+        if not all(name in values for name in CONSTRAINT_LABELS):
+            continue
+        x = np.asarray(x, dtype=float)
+        if previous is not None and np.linalg.norm(x - previous) < 1e-5:
+            continue
+        previous = x
+        carbon = values.get(CARBON_CONSTRAINT)
+        history.append(
+            (
+                _constraint_frame(values),
+                float(np.ravel(carbon)[0]) if carbon is not None else np.nan,
+            )
+        )
+    return history
+
+
 def run_reference(case, kind="refueleu", config="config_rte.yaml", resume=True):
     """A plain MDA at a fixed mandate: the two comparison points of the paper.
 
