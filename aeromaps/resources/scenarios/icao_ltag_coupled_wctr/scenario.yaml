@@ -1,0 +1,6 @@
+name: "ICAO LTAG, coupled demand"
+category: academic
+tags: ["icao ltag", "coupled demand"]
+description: >-
+  The LTAG scenarios with price-elastic demand, under logistic and constant
+  elasticity formulations and a range of fuel-price assumptions.

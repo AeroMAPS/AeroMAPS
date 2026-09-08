@@ -26,6 +26,3 @@ models:
     - models_energy_cost
     - models_operation_cost_top_down_feedback
     - models_abatements_cost_simplified
-
-  customs:
-    socioeconomic_drivers: "../../notebooks/publications/wctr_2026/models/socioeconomic_drivers.py::SocioeconomicDrivers"

@@ -13,9 +13,36 @@ __pycache__/
 .python-version
 /docs/_build/
 /site/
+
+# MyST build output and the sweep's throwaway configurations, which are
+# regenerated on every run and must never be committed.
+/aeromaps/notebooks/publications/atag_scenarios/_build/
+/aeromaps/notebooks/publications/atag_scenarios/exports/
+/aeromaps/notebooks/publications/atag_scenarios/3rd_edition_variants/_generated/
+# The avoided-emissions paper is a second MyST project in the same tree,
+# with its own build and export directories.
+/aeromaps/notebooks/publications/atag_scenarios/avoided_emissions/_build/
+/aeromaps/notebooks/publications/atag_scenarios/avoided_emissions/exports/
+# Region configs rebaselined onto this scenario's own historic window by
+# aggregate_regions_to_single_process; regenerated on every run.
+/aeromaps/resources/scenarios/atag_3rd_edition_light/config_files/_rebaselined/
+
 /aeromaps/notebooks/private/
+# The sandbox prepare_scenario copies a reference scenario into, so a notebook
+# run never edits the packaged originals.
+/workdir/
 /aeromaps/notebooks/tutorials/07_life_cycle_assessment/data/config_files/lca/tmp/
 /aeromaps/notebooks/publications/ecats_2026/data/config_files/lca/tmp/
+# The LCA cache the process writes and re-reads; 49 MB rewritten by every suite run.
+/aeromaps/tests/tested_configs/tmp/
+# Written by regions_scaleup_time.ipynb, which calls it TMP_YAML.
+/aeromaps/notebooks/publications/_a_r_m/_tmp_scaling_run.yaml
 aeromaps/notebooks/tutorials/11_custom_markets_multi_regions/custom_data_excel/~$Classeur1.xlsx
 aeromaps/notebooks/tutorials/11_custom_markets_multi_regions/custom_data_excel/Classeur1.xlsx
 aeromaps/notebooks/tutorials/11_custom_markets_multi_regions/custom_data_excel/aeromaps_custom_inputs.xlsx
+
+# Generated notebook/premise build artifacts
+# NB: a pattern containing a slash is anchored to this file's directory, so the
+# export/logs rule needs the **/ prefix to match nested notebook folders.
+unlinked.log
+**/export/logs/

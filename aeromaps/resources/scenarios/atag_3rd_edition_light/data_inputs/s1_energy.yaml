@@ -1,0 +1,623 @@
+generic_biofuel:
+  name: generic_biofuel
+  environmental_model: top-down
+  cost_model: top-down
+  aircraft_type: dropin_fuel
+  energy_origin: biomass
+  default: false
+  compute_all_years: true
+  inputs:
+    mandate:
+      mandate_type: quantity
+      mandate_quantity: !AeroMapsCustomDataType
+        years:
+        - 2020
+        - 2021
+        - 2022
+        - 2023
+        - 2024
+        - 2025
+        - 2026
+        - 2027
+        - 2028
+        - 2029
+        - 2030
+        - 2031
+        - 2032
+        - 2033
+        - 2034
+        - 2035
+        - 2036
+        - 2037
+        - 2038
+        - 2039
+        - 2040
+        - 2041
+        - 2042
+        - 2043
+        - 2044
+        - 2045
+        - 2046
+        - 2047
+        - 2048
+        - 2049
+        - 2050
+        values:
+        - 0.0
+        - 0.0
+        - 0.0
+        - 0.0
+        - 205838873416.4607
+        - 257298591770.57587
+        - 308758310124.69104
+        - 465466902750.33795
+        - 619960521826.3346
+        - 826801606099.7279
+        - 1091385485555.3309
+        - 1502293959561.27
+        - 1960966240037.77
+        - 2479442897261.36
+        - 3170738283079.1694
+        - 3862027663218.99
+        - 4668392820878.41
+        - 5527722740024.131
+        - 6454543805326.99
+        - 7318643029482.449
+        - 8240493856607.241
+        - 9162201800261.12
+        - 9968754249860.05
+        - 10544861463923.22
+        - 11063362517884.959
+        - 11502628035260.66
+        - 11985150130461.959
+        - 12287095383859.9
+        - 12605188821402.16
+        - 12618028737766.66
+        - 12618040639790.182
+        method: linear
+    technical:
+      resource_names:
+      - generic_biomass
+      resource_specific_consumption:
+        generic_biomass: !AeroMapsCustomDataType
+          years:
+          - 2020
+          - 2021
+          - 2022
+          - 2023
+          - 2024
+          - 2025
+          - 2026
+          - 2027
+          - 2028
+          - 2029
+          - 2030
+          - 2031
+          - 2032
+          - 2033
+          - 2034
+          - 2035
+          - 2036
+          - 2037
+          - 2038
+          - 2039
+          - 2040
+          - 2041
+          - 2042
+          - 2043
+          - 2044
+          - 2045
+          - 2046
+          - 2047
+          - 2048
+          - 2049
+          - 2050
+          values:
+          - 1.6137694232489712
+          - 1.6137694232489712
+          - 1.6137694232489712
+          - 1.6137694232489712
+          - 1.6137694232489712
+          - 1.613769423248971
+          - 1.613769423248971
+          - 1.506643227666441
+          - 1.4546012073589818
+          - 1.412348964403315
+          - 1.4698008118939987
+          - 1.5005747446768132
+          - 1.4924631606057925
+          - 1.524942777784196
+          - 1.5550223432543613
+          - 1.559638399602439
+          - 1.5811940466752235
+          - 1.6055455201759605
+          - 1.6283793157620785
+          - 1.646474389343995
+          - 1.655019221000231
+          - 1.6663666669716586
+          - 1.6694035791275064
+          - 1.6742712379442626
+          - 1.682377270266086
+          - 1.6868063759035419
+          - 1.6930107485724615
+          - 1.6907513453887135
+          - 1.6943030475553211
+          - 1.6937178707778873
+          - 1.6937180276242523
+          method: linear
+      kerosene_selectivity: !AeroMapsCustomDataType
+        years:
+        - 2020
+        - 2021
+        - 2022
+        - 2023
+        - 2024
+        - 2025
+        - 2026
+        - 2027
+        - 2028
+        - 2029
+        - 2030
+        - 2031
+        - 2032
+        - 2033
+        - 2034
+        - 2035
+        - 2036
+        - 2037
+        - 2038
+        - 2039
+        - 2040
+        - 2041
+        - 2042
+        - 2043
+        - 2044
+        - 2045
+        - 2046
+        - 2047
+        - 2048
+        - 2049
+        - 2050
+        values:
+        - 0.2476104612667259
+        - 0.2476104612667259
+        - 0.2476104612667259
+        - 0.2476104612667259
+        - 0.2476104612667259
+        - 0.2476104612667259
+        - 0.2476104612667259
+        - 0.22280470126031962
+        - 0.2113910113432915
+        - 0.20666825398515673
+        - 0.20885402272617068
+        - 0.187899356969932
+        - 0.2014170387219555
+        - 0.20094826550730768
+        - 0.2011428153332735
+        - 0.20126455137395755
+        - 0.20201321524579421
+        - 0.2037298223308552
+        - 0.20759544457559903
+        - 0.200701278665302
+        - 0.2025521238777855
+        - 0.20540968409071436
+        - 0.21000843817150067
+        - 0.2110526128312399
+        - 0.21114355217608438
+        - 0.21144539638141027
+        - 0.21098950424983653
+        - 0.21335415985830808
+        - 0.2136089255650312
+        - 0.21578800448977717
+        - 0.2157881637035772
+        method: linear
+      lhv: 44
+      plant_load_factor: 0.95
+      plant_lifespan: 25
+    environmental:
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years:
+        - 2020
+        - 2021
+        - 2022
+        - 2023
+        - 2024
+        - 2025
+        - 2026
+        - 2027
+        - 2028
+        - 2029
+        - 2030
+        - 2031
+        - 2032
+        - 2033
+        - 2034
+        - 2035
+        - 2036
+        - 2037
+        - 2038
+        - 2039
+        - 2040
+        - 2041
+        - 2042
+        - 2043
+        - 2044
+        - 2045
+        - 2046
+        - 2047
+        - 2048
+        - 2049
+        - 2050
+        values:
+        - 34.96996861547854
+        - 34.96996861547854
+        - 34.96996861547854
+        - 34.96996861547854
+        - 34.96996861547854
+        - 34.96996861547855
+        - 34.53231684820128
+        - 31.735234696768913
+        - 30.207693641547234
+        - 29.55017723524715
+        - 28.282275897975282
+        - 25.399829840293027
+        - 26.17981370060696
+        - 26.172306171630524
+        - 26.13372780959597
+        - 25.430739681756172
+        - 25.19566967619518
+        - 24.613877378538852
+        - 24.250539694195087
+        - 23.461929920709792
+        - 22.798591811473454
+        - 22.109954524971545
+        - 21.528735793538136
+        - 21.13122236897906
+        - 20.366842568718116
+        - 19.718204820394963
+        - 19.018090975676156
+        - 18.495294958367143
+        - 17.822507099537916
+        - 17.329574483808972
+        - 16.718146954493605
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0
+        soot: 6.0e-06
+        particles_number: 80000000000000.0
+    economics:
+      mean_mfsp_without_resource: !AeroMapsCustomDataType
+        years:
+        - 2020
+        - 2021
+        - 2022
+        - 2023
+        - 2024
+        - 2025
+        - 2026
+        - 2027
+        - 2028
+        - 2029
+        - 2030
+        - 2031
+        - 2032
+        - 2033
+        - 2034
+        - 2035
+        - 2036
+        - 2037
+        - 2038
+        - 2039
+        - 2040
+        - 2041
+        - 2042
+        - 2043
+        - 2044
+        - 2045
+        - 2046
+        - 2047
+        - 2048
+        - 2049
+        - 2050
+        values:
+        - 0.02549183590641048
+        - 0.02549183590641048
+        - 0.02549183590641048
+        - 0.02549183590641048
+        - 0.02549183590641048
+        - 0.02549183590641048
+        - 0.024968272203131376
+        - 0.024631578083581677
+        - 0.024359128698578637
+        - 0.0241576028417258
+        - 0.023633314681087793
+        - 0.02381536070713451
+        - 0.023567261497035728
+        - 0.023525948696637104
+        - 0.023419257554218732
+        - 0.023260372856806034
+        - 0.02308730617565629
+        - 0.02281904038439745
+        - 0.022515296681667418
+        - 0.02250533064905568
+        - 0.022223877096097435
+        - 0.021977192761153095
+        - 0.02176947752139706
+        - 0.02172910094811664
+        - 0.021586370438582112
+        - 0.021499980730950177
+        - 0.021411769359287097
+        - 0.02130023137876347
+        - 0.021197787357607575
+        - 0.021078567222439323
+        - 0.021011446023067246
+        method: linear
+  outputs: null
+electrofuel:
+  name: electrofuel
+  environmental_model: top-down
+  cost_model: top-down
+  aircraft_type: dropin_fuel
+  energy_origin: electricity
+  default: false
+  compute_all_years: true
+  inputs:
+    mandate:
+      mandate_type: quantity
+      mandate_quantity: !AeroMapsCustomDataType
+        years:
+        - 2024
+        - 2031
+        - 2032
+        - 2033
+        - 2034
+        - 2035
+        - 2036
+        - 2037
+        - 2038
+        - 2039
+        - 2040
+        - 2041
+        - 2042
+        - 2043
+        - 2044
+        - 2045
+        - 2046
+        - 2047
+        - 2048
+        - 2049
+        - 2050
+        values:
+        - 41894477845.11637
+        - 115209814074.07
+        - 144029390380.21
+        - 172870175737.01
+        - 172843589108.98
+        - 230355028182.39
+        - 288070752132.4
+        - 403262145396.65
+        - 460879559166.13
+        - 633699392244.87
+        - 806744209255.6
+        - 979388888266.44
+        - 1209814199774.44
+        - 1728303877845.49
+        - 2304405211290.52
+        - 2880506545136.6
+        - 3398996302947.55
+        - 4032709036744.22
+        - 4666421770540.89
+        - 5472883323287.34
+        - 6221809644849.08
+        method: linear
+    technical:
+      resource_names:
+      - green_electricity
+      - co2_dac
+      resource_specific_consumption:
+        green_electricity: 2.26
+        co2_dac: 0.1015
+      lhv: 44
+      technology_introduction_year: 2020
+      technology_introduction_volume: 400000000000.0
+      plant_load_factor: 0.95
+      plant_lifespan: 25
+    environmental:
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years:
+        - 2025
+        - 2040
+        - 2050
+        values:
+        - 13.4
+        - 10.5
+        - 7.6
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0
+        soot: 6.0e-06
+        particles_number: 80000000000000.0
+    economics:
+      mean_mfsp_without_resource: !AeroMapsCustomDataType
+        years:
+        - 2025
+        - 2030
+        - 2040
+        - 2050
+        values:
+        - 0.07968170241860699
+        - 0.05397045724098262
+        - 0.040999019983749066
+        - 0.030807170112999264
+        method: linear
+  outputs: null
+fossil_kerosene:
+  name: fossil_kerosene
+  environmental_model: top-down
+  cost_model: top-down
+  aircraft_type: dropin_fuel
+  energy_origin: fossil
+  default: true
+  inputs:
+    technical:
+      lhv: 44
+      plant_load_factor: 0.95
+      plant_lifespan: 25
+    environmental:
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years:
+        - 2000
+        - 2050
+        values:
+        - 88.7
+        - 88.7
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0012
+        soot: 3.0e-05
+        particles_number: 200000000000000.0
+    economics:
+      mean_mfsp_without_resource: !AeroMapsCustomDataType
+        years:
+        - 2000
+        - 2001
+        - 2002
+        - 2003
+        - 2004
+        - 2005
+        - 2006
+        - 2007
+        - 2008
+        - 2009
+        - 2010
+        - 2011
+        - 2012
+        - 2013
+        - 2014
+        - 2015
+        - 2016
+        - 2017
+        - 2018
+        - 2019
+        - 2020
+        - 2021
+        - 2022
+        - 2023
+        - 2024
+        - 2050
+        values:
+        - 0.008364654
+        - 0.006916631
+        - 0.006340188
+        - 0.007424531
+        - 0.010158403
+        - 0.014797798
+        - 0.016189765
+        - 0.017474982
+        - 0.023710593
+        - 0.01277897
+        - 0.016366254
+        - 0.022487714
+        - 0.022192747
+        - 0.020655099
+        - 0.018819777
+        - 0.010615193
+        - 0.008737464
+        - 0.01085308
+        - 0.013921201
+        - 0.012684225
+        - 0.007299796
+        - 0.01202598
+        - 0.019909217
+        - 0.014922935
+        - 0.012596014
+        - 0.012
+        method: linear
+  outputs: null
+liquid_hydrogen:
+  name: liquid_hydrogen
+  environmental_model: top-down
+  cost_model: top-down
+  aircraft_type: hydrogen
+  energy_origin: electricity
+  default: true
+  inputs:
+    mandate:
+      mandate_type: share
+      mandate_share: !AeroMapsCustomDataType
+        years:
+        - 2024
+        - 2030
+        - 2040
+        - 2050
+        values:
+        - 41
+        - 100
+        - 100
+        - 100
+        method: linear
+    technical:
+      processes_names:
+      - liquefaction
+      - electrolysis
+      lhv: 120
+      resource_names:
+      - transport
+      resource_specific_consumption:
+        transport: 1
+    environmental:
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values:
+        - 0.0
+        method: linear
+      emission_index:
+        h2o: 9.0
+        nox: 0.007
+        sulfur: 0.0
+        soot: 0.0
+        particles_number: 0.0
+    economics: null
+  outputs: null
+battery_electric:
+  name: battery_electric
+  environmental_model: top-down
+  cost_model: top-down
+  aircraft_type: electric
+  energy_origin: electricity
+  default: true
+  inputs:
+    technical:
+      resource_names:
+      - green_electricity
+      resource_specific_consumption:
+        green_electricity: 1
+      lhv: 1
+    environmental:
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values:
+        - 15.7
+        method: linear
+      emission_index:
+        h2o: 0.0
+        nox: 0.0
+        sulfur: 0.0
+        soot: 0.0
+        particles_number: 0.0
+    economics:
+      mean_mfsp_without_resource: !AeroMapsCustomDataType
+        years:
+        - 2020
+        - 2050
+        values:
+        - 0.03797222222222222
+        - 0.028944444444444443
+        method: linear
+  outputs: null

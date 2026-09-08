@@ -152,6 +152,12 @@ class TopDownEnvironmental(AeroMAPSModel):
                     # TODO initialize with zeros instead of actual val?
                     self.input_names[key] = val
 
+            # The environmental block has to be registered here: this model reads
+            # the process's own emission factor below, and registering only the
+            # cost block left that read missing from input_data, so .get()
+            # returned the null series and a process's own emissions were
+            # silently dropped. Economics stays registered alongside it, since a
+            # process may declare either block and the cost model reads that one.
             for key, val in (
                 processes_data[process_key].get("inputs").get("environmental", {}) or {}
             ).items():
@@ -317,6 +323,11 @@ class TopDownEnvironmental(AeroMAPSModel):
 
         # 3 ) --> pathway gets a process that makes own emissions (besides resources)
         for process_key in self.process_keys:
+            # The key carries the mean_ prefix, matching the pathway lookup above, the
+            # cost model's process lookup and every processes file in the repository,
+            # the packaged default included. Without the prefix the lookup missed and
+            # .get() returned the null series, so a process's own emissions were
+            # silently dropped from the pathway's emission factor.
             co2_emission_factor_process = input_data.get(
                 f"{process_key}_mean_co2_emission_factor_without_resource", optional_null_series
             )

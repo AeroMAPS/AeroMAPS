@@ -1,13 +1,114 @@
 # Changelog
 
-## Unreleased
+## Version 1.2.0
 
 Changed:
+- Corrected the first-order delay on the price demand responds to, which ran only from the
+  prospection start year and entered the projection from that year's raw price. Every historic
+  year was left unfiltered, so the effective price was not delayed at all over the period the
+  model was calibrated against. This was not a transient: the price index is anchored on the
+  same series at a reference year sitting on that boundary, so the cold start landed in the
+  denominator and shifted projected demand permanently, by -2.6 % of 2050 traffic under
+  SSP2-1.9 and +3.3 % under SSP2-4.5, in opposite directions. The recursion now starts at the
+  first year of the series, which is the convention the calibration used. Because the memory is
+  about 1.26 years the result does not depend on where the series begins: 2000, 2010, 2015 and
+  2019 give the same effective price at 2024 to four decimals. The function was duplicated
+  verbatim in the two demand models and now lives in one place. (#144)
+- Reproduced the ATAG Waypoint 2050 scenarios lever by lever across the three editions of the
+  report, with a MyST document that reads only committed outputs and names the notebook behind
+  each result. (#144)
+- Added a CO2 decomposition following the reports' own pillars: fleet renewal, next generation
+  aircraft technology, operations and infrastructure, SAF, and market-based measures. Alternative
+  aircraft are counted as technology rather than as fuel, and the technology split is anchored on
+  the report's own T0 frozen-fleet and T1 renewal-only scenarios. (#144)
+- Added tank-to-wake twins for the reported scenarios, derived from the well-to-wake files by the
+  CORSIA scaling the reports describe, so both accounting scopes are available from committed
+  outputs. Agreement with the report's published technology curves is 0.3 % to 2.6 % at 2050.
+  (#144)
+- Added demand-price coupling for the ATAG scenarios, closing the feedback the reports leave out,
+  under both fixed-volume and fixed-share readings of a SAF mandate. (#144)
+- Added a full lever sweep over traffic, technology, operations and fuel, placing the three
+  published scenarios inside the range their own levers can produce. (#144)
+- Added climate analysis for the ATAG scenarios: per-mechanism temperature decomposition, non-CO2
+  uncertainty bands from the contrail-sensitivity and fuel-effect literature, and contrail
+  avoidance strategies parameterised on Teoh et al. (2020). (#144)
+- Re-baselined the third-edition scenarios on observed traffic through 2023, kept inside those
+  scenarios' own inputs rather than in the packaged defaults. (#144)
+- Made the scenario-comparison utilities usable against committed JSON, so results can be plotted
+  without re-running a process. (#144)
+- Stripped outputs from every tracked notebook and enforced the existing nbstripout hook. (#144)
 - Energy carriers, processes and resources yaml files are validated at load time: a key no energy model reads is now rejected instead of silently resolving to zero. The accepted vocabulary is collected from the energy models themselves, each key belonging to exactly one `inputs` block. (#158)
 - Moved `fossil_kerosene`'s emission factor from `technical:` to `environmental:` in the three `icas_2024` energy carriers files. It was read from either block, so no result changes. (#158)
 - Documented `mandate_type: "quantity"` and `mandate_quantity`, and corrected the subsidy keys, in the shipped energy templates. (#158)
+- Moved the reference scenarios into the package, at `aeromaps/resources/scenarios/`: one folder per scenario holding its configurations and inputs, with the shared market definitions beside them and a `scenario.yaml` giving each a name, a category (institutional, industrial or academic) and tags. `aeromaps.utils.scenarios` lists and filters them, and `prepare_scenario` copies one into a sandbox before it is run. That copy is the point: the scenario notebooks write, both their outputs and their regenerated tank-to-wake twins, so running one in place edited the installed package. The results those runs produce stay with the publication that reports them. Covers the ATAG editions and their coupled-demand and climate extensions, the ICAO LTAG scenarios from the ECATS study, and the coupled LTAG scenarios from the WCTR one. (#144)
+- Moved the ATAG document and notebooks to `aeromaps/notebooks/publications/atag_scenarios/`, alongside the other publications, and removed the `notebooks/scenarios/` tree that held only them. No committed result changed. (#144)
+- Dropped the duplicated `socioeconomic_drivers` custom model from the WCTR configurations and the test fixtures, which declared a file identical to the packaged model. The built discipline set is unchanged either way. (#144)
 
 Fixed:
+- Corrected a family of silent-zero defects in the generic energy model, where a misspelled or
+  unregistered key resolved to a null series instead of raising: emission factors missing the
+  `mean_` prefix, a plural `resources_names`, subsidy and tax lookups, and a process's own
+  emission factor, which was read from `input_data` but never registered. (#144)
+- Corrected intensity curves reading as zero before their first reference year. Emission factors
+  and fuel prices are properties of a fuel and now clamp backwards, while mandates, which are
+  quantities, still truncate. (#144)
+- Corrected a double-count of electrofuel's green electricity and DAC-CO2, present in both its
+  cost and its emission factor. The report-derived values are life-cycle figures that already
+  include those resources, and charging for them again overstated the 2050 fuel price by 84 % and
+  roughly a third of the third edition's 2050 residual. (#144)
+- Corrected `aggregate_regions_to_single_process` writing machine-absolute paths into the
+  configuration it generates, which resolved on one machine only. (#144)
+- Corrected the ATAG re-baseline having been applied to `resources/data/parameters.json` and
+  `partitioning_inputs.json`, which silently moved the baseline of every other scenario in the
+  repository; no publication or tutorial output had been regenerated against it. The scenarios
+  that want that baseline now state it themselves, and
+  `aggregate_regions_to_single_process` takes a `region_baseline` so a caller can rebaseline a
+  multi-regional publication without editing it. (#144)
+- Corrected `compare_json_files` raising `IndexError` from inside its own tolerance filter when
+  two JSON files held lists of different lengths, instead of reporting them as different. (#144)
+- Corrected historic contrail forcing being zeroed, and ERF unit labels. (#144)
+- Corrected the alternative-aircraft wedge of the ATAG decomposition, which computed the energy
+  split with SAF taken first while drawing that pillar above the fuel band. The same
+  battery-electric fleet was credited 246.3 Mt in T4, where no SAF competes for it, and 6.3 Mt
+  in S2. The split now takes the alternative leg first, matching the stacking. Because no
+  ordering of a nested decomposition is canonical, the module documents the measured
+  indeterminacy rather than presenting the new order as correct. (#144)
+- Corrected the discontinuity where CORSIA-derived offsets stop in 2035 and the prescribed
+  residual shares begin in 2036. The prescribed shares were also too small for the scenarios with
+  higher gross emissions, so net emissions rose between 2036 and 2040 before falling. Post-2035
+  offsetting is now stated as a target on net emissions instead: a linear decline from the 2035
+  level to zero at 2050, which is the shape all three published scenarios draw. `make_offset_glide.py`
+  derives the schedule from each scenario's own gross trajectory, since copying one scenario's
+  schedule to another is what caused the defect. (#144)
+- Corrected the coupled-demand figure starting its CO2 panel at 2023, and added a background row
+  showing the population, GDP per capita and carbon price behind each SSP pathway. (#144)
+- Corrected envelope mode of the multi-scenario comparison plots dropping one member scenario
+  and labelling none of them, so a grouped envelope drew n-1 lines under an empty legend.
+  Members are now all drawn and labelled with their scenario name. (#144)
+- Added a per-pixel digitisation of the third edition's own S0-S2 charts, tracing the boundary
+  between the SAF and market-based bands, which is emissions before offsetting and therefore
+  comparable with `co2_emissions_including_energy`. The validation table now covers the three
+  headline scenarios as well as T0-T4. (#144)
+- Replaced the hand-written bibliography, whose keys were invented locally and which cited no
+  reference for GEMSEO or for fleet renewal, with entries taken from the author's own
+  libraries. (#144)
+- Added comparison plots for the background-scenario drivers, `population_comparison`,
+  `gdp_per_capita_comparison` and `carbon_price_comparison`, so a figure mixing drivers with
+  results can draw every panel through the same code path and share the grouping and envelope
+  behaviour. These carry outputs that only exist under an income-driven demand model, so the
+  registry test now skips a plot whose required outputs no test scenario produces, instead of
+  failing it. (#144)
+- Added `dropin_mfsp_without_carbon_tax_comparison` and `co2_per_energy_comparison`, which are
+  the two quantities a fuel-switching lever acts on directly, and made `years_source`
+  overridable per call. The cost plots default to the projection alone, which is right where a
+  scenario only models cost forward and wrong where the historic part is populated and carries
+  the calibration the projection starts from. (#144)
+- Extracted `build_pathways_manager` from `AeroMAPSProcess`, so results loaded from committed
+  JSON can reconstruct the pathway metadata from the same YAML the scenario ran against. Every
+  pathway-aware plot previously fell back to an empty figure against stored results. `SimpleMFSP`
+  takes an `mfsp_type` that skips its toggle, `ResultsView.plot` forwards keywords to the plot
+  class, and the per-RPK cost breakdown honours `legend=False`, which together let those plots be
+  used in a document built without a live kernel. (#144)
 - Fixed kerosene selectivity being ignored, and inverted, in the bottom-up model. (#158)
 - An unrecognised `mandate_type` now raises instead of giving a pathway no mandate at all. (#158)
 - Process emission factors are now read: the environmental models registered no process `environmental` block and looked the factor up under a name no configuration writes, so hydrogen liquefaction and electrolysis emissions read exactly zero. Every process emission factor in the repository is 0.0, so no committed result moves. (#158)
@@ -169,7 +270,7 @@ Fixed:
 
 - Changed:
     - Updated JOAS publication notebook with reviewers feedback. (#37)
-    - Updated voilà minimum version. (#38)
+    - Updated voilÃ  minimum version. (#38)
 
 - Fixed:
     - Corrected soot calculation. (#36)

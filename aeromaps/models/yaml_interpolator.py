@@ -14,6 +14,35 @@ from scipy.interpolate import interp1d
 
 from aeromaps.models.base import AeroMAPSModel
 
+# Curves whose value is a *property* of an energy carrier, resource or process -- a cost, an
+# emission factor, a heating value -- as opposed to a *quantity* such as a mandate.
+#
+# The distinction decides what happens before a curve's first reference year. A quantity is
+# genuinely absent there: back-extending a mandate would invent SAF in years that deployed none,
+# which is why mandates are truncated (and why retime_mandates.py exists). A property is not
+# absent -- a fuel does not cost zero and emit zero before its first data point -- so the nearest
+# known value is held flat instead. That mirrors what this function already does at the other end
+# of the curve, where a last reference year below the end year is clamped forward.
+#
+# Matched as suffixes of the flattened parameter name, e.g.
+# "hefa_oil_crops_trees_mean_mfsp_without_resource".
+_INTENSITY_SUFFIXES = (
+    "_mean_co2_emission_factor_without_resource",
+    "_mean_co2_emission_factor_without_resources",
+    "_mean_mfsp_without_resource",
+    "_mean_unit_subsidy_without_resource",
+    "_mean_unit_tax_without_resource",
+    "_co2_emission_factor",
+    "_cost",
+    "_kerosene_selectivity",
+    "_lhv",
+)
+
+
+def _is_intensity_curve(model_name):
+    """Return True when a curve should be held flat before its first reference year."""
+    return isinstance(model_name, str) and model_name.endswith(_INTENSITY_SUFFIXES)
+
 
 class YAMLInterpolator(AeroMAPSModel):
     """
@@ -107,6 +136,9 @@ class YAMLInterpolator(AeroMAPSModel):
         model_name="Not provided",
     ):
         interpolation_function_values = []
+        # Number of leading years to hold flat at the first interpolated value; see the
+        # reconciliation block below. Stays 0 for constant curves and for mandates.
+        clamp_head = 0
 
         if len(reference_years_values) == 0:
             raise ValueError(
@@ -131,22 +163,40 @@ class YAMLInterpolator(AeroMAPSModel):
                 kind=method,
             )
 
-            # If first reference year is lower than prospection start year, we start interpolating before
-            # TODO: improve the condition for the warning?
+            # Reconcile the curve's own first reference year with the prospection start year.
+            #
+            # Two genuinely different cases hide behind "they differ":
+            #
+            #  * The curve starts EARLIER (e.g. fossil kerosene anchored at 2000). The series is
+            #    extended backwards to cover those years, so the index starts at the curve.
+            #  * The curve starts LATER (e.g. a SAF cost anchored at 2025 under a 2024 prospection).
+            #    Interpolation cannot begin before the first anchor, so it starts there -- but for
+            #    an intensity the missing head is then held flat at the first value rather than
+            #    dropped. Dropping it used to leave those years absent from the index, and every
+            #    accumulation downstream uses .add(..., fill_value=0), which silently turned the
+            #    gap into a hard zero: SAF produced at zero cost and zero emissions.
+            #
+            # Mandates keep the old truncating behaviour, deliberately -- see _INTENSITY_SUFFIXES.
+            interpolation_start_year = prospection_start_year
             if reference_years[0] != prospection_start_year:
-                if (model_name != 'fossil_kerosene_mean_co2_emission_factor_without_resource'
-                        and model_name != 'fossil_kerosene_mean_mfsp_without_resource'
-                ):
-                    warnings.warn(
-                        f"\n[Interpolation Model: {model_name} Warning]\n"
-                        f"The first reference year ({reference_years[0]}) differs from the prospection start year ({prospection_start_year}).\n"
-                        f"Interpolation will begin at the first reference year."
-                    )
-                prospection_start_year = reference_years[0]
+                if reference_years[0] > prospection_start_year and _is_intensity_curve(model_name):
+                    clamp_head = reference_years[0] - prospection_start_year
+                    interpolation_start_year = reference_years[0]
+                else:
+                    if (model_name != 'fossil_kerosene_mean_co2_emission_factor_without_resource'
+                            and model_name != 'fossil_kerosene_mean_mfsp_without_resource'
+                    ):
+                        warnings.warn(
+                            f"\n[Interpolation Model: {model_name} Warning]\n"
+                            f"The first reference year ({reference_years[0]}) differs from the prospection start year ({prospection_start_year}).\n"
+                            f"Interpolation will begin at the first reference year."
+                        )
+                    prospection_start_year = reference_years[0]
+                    interpolation_start_year = prospection_start_year
 
                 # If the last reference year matches the end year, interpolate for all years
             if reference_years[-1] == end_year:
-                for k in range(prospection_start_year, reference_years[-1] + 1):
+                for k in range(interpolation_start_year, reference_years[-1] + 1):
                     value = interpolation_function(k).item()
                     if positive_constraint and value <= 0.0:
                         interpolation_function_values.append(0.0)
@@ -160,7 +210,7 @@ class YAMLInterpolator(AeroMAPSModel):
                     f"The last reference year ({reference_years[-1]}) is higher than the end year ({end_year}).\n"
                     f"The interpolation function will not be used in its entirety."
                 )
-                for k in range(prospection_start_year, end_year + 1):
+                for k in range(interpolation_start_year, end_year + 1):
                     value = interpolation_function(k).item()
                     if positive_constraint and value <= 0.0:
                         interpolation_function_values.append(0.0)
@@ -173,7 +223,7 @@ class YAMLInterpolator(AeroMAPSModel):
                     f"The last reference year ({reference_years[-1]}) is lower than the end year ({end_year}).\n"
                     f"The value associated with the last reference year will be used as a constant for the upper years."
                 )
-                for k in range(prospection_start_year, reference_years[-1] + 1):
+                for k in range(interpolation_start_year, reference_years[-1] + 1):
                     value = interpolation_function(k).item()
                     if positive_constraint and value <= 0.0:
                         interpolation_function_values.append(0.0)
@@ -182,6 +232,14 @@ class YAMLInterpolator(AeroMAPSModel):
                 last_value = interpolation_function_values[-1]
                 for k in range(reference_years[-1] + 1, end_year + 1):
                     interpolation_function_values.append(last_value)
+
+        # Hold the first interpolated value flat over the years preceding the curve's first
+        # reference year, so the series covers the full prospection window rather than starting
+        # late and reading as zero downstream.
+        if clamp_head:
+            interpolation_function_values = [
+                interpolation_function_values[0]
+            ] * clamp_head + interpolation_function_values
 
         return pd.Series(
             interpolation_function_values, index=range(prospection_start_year, end_year + 1)

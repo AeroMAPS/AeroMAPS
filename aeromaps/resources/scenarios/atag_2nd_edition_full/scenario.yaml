@@ -1,0 +1,6 @@
+name: "ATAG Waypoint 2050, second edition"
+category: institutional
+tags: ["atag reference", "exogenous demand"]
+description: >-
+  Reproduction of the second edition of ATAG's Waypoint 2050, scenarios S1 to S3,
+  with tank-to-wake twins derived from the well-to-wake files by CORSIA scaling.

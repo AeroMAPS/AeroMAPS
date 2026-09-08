@@ -197,7 +197,7 @@ historical_temperature_increase;Float;°C;World temperature increase from 1750 t
 temperature_target;Float;°C;World temperature target
 waste_biomass;Float;EJ;Available biomass in the form of waste in 2050;Statistical analysis of a literature review (see resources/energy_data)
 world_co2_emissions_2019;Float;GtCO2;World CO2 emissions in 2019;Global Carbon Project - https://www.globalcarbonproject.org/
-aerosol_erf;Vector;mW/m²;Effective radiative forcing due to aerosol (soot and sulfur)
+aerosol_erf;Vector;W/m²;Effective radiative forcing due to aerosol (soot and sulfur)
 ask;Vector;ASK;Number of Available Seat Kilometer (ASK) for all commercial air transport
 ask_long_range;Vector;ASK;Number of Available Seat Kilometer (ASK) for passenger long-range market
 ask_long_range_dropin_fuel;Vector;ASK;Number of Available Seat Kilometer (ASK) for passenger long-range market from drop-in fuel aircraft

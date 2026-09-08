@@ -117,7 +117,12 @@ class ClimateModel(AeroMAPSModel):
         self.df_climate.loc[idx1, "contrails_distance_corrected"] = (
                 input_data["total_aircraft_distance"].loc[idx1]
         )
-        idx2 = slice(self.historic_start_year, self.end_year)
+        # The fuel-effect correction is built from pathway massic shares, which only
+        # exist from the prospection start year onwards; it is zero over the historic
+        # period. Applying it there would wipe out the historic contrail distance (and
+        # with it all historic contrail forcing), so the correction is restricted to
+        # the prospective years and the historic years keep the raw distance above.
+        idx2 = slice(self.prospection_start_year, self.end_year)
         self.df_climate.loc[idx2, "contrails_distance_corrected"] = (
                 input_data["total_aircraft_distance"].loc[idx2]
                 * (1 - input_data["operations_contrails_gain"].loc[idx2] / 100)

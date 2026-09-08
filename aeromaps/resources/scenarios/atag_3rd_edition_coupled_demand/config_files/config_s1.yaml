@@ -1,0 +1,30 @@
+data:
+  inputs:
+    json_inputs_file: ../data_inputs/s1_inputs.json
+  outputs:
+    json_outputs_file: ../data_outputs/s1.json
+models:
+  climate:
+    climate_model_data_file: default
+  energy:
+    energy_carriers_model_data_file: ../data_inputs/s1_energy.yaml
+    resources_model_data_file: ../data_inputs/resources.yaml
+    processes_model_data_file: ../data_inputs/processes.yaml
+  standards:
+  # The logistic income demand model is now selected via
+  # global.demand.model: logistic_income in markets_coupled.yaml,
+  # replacing the removed models_traffic_price_adjusted_logistic bundle.
+  - models_traffic
+  - models_efficiency_top_down_interp
+  - models_energy_with_fuel_effect
+  - models_energy_cost
+  - models_emissions
+  - models_offset
+  - models_sustainability
+  # The feedback variant swaps the fixed-markup airfare for a marginal-cost one
+  # (PassengerAircraftMarginalCost / TotalAirlineCost), so decarbonisation costs
+  # actually reach the ticket price. Without it the price-elastic demand loop is
+  # driven only by the energy term and understates the response.
+  - models_operation_cost_top_down_feedback
+  markets:
+    markets_data_file: ../../markets/markets_coupled.yaml

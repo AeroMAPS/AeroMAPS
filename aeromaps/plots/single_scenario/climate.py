@@ -60,7 +60,7 @@ class FinalEffectiveRadiativeForcingPlot(SingleScenarioPlot):
             "Components of effective radiative forcing\nfrom air transport for the final year"
         )
         self.ax.grid()
-        self.ax.set_xlabel("Effective radiative forcing [$mW/m^2$]")
+        self.ax.set_xlabel("Effective radiative forcing [$W/m^2$]")
 
     def _update_plot_elements(self):
         chosen_year = self.years[-1]

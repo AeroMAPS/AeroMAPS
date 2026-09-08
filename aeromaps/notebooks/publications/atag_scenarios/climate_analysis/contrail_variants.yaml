@@ -1,0 +1,108 @@
+# Contrail mitigation variants for the ATAG Waypoint 2050 scenarios
+# ================================================================
+#
+# The Waypoint 2050 reports exclude contrail mitigation entirely: every
+# scenario runs with operations_contrails_start_year = 2101. Contrails are
+# nonetheless the largest single warming term in 2050, so these variants
+# quantify what the reports leave out.
+#
+# Source
+# ------
+# Teoh, R., Schumann, U., Gryspeerdt, E., Shapiro, M., Molloy, J., Koudis, G.,
+# Voigt, C., Stettler, M. E. J. (2020). "Mitigating the Climate Forcing of
+# Aircraft Contrails by Small-Scale Diversions and Technology Adoption."
+# Environmental Science & Technology. doi:10.1021/acs.est.9b05608
+#
+# Reported reductions in contrail energy forcing, with 95% intervals:
+#   low-risk diversion (only where no fuel penalty)  20.0% [17.4, 23.0]
+#   small-scale diversion (1.7% of the fleet)        59.3% [52.4, 65.6]
+#     ... at a fuel and CO2 cost of                  0.014% [0.010, 0.017]
+#   new engine combustor technology (lower BC)       68.8% [45.2, 82.1]
+#   both interventions combined                      91.8% [88.6, 95.8]
+#
+# The combined case is deliberately not modelled as a family: the model has a
+# single contrail ramp and cannot express a two-stage rollout (near-term
+# diversion, later technology), and the combined figure cannot be composed from
+# the individual ones either -- treating them as independent gives 87.3%, not
+# the 91.8% Teoh obtain from their own simulation.
+#
+# How these map onto the model
+# ----------------------------
+# operations_contrails_final_gain is a percentage reduction in contrail
+# climate impact -- the same quantity Teoh reports -- applied in
+# climate.py as distance * (1 - gain/100) * fuel_effect_correction_contrails.
+# operations_contrails_final_overconsumption is a percentage increase in fuel
+# burn, which reaches CO2 through aircraft_fleet_and_operations.py:
+# energy_per_ask *= (1 + overconsumption/100). Both follow a logistic ramp
+# from the start year, reaching 98% of their final value after `duration`.
+#
+# Note that AeroMAPS already ships the small-scale central case as its
+# defaults (final_gain 59.4, final_overconsumption 0.014); only the start year
+# keeps it switched off.
+#
+# Three modelling decisions
+# -------------------------
+# 1. The fuel penalty tracks the benefit: more diversion buys more contrail
+#    reduction and costs more fuel, so the strongest benefit bound is paired
+#    with the largest penalty.
+# 2. Combustor technology starts later than the diversion strategies because it
+#    depends on a fleet-renewal cycle. That timing difference matters: see the
+#    notebook, where the stronger measure delivers less by 2050 than the weaker
+#    one that arrives five years earlier.
+# 3. LEVELS ARE NAMED BY CLIMATE IMPACT, NOT BY PARAMETER MAGNITUDE. `Low` is
+#    the low-warming end, so it carries Teoh's *upper* confidence bound on the
+#    reduction; `High` is the high-warming end and carries the *lower* bound.
+#    Reading down a family, the gain therefore decreases -- that is deliberate,
+#    not a transcription error.
+#
+#    This matches non_co2_uncertainty.yaml, which names its bands the same way,
+#    so a scenario can be run at "High" on both files and mean one coherent
+#    pessimistic case: largest contrail forcing, weakest fuel benefit, weakest
+#    mitigation. `mitigation_pairing` in that file records the correspondence.
+
+reference:
+  citation: >-
+    Teoh et al. (2020), Mitigating the Climate Forcing of Aircraft Contrails by
+    Small-Scale Diversions and Technology Adoption, Environ. Sci. Technol.
+  doi: 10.1021/acs.est.9b05608
+
+# Applied to every variant unless overridden per family.
+defaults:
+  operations_contrails_duration: 15.0   # years to reach 98% of the final gain
+
+families:
+
+  low_risk:
+    label: Low-risk diversion
+    description: >-
+      Divert flights only where there is no fuel penalty, so no additional
+      long-lived CO2 is emitted.
+    operations_contrails_start_year: 2030
+    levels:
+      Low:     {operations_contrails_final_gain: 23.0, operations_contrails_final_overconsumption: 0.0}
+      Central: {operations_contrails_final_gain: 20.0, operations_contrails_final_overconsumption: 0.0}
+      High:    {operations_contrails_final_gain: 17.4, operations_contrails_final_overconsumption: 0.0}
+
+  small_scale:
+    label: Small-scale diversion
+    description: >-
+      Selectively divert 1.7% of the fleet, accepting a small fuel and CO2
+      penalty in exchange for a much larger contrail reduction.
+    operations_contrails_start_year: 2030
+    levels:
+      Low:     {operations_contrails_final_gain: 65.6, operations_contrails_final_overconsumption: 0.017}
+      Central: {operations_contrails_final_gain: 59.3, operations_contrails_final_overconsumption: 0.014}
+      High:    {operations_contrails_final_gain: 52.4, operations_contrails_final_overconsumption: 0.010}
+
+  long_term_tech:
+    label: Long-term combustor technology
+    description: >-
+      Widespread adoption of new engine combustor technology reducing black
+      carbon particle emissions. Starts later than the diversion strategies
+      because it depends on a fleet-renewal cycle.
+    operations_contrails_start_year: 2035
+    levels:
+      Low:     {operations_contrails_final_gain: 82.1, operations_contrails_final_overconsumption: 0.0}
+      Central: {operations_contrails_final_gain: 68.8, operations_contrails_final_overconsumption: 0.0}
+      High:    {operations_contrails_final_gain: 45.2, operations_contrails_final_overconsumption: 0.0}
+
