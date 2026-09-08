@@ -378,7 +378,15 @@ def run_optimisation(case, budget=None, config="config_rte.yaml", x0=None, max_i
     }
 
 
-def run_sweep(case, budgets=None, config="config_rte.yaml", max_iter=50, resume=True, **kwargs):
+def run_sweep(
+    case,
+    budgets=None,
+    config="config_rte.yaml",
+    max_iter=50,
+    resume=True,
+    stop_on_error=False,
+    **kwargs,
+):
     """Carbon-budget continuation for one case, loosest budget first.
 
     Each optimisation starts from the previous one's optimum. Tightening the budget
@@ -391,28 +399,72 @@ def run_sweep(case, budgets=None, config="config_rte.yaml", max_iter=50, resume=
     An infeasible run is not propagated -- its ``x_opt`` is a best effort, not an
     optimum -- so the chain carries the last feasible design forward instead.
 
-    With ``resume=True`` a budget whose JSON already exists is skipped and its
-    optimum read back from the HDF, so an interrupted sweep continues cleanly.
-    Delete the file to force a re-run.
+    With ``resume=True`` a budget already on disk is skipped and its optimum read back
+    from the HDF, so an interrupted sweep continues cleanly. **A run that ended
+    infeasible is skipped too**, because on the same start point it would reproduce
+    itself exactly; the summary marks it and you delete its files to retry, normally
+    after raising ``max_iter`` or handing it a different ``x0`` via
+    ``run_optimisation``.
+
+    A run that raises is reported and the ladder continues from the last feasible
+    design, so one blow-up does not cost the whole sweep. Pass ``stop_on_error=True``
+    to get the traceback instead.
+
+    The returned frame covers the whole ladder, skipped runs included, so it is the
+    same table whether the sweep ran from scratch or resumed.
     """
     budgets = budgets if budgets is not None else [3.8, 3.6, 3.4, 3.2, 3.0, 2.8, 2.6, 2.4, 2.2, 2.0]
 
     rows, x0 = [], None
     for budget in list(budgets) + [None]:
+        label = "min CO2" if budget is None else budget
         stem = RESULTS_DIR / (
             f"opt_{case}_mincarb" if budget is None else f"opt_{case}_{budget_tag(budget)}"
         )
+
         if resume and stem.with_suffix(".json").exists():
-            x0 = read_optimum(stem.with_suffix(".hdf")) or x0
-            print(f"{case} {'min CO2' if budget is None else budget}: already on disk, skipped")
+            saved = read_run(stem.with_suffix(".hdf"))
+            feasible = bool(saved and saved["feasible"])
+            rows.append(
+                {
+                    "case": case,
+                    "budget": label,
+                    "objective": saved["objective"] if saved else np.nan,
+                    "feasible": feasible,
+                    "status": "on disk" if feasible else "on disk, INFEASIBLE - delete to retry",
+                    "path": str(stem.with_suffix(".json")),
+                }
+            )
+            print(f"{case} {label}: {rows[-1]['status']}, skipped")
+            if feasible and budget is not None:
+                x0 = saved["x"]
             continue
 
-        row = run_optimisation(
-            case, budget=budget, config=config, x0=x0, max_iter=max_iter, **kwargs
-        )
+        try:
+            row = run_optimisation(
+                case, budget=budget, config=config, x0=x0, max_iter=max_iter, **kwargs
+            )
+        except Exception as error:
+            if stop_on_error:
+                raise
+            # Nothing was saved: _save runs only after a successful compute.
+            rows.append(
+                {
+                    "case": case,
+                    "budget": label,
+                    "objective": np.nan,
+                    "feasible": False,
+                    "status": f"{type(error).__name__}: {error}",
+                    "path": "",
+                }
+            )
+            print(f"{case} {label}: FAILED - {type(error).__name__}: {str(error)[:120]}")
+            continue
+
+        row["status"] = "ran" if row["feasible"] else "ran, INFEASIBLE"
         rows.append(row)
         print(
-            f"{case} {row['budget']}: obj {row['objective']:+.4f}  "
+            f"{case} {label}: obj {row['objective']:+.4f}  "
             f"{'feasible' if row['feasible'] else 'INFEASIBLE'}  "
             f"{row['evaluations']} evals  {row['seconds']} s"
         )
@@ -424,15 +476,26 @@ def run_sweep(case, budgets=None, config="config_rte.yaml", max_iter=50, resume=
     return pd.DataFrame(rows)
 
 
-def read_optimum(hdf_path):
-    """Recover a saved run's optimum, so a resumed sweep keeps its continuation."""
+def read_run(hdf_path):
+    """Recover a saved run's optimum, objective and feasibility from its HDF.
+
+    Feasibility is what lets a resumed sweep tell a finished run from a failed one --
+    the JSON is written either way, so its existence alone says nothing.
+    """
     from gemseo.algos.optimization_problem import OptimizationProblem
 
     try:
-        x = np.asarray(OptimizationProblem.from_hdf(str(hdf_path)).optimum.design)
+        optimum = OptimizationProblem.from_hdf(str(hdf_path)).optimum
+        x = np.asarray(optimum.design)
     except Exception:
         return None
-    return {"electrofuel": list(x[:5]), "biofuel": list(x[5:])} if x.size == 10 else None
+    if x.size != 10:
+        return None
+    return {
+        "x": {"electrofuel": list(x[:5]), "biofuel": list(x[5:])},
+        "objective": float(np.ravel(optimum.objective)[0]),
+        "feasible": bool(optimum.is_feasible),
+    }
 
 
 def run_reference(case, kind="refueleu", config="config_rte.yaml", resume=True):
@@ -486,3 +549,57 @@ def load(path):
         if isinstance(v, list) and len(v) == len(YEARS)
     }
     return pd.DataFrame(vectors), data.get("float_outputs", {})
+
+
+# --------------------------------------------------------------------------- #
+# Command line: one case per process
+# --------------------------------------------------------------------------- #
+#
+# The five cases share nothing -- disjoint parameters, disjoint result files -- so
+# they are the level at which this problem parallelises:
+#
+#     for case in main B5 B75 B15 pess; do
+#         poetry run python optimisation_runs.py $case > log_$case.txt 2>&1 &
+#     done
+#
+# Five processes, one core each, five sweeps in the time of the slowest. Nothing
+# below that level is worth parallelising:
+#
+# * The budgets of one case are a continuation chain -- each starts from the
+#   previous optimum -- so they are sequential by construction. Running them
+#   independently means giving that up and cold-starting each one.
+# * Parallel finite differences inside a run do not pay. GEMSEO refuses threads
+#   ("all workers shall be different objects": the eleven perturbed points share one
+#   MDA object). Processes work but measured 436 s against 112 s serial on three
+#   SLSQP iterations -- roughly 4x slower, because each point ships the whole
+#   106-discipline chain to a worker and, worse, the workers cannot see the memo
+#   installed by share_mda_across_functions, whose ~7x saving is larger than
+#   anything the parallelism could return.
+
+
+def main(argv=None):
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Run one case of the ReFuelEU sweep.")
+    parser.add_argument("case", choices=sorted(CASES), help="which published variant")
+    parser.add_argument("--max-iter", type=int, default=50)
+    parser.add_argument("--config", default="config_rte.yaml")
+    parser.add_argument("--no-resume", action="store_true", help="re-run budgets already on disk")
+    args = parser.parse_args(argv)
+
+    for kind in ("fossil", "refueleu"):
+        run_reference(args.case, kind=kind, config=args.config)
+
+    summary = run_sweep(
+        args.case,
+        config=args.config,
+        max_iter=args.max_iter,
+        resume=not args.no_resume,
+    )
+    print()
+    print(summary.drop(columns=["x"], errors="ignore").to_string(index=False))
+    return summary
+
+
+if __name__ == "__main__":
+    main()
