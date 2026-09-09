@@ -1,78 +1,78 @@
 ### DEFAULT OPERATIONS DATA ###
-# This file contains the default operational concepts for the generic operations models.
-# Each concept contributes one or more gains that compose multiplicatively into the
-# aggregate operational effects consumed downstream:
-#   - fuel_efficiency.gain          -> operations_gain [%]                    (reduces energy per ASK, CO2)
-#   - contrails.gain                -> operations_contrails_gain [%]          (reduces contrail climate impact, non-CO2)
-#   - contrails.overconsumption     -> operations_contrails_overconsumption [%] (fuel-burn penalty of contrail avoidance, CO2)
+# Operational concepts for the generic operations models. Each concept contributes one
+# or more gains that compose multiplicatively into the aggregate operational effects:
+#   - fuel_efficiency.gain      -> operations_gain [%]                      (energy per ASK, CO2)
+#   - contrails.gain            -> operations_contrails_gain [%]            (contrail climate impact)
+#   - contrails.overconsumption -> operations_contrails_overconsumption [%] (fuel penalty of avoidance)
 #
-# -----------------------------------------------------------------------------
-# Example of a generic operational concept (all possible fields)
-# -----------------------------------------------------------------------------
-# generic_example:
-#   name: "generic_example"
-#   category: "flight_operations"   # e.g. flight_operations, ground_operations, contrails - free to add/decompose
+# The default concepts are the three blocks of the "Improvements in ATM and aircraft
+# operations" pillar of the DESTINATION 2050 roadmap, 2025 edition (NLR-CR-2024-416,
+# Section 4.4, Tables 5 to 7 and Section 4.5). The roadmap gives per-measure fuel burn
+# reductions per flight for 2030 and 2050 (2040 interpolated), whose sum over all
+# measures is 7.8 % in 2030, 9.5 % in 2040 and 11.6 % in 2050 with respect to 2019
+# (2020 is taken as the year without gain).
+# Values are for flights departing the EU+ region and are applied here to all traffic.
+#
+#   - airline_operations: sum of Table 5 (flight planning 1.2, reduced cruise speeds
+#     0.3, flight management system updates 0.5/1.0/1.0, weight reduction
+#     0.56/0.64/0.71, reduced tankering 0.41, airframe condition and maintenance
+#     0.53/0.74/1.05) = 3.5 / 4.3 / 4.7 %.
+#   - airports_and_ground_operations: Table 7 weighted by the fuel share of short-haul
+#     and long-haul flights (about 40 / 60 %) and by the share of intra-EU+ arrivals =
+#     0.8 / 1.0 / 1.2 %.
+#   - airspace_and_atm: the remainder of the roadmap total, 3.5 / 4.2 / 5.7 %, which
+#     is consistent with Table 6 weighted by flight scope (SES/SESAR 3.9 to 5.7 %
+#     intra-EU+, 2.7 to 3.9 % extra-EU+, North Atlantic and wake energy retrieval).
+#
+# The roadmap adds the measures while AeroMAPS composes them multiplicatively, so the
+# composed operations_gain is 11.1 % in 2050 instead of 11.6 %.
+#
+# Contrail avoidance is not part of the roadmap pillar. To add it, declare a concept
+# with a "contrails" channel, for instance:
+#
+# contrail_avoidance:
+#   name: "contrail_avoidance"
+#   category: "contrails"
 #   inputs:
-#     fuel_efficiency:
-#       gain: !AeroMapsCustomDataType        # [%] reduction in energy per ASK
-#         years: [2020, 2050]
-#         values: [0.0, 3.0]
-#         method: linear
 #     contrails:
 #       gain: !AeroMapsCustomDataType        # [%] reduction in contrail climate impact
-#         years: [2020, 2050]
-#         values: [0.0, 60.0]
+#         years: [2020, 2035, 2050]
+#         values: [0.0, 30.0, 60.0]
 #         method: linear
 #       overconsumption: !AeroMapsCustomDataType   # [%] increase in fuel consumption
 #         years: [2020, 2050]
 #         values: [0.0, 0.5]
 #         method: linear
-# -----------------------------------------------------------------------------
 
 
-air_traffic_management:
-  name: "air_traffic_management"
-  category: "flight_operations"
+airline_operations:
+  name: "airline_operations"
+  category: "airline_operations"
   inputs:
     fuel_efficiency:
       gain: !AeroMapsCustomDataType
-        years: [2020, 2030, 2050]
-        values: [0.0, 2.0, 4.0]
+        years: [2020, 2030, 2040, 2050]
+        values: [0.0, 3.5, 4.3, 4.7]
         method: linear
 
 
-trajectory_and_speed_optimization:
-  name: "trajectory_and_speed_optimization"
-  category: "flight_operations"
+airspace_and_atm:
+  name: "airspace_and_atm"
+  category: "airspace_and_atm"
   inputs:
     fuel_efficiency:
       gain: !AeroMapsCustomDataType
-        years: [2020, 2050]
-        values: [0.0, 2.0]
+        years: [2020, 2030, 2040, 2050]
+        values: [0.0, 3.5, 4.2, 5.7]
         method: linear
 
 
-eco_taxiing:
-  name: "eco_taxiing"
-  category: "ground_operations"
+airports_and_ground_operations:
+  name: "airports_and_ground_operations"
+  category: "airports_and_ground_operations"
   inputs:
     fuel_efficiency:
       gain: !AeroMapsCustomDataType
-        years: [2020, 2050]
-        values: [0.0, 1.0]
-        method: linear
-
-
-contrail_avoidance:
-  name: "contrail_avoidance"
-  category: "contrails"
-  inputs:
-    contrails:
-      gain: !AeroMapsCustomDataType
-        years: [2020, 2035, 2050]
-        values: [0.0, 30.0, 60.0]
-        method: linear
-      overconsumption: !AeroMapsCustomDataType
-        years: [2020, 2050]
-        values: [0.0, 0.5]
+        years: [2020, 2030, 2040, 2050]
+        values: [0.0, 0.8, 1.0, 1.2]
         method: linear
