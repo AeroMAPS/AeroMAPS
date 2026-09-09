@@ -2,13 +2,16 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from aeromaps.models.impacts.emissions.co2_emissions import (
+    ENERGY_SUB_LEVER_OTHER,
     MARKET_CROSS_MIX,
     OPERATIONS_OTHER,
     aircraft_efficiency_lever_names,
+    efficiency_sub_lever_column,
     market_lever_column,
     market_lever_names,
     operations_category_column,
     operations_concept_column,
+    pathway_energy_column,
 )
 from aeromaps.plots import colors
 from aeromaps.plots.labels import readable_label
@@ -327,7 +330,7 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
         falls back to a single aggregated band.
         """
         fleet_model = getattr(self.process, "fleet_model", None)
-        if fleet_model is None or "co2_emissions_lever_efficiency_fleet_renewal" not in (
+        if fleet_model is None or efficiency_sub_lever_column("fleet_renewal") not in (
             self.df.columns
         ):
             return None
@@ -346,12 +349,12 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
         bands = [
             (
                 "Fleet renewal",
-                self._col("co2_emissions_lever_efficiency_fleet_renewal"),
+                self._col(efficiency_sub_lever_column("fleet_renewal")),
                 efficiency_cmap(0.3),
             ),
             (
                 "Continuous improvement",
-                self._col("co2_emissions_lever_efficiency_continuous_improvement"),
+                self._col(efficiency_sub_lever_column("continuous_improvement")),
                 efficiency_cmap(0.4),
             ),
         ]
@@ -370,7 +373,7 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
         bands.append(
             (
                 "Freight fleet",
-                self._col("co2_emissions_lever_efficiency_freight"),
+                self._col(efficiency_sub_lever_column("freight")),
                 efficiency_cmap(0.2),
             )
         )
@@ -378,7 +381,7 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
         bands.append(
             (
                 "Traffic mix",
-                self._col("co2_emissions_lever_efficiency_other"),
+                self._col(efficiency_sub_lever_column("other")),
                 colors.NEUTRAL,
             )
         )
@@ -439,16 +442,14 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
         (e.g. non-generic, top-down energy models are used), so that the caller
         falls back to a single aggregated band.
         """
-        if self.pathways_manager is None or "co2_emissions_lever_energy_other" not in (
-            self.df.columns
-        ):
+        if self.pathways_manager is None or ENERGY_SUB_LEVER_OTHER not in (self.df.columns):
             return None
 
         # Group pathways by fuel family (hydrogen / electric kept separate from
         # drop-in fuels via the pathway's aircraft_type), preserving first-seen order.
         pathways_by_family = {}
         for pathway in self.pathways_manager.get_all():
-            column = f"co2_emissions_lever_energy_{pathway.name}"
+            column = pathway_energy_column(pathway.name)
             if column in self.df.columns:
                 family = colors.energy_family(pathway.aircraft_type, pathway.energy_origin)
                 pathways_by_family.setdefault(family, []).append((pathway.name, column))
@@ -468,9 +469,7 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
                 for (pathway_name, column), color in zip(pathways, pathway_colors):
                     bands.append((pathway_name.replace("_", " ").title(), self._col(column), color))
         # Residual energy effects are not an identity band -> neutral grey.
-        bands.append(
-            ("Other energy effects", self._col("co2_emissions_lever_energy_other"), colors.NEUTRAL)
-        )
+        bands.append(("Other energy effects", self._col(ENERGY_SUB_LEVER_OTHER), colors.NEUTRAL))
         return bands
 
     def _plot_sub_lever_bands(self, upper, bands):

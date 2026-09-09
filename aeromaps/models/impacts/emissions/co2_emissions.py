@@ -18,6 +18,32 @@ def slugify(name: str) -> str:
     return re.sub(r"[^0-9a-zA-Z]+", "_", name).strip("_").lower()
 
 
+# Named sub-levers of the per-aircraft decomposition of the aircraft efficiency lever.
+EFFICIENCY_SUB_LEVERS = ("fleet_renewal", "continuous_improvement", "freight", "other")
+
+# Residual of the per-pathway decomposition of the aircraft energy lever.
+ENERGY_SUB_LEVER_OTHER = "co2_emissions_lever_energy_other"
+
+
+def efficiency_sub_lever_column(name: str) -> str:
+    """Output column of a named efficiency sub-lever (fleet renewal, freight...)."""
+    return f"co2_emissions_lever_efficiency_{name}"
+
+
+def aircraft_efficiency_column(aircraft_slug: str) -> str:
+    """Output column holding the contribution of one aircraft to the efficiency lever.
+
+    The ``aircraft`` segment keeps these columns apart from the per-market ones
+    (``..._efficiency_market_<id>``), so consumers never have to filter by prefix.
+    """
+    return f"co2_emissions_lever_efficiency_aircraft_{aircraft_slug}"
+
+
+def pathway_energy_column(pathway: str) -> str:
+    """Output column holding the contribution of one energy pathway to the energy lever."""
+    return f"co2_emissions_lever_energy_pathway_{pathway}"
+
+
 def aircraft_efficiency_lever_names(fleet) -> dict:
     """
     Map each aircraft of a fleet to the name of the output variable containing its
@@ -41,17 +67,34 @@ def aircraft_efficiency_lever_names(fleet) -> dict:
     for category in fleet.categories.values():
         for subcategory in category.subcategories.values():
             for aircraft in subcategory.aircraft.values():
-                lever_name = (
-                    f"co2_emissions_lever_efficiency_"
+                lever_name = aircraft_efficiency_column(
                     f"{slugify(category.name)}_{slugify(aircraft.name)}"
                 )
                 if lever_name in lever_names.values():
-                    lever_name = (
-                        f"co2_emissions_lever_efficiency_{slugify(category.name)}_"
-                        f"{slugify(subcategory.name)}_{slugify(aircraft.name)}"
+                    lever_name = aircraft_efficiency_column(
+                        f"{slugify(category.name)}_{slugify(subcategory.name)}_"
+                        f"{slugify(aircraft.name)}"
                     )
                 lever_names[(category.name, subcategory.name, aircraft.name)] = lever_name
     return lever_names
+
+
+def aircraft_efficiency_sub_lever_columns(fleet) -> list:
+    """All columns of the per-aircraft decomposition of the efficiency lever.
+
+    Named sub-levers first (fleet renewal, continuous improvement, freight, residual),
+    then one column per aircraft of ``fleet``. Their sum is the global efficiency lever.
+    """
+    return [efficiency_sub_lever_column(name) for name in EFFICIENCY_SUB_LEVERS] + list(
+        aircraft_efficiency_lever_names(fleet).values()
+    )
+
+
+def pathway_energy_sub_lever_columns(pathways_manager) -> list:
+    """All columns of the per-pathway decomposition of the energy lever, residual last."""
+    return [pathway_energy_column(pathway.name) for pathway in pathways_manager.get_all()] + [
+        ENERGY_SUB_LEVER_OTHER
+    ]
 
 
 # Levers of the CO2 emissions cascade that DetailedCo2EmissionsPerMarket decomposes
@@ -946,7 +989,7 @@ class DetailedCo2EmissionsPerPathway(AeroMAPSModel):
             "co2_per_energy_mean": pd.Series([0.0]),
         }
         self.output_names = {
-            "co2_emissions_lever_energy_other": pd.Series([0.0]),
+            ENERGY_SUB_LEVER_OTHER: pd.Series([0.0]),
         }
 
         for pathway in self.pathways_manager.get_all():
@@ -958,7 +1001,7 @@ class DetailedCo2EmissionsPerPathway(AeroMAPSModel):
             )
             self.output_names.update(
                 {
-                    f"co2_emissions_lever_energy_{pathway.name}": pd.Series([0.0]),
+                    pathway_energy_column(pathway.name): pd.Series([0.0]),
                 }
             )
 
@@ -1008,11 +1051,11 @@ class DetailedCo2EmissionsPerPathway(AeroMAPSModel):
                 self.historic_start_year, self.end_year, fill_value=float("nan")
             )
             contribution.loc[years] = pathway_contribution
-            output_data[f"co2_emissions_lever_energy_{pathway.name}"] = contribution
+            output_data[pathway_energy_column(pathway.name)] = contribution
 
         other = get_default_series(self.historic_start_year, self.end_year, fill_value=float("nan"))
         other.loc[years] = total_lever.fillna(0) - cumulated_contributions
-        output_data["co2_emissions_lever_energy_other"] = other
+        output_data[ENERGY_SUB_LEVER_OTHER] = other
 
         output_data = {name: _denoise(series) for name, series in output_data.items()}
         self._store_outputs(output_data)
