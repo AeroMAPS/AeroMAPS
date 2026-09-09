@@ -10,6 +10,9 @@ models:
     fleet_model_data_file: "./fleet.yaml"
     aircraft_inventory_model_data_file: "./aircraft_inventory.yaml"
 
+  operations:
+    operations_model_data_file: default
+
   energy:
     energy_carriers_model_data_file: default
     resources_model_data_file: default
