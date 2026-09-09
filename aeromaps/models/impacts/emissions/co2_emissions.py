@@ -1009,9 +1009,10 @@ class DetailedCo2EmissionsPerPathway(AeroMAPSModel):
 class DetailedCo2EmissionsPerAircraft(AeroMAPSModel):
     """
     Class to decompose the "aircraft efficiency" lever of action into sub-levers:
-    fleet renewal with reference (already existing) aircraft, introduction of each
-    new aircraft of the fleet, freight fleet efficiency, and a residual term
-    (mainly traffic mix effects between markets).
+    fleet renewal with reference (already existing) aircraft, continuous
+    improvement of the recent reference aircraft, introduction of each new
+    aircraft of the fleet, freight fleet efficiency, and a residual term (traffic
+    mix effects between markets).
 
     The decomposition builds on the per-aircraft energy efficiency contributions
     computed by the fleet model (see FleetPerformanceMixin), which quantify how much
@@ -1025,6 +1026,12 @@ class DetailedCo2EmissionsPerAircraft(AeroMAPSModel):
     With this convention, the "fleet renewal" sub-lever measures the gain from
     replacing old reference aircraft by recent reference aircraft, and each new
     aircraft is only credited for its additional gain beyond fleet renewal.
+
+    The fleet model measures every contribution against the recent reference
+    aircraft *including its own* ``continuous_improvement_factor_energy``, so the
+    drift of that baseline over time belongs to none of the aircraft bands. It is
+    reported as the "continuous improvement" sub-lever rather than left in the
+    residual, which then only carries the traffic mix between markets.
 
     This model requires the bottom-up fleet model.
 
@@ -1081,6 +1088,7 @@ class DetailedCo2EmissionsPerAircraft(AeroMAPSModel):
         }
         self.output_names = {
             "co2_emissions_lever_efficiency_fleet_renewal": pd.Series([0.0]),
+            "co2_emissions_lever_efficiency_continuous_improvement": pd.Series([0.0]),
             "co2_emissions_lever_efficiency_freight": pd.Series([0.0]),
             "co2_emissions_lever_efficiency_other": pd.Series([0.0]),
         }
@@ -1106,8 +1114,9 @@ class DetailedCo2EmissionsPerAircraft(AeroMAPSModel):
         Returns
         -------
         output_data
-            Dictionary containing, for each sub-lever (fleet renewal, each new aircraft,
-            freight, residual), the annual CO2 emissions avoided [MtCO2].
+            Dictionary containing, for each sub-lever (fleet renewal, continuous
+            improvement, each new aircraft, freight, residual), the annual CO2
+            emissions avoided [MtCO2].
         """
         output_data = {}
 
@@ -1142,6 +1151,7 @@ class DetailedCo2EmissionsPerAircraft(AeroMAPSModel):
         )
 
         fleet_renewal = pd.Series(0.0, index=pd.Index(years))
+        continuous_improvement = pd.Series(0.0, index=pd.Index(years))
         cumulated_contributions = pd.Series(0.0, index=pd.Index(years))
 
         def co2_contribution(category_ask_share, contribution_column):
@@ -1162,6 +1172,19 @@ class DetailedCo2EmissionsPerAircraft(AeroMAPSModel):
                 )
                 fleet_renewal += contribution
                 cumulated_contributions += contribution
+
+            # Continuous improvement: the contributions above are measured against
+            # the recent reference baseline, which itself improves over time when a
+            # continuous improvement factor is set. The identity
+            # mean(t) = baseline(t) - sum(contributions(t)) makes the baseline drift
+            # a gain of its own (sign flipped: a lower baseline is avoided CO2).
+            contribution = -co2_contribution(
+                category_ask_share,
+                f"{category.name}:{first_subcategory.name}:recent_reference:"
+                "energy_efficiency_contribution_baseline",
+            )
+            continuous_improvement += contribution
+            cumulated_contributions += contribution
 
             # New aircraft: additional gain beyond fleet renewal
             for subcategory in category.subcategories.values():
@@ -1193,8 +1216,8 @@ class DetailedCo2EmissionsPerAircraft(AeroMAPSModel):
         )
         cumulated_contributions += freight
 
-        # Residual term (mainly traffic mix effects between markets) so that the
-        # sum of all sub-levers equals the total aircraft efficiency lever
+        # Residual term (traffic mix effects between markets) so that the sum of
+        # all sub-levers equals the total aircraft efficiency lever
         total_lever = (
             input_data["co2_emissions_last_historical_year_technology"]
             - input_data["co2_emissions_including_aircraft_efficiency"]
@@ -1203,6 +1226,7 @@ class DetailedCo2EmissionsPerAircraft(AeroMAPSModel):
 
         for name, values in [
             ("co2_emissions_lever_efficiency_fleet_renewal", fleet_renewal),
+            ("co2_emissions_lever_efficiency_continuous_improvement", continuous_improvement),
             ("co2_emissions_lever_efficiency_freight", freight),
             ("co2_emissions_lever_efficiency_other", other),
         ]:

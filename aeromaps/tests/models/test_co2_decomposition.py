@@ -15,6 +15,7 @@ caught in CI.
 """
 
 import os
+import shutil
 
 import pytest
 from aeromaps import create_process
@@ -130,3 +131,79 @@ def test_market_lever_dataframe_is_tidy(process, outputs):
     # Freight has no load-factor lever.
     freight = per_market.xs("freight", level="market", axis=1)
     assert "loadfactor" not in freight.columns
+
+
+# --- Continuous improvement of the recent reference aircraft ---------------------
+#
+# The fleet model measures every aircraft contribution against the recent
+# reference *including its own* continuous improvement factor, so the drift of
+# that baseline must be reported as its own sub-lever, not left in the residual.
+
+CIF_BLOCK = """      continuous_improvement_factor_energy: !AeroMapsCustomDataType
+        years: [2020, 2050]
+        values: [1.0, 0.8]
+        method: linear
+"""
+
+
+@pytest.fixture(scope="module")
+def process_with_continuous_improvement(tmp_path_factory):
+    """config_advanced with a 20 % continuous improvement on every recent reference."""
+    root = tmp_path_factory.mktemp("cif")
+    source = os.path.dirname(CONFIG)
+    shutil.copy(CONFIG, root / "config_advanced.yaml")
+    shutil.copytree(os.path.join(source, "data"), root / "data")
+
+    inventory = root / "data" / "aircraft_inventory.yaml"
+    lines = inventory.read_text().splitlines(keepends=True)
+    patched, in_recent_reference = [], False
+    for line in lines:
+        if line.startswith("  - id:"):
+            in_recent_reference = line.rstrip().endswith("_recent")
+        patched.append(line)
+        if in_recent_reference and line.startswith("      energy_per_ask:"):
+            patched.append(CIF_BLOCK)
+    inventory.write_text("".join(patched))
+
+    proc = create_process(configuration_file=str(root / "config_advanced.yaml"))
+    proc.compute()
+    return proc
+
+
+def test_continuous_improvement_is_its_own_sub_lever(process, process_with_continuous_improvement):
+    df_reference = process.data["vector_outputs"]
+    df = process_with_continuous_improvement.data["vector_outputs"]
+    years = list(
+        range(
+            int(process.parameters.prospection_start_year),
+            process.parameters.end_year + 1,
+        )
+    )
+    end_year = years[-1]
+
+    # Without a factor the sub-lever is identically zero; with one it carries the gain.
+    assert (
+        _max_abs(df_reference["co2_emissions_lever_efficiency_continuous_improvement"], years) == 0
+    )
+    assert df.loc[end_year, "co2_emissions_lever_efficiency_continuous_improvement"] > 1.0
+
+    # The residual is a pure traffic-mix term: it only depends on reference-year
+    # intensities and on the traffic split, so it must not move with the factor.
+    residual_shift = (
+        df["co2_emissions_lever_efficiency_other"]
+        - df_reference["co2_emissions_lever_efficiency_other"]
+    )
+    assert _max_abs(residual_shift, years) < TOL
+
+    # And the decomposition still closes exactly on the global lever.
+    global_lever = (
+        df["co2_emissions_last_historical_year_technology"]
+        - df["co2_emissions_including_aircraft_efficiency"]
+    )
+    market_columns = set(market_lever_names(process_with_continuous_improvement.markets).values())
+    sub_levers = [
+        c
+        for c in df.columns
+        if c.startswith("co2_emissions_lever_efficiency_") and c not in market_columns
+    ]
+    assert _max_abs(global_lever - df[sub_levers].sum(axis=1), years) < TOL

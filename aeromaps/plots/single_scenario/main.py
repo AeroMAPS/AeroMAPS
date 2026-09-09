@@ -343,18 +343,23 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
             (
                 "Fleet renewal",
                 self._col("co2_emissions_lever_efficiency_fleet_renewal"),
-                efficiency_cmap(0.35),
-            )
+                efficiency_cmap(0.3),
+            ),
+            (
+                "Continuous improvement",
+                self._col("co2_emissions_lever_efficiency_continuous_improvement"),
+                efficiency_cmap(0.4),
+            ),
         ]
 
         if self._efficiency_granularity == "category":
             categories = list(dict.fromkeys(category for category, _, _ in aircraft))
-            ramp = efficiency_cmap(np.linspace(0.45, 0.85, max(len(categories), 1)))
+            ramp = efficiency_cmap(np.linspace(0.5, 0.9, max(len(categories), 1)))
             for category_name, color in zip(categories, ramp):
                 columns = [col for cat, _, col in aircraft if cat == category_name]
                 bands.append((f"{category_name} fleet", self._sum_cols(columns), color))
         else:
-            ramp = efficiency_cmap(np.linspace(0.45, 0.85, max(len(aircraft), 1)))
+            ramp = efficiency_cmap(np.linspace(0.5, 0.9, max(len(aircraft), 1)))
             for (category_name, aircraft_name, column), color in zip(aircraft, ramp):
                 bands.append((f"{aircraft_name} ({category_name})", self._col(column), color))
 
@@ -362,13 +367,13 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
             (
                 "Freight fleet",
                 self._col("co2_emissions_lever_efficiency_freight"),
-                efficiency_cmap(0.25),
+                efficiency_cmap(0.2),
             )
         )
         # Residual (traffic mix) is not an identity band -> neutral grey.
         bands.append(
             (
-                "Traffic mix and others",
+                "Traffic mix",
                 self._col("co2_emissions_lever_efficiency_other"),
                 colors.NEUTRAL,
             )
