@@ -99,8 +99,8 @@ def pathway_energy_sub_lever_columns(pathways_manager) -> list:
 
 # Levers of the CO2 emissions cascade that DetailedCo2EmissionsPerMarket decomposes
 # by market. Freight is not affected by the (passenger) load factor lever.
-MARKET_LEVERS_PASSENGER = ("efficiency", "operations", "loadfactor", "energy")
-MARKET_LEVERS_FREIGHT = ("efficiency", "operations", "energy")
+MARKET_LEVERS_PASSENGER = ("demand", "efficiency", "operations", "loadfactor", "energy")
+MARKET_LEVERS_FREIGHT = ("demand", "efficiency", "operations", "energy")
 
 # Pseudo-market key holding the per-lever cross-market-mix residual.
 MARKET_CROSS_MIX = "cross_mix"
@@ -1307,17 +1307,20 @@ class DetailedCo2EmissionsPerMarket(AeroMAPSModel):
     market (each passenger market and each freight market).
 
     The global CO2 emissions cascade computed by DetailedCo2Emissions goes, for
-    a given year, through five successive emission levels::
+    a given year, through six successive emission levels::
 
-        last-historical-year technology
+        last-historical-year technology with baseline traffic growth
+          -> last-historical-year technology (demand lever)
           -> including aircraft efficiency
           -> including operations
           -> including load factor
           -> including energy (actual emissions)
 
-    and defines four levers of action as the differences between consecutive
+    and defines five levers of action as the differences between consecutive
     levels. This model recomputes the same cascade *per market*, using the
-    per-market traffic (``rpk_<market>`` / ``rtk_<market>``) and the per-market,
+    per-market traffic (``rpk_<market>`` / ``rtk_<market>``, and their baseline
+    growth counterparts ``rpk_reference_<market>`` / ``rtk_reference_<market>``
+    for the demand lever) and the per-market,
     per-energy-type physical intensities (``energy_per_ask_<market>_<energy>``
     and their ``without_operations`` counterparts). Each lever therefore gets a
     per-market contribution answering "how much of this lever is attributable to
@@ -1372,6 +1375,7 @@ class DetailedCo2EmissionsPerMarket(AeroMAPSModel):
         self.input_names = {
             "load_factor": pd.Series([0.0]),
             "co2_per_energy_mean": pd.Series([0.0]),
+            "co2_emissions_last_historical_year_technology_baseline3": pd.Series([0.0]),
             "co2_emissions_last_historical_year_technology": pd.Series([0.0]),
             "co2_emissions_including_aircraft_efficiency": pd.Series([0.0]),
             "co2_emissions_including_operations": pd.Series([0.0]),
@@ -1384,6 +1388,7 @@ class DetailedCo2EmissionsPerMarket(AeroMAPSModel):
         for market in self.markets.get(traffic_type="passenger"):
             mid = market.id
             self.input_names[f"rpk_{mid}"] = pd.Series([0.0])
+            self.input_names[f"rpk_reference_{mid}"] = pd.Series([0.0])
             for energy_type in self.ENERGY_TYPES:
                 self.input_names[f"ask_{mid}_{energy_type}_share"] = pd.Series([0.0])
                 self.input_names[f"energy_per_ask_{mid}_{energy_type}"] = pd.Series([0.0])
@@ -1394,6 +1399,7 @@ class DetailedCo2EmissionsPerMarket(AeroMAPSModel):
         for market in self.markets.get(traffic_type="freight"):
             mid = market.id
             self.input_names[f"rtk_{mid}"] = pd.Series([0.0])
+            self.input_names[f"rtk_reference_{mid}"] = pd.Series([0.0])
             for energy_type in self.ENERGY_TYPES:
                 self.input_names[f"rtk_{mid}_{energy_type}_share"] = pd.Series([0.0])
                 self.input_names[f"energy_per_rtk_{mid}_{energy_type}"] = pd.Series([0.0])
@@ -1469,6 +1475,7 @@ class DetailedCo2EmissionsPerMarket(AeroMAPSModel):
         for market in self.markets.get(traffic_type="passenger"):
             mid = market.id
             rpk = input_data[f"rpk_{mid}"].loc[years]
+            rpk_reference = input_data[f"rpk_reference_{mid}"].loc[years]
 
             energy_per_ask = weighted_intensity("energy_per_ask", "ask", mid)
             energy_per_ask_without_operations = weighted_intensity(
@@ -1482,6 +1489,13 @@ class DetailedCo2EmissionsPerMarket(AeroMAPSModel):
             ]
 
             # Emission levels of the cascade for this market [MtCO2].
+            level_baseline_traffic = (
+                rpk_reference
+                * energy_per_ask_reference
+                / (load_factor_reference / 100)
+                * co2_emission_factor_reference
+                * 10 ** (-12)
+            )
             level_last_historical_year = (
                 rpk
                 * energy_per_ask_reference
@@ -1514,6 +1528,7 @@ class DetailedCo2EmissionsPerMarket(AeroMAPSModel):
             level_energy = rpk / (load_factor / 100) * co2_per_ask * 10 ** (-12)
 
             levers = {
+                "demand": level_baseline_traffic - level_last_historical_year,
                 "efficiency": level_last_historical_year - level_efficiency,
                 "operations": level_efficiency - level_operations,
                 "loadfactor": level_operations - level_load_factor,
@@ -1527,6 +1542,7 @@ class DetailedCo2EmissionsPerMarket(AeroMAPSModel):
         for market in self.markets.get(traffic_type="freight"):
             mid = market.id
             rtk = input_data[f"rtk_{mid}"].loc[years]
+            rtk_reference = input_data[f"rtk_reference_{mid}"].loc[years]
 
             energy_per_rtk = weighted_intensity("energy_per_rtk", "rtk", mid)
             energy_per_rtk_without_operations = weighted_intensity(
@@ -1539,6 +1555,12 @@ class DetailedCo2EmissionsPerMarket(AeroMAPSModel):
                 reference_year
             ]
 
+            level_baseline_traffic = (
+                rtk_reference
+                * energy_per_rtk_reference
+                * co2_emission_factor_reference
+                * 10 ** (-12)
+            )
             level_last_historical_year = (
                 rtk * energy_per_rtk_reference * co2_emission_factor_reference * 10 ** (-12)
             )
@@ -1553,6 +1575,7 @@ class DetailedCo2EmissionsPerMarket(AeroMAPSModel):
             level_energy = rtk * co2_per_rtk * 10 ** (-12)
 
             levers = {
+                "demand": level_baseline_traffic - level_last_historical_year,
                 "efficiency": level_last_historical_year - level_efficiency,
                 "operations": level_efficiency - level_operations,
                 "energy": level_operations - level_energy,
@@ -1564,6 +1587,8 @@ class DetailedCo2EmissionsPerMarket(AeroMAPSModel):
         # --- Cross-market-mix residual per lever ---
         # Global levers from the DetailedCo2Emissions cascade.
         global_levers = {
+            "demand": input_data["co2_emissions_last_historical_year_technology_baseline3"]
+            - input_data["co2_emissions_last_historical_year_technology"],
             "efficiency": input_data["co2_emissions_last_historical_year_technology"]
             - input_data["co2_emissions_including_aircraft_efficiency"],
             "operations": input_data["co2_emissions_including_aircraft_efficiency"]

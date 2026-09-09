@@ -670,8 +670,8 @@ class AirTransportCO2EmissionsPerMarketPlot(SingleScenarioPlot):
     """
     Small-multiples decomposition of the CO2 levers of action per market.
 
-    One panel per lever of action (aircraft efficiency, fleet operations, load
-    factor, aircraft energy); within each panel the annual CO2 contribution of
+    One panel per lever of action (demand, aircraft efficiency, fleet operations,
+    load factor, aircraft energy); within each panel the annual CO2 contribution of
     every market is drawn as a signed line (positive = emissions avoided w.r.t.
     the last-historical-year technology), together with the cross-market-mix
     residual. Market colours are kept consistent across panels.
@@ -683,6 +683,7 @@ class AirTransportCO2EmissionsPerMarketPlot(SingleScenarioPlot):
 
     # (lever key as produced by DetailedCo2EmissionsPerMarket, panel title)
     _LEVERS = [
+        ("demand", "Demand"),
         ("efficiency", "Aircraft efficiency"),
         ("operations", "Fleet operations"),
         ("loadfactor", "Load factor"),
@@ -708,7 +709,9 @@ class AirTransportCO2EmissionsPerMarketPlot(SingleScenarioPlot):
     def create_plot(self):
         # Replace the single default axes by a 2x2 grid of lever panels.
         self.ax.remove()
-        self.facet_axes = self.fig.subplots(2, 2).flatten()
+        self.facet_axes = self.fig.subplots(2, 3).flatten()
+        for axis in self.facet_axes[len(self._LEVERS) :]:
+            axis.set_visible(False)
         self._draw_facets()
 
     def _draw_facets(self):
