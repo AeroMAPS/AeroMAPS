@@ -184,6 +184,9 @@ models_efficiency_top_down = {
     "soot_emission_index": SootEmissionIndex("soot_emission_index"),
     "h2o_emission_index": H2OEmissionIndex("h2o_emission_index"),
     "sulfur_emission_index": SulfurEmissionIndex("sulfur_emission_index"),
+    "detailed_co2_emissions_per_market": DetailedCo2EmissionsPerMarket(
+        "detailed_co2_emissions_per_market"
+    ),
 }
 
 models_efficiency_push = {
@@ -205,6 +208,9 @@ models_efficiency_push = {
     "soot_emission_index": SootEmissionIndex("soot_emission_index"),
     "h2o_emission_index": H2OEmissionIndex("h2o_emission_index"),
     "sulfur_emission_index": SulfurEmissionIndex("sulfur_emission_index"),
+    "detailed_co2_emissions_per_market": DetailedCo2EmissionsPerMarket(
+        "detailed_co2_emissions_per_market"
+    ),
 }
 
 models_efficiency_top_down_interp = {
@@ -224,6 +230,9 @@ models_efficiency_top_down_interp = {
     "soot_emission_index": SootEmissionIndex("soot_emission_index"),
     "h2o_emission_index": H2OEmissionIndex("h2o_emission_index"),
     "sulfur_emission_index": SulfurEmissionIndex("sulfur_emission_index"),
+    "detailed_co2_emissions_per_market": DetailedCo2EmissionsPerMarket(
+        "detailed_co2_emissions_per_market"
+    ),
 }
 
 models_efficiency_bottom_up = {

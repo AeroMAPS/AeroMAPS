@@ -1336,9 +1336,9 @@ class DetailedCo2EmissionsPerMarket(AeroMAPSModel):
     emission factors (exactly as :class:`CO2Emissions`), so the per-market energy
     lever captures market-specific fuel-mix decarbonisation.
 
-    This model requires the bottom-up fleet model and the generic energy models
-    (which produce the per-market intensities); it is registered next to
-    DetailedCo2EmissionsPerAircraft in the bottom-up efficiency group.
+    This model only needs the per-market intensities, which every efficiency
+    model group produces (top-down, push and bottom-up), so it is registered in
+    each of them.
 
     Parameters
     --------------
