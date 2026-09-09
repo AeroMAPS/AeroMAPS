@@ -1163,15 +1163,17 @@ class DetailedCo2EmissionsPerAircraft(AeroMAPSModel):
         for category in self.fleet_model.fleet.categories.values():
             category_ask_share = input_data[f"ask_{category.market_id}"].loc[years] / ask
 
-            # Fleet renewal: replacement of the old reference aircraft by the recent one
+            # Fleet renewal: replacement of the old reference aircraft by the recent
+            # one. The recent reference is the baseline of the fleet model, so its
+            # own contribution is zero and only the old reference term remains.
             first_subcategory = category.subcategories[0]
-            for reference in ("old_reference", "recent_reference"):
-                contribution = co2_contribution(
-                    category_ask_share,
-                    f"{category.name}:{first_subcategory.name}:{reference}:energy_efficiency_contribution",
-                )
-                fleet_renewal += contribution
-                cumulated_contributions += contribution
+            contribution = co2_contribution(
+                category_ask_share,
+                f"{category.name}:{first_subcategory.name}:old_reference:"
+                "energy_efficiency_contribution",
+            )
+            fleet_renewal += contribution
+            cumulated_contributions += contribution
 
             # Continuous improvement: the contributions above are measured against
             # the recent reference baseline, which itself improves over time when a
