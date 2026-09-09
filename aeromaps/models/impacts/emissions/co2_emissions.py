@@ -136,6 +136,20 @@ def market_lever_dataframe(df: pd.DataFrame, markets) -> pd.DataFrame:
     return tidy
 
 
+# Pseudo-key holding the residual of the per-concept operations decomposition.
+OPERATIONS_OTHER = "other"
+
+
+def operations_concept_column(concept: str) -> str:
+    """Output column holding the contribution of an operational concept to the operations lever."""
+    return f"co2_emissions_lever_operations_concept_{concept}"
+
+
+def operations_category_column(category: str) -> str:
+    """Output column holding the contribution of an operational category to the operations lever."""
+    return f"co2_emissions_lever_operations_category_{category}"
+
+
 def _denoise(series: pd.Series, atol: float = 1e-9) -> pd.Series:
     """Snap negligible decomposition values (``|x| < atol`` MtCO2) to exactly zero.
 
@@ -1519,6 +1533,128 @@ class DetailedCo2EmissionsPerMarket(AeroMAPSModel):
         for lever, global_lever in global_levers.items():
             residual = global_lever.loc[years].fillna(0) - lever_sum[lever]
             emit(market_lever_column(lever, MARKET_CROSS_MIX), residual)
+
+        output_data = {name: _denoise(series) for name, series in output_data.items()}
+        self._store_outputs(output_data)
+
+        return output_data
+
+
+class DetailedCo2EmissionsPerOperationalConcept(AeroMAPSModel):
+    """
+    Class to decompose the "fleet operations" lever of action into sub-levers, one
+    per operational concept (and one per category of concepts) declared in the
+    generic operations module.
+
+    The operations lever of DetailedCo2Emissions is proportional to the aggregate
+    ``operations_gain``: emissions including operations equal emissions including
+    aircraft efficiency scaled by ``1 - operations_gain / 100``, for passenger and
+    freight alike. The lever is therefore shared between concepts in proportion to
+    their contribution to ``operations_gain`` as attributed by OperationsUseChoice
+    (logarithmic share, order independent). A residual term keeps the sum of the
+    sub-levers equal to the global lever by construction; it is zero unless the
+    operational gain is applied differently to some traffic.
+
+    Parameters
+    --------------
+    name : str
+        Name of the model instance ('detailed_co2_emissions_per_operational_concept' by default).
+    operations_manager : OperationalConceptManager
+        Manager enumerating the operational concepts and their categories.
+
+    Attributes
+    ----------
+    input_names : dict
+        Dictionary of input variable names populated at model initialisation before MDA chain creation.
+    output_names : dict
+        Dictionary of output variable names populated at model initialisation before MDA chain creation.
+    """
+
+    def __init__(
+        self,
+        name="detailed_co2_emissions_per_operational_concept",
+        operations_manager=None,
+        *args,
+        **kwargs,
+    ):
+        super().__init__(name=name, model_type="custom", *args, **kwargs)
+        # Metadata only (not a coupling variable).
+        self.operations_manager = operations_manager
+
+        self.input_names = {
+            "co2_emissions_including_aircraft_efficiency": pd.Series([0.0]),
+            "co2_emissions_including_operations": pd.Series([0.0]),
+            "operations_gain": pd.Series([0.0]),
+        }
+        self.output_names = {
+            operations_concept_column(OPERATIONS_OTHER): pd.Series([0.0]),
+        }
+        for concept in self._fuel_concepts():
+            self.input_names[f"{concept.name}_operations_gain_contribution"] = pd.Series([0.0])
+            self.output_names[operations_concept_column(concept.name)] = pd.Series([0.0])
+        for category in self._categories():
+            self.output_names[operations_category_column(category)] = pd.Series([0.0])
+
+    def _fuel_concepts(self):
+        return [c for c in self.operations_manager.get_all() if c.has_fuel_efficiency]
+
+    def _categories(self):
+        """Categories of the fuel-efficiency concepts, in declaration order."""
+        return list(dict.fromkeys(c.category for c in self._fuel_concepts() if c.category))
+
+    def compute(self, input_data) -> dict:
+        """
+        Execute the decomposition of the operations lever of action per operational concept.
+
+        Parameters
+        ----------
+        input_data
+            Dictionary containing all input data required for the computation, completed at model instantiation with information from yaml files and outputs of other models.
+
+        Returns
+        -------
+        output_data
+            Dictionary containing, for each concept and each category, the annual CO2
+            emissions avoided [MtCO2], plus a residual term.
+        """
+        output_data = {}
+
+        reference_year = self.prospection_start_year - 1
+        years = pd.Index(range(reference_year, self.end_year + 1))
+
+        total_lever = (
+            (
+                input_data["co2_emissions_including_aircraft_efficiency"]
+                - input_data["co2_emissions_including_operations"]
+            )
+            .loc[years]
+            .fillna(0)
+        )
+        operations_gain = input_data["operations_gain"].reindex(years).fillna(0)
+
+        def emit(name, series):
+            out = get_default_series(
+                self.historic_start_year, self.end_year, fill_value=float("nan")
+            )
+            out.loc[years] = series
+            output_data[name] = out
+
+        cumulated = pd.Series(0.0, index=years)
+        per_category = {category: pd.Series(0.0, index=years) for category in self._categories()}
+        for concept in self._fuel_concepts():
+            contribution = (
+                input_data[f"{concept.name}_operations_gain_contribution"].reindex(years).fillna(0)
+            )
+            share = (contribution / operations_gain).where(operations_gain != 0, 0.0)
+            sub_lever = total_lever * share
+            emit(operations_concept_column(concept.name), sub_lever)
+            cumulated = cumulated + sub_lever
+            if concept.category in per_category:
+                per_category[concept.category] = per_category[concept.category] + sub_lever
+
+        for category, values in per_category.items():
+            emit(operations_category_column(category), values)
+        emit(operations_concept_column(OPERATIONS_OTHER), total_lever - cumulated)
 
         output_data = {name: _denoise(series) for name, series in output_data.items()}
         self._store_outputs(output_data)

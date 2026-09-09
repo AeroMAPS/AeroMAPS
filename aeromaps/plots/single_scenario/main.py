@@ -3,11 +3,15 @@ import numpy as np
 
 from aeromaps.models.impacts.emissions.co2_emissions import (
     MARKET_CROSS_MIX,
+    OPERATIONS_OTHER,
     aircraft_efficiency_lever_names,
     market_lever_column,
     market_lever_names,
+    operations_category_column,
+    operations_concept_column,
 )
 from aeromaps.plots import colors
+from aeromaps.plots.labels import readable_label
 from aeromaps.plots.single_scenario_plot import SingleScenarioPlot
 from aeromaps.plots.single_scenario_plot import plot_1_x
 from aeromaps.plots.single_scenario_plot import plot_1_y
@@ -380,6 +384,50 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
         )
         return bands
 
+    def _operations_bands(self):
+        """Return the (label, values, color) list of the fleet operations sub-levers.
+
+        One band per category of operational concepts (e.g. airline operations,
+        airspace and ATM, airports and ground operations), plus the residual.
+        Returns None when the generic operations module is not used, so that the
+        caller falls back to the merged "operations and load factor" band.
+        """
+        operations_manager = getattr(self.process, "operations_manager", None)
+        if operations_manager is None or "co2_emissions_including_operations" not in (
+            self.df.columns
+        ):
+            return None
+
+        categories = list(
+            dict.fromkeys(
+                concept.category
+                for concept in operations_manager.get_all()
+                if concept.has_fuel_efficiency and concept.category
+            )
+        )
+        columns = [
+            (category, operations_category_column(category))
+            for category in categories
+            if operations_category_column(category) in self.df.columns
+        ]
+        if not columns:
+            return None
+
+        operations_cmap = colors.LEVER_SEQUENTIAL_CMAP["operations"]
+        ramp = operations_cmap(np.linspace(0.4, 0.8, max(len(columns), 1)))
+        bands = [
+            (readable_label(category), self._col(column), color)
+            for (category, column), color in zip(columns, ramp)
+        ]
+        bands.append(
+            (
+                "Other operational effects",
+                self._col(operations_concept_column(OPERATIONS_OTHER)),
+                colors.NEUTRAL,
+            )
+        )
+        return bands
+
     def _energy_bands(self):
         """Return the (label, values, color) list of the energy pathway sub-levers.
 
@@ -514,18 +562,32 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
                 self.years,
                 self.df["co2_emissions_last_historical_year_technology"],
                 self.df["co2_emissions_including_aircraft_efficiency"],
-                color="gold",
+                color=colors.LEVER_COLORS["efficiency"],
                 label="Aircraft efficiency",
             )
 
-        # Fleet operations and load factor
-        self.ax.fill_between(
-            self.years,
-            self.df["co2_emissions_including_aircraft_efficiency"],
-            self.df["co2_emissions_including_load_factor"],
-            color=colors.LEVER_OPERATIONS_LOADFACTOR,
-            label="Fleet operations and load factor",
-        )
+        # Fleet operations: decomposed per operational category when the generic
+        # operations module is used, then the load factor as its own band;
+        # otherwise a single merged band (same as AirTransportCO2EmissionsPlot)
+        operations_bands = self._operations_bands()
+        if operations_bands is not None:
+            upper = self.df.loc[self.years, "co2_emissions_including_aircraft_efficiency"]
+            self._plot_sub_lever_bands(upper, operations_bands)
+            self.ax.fill_between(
+                self.years,
+                self.df["co2_emissions_including_operations"],
+                self.df["co2_emissions_including_load_factor"],
+                color=colors.LEVER_COLORS["loadfactor"],
+                label="Load factor",
+            )
+        else:
+            self.ax.fill_between(
+                self.years,
+                self.df["co2_emissions_including_aircraft_efficiency"],
+                self.df["co2_emissions_including_load_factor"],
+                color=colors.LEVER_OPERATIONS_LOADFACTOR,
+                label="Fleet operations and load factor",
+            )
 
         # Aircraft energy: decomposed into sub-levers when available, otherwise
         # a single aggregated band (same as AirTransportCO2EmissionsPlot)
@@ -538,7 +600,7 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
                 self.years,
                 self.df["co2_emissions_including_load_factor"],
                 self.df_climate.loc[self.years, "co2_emissions"],
-                color="yellowgreen",
+                color=colors.LEVER_COLORS["energy"],
                 label="Aircraft energy",
             )
 

@@ -47,6 +47,7 @@ NEUTRAL = "#9a9a95"
 # into service) read as steps of the lever's own hue.
 LEVER_SEQUENTIAL_CMAP = {
     "efficiency": plt.cm.Blues,
+    "operations": plt.cm.BuGn,
     "energy": plt.cm.Greens,
 }
 

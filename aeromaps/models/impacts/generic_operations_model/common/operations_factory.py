@@ -2,6 +2,9 @@
 Factory to create operational concept models based on yaml configuration files.
 """
 
+from aeromaps.models.impacts.emissions.co2_emissions import (
+    DetailedCo2EmissionsPerOperationalConcept,
+)
 from aeromaps.models.impacts.generic_operations_model.common.operations_use_choice import (
     OperationsUseChoice,
 )
@@ -32,5 +35,11 @@ class OperationsFactory:
         return {
             "operations_use_choice": OperationsUseChoice(
                 "operations_use_choice", operations_data, operations_manager
+            ),
+            "detailed_co2_emissions_per_operational_concept": (
+                DetailedCo2EmissionsPerOperationalConcept(
+                    "detailed_co2_emissions_per_operational_concept",
+                    operations_manager=operations_manager,
+                )
             ),
         }

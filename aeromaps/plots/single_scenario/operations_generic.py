@@ -7,12 +7,8 @@ operational effects are built up from the per-concept contributions.
 """
 
 from aeromaps.plots import colors
+from aeromaps.plots.labels import readable_label
 from aeromaps.plots.single_scenario_plot import SingleScenarioPlot, plot_3_x, plot_3_y
-
-
-def _readable_label(raw_name):
-    """Turn a snake_case name into a readable label."""
-    return raw_name.replace("_", " ").title()
 
 
 class _OperationsPlot(SingleScenarioPlot):
@@ -75,7 +71,7 @@ class OperationsGainByConceptPlot(_OperationsPlot):
             [
                 (
                     f"{c.name}_operations_gain_contribution",
-                    _readable_label(c.name),
+                    readable_label(c.name),
                     concept_color[c.name],
                 )
                 for c in concepts
@@ -104,7 +100,7 @@ class OperationsGainByCategoryPlot(_OperationsPlot):
             [
                 (
                     f"{cat}_operations_gain_contribution",
-                    _readable_label(cat),
+                    readable_label(cat),
                     category_color[cat],
                 )
                 for cat in categories
@@ -130,7 +126,7 @@ class OperationsContrailsGainByConceptPlot(_OperationsPlot):
             [
                 (
                     f"{c.name}_operations_contrails_gain_contribution",
-                    _readable_label(c.name),
+                    readable_label(c.name),
                     concept_color[c.name],
                 )
                 for c in concepts
