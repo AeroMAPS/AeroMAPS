@@ -10,10 +10,13 @@ decomposing each aggregate per operational concept and per category.
 Composition is multiplicative: independent operational measures each act on the
 consumption/impact remaining after the others, so a fuel-efficiency gain
 ``operations_gain = (1 - prod_i(1 - g_i/100)) * 100`` rather than a naive sum.
-The per-concept contributions are obtained by a sequential (telescoping)
-attribution that sums exactly to the aggregate.
+The per-concept contributions are obtained by a logarithmic attribution,
+``contribution_i = operations_gain * ln(1 - g_i) / ln(1 - operations_gain)``,
+which sums exactly to the aggregate and does not depend on the order in which
+the concepts are declared.
 """
 
+import numpy as np
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
@@ -106,42 +109,41 @@ class OperationsUseChoice(AeroMAPSModel):
         def concept_series(name):
             return input_data[name].reindex(full_index).fillna(0).where(prospective, 0.0)
 
-        # --- Fuel-efficiency gain: multiplicative reduction, sequential attribution ---
-        remaining = pd.Series(1.0, index=full_index)
-        for concept in self.operations_manager.get_all():
-            if not concept.has_fuel_efficiency:
-                continue
-            gain = concept_series(f"{concept.name}_fuel_efficiency_gain") / 100
-            contribution = remaining * gain
-            remaining = remaining * (1 - gain)
-            output_data[f"{concept.name}_operations_gain_contribution"] = contribution * 100
-        output_data["operations_gain"] = (1 - remaining) * 100
+        def attribute(concepts, channel, output_channel, sign):
+            """Compose multiplicative rates and share the aggregate in log proportion.
 
-        # --- Contrail gain (ERF reduction): multiplicative reduction, sequential attribution ---
-        remaining = pd.Series(1.0, index=full_index)
-        for concept in self.operations_manager.get_all():
-            if not concept.has_contrails:
-                continue
-            gain = concept_series(f"{concept.name}_contrails_gain") / 100
-            contribution = remaining * gain
-            remaining = remaining * (1 - gain)
-            output_data[f"{concept.name}_operations_contrails_gain_contribution"] = (
-                contribution * 100
-            )
-        output_data["operations_contrails_gain"] = (1 - remaining) * 100
+            ``sign`` is -1 for a reduction (factor ``1 - r``) and +1 for an increase
+            (factor ``1 + r``). The log shares sum to one by construction, so the
+            contributions sum exactly to the aggregate whatever the declaration order.
+            """
+            logs = {
+                concept.name: np.log1p(sign * concept_series(f"{concept.name}_{channel}") / 100)
+                for concept in concepts
+            }
+            total_log = sum(logs.values()) if logs else pd.Series(0.0, index=full_index)
+            aggregate = sign * np.expm1(total_log) * 100
+            for name, log in logs.items():
+                share = (log / total_log).where(total_log != 0, 0.0)
+                output_data[f"{name}_{output_channel}"] = aggregate * share
+            return aggregate
 
-        # --- Contrail overconsumption (fuel penalty): multiplicative increase ---
-        running = pd.Series(1.0, index=full_index)
-        for concept in self.operations_manager.get_all():
-            if not concept.has_contrails:
-                continue
-            overconsumption = concept_series(f"{concept.name}_contrails_overconsumption") / 100
-            contribution = running * overconsumption
-            running = running * (1 + overconsumption)
-            output_data[f"{concept.name}_operations_contrails_overconsumption_contribution"] = (
-                contribution * 100
-            )
-        output_data["operations_contrails_overconsumption"] = (running - 1) * 100
+        fuel_concepts = [c for c in self.operations_manager.get_all() if c.has_fuel_efficiency]
+        contrail_concepts = [c for c in self.operations_manager.get_all() if c.has_contrails]
+
+        # Fuel-efficiency gain and contrail gain: multiplicative reductions.
+        output_data["operations_gain"] = attribute(
+            fuel_concepts, "fuel_efficiency_gain", "operations_gain_contribution", -1
+        )
+        output_data["operations_contrails_gain"] = attribute(
+            contrail_concepts, "contrails_gain", "operations_contrails_gain_contribution", -1
+        )
+        # Contrail overconsumption (fuel penalty): multiplicative increase.
+        output_data["operations_contrails_overconsumption"] = attribute(
+            contrail_concepts,
+            "contrails_overconsumption",
+            "operations_contrails_overconsumption_contribution",
+            +1,
+        )
 
         # --- Per-category aggregates (sum of the concept contributions in the category) ---
         for category in self.operations_manager.get_all_types("category"):
