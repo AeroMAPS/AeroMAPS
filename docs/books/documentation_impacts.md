@@ -22,6 +22,34 @@ CO<sub>2</sub> emissions is simple by multiplying the different factors. In addi
 other life cycle emissions (excluding combustion and fuel production) can also be applied, but it only represents a few 
 percent of the aviation environmental impacts [@pinheiro2020sustainability].
 
+#### Decomposition of the levers of action into sub-levers
+
+The reduction of CO<sub>2</sub> emissions with respect to a trajectory at the technological level of the last 
+historical year is represented as a cascade of levers of action: demand, aircraft efficiency, fleet operations, 
+load factor and aircraft energy, each lever being the difference between two successive emission levels. Some of 
+these levers can be further decomposed into sub-levers. Each decomposition is exact by construction: the sub-levers, 
+including an explicit residual term, sum to the lever they split.
+
+- **Aircraft efficiency per aircraft** (bottom-up fleet model). The fleet model measures the contribution of each 
+aircraft as the shift of the mean energy intensity with respect to the recent reference aircraft. The evolution of 
+these contributions since the reference year is converted into avoided emissions with the reference-year factors. 
+The sub-levers are the fleet renewal (replacement of the old reference aircraft by the recent one), the continuous 
+improvement of the recent reference aircraft itself, one sub-lever per new aircraft (its additional gain beyond fleet 
+renewal, weighted by the share of the market it serves), the freight fleet, and a residual that is the traffic mix 
+between markets.
+- **Fleet operations per operational concept** (generic operations module). The operational gains of the concepts 
+compose multiplicatively and the aggregate gain is shared between the concepts in proportion to the logarithm of 
+their individual factors, so that the sub-levers do not depend on the order in which the concepts are declared. The 
+sub-levers are also aggregated per category of concepts.
+- **Aircraft energy per pathway** (generic energy models). Each pathway is credited with its energy consumption 
+multiplied by the difference between the mean carbon intensity of the reference year and its own carbon intensity. 
+The reference is the mean of the reference year rather than that of fossil kerosene, so that the sub-levers sum 
+exactly to the energy lever; when low-carbon fuels are already used in the reference year, fossil kerosene carries a 
+small negative sub-lever.
+- **Every lever per market**. The cascade is recomputed for each passenger and freight market with its own traffic 
+and energy intensities. The global cascade uses fleet-wide mean intensities, so the sum over markets differs from the 
+global lever by a cross-market mix term, reported as a residual for each lever.
+
 #### Non-CO<sub>2</sub> emissions
 
 For estimating non-CO<sub>2</sub> emissions, the concept of Emission Index (EI) is used. They make it possible to 
