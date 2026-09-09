@@ -4,6 +4,7 @@ co2_emissions
 This module contains models for calculating CO2 emissions and related factors.
 """
 
+import logging
 import re
 from typing import Tuple
 
@@ -1210,6 +1211,8 @@ class DetailedCo2EmissionsPerAircraft(AeroMAPSModel):
         fleet_renewal = pd.Series(0.0, index=pd.Index(years))
         continuous_improvement = pd.Series(0.0, index=pd.Index(years))
         cumulated_contributions = pd.Series(0.0, index=pd.Index(years))
+        current_names = aircraft_efficiency_lever_names(self.fleet_model.fleet)
+        unknown_aircraft = []
 
         def co2_contribution(category_ask_share, contribution_column):
             """Convert a fleet energy efficiency contribution [MJ/ASK] into avoided CO2 [MtCO2]."""
@@ -1245,22 +1248,40 @@ class DetailedCo2EmissionsPerAircraft(AeroMAPSModel):
             continuous_improvement += contribution
             cumulated_contributions += contribution
 
-            # New aircraft: additional gain beyond fleet renewal
+            # New aircraft: additional gain beyond fleet renewal. The fleet may have
+            # been rebuilt since setup (the GUI does so), while the output grammar is
+            # fixed: an aircraft unknown at setup cannot get a column, so its gain is
+            # left in the residual, and a declared aircraft that disappeared is zero.
             for subcategory in category.subcategories.values():
                 for aircraft in subcategory.aircraft.values():
-                    lever_name = self.aircraft_lever_names[
-                        (category.name, subcategory.name, aircraft.name)
-                    ]
+                    key = (category.name, subcategory.name, aircraft.name)
                     contribution = co2_contribution(
                         category_ask_share,
                         f"{category.name}:{subcategory.name}:{aircraft.name}:energy_efficiency_contribution",
                     )
+                    lever_name = self.aircraft_lever_names.get(key, current_names.get(key))
+                    if lever_name not in self.output_names:
+                        unknown_aircraft.append(aircraft.name)
+                        continue
                     cumulated_contributions += contribution
                     series = get_default_series(
                         self.historic_start_year, self.end_year, fill_value=float("nan")
                     )
                     series.loc[years] = contribution
                     output_data[lever_name] = series
+
+        if unknown_aircraft:
+            logging.warning(
+                "Aircraft %s were added to the fleet after the process was set up: their "
+                "efficiency gain is reported in the residual sub-lever. Set the process up "
+                "again to get one sub-lever per aircraft.",
+                unknown_aircraft,
+            )
+        for lever_name in self.aircraft_lever_names.values():
+            if lever_name not in output_data:
+                output_data[lever_name] = get_default_series(
+                    self.historic_start_year, self.end_year, fill_value=0.0
+                )
 
         # Freight part of the aircraft efficiency lever
         freight = (

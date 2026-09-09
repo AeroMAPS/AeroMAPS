@@ -16,6 +16,7 @@ that do not need the fleet model, against the top-down ``config_basic`` one.
 
 import os
 import shutil
+from pathlib import Path
 
 import pytest
 from aeromaps import create_process
@@ -188,3 +189,59 @@ def test_continuous_improvement_is_its_own_sub_lever(process, process_with_conti
     )
     residual = _global_lever(df, "efficiency") - df[columns].sum(axis=1)
     assert _max_abs(residual, years) < TOL
+
+
+@pytest.fixture(scope="module")
+def process_gui_like(tmp_path_factory):
+    """config_advanced restricted to the default bottom-up standards, as the GUI uses.
+
+    The abatement-cost models of config_advanced are not robust to a fleet rebuilt
+    after setup, which is out of scope here.
+    """
+    root = tmp_path_factory.mktemp("gui_like")
+    config = root / "config_advanced.yaml"
+    text = Path(CONFIG).read_text().split("  standards:")[0]
+    config.write_text(text + "  standards:\n    - default_models_bottom_up\n")
+    shutil.copytree(os.path.join(CONFIGS, "data"), root / "data")
+    return _run(str(config))
+
+
+def test_fleet_rebuilt_after_setup_keeps_the_decomposition_exact(process_gui_like):
+    """The GUI rebuilds the fleet and recomputes without a new setup (aeromaps/gui/gui.ipynb)."""
+    from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_model import (
+        Aircraft,
+        AircraftParameters,
+    )
+
+    process = process_gui_like
+    subcategory = process.fleet.categories["Short Range"].subcategories[0]
+    added = Aircraft(
+        "Aircraft added after setup",
+        parameters=AircraftParameters(
+            entry_into_service_year=2035,
+            consumption_evolution=-20.0,
+            nox_evolution=0.0,
+            soot_evolution=0.0,
+            doc_non_energy_evolution=0.0,
+            cruise_altitude=12000.0,
+            ask_year=1.0,
+            rc_cost=1.0,
+            nrc_cost=1.0,
+        ),
+        energy_type="DROP_IN_FUEL",
+    )
+    subcategory.add_aircraft(aircraft=added)
+    try:
+        process.compute()
+        df = process.data["vector_outputs"]
+        columns = aircraft_efficiency_sub_lever_columns(process.fleet_model.fleet)
+        declared = [c for c in columns if c in df.columns]
+        # The added aircraft has no column of its own, but the declared ones still
+        # sum to the global lever: its gain sits in the residual.
+        assert len(declared) == len(columns) - 1
+        residual = _global_lever(df, "efficiency") - df[declared].sum(axis=1)
+        assert _max_abs(residual, _years(process)) < TOL
+        assert df.loc[2050, efficiency_sub_lever_column("other")] > 1.0
+    finally:
+        subcategory.remove_aircraft(added.name)
+        process.compute()
