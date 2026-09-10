@@ -35,11 +35,15 @@ from gemseo import generate_n2_plot
 from aeromaps.models.base import AeroMAPSModel, AeroMapsCustomDataType
 from aeromaps.core.gemseo import (
     AeroMAPSAutoModelWrapper,
+   
     AeroMAPSCustomModelWrapper,
     apply_coupling_bounds,
     check_mda_convergence,
     freeze_nan_masks_after_first_sweep,
+    check_coupling_units,
+    strip_namespace,
 )
+from aeromaps.utils.units import UnitError
 from aeromaps.core import models as aeromaps_models
 
 from aeromaps.models.parameters import Parameters
@@ -1059,13 +1063,49 @@ class AeroMAPSProcess(object):
         Returns
         -------
         information
-            Dictionary with keys 'Unit', 'Description' and 'Source', or
-            None if the variable is not documented in the data
-            information file.
+            Dictionary with keys 'Unit', 'Description' and 'Source', or None
+            if neither a discipline nor the data information file documents
+            the variable. Discipline metadata (declared by the model or
+            attached from the registry when the discipline was built) takes
+            precedence over the registry; the source always comes from the
+            registry.
         """
-        if self._data_information is None:
-            self._read_data_information()
-        return self._data_information.lookup(name)
+        unit, description = self._lookup_discipline_metadata(name)
+        entry = self._load_data_information().lookup(strip_namespace(name))
+        if unit is None and description is None and entry is None:
+            return None
+        entry = entry or {}
+        return {
+            "Unit": unit if unit is not None else entry.get("Unit", "N/A"),
+            "Description": (
+                description if description is not None else entry.get("Description", "N/A")
+            ),
+            "Source": entry.get("Source", ""),
+        }
+
+    def _lookup_discipline_metadata(self, name):
+        """Return the (unit, description) attached to a variable by the disciplines."""
+        unit = None
+        description = None
+        candidates = (name, strip_namespace(name))
+        disciplines = [d for d in getattr(self, "disciplines", []) if hasattr(d, "units")]
+        # The producer of a variable is the authority on it; consumers come next.
+        producers = [d for d in disciplines if any(c in d.output_grammar.names for c in candidates)]
+        consumers = [d for d in disciplines if d not in producers]
+        for discipline in producers + consumers:
+            for candidate in candidates:
+                if candidate not in discipline.units:
+                    continue
+                if unit is None:
+                    unit = discipline.units[candidate]
+                if description is None:
+                    for grammar in (discipline.output_grammar, discipline.input_grammar):
+                        description = grammar.descriptions.get(candidate)
+                        if description is not None:
+                            break
+            if unit is not None and description is not None:
+                break
+        return unit, description
 
     def plot(
         self,
@@ -2311,10 +2351,11 @@ class AeroMAPSProcess(object):
                             )
                         model.climate_historical_data = self.climate_historical_data
                     if hasattr(model, "compute"):
+                        registry = self._load_data_information()
                         if getattr(model, "model_type") == "custom":
-                            model = AeroMAPSCustomModelWrapper(model=model)
+                            model = AeroMAPSCustomModelWrapper(model=model, metadata=registry)
                         else:
-                            model = AeroMAPSAutoModelWrapper(model=model)
+                            model = AeroMAPSAutoModelWrapper(model=model, metadata=registry)
                         self.disciplines.append(model)
                     else:
                         raise AttributeError(
@@ -2328,6 +2369,79 @@ class AeroMAPSProcess(object):
                     )
 
         check_instance_in_dict(self.models)
+        self._check_coupling_units()
+
+    def _check_coupling_units(self):
+        """Fail if a coupling variable is produced and consumed in different units."""
+        mismatches = check_coupling_units(self.disciplines)
+        if mismatches:
+            raise UnitError(
+                "Unit mismatch between coupled models:\n"
+                + "\n".join(f"  - {mismatch}" for mismatch in mismatches)
+            )
+
+    def list_registry_resolved_variables(self):
+        """List the discipline variables whose unit still comes from the registry.
+
+        Returns
+        -------
+        names
+            Sorted variable names (namespace stripped) with no unit declared by
+            the model that reads or writes them. The list is meant to shrink as
+            models declare their own metadata.
+        """
+        declared = set()
+        names = set()
+        for discipline in self.disciplines:
+            for name, origin in getattr(discipline, "metadata_origin", {}).items():
+                names.add(strip_namespace(name))
+                if origin == "model":
+                    declared.add(strip_namespace(name))
+        return sorted(names - declared)
+
+    def list_undocumented_variables(self):
+        """List the process variables with neither a unit nor a description.
+
+        Returns
+        -------
+        names
+            Sorted names of the variables of ``self.data`` that no model
+            declares and that the data information file does not list.
+        """
+        names = set()
+        for variables in self.data.values():
+            if isinstance(variables, xr.DataArray):
+                continue
+            for variable in variables:
+                if self.get_variable_information(variable) is None:
+                    names.add(variable)
+        return sorted(names)
+
+    def export_schema(self, directory=None, include_defaults=True):
+        """Export the JSON Schemas of the process inputs and outputs.
+
+        The schemas are derived from the discipline grammars and carry the unit,
+        description and source of every variable (see aeromaps.utils.schema).
+
+        Parameters
+        ----------
+        directory
+            Directory where inputs_schema.json and outputs_schema.json are
+            written. If None, nothing is written.
+        include_defaults
+            Whether to attach the default value of each input.
+
+        Returns
+        -------
+        schemas
+            Dictionary with keys 'inputs' and 'outputs' if directory is None,
+            otherwise the list of written file paths.
+        """
+        from aeromaps.utils.schema import build_variable_schemas, export_variable_schemas
+
+        if directory is None:
+            return build_variable_schemas(self, include_defaults=include_defaults)
+        return export_variable_schemas(self, directory, include_defaults=include_defaults)
 
     def _initialize_years(self):
         """Initialize year index ranges for all time series.
@@ -2903,34 +3017,63 @@ class AeroMAPSProcess(object):
             outputs.
         """
         if file_name is None:
-            # Legacy config key, kept for backward compatibility with old user configs
-            legacy_value = self._get_user_config_value(
-                "data", "inputs", "csv_data_information_file"
+            file_name = self._resolve_data_information_path()
+        self._data_information = DataInformation.from_file(file_name)
+        return self._build_data_information_df(file_name)
+
+    def _load_data_information(self):
+        """Return the metadata registry, loading it from the configured file once."""
+        if self._data_information is None:
+            self._data_information = DataInformation.from_file(
+                self._resolve_data_information_path()
             )
-            new_value = self._get_user_config_value("data", "inputs", "data_information_file")
-            if legacy_value is not None and new_value is None:
-                warnings.warn(
-                    "The 'csv_data_information_file' configuration key is deprecated. "
-                    "Use 'data_information_file' with a YAML file instead.",
-                    DeprecationWarning,
-                )
-                file_name = self._resolve_config_path("data", "inputs", "csv_data_information_file")
-            else:
-                file_name = self._resolve_config_path(
-                    "data",
-                    "inputs",
-                    "data_information_file",
-                    default_filename="data_information.yaml",
-                )
+        return self._data_information
+
+    def _resolve_data_information_path(self):
+        """Resolve the data information file from the configuration."""
+        # Legacy config key, kept for backward compatibility with old user configs
+        legacy_value = self._get_user_config_value("data", "inputs", "csv_data_information_file")
+        new_value = self._get_user_config_value("data", "inputs", "data_information_file")
+        if legacy_value is not None and new_value is None:
+            warnings.warn(
+                "The 'csv_data_information_file' configuration key is deprecated. "
+                "Use 'data_information_file' with a YAML file instead.",
+                DeprecationWarning,
+            )
+            file_name = self._resolve_config_path("data", "inputs", "csv_data_information_file")
+        else:
+            file_name = self._resolve_config_path(
+                "data",
+                "inputs",
+                "data_information_file",
+                default_filename="data_information.yaml",
+            )
         if file_name is None:
             raise ValueError("Cannot resolve data information file path. Check your configuration.")
-        data_information = DataInformation.from_file(file_name)
-        self._data_information = data_information
-        unresolved = data_information.unresolved_names(self.data)
+        return file_name
+
+    def _build_data_information_df(self, file_name):
+        """Build the consolidated metadata table of the process data.
+
+        Metadata is resolved through get_variable_information, so what a
+        model declares for its own variables wins over the registry.
+        """
+        rows = []
+        unresolved = []
+        for data_type, variables in self.data.items():
+            # FIXME: xarray not supported yet for data information
+            if isinstance(variables, xr.DataArray):
+                continue
+            for variable in variables:
+                info = self.get_variable_information(variable)
+                if info is None:
+                    unresolved.append(variable)
+                    info = DataInformation._UNKNOWN
+                rows.append({"Name": variable, "Type": data_type, **info})
         if unresolved:
             logging.warning(
-                f"{len(unresolved)} variables have no entry in the data information file "
-                f"'{file_name}' (first ones: {unresolved[:5]}). "
-                "Add exact entries or pattern rules to document their unit."
+                f"{len(unresolved)} variables have no unit nor description, neither declared "
+                f"by a model nor listed in '{file_name}' (first ones: {unresolved[:5]}). "
+                "Declare them in the model or add entries or pattern rules to the file."
             )
-        return data_information.build_dataframe(self.data)
+        return pd.DataFrame(rows, columns=["Name", "Type", "Unit", "Description", "Source"])

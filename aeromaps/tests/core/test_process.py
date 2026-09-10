@@ -5,6 +5,7 @@ This module tests the AeroMAPSProcess class functionality and that all model
 groups can be instantiated and run without errors.
 """
 
+import json
 from pathlib import Path
 
 import pytest
@@ -62,14 +63,29 @@ def test_compute(config_file):
     assert isinstance(plots, list)
     assert len(plots) > 0
 
-    # Every variable of the process must be documented (unit + description) in
-    # data_information.yaml, either by an exact entry or by a pattern rule.
+    # Every variable of the process must be documented (unit + description),
+    # either by the model that reads or writes it or by data_information.yaml
+    # (exact entry or pattern rule).
     data_information_df = proc._get_data_information_df()
     assert not data_information_df.empty
-    unresolved = proc._data_information.unresolved_names(proc.data)
-    assert unresolved == [], (
-        f"{len(unresolved)} variables are missing from data_information.yaml: " f"{unresolved[:10]}"
-    )
+    unresolved = proc.list_undocumented_variables()
+    assert (
+        unresolved == []
+    ), f"{len(unresolved)} variables have no unit nor description: {unresolved[:10]}"
+    # The metadata table is derived from the same resolution
+    undocumented_rows = data_information_df[
+        (data_information_df["Unit"] == "N/A") & (data_information_df["Description"] == "N/A")
+    ]
+    assert undocumented_rows.empty
+
+    # Schemas can be exported for any tested configuration and stay JSON-serialisable
+    schemas = proc.export_schema()
+    assert set(schemas) == {"inputs", "outputs"}
+    co2 = schemas["outputs"]["properties"]["co2_emissions"]
+    # After a run, untyped auto-model outputs get their type from the data containers
+    assert co2["type"] == "array"
+    assert co2["unit"] == "MtCO2"
+    json.dumps(schemas)
 
     float_inputs = proc.list_float_inputs()
     assert float_inputs is not None
@@ -104,16 +120,23 @@ def test_get_variable_information():
     config_file = CONFIG_DIR / "config_basic.yaml"
     proc = create_process(configuration_file=str(config_file))
 
-    # Exact entry, resolved through the lazily loaded registry
+    # Produced by a discipline: unit from the registry attached at build time,
+    # description from the producer's docstring
     info = proc.get_variable_information("co2_emissions")
-    assert info == {
-        "Unit": "MtCO2",
-        "Description": "CO2 emissions from all commercial air transport",
-        "Source": "",
-    }
+    assert info["Unit"] == "MtCO2"
+    assert info["Description"] and info["Description"] != "N/A"
+    assert info["Source"] == ""
+    # Declared by the model that writes it
+    assert proc.get_variable_information("manual_carbon_offset")["Unit"] == "MtCO2"
+    registry_resolved = proc.list_registry_resolved_variables()
+    assert registry_resolved
+    assert "manual_carbon_offset" not in registry_resolved
+    assert "co2_emissions" in registry_resolved
     # Pattern-resolved name (market ids are user-defined, so this must
     # work for names absent from the file)
     assert proc.get_variable_information("cagr_rpk_short_range")["Unit"] == "%"
+    # Namespaced names resolve through their bare name
+    assert proc.get_variable_information("FR:co2_emissions")["Unit"] == "MtCO2"
     # Unknown variable
     assert proc.get_variable_information("definitely_not_a_variable") is None
 
@@ -161,6 +184,6 @@ def test_process_models_are_independent():
 
     # Check that at least one model is a different instance
     for model_name in list(common_models)[:3]:  # Test first 3 common models
-        assert proc1.models[model_name] is not proc2.models[model_name], (
-            f"Model {model_name} should be independent between processes"
-        )
+        assert (
+            proc1.models[model_name] is not proc2.models[model_name]
+        ), f"Model {model_name} should be independent between processes"
