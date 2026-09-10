@@ -457,7 +457,7 @@ class TotalSurplusLoss(AeroMAPSModel):
         rpk_no_elasticity: pd.Series,
         cumulative_total_airline_cost_increase: pd.Series,
         cumulative_total_airline_cost_increase_discounted: pd.Series,
-        airfare_per_rpk: pd.Series,
+        initial_airfare_per_rpk: float,
         price_elasticity: float,
         social_discount_rate: float,
     ) -> Tuple[pd.Series, pd.Series, pd.Series, float]:
@@ -474,8 +474,8 @@ class TotalSurplusLoss(AeroMAPSModel):
             Cumulative total airline cost increase [M€].
         cumulative_total_airline_cost_increase_discounted
             Cumulative total airline cost increase discounted [M€].
-        airfare_per_rpk
-            Airfare per RPK [€/RPK].
+        initial_airfare_per_rpk
+            Reference airfare anchoring the demand curve [€/RPK].
         price_elasticity
             Price elasticity of demand [-].
         social_discount_rate
@@ -494,7 +494,7 @@ class TotalSurplusLoss(AeroMAPSModel):
         """
 
         # computation of demand function parameters: asummption => constant elasticity => P= beta * Q**(1/elasticity)
-        beta = airfare_per_rpk[2025] / (rpk_no_elasticity ** (1 / price_elasticity))
+        beta = initial_airfare_per_rpk / (rpk_no_elasticity ** (1 / price_elasticity))
 
         # Gloabl Surplus before removing total costs
 
@@ -563,7 +563,7 @@ class ConsumerSurplusLoss(AeroMAPSModel):
         self,
         rpk: pd.Series,
         rpk_no_elasticity: pd.Series,
-        airfare_per_rpk: pd.Series,
+        initial_airfare_per_rpk: float,
         price_elasticity: float,
         social_discount_rate: float,
     ) -> Tuple[pd.Series, pd.Series, float]:
@@ -575,8 +575,8 @@ class ConsumerSurplusLoss(AeroMAPSModel):
             Revenue passenger kilometers [RPK].
         rpk_no_elasticity
             Revenue passenger kilometers without demand elasticity (exogenous growth assumption) [RPK].
-        airfare_per_rpk
-            Airfare per RPK [€/RPK].
+        initial_airfare_per_rpk
+            Reference airfare anchoring the demand curve [€/RPK].
         price_elasticity
             Price elasticity of demand [-].
         social_discount_rate
@@ -591,7 +591,7 @@ class ConsumerSurplusLoss(AeroMAPSModel):
 
         """
         # computation of demand function parameters: assumption => constant elasticity => P= beta * Q**(1/elasticity)
-        beta = airfare_per_rpk[2025] / (rpk_no_elasticity ** (1 / price_elasticity))
+        beta = initial_airfare_per_rpk / (rpk_no_elasticity ** (1 / price_elasticity))
 
         # Passenger Surplus = area under demand curve - price
 
