@@ -1,0 +1,22 @@
+{
+  "run": "efuel_wind",
+  "block": "C",
+  "label": "dedicated-wind electrofuel, no electricity limit",
+  "objective_name": "surplus",
+  "f_opt": -5.712222620387958,
+  "feasible": true,
+  "message": "The KKT residual norm is smaller than the tolerance kkt_tol_abs or kkt_tol_rel. GEMSEO stopped the driver.",
+  "n_evaluations": 10,
+  "max_constraint_violation": 3.696001579617365e-09,
+  "seconds": 193.2,
+  "budget_world_share": 3.119357596335,
+  "biomass_share": 10.0,
+  "elasticity": -0.9,
+  "rate_cap": 0.2,
+  "volume_cap": 0.2,
+  "discount_rate": 0.045,
+  "efuel_pathway": "dedicated wind",
+  "dropped_constraints": "electricity_trajectory_constraint",
+  "ftol_abs": 1e-08,
+  "kkt_tol_rel": 1e-06
+}

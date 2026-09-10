@@ -1,0 +1,22 @@
+{
+  "run": "r_15",
+  "block": "D",
+  "label": "discount rate 15 % (extreme)",
+  "objective_name": "surplus",
+  "f_opt": -2.1613866210532104,
+  "feasible": true,
+  "message": "The KKT residual norm is smaller than the tolerance kkt_tol_abs or kkt_tol_rel. GEMSEO stopped the driver.",
+  "n_evaluations": 26,
+  "max_constraint_violation": 9.756522920533409e-11,
+  "seconds": 930.4,
+  "budget_world_share": 3.119357596335,
+  "biomass_share": 10.0,
+  "elasticity": -0.9,
+  "rate_cap": 0.2,
+  "volume_cap": 0.2,
+  "discount_rate": 0.15,
+  "efuel_pathway": "grid electricity",
+  "dropped_constraints": "none",
+  "ftol_abs": 0.0,
+  "kkt_tol_rel": 1e-06
+}

@@ -1,0 +1,22 @@
+{
+  "run": "eps_m0_8",
+  "block": "A",
+  "label": "eps_P = -0.8",
+  "objective_name": "surplus",
+  "f_opt": -4.653321498306516,
+  "feasible": true,
+  "message": "The KKT residual norm is smaller than the tolerance kkt_tol_abs or kkt_tol_rel. GEMSEO stopped the driver.",
+  "n_evaluations": 8,
+  "max_constraint_violation": 2.396721301801189e-07,
+  "seconds": 145.9,
+  "budget_world_share": 3.119357596335,
+  "biomass_share": 10.0,
+  "elasticity": -0.8,
+  "rate_cap": 0.2,
+  "volume_cap": 0.2,
+  "discount_rate": 0.045,
+  "efuel_pathway": "grid electricity",
+  "dropped_constraints": "none",
+  "ftol_abs": 1e-08,
+  "kkt_tol_rel": 1e-06
+}

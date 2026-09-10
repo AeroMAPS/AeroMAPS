@@ -1,0 +1,22 @@
+{
+  "run": "r_3_2",
+  "block": "D",
+  "label": "discount rate 3.2 %",
+  "objective_name": "surplus",
+  "f_opt": -5.242835097652182,
+  "feasible": true,
+  "message": "Successive iterates of the design variables are closer than xtol_rel or xtol_abs. GEMSEO stopped the driver.",
+  "n_evaluations": 4,
+  "max_constraint_violation": 1.450687543705649e-07,
+  "seconds": 56.8,
+  "budget_world_share": 3.119357596335,
+  "biomass_share": 10.0,
+  "elasticity": -0.9,
+  "rate_cap": 0.2,
+  "volume_cap": 0.2,
+  "discount_rate": 0.032,
+  "efuel_pathway": "grid electricity",
+  "dropped_constraints": "none",
+  "ftol_abs": 0.0,
+  "kkt_tol_rel": 1e-06
+}

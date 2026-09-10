@@ -1,0 +1,22 @@
+{
+  "run": "fixed_demand",
+  "block": "A'",
+  "label": "fixed demand (no cost feedback)",
+  "objective_name": "cost",
+  "f_opt": -4.996946739609347,
+  "feasible": true,
+  "message": "The KKT residual norm is smaller than the tolerance kkt_tol_abs or kkt_tol_rel. GEMSEO stopped the driver.",
+  "n_evaluations": 15,
+  "max_constraint_violation": 5.021772007517807e-10,
+  "seconds": 39.5,
+  "budget_world_share": 3.119357596335,
+  "biomass_share": 10.0,
+  "elasticity": "n/a",
+  "rate_cap": 0.2,
+  "volume_cap": 0.2,
+  "discount_rate": 0.045,
+  "efuel_pathway": "grid electricity",
+  "dropped_constraints": "none",
+  "ftol_abs": 1e-08,
+  "kkt_tol_rel": 1e-06
+}

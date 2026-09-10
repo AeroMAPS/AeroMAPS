@@ -1,0 +1,22 @@
+{
+  "run": "rate_39",
+  "block": "B",
+  "label": "ramp rate 39 %/yr (wind/PV emergence)",
+  "objective_name": "surplus",
+  "f_opt": -4.938567468629718,
+  "feasible": true,
+  "message": "The KKT residual norm is smaller than the tolerance kkt_tol_abs or kkt_tol_rel. GEMSEO stopped the driver.",
+  "n_evaluations": 17,
+  "max_constraint_violation": 3.030382577194648e-08,
+  "seconds": 324.4,
+  "budget_world_share": 3.119357596335,
+  "biomass_share": 10.0,
+  "elasticity": -0.9,
+  "rate_cap": 0.39,
+  "volume_cap": 0.2,
+  "discount_rate": 0.045,
+  "efuel_pathway": "grid electricity",
+  "dropped_constraints": "none",
+  "ftol_abs": 1e-08,
+  "kkt_tol_rel": 1e-06
+}

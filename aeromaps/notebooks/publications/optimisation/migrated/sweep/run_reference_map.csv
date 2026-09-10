@@ -1,0 +1,15 @@
+run,reference
+base,ref_fossil_epsm0_9
+eps_m0_6,ref_fossil_epsm0_6
+eps_m0_8,ref_fossil_epsm0_8
+eps_m1_0,ref_fossil_epsm1
+eps_m1_4,ref_fossil_epsm1_4
+fixed_demand,ref_fossil_nofeedback
+rate_11_8,ref_fossil_epsm0_9
+rate_39,ref_fossil_epsm0_9
+vol_0_1,ref_fossil_epsm0_9
+vol_0_4,ref_fossil_epsm0_9
+efuel_wind,ref_fossil_epsm0_9
+r_3_2,ref_fossil_r0_032
+r_7,ref_fossil_r0_07
+r_15,ref_fossil_r0_15

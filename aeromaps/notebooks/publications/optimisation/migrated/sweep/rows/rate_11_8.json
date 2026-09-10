@@ -1,0 +1,22 @@
+{
+  "run": "rate_11_8",
+  "block": "B",
+  "label": "ramp rate 11.8 %/yr (IEA NZE)",
+  "objective_name": "surplus",
+  "f_opt": -3.3061373875828157,
+  "feasible": true,
+  "message": "The KKT residual norm is smaller than the tolerance kkt_tol_abs or kkt_tol_rel. GEMSEO stopped the driver.",
+  "n_evaluations": 19,
+  "max_constraint_violation": 4.4612357477082525e-06,
+  "seconds": 369.3,
+  "budget_world_share": 3.119357596335,
+  "biomass_share": 10.0,
+  "elasticity": -0.9,
+  "rate_cap": 0.118,
+  "volume_cap": 0.2,
+  "discount_rate": 0.045,
+  "efuel_pathway": "grid electricity",
+  "dropped_constraints": "none",
+  "ftol_abs": 1e-08,
+  "kkt_tol_rel": 1e-06
+}
