@@ -482,6 +482,33 @@ models_optim_complex = {
     "total_surplus_loss": TotalSurplusLoss("total_surplus_loss"),
 }
 
+# The same problem with the airfare <-> RPK loop removed: fixed demand, the
+# non-feedback cost chain (PassengerAircraftSimpleAirfare + TotalAirlineCostNoElast)
+# and no surplus model, since with no demand response the consumer-surplus term is
+# identically zero and the welfare loss is just the airline cost increase. Pair with
+# ``demand.model: cagr`` in markets.yaml, which drops the RPKElasticity layer, and
+# with ``objective="cost"``. This is the price-elasticity -> 0 anchor: not the
+# elasticity model evaluated at zero, but the formulation that has no coupling at all.
+models_optim_no_feedback = {
+    "models_traffic": models_traffic,
+    "models_efficiency_top_down": models_efficiency_top_down,
+    "models_energy_without_fuel_effect": models_energy_without_fuel_effect,
+    "models_offset": models_offset,
+    "kaya_factors": KayaFactors("kaya_factors"),
+    "co2_emissions": CO2Emissions("co2_emissions"),
+    "cumulative_co2_emissions": CumulativeCO2Emissions("cumulative_co2_emissions"),
+    "detailed_co2_emissions": DetailedCo2Emissions("detailed_co2_emissions"),
+    "detailed_cumulative_co2_emissions": DetailedCumulativeCO2Emissions(
+        "detailed_cumulative_co2_emissions"
+    ),
+    "gross_carbon_budget": GrossCarbonBudget("gross_carbon_budget"),
+    "carbon_budget_consumed_share": CarbonBudgetConsumedShare("carbon_budget_consumed_share"),
+    "models_energy_cost": models_energy_cost,
+    "models_operation_cost_top_down": models_operation_cost_top_down,
+    "carbon_budget_constraint": CarbonBudgetConstraint("carbon_budget_constraint"),
+}
+
+
 carbon_budget_constraint = {
     "carbon_budget_constraint": CarbonBudgetConstraint("carbon_budget_constraint"),
 }
