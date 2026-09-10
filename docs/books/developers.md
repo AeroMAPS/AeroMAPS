@@ -17,13 +17,48 @@ uv sync --extra lca
 ## Units and variable metadata
 
 Every variable exchanged between AeroMAPS models (inputs, outputs, climate
-outputs) is documented — unit, description, optional source — in a single
-file: [`aeromaps/resources/data/data_information.yaml`](https://github.com/AeroMAPS/AeroMAPS/blob/main/aeromaps/resources/data/data_information.yaml).
-The test suite fails if a variable produced by one of the tested configurations
-is missing from it, so keeping it up to date is part of adding a model.
+outputs) carries a unit and a description. The metadata lives on the GEMSEO
+grammars of the disciplines: when a model is wrapped, its unit is validated
+against the vocabulary and attached to the discipline, and the description is
+stored in the grammar. The test suite fails if a variable of one of the tested
+configurations has neither, so documenting a variable is part of adding a model.
 
-### Documenting a new variable
+### Declaring metadata in the model
 
+The preferred place is the model itself, because the model that generates a
+family of names (one per market, one per pathway) knows their unit once.
+
+- Custom models declare their I/O with `declare_input` and `declare_output`
+  instead of filling `input_names` and `output_names` by hand:
+
+  ```python
+  self.declare_output(
+      f"energy_per_ask_{market.id}_{energy_type}",
+      pd.Series([0.0]),
+      unit="MJ/ASK",
+      description=f"Energy per ASK of the {market.id} market",
+  )
+  ```
+
+- Auto models declare units in the class-level `UNITS` mapping; descriptions
+  are parsed by GEMSEO from the docstring of `compute`:
+
+  ```python
+  class ManualCarbonOffset(AeroMAPSModel):
+      UNITS = {"manual_carbon_offset": "MtCO2"}
+  ```
+
+Wrong units fail when the discipline is built, and a coupling variable
+produced in one unit and consumed in another (even a commensurable one, MJ
+against EJ) fails when the process assembles its disciplines. Values are
+passed between models without conversion, so identical units are required.
+`process.list_registry_resolved_variables()` lists the variables whose unit
+still comes from the registry described below; the list is meant to shrink.
+
+### The metadata registry
+
+Variables not declared by a model fall back to
+[`aeromaps/resources/data/data_information.yaml`](https://github.com/AeroMAPS/AeroMAPS/blob/main/aeromaps/resources/data/data_information.yaml).
 Two options, in order of precedence:
 
 1. **Exact entry** in the `variables` section, keyed by the variable name:
@@ -80,7 +115,28 @@ energy_ej = convert(energy_mj, "MJ", "EJ")  # works on scalars, arrays, Series
 
 `convert` raises a `UnitError` if the two units are not commensurable, which
 catches unit mistakes early. Metadata of a variable can be queried from a
-process with `process.get_variable_information("co2_emissions")`.
+process with `process.get_variable_information("co2_emissions")`; what the
+model declares wins over the registry, the source always comes from the
+registry.
+
+### Exporting the variable schemas
+
+The inputs and outputs of a configured process can be exported as two JSON
+Schema files (draft-07), derived from the discipline grammars:
+
+```bash
+aeromaps schema --config my_config.yaml --output-dir schema/ --compute
+```
+
+`inputs_schema.json` lists every variable read by a model and produced by
+none, with its JSON type, `unit`, `description`, `source`, default value and
+the models consuming it (`x-consumers`). `outputs_schema.json` lists every
+variable produced by a model, with its producer (`x-producer`). Auto models do
+not annotate their outputs one by one, so those outputs are untyped unless the
+process has run (`--compute`, or `process.compute()` before
+`process.export_schema()`). Downstream tools such as the web application
+should read units and descriptions from these files rather than duplicating
+them.
 
 ## Release process
 
