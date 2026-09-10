@@ -1,0 +1,7 @@
+eps,objective,f_opt,feasible,message,n_evaluations,max_constraint_violation,ftol_abs,kkt_tol_rel,seconds,skipped
+0.0,cost,5.328044761264996,True,The KKT residual norm is smaller than the tolerance kkt_tol_abs or kkt_tol_rel. GEMSEO stopped the driver.,17,4.909082942618925e-11,1e-08,1e-06,46.6,False
+-0.6,surplus,3.8340479153997897,True,The KKT residual norm is smaller than the tolerance kkt_tol_abs or kkt_tol_rel. GEMSEO stopped the driver.,22,9.109039365745038e-08,1e-08,1e-06,396.9,False
+-0.8,surplus,3.1720136516930633,True,The KKT residual norm is smaller than the tolerance kkt_tol_abs or kkt_tol_rel. GEMSEO stopped the driver.,24,1.0267714709747102e-06,1e-08,1e-06,465.6,False
+-0.9,surplus,2.95917453649126,True,The KKT residual norm is smaller than the tolerance kkt_tol_abs or kkt_tol_rel. GEMSEO stopped the driver.,24,1.1296986464845949e-06,1e-08,1e-06,483.3,False
+-1.0,surplus,2.8405124705586946,True,The KKT residual norm is smaller than the tolerance kkt_tol_abs or kkt_tol_rel. GEMSEO stopped the driver.,26,4.19548367003218e-06,1e-08,1e-06,558.5,False
+-1.4,surplus,2.448008089021753,True,The KKT residual norm is smaller than the tolerance kkt_tol_abs or kkt_tol_rel. GEMSEO stopped the driver.,23,1.7515062971202348e-06,1e-08,1e-06,567.4,False
