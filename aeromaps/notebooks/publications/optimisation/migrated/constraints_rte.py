@@ -34,8 +34,25 @@ class ReducedMandate(AeroMAPSModel):
         return generic_biofuel_mandate_share_values, generic_electrofuel_mandate_share_values
 
 
+# Ceiling on the drop-in blend, just below 100 %.
+#
+# At exactly 100 % the residual fossil kerosene share is 100 - 100 = 0, and the
+# energy model's own share arithmetic divides by it: measured on opt_B15_2_6, the
+# 2050 kerosene energy came out at 7.3e-4 MJ against a ~1e12 MJ blend, a relative
+# 4e-16, and re-evaluating that point kills the MDA with
+# "converged on NaN: fossil_kerosene_share_dropin_fuel_fossil". It is the same
+# 0/0 that EPSILON_SHARE guards against on the electrofuel pathway, which has no
+# counterpart here because kerosene is the residual rather than a design variable.
+#
+# 99.999 % leaves 1e-5 of the blend as kerosene - eleven orders of magnitude above
+# the degenerate value, and far below anything of policy interest, since the
+# nearest non-saturated run sits at 0.55 %. Only the highest-biomass case ever
+# reaches this ceiling; every other case runs out of biomass or electricity first.
+MAX_BLEND_SHARE = 99.999
+
+
 class BlendCompletenessConstraint(AeroMAPSModel):
-    """G2: biofuel + electrofuel share must not exceed 100%."""
+    """G2: biofuel + electrofuel share must not exceed ``MAX_BLEND_SHARE``."""
 
     def __init__(self, name="blend_completeness_constraint", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
@@ -47,7 +64,7 @@ class BlendCompletenessConstraint(AeroMAPSModel):
         blend_completeness_constraint_enforcement_years: list,
     ) -> list:
         total = generic_biofuel_mandate_share + generic_electrofuel_mandate_share
-        violation = (total - 100) / 100
+        violation = (total - MAX_BLEND_SHARE) / 100
         blend_completeness_constraint = [
             violation.loc[y]
             for y in blend_completeness_constraint_enforcement_years

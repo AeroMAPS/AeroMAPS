@@ -68,8 +68,13 @@ RESOURCE_PER_FUEL = {"biomass": 2.104355, "electricity": 2.290426}
 # drop-in gain curve unless the freight efficiency model is switched on.
 PASSENGER_MARKETS = {
     "config_rte.yaml": ["short_range", "medium_range", "long_range"],
+    "config_rte_nofeedback.yaml": ["short_range", "medium_range", "long_range"],
     "config_1m.yaml": ["passenger"],
 }
+
+# Configs whose markets.yaml wires in the RPKElasticity layer, and so have an
+# airfare <-> RPK loop to seed. The no-feedback variant has neither parameter.
+ELASTIC_CONFIGS = {"config_rte.yaml", "config_1m.yaml"}
 
 
 # --------------------------------------------------------------------------- #
@@ -91,12 +96,14 @@ def build_process(case="main", config="config_rte.yaml", optimisation=False, car
     settings = CASES[case]
     process = create_process(configuration_file=config, optimisation=optimisation)
 
-    # Entry point for the airfare <-> RPK loop, as in the published notebook.
-    process.parameters.price_elasticity = -0.9
-    process.parameters.airfare_per_rpk = pd.Series(
-        0.09236379319842411,
-        index=range(process.parameters.historic_start_year, process.parameters.end_year + 1),
-    )
+    # Entry point for the airfare <-> RPK loop, as in the published notebook. The
+    # no-feedback config has no such loop, and neither parameter exists there.
+    if config in ELASTIC_CONFIGS:
+        process.parameters.price_elasticity = -0.9
+        process.parameters.airfare_per_rpk = pd.Series(
+            0.09236379319842411,
+            index=range(process.parameters.historic_start_year, process.parameters.end_year + 1),
+        )
 
     # Constraint enforcement years (G2-G6).
     for name in [
@@ -228,7 +235,14 @@ _CONSTRAINTS = [
 ]
 
 
-def setup_optimisation(process, x0=None, max_iter=50, objective="surplus", warm_start=False):
+def setup_optimisation(
+    process,
+    x0=None,
+    max_iter=50,
+    objective="surplus",
+    warm_start=False,
+    drop_constraints=(),
+):
     """Configure the SLSQP problem of section 3.5 of the paper.
 
     Scenario parameters are already set by ``build_process``; this only adds the
@@ -248,6 +262,11 @@ def setup_optimisation(process, x0=None, max_iter=50, objective="surplus", warm_
 
     ``warm_start`` trades reproducibility for speed and is off by default -- see the
     comment at the bottom of this function.
+
+    ``drop_constraints`` names constraints to leave out of the problem. Dropping is
+    not relaxing: the constraint is absent, not widened, so the run answers "what
+    would the optimum be if this limit did not exist" rather than "how far must it
+    move to admit this point".
     """
     x0 = x0 or (MIN_CARBON_START if objective == "carbon" else COLD_START)
 
@@ -282,8 +301,17 @@ def setup_optimisation(process, x0=None, max_iter=50, objective="surplus", warm_
         process.gemseo_settings["objective_name"] = "aviation_carbon_budget_constraint"
         constraints = _CONSTRAINTS
         scale = 10.0
+    elif objective == "cost":
+        # The airline-cost term of the surplus objective, on its own. This is what
+        # "surplus" reduces to when demand cannot respond to price, so it is the
+        # price_elasticity -> 0 limit of the published problem -- needed because the
+        # surplus integral itself divides by the elasticity and is undefined at zero.
+        # Same constraint set and scaling as "surplus" so the two are comparable.
+        process.gemseo_settings["objective_name"] = "cumulative_total_airline_cost_discounted_obj"
+        constraints = ["aviation_carbon_budget_constraint"] + _CONSTRAINTS
+        scale = 1e-10
     else:
-        raise ValueError(f"objective must be 'surplus' or 'carbon', got {objective!r}")
+        raise ValueError(f"objective must be 'surplus', 'carbon' or 'cost', got {objective!r}")
 
     process.create_gemseo_scenario()
 
@@ -292,6 +320,12 @@ def setup_optimisation(process, x0=None, max_iter=50, objective="surplus", warm_
     problem.objective = problem.objective * scale
 
     for constraint in constraints:
+        # ``drop_constraints`` removes a constraint from the problem entirely rather
+        # than relaxing its bound. The only use so far is the dedicated-wind
+        # electrofuel run, where the pathway is assumed to build its own generation
+        # and so does not draw on the shared electricity allocation G4 rations.
+        if constraint in drop_constraints:
+            continue
         process.scenario.add_constraint(constraint, constraint_type="ineq")
 
     process.scenario.set_differentiation_method("finite_differences")
