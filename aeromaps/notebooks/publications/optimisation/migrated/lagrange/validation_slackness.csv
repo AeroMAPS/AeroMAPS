@@ -1,0 +1,3 @@
+run_feasible,runs,rows,negative_multipliers,nonzero_lambda_on_inactive,active_with_zero_lambda,max_lambda_on_inactive,max_constraint_violation,median_relative_kkt_residual,max_relative_kkt_residual
+False,9,234,0,19,10,408.3067269674606,0.337782617137121,8.143009455615834e-16,0.0015296038837099
+True,44,1139,0,0,0,0.0,0.0,9.94161903487384e-16,0.1135555968271426

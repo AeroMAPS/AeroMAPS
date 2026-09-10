@@ -1,0 +1,12 @@
+# Optimisation run outputs. Every run writes a GEMSEO history (.hdf) and a full model
+# dump (.json); the sweeps in this folder come to roughly 215 MB, all of it regenerable
+# by the drivers sitting beside it. What is committed instead is the analysis: the CSVs
+# carry every number the figures and the reports quote.
+results/
+results_e/
+results_prefix/
+results_tight/
+
+# Solver logs. Kept so a sweep in progress can be watched, not as a record of it.
+logs/
+log_*.txt
