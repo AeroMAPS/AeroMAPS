@@ -79,12 +79,15 @@ BIOMASS_SHARE = 10.0  # % of world biomass allocated to aviation (was 9.90)
 # the headline output of this batch, so it is tightened.
 #
 # The ftol stop is disabled outright rather than tightened. "The objective stopped
-# moving" is not an optimality test, and every run here warm-starts from the baseline
-# optimum, where a one-parameter change often leaves the objective nearly flat on the
-# first trial step: the first pass at ftol_abs=1e-8 stopped r_3_2 after 4 evaluations
-# without it having moved from its start point at all, while its sibling r_7 moved by
-# 2.09 and stopped on KKT. The KKT residual is the criterion worth trusting, so it is
-# left as the only one -- max_iter still bounds the run.
+# moving" is not an optimality test, and a warm start near the optimum often leaves the
+# objective nearly flat on the first trial step: the first pass at ftol_abs=1e-8 stopped
+# r_3_2 after 4 evaluations without it having moved from its start point at all, while
+# its sibling r_7 moved by 2.09 and stopped on KKT. The KKT residual is the criterion
+# worth trusting. GEMSEO's xtol stop is still live, though, and a run seeded at its own
+# previous optimum can end on it without meeting KKT -- summary.csv records which
+# criterion stopped each run, and those are the ones to check.
+SEED = os.environ.get("AEROMAPS_SEED", "1") != "0"
+
 FTOL = 0.0
 KKT_TOL_REL = 1e-6
 MAX_ITER = 50
@@ -145,6 +148,29 @@ RUNS = OrderedDict(
 )
 
 WIND_CSV = HERE / "efuel_dedicated_wind.csv"
+
+# Where each run's previous optimum came from, one row per (run, reference year). It is
+# the mandate the last sweep settled on, lifted out of that sweep's tidy CSV, and it is
+# used only as a start point: SLSQP still has to satisfy the current constraints from it.
+#
+# Seeding does more than save the cold start. Without it every run warm-starts from
+# ``base``, which makes base a barrier the queue has to wait on; with it the fourteen
+# runs are independent and all of them can run at once.
+SEED_CSV = HERE / "previous_optima.csv"
+
+
+def _seeds():
+    """{run: {"biofuel": [...], "electrofuel": [...]}} over OPTIM_YEARS, or {}."""
+    if not SEED_CSV.exists():
+        return {}
+    frame = pd.read_csv(SEED_CSV).sort_values(["run", "year"])
+    return {
+        run: {
+            "biofuel": list(group.biofuel_mandate_share),
+            "electrofuel": list(group.electrofuel_mandate_share),
+        }
+        for run, group in frame.groupby("run")
+    }
 
 
 # --------------------------------------------------------------------------- #
@@ -238,7 +264,13 @@ def run_one(run_id):
     )
     _apply(process, spec, R)
 
-    x0 = None if run_id == "base" else _x0(R)
+    seeds = _seeds() if SEED else {}
+    if run_id in seeds:
+        x0 = seeds[run_id]
+        print(f"    seed: previous optimum for {run_id}", flush=True)
+    else:
+        x0 = None if run_id == "base" else _x0(R)
+        print(f"    seed: {'baseline optimum' if x0 else 'cold start'}", flush=True)
     R.setup_optimisation(
         process,
         x0=x0,
@@ -359,9 +391,11 @@ def _spawn(run_id):
 def drive(run_ids, jobs=1):
     """Run the queue, at most ``jobs`` at a time.
 
-    Every run warm-starts from the baseline optimum, so ``base`` is a barrier: it runs
-    alone and the rest only start once it is on disk. Without that they would all fall
-    back to the cold start and take longer than the serialisation saves.
+    Unseeded, every run warm-starts from the baseline optimum, so ``base`` is a barrier:
+    it runs alone and the rest only start once it is on disk. Without that they would all
+    fall back to the cold start and take longer than the serialisation saves. When every
+    queued run has a seed in ``previous_optima.csv`` there is nothing to wait for and the
+    barrier is dropped.
 
     Each run's output goes to its own log rather than to the console, because parallel
     runs interleaved on one stream are unreadable. The console gets one line per start
@@ -375,8 +409,9 @@ def drive(run_ids, jobs=1):
         if _done(run_id):
             print(f"{run_id}: on disk, skipped", flush=True)
 
-    # The barrier: base first, alone.
-    if "base" in queue:
+    # The barrier: base first, alone -- unless the runs are seeded from previous optima,
+    # in which case none of them needs base and all can start together.
+    if "base" in queue and not (SEED and set(queue) <= set(_seeds())):
         queue.remove("base")
         print("base: running alone (warm-start source) -> logs/base.log", flush=True)
         process, handle, started = _spawn("base")
