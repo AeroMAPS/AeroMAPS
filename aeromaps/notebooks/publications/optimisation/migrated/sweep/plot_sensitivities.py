@@ -63,6 +63,19 @@ def series(run, key):
     return pd.Series(vectors[key], index=YEARS) if key in vectors else None
 
 
+def alternative_fuel(run, key):
+    """A mandate share or alternative-fuel volume, with 2019 at zero.
+
+    The model computes these only over the prospective period, so 2019 comes back NaN
+    and the line would start a year after every other panel. Zero is not an assumption:
+    there was no mandate in 2019, and the model's own 2020 value is zero.
+    """
+    data = series(run, key).copy()
+    if pd.isna(data.loc[2019]):
+        data.loc[2019] = 0.0
+    return data
+
+
 def realised_abatement_cost(run):
     """What the scenario pays per tonne it abates, year by year, on the objective's basis.
 
@@ -220,12 +233,12 @@ def sensitivity_panels(cases, title, subtitle, legend_title, stem, annotate=None
             (biofuel, "generic_biofuel_mandate_share"),
             (electrofuel, "generic_electrofuel_mandate_share"),
         ]:
-            data = series(run, key).loc[SPAN]
+            data = alternative_fuel(run, key).loc[SPAN]
             axis.plot(data.index, data, **kwargs)
 
         aaf = (
-            series(run, "generic_biofuel_energy_consumption")
-            + series(run, "generic_electrofuel_energy_consumption")
+            alternative_fuel(run, "generic_biofuel_energy_consumption")
+            + alternative_fuel(run, "generic_electrofuel_energy_consumption")
         ).loc[SPAN]
         volume.plot(aaf.index, aaf / 1e12, **kwargs)
 
@@ -362,11 +375,11 @@ def pathway():
         price.plot(mfsp.loc[SPAN].index, mfsp.loc[SPAN] * 1000, **kwargs)
         cost = abatement_cost(run, "generic_electrofuel").loc[SPAN]
         mac.plot(cost.index, cost, **kwargs)
-        mandate = series(run, "generic_electrofuel_mandate_share").loc[SPAN]
+        mandate = alternative_fuel(run, "generic_electrofuel_mandate_share").loc[SPAN]
         electrofuel.plot(mandate.index, mandate, **kwargs)
-        energy = series(run, "generic_electrofuel_energy_consumption").loc[SPAN]
+        energy = alternative_fuel(run, "generic_electrofuel_energy_consumption").loc[SPAN]
         consumed.plot(energy.index, energy / 1e12, **kwargs)
-        bio = series(run, "generic_biofuel_mandate_share").loc[SPAN]
+        bio = alternative_fuel(run, "generic_biofuel_mandate_share").loc[SPAN]
         biofuel.plot(bio.index, bio, **kwargs)
 
     # The biofuel *cost* curve is identical in both runs -- same MFSP, same emission
