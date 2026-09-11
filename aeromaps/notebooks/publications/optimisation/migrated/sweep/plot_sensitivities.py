@@ -121,20 +121,83 @@ PANELS = [
     ("d. Biofuel mandate", "share of drop-in blend  [%]"),
     ("e. Electrofuel mandate", "share of drop-in blend  [%]"),
     ("f. Alternative fuel consumed", "biofuel + electrofuel  [EJ/yr]"),
+    ("g. Airfare", "EUR cents per RPK"),
+    ("h. Direct operating cost", "EUR cents per ASK"),
+    ("i. Energy direct operating cost", "EUR cents per ASK"),
+]
+
+# The airfare the demand curve, the supply curve and the surplus are all anchored on --
+# optimisation_runs.initial_airfare_per_rpk, in euro cents.
+AIRFARE_ANCHOR_CENTS = 9.236379319842411
+
+# What the cost row plots, in euro cents. Airfare is per RPK and the two DOCs per ASK, as
+# the model computes them; energy DOC is one component of DOC, alongside the non-energy
+# DOC and the carbon tax.
+COST_ROW = [
+    "airfare_per_rpk",
+    "doc_total_per_ask_mean",
+    "doc_energy_per_ask_mean",
 ]
 
 
-def six_panels(cases, title, subtitle, legend_title, stem, annotate=None, ncol=5):
-    """cases: (label, run, colour, linestyle, width). Returns the axes grid.
+def _cost_row(row, cases):
+    """Airfare, DOC and energy DOC for every case, on three axes, in euro cents.
 
-    The same six panels for every block, so the blocks can be read against each other:
-    what happened to traffic and emissions, what it cost per tonne, and the two mandates
-    plus the physical volume they imply.
+    Each axis is scaled to 2023-2050. 2020 is the COVID year -- load factor collapsed, so
+    every cost per seat or per passenger jumps -- and it is identical in every case, so on
+    an axis that includes it the part that differs between cases is a sliver. The 2020
+    value is written at the top edge where it leaves the axis rather than dropped.
     """
-    figure, axes = plt.subplots(2, 3, figsize=(15.5, 8.0), sharex=True)
+    for axis, key in zip(row, COST_ROW):
+        shown = []
+        for _, run, colour, style, width in cases:
+            data = series(run, key).loc[SPAN] * 100  # EUR -> euro cents
+            axis.plot(data.index, data, color=colour, lw=width, ls=style)
+            shown.append(data)
+        tail = pd.concat([data.loc[2023:] for data in shown])
+        low, high = tail.min(), tail.max()
+        if key == "airfare_per_rpk":
+            low, high = min(low, AIRFARE_ANCHOR_CENTS), max(high, AIRFARE_ANCHOR_CENTS)
+        pad = 0.08 * (high - low)
+        axis.set_ylim(low - pad, high + pad)
+        covid = shown[0].loc[2020]
+        if covid > high + pad:
+            axis.annotate(
+                f"2020 (COVID): {covid:.2f}, off scale",
+                xy=(2020, high + pad),
+                xytext=(4, -4),
+                textcoords="offset points",
+                va="top",
+                fontsize=8,
+                color=MUTED,
+            )
+
+    airfare = row[0]
+    airfare.axhline(AIRFARE_ANCHOR_CENTS, color=MUTED, lw=0.9, ls=":", zorder=0)
+    airfare.annotate(
+        "2019 anchor",
+        xy=(2050, AIRFARE_ANCHOR_CENTS),
+        xytext=(0, -3),
+        textcoords="offset points",
+        ha="right",
+        va="top",
+        fontsize=8,
+        color=MUTED,
+    )
+
+
+def sensitivity_panels(cases, title, subtitle, legend_title, stem, annotate=None, ncol=5):
+    """cases: (label, run, colour, linestyle, width). Returns the 3 x 3 axes grid.
+
+    The same nine panels for every block, so the blocks can be read against each other:
+    what happened to traffic and emissions, what it cost per tonne, the two mandates plus
+    the physical volume they imply, and what passengers and airlines pay for it -- the
+    airfare, the direct operating cost, and the energy part of that cost.
+    """
+    figure, axes = plt.subplots(3, 3, figsize=(15.5, 11.5), sharex=True)
     for axis in axes.ravel():
         _frame(axis)
-    (traffic, emissions, mac), (biofuel, electrofuel, volume) = axes
+    (traffic, emissions, mac), (biofuel, electrofuel, volume), cost_row = axes
 
     for label, run, colour, style, width in cases:
         kwargs = dict(color=colour, lw=width, ls=style)
@@ -162,6 +225,8 @@ def six_panels(cases, title, subtitle, legend_title, stem, annotate=None, ncol=5
         ).loc[SPAN]
         volume.plot(aaf.index, aaf / 1e12, **kwargs)
 
+    _cost_row(cost_row, cases)
+
     if annotate:
         annotate(axes)
 
@@ -181,8 +246,9 @@ def six_panels(cases, title, subtitle, legend_title, stem, annotate=None, ncol=5
         bbox_to_anchor=(0.5, -0.005),
     )
     figure.suptitle(title, x=0.006, ha="left", fontsize=13, color=INK)
-    figure.text(0.006, 0.935, subtitle, ha="left", fontsize=9, color=MUTED)
-    figure.tight_layout(rect=(0, 0.05, 1, 0.925))
+    # Same offsets in inches as the two-row layout had, on a taller figure.
+    figure.text(0.006, 0.955, subtitle, ha="left", fontsize=9, color=MUTED)
+    figure.tight_layout(rect=(0, 0.035, 1, 0.948))
     for suffix in ("png", "pdf"):
         figure.savefig(HERE / f"{stem}.{suffix}", dpi=200, bbox_inches="tight")
     print(f"wrote {stem}.png / .pdf")
@@ -202,10 +268,10 @@ def ramp_up():
     ]
 
     def notes(axes):
-        (_, _, mac), (biofuel, electrofuel, _) = axes
+        (_, _, mac), (biofuel, electrofuel, _), _ = axes
         electrofuel.annotate(
-            "a tighter ramp cannot abate early,\nso it must end higher:\n29.6 % against 13.5 %",
-            xy=(2050, 29.0),
+            "a tighter ramp cannot abate early,\nso it must end higher:\n22.4 % against 13.5 %",
+            xy=(2050, 22.0),
             xytext=(2022, 0.72),
             textcoords=("data", "axes fraction"),
             fontsize=8.5,
@@ -222,7 +288,7 @@ def ramp_up():
             arrowprops=dict(arrowstyle="->", color=MUTED, lw=0.8),
         )
 
-    six_panels(
+    sensitivity_panels(
         cases,
         "Industrial ramp-up limits set the mandate, not the carbon budget",
         "Blocks B and B'. Case main, eps -0.9, biomass 10 %, same 3.8656 GtCO2 budget. "
@@ -272,10 +338,10 @@ def pathway():
     side is the argument: the pathway is transformed, its abatement cost falls by 40 % or
     more, and the optimiser defers early biofuel to buy the abatement back with it later.
     """
-    figure, axes = plt.subplots(2, 3, figsize=(15.5, 8.0))
+    figure, axes = plt.subplots(3, 3, figsize=(15.5, 11.5))
     for axis in axes.ravel():
         _frame(axis)
-    (factor, price, mac), (electrofuel, consumed, biofuel) = axes
+    (factor, price, mac), (electrofuel, consumed, biofuel), cost_row = axes
 
     cases = [
         ("baseline (grid electricity)", "base", NEUTRAL, "-", 2.2),
@@ -333,6 +399,8 @@ def pathway():
         fontsize=9,
         color="#8c510a",
     )
+    _cost_row(cost_row, cases)
+
     # Discounted, the interesting comparison is across dates, not within one: biofuel is
     # flat at 380 EUR/tCO2 undiscounted, so its discounted curve decays, and the question
     # is whether late electrofuel undercuts early biofuel. Clip to the band where that is
@@ -350,6 +418,7 @@ def pathway():
         (electrofuel, "d. OUTPUT: electrofuel mandate", "share of drop-in blend  [%]"),
         (consumed, "e. OUTPUT: electrofuel consumed", "EJ/yr"),
         (biofuel, "f. OUTPUT: biofuel mandate", "share of drop-in blend  [%]"),
+        *[(axis, *panel) for axis, panel in zip(cost_row, PANELS[6:])],
     ]:
         axis.set_title(panel_title, loc="left", fontsize=10.5, color=INK, pad=8)
         axis.set_ylabel(ylabel, fontsize=9, color=MUTED)
@@ -385,7 +454,7 @@ def pathway():
     )
     figure.text(
         0.006,
-        0.935,
+        0.955,
         "Block C. Both input trajectories are swapped and G4, the shared electricity "
         "allocation, is dropped entirely rather than relaxed. Electrofuel reaches 49 % of "
         "the blend against 14 %, and early biofuel is held back to pay for it.",
@@ -393,7 +462,7 @@ def pathway():
         fontsize=9,
         color=MUTED,
     )
-    figure.tight_layout(rect=(0, 0.055, 1, 0.925))
+    figure.tight_layout(rect=(0, 0.038, 1, 0.948))
     for suffix in ("png", "pdf"):
         figure.savefig(HERE / f"fig_pathway_panels.{suffix}", dpi=200, bbox_inches="tight")
     print("wrote fig_pathway_panels.png / .pdf")
@@ -408,7 +477,7 @@ def discount():
     ]
 
     def notes(axes):
-        (_, _, mac), (_, electrofuel, _) = axes
+        (_, _, mac), (_, electrofuel, _), _ = axes
         electrofuel.annotate(
             "3.2 % and 4.5 % are the *same design*:\nthe optimum sits on a vertex of the feasible\n"
             "set and the objective only picks which vertex",
@@ -430,7 +499,7 @@ def discount():
             arrowprops=dict(arrowstyle="->", color=MUTED, lw=0.8),
         )
 
-    six_panels(
+    sensitivity_panels(
         cases,
         "Discount rate: mechanical between 3.2 and 7 %, decisive at 15 %",
         "Block D. The 3.2 % line is drawn heavier with the baseline dashed over it, because "

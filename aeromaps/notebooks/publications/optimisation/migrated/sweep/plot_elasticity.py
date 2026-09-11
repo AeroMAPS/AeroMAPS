@@ -48,14 +48,14 @@ def series(run, key):
 
 def main():
     """Block A on the shared six-panel layout, plus the traffic inset it needs."""
-    from plot_sensitivities import six_panels
+    from plot_sensitivities import sensitivity_panels
 
     cases = [
         (label, run, colour, "-", 2.4 if run == "base" else 1.7) for label, run, colour in CASES
     ]
 
     def notes(axes):
-        (traffic, _, mac), (biofuel, electrofuel, _) = axes
+        (traffic, _, _), (biofuel, electrofuel, _), _ = axes
 
         reference = series("base", "rpk_no_elasticity")
         traffic.plot(
@@ -132,24 +132,15 @@ def main():
         )
         electrofuel.annotate(
             "the whole adjustment\nhappens here",
-            xy=(2049, 19.5),
+            xy=(2049, 15.0),
             xytext=(2022, 0.62),
             textcoords=("data", "axes fraction"),
             fontsize=8.5,
             color=MUTED,
             arrowprops=dict(arrowstyle="->", color=MUTED, lw=0.8),
         )
-        mac.annotate(
-            "a cheaper way to abate:\nflights that do not happen",
-            xy=(2048, 372),
-            xytext=(2021.5, 0.72),
-            textcoords=("data", "axes fraction"),
-            fontsize=8.5,
-            color=MUTED,
-            arrowprops=dict(arrowstyle="->", color=MUTED, lw=0.8),
-        )
 
-    six_panels(
+    sensitivity_panels(
         cases,
         "Cost-optimal path to the same carbon budget, by price elasticity",
         "Blocks A and A'. Case main, biomass 10 %, cumulative 2020-2050 CO2 fixed at "
