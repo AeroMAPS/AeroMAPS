@@ -1,13 +1,13 @@
 """The section 1 optimisation: case main at the ReFuelEU-equivalent carbon budget.
 
 The budget the paper's headline run is held to is the one ReFuelEU itself implies --
-3.8615905850 GtCO2 cumulative 2020-2050, 3.119357596 % of the world budget -- so that the
+3.8656495 GtCO2 cumulative 2020-2050, 3.122636344 % of the world budget -- so that the
 optimum and the regulation it is compared against consume the same carbon. That value
 falls between the 3.2 and 3.0 rungs of the block E ladder, so it needs its own run.
 
 Blocks A-D already contain an optimisation at exactly this budget, ``base``. This one is
-not a copy of it: ``base`` was cold-started, and this is warm-started from the ladder's
-3.2 optimum, the way every other rung of the ladder is. On a non-convex problem the start
+not a copy of it: ``base`` is seeded from the previous sweep's optimum, and this is
+warm-started from the ladder's 3.2 optimum. On a non-convex problem the start
 point can decide which local optimum SLSQP lands on, so the two are worth comparing --
 the script prints the comparison and says whether they agree.
 

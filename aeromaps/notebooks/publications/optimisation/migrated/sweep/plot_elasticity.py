@@ -1,7 +1,7 @@
 """Block A: what price elasticity does to the cost-optimal path at a fixed carbon budget.
 
 Four panels, one line per elasticity. Every run here meets the same absolute cumulative
-budget -- 3.8616 GtCO2 over 2020-2050, the ReFuelEU-linear number -- so the panels show
+budget -- 3.8656 GtCO2 over 2020-2050, the ReFuelEU-linear number -- so the panels show
 *how* each elasticity gets there, not whether it does.
 
 The elasticity is an ordered quantity, so the series take a single-hue sequential ramp
@@ -153,7 +153,7 @@ def main():
         cases,
         "Cost-optimal path to the same carbon budget, by price elasticity",
         "Blocks A and A'. Case main, biomass 10 %, cumulative 2020-2050 CO2 fixed at "
-        "3.8616 GtCO2 (ReFuelEU linear) in every run.",
+        "3.8656 GtCO2 (ReFuelEU linear) in every run.",
         "price elasticity",
         "fig_elasticity_panels",
         annotate=notes,
