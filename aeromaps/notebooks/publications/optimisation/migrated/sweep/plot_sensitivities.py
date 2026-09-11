@@ -535,135 +535,255 @@ def discount():
 # Named tests, grouped by the parameter they vary. The block letters of the brief are
 # an index, not a label -- a reader should not have to hold "B'" in their head to know
 # they are looking at a ramp-up volume.
-GROUPS = [
+# --------------------------------------------------------------------------- #
+# The summary: every sensitivity, blocks A-E, against one baseline
+# --------------------------------------------------------------------------- #
+
+# Each row names its JSON relative to this folder, because the rows come from two
+# places: blocks A-D in results/, and the carbon-budget ladder, the other cases at the
+# central budget and the fossil BAU in results_e/.
+BASELINE_ROW = ("results/base.json", "ReFuelEU budget, 10 % biomass, eps -0.9, r 4.5 %")
+
+SUMMARY_GROUPS = [
+    (
+        "Reference",
+        INK,
+        [("results_e/fossil_main.json", "fossil BAU, no mandate")],
+    ),
+    (
+        "Carbon budget  (% of world budget)",
+        "#762a83",
+        [
+            ("results_e/opt_main_3_8.json", "3.8 %"),
+            ("results_e/opt_main_3_4.json", "3.4 %"),
+            ("results_e/opt_main_3_0.json", "3.0 %"),
+            ("results_e/opt_main_2_6.json", "2.6 %"),
+            ("results_e/opt_main_2_2.json", "2.2 %"),
+        ],
+    ),
+    (
+        "Biomass allocated to aviation",
+        "#35978f",
+        [
+            ("results_e/opt_B5_refueleu.json", "5 %"),
+            ("results_e/opt_B75_refueleu.json", "7.5 %"),
+            ("results_e/opt_B15_refueleu.json", "15 %"),
+        ],
+    ),
+    (
+        "Technology",
+        "#5e5e5e",
+        [("results_e/opt_pess_refueleu.json", "efficiency gain 0.91 %/yr")],
+    ),
     (
         "Price elasticity",
         "#2166ac",
         [
-            ("fixed_demand", "fixed demand"),
-            ("eps_m0_6", "-0.6"),
-            ("eps_m0_8", "-0.8"),
-            ("base", "-0.9  BASELINE"),
-            ("eps_m1_0", "-1.0"),
-            ("eps_m1_4", "-1.4"),
+            ("results/fixed_demand.json", "fixed demand"),
+            ("results/eps_m0_6.json", "-0.6"),
+            ("results/eps_m0_8.json", "-0.8"),
+            ("results/eps_m1_0.json", "-1.0"),
+            ("results/eps_m1_4.json", "-1.4"),
         ],
     ),
     (
         "Ramp-up rate",
         "#b2182b",
         [
-            ("rate_11_8", "11.8 %/yr  (IEA NZE)"),
-            ("rate_39", "39 %/yr  (wind/PV)"),
+            ("results/rate_11_8.json", "11.8 %/yr  (IEA NZE)"),
+            ("results/rate_39.json", "39 %/yr  (wind/PV)"),
         ],
     ),
     (
         "Ramp-up volume",
         "#ef8a62",
         [
-            ("vol_0_1", "0.1 EJ/yr"),
-            ("vol_0_4", "0.4 EJ/yr"),
+            ("results/vol_0_1.json", "0.1 EJ/yr"),
+            ("results/vol_0_4.json", "0.4 EJ/yr"),
         ],
     ),
     (
         "Electrofuel pathway",
         "#1b7837",
-        [
-            ("efuel_wind", "dedicated wind"),
-        ],
+        [("results/efuel_wind.json", "dedicated wind")],
     ),
     (
         "Discount rate",
         "#8c6d31",
         [
-            ("r_3_2", "3.2 %"),
-            ("r_7", "7 %"),
-            ("r_15", "15 %  (extreme)"),
+            ("results/r_3_2.json", "3.2 %  †"),
+            ("results/r_7.json", "7 %  †"),
+            ("results/r_15.json", "15 %  (extreme)  †"),
         ],
     ),
 ]
 
 
-def summary():
-    frame = pd.read_csv(HERE / "sweep_summary.csv").set_index("run")
+def _surplus_loss(vectors):
+    """The objective, cumulative discounted total surplus loss to 2050, in bn EUR.
 
-    # Lay the rows out with a header row per group. Rotated labels in the margin were
-    # the first attempt and they collide: a one-row group has no vertical room for its
-    # own name. A header row costs one slot and reads at a glance.
+    The fixed-demand run uses the no-feedback chain, which does not report it. Its
+    equivalent is exact rather than approximate: the model sums discounted area_loss
+    plus the 2026-2050 discounted airline cost increase, and with traffic equal to the
+    reference traffic area_loss is identically zero. The reconstruction matches the
+    reported value to six decimals on the elastic runs.
+    """
+    if "cumulative_total_surplus_loss_discounted" in vectors:
+        return vectors["cumulative_total_surplus_loss_discounted"][-1] / 1e9
+    airline = vectors["cumulative_total_airline_cost_increase_discounted"]
+    return (airline[YEARS.index(2050)] - airline[YEARS.index(2025)]) / 1e9
+
+
+SUMMARY_METRICS = [
+    ("a. Cumulative surplus loss", "discounted, 2020-2050  [bn EUR]", _surplus_loss),
+    (
+        "b. Cumulative CO2 emissions",
+        "2020-2050  [GtCO2]",
+        lambda v: v["cumulative_co2_emissions"][YEARS.index(2050)],
+    ),
+    (
+        "c. CO2 emissions in 2050",
+        "[MtCO2/yr]",
+        lambda v: v["co2_emissions_passenger"][-1] + v["co2_emissions_freight"][-1],
+    ),
+    ("d. Traffic in 2050", "[trillion RPK]", lambda v: v["rpk"][-1] / 1e12),
+    (
+        "e. Biofuel mandate, 2035",
+        "[% of drop-in blend]",
+        lambda v: v["generic_biofuel_mandate_share"][YEARS.index(2035)],
+    ),
+    (
+        "f. Biofuel mandate, 2050",
+        "[% of drop-in blend]",
+        lambda v: v["generic_biofuel_mandate_share"][-1],
+    ),
+    (
+        "g. Electrofuel mandate, 2035",
+        "[% of drop-in blend]",
+        lambda v: v["generic_electrofuel_mandate_share"][YEARS.index(2035)],
+    ),
+    (
+        "h. Electrofuel mandate, 2050",
+        "[% of drop-in blend]",
+        lambda v: v["generic_electrofuel_mandate_share"][-1],
+    ),
+]
+MANDATE_PANELS = slice(4, 8)  # drawn on one shared scale, so the four read against each other
+
+
+def _summary_row(path):
+    """(metric values, status) for one row; status is 'ok', 'missing' or 'infeasible'.
+
+    Feasibility is read from the optimisation history, not assumed from the JSON: an
+    infeasible run still writes one, holding its last iterate, and that is not a result.
+    A reference MDA has no history and no constraints to violate.
+    """
+    json_path = HERE / path
+    if not json_path.exists():
+        return None, "missing"
+    hdf = json_path.with_suffix(".hdf")
+    if hdf.exists():
+        sys.path.insert(0, str(HERE.parent))
+        import optimisation_runs as R
+
+        run = R.read_run(hdf)
+        if run is None or not run["feasible"]:
+            return None, "infeasible"
+    vectors = json.load(open(json_path))["vector_outputs"]
+    return [metric(vectors) for _, _, metric in SUMMARY_METRICS], "ok"
+
+
+def summary():
+    """Every sensitivity against one baseline, on eight quantities.
+
+    Blocks A-D vary one parameter at the ReFuelEU-equivalent budget. The carbon-budget
+    group is block E's main ladder; the biomass and technology groups are the other
+    block E cases re-optimised at that same central budget, so every group except the
+    carbon budget shares the baseline's cumulative emissions.
+    """
+    baseline, _ = _summary_row(BASELINE_ROW[0])
+
     rows, ticks, labels, styles, separators = [], [], [], [], []
     y = 0.0
-    for index, (group, colour, members) in enumerate(GROUPS):
-        if index:
-            separators.append(y - 0.5)
-            y += 0.6
+    ticks.append(y)
+    labels.append(f"BASELINE   {BASELINE_ROW[1]}")
+    styles.append((INK, "bold", 8.5))
+    rows.append((y, baseline, NEUTRAL, True))
+    y += 1.0
+    for group, colour, members in SUMMARY_GROUPS:
+        separators.append(y - 0.5)
+        y += 0.6
         ticks.append(y)
         labels.append(group.upper())
         styles.append((colour, "bold", 8.5))
         y += 1.0
-        for run, label in members:
-            if run not in frame.index:
-                continue
-            rows.append((y, run, label, colour, group))
+        for path, label in members:
+            values, status = _summary_row(path)
+            note = {"ok": "", "missing": "   (not on disk)", "infeasible": "   (infeasible)"}
             ticks.append(y)
-            labels.append(f"   {label}")
-            styles.append((INK if run != "base" else colour, "normal", 9))
+            labels.append(f"   {label}{note[status]}")
+            styles.append((INK if status == "ok" else MUTED, "normal", 9))
+            if values is not None:
+                rows.append((y, values, colour, False))
             y += 1.0
 
-    figure, axes = plt.subplots(1, 3, figsize=(13.5, 6.4), sharey=True)
-    metrics = [
-        ("aaf_share_2050", "2050 AAF mandate  [% of blend]", "a. Required alternative fuel"),
-        ("policy_cost_bnEUR", "vs matched fossil BAU  [bn EUR]", "b. Policy cost"),
-        ("rpk_2050_Tpkm", "2050 RPK  [trillion pkm]", "c. Traffic"),
-    ]
-    for axis, (column, xlabel, title) in zip(axes, metrics):
+    figure, axes = plt.subplots(2, 4, figsize=(18.0, 17.0), sharey=True)
+    flat = axes.ravel()
+    mandate_top = max(max(values[i] for _, values, _, _ in rows) for i in range(8)[MANDATE_PANELS])
+    for index, (axis, (title, xlabel, _)) in enumerate(zip(flat, SUMMARY_METRICS)):
         _frame(axis)
         axis.grid(axis="y", visible=False)
-        baseline = frame.loc["base", column]
-        axis.axvline(baseline, color=MUTED, lw=0.9, ls=":", zorder=0)
+        axis.axvline(baseline[index], color=MUTED, lw=0.9, ls=":", zorder=0)
         for boundary in separators:
             axis.axhline(boundary, color=GRID, lw=1.0, zorder=0)
-        for y, run, label, colour, group in rows:
-            value = frame.loc[run, column]
-            is_baseline = run == "base"
-            axis.plot([baseline, value], [y, y], color=colour, lw=1.2, alpha=0.45, zorder=1)
+        for y, values, colour, is_baseline in rows:
+            value = values[index]
+            axis.plot([baseline[index], value], [y, y], color=colour, lw=1.2, alpha=0.45)
             axis.plot(
                 value,
                 y,
                 "o",
                 color="white" if is_baseline else colour,
-                ms=8,
+                ms=7,
                 zorder=2,
                 markeredgecolor=colour,
-                markeredgewidth=2.0 if is_baseline else 1.4,
+                markeredgewidth=2.0 if is_baseline else 1.3,
             )
+        if index in range(8)[MANDATE_PANELS]:
+            axis.set_xlim(-2, mandate_top * 1.06)
         axis.set_xlabel(xlabel, fontsize=9, color=MUTED)
         axis.set_title(title, loc="left", fontsize=11, color=INK, pad=8)
 
-    axes[0].set_yticks(ticks)
-    axes[0].set_yticklabels(labels)
-    for text, (colour, weight, size) in zip(axes[0].get_yticklabels(), styles):
-        text.set_color(colour)
-        text.set_fontweight(weight)
-        text.set_fontsize(size)
-    axes[0].invert_yaxis()
+    for axis in axes[:, 0]:
+        axis.set_yticks(ticks)
+        axis.set_yticklabels(labels)
+        for text, (colour, weight, size) in zip(axis.get_yticklabels(), styles):
+            text.set_color(colour)
+            text.set_fontweight(weight)
+            text.set_fontsize(size)
+    axes[0, 0].invert_yaxis()
 
     figure.suptitle(
-        "What each sensitivity moves, against the baseline",
+        "Every sensitivity against one baseline",
         x=0.006,
         ha="left",
-        fontsize=13,
+        fontsize=14,
         color=INK,
     )
     figure.text(
         0.006,
-        0.930,
-        "Fourteen optimisations, all meeting the same 3.8656 GtCO2 budget. Dotted line "
-        "and hollow marker are the baseline; policy cost is measured against a fossil "
-        "BAU run sharing the run's elasticity and discount rate.",
+        0.968,
+        "Every optimisation outside the carbon-budget group is held to the ReFuelEU-equivalent "
+        "budget, 3.8656 GtCO2 over 2020-2050, which is why panel b is a single line for them. "
+        "Dotted line and hollow marker: the baseline.\n"
+        "Panel a is the objective, discounted to 2020 at each run's own rate; the runs marked "
+        "† use a different rate, so their level is not comparable with the rest.",
         ha="left",
+        va="top",
         fontsize=9,
         color=MUTED,
     )
-    figure.tight_layout(rect=(0, 0.01, 1, 0.905))
+    figure.tight_layout(rect=(0, 0.0, 1, 0.945))
     for suffix in ("png", "pdf"):
         figure.savefig(HERE / f"fig_sensitivity_summary.{suffix}", dpi=200, bbox_inches="tight")
     print("wrote fig_sensitivity_summary.png / .pdf")
