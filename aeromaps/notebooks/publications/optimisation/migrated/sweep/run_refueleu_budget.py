@@ -11,7 +11,12 @@ warm-started from the ladder's 3.2 optimum. On a non-convex problem the start
 point can decide which local optimum SLSQP lands on, so the two are worth comparing --
 the script prints the comparison and says whether they agree.
 
-Usage:  poetry run python run_refueleu_budget.py
+The same budget is also run for the other cases -- the three biomass allocations and
+the pessimistic roadmap -- so the sensitivity summary can compare every case at the one
+budget blocks A-D are held to. Each is warm-started from its own 3.2 rung, the way
+``main`` is, and saved as ``opt_<case>_refueleu``.
+
+Usage:  poetry run python run_refueleu_budget.py [case ...]     # default: main
 """
 
 from __future__ import annotations
@@ -33,11 +38,14 @@ import optimisation_runs as R  # noqa: E402
 from run_batch import BIOMASS_SHARE, BUDGET_GTCO2, BUDGET_WORLD_SHARE, FTOL, KKT_TOL_REL  # noqa: E402
 from run_block_e import BIOMASS_OVERRIDE, MAX_ITER, RESULTS_E  # noqa: E402
 
-STEM = RESULTS_E / "opt_main_refueleu"
-WARM_FROM = RESULTS_E / "opt_main_3_2.hdf"
+CASES = ("main", "B5", "B75", "B15", "pess")
 
 
-def main():
+def stem(case):
+    return RESULTS_E / f"opt_{case}_refueleu"
+
+
+def main(case="main"):
     from aeromaps.core.gemseo import disable_gemseo_execution_statistics
     from gemseo import configure_logger
     from gemseo.algos.opt.scipy_local.settings.slsqp import SLSQP_Settings
@@ -46,21 +54,26 @@ def main():
     disable_gemseo_execution_statistics()
     os.chdir(PAPER)
 
-    if STEM.with_suffix(".json").exists():
-        print(f"{STEM.name}: on disk, skipped")
+    out = stem(case)
+    warm_from = RESULTS_E / f"opt_{case}_3_2.hdf"
+    # The ladder's convention: main and pess at a round 10 %, the biomass cases at the
+    # allocation that defines them.
+    biomass = BIOMASS_OVERRIDE.get(case, R.CASES[case]["biomass_share"])
+    if out.with_suffix(".json").exists():
+        print(f"{out.name}: on disk, skipped")
     else:
-        warm = R.read_run(WARM_FROM)
+        warm = R.read_run(warm_from)
         if warm is None or not warm["feasible"]:
-            raise SystemExit(f"need a feasible {WARM_FROM.name} to warm-start from")
+            raise SystemExit(f"need a feasible {warm_from.name} to warm-start from")
 
         process = R.build_process(
-            "main",
+            case,
             config="config_rte.yaml",
             optimisation=True,
             carbon_budget=BUDGET_WORLD_SHARE,
         )
         process.parameters.generic_biomass_availability_aviation_allocated_share = (
-            BIOMASS_OVERRIDE["main"] * R.EU_ASK_SHARE
+            biomass * R.EU_ASK_SHARE
         )
         R.setup_optimisation(process, x0=warm["x"], max_iter=MAX_ITER, objective="surplus")
         process.gemseo_settings["algorithm"] = SLSQP_Settings(
@@ -72,16 +85,14 @@ def main():
             normalize_design_space=False,
         )
 
-        print("=== main at the ReFuelEU-equivalent budget ===", flush=True)
+        print(f"=== {case} at the ReFuelEU-equivalent budget ===", flush=True)
         print(f"    {BUDGET_WORLD_SHARE:.9f} % world share = {BUDGET_GTCO2:.10f} GtCO2", flush=True)
-        print(
-            f"    biomass {BIOMASS_OVERRIDE['main']} % (batch uses {BIOMASS_SHARE} %)", flush=True
-        )
-        print(f"    warm-started from {WARM_FROM.name}", flush=True)
+        print(f"    biomass {biomass} % (batch uses {BIOMASS_SHARE} %)", flush=True)
+        print(f"    warm-started from {warm_from.name}", flush=True)
 
         started = time.perf_counter()
         process.compute()
-        R._save(process, STEM)
+        R._save(process, out)
         result = process.scenario.get_result().optimization_result
         print(
             f"--- f={float(result.f_opt):.6f} feasible={bool(result.is_feasible)} "
@@ -89,12 +100,13 @@ def main():
             flush=True,
         )
 
-    compare()
+    if case == "main":
+        compare()
 
 
 def compare():
-    """Against ``base``, which reached the same budget from a cold start."""
-    ladder = R.read_run(STEM.with_suffix(".hdf"))
+    """Against ``base``, which reached the same budget from a different start."""
+    ladder = R.read_run(stem("main").with_suffix(".hdf"))
     cold = R.read_run(HERE / "results" / "base.hdf")
     if ladder is None or cold is None:
         return
@@ -117,4 +129,9 @@ def compare():
 
 
 if __name__ == "__main__":
-    main()
+    requested = sys.argv[1:] or ["main"]
+    unknown = [case for case in requested if case not in CASES]
+    if unknown:
+        raise SystemExit(f"unknown case(s) {unknown}; choose from {CASES}")
+    for case in requested:
+        main(case)

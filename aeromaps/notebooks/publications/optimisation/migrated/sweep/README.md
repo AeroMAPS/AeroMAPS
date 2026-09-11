@@ -66,6 +66,8 @@ poetry run python run_references.py             # 8 matched fossil-BAU reference
 poetry run python run_batch.py --jobs 3         # blocks A-D, 14 optimisations, resumable
 poetry run python run_block_e.py --jobs 4 --seed ../lagrange/results_tight
                                                 # block E, 55 optimisations, resumable
+poetry run python run_refueleu_budget.py B5 B75 B15 pess
+                                                # the other cases at the central budget
 poetry run python collect.py                    # the three analysis tables
 poetry run python plot_elasticity.py            # block A figure
 poetry run python plot_sensitivities.py         # blocks B, B', C, D and the summary
