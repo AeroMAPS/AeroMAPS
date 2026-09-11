@@ -28,6 +28,7 @@ sys.path.insert(0, str(HERE))
 
 YEARS = list(range(2000, 2051))
 SPAN = slice(2020, 2050)
+PROSPECTION_START_YEAR = 2020  # the year the objective discounts to
 INK, MUTED, GRID = "#1a1a1a", "#6b6b6b", "#e2e2e2"
 
 # Diverging around the baseline: tighter is warm, looser is cool, baseline neutral.
@@ -40,45 +41,67 @@ def outputs(run):
     return json.load(open(HERE / "results" / f"{run}.json"))["vector_outputs"]
 
 
+def discount_rate(run):
+    """The run's own ``social_discount_rate``, so Block D runs discount at their rate."""
+    return json.load(open(HERE / "results" / f"{run}.json"))["float_inputs"]["social_discount_rate"]
+
+
+def discount_factor(run):
+    """1 / (1+r)^(t - 2020), the factor the objective applies, on the full year index."""
+    rate = discount_rate(run)
+    return pd.Series(
+        [1.0 / (1.0 + rate) ** (year - PROSPECTION_START_YEAR) for year in YEARS], index=YEARS
+    )
+
+
 def series(run, key):
     vectors = outputs(run)
     return pd.Series(vectors[key], index=YEARS) if key in vectors else None
 
 
 def realised_abatement_cost(run):
-    """What the scenario actually pays per tonne it actually abates, year by year.
+    """What the scenario pays per tonne it abates, year by year, on the objective's basis.
 
-    Numerator is the annual welfare cost against the run's matched fossil BAU --
-    consumer surplus (``area_loss``) plus airline cost, which is what
-    ``cumulative_total_surplus_loss`` sums -- and the denominator is the CO2 that BAU
-    would have emitted and this run does not.
+    Both halves are measured against the *same* counterfactual the objective uses: the
+    last-historical-year technological level flown at the baseline traffic growth.
 
-    Airline cost alone will not do. Where demand responds, part of the abatement comes
-    from flights that no longer happen: that costs consumers rather than airlines, so
-    an airline-cost numerator prices it at almost nothing and reports the baseline at
-    58 EUR/tCO2 against 316 for fixed demand. On the welfare basis the two sit at 267
-    and 316, which is the honest comparison.
+    * Numerator ``area_loss + total_airline_cost_increase`` -- exactly the pair that
+      ``cumulative_total_surplus_loss`` sums, undiscounted and un-cumulated.
+      ``total_airline_cost_increase`` is measured against
+      ``total_cost_per_rpk[2019] * rpk_no_elasticity``, and ``area_loss`` integrates the
+      demand curve from ``rpk`` up to ``rpk_no_elasticity``, so the reference state is
+      "2019 unit cost, baseline traffic" for both terms.
+    * Denominator ``co2_emissions_last_historical_year_technology_baseline3`` minus what
+      the run emits. That series is ``rpk_reference`` (which is ``rpk_no_elasticity``,
+      verified identical) at frozen 2019 energy-per-ASK, load factor and emission
+      factor -- the emissions of that very same reference state.
 
-    This is a realised average, not a marginal cost: it is the whole policy divided by
-    the whole abatement, so it is not comparable with the per-fuel figures in the
-    Block C panel, which are marginal against fossil kerosene.
+    An earlier version differenced both halves against the run's matched fossil BAU
+    instead. That is self-consistent too, but it answers a different question -- what the
+    *mandate alone* costs, holding the efficiency and operational improvements fixed --
+    and it is not the objective's basis. It also reported 261-366 EUR/tCO2 where this
+    reads -253 to +8, because the fossil BAU already contains every non-fuel improvement
+    and so credits the scenario with only 90 MtCO2 of 2050 abatement against this
+    baseline's 204.
+
+    The sign is informative rather than a defect: through most of the period the scenario
+    is both cheaper and cleaner than a world that froze in 2019, so the cost per tonne is
+    negative. It turns positive only once the mandate is carrying the abatement on its
+    own.
+
+    This is a realised average, not a marginal cost: the whole scenario divided by the
+    whole abatement, so it is not comparable with the per-fuel figures in the Block C
+    panel, which are marginal against fossil kerosene.
     """
-    from run_batch import RUNS
-    from run_references import reference_key
+    area = series(run, "area_loss")
+    if area is None:  # the no-feedback formulation has no surplus term
+        area = pd.Series(0.0, index=YEARS)
+    cost = area + series(run, "total_airline_cost_increase")
 
-    reference = reference_key(RUNS[run])
-
-    def welfare(name):
-        area = series(name, "area_loss")
-        if area is None:  # the no-feedback formulation has no surplus term
-            area = pd.Series(0.0, index=YEARS)
-        return area + series(name, "total_airline_cost")
-
-    def emissions(name):
-        return series(name, "co2_emissions_passenger") + series(name, "co2_emissions_freight")
-
-    abated = (emissions(reference) - emissions(run)) * 1e6  # MtCO2 -> tCO2
-    return (welfare(run) - welfare(reference)) / abated.where(abated > 0)
+    baseline = series(run, "co2_emissions_last_historical_year_technology_baseline3")
+    emitted = series(run, "co2_emissions_passenger") + series(run, "co2_emissions_freight")
+    abated = (baseline - emitted) * 1e6  # MtCO2 -> tCO2
+    return cost / abated.where(abated > 0)
 
 
 def _frame(axis):
@@ -94,7 +117,7 @@ def _frame(axis):
 PANELS = [
     ("a. Air traffic", "RPK  [trillion pkm]"),
     ("b. Residual CO2 emissions", "annual  [MtCO2]"),
-    ("c. Cost per tonne of CO2 abated", "EUR/tCO2, welfare basis"),
+    ("c. Cost per tonne of CO2 abated", "EUR/tCO2 vs frozen-2019 baseline"),
     ("d. Biofuel mandate", "share of drop-in blend  [%]"),
     ("e. Electrofuel mandate", "share of drop-in blend  [%]"),
     ("f. Alternative fuel consumed", "biofuel + electrofuel  [EJ/yr]"),
@@ -202,7 +225,7 @@ def ramp_up():
     six_panels(
         cases,
         "Industrial ramp-up limits set the mandate, not the carbon budget",
-        "Blocks B and B'. Case main, eps -0.9, biomass 10 %, same 3.8616 GtCO2 budget. "
+        "Blocks B and B'. Case main, eps -0.9, biomass 10 %, same 3.8656 GtCO2 budget. "
         "Rate variants solid, volume variants dashed; warm is tighter than baseline, cool looser.",
         "ramp-up limit",
         "fig_rampup_panels",
@@ -210,12 +233,21 @@ def ramp_up():
     )
 
 
-def abatement_cost(run, pathway_name):
-    """EUR per tCO2 abated against fossil kerosene, year by year.
+def abatement_cost(run, pathway_name, discounted=True):
+    """EUR per tCO2 abated against fossil kerosene, year by year, discounted to 2020.
 
     (MFSP_fuel - MFSP_kerosene) / (EF_kerosene - EF_fuel), in EUR/MJ over gCO2/MJ,
     scaled to EUR/tCO2. Both pathways carry zero resource cost and zero resource
     emissions in this configuration, so the "without_resource" series are the totals.
+
+    The numerator is discounted at the run's own ``social_discount_rate`` and the tonnes
+    are not, which is exactly the trade-off the optimiser faces: the objective is a
+    *discounted* sum of costs, while G1 caps an *undiscounted* cumulative sum of
+    emissions. A tonne abated in 2050 relieves the budget by the same amount as a tonne
+    abated in 2030, but the euros that buy it are worth 1/(1.045)^30 = 0.27 of a 2030
+    euro. Undiscounted, this panel says electrofuel is dearer than biofuel in every year
+    and the schedule looks arbitrary; discounted, the two curves are directly rankable
+    and cheap-but-late competes with dear-but-early on the optimiser's own terms.
 
     Where the denominator is not positive the fuel abates nothing -- it emits at or
     above kerosene -- and no cost per tonne exists. Those years come back as NaN and
@@ -229,7 +261,7 @@ def abatement_cost(run, pathway_name):
     abated = kerosene_factor - fuel_factor  # gCO2 per MJ
     premium = fuel_price - kerosene_price  # EUR per MJ
     cost = (premium / abated.where(abated > 0)) * 1e6
-    return cost
+    return cost * discount_factor(run) if discounted else cost
 
 
 def pathway():
@@ -237,8 +269,8 @@ def pathway():
 
     Panels (a) and (b) are the swapped inputs, (c) turns them into an abatement cost,
     and the bottom row is what the optimiser did with them. Putting the three side by
-    side is the argument: the pathway is transformed, its abatement cost roughly halves,
-    and the schedule does not move.
+    side is the argument: the pathway is transformed, its abatement cost falls by 40 % or
+    more, and the optimiser defers early biofuel to buy the abatement back with it later.
     """
     figure, axes = plt.subplots(2, 3, figsize=(15.5, 8.0))
     for axis in axes.ravel():
@@ -265,7 +297,10 @@ def pathway():
         bio = series(run, "generic_biofuel_mandate_share").loc[SPAN]
         biofuel.plot(bio.index, bio, **kwargs)
 
-    # Biofuel is the same in both runs and is the thing electrofuel is competing with.
+    # The biofuel *cost* curve is identical in both runs -- same MFSP, same emission
+    # factor, verified -- so one line serves for both. What the two runs do with it is
+    # not identical at all: see panel (f). Discounted, biofuel also competes with itself
+    # at every other date, which is why the dotted line slopes.
     biofuel_mac = abatement_cost("base", "generic_biofuel").loc[SPAN]
     mac.plot(biofuel_mac.index, biofuel_mac, color="#8c510a", lw=2.0, ls=(0, (1, 1.4)))
 
@@ -285,7 +320,7 @@ def pathway():
     mac.annotate(
         f"baseline electrofuel abates\nnothing before {first}: it emits\nmore than the kerosene it replaces",
         xy=(first, 0.55),
-        xytext=(first + 1.2, 0.60),
+        xytext=(2031.5, 0.79),
         textcoords=("data", "axes fraction"),
         fontsize=8.5,
         color=MUTED,
@@ -298,12 +333,20 @@ def pathway():
         fontsize=9,
         color="#8c510a",
     )
-    mac.set_ylim(0, 2200)
+    # Discounted, the interesting comparison is across dates, not within one: biofuel is
+    # flat at 380 EUR/tCO2 undiscounted, so its discounted curve decays, and the question
+    # is whether late electrofuel undercuts early biofuel. Clip to the band where that is
+    # legible; the first electrofuel years run off the top and are covered by the note.
+    mac.set_ylim(0, 1200)
 
     for axis, panel_title, ylabel in [
         (factor, "a. INPUT: electrofuel emission factor", "gCO2/MJ  [log scale]"),
         (price, "b. INPUT: electrofuel production cost", "EUR/GJ"),
-        (mac, "c. Cost per tonne of CO2 abated", "EUR/tCO2 vs fossil kerosene"),
+        (
+            mac,
+            "c. Discounted cost per tonne of CO2 abated",
+            "EUR(2020)/tCO2 vs fossil kerosene",
+        ),
         (electrofuel, "d. OUTPUT: electrofuel mandate", "share of drop-in blend  [%]"),
         (consumed, "e. OUTPUT: electrofuel consumed", "EJ/yr"),
         (biofuel, "f. OUTPUT: biofuel mandate", "share of drop-in blend  [%]"),
@@ -319,7 +362,7 @@ def pathway():
             color="#8c510a",
             lw=2.0,
             ls=(0, (1, 1.4)),
-            label="biofuel (identical in both runs)",
+            label="biofuel (same cost curve in both runs)",
         )
     )
     figure.legend(
@@ -333,7 +376,8 @@ def pathway():
         bbox_to_anchor=(0.5, -0.005),
     )
     figure.suptitle(
-        "Dedicated-wind electrofuel: cheaper, cleaner, half the abatement cost -- and no earlier",
+        "Dedicated-wind electrofuel cuts the abatement cost by 40 % or more, and the "
+        "optimiser rebuilds the schedule around it",
         x=0.006,
         ha="left",
         fontsize=13,
@@ -343,7 +387,8 @@ def pathway():
         0.006,
         0.935,
         "Block C. Both input trajectories are swapped and G4, the shared electricity "
-        "allocation, is dropped entirely rather than relaxed.",
+        "allocation, is dropped entirely rather than relaxed. Electrofuel reaches 49 % of "
+        "the blend against 14 %, and early biofuel is held back to pay for it.",
         ha="left",
         fontsize=9,
         color=MUTED,
@@ -521,7 +566,7 @@ def summary():
     figure.text(
         0.006,
         0.930,
-        "Fourteen optimisations, all meeting the same 3.8616 GtCO2 budget. Dotted line "
+        "Fourteen optimisations, all meeting the same 3.8656 GtCO2 budget. Dotted line "
         "and hollow marker are the baseline; policy cost is measured against a fossil "
         "BAU run sharing the run's elasticity and discount rate.",
         ha="left",
