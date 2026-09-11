@@ -38,7 +38,7 @@ CASES = [
     ("-1.4", "eps_m1_4", "#08306b"),
 ]
 INK, MUTED, GRID = "#1a1a1a", "#6b6b6b", "#e2e2e2"
-SPAN = slice(2020, 2050)
+SPAN = slice(2019, 2050)  # as in plot_sensitivities: anchored on 2019
 
 
 def series(run, key):

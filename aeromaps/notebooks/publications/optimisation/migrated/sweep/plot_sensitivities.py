@@ -27,7 +27,11 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
 YEARS = list(range(2000, 2051))
-SPAN = slice(2020, 2050)
+# Every time axis starts in 2019: the last historical year, and the state the objective,
+# the airfare anchor and the frozen-2019 emissions baseline are all measured against.
+# Starting in 2020 would open every panel on the COVID year instead.
+SPAN = slice(2019, 2050)
+YEAR_TICKS = [2019, 2025, 2030, 2035, 2040, 2045, 2050]
 PROSPECTION_START_YEAR = 2020  # the year the objective discounts to
 INK, MUTED, GRID = "#1a1a1a", "#6b6b6b", "#e2e2e2"
 
@@ -226,6 +230,8 @@ def sensitivity_panels(cases, title, subtitle, legend_title, stem, annotate=None
         volume.plot(aaf.index, aaf / 1e12, **kwargs)
 
     _cost_row(cost_row, cases)
+    for axis in axes.ravel():
+        axis.set_xticks(YEAR_TICKS)
 
     if annotate:
         annotate(axes)
@@ -400,6 +406,8 @@ def pathway():
         color="#8c510a",
     )
     _cost_row(cost_row, cases)
+    for axis in axes.ravel():
+        axis.set_xticks(YEAR_TICKS)
 
     # Discounted, the interesting comparison is across dates, not within one: biofuel is
     # flat at 380 EUR/tCO2 undiscounted, so its discounted curve decays, and the question
