@@ -178,7 +178,7 @@ def run_reference(kind):
         process.parameters.generic_electrofuel_mandate_share_values_fixed = electrofuel[:split]
         R.set_mandate(process, biofuel=biofuel[split:], electrofuel=electrofuel[split:])
     elif kind == "fossil":
-        process.parameters.generic_biofuel_mandate_share_values_fixed = [0.0, 0.0]
+        process.parameters.generic_biofuel_mandate_share_values_fixed = [0.0, 0.0, 0.0]
         process.parameters.generic_electrofuel_mandate_share_values_fixed = [0.0, 0.0]
         R.set_mandate(process, biofuel=[0.0] * 5, electrofuel=[0.0] * 5)
     else:

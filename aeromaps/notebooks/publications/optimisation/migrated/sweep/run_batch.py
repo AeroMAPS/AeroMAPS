@@ -56,14 +56,20 @@ ROWS = HERE / "rows"
 # The fixed framing
 # --------------------------------------------------------------------------- #
 
-# ReFuelEU (linear) at eps_P = -0.9: cumulative 2020-2050 CO2 of 3.8615905850 GtCO2 on
-# the EU perimeter, against a world gross budget of 799.1892711816 GtCO2. That is
-# 0.483188491672 % of the world budget; ``build_process`` takes the share *before* the
-# EU downscaling, hence the division by EU_ASK_SHARE.
+# ReFuelEU (linear) at eps_P = -0.9: cumulative 2020-2050 CO2 on the EU perimeter,
+# against a world gross budget of 799.1892711816 GtCO2. ``build_process`` takes the share
+# *before* the EU downscaling, hence the division by EU_ASK_SHARE.
 #
-# ``preflight.py`` recomputes this from the reference run and fails if it has moved.
-BUDGET_WORLD_SHARE = 3.119357596335
-BUDGET_GTCO2 = 3.8615905850289276
+# ``preflight.py`` recomputes this from the reference run and says so if it has moved.
+#
+# It moved when the mandate's first obligation became a step at 2025 rather than a
+# linear phase-in from 2020, which stopped the reference abating 4.06 MtCO2 in four years
+# the regulation obliges nothing -- abatement that lowered the ceiling for every run
+# rather than buying any of them headroom. (The ramp-up correction cannot move it: this
+# is the cumulative CO2 of an MDA, and constraints do not enter one.) Earlier values,
+# for reference: 3.119357596335 % / 3.8615905850289276 GtCO2.
+BUDGET_WORLD_SHARE = 3.122636344
+BUDGET_GTCO2 = 3.8656495
 
 BIOMASS_SHARE = 10.0  # % of world biomass allocated to aviation (was 9.90)
 

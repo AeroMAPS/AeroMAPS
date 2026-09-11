@@ -88,7 +88,7 @@ def run_reference(key):
     # Fossil BAU: no mandate at all. The 2025 leading entry is zeroed along with the
     # design years -- leaving biofuel at 2 % in 2025 and 0 % after would take its
     # pathway share from positive back to zero, the 0/0 that kills the MDA on NaN.
-    process.parameters.generic_biofuel_mandate_share_values_fixed = [0.0, 0.0]
+    process.parameters.generic_biofuel_mandate_share_values_fixed = [0.0, 0.0, 0.0]
     process.parameters.generic_electrofuel_mandate_share_values_fixed = [0.0, 0.0]
     R.set_mandate(process, biofuel=[0.0] * 5, electrofuel=[0.0] * 5)
 

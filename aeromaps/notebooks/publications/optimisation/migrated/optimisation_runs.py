@@ -145,8 +145,29 @@ def build_process(case="main", config="config_rte.yaml", optimisation=False, car
             [settings["efficiency_gain"]],
         )
 
-    # Fixed leading mandate entries (2020, 2025); later years are the design variables.
-    process.parameters.generic_biofuel_mandate_share_values_fixed = [0.0, 2.0]
+    # Fixed leading mandate entries; later years are the design variables.
+    #
+    # The 2024 anchor at zero is what makes ReFuelEU's first obligation a step rather
+    # than a ramp. The mandate is interpolated linearly between reference years, so
+    # [2020, 2025] = [0, 2] silently phases biofuel in from 2021 -- 0.4, 0.8, 1.2, 1.6 %
+    # -- across four years in which the regulation obliges nothing. It is 2 % from
+    # 1 January 2025, full stop.
+    #
+    # That mattered out of proportion to its size, because the ReFuelEU scenario is not
+    # only a comparison point: the carbon budget of the sensitivity blocks is *defined*
+    # as its cumulative 2020-2050 CO2. The phantom biofuel abated 4.06 MtCO2 inside the
+    # run that sets the ceiling, so it lowered the ceiling for every other run rather
+    # than buying them headroom -- 3.86159 GtCO2 against a true 3.86565, a budget
+    # 0.105 % tighter than the regulation implies.
+    #
+    # Electrofuel needs no such anchor: it is zero at both 2020 and 2025, so linear
+    # interpolation between them is already flat.
+    process.parameters.generic_biofuel_mandate_share_years = [
+        2020,
+        2024,
+        2025,
+    ] + OPTIM_YEARS
+    process.parameters.generic_biofuel_mandate_share_values_fixed = [0.0, 0.0, 2.0]
     process.parameters.generic_electrofuel_mandate_share_values_fixed = [0.0, 0.0]
     return process
 
@@ -647,7 +668,7 @@ def run_reference(case, kind="refueleu", config="config_rte.yaml", resume=True):
     if kind == "refueleu":
         set_mandate(process, **REFUELEU_MANDATE)
     elif kind == "fossil":
-        process.parameters.generic_biofuel_mandate_share_values_fixed = [0.0, 0.0]
+        process.parameters.generic_biofuel_mandate_share_values_fixed = [0.0, 0.0, 0.0]
         process.parameters.generic_electrofuel_mandate_share_values_fixed = [0.0, 0.0]
         set_mandate(process, biofuel=[0.0] * 5, electrofuel=[0.0] * 5)
     else:
