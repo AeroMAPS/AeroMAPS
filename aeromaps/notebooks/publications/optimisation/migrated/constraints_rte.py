@@ -2,7 +2,8 @@
 
 Adapted from publications/ecats_2026/energy_constraints.py. The difference that
 matters: the paper's ramp-up (Eq. 12) is the *least constraining* of a rate and a
-volume limit, max{E_{t-1}(1+tau)^dt, dE*dt}; ecats implements the rate branch only.
+volume limit, max{E_{t-1}(1+tau)^dt, E_{t-1} + dE*dt}; ecats implements the rate branch
+only.
 
 G1 (carbon budget) comes from the core CarbonBudgetConstraint via models_optim_complex.
 """
@@ -129,19 +130,34 @@ EJ_PER_YEAR_TO_MJ = 1e12
 def _ramp_up_violation(consumption, enforcement_years, rate, volume):
     """Paper Eq. (12): the least constraining of the rate and volume limits.
 
-    The violation is normalised by a *constant* reference -- the volume cap, which is
-    a fixed parameter -- rather than by the consumption itself.
+        E_t <= max{ E_{t-1} (1 + tau)^dt ,  E_{t-1} + dE dt }
 
-    Dividing by ``current`` leaves the feasible set untouched (the denominator is
-    strictly positive, so the sign of the constraint never changes) but costs twice
-    over: it turns an otherwise nearly-linear constraint into a nonlinear one, and its
-    derivative grows without bound as consumption approaches zero. Measured on the
-    ReFuelEU point, that put the 2030 electrofuel row at roughly 600x the norm of every
-    other constraint row, purely because electrofuel starts near zero there.
+    Both branches are *increments* on the previous period's consumption. The rate branch
+    compounds it; the volume branch adds a fixed industrial capacity addition. The max
+    takes whichever is more permissive, which is what "the least constraining of the two"
+    means.
 
-    The volume cap is the right scale as well as a stable one: it is the industrial
-    capacity-addition the scenario grants per period, so a violation of 1.0 reads as
-    "one period of capacity additions beyond what is allowed".
+    ``dE`` is a change in E, so the volume branch has to sit on top of ``E_{t-1}``. An
+    earlier version of this function read the term as an absolute ceiling, ``dE dt``
+    alone. That is wrong twice over: it under-constrains a pathway starting from zero
+    (which may jump straight to dE dt in one period) and over-constrains every mature
+    one, because once E_{t-1} exceeds dE dt the volume branch can never be the max again
+    and the limit silently degenerates into a pure rate constraint. Measured on the
+    ReFuelEU-budget optimum, the two readings disagree only in 2030 -- the one year the
+    volume branch binds -- where the absolute form pinned biofuel at 0.1549 EJ against a
+    true cap of 0.1910 EJ.
+
+    The violation is normalised by ``volume * dt``, the industrial capacity-addition the
+    scenario grants per period. That is a *constant* with respect to the design
+    variables, so a violation of 1.0 reads as "one period of capacity additions beyond
+    what is allowed" in every year and every run.
+
+    Normalising by ``current`` instead would leave the feasible set untouched -- the
+    denominator is strictly positive, so the sign never changes -- but costs twice over:
+    it turns a nearly-linear constraint into a nonlinear one, and its derivative grows
+    without bound as consumption approaches zero. Measured on the ReFuelEU point, that
+    put the 2030 electrofuel row at roughly 600x the norm of every other constraint row,
+    purely because electrofuel starts near zero there.
     """
     out = []
     check_years = [enforcement_years[0] - 5] + list(enforcement_years)
@@ -150,11 +166,10 @@ def _ramp_up_violation(consumption, enforcement_years, rate, volume):
         dt = year - lookback
         previous = consumption.loc[lookback]
         current = consumption.loc[year]
-        rate_cap = previous * (1 + rate) ** dt
-        volume_cap = volume * dt * EJ_PER_YEAR_TO_MJ
-        cap = max(rate_cap, volume_cap)
+        allowance = volume * dt * EJ_PER_YEAR_TO_MJ
+        cap = max(previous * (1 + rate) ** dt, previous + allowance)
         # Constant w.r.t. the design variables; varies by year only through dt.
-        out.append((current - cap) / volume_cap)
+        out.append((current - cap) / allowance)
     return out
 
 

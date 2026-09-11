@@ -63,13 +63,19 @@ EJ_PER_YEAR_TO_MJ = 1e12
 
 
 def _ramp(consumption, rate, volume):
-    """G5/G6 exactly as ``constraints_rte._ramp_up_violation`` computes them."""
+    """G5/G6 exactly as ``constraints_rte._ramp_up_violation`` computes them.
+
+    Both branches are increments on the previous period: the volume term is a capacity
+    *addition*, so it sits on top of ``E_{t-1}`` rather than replacing it.
+    """
     out, check_years = {}, [OPTIM_YEARS[0] - 5] + list(OPTIM_YEARS)
     for year in OPTIM_YEARS:
         lookback = year - 5 if (year - 5) in check_years else year - 10
         dt = year - lookback
-        cap = max(consumption.loc[lookback] * (1 + rate) ** dt, volume * dt * EJ_PER_YEAR_TO_MJ)
-        out[year] = (consumption.loc[year] - cap) / (volume * dt * EJ_PER_YEAR_TO_MJ)
+        previous = consumption.loc[lookback]
+        allowance = volume * dt * EJ_PER_YEAR_TO_MJ
+        cap = max(previous * (1 + rate) ** dt, previous + allowance)
+        out[year] = (consumption.loc[year] - cap) / allowance
     return pd.Series(out)
 
 
