@@ -93,6 +93,11 @@ from aeromaps.plots.single_scenario.costs_generic import (
     ScenarioEnergyCapitalPlot,
 )
 
+from aeromaps.plots.single_scenario.offsets_generic import (
+    CarbonOffsetByCategoryPlot,
+    CarbonOffsetBySchemePlot,
+    CarbonOffsetExpenseBySchemePlot,
+)
 from aeromaps.plots.single_scenario.operations_generic import (
     OperationsGainByConceptPlot,
     OperationsGainByCategoryPlot,
@@ -158,6 +163,10 @@ available_plots = {
     "biofuel_mix": BiofuelMixPlot,
     "drop_in_shares_breakdown": DropInSharesBreakdownPlot,
     # Generic operations-manager-driven plots
+    # Generic offsets-manager-driven plots
+    "carbon_offset_by_scheme": CarbonOffsetBySchemePlot,
+    "carbon_offset_by_category": CarbonOffsetByCategoryPlot,
+    "carbon_offset_expense_by_scheme": CarbonOffsetExpenseBySchemePlot,
     "operations_gain_by_concept": OperationsGainByConceptPlot,
     "operations_gain_by_category": OperationsGainByCategoryPlot,
     "operations_contrails_gain_by_concept": OperationsContrailsGainByConceptPlot,

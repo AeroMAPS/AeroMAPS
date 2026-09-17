@@ -77,6 +77,15 @@ from aeromaps.models.impacts.generic_operations_model.common.operations_factory 
     OperationsFactory,
 )
 
+# Generic offsets models imports
+from aeromaps.models.impacts.generic_offsets_model.common.offsets_manager import (
+    OffsetSchemeManager,
+    OffsetSchemeMetadata,
+)
+from aeromaps.models.impacts.generic_offsets_model.common.offsets_factory import (
+    OffsetsFactory,
+)
+
 # TODO: investigate if this should be handle in a model layer
 # Markets registry
 from aeromaps.models.air_transport.markets.market import Market
@@ -269,6 +278,9 @@ class AeroMAPSProcess(object):
 
         # Initialize operations_manager to None - will be populated if generic operations models are used
         self.operations_manager = None
+
+        # Initialize offsets_manager to None - will be populated if generic offsets models are used
+        self.offsets_manager = None
 
         custom_logger_config(logging.getLogger("gemseo.utils.source_parsing"))
 
@@ -473,6 +485,7 @@ class AeroMAPSProcess(object):
         self._initialize_lca_model()
         self._initialize_generic_energy()
         self._initialize_operations()
+        self._initialize_offsets()
         self._initialize_vector_inputs()
 
         # Fail loudly on stale `_2019` config keys (renamed when prospection_start_year
@@ -1842,6 +1855,82 @@ class AeroMAPSProcess(object):
             OperationsFactory.instantiate_operations_models(
                 self.operations_data, self.operations_manager
             )
+        )
+
+    def _initialize_offsets(self):
+        """Initialize generic offsetting schemes.
+
+        Reads the offsetting scheme configurations, builds scheme metadata, flattens
+        and interpolates the per-scheme inputs (quantity rule and price), and uses
+        the ``OffsetsFactory`` to create the model that computes each scheme's offset
+        quantity and expense and sums them into the aggregates (``carbon_offset``,
+        ``carbon_offset_price``, ``noc_carbon_offset_per_ask``). The generic model
+        replaces the simple offset models and the single-price offset cost model, so
+        those are removed from the models dictionary.
+        Skipped if the models.offsets key is not present in the user configuration.
+        """
+        offsets_config = self._get_user_config_value("models", "offsets", default=None)
+        if offsets_config is None:
+            return
+
+        offsets_data_file_path = self._resolve_config_path(
+            "models",
+            "offsets",
+            "offsets_model_data_file",
+            default_filename="default_offsets/offsets_data.yaml",
+        )
+
+        self.offsets_data = read_yaml_file(str(offsets_data_file_path))
+
+        # The first level of the yaml conf file contains all the offsetting schemes
+        schemes = list(self.offsets_data.keys())
+
+        self.offsets_manager = OffsetSchemeManager()
+
+        for scheme in schemes:
+            scheme_data = self.offsets_data[scheme]
+            if "name" not in scheme_data:
+                raise ValueError("The offsetting scheme configuration file should contain its name")
+            if "inputs" not in scheme_data or "quantity" not in scheme_data["inputs"]:
+                raise ValueError(
+                    "The offsetting scheme configuration file should contain inputs with a quantity rule"
+                )
+
+            inputs = scheme_data["inputs"]
+            quantity = dict(inputs["quantity"])
+            # The mode is metadata, not an interpolated input.
+            self.offsets_manager.add(
+                OffsetSchemeMetadata(
+                    name=scheme,
+                    category=scheme_data.get("category"),
+                    quantity_mode=quantity.pop("mode", None),
+                )
+            )
+            inputs["quantity"] = quantity
+
+            # Flatten each block's inputs with a "<scheme>_<block>" prefix and interpolate.
+            for block, value in inputs.items():
+                flattened_yaml = _flatten_dict(value, f"{scheme_data['name']}_{block}")
+                inputs[block] = self._convert_custom_data_types(flattened_yaml)
+                self.parameters.from_dict(inputs[block])
+
+            scheme_data["inputs"] = inputs
+            self.offsets_data[scheme] = scheme_data
+
+        # The generic offsets model is the single producer of the aggregate offset and
+        # its price, so drop the simple offset models and the single-price cost model.
+        self._remove_models(
+            {
+                "level_carbon_offset",
+                "residual_carbon_offset",
+                "manual_carbon_offset",
+                "carbon_offset",
+                "passenger_aircraft_noc_carbon_offset",
+            }
+        )
+
+        self.models.update(
+            OffsetsFactory.instantiate_offsets_models(self.offsets_data, self.offsets_manager)
         )
 
     def _initialize_climate_model(self):

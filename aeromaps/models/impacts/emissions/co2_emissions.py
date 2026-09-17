@@ -194,6 +194,20 @@ def operations_category_column(category: str) -> str:
     return f"co2_emissions_lever_operations_category_{category}"
 
 
+def offset_scheme_column(scheme: str) -> str:
+    """Output column holding the offset quantity of one offsetting scheme [MtCO2].
+
+    The carbon offset is the plain sum of its schemes, so these columns are the
+    sub-levers of the offsetting lever of the CO2 cascade with no residual term.
+    """
+    return f"co2_emissions_lever_offset_scheme_{scheme}"
+
+
+def offset_category_column(category: str) -> str:
+    """Output column holding the offset quantity of one category of schemes [MtCO2]."""
+    return f"co2_emissions_lever_offset_category_{category}"
+
+
 def _denoise(series: pd.Series, atol: float = 1e-9) -> pd.Series:
     """Snap negligible decomposition values (``|x| < atol`` MtCO2) to exactly zero.
 
