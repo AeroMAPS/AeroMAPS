@@ -582,6 +582,20 @@ def clear_market(inputs: ClearingInputs) -> ClearingOutputs:
     energy_price = -solved["energy_dual"] * to_current_price
     compliance_price = solved["mandate_dual"] * to_current_price
 
+    # Where the obligation is zero the mandate constraint reads `sum q_s + x >= 0`,
+    # which the variable bounds already guarantee. It is redundant, so the KKT system
+    # is degenerate there: the solver may hang the multiplier on the mandate instead of
+    # on the non-negativity bounds, and report a compliance price for an obligation
+    # that does not exist. Measured on the bench: up to 0.0112 per MJ in 2020-2023,
+    # about the whole cost of kerosene, in years with no obligation at all. It is not
+    # harmless -- it flows into `marginal_price` and so into `market_mfsp` at any
+    # w > 0, and it makes the dual depend on how many regions were solved at once.
+    #
+    # Complying with nothing costs nothing. A dual solution with lambda_M = 0 always
+    # exists when the obligation is zero, so this restores the meaningful KKT value
+    # rather than overriding the solver.
+    compliance_price = np.where(inputs.mandate_share > 0, compliance_price, 0.0)
+
     rampup_price = np.zeros((regions * pathways, years))
     if solved["rampup_dual"] is not None:
         # to_current_price is (1, T), so it broadcasts over the sustainable rows.

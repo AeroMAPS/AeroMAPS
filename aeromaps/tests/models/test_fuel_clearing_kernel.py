@@ -566,3 +566,27 @@ def test_solve_time_is_reported(regions, pathways, years, capsys):
             f"solve {outputs.diagnostics['solve_seconds']:.3f}s, wall {wall:.3f}s"
         )
     assert wall < 60.0
+
+
+def test_no_compliance_price_where_there_is_no_obligation():
+    """A zero obligation must cost zero to comply with.
+
+    Where ``mandate_share`` is 0 the constraint is ``sum q_s + x >= 0``, which the
+    variable bounds already give -- redundant, so the dual is degenerate and the solver
+    may report a price for an obligation that does not exist. Measured on the real
+    bench before the fix: 0.0112 per MJ in a year with no obligation, roughly the whole
+    cost of kerosene, which then flowed into ``market_mfsp`` at any w > 0.
+    """
+    years = 12
+    mandate = np.linspace(0.0, 0.5, years)
+    mandate[:4] = 0.0  # a genuine no-obligation window, as ReFuelEU has before 2025
+    outputs = clear_market(_multi_year_case(mandate_share=mandate[None, :]))
+
+    assert np.all(outputs.compliance_price[0, :4] == 0.0)
+    # And the marginal price of the sustainable pathway falls back to the energy price
+    # alone there, instead of carrying a phantom premium.
+    np.testing.assert_allclose(
+        outputs.marginal_price[0, 0, :4], outputs.energy_price[0, :4], rtol=1e-12
+    )
+    # The obligation still prices where it exists.
+    assert outputs.compliance_price[0, 4:].max() > 0

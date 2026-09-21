@@ -79,6 +79,54 @@ divergence to report, not something to resolve silently. It does not affect test
 
 ---
 
+## 2b. The two regions do not interact, and a phantom price that came out of asking why
+
+**Where the regional difference comes from.** Nothing in the brief specifies it. The
+bench is inherited from the spike scenario, where the two regions differ in exactly one
+input: traffic growth, 3.0 %/yr against 4.5 %/yr (`markets.yaml`, five CAGR values).
+`parameters.json` is byte-identical and both regions read the same carriers file, so
+they get the *same* obligation in percent. Volumes then differ only through demand,
+and exactly so — the region-B/region-A volume ratio equals the demand ratio to four
+decimals in every year (1.0906 in 2030, 1.2603 in 2040, 1.4563 in 2050).
+
+**At step 1 the market is global in plumbing, not in economics.** Every constraint is
+per region — the energy balance, the mandate, the ramp-up, the capacity — and the
+objective is a plain sum over regions. Nothing couples them. Verified: solving both
+regions in one call and solving them one at a time agree to solver noise
+(volumes 1.9e-9, energy price 9.6e-10, `market_mfsp` exactly 0).
+
+That is correct per the brief, which puts inter-regional flows out of scope, but it is
+worth stating: the global-discipline machinery from the spike is justified by what
+comes *later* (shared feedstock, trade, book-and-claim), not by anything step 1 does.
+Today a per-region discipline would give identical numbers.
+
+### 2b.1 A phantom compliance price, found by asking the above
+
+The decomposition check initially disagreed on the compliance price by 8e-3 relative.
+The cause was not coupling. Where the obligation is zero, the mandate constraint reads
+`Σ q_s + x ≥ 0`, which the variable bounds already guarantee — **redundant**, so the
+KKT system is degenerate and the solver may hang the multiplier on the mandate rather
+than on the non-negativity bounds.
+
+Measured on the bench, region A, in years with **no obligation at all**:
+
+| year | 2020 | 2021 | 2022 | 2023 | 2024 |
+|---|---|---|---|---|---|
+| obligation | 0 % | 0 % | 0 % | 0 % | 0 % |
+| compliance price, before | **0.01118** | 0.00769 | 0.00212 | 0.00556 | 0.0 |
+
+0.0112 EUR/MJ is about the entire cost of kerosene. Not harmless: `marginal_price =
+λ_E + λ_M`, so it inflated `market_mfsp` at any `w > 0`, and it made the dual depend
+on how many regions were solved at once.
+
+Fixed by zeroing the compliance price wherever the obligation is zero — complying with
+nothing costs nothing, and a dual solution with `λ_M = 0` always exists when the
+constraint is redundant, so this restores the meaningful KKT value rather than
+overriding the solver. Regression test added. Afterwards the joint-vs-separate gap on
+the compliance price falls from 8e-3 to **6.6e-7**.
+
+---
+
 ## 3. The bench
 
 Two regions differing only in traffic growth (3.0 % and 4.5 % CAGR), `unified_mda`,
