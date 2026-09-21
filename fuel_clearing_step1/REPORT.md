@@ -217,7 +217,48 @@ One real discontinuity was found and is excluded from that test on purpose: at a
 character and the price moves by a real step (7.2× the sweep step at `n = 2`). That is
 a property of the market, not a defect.
 
-### 5.4 Measured timings (3.3.j)
+### 5.4 Sensitivities, and where the formulation stops solving
+
+`sensitivity.py` sweeps each major parameter around a baseline that binds
+(`n=4`, `γ=1`, `g=0.30/yr`, `w=0`, buy-out 0.05, discount 4 %, capacity 2.5× the
+obligation). Region A, 2050 delivered price:
+
+| parameter | swept over | spread in delivered price |
+|---|---|---|
+| pricing weight `w` | 0 → 1 | **37.3 %** |
+| stiffness `n` | 1 → 16 | **15.9 %** |
+| ramp-up `g` | 0.10 → 1.20 /yr | 3.8 % |
+| intensity `γ` | 0 → 4 | 0.4 % |
+| buy-out | 0.02 → 0.30 | 0.0 % |
+| discount rate | 0 → 0.08 | 0.0 % |
+
+`w` dominates, which is the point of decision 10 — it is a scenario lever, not a
+calibration constant. The buy-out and the discount rate leave the *delivered price*
+untouched at this baseline, although the buy-out sets the compliance price wherever it
+binds; they move the policy cost, not the fuel bill.
+
+**`γ`'s 0.4 % is misleading in isolation**, and the `(γ, n)` map explains why: at
+`w = 0` and `n = 4`, γ from 0.25 to 1 moves the uplift only 0 → 0.4 %, because
+`q/K ≈ 0.8` and `(q/K)^4` is already small. At `n = 1` the same γ range moves it
+4 → 16 %. The two saturation parameters are not separable.
+
+**Capacity sized on the obligation is undersized once the market anticipates.** With
+1.25× headroom and a binding ramp-up, pre-building pushes `q/K` to **1.97** between
+steps. Saturation then disciplines the pre-building — with `γ = 1` the market builds
+less far ahead (peak `q/K` 1.29 rather than 1.97) — but the bench needed 2.5× headroom
+before the sweeps would run.
+
+**Half the `(γ, n)` grid does not solve.** 18 of 36 cells fail outright: everything
+with `n ≥ 4` above `γ = 1`, and everything with `n ≥ 8` above `γ = 0.25`. This is not a
+tolerance trade-off — Clarabel fails at 1e-9, 1e-8, 1e-7, 1e-6 and 1e-5 alike on
+`γ = 1, n = 8`. **The brief's measurement 4.5.1 grid is `n ∈ {2,4,6,8,12,16}`, most of
+which is unreachable at a saturation intensity that does anything.** Either the grid
+shrinks to `n ≤ 2` at useful `γ`, or the power term needs reformulating (rescaling
+`q/K`, or building the cone by hand rather than through `cp.power`) before 4.5.1 can
+run as written. This is the step-1 analogue of the convexity ceiling the spike found in
+the MDA, and it should be settled before J4's measurements, not during them.
+
+### 5.5 Measured timings (3.3.j)
 
 | case | solve |
 |---|---|
@@ -228,7 +269,7 @@ At 0.03 s per solve, a 200-iteration MDA spends about 6 s in the market. The 9×
 case at 0.5 s per solve would be 100 s per MDA, which is usable but not free — worth
 knowing before the regional extension.
 
-### 5.5 Figures
+### 5.6 Figures
 
 Regenerate all three with `poetry run python -m fuel_clearing_step1.figures`.
 
@@ -270,17 +311,27 @@ price equals the current mode's to **6.9e-9** relative, across both regions and 
 year. That is decision 10's claim, verified on the real chain's numbers rather than
 asserted.
 
-**`w` is inert unless the saturation term is active.** With `γ = 0`, `w = 0` and
-`w = 1` give the same delivered price to **1.1e-8** — they are not merely close, they
-are the same number. The reason is structural: with a flat marginal cost,
-`λ_E = c_k` and `λ_M = c_s − c_k`, so the sustainable pathway's marginal price is
-exactly `c_s`, which is also its average cost. Decision 10's blend has two identical
-endpoints.
+**`w` is inert only when nothing is scarce.** With `γ = 0` **and the ramp-up slack**,
+`w = 0` and `w = 1` give the same delivered price to **1.1e-8** — not merely close,
+the same number. With a flat marginal cost and no binding constraint, `λ_E = c_k` and
+`λ_M = c_s − c_k`, so the sustainable pathway's marginal price is exactly `c_s`, which
+is also its average cost, and decision 10's blend has two identical endpoints.
 
-This matters for measurement 4.5.1. The brief notes that stiffness `n` can only reach
-the traffic loop at `w > 0`; the converse is equally true and is not stated — **`w`
-can only reach it at `γ > 0`**. The two knobs are multiplicative, not independent, so
-a grid that varies them separately will find three-quarters of its cells inert.
+⚠️ **An earlier version of this section said "inert unless the saturation term is
+active", which is wrong.** Scarcity from the *ramp-up* does the same job. Measured at
+`γ = 0`, varying only the ramp-up limit:
+
+| `g` per year | 0.10 | 0.20 | 0.30 | 0.60 | 1.20 | loose |
+|---|---|---|---|---|---|---|
+| `w=1` vs `w=0` | **+137 %** | +64 % | +32 % | +26 % | 8e-11 | 4e-11 |
+
+When the ramp-up binds, the mandate cannot be met by building more now, so `λ_M` rises
+above `c_s − c_k` toward the buy-out, the marginal price leaves the average cost, and
+`w` becomes live with no saturation at all.
+
+The correct statement is: **`w` is live wherever there is scarcity rent, from either
+source.** For measurement 4.5.1 this still means `n` and `w` are not independent axes,
+but the inert region is smaller than "γ = 0" — it is "nothing binds".
 
 With saturation on (`γ = 1`, `n = 4`, capacity tracking the build-out at 1.25×), region A:
 
@@ -293,6 +344,8 @@ The first row is the saturation markup — a cost the current mode has no concep
 The second adds the inframarginal rent that marginal pricing passes to the consumer.
 A 33 % difference in the price that drives the demand loop is not a detail, and it is
 the reason `w` is a scenario lever rather than a calibration constant.
+
+**`figures/sensitivity_oat.png`** and **`figures/saturation_map.png`** — §5.4.
 
 **`figures/price_continuity.png`** — the compliance price against a mandate multiplier
 at `n ∈ {2, 4, 8, 16}`, beside the unmet obligation. The curves steepen with `n` and

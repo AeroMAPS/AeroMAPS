@@ -421,11 +421,19 @@ def pricing_vs_current(region=0, gamma=1.0):
     regions = len(bench["regions"])
 
     flat = _delivered(clear_market(_bench_inputs(bench, **loose)))
-    # w = 1 with saturation OFF. Lies exactly on the w = 0 curve, which is the point:
-    # with a flat marginal cost, average equals marginal for every pathway, so
-    # decision 10's blend has two identical endpoints and w cannot do anything.
+    # w = 1 with saturation OFF *and the ramp-up slack*. Lies exactly on the w = 0
+    # curve: with nothing scarce, average cost equals marginal price for every pathway
+    # and decision 10's blend has two identical endpoints.
     flat_marginal = _delivered(
         clear_market(replace(_bench_inputs(bench, **loose), pricing_weight=1.0))
+    )
+    # The same thing with saturation still OFF but the ramp-up BINDING. Now w is very
+    # much alive, because the ramp-up's own scarcity raises the compliance dual above
+    # c_s - c_k and so pushes the marginal price above the average cost. w is inert
+    # only when NOTHING is scarce -- not merely when gamma = 0.
+    tight = dict(rampup_limit=0.10, rampup_seed=float(bench["demand"].max()) * 0.005, buyout=0.05)
+    tight_marginal = _delivered(
+        clear_market(replace(_bench_inputs(bench, **tight), pricing_weight=1.0))
     )
     saturated = replace(
         _bench_inputs(bench, **loose),
@@ -494,10 +502,10 @@ def pricing_vs_current(region=0, gamma=1.0):
     axes[1].legend(frameon=False, fontsize=7.5, loc="upper left")
 
     for values, colour, style, label in (
-        (flat, "#1f77b4", "-", "w=0, no saturation"),
-        (flat_marginal, "#9467bd", (0, (2, 2)), "w=1, no saturation"),
-        (saturated_average, "#2ca02c", "-", "w=0, saturation"),
-        (saturated_marginal, "#d62728", "-", "w=1, saturation"),
+        (flat, "#1f77b4", "-", "w=0, nothing scarce"),
+        (flat_marginal, "#9467bd", (0, (2, 2)), "w=1, nothing scarce"),
+        (saturated_marginal, "#d62728", "-", "w=1, saturation scarce"),
+        (tight_marginal, "#ff7f0e", "-", "w=1, ramp-up scarce (gamma=0)"),
     ):
         axes[2].plot(
             years,
@@ -509,7 +517,7 @@ def pricing_vs_current(region=0, gamma=1.0):
         )
     axes[2].axhline(0, color="0.5", linewidth=1)
     axes[2].set_ylabel("difference vs current mode, %")
-    axes[2].set_title("w is inert until saturation is on")
+    axes[2].set_title("w bites wherever there is scarcity rent")
     axes[2].legend(frameon=False, fontsize=7.5, loc="upper left")
 
     for axis in axes:
@@ -525,7 +533,9 @@ def pricing_vs_current(region=0, gamma=1.0):
     inert = float(np.max(np.abs(flat_marginal - flat) / flat))
     print(f"wrote {target}")
     print(f"  w=0 no saturation vs current mode: max relative difference {worst_flat:.3e}")
-    print(f"  w=1 vs w=0 with saturation OFF:    max relative difference {inert:.3e} (w is inert)")
+    print(f"  w=1 vs w=0, nothing scarce:        max relative difference {inert:.3e} (w inert)")
+    live = float(np.max(np.abs(tight_marginal - flat) / flat))
+    print(f"  w=1 vs w=0, ramp-up scarce, gamma=0: max relative difference {live:.3e} (w live)")
     print(
         f"  2050, region {region}: current {current[region, -1]:.5f}, "
         f"w=0+sat {saturated_average[region, -1]:.5f} "

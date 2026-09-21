@@ -49,6 +49,7 @@ Units and conventions, none of which the arrays carry themselves:
 from __future__ import annotations
 
 import time
+import warnings
 from dataclasses import dataclass, field, replace
 
 import numpy as np
@@ -480,22 +481,37 @@ def _solve_scaled(inputs: ClearingInputs, energy_scale: float, cost_scale: float
 
     problem = cp.Problem(cp.Minimize(objective), constraints)
 
-    started = time.perf_counter()
-    problem.solve(
-        solver=cp.CLARABEL,
-        tol_gap_abs=inputs.solver_tolerance,
-        tol_gap_rel=inputs.solver_tolerance,
-        tol_feas=inputs.solver_tolerance,
+    context = (
+        f"Shapes R={regions}, P={pathways}, T={years}; "
+        f"sat_n={inputs.sat_n}, rampup_form={inputs.rampup_form!r}, "
+        f"max mandate share {inputs.mandate_share.max():.4g}, "
+        f"max gamma {inputs.sat_gamma.max():.4g}, "
+        f"solver_tolerance {inputs.solver_tolerance:.1e}."
     )
+
+    started = time.perf_counter()
+    try:
+        problem.solve(
+            solver=cp.CLARABEL,
+            tol_gap_abs=inputs.solver_tolerance,
+            tol_gap_rel=inputs.solver_tolerance,
+            tol_feas=inputs.solver_tolerance,
+        )
+    except cp.error.SolverError as exc:
+        # Clarabel can fail outright rather than return a status -- a stiff saturation
+        # (large gamma and n together) is enough to do it. Callers sweeping parameters
+        # must be able to catch that the same way they catch a refused status, so it
+        # does not escape as a bare cvxpy exception.
+        raise ClearingError(
+            f"The fuel market did not clear: the solver failed ({exc}). {context}"
+        ) from exc
     elapsed = time.perf_counter() - started
 
     if problem.status != _ACCEPTED_STATUS:
         raise ClearingError(
             f"The fuel market did not clear: solver status {problem.status!r} "
             f"(only {_ACCEPTED_STATUS!r} is accepted -- an inaccurate dual is a wrong "
-            f"price). Shapes R={regions}, P={pathways}, T={years}; "
-            f"sat_n={inputs.sat_n}, rampup_form={inputs.rampup_form!r}, "
-            f"max mandate share {inputs.mandate_share.max():.4g}."
+            f"price). {context}"
         )
 
     return {
@@ -650,7 +666,23 @@ def clear_market(inputs: ClearingInputs) -> ClearingOutputs:
     }
 
     if inputs.compute_elasticity:
-        diagnostics["elasticity_at_operating_point"] = _elasticity(inputs, market_mfsp, volume)
+        # The elasticity is a DIAGNOSTIC (section 3.4, off by default), computed by
+        # re-solving at a bumped demand. That second solve is strictly harder than the
+        # first -- it perturbs the active set of a program already sitting on a stiff
+        # power cone -- and it can fail where the primary one succeeded. Letting it
+        # raise would destroy a perfectly good solution to protect a measurement of it.
+        # So the failure is recorded and warned about, not propagated.
+        try:
+            diagnostics["elasticity_at_operating_point"] = _elasticity(inputs, market_mfsp, volume)
+        except ClearingError as exc:
+            diagnostics["elasticity_error"] = str(exc)
+            warnings.warn(
+                "The market cleared, but the elasticity diagnostic's re-solve at "
+                f"demand x (1 + {inputs.elasticity_step:g}) did not: {exc} "
+                "The solution itself is unaffected; 'elasticity_at_operating_point' "
+                "is absent from the diagnostics.",
+                stacklevel=2,
+            )
 
     return ClearingOutputs(
         volume=volume,
