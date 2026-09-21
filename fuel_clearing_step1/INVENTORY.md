@@ -333,7 +333,10 @@ wrong allocator.
 Decision 6's guard (`cost_model != "top-down"` → raise) sits naturally in the same
 place, since `cost_model` is per pathway
 ([`process.py:1730`](../aeromaps/core/process.py#L1730)) and must be checked across
-all of them at mode setup.
+all of them at mode setup. It is a "for now", not an exclusion — see
+[`REPORT.md`](REPORT.md) §6 for what actually blocks bottom-up (a vintage **mix**
+effect that makes average cost *fall* with volume, hence a concave cost integral) and
+the two routes out.
 
 ---
 

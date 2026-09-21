@@ -266,7 +266,58 @@ rejected.
 
 ---
 
-## 6. Open, in priority order
+## 6. Decision 6 is "top-down **for now**", and the guard should say why
+
+The brief's ground for excluding bottom-up is "the bottom-up model reads volumes:
+a volume → price → volume loop". That is true but it is not the real obstacle, and
+taking it as the reason would point future work in the wrong direction.
+
+**A loop is not the problem.** AeroMAPS closes loops for a living, and the kernel
+already carries a volume-dependent cost *inside* the program: the saturation term
+`c(1 + γ(q/K)^n)` is a marginal cost rising with quantity, and its integral is convex.
+Volume-dependent cost is fine. What matters is the *direction*.
+
+**What bottom-up actually does with volume** (`bottom_up/cost.py:245-288`): the mean
+MFSP is a vintage-weighted average, `share_v = needed_capacity_v / (consumption +
+unused)`, with each vintage's cost driven by `eis_capex` read off its EIS year. Per
+BRIEF3 and confirmed here by grep, **there is no learning anywhere in `aeromaps/`** —
+no capacity → cost feedback at all. So the dependence is a *mix effect*, not a supply
+curve.
+
+**And a mix effect runs the wrong way.** Where `eis_capex` declines with EIS year — the
+usual scenario assumption — growing faster raises the share of cheaper new vintages, so
+**average cost falls as volume rises**. A decreasing average cost makes the cost
+integral concave, the program non-convex, and the duals stop being prices. That is the
+thing iteration cannot fix, and it is what the guard is really protecting. (In the one
+committed bottom-up config, `tested_configs/data/energy_carriers_data.yaml`, `eis_capex`
+is flat, so the effect is absent there — but the structure admits a declining series and
+real scenarios use them.)
+
+Two routes when it is wanted, both real:
+
+1. **MDA around the solve, not inside it.** Freeze `c` per iteration, keep the kernel
+   convex, let Gauss-Seidel close volume → cost → volume. Cheap to build. The costs are
+   specific: the answer becomes a fixed point that can depend on the starting point,
+   which is exactly what decision 2 bought by using a solver; the duals become
+   multipliers of a program whose own parameters are outputs, so they stop measuring
+   the marginal cost of the system; and it adds a feedback to the SCC that the spike
+   already measured a convexity ceiling on.
+2. **Put the vintages in the program.** Make capacity a decision variable with its own
+   annuity, so the vintage structure is explicit and the cost stays convex. This is
+   what `saf_market_skeleton.py`'s D1/D2 already describe, and it is decision 4
+   reopened — it needs a capex that is not *already* inside the cost, which is exactly
+   why step 1 froze `K` against a top-down full cost.
+
+This is structurally the same problem as the skeleton's NOTE-WACC: "une MDA autour du
+solve, pas un solve unique". Route 2 is the principled one.
+
+**Action:** the guard stays, but its message should name the concavity, not the loop,
+so whoever hits it knows which of the two routes they are choosing between. Written up
+here rather than implemented, since the guard itself lands with J4.
+
+---
+
+## 7. Open, in priority order
 
 1. **J4–J5**: the `FuelClearing` global discipline, the mode, the coupled run, and
    measurements 4.5.1 and 4.5.2. The landing spot exists and is documented —
