@@ -383,28 +383,62 @@ def test_share_increment_without_demand_init_is_refused():
 # --- 3.3.f price continuity -------------------------------------------------------
 
 
-def test_compliance_price_does_not_jump_as_the_mandate_is_swept():
-    """200 points from 0.5x to 2x the mandate; the dual must not step.
+def _sweep_compliance_price(points, sat_n, top=1.9):
+    """Compliance price in the final year against a multiplier on the mandate.
 
-    A hard capacity cap would put a jump here -- that is precisely why decision 5
-    chose a soft saturation instead. The bound is generous because the sweep crosses
-    the point where the buy-out engages, which is a kink (continuous) and not a jump.
+    The ramp-up is loose on purpose. With the tight one this module uses elsewhere it
+    binds before the mandate does, the volume stops responding, the buy-out covers the
+    whole gap and the price sits flat on the buy-out for the entire sweep -- measured.
+    A flat curve passes any continuity bound while testing nothing, so the regime has
+    to be the one where the mandate is what sets the volume.
+
+    ``top`` stops at a 95 % mandate. At 100 % kerosene is driven out of the mix
+    entirely and the energy balance changes character, which is a real regime change
+    and moves the price by a real step (measured: 7.2x the sweep step at n = 2). That
+    is a property of the market, not a defect, and it is not what this test is about.
     """
-    base = _multi_year_case()
-    factors = np.linspace(0.5, 2.0, 200)
-    step = float(factors[1] - factors[0])
+    base = np.linspace(0.0, 0.5, 12)[None, :]
+    factors = np.linspace(0.5, top, points)
+    prices = [
+        clear_market(
+            _multi_year_case(
+                mandate_share=np.clip(base * factor, 0.0, 1.0),
+                sat_n=sat_n,
+                rampup_limit=np.array([[2.0, 0.0]]),
+                rampup_seed=np.array([[DEMAND * 0.1, 0.0]]),
+                buyout_price=np.full((1, 12), 0.3),
+            )
+        ).compliance_price[0, -1]
+        for factor in factors
+    ]
+    return np.array(prices)
 
-    prices = []
-    for factor in factors:
-        shares = np.clip(base.mandate_share * factor, 0.0, 1.0)
-        outputs = clear_market(_multi_year_case(mandate_share=shares))
-        prices.append(outputs.compliance_price[0])
-    prices = np.array(prices)
 
-    jumps = np.abs(np.diff(prices, axis=0))
-    # Lipschitz in the sweep parameter: the largest step between neighbours stays
-    # proportional to the step size, instead of jumping by a finite amount.
-    assert jumps.max() < 50.0 * step, f"largest jump {jumps.max():.4g} over step {step:.4g}"
+@pytest.mark.parametrize("sat_n", [2.0, 8.0, 16.0])
+def test_compliance_price_is_continuous_in_the_mandate(sat_n):
+    """3.3.f -- the dual must not step as the mandate is swept.
+
+    Testing this against a fixed bound needs a magic constant, and a stiff-but-smooth
+    curve fails it for the wrong reason. The honest test is refinement: **halving the
+    sweep step halves the largest jump between neighbours** if the curve is continuous,
+    and leaves it unchanged if there is a genuine discontinuity.
+
+    A hard capacity cap -- what decision 5 rejected -- would show a ratio near 1.
+    """
+    coarse = _sweep_compliance_price(100, sat_n)
+    fine = _sweep_compliance_price(200, sat_n)
+
+    # Guard against passing trivially on a flat curve.
+    assert fine.ptp() > 0.01, f"the swept price barely moved ({fine.ptp():.4g}); nothing is tested"
+
+    coarse_jump = np.abs(np.diff(coarse)).max()
+    fine_jump = np.abs(np.diff(fine)).max()
+    ratio = fine_jump / coarse_jump
+    assert ratio < 0.75, (
+        f"halving the sweep step took the largest jump from {coarse_jump:.4g} to "
+        f"{fine_jump:.4g} (ratio {ratio:.3f}); a continuous price gives about 0.5, a "
+        "genuine step stays near 1."
+    )
 
 
 # --- 3.3.g determinism ------------------------------------------------------------
