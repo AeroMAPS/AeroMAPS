@@ -60,6 +60,11 @@ _ACCEPTED_STATUS = "optimal"
 
 _RAMPUP_FORMS = ("relative", "share_increment")
 
+# A mandate share this close to 1 is treated as covering all demand. Not a fudge: the
+# dual split degenerates exactly at 1, and a share meant to be 100 % routinely arrives
+# as 0.9999999999 after a share-sum normalisation upstream.
+_FULL_MANDATE_TOLERANCE = 1.0e-9
+
 
 class ClearingError(RuntimeError):
     """The market did not clear, or cleared to something that fails its own invariants.
@@ -353,13 +358,22 @@ class ClearingOutputs:
     diagnostics: dict = field(default_factory=dict)
 
 
-def _saturation_coefficient(cost, capacity, gamma, sat_n):
-    """Coefficient ``a`` such that the saturation cost is ``a * q**(n+1)``.
+def _saturation_weight(cost, capacity, gamma, sat_n):
+    """The saturation cost as ``w * (q/K)**(n+1)``, in utilisation rather than energy.
 
         integral_0^q c * (1 + gamma * (s/K)**n) ds
-            = c*q  +  c*gamma/(n+1) * q**(n+1) / K**n
+            = c*q  +  c*gamma*K/(n+1) * (q/K)**(n+1)
 
-    so ``a = c * gamma / ((n+1) * K**n)``, and ``a = 0`` wherever saturation is off.
+    so ``w = c * gamma * K / (n+1)``, and ``w = 0`` wherever saturation is off.
+
+    The algebraically equivalent form ``a * q**(n+1)`` with ``a = c*gamma/((n+1)*K**n)``
+    is what this used to build, and it is numerically unusable. ``a`` carries ``K**-n``,
+    so on the bench -- where the smallest scaled capacity is 6e-3 -- the coefficients
+    span 4 orders of magnitude at ``n = 2`` and 35 at ``n = 16``, against a power
+    variable of the reciprocal size. Clarabel refuses half the (gamma, n) grid that way,
+    at every tolerance from 1e-9 to 1e-5. Written in ``q/K`` the argument is order 1
+    wherever the term matters and ``w`` stays the size of a cost, which is the whole
+    difference between a grid that runs and one that does not.
 
     Computed with ``np.where`` guards rather than relying on ``inf ** n``: at ``n = 0``
     that is ``1.0``, which would silently switch saturation back *on* for a pathway
@@ -367,12 +381,9 @@ def _saturation_coefficient(cost, capacity, gamma, sat_n):
     """
     active = np.isfinite(capacity) & (gamma[..., None] > 0) & (capacity > 0)
     safe_capacity = np.where(active, capacity, 1.0)
-    coefficient = np.where(
-        active,
-        cost * gamma[..., None] / ((sat_n + 1.0) * safe_capacity**sat_n),
-        0.0,
-    )
-    return coefficient, active
+    weight = np.where(active, cost * gamma[..., None] * safe_capacity / (sat_n + 1.0), 0.0)
+    inverse_capacity = np.where(active, 1.0 / safe_capacity, 0.0)
+    return weight, inverse_capacity, active
 
 
 def _average_cost(cost, volume, capacity, gamma, sat_n):
@@ -420,15 +431,20 @@ def _solve_scaled(inputs: ClearingInputs, energy_scale: float, cost_scale: float
     linear = cp.sum(cp.multiply(flatten(cost) * discount[None, :], q))
     objective = linear + cp.sum(cp.multiply(buyout * discount[None, :], x))
 
-    coefficient, active = _saturation_coefficient(cost, capacity, inputs.sat_gamma, inputs.sat_n)
-    if active.any():
-        # power() with exponent > 1 is convex on the non-negative orthant, which q is
-        # declared to be. Entries with a zero coefficient contribute nothing.
-        objective = objective + cp.sum(
-            cp.multiply(
-                flatten(coefficient) * discount[None, :],
-                cp.power(q, inputs.sat_n + 1.0),
-            )
+    weight, inverse_capacity, active = _saturation_weight(
+        cost, capacity, inputs.sat_gamma, inputs.sat_n
+    )
+    saturating = flatten(active)
+    if saturating.any():
+        # Only the saturating entries get a cone. The rest carry a zero weight and would
+        # contribute nothing, but power() builds its cone tree per entry regardless, so
+        # masking is what keeps the program the size of the problem rather than the size
+        # of the array -- on the bench, a quarter of the entries.
+        utilisation = cp.multiply(flatten(inverse_capacity)[saturating], q[saturating])
+        # power() with exponent > 1 is convex on the non-negative orthant, and the
+        # argument is a non-negative constant times a non-negative variable.
+        objective = objective + (flatten(weight) * discount[None, :])[saturating] @ cp.power(
+            utilisation, inputs.sat_n + 1.0
         )
 
     # --- constraints ---------------------------------------------------------
@@ -596,6 +612,40 @@ def clear_market(inputs: ClearingInputs) -> ClearingOutputs:
     # rather than overriding the solver.
     compliance_price = np.where(inputs.mandate_share > 0, compliance_price, 0.0)
 
+    # The mirror image, at the other end. Where the obligation covers ALL demand, the
+    # mandate `sum q_s + x >= D` and the balance `sum q = D` have the same active rows:
+    # every excluded pathway is forced to zero by the obligation rather than by cost.
+    # Only the SUM of the two duals is then determined -- the split slides freely along
+    # it. Measured on the continuity bench at a 100 % mandate: the sum is smooth through
+    # the corner (0.21527 -> 0.21600) while the energy price flips to -0.026 per MJ, and
+    # two runs of the *same* problem split it differently (-0.02054, -0.02070).
+    #
+    # A 100 % sustainable 2050 is an ordinary AeroMAPS scenario, not a corner case, so
+    # this cannot be left to the solver. The split is pinned at the limit approached
+    # from below: while a conventional pathway is still available, the energy price is
+    # its marginal cost -- which at zero volume is its base cost, saturation being a
+    # function of q/K -- and everything above it is the cost of compliance. Where the
+    # obligation excludes nothing (every pathway sustainable) the mandate is implied by
+    # the balance instead, and lambda_M = 0 is the meaningful value, exactly as above.
+    # The sum is preserved to the last bit either way, so `marginal_price`,
+    # `market_mfsp` and `rent` are untouched by this.
+    full_mandate = inputs.mandate_share >= 1.0 - _FULL_MANDATE_TOLERANCE
+    if full_mandate.any():
+        total = energy_price + compliance_price
+        excluded = ~inputs.is_sustainable
+        if excluded.any():
+            pinned = np.min(inputs.cost[:, excluded, :], axis=1)
+        else:
+            pinned = total
+        # lambda_M stays a multiplier: non-negative, and capped by the buy-out, which is
+        # what releases the obligation in the first place.
+        share = np.clip(total - pinned, 0.0, inputs.buyout_price)
+        compliance_price = np.where(full_mandate, share, compliance_price)
+        energy_price = np.where(full_mandate, total - share, energy_price)
+        diagnostics_full_mandate = int(np.count_nonzero(full_mandate))
+    else:
+        diagnostics_full_mandate = 0
+
     rampup_price = np.zeros((regions * pathways, years))
     if solved["rampup_dual"] is not None:
         # to_current_price is (1, T), so it broadcasts over the sustainable rows.
@@ -677,6 +727,9 @@ def clear_market(inputs: ClearingInputs) -> ClearingOutputs:
         "rampup_form": inputs.rampup_form,
         "sat_n": inputs.sat_n,
         "pricing_weight": weight,
+        # How many (region, year) cells had their price split pinned rather than taken
+        # from the solver. Zero in any scenario short of a full obligation.
+        "full_mandate_cells": diagnostics_full_mandate,
     }
 
     if inputs.compute_elasticity:

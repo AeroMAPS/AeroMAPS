@@ -274,37 +274,131 @@ obligation). Region A, 2050 delivered price:
 | parameter | swept over | spread in delivered price |
 |---|---|---|
 | pricing weight `w` | 0 → 1 | **37.3 %** |
-| stiffness `n` | 1 → 16 | **15.9 %** |
+| stiffness `n` | 1 → 16 | **16.3 %** |
+| buy-out | 0.02 → 0.30 | **8.3 %** |
 | ramp-up `g` | 0.10 → 1.20 /yr | 3.8 % |
-| intensity `γ` | 0 → 4 | 0.4 % |
-| buy-out | 0.02 → 0.30 | 0.0 % |
+| intensity `γ` | 0 → 4 | 1.7 % |
 | discount rate | 0 → 0.08 | 0.0 % |
 
-`w` dominates, which is the point of decision 10 — it is a scenario lever, not a
-calibration constant. The buy-out and the discount rate leave the *delivered price*
-untouched at this baseline, although the buy-out sets the compliance price wherever it
-binds; they move the policy cost, not the fuel bill.
+> These numbers replace an earlier version of this table. The `(q/K)` reformulation in
+> §5.4.1 changed four of the six rows: the previous run was scoring failed cells as
+> missing data and, worse, was reading a suboptimal solve at the baseline itself.
 
-**`γ`'s 0.4 % is misleading in isolation**, and the `(γ, n)` map explains why: at
-`w = 0` and `n = 4`, γ from 0.25 to 1 moves the uplift only 0 → 0.4 %, because
-`q/K ≈ 0.8` and `(q/K)^4` is already small. At `n = 1` the same γ range moves it
-4 → 16 %. The two saturation parameters are not separable.
+`w` dominates, which is the point of decision 10 — it is a scenario lever, not a
+calibration constant. The discount rate leaves the delivered price untouched.
+
+**The buy-out is inert until it is cheap enough to be worth paying, then it caps the
+fuel price too.** The obligation's own marginal cost on this bench is **0.0546 per MJ**:
+set the buy-out above that and it never binds (compliance settles at 0.0546, nothing is
+released), set it below and the compliance price sits exactly on it. At 0.02 the market
+stops building and pays the penalty on 1.10 % of demand, and the *delivered* price falls
+8.3 %. So the buy-out is not only a policy-cost cap — priced below the compliance cost it
+becomes a subsidy to non-compliance that shows up in the fuel bill.
+
+| buy-out | 0.02 | 0.03 | 0.05 | 0.10 | 0.30 |
+|---|---|---|---|---|---|
+| compliance price | 0.0200 | 0.0300 | 0.0500 | 0.0546 | 0.0546 |
+| unmet, % of demand | 1.10 | 0.20 | 0.04 | 0.00 | 0.00 |
+| delivered price | 0.01824 | 0.01990 | 0.01990 | 0.01990 | 0.01990 |
+
+**`γ`'s 1.7 % is misleading in isolation**, and the `(γ, n)` map explains why: at
+`w = 0` and `n = 4`, γ from 0 to 1 moves the delivered price only 0.01982 → 0.01990,
+because `q/K ≈ 0.8` and `(q/K)^4` is already small. At `n = 1` the same γ range moves the
+uplift 4 → 16 %. The two saturation parameters are not separable. γ's real effect at this
+baseline is on the *compliance* price, which it moves 0.0319 → 0.0500 (+57 %) before the
+buy-out caps it — scarcity of supply raises the cost of the obligation well before it
+raises the average fuel bill.
 
 **Capacity sized on the obligation is undersized once the market anticipates.** With
-1.25× headroom and a binding ramp-up, pre-building pushes `q/K` to **1.97** between
-steps. Saturation then disciplines the pre-building — with `γ = 1` the market builds
-less far ahead (peak `q/K` 1.29 rather than 1.97) — but the bench needed 2.5× headroom
-before the sweeps would run.
+1.25× headroom and a binding ramp-up, pre-building pushes `q/K` to **2.01** between
+steps — the market builds twice the plant the obligation asks for, because with perfect
+foresight the cheapest way to meet a step is to be ready before it. Saturation
+disciplines this: at `γ = 1` the peak falls to **1.30**, and the cost of running past
+capacity is what stops it going further.
 
-**Half the `(γ, n)` grid does not solve.** 18 of 36 cells fail outright: everything
-with `n ≥ 4` above `γ = 1`, and everything with `n ≥ 8` above `γ = 0.25`. This is not a
-tolerance trade-off — Clarabel fails at 1e-9, 1e-8, 1e-7, 1e-6 and 1e-5 alike on
-`γ = 1, n = 8`. **The brief's measurement 4.5.1 grid is `n ∈ {2,4,6,8,12,16}`, most of
-which is unreachable at a saturation intensity that does anything.** Either the grid
-shrinks to `n ≤ 2` at useful `γ`, or the power term needs reformulating (rescaling
-`q/K`, or building the cone by hand rather than through `cp.power`) before 4.5.1 can
-run as written. This is the step-1 analogue of the convexity ceiling the spike found in
-the MDA, and it should be settled before J4's measurements, not during them.
+The sweeps run at 2.5× headroom, which was originally chosen because 1.25× would not
+clear. After §5.4.1 that is no longer the reason — 1.25× clears at both `γ = 0` and
+`γ = 1` — so the headroom is now just a choice to keep the sweeps away from the
+saturation term's stiff region, not a constraint imposed by the solver.
+
+### 5.4.1 The saturation term had to be rewritten before any of this could be measured
+
+The first version of this section reported that **half the `(γ, n)` grid did not solve**
+— 18 of 36 cells, at every tolerance from 1e-9 to 1e-5 — and concluded that the brief's
+measurement 4.5.1 grid (`n ∈ {2,4,6,8,12,16}`) was unreachable. That was right about the
+symptom and wrong to treat it as a property of the model. It was a formulation defect.
+
+The saturation cost was built as `a · q^(n+1)` with `a = c·γ / ((n+1)·K^n)`. Algebraically
+correct, numerically unusable: `a` carries `K^-n`, and the smallest scaled capacity on
+the bench is 6e-3, so the objective coefficients span **4 orders of magnitude at `n = 2`
+and 35 at `n = 16`**, multiplying a power variable of the reciprocal size. The existing
+scaling normalised energy and cost but not the ratio the term actually depends on.
+
+Written instead in the utilisation it is a function of,
+
+```
+∫₀^q c(1 + γ(s/K)^n) ds  =  c·q  +  [c·γ·K/(n+1)] · (q/K)^(n+1)
+```
+
+the argument is order 1 wherever the term matters and the weight stays the size of a
+cost. Same maths, different conditioning. The cones are also now built only on the
+entries that actually saturate, about a quarter of the array on the bench.
+
+| | before | after |
+|---|---|---|
+| `(γ, n)` cells that clear | 18 / 36 | **36 / 36** |
+| agreement where both cleared, well-conditioned cells | — | 1.4e-7 relative |
+
+**And where the old form did solve at `n = 4`, it was wrong.** Scored against the true
+objective computed in numpy, the new solutions are *cheaper at equal feasibility*
+(6.6505e12 vs 6.6593e12 at the baseline, violations ≤ 1e-11 of demand either way): the
+old form was converging to a suboptimal point 0.13 % more expensive. Prices are duals, so
+that showed up as a **3.4 % error in the delivered price** — at `γ = 1, n = 4`, which is
+the baseline the whole sensitivity table is built on. This is why the table above
+replaces the earlier one rather than extending it.
+
+The lesson generalises past this term: a convex program that *solves* is not a program
+that is *right*, and the only thing that caught this was scoring the returned point
+against the objective independently of the solver.
+
+### 5.4.2 At a 100 % obligation the price split is not determined
+
+Found while checking that the continuity figure's largest jump shrank under refinement.
+At `n = 16` it halved when the step halved — steep but continuous. At `n = 2`, the
+*softest* case, it did not shrink at all (×0.97, ×0.98 over two refinements), which is
+the signature of a genuine discontinuity.
+
+It sits at the sweep's endpoint, where the mandate reaches exactly 100 % and the
+conventional pathway leaves the basis. The obligation then forces kerosene to zero rather
+than cost doing it, so `Σq_s + x ≥ D` and `Σq = D` have the same active rows and **only
+the sum of the two duals is determined** — the split slides freely along it:
+
+| mandate | 99.0 % | 99.5 % | 99.8 % | 100 % | 100 % (×2.05) | 100 % (×2.1) |
+|---|---|---|---|---|---|---|
+| energy price | 0.01200 | 0.01200 | 0.01200 | **−0.02616** | **−0.02054** | **−0.02070** |
+| compliance price | 0.20018 | 0.20208 | 0.20327 | 0.24216 | 0.23654 | 0.23670 |
+| **sum** | 0.21218 | 0.21408 | 0.21527 | 0.21600 | 0.21600 | 0.21600 |
+
+The last three columns are the *same problem* — the share clips to 1 — and the solver
+split it three different ways, including a negative energy price. The sum is smooth
+throughout.
+
+This is not a corner case for AeroMAPS: a 100 % sustainable 2050 is an ordinary scenario,
+and it would have reported a negative energy price and a meaningless compliance price to
+anyone reading them. The split is now pinned at the limit approached from below — while a
+conventional pathway exists, the energy price is its marginal cost and the remainder is
+compliance; where the obligation excludes nothing, `λ_M = 0`, as for a zero obligation
+(§2b). The sum is preserved bit-for-bit, so `marginal_price`, `market_mfsp` and `rent` are
+untouched, and `diagnostics["full_mandate_cells"]` counts where it was applied.
+
+Afterwards both stiffnesses converge first-order — max jump ×0.499 at `n = 2` and ×0.501
+at `n = 16` when the sweep step halves — so the dual is Lipschitz in the mandate and the
+figure's claim that it "rises smoothly" is now literally true rather than nearly true.
+
+Together with §2b this is the same defect twice, at the two ends of the mandate range: a
+constraint that stops being independent makes its multiplier arbitrary. Worth assuming
+that any *other* constraint in this program can do the same — the ramp-up at `g → ∞` and
+the capacity at `γ → 0` are the obvious candidates, and neither is tested yet.
 
 ### 5.5 Measured timings (3.3.j)
 
@@ -467,3 +561,12 @@ here rather than implemented, since the guard itself lands with J4.
    under-serve, if a hydrogen or electric pathway is declared.
 4. **Ramp-up form for the headline comparison** (§2). Both are relaxations of Eq. 12
    in different directions.
+5. **The remaining degeneracy candidates** (§5.4.2). Two multipliers have already been
+   found arbitrary where their constraint stopped being independent, at the two ends of
+   the mandate range. The ramp-up dual as `g → ∞` and the capacity as `γ → 0` are the
+   same shape of problem and are not tested. A dual that is silently arbitrary is worse
+   than one that is missing, because it is a plausible-looking price.
+6. **Score solutions against the objective, not just the solver status** (§5.4.1). The
+   suboptimal-but-`optimal` solve was invisible to every test until it was scored
+   independently. Worth a test helper that recomputes the objective in numpy and
+   asserts the returned point beats a perturbation of itself.

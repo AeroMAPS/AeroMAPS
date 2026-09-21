@@ -590,3 +590,40 @@ def test_no_compliance_price_where_there_is_no_obligation():
     )
     # The obligation still prices where it exists.
     assert outputs.compliance_price[0, 4:].max() > 0
+
+
+def test_price_split_is_pinned_under_a_full_obligation():
+    """At a 100 % mandate only the SUM of the two duals is determined.
+
+    The obligation then forces every conventional pathway to zero, so the mandate and
+    the energy balance have the same active rows and the split slides freely along the
+    sum. Left to the solver it produced a NEGATIVE energy price (-0.026 per MJ on the
+    continuity bench) and split the same problem two different ways on two runs. A
+    100 % sustainable 2050 is an ordinary scenario, so the split is pinned at the limit
+    from below instead: the energy price is the cheapest conventional marginal cost,
+    the rest is compliance.
+    """
+    years = 12
+    mandate = np.full(years, 1.0)
+    outputs = clear_market(_multi_year_case(mandate_share=mandate[None, :]))
+
+    assert outputs.diagnostics["full_mandate_cells"] == years
+    # Pinned at the conventional pathway's cost, which is what a buyer would pay for
+    # energy if the obligation let them.
+    np.testing.assert_allclose(outputs.energy_price[0], COST_KEROSENE, rtol=1e-9)
+    assert np.all(outputs.compliance_price[0] >= 0.0)
+    # The premium is real: an all-sustainable mandate costs more than kerosene.
+    assert outputs.compliance_price[0, -1] > 0.0
+
+    # The sum is what the solver actually determined, and pinning must not have moved
+    # it -- everything downstream reads the sum, not the split.
+    np.testing.assert_allclose(
+        outputs.marginal_price[0, 0],
+        outputs.energy_price[0] + outputs.compliance_price[0],
+        rtol=1e-12,
+    )
+    # Approached from below, the split is continuous rather than jumping at the corner.
+    just_under = clear_market(_multi_year_case(mandate_share=np.full((1, years), 0.999)))
+    np.testing.assert_allclose(
+        outputs.energy_price[0, -1], just_under.energy_price[0, -1], rtol=1e-6
+    )
