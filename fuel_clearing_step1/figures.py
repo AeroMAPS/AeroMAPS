@@ -4,7 +4,7 @@ Usage::
 
     poetry run python -m fuel_clearing_step1.figures
 
-Three figures:
+Four figures:
 
 ``reproduction``
     Test 3.3.c made visible -- the kernel against the reference run, on the real
@@ -12,6 +12,10 @@ Three figures:
 ``rampup_regimes``
     What the market does when a plausible ramp-up meets ReFuelEU's step obligation.
     The step years are where the two modes stop agreeing.
+``pricing_vs_current``
+    The market's delivered price against the current mode's ``{at}_mean_mfsp`` -- the
+    price that reaches the airfare and so the demand loop. Volumes held fixed, so the
+    difference is the pricing rule alone.
 ``price_continuity``
     The sweep of test 3.3.f. The test asserts continuity by refinement; this draws
     what that is protecting, which is the difference between a soft saturation and a
@@ -22,6 +26,7 @@ from __future__ import annotations
 
 import json
 import warnings
+from dataclasses import replace
 from pathlib import Path
 
 import matplotlib
@@ -181,7 +186,19 @@ def load_bench():
         "cost": np.stack([stack(f"{SUSTAINABLE}_mean_mfsp"), stack(f"{RESIDUAL}_mean_mfsp")], 1),
         "reference_share": stack(f"{SUSTAINABLE}_share_dropin_fuel") / 100.0,
         "reference_volume": stack(f"{SUSTAINABLE}_energy_consumption"),
+        # The price that actually reaches the airline in the current mode, and so the
+        # DOC, the airfare and the demand loop.
+        "reference_delivered": stack("dropin_fuel_mean_mfsp"),
     }
+
+
+def _delivered(outputs):
+    """Volume-weighted mean market MFSP, per region and year.
+
+    The same weighting `EnergyCarriersMeans` applies in the current mode
+    (``Sigma_p share_p * mfsp_p``), so the two are directly comparable.
+    """
+    return (outputs.market_mfsp * outputs.volume).sum(axis=1) / outputs.volume.sum(axis=1)
 
 
 def _bench_inputs(bench, *, rampup_limit, rampup_seed, buyout, capacity=np.inf, gamma=0.0):
@@ -367,7 +384,159 @@ def rampup_regimes(limits=(0.15, 0.30, 0.60, 1.20)):
     print(f"wrote {target}")
 
 
+def _tracking_capacity(bench, headroom=1.25, floor_share=0.02):
+    """Exogenous capacity that follows the build-out, instead of a flat number.
+
+    A constant ``K`` against an obligation running 0 -> 70 % puts ``q/K`` almost
+    entirely in the last few years, so the saturation markup is invisible until 2050
+    and the figure says nothing about the decades in between. Capacity is an
+    ``(R, P, T)`` input, so it can track the volume actually needed with a fixed
+    headroom -- which is also the more plausible reading of "exogenous capacity".
+
+    Floored at a small share of demand so the early years, where the obligation is
+    zero, do not divide by zero.
+    """
+    sustainable = np.maximum(bench["reference_volume"] * headroom, bench["demand"] * floor_share)
+    return np.stack([sustainable, np.full_like(sustainable, np.inf)], axis=1)
+
+
+def pricing_vs_current(region=0, gamma=1.0):
+    """The market's delivered price against the current mode's `{at}_mean_mfsp`.
+
+    This is the quantity that reaches the DOC, the airfare and therefore the demand
+    loop, so it is where the two modes either agree or do not.
+
+    The allocation is held fixed across all four curves -- mandate set to the
+    reference share, ramp-up loose -- so every difference shown is the **pricing rule**
+    and not a different set of volumes.
+
+    The structural point the figure makes: **`w` does nothing at all unless the
+    saturation term is active.** With a flat marginal cost, average equals marginal for
+    every pathway (lambda_E = c_k and lambda_M = c_s - c_k, so the sustainable
+    pathway's marginal price is exactly c_s), and decision 10's blend has two identical
+    endpoints. Measured: w = 0 and w = 1 agree to the last digit with gamma = 0.
+    """
+    bench = load_bench()
+    loose = dict(rampup_limit=1.0e3, rampup_seed=float(bench["demand"].max()), buyout=1.0e3)
+    regions = len(bench["regions"])
+
+    flat = _delivered(clear_market(_bench_inputs(bench, **loose)))
+    # w = 1 with saturation OFF. Lies exactly on the w = 0 curve, which is the point:
+    # with a flat marginal cost, average equals marginal for every pathway, so
+    # decision 10's blend has two identical endpoints and w cannot do anything.
+    flat_marginal = _delivered(
+        clear_market(replace(_bench_inputs(bench, **loose), pricing_weight=1.0))
+    )
+    saturated = replace(
+        _bench_inputs(bench, **loose),
+        capacity=_tracking_capacity(bench),
+        sat_gamma=np.array([[gamma, 0.0]] * regions),
+    )
+    saturated_average = _delivered(clear_market(saturated))
+    saturated_marginal = _delivered(clear_market(replace(saturated, pricing_weight=1.0)))
+
+    current = bench["reference_delivered"]
+    years = bench["years"]
+    figure, axes = plt.subplots(1, 3, figsize=(13.5, 4.2), constrained_layout=True)
+
+    axes[0].plot(
+        years,
+        current[region],
+        color="0.25",
+        linewidth=2.8,
+        alpha=0.5,
+        label="current mode, {at}_mean_mfsp",
+    )
+    axes[0].plot(
+        years,
+        flat[region],
+        color="#1f77b4",
+        linestyle="none",
+        marker="o",
+        markersize=3.4,
+        markevery=2,
+        label="market, w=0, no saturation",
+    )
+    axes[0].plot(
+        years,
+        saturated_average[region],
+        color="#2ca02c",
+        linewidth=1.8,
+        label=f"market, w=0, saturation (gamma={gamma:g}, n=4)",
+    )
+    axes[0].plot(
+        years,
+        saturated_marginal[region],
+        color="#d62728",
+        linewidth=1.8,
+        label="market, w=1, saturation",
+    )
+    axes[0].set_ylabel("delivered price, EUR/MJ")
+    axes[0].set_title("What price reaches the airline")
+    axes[0].legend(frameon=False, fontsize=7)
+
+    # Where the gap comes from, stacked on the current mode's price.
+    markup = saturated_average[region] - current[region]
+    rent = saturated_marginal[region] - saturated_average[region]
+    axes[1].fill_between(
+        years, 0, markup, color="#2ca02c", alpha=0.45, label="saturation markup (w=0)"
+    )
+    axes[1].fill_between(
+        years,
+        markup,
+        markup + rent,
+        color="#d62728",
+        alpha=0.45,
+        label="rent passed through (w: 0 -> 1)",
+    )
+    axes[1].set_ylabel("uplift over the current mode, EUR/MJ")
+    axes[1].set_title("Where the difference comes from")
+    axes[1].legend(frameon=False, fontsize=7.5, loc="upper left")
+
+    for values, colour, style, label in (
+        (flat, "#1f77b4", "-", "w=0, no saturation"),
+        (flat_marginal, "#9467bd", (0, (2, 2)), "w=1, no saturation"),
+        (saturated_average, "#2ca02c", "-", "w=0, saturation"),
+        (saturated_marginal, "#d62728", "-", "w=1, saturation"),
+    ):
+        axes[2].plot(
+            years,
+            100 * (values[region] - current[region]) / current[region],
+            color=colour,
+            linestyle=style,
+            linewidth=2.2 if style != "-" else 1.6,
+            label=label,
+        )
+    axes[2].axhline(0, color="0.5", linewidth=1)
+    axes[2].set_ylabel("difference vs current mode, %")
+    axes[2].set_title("w is inert until saturation is on")
+    axes[2].legend(frameon=False, fontsize=7.5, loc="upper left")
+
+    for axis in axes:
+        axis.set_xlabel("year")
+        axis.spines[["top", "right"]].set_visible(False)
+
+    FIGURES.mkdir(parents=True, exist_ok=True)
+    target = FIGURES / "pricing_vs_current.png"
+    figure.savefig(target, dpi=150)
+    plt.close(figure)
+
+    worst_flat = float(np.max(np.abs(flat - current) / current))
+    inert = float(np.max(np.abs(flat_marginal - flat) / flat))
+    print(f"wrote {target}")
+    print(f"  w=0 no saturation vs current mode: max relative difference {worst_flat:.3e}")
+    print(f"  w=1 vs w=0 with saturation OFF:    max relative difference {inert:.3e} (w is inert)")
+    print(
+        f"  2050, region {region}: current {current[region, -1]:.5f}, "
+        f"w=0+sat {saturated_average[region, -1]:.5f} "
+        f"(+{100 * markup[-1] / current[region, -1]:.1f} %), "
+        f"w=1+sat {saturated_marginal[region, -1]:.5f} "
+        f"(+{100 * (markup[-1] + rent[-1]) / current[region, -1]:.1f} %)"
+    )
+
+
 if __name__ == "__main__":
     reproduction()
     rampup_regimes()
+    pricing_vs_current()
     price_continuity()

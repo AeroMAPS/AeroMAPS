@@ -258,6 +258,42 @@ demand, where 17.1 % was built against 20 % required. The compliance price is **
 in every year where the market is ahead (the mandate is slack), positive where it
 binds exactly, and pinned to the buy-out at 0.05 EUR/MJ in 2035.
 
+**`figures/pricing_vs_current.png`** — the market's delivered price against the current
+mode's `{at}_mean_mfsp`, which is the quantity that reaches the DOC, the airfare and
+therefore the demand loop. The allocation is held fixed across all curves, so every
+difference is the **pricing rule** and not a different set of volumes.
+
+Two results:
+
+**The bridge holds exactly.** At `w = 0` with saturation off, the market's delivered
+price equals the current mode's to **6.9e-9** relative, across both regions and every
+year. That is decision 10's claim, verified on the real chain's numbers rather than
+asserted.
+
+**`w` is inert unless the saturation term is active.** With `γ = 0`, `w = 0` and
+`w = 1` give the same delivered price to **1.1e-8** — they are not merely close, they
+are the same number. The reason is structural: with a flat marginal cost,
+`λ_E = c_k` and `λ_M = c_s − c_k`, so the sustainable pathway's marginal price is
+exactly `c_s`, which is also its average cost. Decision 10's blend has two identical
+endpoints.
+
+This matters for measurement 4.5.1. The brief notes that stiffness `n` can only reach
+the traffic loop at `w > 0`; the converse is equally true and is not stated — **`w`
+can only reach it at `γ > 0`**. The two knobs are multiplicative, not independent, so
+a grid that varies them separately will find three-quarters of its cells inert.
+
+With saturation on (`γ = 1`, `n = 4`, capacity tracking the build-out at 1.25×), region A:
+
+| | 2025 | 2030 | 2035 | 2040 | 2045 | 2050 |
+|---|---|---|---|---|---|---|
+| `w = 0` uplift | +0.3 % | +0.9 % | +2.6 % | +4.0 % | +4.8 % | +6.7 % |
+| `w = 1` uplift | +1.4 % | +4.3 % | +13.1 % | +20.2 % | +23.8 % | +33.5 % |
+
+The first row is the saturation markup — a cost the current mode has no concept of.
+The second adds the inframarginal rent that marginal pricing passes to the consumer.
+A 33 % difference in the price that drives the demand loop is not a detail, and it is
+the reason `w` is a scenario lever rather than a calibration constant.
+
 **`figures/price_continuity.png`** — the compliance price against a mandate multiplier
 at `n ∈ {2, 4, 8, 16}`, beside the unmet obligation. The curves steepen with `n` and
 all pass through a common point where `q/K = 1`, since `(q/K)^n` is 1 there for every
