@@ -228,14 +228,41 @@ At 0.03 s per solve, a 200-iteration MDA spends about 6 s in the market. The 9×
 case at 0.5 s per solve would be 100 s per MDA, which is usable but not free — worth
 knowing before the regional extension.
 
-### 5.5 Figure
+### 5.5 Figures
 
-`figures/price_continuity.png` (regenerate with
-`poetry run python -m fuel_clearing_step1.figures`): the compliance price against a
-mandate multiplier at `n ∈ {2, 4, 8, 16}`, beside the unmet obligation. The curves
-steepen with `n` and all pass through a common point where `q/K = 1` — where `(q/K)^n`
-is 1 for every `n`. A hard capacity cap is the `n → ∞` limit of that family, which is
-what decision 5 rejected.
+Regenerate all three with `poetry run python -m fuel_clearing_step1.figures`.
+
+**`figures/reproduction.png`** — test 3.3.c drawn on the real bench. The market lands
+on the reference allocation in both regions; the residual stays below **1e-8 of
+drop-in demand** everywhere, an order of magnitude under the solver noise floor.
+
+**`figures/rampup_regimes.png`** — a plausible ramp-up against the ReFuelEU steps, at
+`g ∈ {15, 30, 60, 120} %/yr`. This is the most informative result so far, and it
+confirms the behaviour §3.2 predicted:
+
+**Perfect foresight builds ahead of the obligation.** At `g = 15 %/yr`, region A:
+
+| year | 2029 | 2033 | 2034 | 2035 | 2039 | 2044 | 2049 |
+|---|---|---|---|---|---|---|---|
+| obligation | 2 % | 6 % | 6 % | 20 % | 20 % | 34 % | 42 % |
+| built | **4.5 %** | **11.7 %** | **14.1 %** | 17.1 % | **28.9 %** | **36.0 %** | **59.9 %** |
+
+The market holds more than it owes in every year between steps, because the ramp-up
+cannot take it from 6 % to 20 % in the year the step arrives. Sustainable fuel is more
+expensive here and discounting penalises early spend, so it builds the minimum needed
+and no more. This is a result, not a bug — and it is exactly why a ramp-up checked
+*after* the fact has no purchase in this mode (decision 3).
+
+**The buy-out is needed once**, at the 2035 step and only at `g = 15 %/yr`: 2.94 % of
+demand, where 17.1 % was built against 20 % required. The compliance price is **zero**
+in every year where the market is ahead (the mandate is slack), positive where it
+binds exactly, and pinned to the buy-out at 0.05 EUR/MJ in 2035.
+
+**`figures/price_continuity.png`** — the compliance price against a mandate multiplier
+at `n ∈ {2, 4, 8, 16}`, beside the unmet obligation. The curves steepen with `n` and
+all pass through a common point where `q/K = 1`, since `(q/K)^n` is 1 there for every
+`n`. A hard capacity cap is the `n → ∞` limit of that family, which is what decision 5
+rejected.
 
 ---
 
