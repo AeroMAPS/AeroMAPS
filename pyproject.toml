@@ -73,6 +73,15 @@ nbval = "^0.11"
 wrapt = "^1.16.0"
 nbmake = "^1.5.0"
 pytest-xdist = "^3.7.0"
+# The fuel-clearing kernel solves a convex program; Clarabel ships with cvxpy.
+# Deliberately NOT a core dependency: the fuel-market mode is opt-in, and the
+# default mode must not make every AeroMAPS install carry a convex solver. The
+# kernel imports it lazily and raises with an install hint when it is absent.
+# Promote to an extra (or to core) when the mode ships.
+cvxpy = "^1.5"
+# Parquet engine for the fuel-clearing reference fixture. Test-group for the same
+# reason as cvxpy: nothing in aeromaps/ reads parquet at runtime.
+pyarrow = ">=15.0"
 
 [tool.poetry.group.doc.dependencies]
 mkdocs = "^1.6.1"

@@ -1,0 +1,30 @@
+# Step-1 fuel-clearing bench: two regions, unified MDA, NO global model yet.
+#
+# This is the *reference* scenario -- the current mode, which the market must
+# reproduce at w = 0 (decision 10, test 3.3.c). The `global_models` block that will
+# carry FuelClearing is deliberately absent here; the market scenario is a separate
+# file so that the two can be run back to back on one commit.
+#
+# Region A and region B differ only in traffic growth (3.0 vs 4.5 % CAGR), which is
+# enough to give them different demand trajectories and therefore different cleared
+# volumes once a shared market sees them both.
+regionalisation:
+  execution_mode: "unified_mda"
+  global_namespace: "overall"
+
+  regions:
+    region_A:
+      config_file: "region_A/config.yaml"
+    region_B:
+      config_file: "region_B/config.yaml"
+
+  aggregation:
+    sum:
+      - co2_emissions
+      - rpk
+      - ask
+      - energy_consumption
+      - energy_consumption_dropin_fuel
+    weighted_average:
+      - variable: airfare_per_rpk
+        weight_by: rpk

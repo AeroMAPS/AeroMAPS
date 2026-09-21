@@ -1,0 +1,87 @@
+{
+  "generated_utc": "2026-09-21T13:51:43+00:00",
+  "generated_by": "fuel_clearing_step1/export_reference.py",
+  "commit": "993fc9f2d061e6398542eb6a4151894aae318c99",
+  "working_tree_dirty": true,
+  "config": "fuel_clearing_step1/scenario/regionalisation.yaml",
+  "execution_mode": "unified_mda",
+  "regions": [
+    "region_A",
+    "region_B"
+  ],
+  "years": {
+    "first": 2000,
+    "last_historical": 2019,
+    "prospection_start": 2020,
+    "end": 2050
+  },
+  "aircraft_type": "dropin_fuel",
+  "pathways": {
+    "all": [
+      "hefa_fog",
+      "fossil_kerosene"
+    ],
+    "sustainable": [
+      "hefa_fog"
+    ],
+    "default_residual": "fossil_kerosene"
+  },
+  "cost_model": "top-down",
+  "shares": "fixed (mandate shares from the carriers yaml), NOT optimised",
+  "units": {
+    "energy_demand": "MJ",
+    "energy_consumption": "MJ",
+    "mean_mfsp": "EUR/MJ",
+    "mandate_share": "percent of aircraft-type energy"
+  },
+  "q_init_MJ": {
+    "region_A": {
+      "hefa_fog": 0.0,
+      "fossil_kerosene": 12711100000000.0
+    },
+    "region_B": {
+      "hefa_fog": 0.0,
+      "fossil_kerosene": 12711100000000.0
+    }
+  },
+  "q_init_coerced_from_nan": {
+    "region_A": [
+      "hefa_fog"
+    ],
+    "region_B": [
+      "hefa_fog"
+    ]
+  },
+  "historical_nan_columns": {
+    "region_A": {
+      "hefa_fog_energy_consumption": 20,
+      "hefa_fog_share_dropin_fuel": 20
+    },
+    "region_B": {
+      "hefa_fog_energy_consumption": 20,
+      "hefa_fog_share_dropin_fuel": 20
+    }
+  },
+  "energy_balance_closure": {
+    "region_A": {
+      "max_absolute_gap_MJ": 0.001953125,
+      "max_relative_gap": 1.5927269842951146e-16
+    },
+    "region_B": {
+      "max_absolute_gap_MJ": 0.0009765625,
+      "max_relative_gap": 1.226847927351034e-16
+    }
+  },
+  "columns": [
+    "region",
+    "year",
+    "energy_demand",
+    "hefa_fog_energy_consumption",
+    "hefa_fog_mean_mfsp",
+    "hefa_fog_share_dropin_fuel",
+    "fossil_kerosene_energy_consumption",
+    "fossil_kerosene_mean_mfsp",
+    "fossil_kerosene_share_dropin_fuel",
+    "dropin_fuel_mean_mfsp"
+  ]
+}
