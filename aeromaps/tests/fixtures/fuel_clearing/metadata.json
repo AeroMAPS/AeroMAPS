@@ -1,7 +1,7 @@
 {
-  "generated_utc": "2026-09-21T13:51:43+00:00",
+  "generated_utc": "2026-09-21T14:06:01+00:00",
   "generated_by": "fuel_clearing_step1/export_reference.py",
-  "commit": "993fc9f2d061e6398542eb6a4151894aae318c99",
+  "commit": "d27eb1bac8786e55fbfb90bf08d2fc91bc6c2cef",
   "working_tree_dirty": true,
   "config": "fuel_clearing_step1/scenario/regionalisation.yaml",
   "execution_mode": "unified_mda",
@@ -64,12 +64,12 @@
   },
   "energy_balance_closure": {
     "region_A": {
-      "max_absolute_gap_MJ": 0.001953125,
-      "max_relative_gap": 1.5927269842951146e-16
+      "max_absolute_gap_MJ": 0.0,
+      "max_relative_gap": 0.0
     },
     "region_B": {
-      "max_absolute_gap_MJ": 0.0009765625,
-      "max_relative_gap": 1.226847927351034e-16
+      "max_absolute_gap_MJ": 0.001953125,
+      "max_relative_gap": 1.153106392299684e-16
     }
   },
   "columns": [

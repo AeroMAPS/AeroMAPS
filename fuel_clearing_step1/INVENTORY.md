@@ -358,10 +358,10 @@ per-pathway share, aircraft-type mean MFSP.
 ### 8.1 What the reference measures
 
 **Energy balance closes at machine precision.** Max relative gap between
-`Σ_p {p}_energy_consumption` and `energy_consumption_dropin_fuel` is
-**1.59e-16** (region A) and **1.23e-16** (region B) — absolute gaps of 2.0e-3 and
-9.8e-4 MJ against a ~1e13 MJ demand. This is the number §3.2's exact-closure step
-is entitled to: a correction materially larger than this is an error, not rounding.
+`Σ_p {p}_energy_consumption` and `energy_consumption_dropin_fuel` is **0** (region A)
+and **1.15e-16** (region B) — an absolute gap of 2.0e-3 MJ against a ~1e13 MJ demand.
+This is the number §3.2's exact-closure step is entitled to: a correction materially
+larger than this is an error, not rounding.
 
 **`q_init` for the sustainable pathway is zero.** The last historical year (2019)
 has `hefa_fog_energy_consumption = NaN`, coerced to `0.0` in the fixture per §5.1.
@@ -370,26 +370,48 @@ zero-lock case test 3.3.e exists to document: under the `"relative"` form,
 `q_t ≤ seed + (1+g)·q_{t-1}` with `q_init = 0` and `seed = 0` pins the pathway at
 zero for all time. **`rampup_seed` is not optional on this bench.**
 
-**`hefa_fog_mean_mfsp` is flat at 0.02317 EUR/MJ** across every prospective year,
-against a `dropin_fuel_mean_mfsp` that declines from 0.0121 to 0.0120. The top-down
-cost carries no volume dependence and, per BRIEF3, no learning anywhere. The market's
-cost of entry is therefore a constant in this bench, and all price dynamics come
-from the saturation term and the duals — worth stating plainly in the report, since
-it bounds what measurement 4.5.1 can show.
+**`hefa_fog_mean_mfsp` is flat at 0.02317 EUR/MJ** across every prospective year.
+The top-down cost carries no volume dependence and, per BRIEF3, no learning
+anywhere. The market's cost of entry is therefore a *constant* in this bench: every
+price dynamic it produces comes from the saturation term and the duals, not from the
+supply curve moving. Worth stating plainly in the report, because it bounds what
+measurement 4.5.1 can show.
 
-### 8.2 A caveat on the mandate trajectory
+`dropin_fuel_mean_mfsp` nonetheless rises 0.0073 → 0.0198 EUR/MJ over 2020–2050,
+entirely through the mix shifting towards the more expensive pathway.
 
-`hefa_fog`'s share was taken verbatim from the default 13-pathway config, where its
-shape is set by the five other sustainable pathways competing for feedstock. In
-isolation it is non-monotonic:
+### 8.2 The mandate trajectory
+
+`hefa_fog`'s share is **ReFuelEU Aviation's SAF obligation, as a step** — each level
+holds until the next begins (`method: previous`), which is how the regulation reads
+and how the migrated optimisation work treats the 2025 obligation:
 
 ```
-2020  0.00 %     2030  4.80 %  (peak)     2040  0.17 %  (trough)     2050  0.25 %
+2020  0 %    2025  2 %    2030  6 %    2035  20 %    2040  34 %    2045  42 %    2050  70 %
 ```
 
-Faithful to the source, but a poor step-1 reference: a mandate that collapses after
-2030 never makes the ramp-up bind, leaves the buy-out slack at zero, and gives
-measurement 4.5.2 nothing to sweep against. See the open question in §9.
+It replaces the share the default 13-pathway config gives `hefa_fog`, whose shape
+there comes from five other sustainable pathways competing for feedstock; lifted out
+alone it peaked at 4.8 % in 2030 and collapsed to 0.17 % by 2040, so the ramp-up
+never bound and the buy-out never engaged.
+
+**The step years bind hard**, which is the point. Year-on-year growth of the
+sustainable volume required to meet the obligation, region A:
+
+| year | 2025 | 2030 | 2035 | 2040 | 2045 | 2050 |
+|---|---|---|---|---|---|---|
+| required growth | ∞ (from 0) | +202 % | +233 % | +70 % | +24 % | +66 % |
+
+Between steps, growth tracks demand at about +1 %/year. So any ramp-up limit of a
+plausible size (τ of order 20–30 %/year) is violated at every step year and slack
+everywhere else. That is what gives tests 3.3.d and 3.3.f, and measurement 4.5.2,
+their dynamic range — and it means the *reference* allocation is itself not
+ramp-up-feasible. Test 3.3.c must therefore run with the ramp-up deliberately loose,
+exactly as the brief specifies, or it would be asking the market to reproduce an
+allocation its own constraints forbid.
+
+The 2025 step starting from zero is the zero-lock case again: `q_init = 0`, and no
+`rampup_seed` means no sustainable fuel ever.
 
 ---
 
@@ -397,7 +419,7 @@ measurement 4.5.2 nothing to sweep against. See the open question in §9.
 
 1. **Ramp-up form** — `relative` and `share_increment` are both relaxations of the
    live Eq. 12, in different directions. Which one goes in the report's headline
-   comparison? (§1.1)
+   comparison? (§1.1)  *Resolved for the bench: implement both, default `relative`.*
 2. **Historical years** — option 1 or option 2? (§5)
 3. **Mode flag plumbing** — new `AeroMAPSProcess` keyword, or per-region config? (§7)
 4. **Multi-type guard** — hard error when the new mode meets a hydrogen or electric
