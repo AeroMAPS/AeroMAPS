@@ -713,3 +713,146 @@ def test_capacity_is_inert_when_saturation_is_off():
             base = signature
         else:
             np.testing.assert_allclose(signature, base, rtol=0, atol=0)
+
+
+# --- sub-mandates: a second, narrower obligation -----------------------------------
+
+
+def _submandate_case(years: int = 12, level: float = 0.15, **overrides):
+    """Three pathways: kerosene, a general sustainable one, and a sub-mandated one."""
+    demand = np.full((1, years), DEMAND)
+    defaults = dict(
+        demand=demand,
+        cost=np.broadcast_to(
+            np.array([[[COST_SUSTAINABLE], [COST_KEROSENE], [COST_SUSTAINABLE * 2]]]),
+            (1, 3, years),
+        ).copy(),
+        is_sustainable=np.array([True, False, True]),
+        is_submandated=np.array([False, False, True]),
+        mandate_share=np.linspace(0.0, 0.5, years)[None, :],
+        submandate_share=np.minimum(np.linspace(0.0, level, years), np.linspace(0.0, 0.5, years))[
+            None, :
+        ],
+        buyout_price=np.full((1, years), 0.5),
+        submandate_buyout_price=np.full((1, years), 0.9),
+        capacity=np.broadcast_to(
+            np.array([[[CAPACITY], [np.inf], [CAPACITY]]]), (1, 3, years)
+        ).copy(),
+        sat_gamma=np.array([[GAMMA, 0.0, GAMMA]]),
+        sat_n=SAT_N,
+        rampup_limit=np.array([[0.30, 0.0, 0.60]]),
+        rampup_seed=np.array([[DEMAND * 1e-3, 0.0, DEMAND * 2e-2]]),
+        q_init=np.array([[0.0, 0.0, 0.0]]),
+        discount_rate=0.04,
+        pricing_weight=0.0,
+        residual_pathway=1,
+    )
+    defaults.update(overrides)
+    return ClearingInputs(**defaults)
+
+
+def test_submandate_binds_and_is_priced():
+    """The narrower obligation is met, and carries its own shadow price."""
+    inputs = _submandate_case()
+    outputs = clear_market(inputs)
+
+    # The obligation holds every year -- counting the release, which is how an
+    # obligation with a buy-out is satisfied when the ramp-up cannot deliver it.
+    supplied = outputs.volume[0, 2] + outputs.submandate_unmet[0]
+    assert np.all(supplied / inputs.demand[0] - inputs.submandate_share[0] > -1e-7)
+    # On this case it is met by BUILDING, not by paying: the ramp-up is loose enough.
+    assert outputs.submandate_unmet[0].max() / DEMAND < 1e-6
+    # And it costs something where it forces the issue.
+    assert outputs.submandate_price[0].max() > 0
+    # A sub-mandated pathway carries BOTH multipliers: it relaxes both constraints.
+    np.testing.assert_allclose(
+        outputs.marginal_price[0, 2],
+        outputs.energy_price[0] + outputs.compliance_price[0] + outputs.submandate_price[0],
+        rtol=1e-10,
+    )
+    # The generally-eligible pathway carries only the broad one.
+    np.testing.assert_allclose(
+        outputs.marginal_price[0, 0],
+        outputs.energy_price[0] + outputs.compliance_price[0],
+        rtol=1e-10,
+    )
+    _assert_all_finite(outputs)
+
+
+def test_absent_submandate_changes_nothing():
+    """A scenario without one must solve the program it solved before.
+
+    The sub-mandate adds a constraint, a slack variable and an objective term; this is
+    what guarantees they are absent rather than present-and-zero, which would perturb
+    the solver path and quietly move every dual.
+    """
+    plain = clear_market(_multi_year_case())
+    assert plain.submandate_price.shape == plain.compliance_price.shape
+    assert np.all(plain.submandate_price == 0.0)
+    assert np.all(plain.submandate_unmet == 0.0)
+    np.testing.assert_allclose(
+        plain.marginal_price[0, 0],
+        plain.energy_price[0] + plain.compliance_price[0],
+        rtol=1e-12,
+    )
+
+
+def test_no_submandate_price_where_there_is_no_subobligation():
+    """Same degeneracy as the main mandate, at the same place: a zero obligation."""
+    years = 12
+    level = np.zeros(years)
+    level[6:] = 0.10
+    outputs = clear_market(
+        _submandate_case(submandate_share=np.minimum(level, np.linspace(0, 0.5, years))[None, :])
+    )
+    assert np.all(outputs.submandate_price[0, :6] == 0.0)
+    assert outputs.submandate_price[0, 6:].max() > 0
+
+
+def test_submandate_must_be_a_subset_of_the_mandate():
+    """A pathway sub-mandated but not eligible makes the two duals incomparable."""
+    with pytest.raises(ValueError, match="SUBSET"):
+        clear_market(
+            _submandate_case(
+                is_sustainable=np.array([True, False, False]),
+                is_submandated=np.array([False, False, True]),
+            )
+        )
+
+
+def test_submandate_cannot_exceed_the_mandate():
+    years = 12
+    with pytest.raises(ValueError, match="cannot be larger"):
+        clear_market(
+            _submandate_case(
+                mandate_share=np.full((1, years), 0.10),
+                submandate_share=np.full((1, years), 0.20),
+            )
+        )
+
+
+def test_submandate_inputs_must_come_as_a_pair():
+    years = 12
+    # A share without the row set: the kernel cannot know what satisfies it.
+    with pytest.raises(ValueError, match="is_submandated"):
+        clear_market(_submandate_case(is_submandated=None))
+    # A row set without a share: an obligation that does not exist.
+    with pytest.raises(ValueError, match="no obligation"):
+        clear_market(
+            _submandate_case(submandate_share=None, is_submandated=np.array([False, False, True]))
+        )
+    # Neither is not an error -- it is simply a scenario without a sub-mandate.
+    outputs = clear_market(_submandate_case(submandate_share=None, is_submandated=None))
+    assert np.all(outputs.submandate_price == 0.0)
+    assert years == 12
+
+
+def test_submandate_satisfies_complementary_slackness():
+    inputs = _submandate_case()
+    outputs = clear_market(inputs)
+    scale = float(np.max(inputs.demand))
+    cost_scale = float(np.max(inputs.cost))
+    supplied = outputs.volume[:, inputs.is_submandated[0], :].sum(axis=1) + outputs.submandate_unmet
+    slack = np.maximum((supplied - inputs.submandate_share * inputs.demand) / scale, 0.0)
+    residual = float(np.max(outputs.submandate_price * slack) / cost_scale)
+    assert residual < 1e-6, f"sub-mandate price on a slack constraint ({residual:.2e})"

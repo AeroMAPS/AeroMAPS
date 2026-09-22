@@ -116,6 +116,21 @@ class ClearingInputs:
         and does not change because a jurisdiction declines to count the fuel.
     mandate_share
         ``(R, T)`` minimum sustainable fraction of demand, **in [0, 1]**.
+    submandate_share
+        ``(R, T)`` or None. A **second, narrower obligation** on a subset of the
+        eligible pathways, as a fraction of demand -- ReFuelEU's synthetic-fuel
+        sub-target is the motivating case. ``None`` disables it entirely, and the
+        kernel then behaves exactly as before.
+    is_submandated
+        ``(P,)`` or ``(R, P)`` boolean, required when ``submandate_share`` is given.
+        Must be a subset of ``is_sustainable``: a fuel that satisfies the narrow
+        obligation but not the broad one is not a sub-mandate, it is a second
+        unrelated policy, and expressing it this way would make the two duals
+        uninterpretable.
+    submandate_buyout_price
+        ``(R, T)`` or None. Release price for the sub-mandate; defaults to
+        ``buyout_price``. Separate because regulators price the two differently, and
+        because a shared cap would silently tie the two shadow prices together.
     buyout_price
         ``(R, T)`` price of the release penalty, per unit of missing energy. Caps the
         compliance price. Always present: without it an unreachable mandate makes the
@@ -187,6 +202,9 @@ class ClearingInputs:
     closure_tolerance: float = 1e-6
     compute_elasticity: bool = False
     elasticity_step: float = 1e-3
+    submandate_share: np.ndarray | None = None
+    is_submandated: np.ndarray | None = None
+    submandate_buyout_price: np.ndarray | None = None
 
     @property
     def shape(self) -> tuple[int, int, int]:
@@ -293,6 +311,58 @@ class ClearingInputs:
         elif demand_init is not None:
             demand_init = _check("demand_init", demand_init, (regions,))
 
+        submandate_share = self.submandate_share
+        is_submandated = self.is_submandated
+        submandate_buyout = self.submandate_buyout_price
+        if submandate_share is not None:
+            submandate_share = _check("submandate_share", submandate_share, (regions, years))
+            if np.any(submandate_share < 0) or np.any(submandate_share > 1):
+                raise ValueError("submandate_share must be a fraction in [0, 1].")
+            if is_submandated is None:
+                raise ValueError(
+                    "submandate_share was given without is_submandated: the kernel has no "
+                    "way to know which pathways satisfy the narrower obligation."
+                )
+            narrow = np.asarray(is_submandated, dtype=bool)
+            if narrow.shape == (pathways,):
+                narrow = np.broadcast_to(narrow, (regions, pathways)).copy()
+            is_submandated = _check("is_submandated", narrow, (regions, pathways), bool)
+            if not is_submandated.any():
+                raise ValueError(
+                    "submandate_share is set but no pathway is sub-mandated, so the "
+                    "obligation can only ever be met by paying the release price."
+                )
+            # A sub-mandate is a narrowing of the mandate. Allowing a pathway that
+            # satisfies the narrow obligation but not the broad one would make the two
+            # duals incomparable: the same unit of fuel would carry one price towards a
+            # target it does meet and none towards a target it does not.
+            rogue = is_submandated & ~is_sustainable
+            if rogue.any():
+                where = np.argwhere(rogue)[0]
+                raise ValueError(
+                    f"Pathway {where[1]} is sub-mandated in region {where[0]} but not "
+                    "eligible for the main mandate. A sub-mandate must be a SUBSET of "
+                    "the mandate; two unrelated obligations need two separate mandates."
+                )
+            if np.any(submandate_share > mandate_share + 1e-12):
+                where = np.argwhere(submandate_share > mandate_share + 1e-12)[0]
+                raise ValueError(
+                    f"submandate_share exceeds mandate_share at region {where[0]}, year "
+                    f"index {where[1]} ({submandate_share[tuple(where)]:.4g} > "
+                    f"{mandate_share[tuple(where)]:.4g}). The narrower obligation cannot "
+                    "be larger than the one it narrows."
+                )
+            submandate_buyout = (
+                buyout_price
+                if submandate_buyout is None
+                else _check("submandate_buyout_price", submandate_buyout, (regions, years))
+            )
+        elif is_submandated is not None:
+            raise ValueError(
+                "is_submandated was given without submandate_share; there is no "
+                "obligation for it to apply to."
+            )
+
         residual = self.residual_pathway
         if residual is None:
             # A residual must be ineligible EVERYWHERE: it absorbs the balance, so a
@@ -314,6 +384,9 @@ class ClearingInputs:
             demand=demand,
             cost=cost,
             is_sustainable=is_sustainable,
+            submandate_share=submandate_share,
+            is_submandated=is_submandated,
+            submandate_buyout_price=submandate_buyout,
             mandate_share=mandate_share,
             buyout_price=buyout_price,
             capacity=capacity,
@@ -363,6 +436,8 @@ class ClearingOutputs:
     unmet: np.ndarray
     energy_price: np.ndarray
     compliance_price: np.ndarray
+    submandate_price: np.ndarray
+    submandate_unmet: np.ndarray
     rampup_price: np.ndarray
     marginal_price: np.ndarray
     market_mfsp: np.ndarray
@@ -479,6 +554,23 @@ def _solve_scaled(inputs: ClearingInputs, energy_scale: float, cost_scale: float
     mandate = mandate_selector @ q + x >= cp.multiply(inputs.mandate_share, demand)
     constraints = [energy_balance, mandate]
 
+    # The sub-mandate is the same shape of constraint on a narrower row set, with its
+    # own slack and its own release price. Built only when asked for, so a scenario
+    # without one solves the identical program it did before.
+    submandate = None
+    x_sub = None
+    if inputs.submandate_share is not None:
+        submandate_selector = np.zeros((regions, rows))
+        submandate_selector[region_of_row, np.arange(rows)] = inputs.is_submandated.ravel().astype(
+            float
+        )
+        x_sub = cp.Variable((regions, years), nonneg=True, name="unmet_submandate")
+        submandate = submandate_selector @ q + x_sub >= cp.multiply(inputs.submandate_share, demand)
+        constraints.append(submandate)
+        objective = objective + cp.sum(
+            cp.multiply((inputs.submandate_buyout_price / cost_scale) * discount[None, :], x_sub)
+        )
+
     # --- ramp-up, sustainable pathways only ----------------------------------
     sustainable_index = np.flatnonzero(rampup_rows)
     rampup = None
@@ -552,6 +644,8 @@ def _solve_scaled(inputs: ClearingInputs, energy_scale: float, cost_scale: float
         "x": np.asarray(x.value),
         "energy_dual": np.asarray(energy_balance.dual_value),
         "mandate_dual": np.asarray(mandate.dual_value),
+        "submandate_dual": None if submandate is None else np.asarray(submandate.dual_value),
+        "x_sub": None if x_sub is None else np.asarray(x_sub.value),
         "rampup_dual": None if rampup is None else np.asarray(rampup.dual_value),
         "sustainable_index": sustainable_index,
         "discount": discount,
@@ -629,6 +723,17 @@ def clear_market(inputs: ClearingInputs) -> ClearingOutputs:
     # rather than overriding the solver.
     compliance_price = np.where(inputs.mandate_share > 0, compliance_price, 0.0)
 
+    # Same construction, same degeneracy, same remedy: where the narrower obligation is
+    # zero its constraint is implied by the variable bounds, so the multiplier is free
+    # and lambda = 0 is the meaningful member of that set.
+    if solved["submandate_dual"] is None:
+        submandate_price = np.zeros((regions, years))
+        submandate_unmet = np.zeros((regions, years))
+    else:
+        submandate_price = solved["submandate_dual"] * to_current_price
+        submandate_price = np.where(inputs.submandate_share > 0, submandate_price, 0.0)
+        submandate_unmet = solved["x_sub"] * energy_scale
+
     # The mirror image, at the other end. Where the obligation covers ALL demand, the
     # mandate `sum q_s + x >= D` and the balance `sum q = D` have the same active rows:
     # every excluded pathway is forced to zero by the obligation rather than by cost.
@@ -695,9 +800,16 @@ def clear_market(inputs: ClearingInputs) -> ClearingOutputs:
     volume[:, residual, :] = np.maximum(closed, 0.0)
 
     # --- prices and rent -----------------------------------------------------
+    # A sub-mandated unit satisfies the narrow obligation AND the broad one, so it
+    # carries both multipliers. That is not double counting: they price two distinct
+    # constraints, and a unit of e-fuel genuinely relaxes both.
     marginal_price = energy_price[:, None, :] + (
         compliance_price[:, None, :] * inputs.is_sustainable[:, :, None]
     )
+    if inputs.is_submandated is not None:
+        marginal_price = marginal_price + (
+            submandate_price[:, None, :] * inputs.is_submandated[:, :, None]
+        )
     average_cost = _average_cost(
         inputs.cost, volume, inputs.capacity, inputs.sat_gamma, inputs.sat_n
     )
@@ -710,6 +822,7 @@ def clear_market(inputs: ClearingInputs) -> ClearingOutputs:
         unmet,
         energy_price,
         compliance_price,
+        submandate_price,
         rampup_price,
         marginal_price,
         market_mfsp,
@@ -722,6 +835,7 @@ def clear_market(inputs: ClearingInputs) -> ClearingOutputs:
             "unmet",
             "energy_price",
             "compliance_price",
+            "submandate_price",
             "rampup_price",
             "marginal_price",
             "market_mfsp",
@@ -775,6 +889,8 @@ def clear_market(inputs: ClearingInputs) -> ClearingOutputs:
         unmet=unmet,
         energy_price=energy_price,
         compliance_price=compliance_price,
+        submandate_price=submandate_price,
+        submandate_unmet=submandate_unmet,
         rampup_price=rampup_price,
         marginal_price=marginal_price,
         market_mfsp=market_mfsp,

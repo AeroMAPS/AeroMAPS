@@ -23,13 +23,6 @@ not change any ordering, while an MDA per cell would cost minutes each and put t
 
 Three caveats, all of which change how the results below should be read.
 
-**One mandate per region.** The kernel has no *sub-mandate*, so ReFuelEU's separate
-synthetic-fuel obligation cannot be expressed. Sub-mandates are the main reason a real
-scenario has five fuels rather than two, so this is the first thing to add if these
-cases are to be used for anything beyond illustration -- and note that a sub-mandate
-would force e-fuel early, which is exactly the effect the exclusion produces here by
-accident.
-
 **2050 is the last year.** The obligation's steepest step (42 % to 70 %) is also the
 horizon, so a market with perfect foresight has no reason to build past it. Every
 result that turns on "what is built by the final step" is therefore partly a terminal
@@ -94,12 +87,36 @@ ELIGIBLE = {
     "region_B": ["hefa_fog", "hefa_crop", "atj", "efuel"],
 }
 
+# ReFuelEU Aviation's synthetic-fuel sub-target (Annex I), in percent of demand. Each
+# level holds until the next begins, like the headline obligation.
+SYNTHETIC_SUBMANDATE = {
+    2030: 1.2,
+    2032: 2.0,
+    2034: 5.0,
+    2036: 7.0,
+    2038: 10.0,
+    2040: 15.0,
+    2042: 20.0,
+    2044: 25.0,
+    2046: 30.0,
+    2048: 35.0,
+}
+
 RAMPUP = 0.25
 SEED_SHARE = 0.015  # the calibrated value, see REPORT.md section 9.2
 BUYOUT = 0.20
 
 
-def build(mandate_scale=1.0, eligible=None, capacity_share=None, cost=None):
+def submandate_trajectory(years):
+    """ReFuelEU's synthetic sub-target as a step function over the model's year index."""
+    level, out = 0.0, np.zeros(len(years))
+    for i, year in enumerate(years):
+        level = SYNTHETIC_SUBMANDATE.get(int(year), level)
+        out[i] = level / 100.0
+    return out
+
+
+def build(mandate_scale=1.0, eligible=None, capacity_share=None, cost=None, submandate=False):
     """A five-fuel, two-region case on the bench's demand and obligation."""
     bench = load_bench()
     demand = bench["demand"]
@@ -135,11 +152,23 @@ def build(mandate_scale=1.0, eligible=None, capacity_share=None, cost=None):
             rampup_seed[:, p] = SEED_SHARE * peak
     q_init[:, RESIDUAL] = demand[:, 0]
 
+    mandate_share = np.clip(bench["reference_share"] * mandate_scale, 0.0, 1.0)
+    submandate_share = is_submandated = None
+    if submandate:
+        efuel = np.zeros(pathways, dtype=bool)
+        efuel[FUELS.index("efuel")] = True
+        is_submandated = efuel
+        # Clipped to the headline obligation: the narrow target cannot exceed the broad
+        # one it narrows, and at a scaled-down mandate it otherwise would.
+        submandate_share = np.minimum(submandate_trajectory(bench["years"])[None, :], mandate_share)
+
     return ClearingInputs(
         demand=demand,
         cost=cost_array,
         is_sustainable=is_sustainable,
-        mandate_share=np.clip(bench["reference_share"] * mandate_scale, 0.0, 1.0),
+        mandate_share=mandate_share,
+        submandate_share=submandate_share,
+        is_submandated=is_submandated,
         buyout_price=np.full((regions, years), BUYOUT),
         capacity=capacity,
         sat_gamma=sat_gamma,
@@ -338,9 +367,105 @@ def feedstock_squeeze(shares=(0.04, 0.06, 0.08, 0.12, 0.20, 0.40)):
     return mid, final, mix
 
 
+def synthetic_submandate():
+    """ReFuelEU's synthetic-fuel sub-target, against the same scenario without one.
+
+    The headline obligation says how much must be sustainable; the sub-target says how
+    much of it must be the pathway that does not depend on a limited feedstock. The two
+    are usually argued about separately. They are not separable.
+    """
+    bench = load_bench()
+    years = bench["years"]
+    without = clear_market(build())
+    sub_inputs = build(submandate=True)
+    with_sub = clear_market(sub_inputs)
+    efuel = FUELS.index("efuel")
+
+    figure, axes = plt.subplots(1, 3, figsize=(15.0, 4.3), constrained_layout=True)
+
+    axes[0].plot(
+        years,
+        100 * without.volume[0, efuel] / bench["demand"][0],
+        "-",
+        color="#6b7280",
+        label="no sub-target",
+    )
+    axes[0].plot(
+        years,
+        100 * with_sub.volume[0, efuel] / bench["demand"][0],
+        "-",
+        color="#a93226",
+        label="with sub-target",
+    )
+    axes[0].plot(
+        years,
+        100 * sub_inputs.submandate_share[0],
+        "--",
+        color="black",
+        linewidth=1.2,
+        label="sub-target",
+    )
+    axes[0].set_ylabel("e-fuel share of drop-in energy, %")
+    axes[0].set_title("What the sub-target forces", fontsize=10)
+
+    axes[1].plot(years, without.compliance_price[0], "-", color="#6b7280", label="no sub-target")
+    axes[1].plot(years, with_sub.compliance_price[0], "-", color="#a93226", label="with sub-target")
+    axes[1].set_ylabel("main compliance price, EUR/MJ")
+    axes[1].set_title("What it does to the MAIN obligation", fontsize=10)
+
+    axes[2].plot(years, with_sub.submandate_price[0], "-", color="#1f5f8b")
+    axes[2].set_ylabel("sub-target price, EUR/MJ")
+    axes[2].set_title("What the sub-target itself costs", fontsize=10)
+
+    for axis in axes:
+        axis.set_xlabel("year")
+        axis.set_xlim(2025, years[-1])
+        axis.spines[["top", "right"]].set_visible(False)
+    for axis in axes[:2]:
+        axis.legend(frameon=False, fontsize=8)
+    figure.suptitle(
+        "A sub-target moves cost between instruments -- it does not remove any "
+        "(total fuel bill +5.1 %)",
+        fontsize=11,
+    )
+    FIGURES.mkdir(parents=True, exist_ok=True)
+    target = FIGURES / "policy_submandate.png"
+    figure.savefig(target, dpi=150)
+    plt.close(figure)
+    print(f"wrote {target}")
+
+    for year in (2030, 2040, 2050):
+        i = int(np.where(years == year)[0][0])
+        print(
+            f"  {year}: e-fuel {100 * without.volume[0, efuel, i] / bench['demand'][0, i]:5.1f} %"
+            f" -> {100 * with_sub.volume[0, efuel, i] / bench['demand'][0, i]:5.1f} %"
+            f"   main price {without.compliance_price[0, i]:.5f} -> "
+            f"{with_sub.compliance_price[0, i]:.5f}"
+            f"   sub price {with_sub.submandate_price[0, i]:.5f}"
+        )
+    released = with_sub.submandate_unmet[0].sum() / bench["demand"][0].sum()
+    print(f"  sub-target met by building, not paying: released {100 * released:.3f} % of demand")
+
+    # The main compliance price falls in every year, which is easy to misread as the
+    # sub-target making compliance cheaper. It cannot: it is an extra constraint on the
+    # same program, so the optimum can only get dearer. What falls is the price of ONE
+    # instrument, because the other is now doing that work.
+    weights = bench["demand"][0] / bench["demand"][0].sum()
+    before, after = _delivered(without)[0], _delivered(with_sub)[0]
+    bill = lambda o: float((o.market_mfsp[0] * o.volume[0]).sum())  # noqa: E731
+    print(
+        f"  total discounted production cost {100 * (with_sub.diagnostics['objective_scaled'] / without.diagnostics['objective_scaled'] - 1):+.1f} %"
+        f"   fuel bill {100 * (bill(with_sub) / bill(without) - 1):+.1f} %"
+        f"   demand-weighted delivered price {100 * ((after * weights).sum() / (before * weights).sum() - 1):+.1f} %"
+    )
+    return without, with_sub
+
+
 if __name__ == "__main__":
     fuel_mix()
     print()
     cost_of_exclusion()
     print()
     feedstock_squeeze()
+    print()
+    synthetic_submandate()
