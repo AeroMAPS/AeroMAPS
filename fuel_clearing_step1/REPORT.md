@@ -14,13 +14,14 @@ detail behind most of what follows.
 |---|---|
 | `_setup_unified_mda` fix merged, with a test | **Already on this base** — `a27bd252`. No work needed (§1.1) |
 | `INVENTORY.md` and the reference input set | **Done** |
-| Kernel, tests 3.3.a–3.3.i green | **Done** — 21 tests, plus 3.3.j timings |
-| New mode operational; current mode untouched; first coupled run | **Not started** (J4–J5) |
-| Measurements 4.5.1 and 4.5.2, with figures | **Not started**. The 3.3.f figure exists |
+| Kernel, tests 3.3.a–3.3.i green | **Done** — 23 tests, plus 3.3.j timings |
+| New mode operational; current mode untouched; first coupled run | **Done** — §8 |
+| Measurement 4.5.2 (coupled convergence) | **Done** — §8.3 |
+| Measurement 4.5.1 (saturation grid), with figures | Kernel-level done (§5.4); coupled grid §8.4 |
 
-Existing suite: **277 passed** (6 min 49 s), unmodified. Nothing in shared code has
-been touched yet, so that is expected rather than reassuring — the guard-rail that
-matters is the one after J4.
+Existing suite: **281 passed** (6 min 25 s) with the mode wired and shared code
+modified — which, unlike the earlier run against untouched code, is the guard-rail
+that actually means something.
 
 ---
 
@@ -545,6 +546,116 @@ solve, pas un solve unique". Route 2 is the principled one.
 **Action:** the guard stays, but its message should name the concavity, not the loop,
 so whoever hits it knows which of the two routes they are choosing between. Written up
 here rather than implemented, since the guard itself lands with J4.
+
+---
+
+## 8. J4: the market inside the MDA
+
+`FuelClearing` is a **global**, non-namespaced discipline. It reads every region's
+drop-in demand and pathway costs in one call and clears them in one convex program.
+`EnergyUseChoice` is not instantiated in this mode — the market decides the volumes
+rather than allocating them against a fixed share — and emits the same nine output
+families under the same names, from the shared `derive_share_families()` rather than a
+second copy of that arithmetic.
+
+### 8.1 Which price goes where, and why net is not the same as gross
+
+The market **decides on net cost and reports on gross**, and both halves matter.
+
+It decides on `{p}_net_mfsp` because that is what determines which pathway is marginal.
+Measured on the bench, whose carbon tax is 5 EUR/t — not zero, which was itself a
+surprise:
+
+| 2050, region A | `mean_mfsp` | `net_mfsp` | carbon tax |
+|---|---|---|---|
+| hefa_fog | 0.023170 | 0.023273 | 0.000103 |
+| fossil_kerosene | 0.012000 | 0.012443 | 0.000443 |
+
+Kerosene is taxed 4.3× harder per MJ (88.6 vs 20.6 gCO₂/MJ), so the premium the mandate
+has to bridge is 0.011170 gross but **0.010830 net, 3 % smaller**. Extrapolating those
+factors, the premium reaches zero near **164 EUR/tCO₂**: above that the ordering
+reverses, the mandate stops binding and the market buys sustainable fuel unprompted. A
+market clearing on gross MFSP could never produce that result.
+
+It reports on the gross basis because `DirectOperatingCosts` adds the carbon tax as its
+**own line** on top of the fuel line. Publishing a net-basis price into `mean_mfsp`
+would count the tax twice. So:
+
+```
+market_mfsp_p = (1−w)·average_cost_p + w·marginal_price_p − (net_mfsp_p − mean_mfsp_p)
+```
+
+Every existing reporting line keeps its meaning, including the carbon-tax component
+shown separately. At `w = 0` with no scarcity, `average_cost_p = net_mfsp_p` and the
+expression collapses to `mean_mfsp_p` exactly — which is what makes §8.2 possible.
+
+**A passenger-level tax is deliberately NOT in the objective.** It is uniform across
+fuels, so it cannot change which pathway is marginal; including it would be wrong, not
+conservative. It still reaches the market, through demand — airfare, elasticity, fuel
+demand, clearing — which is the loop the MDA closes anyway.
+
+**`{p}_market_mfsp` has no existing equivalent.** Two things in AeroMAPS are called
+marginal and neither does this job. `{p}_marginal_mfsp` exists only in the bottom-up
+cost model (out of scope per decision 6) and means the newest vintage's cost.
+`{type}_marginal_net_mfsp` is `max_p net_mfsp_p` and is **consumed by nothing** — BRIEF2
+§6 already flagged it. A maximum over pathway costs is capped by the dearest pathway; a
+shadow price is not. On the bench the market's marginal price reaches 0.06698 in 2035,
+**2.89× the dearest pathway**, and 0.03388 in 2050 (×1.46). The gap is the scarcity
+rent, and it is the quantity this whole mode exists to produce.
+
+### 8.2 The reproduction test, end to end
+
+With nothing scarce (`γ = 0`, loose ramp-up, buy-out far above any cost, `w = 0`) the
+mode must reproduce the current mode. It does — and not only in the volumes, which is
+all test 3.3.c could check:
+
+| 2050, both regions | reference | market | worst relative, all years |
+|---|---|---|---|
+| `hefa_fog_energy_consumption` | 9.84171e12 | 9.84171e12 | 1.1e-09 |
+| `fossil_kerosene_energy_consumption` | 4.21788e12 | 4.21788e12 | 8.2e-10 |
+| `hefa_fog_share_dropin_fuel` | 70 | 70 | 1.9e-09 |
+| `dropin_fuel_mean_mfsp` | 0.019819 | 0.019819 | 1.8e-10 |
+| `dropin_fuel_mean_co2_emission_factor` | 41.1 | 41.1 | 1.0e-09 |
+| `co2_emissions_passenger` | 493.04 | 493.04 | 6.3e-10 |
+| `airfare_per_rpk` | 0.0867286 | 0.0867286 | 5.1e-11 |
+| `rpk` | 1.98233e13 | 1.98233e13 | 1.6e-11 |
+
+**Worst relative difference across every variable and year: 1.9e-09.**
+
+An independent confirmation fell out of it: the no-scarcity compliance price came back
+at **0.01083**, which is the *net*-basis premium measured in §8.1 (0.010830) and not the
+gross one (0.011170). The decide-on-net rule is doing what it says.
+
+### 8.3 Measurement 4.5.2 — the coupled fixed point
+
+Turn scarcity on (ramp-up 20 %/yr, capacity 1.1e13, `γ = 1`, `n = 4`) and the market
+reaches the traffic loop:
+
+| | no scarcity | scarce, `w = 0` | scarce, `w = 1` |
+|---|---|---|---|
+| delivered price 2050 | 0.019819 | 0.021839 (+10.2 %) | 0.04020 (**+103 %**) |
+| max compliance price | 0.01083 | 0.047886 | — |
+| RPK 2050 | 1.98233e13 | −1.2 % | **−10.8 %** |
+| CO₂ 2050 | 493.04 | −1.2 % | — |
+
+**At `w = 1` the loop does not converge under the default solver.** AeroMAPS builds the
+unified chain with `MDAGaussSeidel`, `over_relaxation_factor = 1.0` and
+`acceleration_method = NONE`; the residual stalls at 2.1e-1 after 200 iterations, in
+`ask` and `rpk` — the traffic loop, not the market.
+
+| inner MDA setting | residual |
+|---|---|
+| undamped (the default) | 2.1e-1 — stalls |
+| `over_relaxation_factor` 0.7 | 3.9e-8 |
+| `over_relaxation_factor` 0.5 | 1.3e-6 — *worse*, over-damped |
+| **Secant** | **converged** |
+| **Alternate-2-delta** | **converged** |
+
+Damping alone does not reach the 1e-10 tolerance; acceleration does, and the two
+accelerated runs agree exactly. This is the measured answer to 4.5.2: **a strongly
+priced market needs an acceleration method, not more iterations.** It is also the
+reason `w` cannot be treated as a free scenario dial without saying which solver
+settings go with it — at `w = 0` the default settings are fine.
 
 ---
 
