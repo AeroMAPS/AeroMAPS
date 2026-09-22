@@ -1,0 +1,7 @@
+# latexmk build products; the .tex and figures are the sources
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.toc
