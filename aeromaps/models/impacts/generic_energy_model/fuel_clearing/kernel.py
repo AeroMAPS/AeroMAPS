@@ -105,7 +105,15 @@ class ClearingInputs:
         ``{p}_mean_mfsp`` from the top-down cost model -- already a full cost, capex
         included, which is why capacity carries no cost of its own here.
     is_sustainable
-        ``(P,)`` boolean. True where the pathway counts towards the mandate.
+        ``(P,)`` or ``(R, P)`` boolean. True where the pathway counts towards the
+        mandate. The per-region form is **eligibility**, not chemistry: the same fuel
+        may count towards one jurisdiction's obligation and not another's, which is how
+        real mandates differ (feedstock rules, certification, origin). Normalised to
+        ``(R, P)`` by :meth:`validate`.
+
+        Eligibility governs the *mandate* only. The ramp-up follows "sustainable in at
+        least one region", because a growth limit is an industrial capacity constraint
+        and does not change because a jurisdiction declines to count the fuel.
     mandate_share
         ``(R, T)`` minimum sustainable fraction of demand, **in [0, 1]**.
     buyout_price
@@ -208,7 +216,10 @@ class ClearingInputs:
                 raise ValueError(f"{name} must have shape {shape}; got {value.shape}")
             return value
 
-        is_sustainable = _check("is_sustainable", self.is_sustainable, (pathways,), bool)
+        eligibility = np.asarray(self.is_sustainable, dtype=bool)
+        if eligibility.shape == (pathways,):
+            eligibility = np.broadcast_to(eligibility, (regions, pathways)).copy()
+        is_sustainable = _check("is_sustainable", eligibility, (regions, pathways), bool)
         mandate_share = _check("mandate_share", self.mandate_share, (regions, years))
         buyout_price = _check("buyout_price", self.buyout_price, (regions, years))
         capacity = _check("capacity", self.capacity, (regions, pathways, years))
@@ -284,7 +295,9 @@ class ClearingInputs:
 
         residual = self.residual_pathway
         if residual is None:
-            candidates = np.flatnonzero(~is_sustainable)
+            # A residual must be ineligible EVERYWHERE: it absorbs the balance, so a
+            # pathway that counts towards some region's mandate cannot play that part.
+            candidates = np.flatnonzero(~is_sustainable.any(axis=0))
             if candidates.size != 1:
                 raise ValueError(
                     "residual_pathway could not be inferred: the exact-closure step needs "
@@ -455,7 +468,11 @@ def _solve_scaled(inputs: ClearingInputs, energy_scale: float, cost_scale: float
     balance_selector[region_of_row, np.arange(rows)] = 1.0
 
     mandate_selector = np.zeros((regions, rows))
-    sustainable_rows = np.tile(inputs.is_sustainable, regions)
+    # Two different row sets. The MANDATE counts only what each region declares
+    # eligible; the RAMP-UP applies wherever the pathway is eligible anywhere, since an
+    # industrial growth limit is not a policy choice.
+    sustainable_rows = inputs.is_sustainable.ravel()
+    rampup_rows = np.tile(inputs.is_sustainable.any(axis=0), regions)
     mandate_selector[region_of_row, np.arange(rows)] = sustainable_rows.astype(float)
 
     energy_balance = balance_selector @ q == demand
@@ -463,7 +480,7 @@ def _solve_scaled(inputs: ClearingInputs, energy_scale: float, cost_scale: float
     constraints = [energy_balance, mandate]
 
     # --- ramp-up, sustainable pathways only ----------------------------------
-    sustainable_index = np.flatnonzero(sustainable_rows)
+    sustainable_index = np.flatnonzero(rampup_rows)
     rampup = None
     if sustainable_index.size:
         q_sustainable = q[sustainable_index, :]
@@ -573,7 +590,7 @@ def clear_market(inputs: ClearingInputs) -> ClearingOutputs:
     energy_scale = float(np.max(inputs.demand))
     if energy_scale <= 0:
         raise ValueError("demand is zero everywhere; there is no market to clear.")
-    fossil = ~inputs.is_sustainable
+    fossil = ~inputs.is_sustainable.any(axis=0)
     reference_cost = inputs.cost[:, fossil, :] if fossil.any() else inputs.cost
     cost_scale = float(np.mean(reference_cost))
     if not np.isfinite(cost_scale) or cost_scale <= 0:
@@ -632,11 +649,13 @@ def clear_market(inputs: ClearingInputs) -> ClearingOutputs:
     full_mandate = inputs.mandate_share >= 1.0 - _FULL_MANDATE_TOLERANCE
     if full_mandate.any():
         total = energy_price + compliance_price
+        # Per region: the cheapest pathway that region's own obligation excludes.
         excluded = ~inputs.is_sustainable
-        if excluded.any():
-            pinned = np.min(inputs.cost[:, excluded, :], axis=1)
-        else:
-            pinned = total
+        pinned = np.where(
+            excluded.any(axis=1)[:, None],
+            np.min(np.where(excluded[:, :, None], inputs.cost, np.inf), axis=1),
+            total,
+        )
         # lambda_M stays a multiplier: non-negative, and capped by the buy-out, which is
         # what releases the obligation in the first place.
         share = np.clip(total - pinned, 0.0, inputs.buyout_price)
@@ -677,7 +696,7 @@ def clear_market(inputs: ClearingInputs) -> ClearingOutputs:
 
     # --- prices and rent -----------------------------------------------------
     marginal_price = energy_price[:, None, :] + (
-        compliance_price[:, None, :] * inputs.is_sustainable[None, :, None]
+        compliance_price[:, None, :] * inputs.is_sustainable[:, :, None]
     )
     average_cost = _average_cost(
         inputs.cost, volume, inputs.capacity, inputs.sat_gamma, inputs.sat_n
