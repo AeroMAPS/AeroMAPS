@@ -627,3 +627,89 @@ def test_price_split_is_pinned_under_a_full_obligation():
     np.testing.assert_allclose(
         outputs.energy_price[0, -1], just_under.energy_price[0, -1], rtol=1e-6
     )
+
+
+# --- complementary slackness, the property behind every degeneracy found so far ------
+
+
+def _slackness_residuals(inputs, outputs):
+    """``lambda * slack`` for each inequality family, in price units over the cost scale.
+
+    Complementary slackness says a multiplier may be non-zero only where its constraint
+    is tight. Every dual defect found in this kernel violated it: a compliance price
+    where the obligation was zero, a price split where two constraints coincided, a
+    multiplier on a constraint that could not bind.
+
+    The normalisation matters. Judging "slack wherever lambda exceeds a threshold"
+    reports the slack of any year whose dual carries solver noise, and dividing by
+    ``max(lambda)`` blows up precisely in the slack case the check exists for. The
+    product, against the cost scale, is stable in both limits.
+    """
+    scale = float(np.max(inputs.demand))
+    cost_scale = float(np.max(inputs.cost))
+    sustainable = inputs.is_sustainable
+
+    previous = np.concatenate([inputs.q_init[:, :, None], outputs.volume[:, :, :-1]], axis=2)
+    allowance = inputs.rampup_seed[..., None] + (1.0 + inputs.rampup_limit[..., None]) * previous
+    rampup_slack = np.maximum((allowance - outputs.volume) / scale, 0.0)[:, sustainable, :]
+    rampup = float(np.max(outputs.rampup_price[:, sustainable, :] * rampup_slack) / cost_scale)
+
+    supplied = outputs.volume[:, sustainable, :].sum(axis=1) + outputs.unmet
+    mandate_slack = np.maximum((supplied - inputs.mandate_share * inputs.demand) / scale, 0.0)
+    mandate = float(np.max(outputs.compliance_price * mandate_slack) / cost_scale)
+
+    return rampup, mandate
+
+
+@pytest.mark.parametrize(
+    "label,overrides",
+    [
+        ("baseline", {}),
+        ("ramp-up so loose it cannot bind", {"rampup_limit": np.array([[1.0e3, 0.0]])}),
+        ("seed so large the ramp-up is slack", {"rampup_seed": np.array([[DEMAND, 0.0]])}),
+        ("saturation off", {"sat_gamma": np.array([[0.0, 0.0]])}),
+        ("tight ramp-up", {"rampup_limit": np.array([[0.10, 0.0]])}),
+        ("cheap buy-out", {"buyout_price": np.full((1, 12), 0.02)}),
+        ("stiff saturation", {"sat_n": 16.0}),
+    ],
+)
+def test_complementary_slackness_holds_in_every_regime(label, overrides):
+    """No price on a constraint that is not tight, whatever the regime.
+
+    Parametrised rather than written once because the degeneracies this guards against
+    appeared at the *edges* -- a zero obligation, a full one, a constraint that cannot
+    bind -- and a single mid-range case sees none of them.
+    """
+    inputs = _multi_year_case(**overrides)
+    outputs = clear_market(inputs)
+    rampup, mandate = _slackness_residuals(inputs, outputs)
+
+    # Clarabel runs at 1e-9 on a scaled problem, so a residual of order 1e-8 is the
+    # solver's own accuracy rather than a modelling defect. The phantom compliance
+    # price this replaces scored 0.46 on the same measure.
+    assert rampup < 1e-6, f"{label}: ramp-up price on a slack constraint ({rampup:.2e})"
+    assert mandate < 1e-6, f"{label}: compliance price on a slack mandate ({mandate:.2e})"
+
+
+def test_capacity_is_inert_when_saturation_is_off():
+    """With ``gamma = 0`` the capacity enters no term, so it must change nothing.
+
+    Worth pinning because the capacity is the only input that reaches the objective
+    through two guards (``isfinite`` and ``gamma > 0``); a change to either could let a
+    capacity silently start mattering in scenarios that declared no saturation.
+    """
+    base = None
+    for capacity in (5.0e12, 1.0e12, 1.0e11, np.inf):
+        outputs = clear_market(
+            _multi_year_case(
+                sat_gamma=np.array([[0.0, 0.0]]),
+                capacity=np.broadcast_to(np.array([[[capacity], [np.inf]]]), (1, 2, 12)).copy(),
+            )
+        )
+        signature = np.concatenate(
+            [outputs.volume.ravel(), outputs.market_mfsp.ravel(), outputs.compliance_price.ravel()]
+        )
+        if base is None:
+            base = signature
+        else:
+            np.testing.assert_allclose(signature, base, rtol=0, atol=0)

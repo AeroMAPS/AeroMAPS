@@ -64,6 +64,15 @@ DEFAULT_SETTINGS = {
     # (decision 9). Capacity is different -- there inf is the documented way to say
     # "this pathway does not saturate" and the kernel tests for it.
     "rampup_limit": 1.0e3,
+    # Defaults are "no ramp-up", so the mode reproduces the current one out of the box.
+    # When the ramp-up IS switched on, `rampup_seed_share` is not a free dial: in the
+    # correspondence with the optimisation mode's Eq. 12 it is that constraint's volume
+    # branch, `dE * dt`. The published calibration is
+    # `volume_ramp_up_constraint_biofuel = 0.2 EJ/yr` scaled by an ASK share of 0.1549,
+    # which is about 1.5 % of that scenario's annual demand -- so `0.015` is the
+    # calibrated annual value, and anything far from it is a different assumption about
+    # industrial capacity addition, not a tuning choice. It matters: on the step-1 bench
+    # the seed moves the compliance price 4.3x across the range 0.001 to 1.0.
     "rampup_seed_share": 1.0,
     "rampup_form": "relative",
     "buyout_price": 1.0e3,

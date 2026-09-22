@@ -758,6 +758,72 @@ including the failures, so the figure does not silently interpolate over them.
 
 ---
 
+## 9. The two open decisions, settled
+
+### 9.1 Degeneracy candidates (was §7.5): both clean
+
+Tested, and **neither is a defect**.
+
+**The ramp-up dual as `g -> infinity`** never reaches exactly zero, but that was a
+misreading on my part: with `q_init = 0` the first year's constraint is `q <= seed`,
+which binds regardless of `g`. The *seed* controls first-year binding, not the growth
+rate. Raising the seed instead drops the dual to 3e-13, as it should.
+
+**The capacity as `gamma -> 0`** is perfectly inert — outputs identical to the last bit
+across capacities from 0.1x to infinite. With `gamma = 0` the term is absent from the
+objective, so there is no multiplier to be degenerate.
+
+The useful artefact is the check rather than the result. **Complementary slackness** —
+a multiplier may be non-zero only where its constraint is tight — is the single property
+that all three real degeneracies violated, and nothing tested it. It is now a
+parametrised test over seven regimes and all three inequality families, chosen at the
+*edges* (zero obligation, full obligation, a constraint that cannot bind) because a
+mid-range case sees none of them. Worst residual across the lot: **1.4e-8**, solver
+noise; the phantom compliance price scored 0.46 on the same measure.
+
+Two notes on the metric, because I got it wrong twice before it was right. Testing
+"slack wherever lambda exceeds a threshold" reports the slack of any year whose dual
+carries noise — it measures the noise floor, not the model. Normalising the product by
+`max(lambda)` blows up exactly in the slack case the check exists for, since the
+denominator goes to zero. The stable form is `lambda * slack/demand` against the cost
+scale.
+
+### 9.2 Ramp-up form for the headline comparison: `relative`
+
+Measured on the bench, the two forms differ in ways that decide the question.
+
+| | `relative` | `share_increment` |
+|---|---|---|
+| excess over paper Eq. 12 | **0.73 %**, independent of `g` | 5.5 % at `g=0.10` → 13.0 % at `g=0.30` |
+| compliance price vs seed (0.001 → 1.0) | 0.05000 → 0.01176 (**4.3x**) | 0.01176 throughout |
+| free parameters | `g`, `seed` | `g` |
+
+`share_increment` looks better on robustness — it has no seed — but it is a much looser
+relaxation of Eq. 12, and the looseness *grows with `g`*, so a comparison against the
+optimisation mode would be confounded by the very parameter being swept.
+
+**And the seed is not a free parameter.** In the Eq. 12 correspondence it *is* that
+constraint's volume branch, `dE*dt`. The published calibration is
+`volume_ramp_up_constraint_biofuel = 0.2 EJ/yr` at an ASK share of 0.1549 — about
+**1.5 % of annual demand**. So the 4.3x sensitivity is not arbitrariness; it is Eq. 12's
+second branch doing real work, and the honest fix is to derive the seed rather than pick
+it. `0.005` as used in the sweeps is roughly 3x tighter than the published calibration.
+
+**Decision: the headline comparison uses `relative`, with the seed derived from `dE`.**
+That gives a relaxation 0.73 % looser than Eq. 12 with no free parameters beyond the two
+the optimisation mode itself has.
+
+`share_increment` stays, as the **policy-facing** form: "the sustainable share may rise
+by at most `g` points per year" is how an obligation is usually argued about, and it
+needs no seed. It must be labelled as *not* comparable to the optimisation mode, because
+its gap to Eq. 12 depends on `g`.
+
+The defaults stay "no ramp-up" (`g = 1e3`, seed = 1.0x demand) so the mode still
+reproduces the current one out of the box; 1.5 % is the calibrated value for when the
+ramp-up is switched on, documented at `DEFAULT_SETTINGS`.
+
+---
+
 ---
 
 ## 7. Open, in priority order
