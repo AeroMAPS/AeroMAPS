@@ -14,10 +14,13 @@ of the kernel-level effect survives that feedback.
 Each cell is a full two-region MDA, so the grid costs minutes rather than seconds and
 its results are saved to ``coupled_grid.json`` rather than recomputed for the figure.
 
-Secant acceleration is applied throughout. That is not a tuning preference: at ``w = 1``
-the default undamped Gauss-Seidel does not converge at all on this bench (REPORT.md
-section 8.3), so without it half the grid would be missing for a reason that has nothing
-to do with saturation.
+**No acceleration, and no need for it.** An earlier version of this grid applied Secant
+to the inner MDAs because ``w = 1`` would not converge otherwise, and still lost most of
+the ``w = 1`` row. The cause was not the solver: the price at ``w = 1`` is a multiplier,
+and a multiplier jumps when the set of tight constraints changes, which no acceleration
+scheme can smooth (``convergence.py`` measures the jump). Giving the balance a demand
+slope removes it at the source, and plain Gauss-Seidel then converges -- so the
+acceleration is gone from here, along with the claim that it was what helped.
 """
 
 from __future__ import annotations
@@ -42,25 +45,13 @@ FIGURES = HERE / "figures"
 
 # Scarcity held fixed while the saturation pair is swept, so the grid isolates it.
 SCARCE = dict(rampup_limit=0.20, rampup_seed_share=0.005, capacity=1.1e13, buyout_price=0.30)
+# The demand slope the market prices against where its own supply curve is vertical. It
+# is inert at the fixed point, so it changes which cells converge and not what they
+# converge to; 0.5 is the fastest value on this bench (fuel_clearing_step1/convergence.py).
+ANCHOR = dict(demand_elasticity=0.5)
 STIFFNESSES = (2.0, 4.0, 8.0, 16.0)
 INTENSITIES = (0.5, 1.0, 2.0)
 WEIGHTS = (0.0, 1.0)
-
-
-def _accelerate():
-    """Secant on the inner MDA -- see the module docstring for why this is not optional."""
-    from gemseo.algos.sequence_transformer.acceleration import AccelerationMethod
-    from aeromaps.core.multi_regional_process import MultiRegionalProcess
-
-    original = MultiRegionalProcess._setup_unified_mda
-
-    def _setup(self):
-        original(self)
-        for inner in getattr(self.mda_chain, "inner_mdas", []):
-            if hasattr(inner, "acceleration_method"):
-                inner.acceleration_method = AccelerationMethod.SECANT
-
-    MultiRegionalProcess._setup_unified_mda = _setup
 
 
 def _run_one(settings, tag):
@@ -94,9 +85,8 @@ def run():
     warnings.resetwarnings()
     warnings.simplefilter("default")
     logging.disable(logging.INFO)
-    _accelerate()
 
-    results = {"reference": _run_one({}, "ref")}
+    results = {"reference": _run_one(dict(ANCHOR), "ref")}
     print("reference (no scarcity):", results["reference"], flush=True)
     for weight in WEIGHTS:
         for gamma in INTENSITIES:
@@ -105,6 +95,7 @@ def run():
                 results[key] = _run_one(
                     {
                         **SCARCE,
+                        **ANCHOR,
                         "saturation_intensity": gamma,
                         "saturation_stiffness": stiffness,
                         "pricing_weight": weight,

@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import json
 import time
+from dataclasses import replace
 from pathlib import Path
 
 import numpy as np
@@ -856,3 +857,238 @@ def test_submandate_satisfies_complementary_slackness():
     slack = np.maximum((supplied - inputs.submandate_share * inputs.demand) / scale, 0.0)
     residual = float(np.max(outputs.submandate_price * slack) / cost_scale)
     assert residual < 1e-6, f"sub-mandate price on a slack constraint ({residual:.2e})"
+
+
+# --- the kink: where the price is not a function of cost at all ---------------------
+#
+# These are the tests behind REPORT.md section 8.6. The failure they describe is the one
+# that kept `pricing_weight > 0` from converging, and it is not a solver problem: the
+# value function genuinely has a kink, so the multiplier there is an interval rather
+# than a number, and no amount of accelerating a fixed-point iteration fixes a quantity
+# that has no single value to iterate towards.
+
+
+def _kinked_case(**overrides):
+    """A market whose obligation is met EXACTLY at the ramp-up limit.
+
+    Two pathways, two years. Year 1 carries a 50 % obligation, and the ramp-up allows
+    the sustainable pathway exactly 50 % of demand in that year -- no more, no less. The
+    two constraints therefore meet at a point, and the compliance price is undetermined
+    between them:
+
+    * relax the ramp-up and nothing is saved, because the obligation is already met, so
+      the right derivative of the cost is 0;
+    * tighten it and the shortfall must be bought out, so the left derivative is
+      ``buyout - (c_sust - c_kero)``.
+
+    Any ``lambda_M`` in ``[c_sust - c_kero, buyout]`` satisfies the KKT conditions. The
+    program is perfectly well posed; it is the PRICE that is set-valued.
+    """
+    demand = np.full((1, 2), DEMAND)
+    defaults = dict(
+        demand=demand,
+        cost=np.broadcast_to(np.array([[[COST_SUSTAINABLE], [COST_KEROSENE]]]), (1, 2, 2)).copy(),
+        is_sustainable=np.array([True, False]),
+        mandate_share=np.array([[0.0, 0.5]]),
+        buyout_price=np.full((1, 2), 0.30),
+        capacity=np.broadcast_to(np.array([[[np.inf], [np.inf]]]), (1, 2, 2)).copy(),
+        sat_gamma=np.array([[0.0, 0.0]]),
+        sat_n=SAT_N,
+        rampup_form="relative",
+        # Year 0 allows the seed; year 1 allows seed + (1+g) * year 0. With g = 0 and
+        # seed = 0.25 D that is exactly 0.5 D in year 1: the obligation, to the MJ.
+        rampup_limit=np.array([[0.0, 0.0]]),
+        rampup_seed=np.array([[0.25 * DEMAND, 0.0]]),
+        q_init=np.array([[0.0, DEMAND]]),
+        discount_rate=0.0,
+        pricing_weight=1.0,
+    )
+    defaults.update(overrides)
+    return ClearingInputs(**defaults)
+
+
+def test_the_compliance_price_is_an_interval_where_the_two_limits_meet():
+    """The kink is real: the volume is pinned, and lambda_M sits strictly inside a range.
+
+    This does not assert a value -- there is no right one. It asserts that the solution
+    is on the corner (so the degeneracy is genuinely reached) and that the multiplier the
+    solver returns is an arbitrary member of a WIDE interval, which is what makes it
+    unusable as the input to a coupling loop.
+    """
+    inputs = _kinked_case()
+    outputs = clear_market(inputs)
+
+    obligation = inputs.mandate_share[0, 1] * DEMAND
+    assert outputs.volume[0, 0, 1] == pytest.approx(
+        obligation, rel=1e-6
+    ), "the case is only degenerate if the ramp-up and the obligation meet exactly"
+    assert outputs.unmet[0, 1] == pytest.approx(0.0, abs=1e-3 * DEMAND)
+
+    floor = COST_SUSTAINABLE - COST_KEROSENE
+    ceiling = float(inputs.buyout_price[0, 1])
+    assert floor <= outputs.compliance_price[0, 1] <= ceiling + 1e-9
+    # The interval is 25x the substitution cost. Any point in it is KKT-optimal, so the
+    # delivered price at w = 1 is undetermined to within 0.5 * (ceiling - floor) per MJ.
+    assert (ceiling - floor) / floor > 20
+
+
+def test_the_demand_slope_picks_one_point_of_that_interval():
+    """Give the balance a slope and the price becomes a number -- the demand's number.
+
+    Stationarity in the demand adjustment reads
+
+        lambda_E + m * lambda_M  =  p0 - a / beta,
+
+    the inverse demand at the quantity served. The check is that identity, to solver
+    tolerance, at three anchors chosen to bracket the interval. It is the whole
+    mechanism: quantity from supply, price from demand.
+    """
+    inputs = _kinked_case()
+    rigid = clear_market(inputs)
+    share = inputs.mandate_share
+    slope = (
+        0.5 * inputs.demand / np.maximum(rigid.energy_price + share * rigid.compliance_price, 1e-12)
+    )
+
+    seen = []
+    for factor in (0.8, 1.0, 1.4):
+        anchor = (rigid.energy_price + share * rigid.compliance_price) * factor
+        outputs = clear_market(replace(inputs, anchor_price=anchor, demand_slope=slope))
+        delivered = outputs.energy_price + share * outputs.compliance_price
+        implied = anchor - outputs.demand_adjustment / slope
+        assert delivered == pytest.approx(
+            implied, abs=1e-9
+        ), "the delivered marginal price must sit on the demand line it was given"
+        seen.append(float(delivered[0, 1]))
+
+    # A different anchor gives a different price: the selection is doing something, and
+    # it moves the right way -- a market willing to pay more clears higher.
+    assert seen[0] < seen[1] < seen[2]
+
+
+def test_the_demand_slope_is_inert_at_its_own_fixed_point():
+    """Anchored at the price the market itself returns, nothing changes.
+
+    This is why the device is exact rather than a relaxation. A coupling loop using it
+    converges to a solution of the UNREGULARISED program or it does not converge at all;
+    there is no fixed point at which the slope is still bending the answer.
+    """
+    inputs = _kinked_case()
+    rigid = clear_market(inputs)
+    delivered = rigid.energy_price + inputs.mandate_share * rigid.compliance_price
+    slope = 0.5 * inputs.demand / np.maximum(delivered, 1e-12)
+
+    outputs = clear_market(replace(inputs, anchor_price=delivered, demand_slope=slope))
+    scale = float(np.max(inputs.demand))
+    assert np.max(np.abs(outputs.demand_adjustment)) / scale < 1e-7
+    assert np.max(np.abs(outputs.volume - rigid.volume)) / scale < 1e-7
+    assert outputs.energy_price == pytest.approx(rigid.energy_price, abs=1e-7)
+
+
+def test_a_rigid_balance_leaves_the_demand_adjustment_at_exactly_zero():
+    """Every scenario without a slope must be bit-identical to what it was before."""
+    outputs = clear_market(_multi_year_case())
+    assert np.all(outputs.demand_adjustment == 0.0)
+    assert "max_relative_demand_adjustment" not in outputs.diagnostics
+
+
+def test_the_demand_curve_needs_both_a_point_and_a_slope():
+    inputs = _kinked_case()
+    with pytest.raises(ValueError, match="go together"):
+        clear_market(replace(inputs, demand_slope=np.full((1, 2), 1.0e15)))
+    with pytest.raises(ValueError, match="go together"):
+        clear_market(replace(inputs, anchor_price=np.full((1, 2), 0.02)))
+    with pytest.raises(ValueError, match="dD/dp"):
+        clear_market(
+            replace(
+                inputs,
+                anchor_price=np.full((1, 2), 0.02),
+                demand_slope=np.full((1, 2), -1.0),
+            )
+        )
+
+
+# --- the proximal anchor, and what it can and cannot do -----------------------------
+
+
+def test_the_proximal_anchor_is_inert_at_the_solution():
+    """Anchoring on the answer returns the answer, at any weight."""
+    base = _multi_year_case()
+    plain = clear_market(base)
+    scale = float(np.max(base.demand))
+    for rho in (0.01, 1.0, 10.0):
+        outputs = clear_market(replace(base, proximal_anchor=plain.volume, proximal_weight=rho))
+        assert np.max(np.abs(outputs.volume - plain.volume)) / scale < 1e-7
+        assert outputs.energy_price == pytest.approx(plain.energy_price, abs=1e-7)
+        assert outputs.compliance_price == pytest.approx(plain.compliance_price, abs=1e-6)
+
+
+def test_the_proximal_anchor_cannot_resolve_a_pinned_primal():
+    """The negative result, kept because it is what sent the fix to the demand side.
+
+    Where the volume is fixed by a constraint, a penalty on the volume has nothing to
+    act on: every candidate dual shares the same primal. Moving the anchor by +/- 50 %
+    moves the compliance price across 0.6 % of the interval it is free in -- which is
+    why `convergence.py` shows the proximal weight alone still failing to converge, and
+    why the fix had to come from the demand side instead.
+    """
+    inputs = _kinked_case()
+    rigid = clear_market(inputs)
+    interval = float(inputs.buyout_price[0, 1]) - (COST_SUSTAINABLE - COST_KEROSENE)
+
+    spread = []
+    for factor in (0.5, 1.0, 1.5):
+        anchor = rigid.volume * factor
+        outputs = clear_market(replace(inputs, proximal_anchor=anchor, proximal_weight=1.0))
+        assert outputs.volume[0, 0, 1] == pytest.approx(rigid.volume[0, 0, 1], rel=1e-6)
+        spread.append(float(outputs.compliance_price[0, 1]))
+
+    assert (max(spread) - min(spread)) / interval < 1e-2
+
+
+def test_the_proximal_anchor_must_be_a_volume():
+    base = _multi_year_case()
+    with pytest.raises(ValueError, match="non-negative"):
+        clear_market(replace(base, proximal_anchor=-np.ones((1, 2, 12)), proximal_weight=1.0))
+    with pytest.raises(ValueError, match="proximal_weight"):
+        clear_market(replace(base, proximal_weight=-1.0))
+
+
+# --- the active set, reported so the coupling loop can be watched -------------------
+
+
+def test_the_active_signature_is_a_function_of_which_constraints_are_tight():
+    """Same active set, same signature; a changed one, a changed signature.
+
+    The signature is what turns "the duals are piecewise" from an inference about a
+    residual into an observation (fuel_clearing_step1/convergence.py). It has to be
+    stable under a change that does not move the active set, and it has to move under
+    one that does -- otherwise it measures noise, or nothing.
+    """
+    base = _multi_year_case()
+    first = clear_market(base)
+    again = clear_market(base)
+    assert first.diagnostics["active_signature"] == again.diagnostics["active_signature"]
+
+    # Doubling demand leaves every share the same, so the same constraints are tight.
+    scaled = clear_market(
+        replace(
+            base,
+            demand=base.demand * 2.0,
+            capacity=base.capacity * 2.0,
+            rampup_seed=base.rampup_seed * 2.0,
+        )
+    )
+    assert scaled.diagnostics["active_signature"] == first.diagnostics["active_signature"]
+
+    # Removing the obligation cannot leave the same constraints tight: the sustainable
+    # pathway drops to zero in every year, so more entries sit on their lower bound.
+    # (Its mandate row counts as tight in MORE cells, not fewer -- `sum q_s + x >= 0` is
+    # satisfied with equality at q_s = 0. That is the redundant-constraint degeneracy
+    # `clear_market` already pins the dual to zero for, visible here from the primal.)
+    relaxed = clear_market(replace(base, mandate_share=np.zeros_like(base.mandate_share)))
+    assert relaxed.diagnostics["active_signature"] != first.diagnostics["active_signature"]
+    assert (
+        relaxed.diagnostics["active_counts"]["at_zero"]
+        > first.diagnostics["active_counts"]["at_zero"]
+    )

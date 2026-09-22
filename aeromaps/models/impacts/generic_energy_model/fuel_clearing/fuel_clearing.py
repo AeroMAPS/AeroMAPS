@@ -35,6 +35,8 @@ of the fuel line, so the published price is put back on the same gross basis
 
 from __future__ import annotations
 
+from dataclasses import replace
+
 import numpy as np
 import pandas as pd
 
@@ -78,6 +80,19 @@ DEFAULT_SETTINGS = {
     "buyout_price": 1.0e3,
     "capacity": np.inf,
     "solver_tolerance": 1.0e-9,
+    # Anchors the solve on the mix the previous coupling iteration produced, which is
+    # what makes the price a continuous function of the loop's state instead of an
+    # arbitrary pick from an interval. Costs nothing at `pricing_weight = 0`, where the
+    # price never depended on a dual in the first place; at `pricing_weight > 0` the loop
+    # does not converge without it. Zero disables it. See `kernel.proximal_weight`.
+    "proximal_weight": 0.0,
+    # How much demand the loop OUTSIDE this discipline withdraws when the delivered price
+    # rises by 1 %, as a fraction. Not a physical constant and not calibrated: it tells
+    # the market what slope of demand curve to price against where its own supply curve
+    # is vertical, and it is inert once the loop settles. Zero restores the rigid
+    # balance, under which `pricing_weight > 0` does not converge. See
+    # `kernel.demand_slope`, and REPORT.md section 8.6 for how to choose it.
+    "demand_elasticity": 0.0,
 }
 
 
@@ -126,6 +141,20 @@ class FuelClearing(AeroMAPSModel):
 
         self.input_names = {}
         self.output_names = {}
+
+        # The only state this discipline carries between calls: the mix the previous
+        # coupling iteration cleared at, as shares of demand. It is an ANCHOR, not a
+        # memory of an answer -- see `_anchor_volumes`. Shares rather than volumes so it
+        # survives the demand moving underneath it, which is precisely what the traffic
+        # loop does to it.
+        self._anchor_shares = None
+        # ... and the delivered marginal price it cleared at, on the kernel's own (net)
+        # basis. This is the point of the demand curve the next solve prices against.
+        self._anchor_price = None
+        # Per-iteration trace, appended to only when `record_trace` is set. The coupled
+        # diagnosis in fuel_clearing_step1/convergence.py reads it.
+        self.trace = []
+        self.record_trace = False
 
     # -- setup ---------------------------------------------------------------
 
@@ -269,6 +298,9 @@ class FuelClearing(AeroMAPSModel):
         every pathway equally cheap.
         """
         super()._initialize_df()
+        self._anchor_shares = None
+        self._anchor_price = None
+        self.trace = []
         regions = getattr(self, "regions", [])
         if not regions:
             return
@@ -299,6 +331,38 @@ class FuelClearing(AeroMAPSModel):
 
     def _prospective(self, series):
         return np.asarray(series.loc[self.prospection_start_year : self.end_year], dtype=float)
+
+    def _anchor_volumes(self, demand):
+        """Last iteration's mix, re-expressed at this iteration's demand. None on entry.
+
+        The first call has nothing to anchor on and solves the plain program, so a market
+        run once outside a coupling loop is untouched by any of this. From the second
+        call on, the anchor is the previous mix -- and because the term it weights is
+        ``(q - anchor)^2``, it is inert exactly when the mix has stopped moving. The loop
+        therefore converges to a solution of the *unregularised* program or not at all:
+        there is no fixed point at which the anchor is still bending the answer.
+        """
+        if self._anchor_shares is None or float(self.settings["proximal_weight"]) <= 0:
+            return None
+        return self._anchor_shares * demand[:, None, :]
+
+    def _demand_curve(self, demand):
+        """``(anchor_price, slope)`` for the elastic balance, or ``(None, None)``.
+
+        The slope is built from a dimensionless elasticity so it carries the units of the
+        problem rather than of the configuration file: ``beta = eta * D / p0`` means "a
+        1 % rise in the delivered price withdraws ``eta`` % of demand".
+
+        Zeroed wherever there is no price or no demand to take a proportion of -- a
+        vertical demand curve there, which is what the market had everywhere before.
+        """
+        elasticity = float(self.settings["demand_elasticity"])
+        if self._anchor_price is None or elasticity <= 0:
+            return None, None
+        price = self._anchor_price
+        usable = (price > 0) & (demand > 0)
+        slope = np.where(usable, elasticity * demand / np.where(usable, price, 1.0), 0.0)
+        return np.where(usable, price, 0.0), slope
 
     def _build_inputs(self, input_data):
         """Assemble the kernel's arrays from the namespaced grammar."""
@@ -360,6 +424,7 @@ class FuelClearing(AeroMAPSModel):
                 q_init[r, p] = last_historical_budget if pathway == self.residual_name else 0.0
 
         is_sustainable = np.array([p in self.sustainable_names for p in pathways])
+        anchor_price, demand_slope = self._demand_curve(demand)
 
         return (
             ClearingInputs(
@@ -379,14 +444,82 @@ class FuelClearing(AeroMAPSModel):
                 rampup_form=str(self.settings["rampup_form"]),
                 residual_pathway=pathways.index(self.residual_name),
                 solver_tolerance=float(self.settings["solver_tolerance"]),
+                proximal_anchor=self._anchor_volumes(demand),
+                proximal_weight=float(self.settings["proximal_weight"]),
+                anchor_price=anchor_price,
+                demand_slope=demand_slope,
             ),
             gross,
+        )
+
+    def _remember(self, inputs, outputs):
+        """Keep the cleared mix for the next call's anchor, and trace if asked.
+
+        A share, not a volume, and guarded at zero demand: a year the traffic loop has
+        driven to nothing must not hand the next iteration a 0/0.
+        """
+        total = np.sum(outputs.volume, axis=1)[:, None, :]
+        self._anchor_shares = np.divide(
+            outputs.volume, total, out=np.zeros_like(outputs.volume), where=total > 0
+        )
+        # The delivered MARGINAL price, which is what the elastic balance's stationarity
+        # condition equates to the inverse demand -- not `market_mfsp`, which at w < 1 is
+        # partly an average and would put the anchor on the wrong curve.
+        marginal = np.sum(outputs.marginal_price * outputs.volume, axis=1)
+        self._anchor_price = np.divide(
+            marginal, total[:, 0, :], out=np.zeros_like(marginal), where=total[:, 0, :] > 0
+        )
+        if not self.record_trace:
+            return
+        delivered = np.divide(
+            np.sum(outputs.market_mfsp * outputs.volume, axis=1),
+            total[:, 0, :],
+            out=np.zeros_like(marginal),
+            where=total[:, 0, :] > 0,
+        )
+        self.trace.append(
+            {
+                "signature": outputs.diagnostics["active_signature"],
+                "counts": dict(outputs.diagnostics["active_counts"]),
+                "anchor_gap": outputs.diagnostics.get("max_relative_anchor_gap"),
+                "demand_adjustment": outputs.diagnostics.get("max_relative_demand_adjustment"),
+                "delivered": delivered.tolist(),
+                "marginal": self._anchor_price.tolist(),
+                "energy_price": outputs.energy_price.tolist(),
+                "compliance_price": outputs.compliance_price.tolist(),
+                "demand": inputs.demand.tolist(),
+            }
+        )
+
+    def _reconcile(self, inputs, outputs):
+        """Put the volumes back on the budget the traffic model handed in.
+
+        With an elastic balance the program clears at ``demand + a`` rather than at
+        ``demand``. That is deliberate -- it is how the price gets pinned on a vertical
+        stretch of supply -- but AeroMAPS's energy budget is set by the traffic model,
+        not by this discipline, and everything downstream divides by it. So the MIX is
+        taken from the market and the LEVEL from the budget.
+
+        At a fixed point ``a`` is zero and the two agree exactly, so this rescale is
+        visible only while the loop is still moving. ``max_relative_demand_adjustment``
+        in the diagnostics is how much it is doing.
+        """
+        served = inputs.demand + outputs.demand_adjustment
+        if not np.any(np.abs(outputs.demand_adjustment) > 0):
+            return outputs
+        ratio = np.divide(inputs.demand, served, out=np.ones_like(served), where=served > 0)
+        return replace(
+            outputs,
+            volume=outputs.volume * ratio[:, None, :],
+            unmet=outputs.unmet * ratio,
         )
 
     def compute(self, input_data) -> dict:
         """Clear the market, then emit it in EnergyUseChoice's vocabulary."""
         inputs, gross = self._build_inputs(input_data)
         outputs = clear_market(inputs)
+        self._remember(inputs, outputs)
+        outputs = self._reconcile(inputs, outputs)
 
         index = self.df.index
         prospective = slice(self.prospection_start_year, self.end_year)

@@ -12,12 +12,15 @@ vectorised solve with perfect foresight:
     min  sum_t d_t * [ sum_{r,p} ( c*q + c*gamma/(n+1) * q^(n+1) / K^n )
                        + sum_r B*x ]
 
-    s.t. sum_p q[r,p,t]                    =  D[r,t]           -> energy_price
-         sum_{p sust} q[r,p,t] + x[r,t]    >= m[r,t] * D[r,t]  -> compliance_price
+    s.t. sum_p q[r,p,t]                    =  S[r,t]           -> energy_price
+         sum_{p sust} q[r,p,t] + x[r,t]    >= m[r,t] * S[r,t]  -> compliance_price
          ramp-up, sustainable pathways only                    -> rampup_price
          q >= 0,  x >= 0
 
-Three things about that program are load-bearing.
+    with S = D by default, or S = D + a with `a` free and the objective carrying
+    `-p0*a + a^2/(2 beta)` when a demand slope is supplied (see `demand_slope`).
+
+Four things about that program are load-bearing.
 
 **One solve, not one per year.** The ramp-up ties year ``t`` to year ``t-1``, so
 solving year by year would throw away the anticipation that makes a producer build
@@ -29,6 +32,13 @@ marginal cost of energy and the multiplier on the mandate *is* the compliance pr
 They come out certified and independent of the starting point. That is the whole
 reason for a dedicated solver rather than a sub-MDA: a fixed point found by iteration
 can depend on where it started.
+
+**But a multiplier is a SUBgradient of the value function, not a gradient.** Where the
+set of tight constraints changes, the value function kinks and the multiplier is an
+*interval* -- every member of which satisfies the KKT conditions, with nothing in the
+program to prefer one. The prices are still correct; they are simply not unique, and a
+quantity that is not unique cannot be iterated on by the coupling loop outside. This is
+what `anchor_price`/`demand_slope` exist for, and `active_signature` exists to watch.
 
 **The ramp-up is a sum, not a max.** The optimisation mode's ramp-up (paper Eq. 12)
 is ``q_t <= max{(1+tau) q_{t-1}, q_{t-1} + dE dt}``. A ``max`` of two affine functions
@@ -48,6 +58,7 @@ Units and conventions, none of which the arrays carry themselves:
 
 from __future__ import annotations
 
+import hashlib
 import time
 import warnings
 from dataclasses import dataclass, field, replace
@@ -64,6 +75,10 @@ _RAMPUP_FORMS = ("relative", "share_increment")
 # dual split degenerates exactly at 1, and a share meant to be 100 % routinely arrives
 # as 0.9999999999 after a share-sum normalisation upstream.
 _FULL_MANDATE_TOLERANCE = 1.0e-9
+
+# A constraint whose scaled slack is below this counts as tight, for the active-set
+# signature only. Nothing downstream depends on it; it is a diagnostic.
+_ACTIVE_TOLERANCE = 1.0e-7
 
 
 class ClearingError(RuntimeError):
@@ -180,6 +195,51 @@ class ClearingInputs:
         Off by default: it doubles the solve.
     elasticity_step
         Relative demand bump used for that finite difference.
+    anchor_price
+        ``(R, T)`` delivered marginal price the incoming ``demand`` was formed at, in the
+        same (net) money as ``cost``, or None. Required with :attr:`demand_slope`.
+    demand_slope
+        ``(R, T)`` ``beta >= 0``, MJ per unit of price: how much demand the loop outside
+        this kernel would withdraw if the delivered price rose by one. None disables the
+        elastic balance and restores the rigid one.
+
+        **Why the market needs to know anything about demand.** With a rigid balance the
+        program is a supply curve evaluated at a fixed quantity, and where that curve is
+        vertical -- a ramp-up exhausted, an obligation that can only be met by buying out
+        -- the price is not determined by cost at all. The multiplier is a whole interval
+        and the solver returns an arbitrary member of it. Giving the balance a slope
+        makes the demand curve pick the point, which is what pins a price on a vertical
+        supply segment in any market: quantity from supply, price from demand.
+
+        The gap that then opens between the price and the marginal production cost is a
+        **scarcity rent**, not an error. It is what a capacity-constrained producer earns.
+
+        ``beta`` does not have to be right. It sets how far the price moves per iteration
+        and nothing else: at a fixed point of the coupling loop the price equals
+        ``anchor_price``, the adjustment ``demand_adjustment`` is zero, and the elastic
+        term is inert. Over-stating it is safe (slow, monotone); under-stating it by more
+        than a factor of two is not (the loop overshoots). See REPORT.md section 8.6.
+    proximal_anchor
+        ``(R, P, T)`` volumes, MJ, or None. A point the solve is pulled towards by
+        :attr:`proximal_weight`. **Not a preference and not a prior**: it exists to make
+        the dual single-valued. Where the supply curve is vertical -- a capacity or
+        ramp-up limit binding -- the volume is pinned and the price is not determined by
+        cost at all, so the solver returns an arbitrary member of an interval. An
+        arbitrary number cannot be iterated on. See :attr:`proximal_weight`.
+
+        ``None`` disables the term outright, whatever the weight, so a caller who does
+        not supply an anchor solves exactly the program they solved before.
+    proximal_weight
+        ``rho >= 0``. Adds ``rho/2 * sum (q - anchor)^2`` to the objective, in *scaled*
+        units, so ``rho ~ 1`` is comparable to the linear cost term.
+
+        This does not bias the answer. At a fixed point of the coupling loop the anchor
+        IS the solution, the added gradient ``rho (q - anchor)`` is zero, and the KKT
+        system reduces to the unregularised one exactly -- so the volumes and the prices
+        are the true ones. What it changes is the *path*: it makes supply strictly
+        increasing, hence the price a continuous function of demand, hence the loop
+        something that can converge. ``rho`` trades convergence speed against damping
+        and nothing else.
     """
 
     demand: np.ndarray
@@ -205,6 +265,10 @@ class ClearingInputs:
     submandate_share: np.ndarray | None = None
     is_submandated: np.ndarray | None = None
     submandate_buyout_price: np.ndarray | None = None
+    proximal_anchor: np.ndarray | None = None
+    proximal_weight: float = 0.0
+    anchor_price: np.ndarray | None = None
+    demand_slope: np.ndarray | None = None
 
     @property
     def shape(self) -> tuple[int, int, int]:
@@ -363,6 +427,36 @@ class ClearingInputs:
                 "obligation for it to apply to."
             )
 
+        anchor_price = self.anchor_price
+        demand_slope = self.demand_slope
+        if (anchor_price is None) != (demand_slope is None):
+            raise ValueError(
+                "anchor_price and demand_slope go together: the elastic balance needs "
+                "both a point on the demand curve and its slope there. Give neither to "
+                "solve at a rigid demand."
+            )
+        if demand_slope is not None:
+            anchor_price = _check("anchor_price", anchor_price, (regions, years))
+            demand_slope = _check("demand_slope", demand_slope, (regions, years))
+            for name, array in (("anchor_price", anchor_price), ("demand_slope", demand_slope)):
+                if not np.all(np.isfinite(array)):
+                    raise ValueError(f"{name} contains NaN or inf.")
+            if np.any(demand_slope < 0):
+                raise ValueError(
+                    "demand_slope must be >= 0. It is the magnitude of dD/dp; a negative "
+                    "value makes demand rise with price and the program non-convex."
+                )
+
+        if self.proximal_weight < 0:
+            raise ValueError(f"proximal_weight must be >= 0; got {self.proximal_weight}.")
+        proximal_anchor = self.proximal_anchor
+        if proximal_anchor is not None:
+            proximal_anchor = _check("proximal_anchor", proximal_anchor, (regions, pathways, years))
+            if not np.all(np.isfinite(proximal_anchor)):
+                raise ValueError("proximal_anchor contains NaN or inf.")
+            if np.any(proximal_anchor < 0):
+                raise ValueError("proximal_anchor must be non-negative; it is a volume.")
+
         residual = self.residual_pathway
         if residual is None:
             # A residual must be ineligible EVERYWHERE: it absorbs the balance, so a
@@ -396,6 +490,9 @@ class ClearingInputs:
             q_init=q_init,
             demand_init=demand_init,
             residual_pathway=residual,
+            proximal_anchor=proximal_anchor,
+            anchor_price=anchor_price,
+            demand_slope=demand_slope,
         )
 
 
@@ -409,6 +506,11 @@ class ClearingOutputs:
         ``(R, P, T)`` production = consumption, MJ. No trade at step 1.
     unmet
         ``(R, T)`` energy covered by the buy-out instead of by fuel, MJ.
+    demand_adjustment
+        ``(R, T)`` how far the cleared quantity departed from the demand handed in, MJ.
+        Identically zero with a rigid balance, and **the convergence measure of the
+        coupling loop** with an elastic one: it is zero exactly when the price the market
+        returns is the price the demand was formed at, and the elastic term is then inert.
     energy_price
         ``(R, T)`` multiplier on the energy balance, in current (undiscounted) money.
         The **marginal** cost of energy, not the average.
@@ -434,6 +536,7 @@ class ClearingOutputs:
 
     volume: np.ndarray
     unmet: np.ndarray
+    demand_adjustment: np.ndarray
     energy_price: np.ndarray
     compliance_price: np.ndarray
     submandate_price: np.ndarray
@@ -515,6 +618,27 @@ def _solve_scaled(inputs: ClearingInputs, energy_scale: float, cost_scale: float
     q = cp.Variable((rows, years), nonneg=True, name="volume")
     x = cp.Variable((regions, years), nonneg=True, name="unmet")
 
+    # --- the elastic balance --------------------------------------------------
+    # `a` is how far the cleared quantity departs from the demand handed in. Zero when
+    # the balance is rigid, and zero again at a fixed point of the coupling loop, which
+    # is what makes this exact rather than a relaxation. Everything downstream -- the
+    # obligation, the closure -- is written against `served`, not against `demand`,
+    # because a share of consumption means a share of what is actually consumed.
+    elastic = inputs.demand_slope is not None
+    if elastic:
+        slope = inputs.demand_slope * cost_scale / energy_scale
+        # Where the slope is zero the demand curve is vertical and there is nothing for
+        # `a` to express; pinning it keeps the program bounded rather than merely
+        # ill-posed (a free `a` with no quadratic on it is a ray to -inf).
+        movable = (slope > 0) & (demand > 0)
+        a = cp.Variable((regions, years), name="demand_adjustment")
+        served = demand + a
+        extra_constraints = [] if movable.all() else [a[~movable] == 0]
+    else:
+        a = None
+        served = demand
+        extra_constraints = []
+
     # --- objective -----------------------------------------------------------
     linear = cp.sum(cp.multiply(flatten(cost) * discount[None, :], q))
     objective = linear + cp.sum(cp.multiply(buyout * discount[None, :], x))
@@ -535,6 +659,28 @@ def _solve_scaled(inputs: ClearingInputs, energy_scale: float, cost_scale: float
             utilisation, inputs.sat_n + 1.0
         )
 
+    # A strictly convex pull towards the anchor. NOT discounted: it is a device for
+    # making the dual single-valued, not a cost anyone bears, and discounting it would
+    # leave the late years -- exactly where the ramp-up chain amplifies -- undamped.
+    anchored = inputs.proximal_anchor is not None and inputs.proximal_weight > 0
+    if anchored:
+        anchor = flatten(inputs.proximal_anchor / energy_scale)
+        objective = objective + 0.5 * inputs.proximal_weight * cp.sum_squares(q - anchor)
+
+    if elastic:
+        # The consumer surplus given up by moving off the anchor, to second order:
+        #   -p0 * a  +  a^2 / (2 beta)
+        # Stationarity in `a` then reads  lambda_E + m * lambda_M = p0 - a/beta, which is
+        # the inverse demand at the quantity served. That identity is the whole point:
+        # it is what pins the price on a vertical stretch of the supply curve, and it is
+        # checked directly by test_demand_anchor_prices_off_the_demand_curve.
+        safe_slope = np.where(movable, slope, 1.0)
+        objective = (
+            objective
+            + cp.sum(cp.multiply(-(inputs.anchor_price / cost_scale) * discount[None, :], a))
+            + 0.5 * cp.sum(cp.multiply(discount[None, :] / safe_slope, cp.square(a)))
+        )
+
     # --- constraints ---------------------------------------------------------
     # Selector matrices, so each family is ONE constraint whose dual comes back with
     # the (R, T) shape the outputs want, instead of R*T separate scalar constraints.
@@ -550,9 +696,9 @@ def _solve_scaled(inputs: ClearingInputs, energy_scale: float, cost_scale: float
     rampup_rows = np.tile(inputs.is_sustainable.any(axis=0), regions)
     mandate_selector[region_of_row, np.arange(rows)] = sustainable_rows.astype(float)
 
-    energy_balance = balance_selector @ q == demand
-    mandate = mandate_selector @ q + x >= cp.multiply(inputs.mandate_share, demand)
-    constraints = [energy_balance, mandate]
+    energy_balance = balance_selector @ q == served
+    mandate = mandate_selector @ q + x >= cp.multiply(inputs.mandate_share, served)
+    constraints = [energy_balance, mandate] + extra_constraints
 
     # The sub-mandate is the same shape of constraint on a narrower row set, with its
     # own slack and its own release price. Built only when asked for, so a scenario
@@ -565,7 +711,7 @@ def _solve_scaled(inputs: ClearingInputs, energy_scale: float, cost_scale: float
             float
         )
         x_sub = cp.Variable((regions, years), nonneg=True, name="unmet_submandate")
-        submandate = submandate_selector @ q + x_sub >= cp.multiply(inputs.submandate_share, demand)
+        submandate = submandate_selector @ q + x_sub >= cp.multiply(inputs.submandate_share, served)
         constraints.append(submandate)
         objective = objective + cp.sum(
             cp.multiply((inputs.submandate_buyout_price / cost_scale) * discount[None, :], x_sub)
@@ -639,9 +785,31 @@ def _solve_scaled(inputs: ClearingInputs, energy_scale: float, cost_scale: float
             f"price). {context}"
         )
 
+    # --- which constraints are tight ------------------------------------------
+    # Recorded from the PRIMAL, never from the multipliers: whether a multiplier is
+    # non-zero is exactly the question that degenerates here, so reading the active set
+    # off the duals would beg it. Cheap, and it is the evidence that the price jumps
+    # because the active set changed rather than because the solver wandered.
+    named = [("mandate", mandate)]
+    if submandate is not None:
+        named.append(("submandate", submandate))
+    if rampup is not None:
+        named.append(("rampup", rampup))
+    tight = {
+        name: np.abs(np.asarray(constraint.expr.value)) <= _ACTIVE_TOLERANCE
+        for name, constraint in named
+    }
+    tight["at_zero"] = np.asarray(q.value) <= _ACTIVE_TOLERANCE
+    pattern = np.concatenate([value.ravel() for value in tight.values()])
+
     return {
         "q": np.asarray(q.value).reshape(regions, pathways, years),
         "x": np.asarray(x.value),
+        "a": None if a is None else np.asarray(a.value),
+        "tight": tight,
+        "active_signature": hashlib.blake2b(
+            np.packbits(pattern).tobytes(), digest_size=6
+        ).hexdigest(),
         "energy_dual": np.asarray(energy_balance.dual_value),
         "mandate_dual": np.asarray(mandate.dual_value),
         "submandate_dual": None if submandate is None else np.asarray(submandate.dual_value),
@@ -695,6 +863,13 @@ def clear_market(inputs: ClearingInputs) -> ClearingOutputs:
     volume = solved["q"] * energy_scale
     unmet = solved["x"] * energy_scale
     discount = solved["discount"]
+
+    # What the program actually served. Equal to `demand` unless the balance was given a
+    # slope, and equal to it again once the coupling loop settles.
+    demand_adjustment = (
+        np.zeros_like(inputs.demand) if solved["a"] is None else solved["a"] * energy_scale
+    )
+    served = inputs.demand + demand_adjustment
 
     # Duals come back discounted (the objective carries d_t) and in scaled money.
     # Dividing by d_t puts them in the current money of their own year, which is what
@@ -782,9 +957,9 @@ def clear_market(inputs: ClearingInputs) -> ClearingOutputs:
     # the invariant nothing downstream re-derives or checks (INVENTORY.md 3.1).
     residual = inputs.residual_pathway
     others = np.sum(np.delete(volume, residual, axis=1), axis=1)
-    closed = inputs.demand - others
+    closed = served - others
     correction = closed - volume[:, residual, :]
-    scale = np.where(inputs.demand > 0, inputs.demand, np.nan)
+    scale = np.where(served > 0, served, np.nan)
     relative_correction = np.abs(correction) / scale
     worst = (
         float(np.nanmax(relative_correction)) if np.any(np.isfinite(relative_correction)) else 0.0
@@ -820,6 +995,7 @@ def clear_market(inputs: ClearingInputs) -> ClearingOutputs:
     outputs = [
         volume,
         unmet,
+        demand_adjustment,
         energy_price,
         compliance_price,
         submandate_price,
@@ -833,6 +1009,7 @@ def clear_market(inputs: ClearingInputs) -> ClearingOutputs:
         (
             "volume",
             "unmet",
+            "demand_adjustment",
             "energy_price",
             "compliance_price",
             "submandate_price",
@@ -863,7 +1040,36 @@ def clear_market(inputs: ClearingInputs) -> ClearingOutputs:
         # How many (region, year) cells had their price split pinned rather than taken
         # from the solver. Zero in any scenario short of a full obligation.
         "full_mandate_cells": diagnostics_full_mandate,
+        # A digest of which constraints are tight. Equal signatures mean the same active
+        # set, so the duals came from the same linear system; a signature that flips
+        # between two values across coupling iterations is the price discontinuity,
+        # observed rather than inferred.
+        "active_signature": solved["active_signature"],
+        "active_counts": {name: int(value.sum()) for name, value in solved["tight"].items()},
     }
+
+    if solved["a"] is not None:
+        with np.errstate(invalid="ignore", divide="ignore"):
+            relative = np.abs(demand_adjustment) / np.where(
+                inputs.demand > 0, inputs.demand, np.nan
+            )
+        diagnostics["max_relative_demand_adjustment"] = (
+            float(np.nanmax(relative)) if np.any(np.isfinite(relative)) else 0.0
+        )
+
+    # How far the solve was pulled from its anchor, relative to demand. This is the
+    # convergence measure of the coupling loop, free: it goes to zero exactly when the
+    # anchor stops moving, and at zero the proximal term is inert and the reported
+    # prices are the unregularised ones.
+    if inputs.proximal_anchor is not None:
+        gap = np.abs(volume - inputs.proximal_anchor).sum(axis=1)
+        scale_by = np.where(inputs.demand > 0, inputs.demand, np.nan)
+        with np.errstate(invalid="ignore"):
+            relative = gap / scale_by
+        diagnostics["proximal_weight"] = float(inputs.proximal_weight)
+        diagnostics["max_relative_anchor_gap"] = (
+            float(np.nanmax(relative)) if np.any(np.isfinite(relative)) else 0.0
+        )
 
     if inputs.compute_elasticity:
         # The elasticity is a DIAGNOSTIC (section 3.4, off by default), computed by
@@ -887,6 +1093,7 @@ def clear_market(inputs: ClearingInputs) -> ClearingOutputs:
     return ClearingOutputs(
         volume=volume,
         unmet=unmet,
+        demand_adjustment=demand_adjustment,
         energy_price=energy_price,
         compliance_price=compliance_price,
         submandate_price=submandate_price,

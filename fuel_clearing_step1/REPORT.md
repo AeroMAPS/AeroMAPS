@@ -712,31 +712,49 @@ and `n ≥ 8` means a *weaker* markup here because `q/K < 1`. That ordering is
 suggestive but it does not fit cleanly (γ=1, n=2 fails while γ=2, n=2 converges), so
 it is recorded as an observation rather than a mechanism.
 
-**Practical consequence for the mode:** `w = 0` is solid — 12 of 12, default solver
-settings, converges in 40 iterations. **`w > 0` is a research problem, not a scenario
-dial**, and the report should not offer it as one until the boundary behaviour is
-understood.
+> ⚠️ **This section's conclusion has been superseded by §8.6.** What was "suggestive
+> but does not fit cleanly" above was the last reading taken *before* the active set
+> itself was instrumented. Once it was, the mechanism turned out to be specific and
+> checkable, and `w > 0` became a dial. The section is kept because the rejected
+> hypothesis is still a correct rejection, and because the shape of the mistake — a
+> pattern read off which cells happened to survive — is worth leaving visible.
 
 ### 8.4 Measurement 4.5.1, coupled
 
 `coupled_grid.py` sweeps the saturation pair through the **full MDA**, so unlike the
 kernel-level map in §5.4 the volumes are free to respond: a higher price cuts demand,
-which cuts the volume, which relieves the scarcity that raised the price. Secant
-acceleration throughout, otherwise the `w = 1` half would be missing for a reason
-unrelated to saturation. Delivered price % / RPK % against the no-scarcity run,
-region A 2050:
+which cuts the volume, which relieves the scarcity that raised the price. **Plain
+Gauss-Seidel, no acceleration**, with the demand-anchored balance of §8.6 (`eta = 0.5`)
+throughout. Delivered price % / RPK % against the no-scarcity run, region A 2050:
 
 | | n=2 | n=4 | n=8 | n=16 |
 |---|---|---|---|---|
 | **w=0**, γ=0.5 | +11.2 / −1.3 | +5.2 / −0.6 | +1.8 / −0.2 | +0.4 / −0.0 |
 | **w=0**, γ=1 | +21.9 / −2.5 | +10.2 / −1.2 | +3.6 / −0.4 | +0.8 / −0.1 |
 | **w=0**, γ=2 | +42.1 / −4.7 | +19.6 / −2.3 | +7.1 / −0.8 | +1.6 / −0.2 |
-| **w=1**, γ=0.5 | did not converge | did not converge | did not converge | did not converge |
-| **w=1**, γ=1 | did not converge | +102.9 / −10.8 | did not converge | did not converge |
-| **w=1**, γ=2 | +186.2 / −18.0 | +133.2 / −13.6 | did not converge | did not converge |
+| **w=1**, γ=0.5 | +99.6 / −10.5 | +84.2 / −9.0 | +71.8 / −7.8 | did not converge |
+| **w=1**, γ=1 | +131.9 / −13.5 | +102.9 / −10.8 | +80.4 / −8.7 | did not converge |
+| **w=1**, γ=2 | +186.2 / −18.0 | +133.2 / −13.6 | +94.7 / −10.0 | did not converge |
 
-**15 of 24 cells converge: all 12 at `w = 0`, 3 of 12 at `w = 1`.** The failures are
-§8.3, not a saturation limit — the cells that fail are not the extreme ones.
+**21 of 24 cells converge** — all 12 at `w = 0` and 9 of 12 at `w = 1`, against 3 of 12
+before §8.6. The three remaining failures are the whole `n = 16` column, the stiffest
+saturation on the grid; that is a separate and still-open problem, not the active-set
+discontinuity, which no longer appears anywhere in the grid.
+
+**The anchored run agrees with the rigid one wherever the rigid one worked.** This is
+the system-level version of the inertness argument in §8.6, and it is worth more than
+the kernel test because it exercises every discipline between the market and demand:
+
+| | cells | agreement |
+|---|---|---|
+| `w = 0` (including the reference) | 13 | ~1e-10 relative — unchanged, as required |
+| `w = 1`, converged under both | 3 | ≤ 3.9e-8 relative |
+| `w = 1`, previously failing | 6 | now converge |
+
+The demand slope changed nothing that already worked and fixed what did not. Note also
+that the `w = 1` row is now monotone in `n`, the same shape as `w = 0` — the pattern
+§8.3.2 could not find was an artefact of reading a trend off whichever cells happened
+to survive.
 
 Two results survive the feedback loop intact:
 
@@ -755,6 +773,139 @@ traffic.**
 
 `figures/coupled_grid.png` draws both panels. `coupled_grid.json` holds the raw cells,
 including the failures, so the figure does not silently interpolate over them.
+
+---
+
+### 8.5 The failure, watched instead of inferred
+
+§8.3.1 concluded that the `w = 1` failure is a discontinuous dual. That was an
+*inference* from the shape of the residual, and a residual that will not fall is
+consistent with several other stories — a gain above one, a badly scaled coupling, an
+outright bug. §8.3.2 then tried to read a mechanism off *which cells happened to
+survive*, and failed to find one that fit. Both of those are the same methodological
+error the rest of this report keeps running into: reasoning about a thing instead of
+instrumenting it.
+
+So the kernel now reports it. `diagnostics["active_signature"]` is a digest of which
+constraints are tight, and `active_counts` the tally per family. Both are taken from
+the **primal slacks, never from the multipliers** — whether a multiplier is non-zero is
+exactly the question that degenerates here, so reading the active set off the duals
+would beg it.
+
+`convergence.py` runs three MDAs on the same scarce bench and logs one line per market
+solve. No acceleration in any of them.
+
+| | market solves | converged | distinct active sets | active-set changes, 2nd half |
+|---|---|---|---|---|
+| `w = 0` | 23 | yes | 5 | **0** |
+| `w = 1`, rigid balance | 202 | **no** (residual 8.6e-2) | 6 | **33** |
+| `w = 1`, demand-anchored | 60 | yes | 6 | **0** |
+
+The `w = 0` row is the control: if its signature also flipped, the signature would be
+measuring noise rather than the active set. It does not flip once in the second half of
+the run.
+
+The two sets `w = 1` alternates between differ in **exactly two cells**:
+
+```
+{mandate tight: 31, rampup tight: 31}   <->   {mandate tight: 29, rampup tight: 33}
+```
+
+**Two (region, year) cells trade "the obligation binds" for "the ramp-up binds".** On
+one side the obligation is met by volume and λ_M is the cost of substituting one fuel
+for another, ≈ 0.012 /MJ. On the other the obligation has become physically unreachable
+and the only way to discharge it is to pay, so λ_M snaps to the buy-out, 0.30 /MJ. The
+delivered price jumps 23–29 % when it does.
+
+**The volume is identical on both sides** — it is pinned by the ramp-up. Only the price
+differs. That is not solver wander: at the crossing the value function has a real kink.
+Relaxing the ramp-up saves nothing, because the obligation is already met, so the right
+derivative is 0; tightening it forces a buy-out, so the left derivative is
+`buyout − Δc`. The subdifferential is the whole interval `[0.012, 0.30]` — a factor of
+25 — and **every point in it satisfies the KKT conditions**. There is no "correct"
+value for the solver to have returned.
+
+`test_the_compliance_price_is_an_interval_where_the_two_limits_meet` builds this as a
+two-year analytic case where the ramp-up allows *exactly* the obligation, so the
+interval is known in closed form.
+
+### 8.6 The fix: quantity from supply, price from demand
+
+The diagnosis dictates the remedy, and the remedy is not a numerical one.
+
+Where the supply curve is vertical the quantity is determined and the price is not.
+That is the ordinary situation in any capacity-constrained market, and every such market
+resolves it the same way: **the quantity comes from supply and the price comes from
+demand.** The program was being asked for a price that the supply side does not contain.
+
+So the balance is given a slope. Around the incoming demand `D` and the price `p0` that
+demand was formed at, introduce a free `a[r,t]` and write
+
+```
+  sum_p q  =  D + a                          (energy balance)
+  sum_sust q + x  >=  m * (D + a)            (obligation, on what is actually consumed)
+```
+
+adding to the objective the consumer surplus given up, to second order:
+
+```
+  sum_t d_t * [ -p0 * a  +  a^2 / (2*beta) ],     beta = eta * D / p0
+```
+
+The quadratic keeps it convex. Stationarity in `a` then reads
+
+```
+  lambda_E + m * lambda_M  =  p0 - a / beta
+```
+
+— **the delivered marginal price equals the inverse demand at the quantity served.**
+The left side is what an airline faces per MJ: the energy, plus the share `m` of
+obligation that MJ drags with it (§8.1). Verified to 5e-11 in
+`test_the_demand_slope_picks_one_point_of_that_interval`.
+
+On a vertical stretch of supply, `a` moves until the price sits where demand wants it.
+The gap that then opens between that price and the marginal production cost is a
+**scarcity rent** — what a capacity-constrained producer earns — not an error.
+
+**This is exact, not a relaxation.** At a fixed point of the coupling loop the price the
+market returns *is* the price the demand was formed at, so `p0 = lambda_E + m*lambda_M`,
+hence `a = 0`, hence the elastic program reduces to the rigid one identically. The loop
+converges to a solution of the **unregularised** program or it does not converge at all;
+there is no fixed point at which the added term is still bending the answer. Measured:
+`|a|/D = 6.5e-11` at convergence.
+
+**And `eta` does not have to be right.** It sets how far the price moves per sweep and
+nothing else. Linearising the loop gives the requirement `beta > |dD/dp| / 2`:
+over-stating the demand response is safe and merely slow; under-stating it by more than
+a factor of two overshoots.
+
+| device (at `w = 1`, no acceleration) | solves | converged | final `|a|/D` | |
+|---|---|---|---|---|
+| none (rigid balance) | 202 | no | — | the failure |
+| volume anchor alone, ρ = 0.5 | 202 | no | — | cannot help: the volume is pinned |
+| `eta = 0.05` | 202 | no | 2.8e-3 | slope too small, overshoots |
+| `eta = 0.2` | 202 | no | 1.5e-9 | market settled, rest of the chain had not |
+| **`eta = 0.5`** | **59** | **yes** | **6.5e-11** | |
+| `eta = 1.0` | 150 | yes | 2.5e-10 | over-damped |
+| `eta = 3.0` | 202 | no | 2.9e-5 | over-damped past the iteration budget |
+
+The fastest `eta` is an estimate of the chain's own elasticity of drop-in demand to the
+delivered price: the iteration is fastest when the slope it is told matches the slope it
+faces. §8.4 measured that transmission independently at ≈ 0.116 of the price change in
+RPK, which is not the same quantity but is the same order.
+
+**A negative result worth keeping.** Anchoring the *volumes* instead — a proximal term
+`(ρ/2)·||q − q_prev||²` — does not work, and cannot, because the primal is identical on
+both sides of the kink. Measured: moving the anchor ±50 % moves λ_M across 0.6 % of the
+interval it is free in (`test_the_proximal_anchor_cannot_resolve_a_pinned_primal`). It
+is kept as an optional, separately weighted device for degeneracies in the *primal*,
+off by default. It is the reason the fix had to come from the demand side, and it took
+building it to find that out.
+
+**Two consequences for the rest of the report.** Plain Gauss-Seidel now suffices, so the
+Secant acceleration is gone from `coupled_grid.py` along with the claim that it helped
+(§8.3's ⚠️). And `w > 0` is a scenario dial rather than a research problem, at the cost
+of one parameter that affects the route and not the destination.
 
 ---
 

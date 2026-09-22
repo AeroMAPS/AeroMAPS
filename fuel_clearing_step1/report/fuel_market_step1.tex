@@ -62,8 +62,17 @@ along the way, and what the mode cannot yet do.
 
 The headline results: with scarcity switched off the new mode reproduces the existing
 one to $1.9\times10^{-9}$ across the whole chain; with scarcity on it produces a
-quantity AeroMAPS has never had --- a scarcity rent --- and that quantity turns out to
-be exactly what makes the coupled fixed point hard to reach.
+quantity AeroMAPS has never had --- a scarcity rent.
+
+That rent turned out to be exactly what made the coupled fixed point hard to reach, and
+chasing it down is the other half of this report. The market's price is a Lagrange
+multiplier; a multiplier is a subgradient of a piecewise-smooth value function; and where
+that function kinks the price is an \emph{interval} rather than a number, which no
+fixed-point iteration can be asked to converge on. Giving the energy balance a demand
+slope --- quantity from supply, price from demand, as in any capacity-constrained market
+--- makes the price single-valued again, and is constructed so that it is exactly inert
+once the loop settles. The coupled model now converges at full marginal pricing, in 60
+sweeps and with no acceleration, to a solution of the unmodified programme.
 \end{abstract}
 
 \tableofcontents
@@ -143,6 +152,103 @@ of energy; $\lambda^{M}$ \emph{is} the compliance price. A fixed point found by
 iteration would not come with that guarantee.
 
 \textbf{The growth limit is a sum, not a maximum} (\S\ref{sec:convexity}).
+\end{keybox}
+
+\subsection{Lagrange multipliers, and the exact sense in which they are prices}
+\label{sec:duality}
+
+The claim in the box above --- ``$\lambda^{E}$ \emph{is} the marginal cost of energy'' ---
+is the load-bearing one in this whole design, and it is worth deriving rather than
+asserting, because the same derivation shows precisely where it stops holding.
+
+\paragraph{The Lagrangian.} Write the objective~\eqref{eq:objective} as $C(q,x)$ and
+attach a multiplier to each constraint, signed so that every multiplier is
+non-negative on an inequality:
+\begin{equation}
+\begin{aligned}
+\mathcal{L}(q,x;\lambda) = C(q,x)
+&+ \sum_{r,t} \lambda^{E}_{r,t}\Big(D_{r,t} - \textstyle\sum_{p} q_{r,p,t}\Big)\\
+&+ \sum_{r,t} \lambda^{M}_{r,t}\Big(m_{r,t} D_{r,t} - \textstyle\sum_{p \in \mathcal{S}_r} q_{r,p,t} - x_{r,t}\Big)\\
+&+ \sum_{r,p,t} \lambda^{R}_{r,p,t}\Big(q_{r,p,t} - s_{r,p} - (1+g_{r,p})q_{r,p,t-1}\Big).
+\end{aligned}
+\label{eq:lagrangian}
+\end{equation}
+
+\paragraph{Stationarity is a statement about margins.} Setting
+$\partial\mathcal{L}/\partial q_{r,p,t} = 0$ for a pathway produced in strictly positive
+quantity gives, after dividing through by the discount factor $\delta_t$:
+\begin{equation}
+\underbrace{c_{r,p,t}\Big(1 + \gamma_{r,p}\big(\tfrac{q_{r,p,t}}{K_{r,p,t}}\big)^{n}\Big)}_{\text{marginal production cost}}
+\;+\; \underbrace{\lambda^{R}_{r,p,t} - (1+g_{r,p})\,\tfrac{\delta_{t+1}}{\delta_t}\lambda^{R}_{r,p,t+1}}_{\text{scarcity of the right to grow}}
+\;=\;
+\lambda^{E}_{r,t} + \lambda^{M}_{r,t}\,\mathbf{1}[p \in \mathcal{S}_r].
+\label{eq:stationarity}
+\end{equation}
+Read from the right: what a unit of this fuel is \emph{worth} to the system --- the
+energy it supplies, plus the obligation it discharges if it is eligible --- equals what
+it costs at the margin, plus the shadow value of the growth room it consumes. That is an
+identity, not a modelling assumption. Three things follow from it directly.
+
+\begin{itemize}[leftmargin=5mm,itemsep=1mm]
+\item \textbf{Equation~\eqref{eq:stationarity} is why the ramp-up multiplier never
+appears in any published price.} It is already inside $\lambda^{E}$ and $\lambda^{M}$. A
+model that added $\lambda^{R}$ to the price the airline pays would count it twice.
+\item \textbf{A pathway not produced} has $\partial\mathcal{L}/\partial q \ge 0$ instead:
+it is worth less than it costs. The programme's choice of which fuels to build is
+exactly this comparison.
+\item \textbf{The term $-(1+g)\,\lambda^{R}_{t+1}$ is anticipation, written down.} Growth
+room used this year buys growth room next year. Its sign is negative: building now is
+\emph{worth} something later. This single term is why the solve builds ahead of an
+obligation (\S\ref{sec:kernelresults}), and it exists only because all years are solved at
+once.
+\end{itemize}
+
+\paragraph{Complementary slackness.} For every inequality, $\lambda \ge 0$, the slack is
+$\ge 0$, and their product is zero:
+\begin{equation}
+\lambda^{M}_{r,t}\cdot\Big(\textstyle\sum_{p \in \mathcal{S}_r} q_{r,p,t} + x_{r,t} - m_{r,t}D_{r,t}\Big) = 0 .
+\label{eq:cs}
+\end{equation}
+An obligation that is over-met has \emph{no} compliance price; one that is exactly met
+has one. This is a testable property rather than an interpretation, and it is what the
+parametrised test over seven regimes checks (\S\ref{sec:verif}). Every degeneracy
+found in this work was found by it failing.
+
+\paragraph{The envelope theorem is the actual claim.} Let $V(D)$ be the optimal value of
+the programme as a function of the demand vector. Then at an optimum
+\begin{equation}
+\lambda^{E}_{r,t} \;=\; \frac{\partial V}{\partial D_{r,t}} .
+\label{eq:envelope}
+\end{equation}
+The multiplier is the derivative of the cost of the whole system with respect to asking
+it for one more MJ --- every knock-on effect included, across pathways, across years,
+through the ramp-up chain. \emph{That} is what makes it a price and not a bookkeeping
+quantity, and it is unavailable from any allocation rule: a rule can report what each
+fuel cost, but only an optimum can report what the next unit would cost.
+
+\paragraph{Why convexity is not a technicality.} Equation~\eqref{eq:envelope} needs
+strong duality, which for this programme follows from Slater's condition (the feasible
+set has a relative interior whenever the obligation is reachable, and the buy-out $x$
+guarantees that it is). Convexity also delivers what no iterative scheme can: the
+optimum is global and the duals are certified, so the answer does not depend on where
+the solver started. This is the entire reason the market is a dedicated convex solve
+rather than another block inside the MDA (\S\ref{sec:mda}).
+
+\begin{keybox}
+\textbf{The caveat that the rest of this report is about.} Equation~\eqref{eq:envelope}
+is an equality only where $V$ is differentiable. In general the correct statement is
+\[
+\lambda \in \partial V(D) \qquad\text{(the \emph{sub}differential)},
+\]
+and $V$ is piecewise smooth, not smooth: it has a kink wherever the set of tight
+constraints changes. At such a point $\partial V$ is an \emph{interval}, every member of
+it satisfies the KKT conditions, and the solver returns one of them with no way to
+prefer another. The price is genuinely not determined by the cost side there.
+
+Nothing is wrong with the optimisation. But a quantity that is set-valued cannot be the
+input to a fixed-point iteration, and that --- not stiffness, not scaling, not the
+solver --- is why the coupled loop failed at $w=1$ (\S\ref{sec:convergence}), and what
+\S\ref{sec:fix} does about it.
 \end{keybox}
 
 \subsection{Every parameter}
@@ -395,9 +501,9 @@ is kernel-only; everything in \S\ref{sec:coupledresults} is coupled.}
 \begin{keybox}
 \textbf{Why the policy cases are kernel-only, deliberately.} Chaining scales every price
 effect by roughly a tenth (\S\ref{sec:coupledgrid}) and changes no \emph{ordering} at
-$w=0$, while costing minutes per case --- and at $w>0$ it introduces a convergence
-problem (\S\ref{sec:convergence}) that would sit between the reader and the policy
-question. The kernel-level results are therefore the \emph{policy} answer; the coupled
+$w=0$, while costing minutes per case. (At $w>0$ it also used to
+introduce a convergence problem, \S\ref{sec:convergence}; that is now resolved,
+\S\ref{sec:fix}, but the cost per case remains.) The kernel-level results are therefore the \emph{policy} answer; the coupled
 results are what tells you how much of it survives the demand response.
 \end{keybox}
 
@@ -424,6 +530,66 @@ process-level keyword. It is refused outside the unified-MDA execution mode, and
 guards raise at set-up rather than producing plausible-looking numbers: drop-in fuels
 only, top-down cost model only, exactly one residual pathway.
 
+\subsection{The MDA, and why it is an awkward instrument for this particular coupling}
+\label{sec:mda}
+
+AeroMAPS closes its loops with a Multi-Disciplinary Analysis: GEMSEO orders the
+disciplines, identifies the strongly coupled block (here 63 variables across two
+regions), and sweeps it with Gauss--Seidel until a residual norm falls below tolerance.
+For the couplings AeroMAPS was built around --- fleet renewal, energy intensity, traffic
+--- this is exactly right. The market is a worse fit, and it is worth being explicit
+about why, because the limitation is structural rather than a matter of settings.
+
+\paragraph{An MDA is a fixed-point iteration, and it asks for more than it looks like.}
+Gauss--Seidel converges when the composite map from coupling variables to coupling
+variables is a contraction near the solution. In this loop that map is
+\[
+p \;\longmapsto\; D(p) \;\longmapsto\; \Lambda\big(D(p)\big) \;=\; p' ,
+\]
+where $D(\cdot)$ is the whole fleet--cost--airfare--elasticity chain and $\Lambda$ is the
+market's price. Convergence therefore requires $\Lambda$ to be not merely bounded but
+\emph{Lipschitz} in demand, with a small enough constant. At $w=0$ it is: the price is
+the average cost, an explicit smooth function of the volumes. At $w=1$ it is a
+multiplier, and \S\ref{sec:duality} established that a multiplier is a subgradient of a
+piecewise-smooth value function. Its Lipschitz constant is infinite at every kink. No
+choice of relaxation factor or acceleration method repairs that, because the failure is
+in the map, not in the scheme applied to it --- a point this work initially got wrong
+and had to retract (\S\ref{sec:defects}).
+
+\paragraph{The disciplines exchange point values, and a set-valued quantity has none.}
+The MDA's contract is that each discipline is a function: same inputs, same outputs. At a
+kink the market is a \emph{correspondence} --- the KKT system admits an interval of
+prices, and which one comes back is a property of the solver's trajectory. It is
+consistent with the maths and inconsistent with the contract. Nothing in GEMSEO can
+detect this; the discipline looks like it is returning a number, and it is.
+
+\paragraph{The convergence test measures the wrong thing.} The residual is a norm over
+all 63 coupling variables, in their own units. A market that has settled to eleven
+digits can sit inside a residual dominated by \var{region\_B:ask} at $10^{12}$, and a
+market that is flipping between two active sets can hide inside a residual that is
+falling for unrelated reasons. Diagnosing \S\ref{sec:convergence} required instrumenting the
+discipline itself --- and four successive instrumentation attempts were wrong before one
+was right (\S\ref{sec:defects}), each producing a confident, false reading.
+
+\paragraph{The market is solved many times to answer one question.} The convex programme
+is solved \emph{in full} --- all regions, pathways and years, with perfect foresight ---
+at every sweep. A converged coupled case costs 23 solves at $w=0$ and 60 at $w=1$; a
+failing one costs 202. Each is a globally optimal answer to a question that is about to
+be superseded.
+
+\paragraph{What the alternative would be.} All of the above points the same way: the
+demand response belongs \emph{inside} the programme rather than outside it. A single
+optimisation maximising surplus net of cost, with demand as a decision variable, has no
+outer loop, no set-valued exchange and no residual to interpret --- its optimality
+conditions simply include the demand relation. That is a large change to how AeroMAPS is
+organised and it is not proposed here.
+
+What \emph{is} done here (\S\ref{sec:fix}) is the smallest useful step in that direction:
+a local linearisation of the demand curve is passed into the programme, enough to make
+the price single-valued, constructed so that it is exactly inert once the loop settles.
+The MDA stays; it is simply no longer asked to iterate on a quantity that has no value
+to iterate on.
+
 \subsection{Decide on net, report on gross}
 \label{sec:netgross}
 
@@ -444,6 +610,7 @@ across fuels, so it cannot change which pathway is marginal. It still reaches th
 through demand, which is the correct channel.
 
 \section{Verification}
+\label{sec:verif}
 
 \paragraph{An analytic case pins the conventions.} One region, one year, saturation known
 in closed form, so both prices are known exactly. This caught a sign error that
@@ -580,13 +747,29 @@ no-scarcity run:
 $w=0,\ \gamma=0.5$ & $+11.2 / -1.3$ & $+5.2 / -0.6$ & $+1.8 / -0.2$ & $+0.4 / -0.0$ \\
 $w=0,\ \gamma=1$   & $+21.9 / -2.5$ & $+10.2 / -1.2$ & $+3.6 / -0.4$ & $+0.8 / -0.1$ \\
 $w=0,\ \gamma=2$   & $+42.1 / -4.7$ & $+19.6 / -2.3$ & $+7.1 / -0.8$ & $+1.6 / -0.2$ \\
-$w=1,\ \gamma=0.5$ & \multicolumn{4}{c}{\emph{did not converge}} \\
-$w=1,\ \gamma=1$   & \emph{n.c.} & $+102.9 / -10.8$ & \emph{n.c.} & \emph{n.c.} \\
-$w=1,\ \gamma=2$   & $+186.2 / -18.0$ & $+133.2 / -13.6$ & \emph{n.c.} & \emph{n.c.} \\
+$w=1,\ \gamma=0.5$ & $+99.6 / -10.5$ & $+84.2 / -9.0$ & $+71.8 / -7.8$ & \emph{n.c.} \\
+$w=1,\ \gamma=1$   & $+131.9 / -13.5$ & $+102.9 / -10.8$ & $+80.4 / -8.7$ & \emph{n.c.} \\
+$w=1,\ \gamma=2$   & $+186.2 / -18.0$ & $+133.2 / -13.6$ & $+94.7 / -10.0$ & \emph{n.c.} \\
 \bottomrule
 \end{tabular}
-\caption{15 of 24 cells converge: all 12 at $w=0$, only 3 of 12 at $w=1$.}
+\caption{21 of 24 cells converge with the demand-anchored balance and \emph{no}
+acceleration --- all 12 at $w=0$ and 9 of 12 at $w=1$, against 3 of 12 before
+(\S\ref{sec:fix}). The three remaining failures are the whole $n=16$ column, the
+stiffest saturation on the grid; they are a separate and still-open problem.}
 \end{table}
+
+\begin{keybox}
+\textbf{The anchored run agrees with the rigid one wherever the rigid one worked.} This
+is the system-level check that \S\ref{sec:fix}'s inertness argument survives contact with
+the full chain, and it is worth more than the kernel test because it exercises every
+discipline between the market and the demand:
+\begin{itemize}[nosep,leftmargin=5mm]
+  \item all 13 $w=0$ cells: agree to $\sim 10^{-10}$ relative --- unchanged, as required;
+  \item the 3 $w=1$ cells that converged before: agree to $3\times10^{-8}$;
+  \item 6 $w=1$ cells that previously failed: now converge.
+\end{itemize}
+The demand slope changed nothing that already worked, and fixed what did not.
+\end{keybox}
 
 \begin{figure}[h]
 \centering
@@ -596,47 +779,177 @@ interpolated over.}
 \end{figure}
 
 \noindent Two results survive the feedback intact. The kernel-level \emph{ordering} holds
---- uplift still falls monotonically in $n$. And \textbf{the traffic response is
+--- uplift still falls monotonically in $n$, at $w=1$ as well now that the row is legible. And \textbf{the traffic response is
 consistently about a tenth of the price response}: $+42.1\,\%$ on price gives $-4.7\,\%$
 on RPK. That ratio is the product of two independently measured transmissions (fuel is
 13.1\,\% of the airfare; demand elasticity $0.888$). Rule of thumb for this bench:
 \textbf{a 10\,\% fuel-price rise costs about 1.2\,\% of traffic}.
 
-\subsection{The coupled fixed point fails at $w=1$}
+\subsection{The coupled fixed point, and why it failed at $w=1$}
 \label{sec:convergence}
 
 At $w=1$ the loop does not converge under AeroMAPS's default settings: the residual
-stalls at $2.1\times10^{-1}$ after 200 iterations. Damping helps but does not close it;
-acceleration fixes \emph{some} cells (3 of 12), not all.
+stalls at $8.6\times10^{-2}$ after 200 sweeps. Damping helps but does not close it, and
+acceleration --- which an earlier version of this report credited with fixing it --- does
+not (\S\ref{sec:defects}).
 
-Instrumenting per iteration locates it exactly. Everything is converged to $10^{-12}$
-except \textbf{two years}, where the \emph{compliance price swings 100\,\% of its own
-magnitude while the volumes move 1--2\,\%}.
+The mechanism was first \emph{inferred} from the shape of the residual. It has since been
+\emph{measured}. The kernel now reports an \var{active\_signature}: a digest of which
+constraints are tight, taken from the primal slacks and never from the multipliers, since
+whether a multiplier is non-zero is precisely the question that degenerates. Two sweeps
+with the same signature solved the same linear system for their prices. The measurement
+(\var{fuel\_clearing\_step1/convergence.py}, Fig.~\ref{fig:convergence}) is
+Table~\ref{tab:activeset}.
+
+\begin{table}[h]
+\centering\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+ & \textbf{market solves} & \textbf{converged?} & \textbf{distinct active sets}
+ & \textbf{changes, 2nd half} \\
+\midrule
+$w = 0$ & 23 & yes & 5 & \textbf{0} \\
+$w = 1$, rigid balance & 202 & \textbf{no} & 6 & \textbf{33} \\
+$w = 1$, demand-anchored & 60 & yes & 6 & \textbf{0} \\
+\bottomrule
+\end{tabular}
+\caption{The failure, watched rather than deduced. At $w=0$ the set of tight constraints
+stops moving and stays stopped. At $w=1$ it never stops.}
+\label{tab:activeset}
+\end{table}
+
+The two sets it alternates between differ in exactly two cells:
+\[
+\{\text{obligation tight}: 31,\; \text{growth limit tight}: 31\}
+\quad\longleftrightarrow\quad
+\{\text{obligation tight}: 29,\; \text{growth limit tight}: 33\}.
+\]
 
 \begin{keybox}
-\textbf{The mechanism, and it is not ``prices are volatile''.} The measured loop gain is
-$\approx 0.32$, far below 1 --- a gain that low cannot diverge. It is a
-\emph{discontinuity}. A 2\,\% demand wobble flips the obligation between binding and
-slack; $\lambda^{M}$ jumps between a positive value and zero when it does. The primal
-barely notices; the multiplier is a step function across that boundary. The iterate
-settles into an exact period-3 limit cycle.
+\textbf{The mechanism, precisely.} In two (region, year) cells the binding constraint
+trades places between \emph{the obligation binds} and \emph{the growth limit binds}. On
+one side the obligation is met by volume and $\lambda^{M}$ is the cost of substituting
+one fuel for another, about $0.012$\,\EURMJ. On the other the obligation has become
+physically unreachable and the only way to discharge it is to pay --- so $\lambda^{M}$
+snaps to the buy-out, $0.30$\,\EURMJ. The delivered price jumps 23--29\,\% when it does.
+
+\textbf{The volume is identical on both sides.} It is pinned by the growth limit. Only
+the price differs. That is not a solver artefact: at the crossing point the value
+function has a genuine kink, relaxing the growth limit saves nothing (the obligation is
+already met) while tightening it costs the buy-out, so the right and left derivatives
+differ and $\partial V$ is the whole interval $[0.012,\,0.30]$ --- a factor of 25. This
+is exactly the caveat of \S\ref{sec:duality}, met in practice.
 
 \textbf{So $w$ decides whether the model couples to a well-defined function of its own
-state.} At $w=0$ the delivered price is the \emph{average cost} --- a function of volumes,
-which move 1\,\%; the jump never reaches the traffic loop and the MDA converges in 40
-iterations. At $w=1$ the price contains $\lambda^{M}$, and duals at an active-set
-boundary are not well-defined functions of the state.
+state}, not how volatile the price is. At $w=0$ the delivered price is the average cost:
+a function of volumes, which move by 1--2\,\%. At $w=1$ it contains $\lambda^{M}$, and
+at a kink $\lambda^{M}$ is not a function of the state at all.
 \end{keybox}
 
-\noindent A natural explanation was tested and \textbf{rejected}: the bad years sit next
-to a ReFuelEU step, so the staircase obligation looked responsible. Replacing it with a
-smooth ramp through the same points still fails. Smoothing moves the boundary rather than
-removing it --- with a binding growth limit there is always some year where it stops
-binding. This is intrinsic to coupling an MDA fixed point to the duals of a constrained
-intertemporal programme, not a quirk of the regulation.
+\noindent Two explanations were tested and \textbf{rejected}. The bad years sit next to a
+ReFuelEU step, so the staircase obligation looked responsible --- but replacing it with a
+smooth ramp through the same points still fails: smoothing moves the boundary rather than
+removing it. And the measured loop gain, $\approx 0.32$, is far below 1; a gain that low
+cannot diverge, which is what ruled out ``the prices are volatile'' at the outset.
 
-\textbf{Practical consequence:} $w=0$ is solid (12 of 12, default settings). $w>0$ is a
-research problem, not a scenario dial, until the boundary behaviour is understood.
+\subsection{The fix: quantity from supply, price from demand}
+\label{sec:fix}
+
+The diagnosis dictates the remedy. Where the supply curve is vertical --- a growth limit
+exhausted, an obligation reachable only by buying out --- the quantity is determined and
+the price is not. That is not a pathology; it is the ordinary situation in any
+capacity-constrained market, and every such market resolves it the same way: \textbf{the
+quantity comes from supply and the price comes from demand}. The programme was solving a
+supply curve at a fixed quantity and then being asked for a price the supply side does
+not contain.
+
+So the balance is given a slope. Around the incoming demand $D_{r,t}$ and the price
+$p^{0}_{r,t}$ that demand was formed at, introduce $a_{r,t}$ (free) and replace
+\eqref{eq:balance} and \eqref{eq:mandate} with
+\begin{equation}
+\sum_{p} q_{r,p,t} = D_{r,t} + a_{r,t},
+\qquad
+\sum_{p \in \mathcal{S}_r} q_{r,p,t} + x_{r,t} \ge m_{r,t}\,\big(D_{r,t} + a_{r,t}\big),
+\label{eq:elastic}
+\end{equation}
+adding to the objective the consumer surplus given up, to second order:
+\begin{equation}
+\sum_{r,t}\delta_t\left[-\,p^{0}_{r,t}\,a_{r,t} + \frac{a_{r,t}^{2}}{2\beta_{r,t}}\right],
+\qquad \beta_{r,t} = \eta\,\frac{D_{r,t}}{p^{0}_{r,t}} \;\ge\; 0 .
+\label{eq:surplus}
+\end{equation}
+The quadratic keeps the programme convex. Stationarity in $a_{r,t}$ then reads
+\begin{equation}
+\boxed{\;\lambda^{E}_{r,t} + m_{r,t}\,\lambda^{M}_{r,t} \;=\; p^{0}_{r,t} - \frac{a_{r,t}}{\beta_{r,t}}\;}
+\label{eq:inversedemand}
+\end{equation}
+--- the delivered marginal price equals the inverse demand at the quantity served. The
+left-hand side is what the airline faces per MJ: the energy, plus the share $m$ of
+obligation that MJ drags with it (\S\ref{sec:whopays}). The identity holds to
+$5\times10^{-11}$ in the kernel tests, and it is the entire mechanism. On a vertical
+stretch of supply, $a$ moves until the price sits where demand wants it; the gap that
+opens between that price and the marginal production cost is a \textbf{scarcity rent},
+which is what a capacity-constrained producer earns, not an error.
+
+\begin{keybox}
+\textbf{This is exact, not a relaxation.} At a fixed point of the coupling loop the price
+the market returns \emph{is} the price the demand was formed at, so $p^{0} = \lambda^{E}
++ m\lambda^{M}$, hence $a = 0$ by \eqref{eq:inversedemand}, hence
+\eqref{eq:elastic}--\eqref{eq:surplus} reduce to \eqref{eq:balance}--\eqref{eq:mandate}
+identically. The loop therefore converges to a solution of the \emph{unregularised}
+programme or it does not converge at all. There is no fixed point at which the added term
+is still bending the answer. Measured: $|a|/D = 6\times10^{-11}$ at convergence.
+
+\textbf{And $\eta$ does not have to be right.} It sets how far the price moves per sweep
+and nothing else. Linearising the loop gives the requirement $\beta > \tfrac12|dD/dp|$:
+over-stating the demand response is safe and merely slow, under-stating it by more than a
+factor of two overshoots.
+\end{keybox}
+
+\begin{table}[h]
+\centering\small
+\begin{tabular}{@{}lrrrl@{}}
+\toprule
+\textbf{Device} & \textbf{solves} & \textbf{converged?} & \textbf{$|a|/D$ final} & \\
+\midrule
+none (rigid) & 202 & no & --- & the failure \\
+volume anchor alone, $\rho=0.5$ & 202 & no & --- & cannot help: the volume is pinned \\
+$\eta = 0.05$ & 202 & no & $2.8\times10^{-3}$ & slope too small, overshoots \\
+$\eta = 0.2$ & 202 & no & $1.5\times10^{-9}$ & market settled, chain had not \\
+$\eta = 0.5$ & \textbf{59} & \textbf{yes} & $6.5\times10^{-11}$ & \\
+$\eta = 1.0$ & 150 & yes & $2.5\times10^{-10}$ & over-damped \\
+$\eta = 3.0$ & 202 & no & $2.9\times10^{-5}$ & over-damped past the iteration budget \\
+\bottomrule
+\end{tabular}
+\caption{Ablation at $w=1$, two regions, no acceleration. The fastest $\eta$ is an
+estimate of the chain's own elasticity of drop-in demand to the delivered fuel price:
+the iteration is fastest when the slope it is told matches the slope it faces.}
+\label{tab:ablation}
+\end{table}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{convergence.png}
+\caption{Left: the delivered price by sweep. Middle: the active set, numbered by first
+appearance --- the value means nothing, only whether it changes. Right: how hard the
+anchor is pulling; it reaching zero is what certifies the answer is the unregularised
+one.}
+\label{fig:convergence}
+\end{figure}
+
+Two further consequences. First, a \textbf{negative result worth keeping}: anchoring the
+\emph{volumes} instead --- a proximal term $\tfrac{\rho}{2}\|q - \hat q\|^2$ --- does not
+work, and cannot, because the primal is identical on both sides of the kink. It moves
+$\lambda^{M}$ across 0.6\,\% of the interval it is free in. It is retained as an optional,
+separately weighted device for degeneracies in the \emph{primal}, off by default.
+
+Second, all of this runs on \textbf{plain Gauss--Seidel with no acceleration}. The
+acceleration that was previously thought to help is gone from the coupled grid along with
+the claim.
+
+\textbf{Practical consequence:} $w=0$ was already solid. $w>0$ is now a scenario dial
+rather than a research problem, at the cost of one parameter whose value affects the
+route and not the destination.
 
 \section{Policy cases}
 \label{sec:policy}
@@ -782,12 +1095,32 @@ plausible-looking numbers rather than errors.
         split the identical problem three different ways, including a \emph{negative}
         energy price.
   \item \textbf{A jump at a binding/slack boundary} --- \S\ref{sec:convergence}. The same
-        thing dynamically, and the one that stops the solver.
+        thing dynamically, and the one that stopped the coupled solve.
 \end{enumerate}
 
 \noindent In every case a constraint stopped being independent and its multiplier became
-arbitrary. The first two are now pinned to their meaningful KKT values; the third is not
-fixable that way, because the discontinuity is real.
+arbitrary. The first two are pinned to their meaningful KKT values. The third could not
+be pinned, because the discontinuity is real and neither branch is more meaningful than
+the other --- it needed information the cost side does not contain, which is what
+\S\ref{sec:fix} supplies.
+
+\subsection*{Two claims this report previously made and now withdraws}
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{``Acceleration fixes the \(w=1\) failure.''} It was true of the one cell
+        it was measured on. Run over the grid, Secant acceleration returned 3 cells of
+        12. It was a coincidence of trajectory, not a remedy: no sequence transformation
+        can smooth a map that is genuinely discontinuous. The acceleration has been
+        removed from the coupled grid.
+  \item \textbf{``\(w>0\) is a research problem, not a scenario dial.''} It was, until
+        the failure was measured rather than inferred. It is now a dial
+        (\S\ref{sec:fix}).
+\end{itemize}
+
+\noindent Both errors share a shape with the defects above, and with the four successive
+instrumentation attempts that each produced a confident and false reading of the coupled
+loop: \emph{a measurement of one case, generalised}. The active-set signature exists so
+that this particular question can be answered by looking rather than by arguing.
 
 \begin{keybox}
 \textbf{A convex programme that \emph{solves} is not a programme that is \emph{right}.}
@@ -811,7 +1144,14 @@ of the solver}.
         is a plain sum, so solving jointly and separately agree to solver noise. There is
         no \textbf{leakage}: a stricter region cannot import compliance from a looser one.
         This is the single most important missing mechanism for policy work.
-  \item \textbf{$w>0$ does not reliably converge} (\S\ref{sec:convergence}).
+  \item \textbf{$w>0$ needs a demand slope to converge} (\S\ref{sec:fix}). The value
+        chosen does not affect the answer, but it is one more thing a user can set to a
+        number that makes the run take 200 sweeps instead of 60. It should eventually be
+        derived from the chain's own elasticity rather than configured.
+  \item \textbf{The elastic balance is a local linearisation.} It is exact at the fixed
+        point and only there; away from it the demand curve it prices against is a
+        straight line through one measured point. That is enough to select a price and
+        not enough to be a demand model.
   \item \textbf{The buy-out payment reaches no one} (\S\ref{sec:whopays}).
   \item \textbf{No learning curve} anywhere in AeroMAPS, so the cost of entry is a
         constant and every price dynamic comes from the model's own scarcity terms.
@@ -829,8 +1169,10 @@ of the solver}.
 \begin{enumerate}[leftmargin=*,nosep]
   \item \textbf{Inter-regional trade}, which is what the global (non-namespaced)
         discipline was built for. At step~1 it is global in plumbing, not economics.
-  \item \textbf{Understand the $w>0$ boundary behaviour}, or decide the model reports the
-        rent without charging it.
+  \item \textbf{Derive the demand slope} from the chain instead of configuring it, so
+        $w>0$ has no free parameter at all. The convergence rate already measures it: the
+        fastest $\eta$ on the bench is an estimate of the true elasticity
+        (Table~\ref{tab:ablation}).
   \item \textbf{Pass the buy-out payment through} to the cost chain.
   \item \textbf{Make \var{cvxpy} a proper optional dependency} before the mode ships.
 \end{enumerate}

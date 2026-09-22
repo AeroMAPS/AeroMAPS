@@ -1,166 +1,190 @@
 {
  "reference": {
   "ok": true,
-  "delivered": 0.01981900000259871,
-  "compliance": 0.010830000007770778,
-  "rpk": 19823328986604.117,
-  "co2": 493.0399933511088,
-  "share": 70.00000002326505
+  "delivered": 0.019819000000029684,
+  "compliance": 0.010830000000068734,
+  "rpk": 19823328986898.715,
+  "co2": 493.03999354572875,
+  "share": 70.00000000026574
  },
  "w0_g0.5_n2": {
   "ok": true,
-  "delivered": 0.022033982607921342,
-  "compliance": 0.04158128183119656,
-  "rpk": 19565363523030.535,
-  "co2": 486.62395253712884,
-  "share": 70.00000000699477
+  "delivered": 0.022033982606702574,
+  "compliance": 0.04158128427796151,
+  "rpk": 19565363523166.656,
+  "co2": 486.6239525929925,
+  "share": 70.00000000046953
  },
  "w0_g0.5_n4": {
   "ok": true,
-  "delivered": 0.02084928517639644,
-  "compliance": 0.03832602395477466,
-  "rpk": 19702495897231.426,
-  "co2": 490.034668018097,
-  "share": 70.00000006811243
+  "delivered": 0.020849285165109917,
+  "compliance": 0.038326023132755294,
+  "rpk": 19702495898521.816,
+  "co2": 490.0346685659142,
+  "share": 70.00000000449857
  },
  "w0_g0.5_n8": {
   "ok": true,
-  "delivered": 0.020185243053086447,
-  "compliance": 0.033872672961943746,
-  "rpk": 19780205995428.438,
-  "co2": 491.9674511184447,
-  "share": 70.00000001239957
+  "delivered": 0.020185243052654657,
+  "compliance": 0.03387267319240196,
+  "rpk": 19780205995477.277,
+  "co2": 491.967451151805,
+  "share": 70.00000000846062
  },
  "w0_g0.5_n16": {
   "ok": true,
-  "delivered": 0.01989925950768881,
-  "compliance": 0.03032531497878525,
-  "rpk": 19813862805818.04,
-  "co2": 492.8045530401855,
-  "share": 70.00000005438895
+  "delivered": 0.019899259501700697,
+  "compliance": 0.03032531361899321,
+  "rpk": 19813862806505.062,
+  "co2": 492.8045534360964,
+  "share": 70.00000000792924
  },
  "w0_g1_n2": {
   "ok": true,
-  "delivered": 0.024156528803494875,
-  "compliance": 0.054183918117832,
-  "rpk": 19324397384171.895,
-  "co2": 480.6307136612787,
-  "share": 70.00000002224856
+  "delivered": 0.024156528799024506,
+  "compliance": 0.05418392879973352,
+  "rpk": 19324397384670.04,
+  "co2": 480.6307138182311,
+  "share": 70.00000000402041
  },
  "w0_g1_n4": {
   "ok": true,
-  "delivered": 0.02183897289508283,
-  "compliance": 0.047885964221610344,
-  "rpk": 19587804874660.83,
-  "co2": 487.18210715796636,
-  "share": 70.00000001441767
+  "delivered": 0.021838972894603233,
+  "compliance": 0.0478859640185243,
+  "rpk": 19587804874714.285,
+  "co2": 487.1821071970244,
+  "share": 70.00000000973684
  },
  "w0_g1_n8": {
   "ok": true,
-  "delivered": 0.020541012447903934,
-  "compliance": 0.03927861736755429,
-  "rpk": 19738495626370.71,
-  "co2": 490.93004282539323,
-  "share": 70.00000004842505
+  "delivered": 0.02054101243887293,
+  "compliance": 0.03927861815140806,
+  "rpk": 19738495627409.89,
+  "co2": 490.93004322484126,
+  "share": 70.00000000241957
  },
  "w0_g1_n16": {
   "ok": true,
-  "delivered": 0.019978489659010844,
-  "compliance": 0.03232821407806628,
-  "rpk": 19804526900653.035,
-  "co2": 492.57235330217594,
-  "share": 70.00000003691582
+  "delivered": 0.01997848965635414,
+  "compliance": 0.032328215404388363,
+  "rpk": 19804526900960.312,
+  "co2": 492.5723534729342,
+  "share": 70.00000001690435
  },
  "w0_g2_n2": {
   "ok": true,
-  "delivered": 0.028162330384247806,
-  "compliance": 0.07764090016167374,
-  "rpk": 18885490744989.26,
-  "co2": 469.7143572353882,
-  "share": 70.00000001115177
+  "delivered": 0.02816233038104448,
+  "compliance": 0.07764093103809566,
+  "rpk": 18885490745329.445,
+  "co2": 469.71435731449765,
+  "share": 70.00000000206
  },
  "w0_g2_n4": {
   "ok": true,
-  "delivered": 0.023711114105743555,
-  "compliance": 0.06576696522073316,
-  "rpk": 19374469217896.066,
-  "co2": 481.87608550172564,
-  "share": 70.00000002766377
+  "delivered": 0.023711114097240624,
+  "compliance": 0.06576696590332415,
+  "rpk": 19374469218844.94,
+  "co2": 481.8760857243292,
+  "share": 70.0000000027027
  },
  "w0_g2_n8": {
   "ok": true,
-  "delivered": 0.02122379568370994,
-  "compliance": 0.04962188626993442,
-  "rpk": 19658937495892.74,
-  "co2": 488.9512967713949,
-  "share": 70.0000000104122
+  "delivered": 0.021223795683614106,
+  "compliance": 0.049621886632431306,
+  "rpk": 19658937495902.516,
+  "co2": 488.95129679538576,
+  "share": 70.00000000747742
  },
  "w0_g2_n16": {
   "ok": true,
-  "delivered": 0.02013398056386167,
-  "compliance": 0.036258483134573555,
-  "rpk": 19786230551780.33,
-  "co2": 492.1172918621336,
-  "share": 70.00000004255872
+  "delivered": 0.020133980556912907,
+  "compliance": 0.03625848459139051,
+  "rpk": 19786230552580.117,
+  "co2": 492.1172921980259,
+  "share": 70.00000000377139
  },
  "w1_g0.5_n2": {
-  "ok": false,
-  "error": "MDAConvergenceError: MDAGaussSeidel did not converge: residual 8.830e-04 is above the requested tolerance 1.0e-10 over 63 strongly coupled disciplines "
+  "ok": true,
+  "delivered": 0.039567457519407,
+  "compliance": 0.03795921444886455,
+  "rpk": 17739061801168.727,
+  "co2": 441.2007146370674,
+  "share": 70.00000000337491
  },
  "w1_g0.5_n4": {
-  "ok": false,
-  "error": "MDAConvergenceError: MDAGaussSeidel did not converge: residual 2.621e-02 is above the requested tolerance 1.0e-10 over 63 strongly coupled disciplines "
+  "ok": true,
+  "delivered": 0.03651251220009011,
+  "compliance": 0.03453848017164227,
+  "rpk": 18032142864237.87,
+  "co2": 448.49014036438325,
+  "share": 70.00000001101905
  },
  "w1_g0.5_n8": {
-  "ok": false,
-  "error": "MDAConvergenceError: MDAGaussSeidel did not converge: residual 7.721e-03 is above the requested tolerance 1.0e-10 over 63 strongly coupled disciplines "
+  "ok": true,
+  "delivered": 0.03405342902748051,
+  "compliance": 0.031162505945960723,
+  "rpk": 18275263845049.78,
+  "co2": 454.5369737037422,
+  "share": 70.00000001214141
  },
  "w1_g0.5_n16": {
   "ok": false,
-  "error": "MDAConvergenceError: MDAGaussSeidel converged on NaN: 22 coupling variable(s) went NaN at a position that held a value after the first sweep, so the re"
+  "error": "MDAConvergenceError: MDAGaussSeidel did not converge: residual 2.863e-09 is above the requested tolerance 1.0e-10 over 63 strongly coupled disciplines -- the residual stopped decreasing after 200 of 2"
  },
  "w1_g1_n2": {
-  "ok": false,
-  "error": "MDAConvergenceError: MDAGaussSeidel did not converge: residual 6.930e-02 is above the requested tolerance 1.0e-10 over 63 strongly coupled disciplines "
+  "ok": true,
+  "delivered": 0.045958391524464154,
+  "compliance": 0.04612400555804527,
+  "rpk": 17156077022047.227,
+  "co2": 426.70088911513267,
+  "share": 70.00000000238504
  },
  "w1_g1_n4": {
   "ok": true,
-  "delivered": 0.040204015399635265,
-  "compliance": 0.039690569192446214,
-  "rpk": 17679201126532.797,
-  "co2": 439.7118772833178,
-  "share": 70.00000004526589
+  "delivered": 0.04020401568395933,
+  "compliance": 0.03969056970240678,
+  "rpk": 17679201099873.926,
+  "co2": 439.7118769230334,
+  "share": 70.00000000365985
  },
  "w1_g1_n8": {
-  "ok": false,
-  "error": "MDAConvergenceError: MDAGaussSeidel did not converge: residual 2.548e-01 is above the requested tolerance 1.0e-10 over 63 strongly coupled disciplines "
+  "ok": true,
+  "delivered": 0.035759092678089716,
+  "compliance": 0.033597066732744534,
+  "rpk": 18105934105437.754,
+  "co2": 450.3254543626998,
+  "share": 70.00000001029315
  },
  "w1_g1_n16": {
   "ok": false,
-  "error": "MDAConvergenceError: MDAGaussSeidel converged on NaN: 12 coupling variable(s) went NaN at a position that held a value after the first sweep, so the re"
+  "error": "MDAConvergenceError: MDAGaussSeidel did not converge: residual 5.320e-09 is above the requested tolerance 1.0e-10 over 63 strongly coupled disciplines -- the residual stopped decreasing after 200 of 2"
  },
  "w1_g2_n2": {
   "ok": true,
-  "delivered": 0.05671219509083361,
-  "compliance": 0.05978844657031179,
-  "rpk": 16258181107103.404,
-  "co2": 404.3686865997638,
-  "share": 70.00000001202625
+  "delivered": 0.056712192906350746,
+  "compliance": 0.05978844359281717,
+  "rpk": 16258181279787.256,
+  "co2": 404.3686908958079,
+  "share": 70.0000000125519
  },
  "w1_g2_n4": {
   "ok": true,
-  "delivered": 0.04621947646226234,
-  "compliance": 0.0480751860389704,
-  "rpk": 17133085059076.08,
-  "co2": 426.12903940203853,
-  "share": 70.00000005759959
+  "delivered": 0.04621947798469526,
+  "compliance": 0.048075188303877824,
+  "rpk": 17133084925173.041,
+  "co2": 426.1290364224309,
+  "share": 70.00000000784169
  },
  "w1_g2_n8": {
-  "ok": false,
-  "error": "MDAConvergenceError: MDAGaussSeidel did not converge: residual 1.561e-04 is above the requested tolerance 1.0e-10 over 63 strongly coupled disciplines "
+  "ok": true,
+  "delivered": 0.03857869653239606,
+  "compliance": 0.037621451216224885,
+  "rpk": 17832860479411.305,
+  "co2": 443.5336476568394,
+  "share": 70.00000000990062
  },
  "w1_g2_n16": {
   "ok": false,
-  "error": "MDAConvergenceError: MDAGaussSeidel converged on NaN: 12 coupling variable(s) went NaN at a position that held a value after the first sweep, so the re"
+  "error": "MDAConvergenceError: MDAGaussSeidel did not converge: residual 2.476e-10 is above the requested tolerance 1.0e-10 over 63 strongly coupled disciplines -- the residual stopped decreasing after 200 of 2"
  }
 }
