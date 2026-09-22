@@ -13,6 +13,118 @@ import pandas as pd
 from aeromaps.models.base import AeroMAPSModel
 
 
+def derive_share_families(
+    volumes,
+    total_energy_consumption,
+    type_energy_consumption,
+    pathways_manager,
+    fallback_index,
+):
+    """Every share family that follows from the per-pathway volumes.
+
+    Eight of the nine output families this module emits are the ninth divided by a
+    total: share of all energy, share of an aircraft type, share of an energy origin,
+    and the per-origin/per-type cross-tabulations. None of them is an independent
+    decision -- given ``{pathway: volume}`` they are fixed.
+
+    Pulled out of :meth:`EnergyUseChoice.compute` so the fuel market can emit the same
+    families from volumes it solved for rather than volumes it was handed, without a
+    second copy of this arithmetic. Two copies would drift, and the failure mode is
+    silent: ``EnergyCarriersMeans`` multiplies by a share sum it never checks, so a
+    share family that disagrees with its volumes rescales CO2 with no error raised.
+
+    Parameters
+    ----------
+    volumes
+        ``{pathway_name: Series}`` in MJ -- the ``{p}_energy_consumption`` family.
+    total_energy_consumption
+        Series in MJ, the denominator of the ``share_total_energy`` families.
+    type_energy_consumption
+        ``{aircraft_type: Series}`` in MJ, one hard budget per aircraft type.
+    pathways_manager
+        Metadata only; no coupling variables are read from it.
+    fallback_index
+        Year index for the three mandatory zero outputs, used only when no pathway of
+        that origin exists.
+
+    Returns
+    -------
+    dict
+        The derived families. Does NOT include ``{p}_energy_consumption`` itself.
+    """
+    derived = {}
+
+    for pathway in pathways_manager.get_all():
+        derived[f"{pathway.name}_share_total_energy"] = (
+            volumes[pathway.name] / total_energy_consumption * 100
+        )
+
+    for aircraft_type in pathways_manager.get_all_types("aircraft_type"):
+        # Note the fillna(0) here and its ABSENCE in the energy-origin block below.
+        # Preserved from the original rather than harmonised: the two differ in what
+        # they emit where a budget is NaN, and that is downstream-visible behaviour.
+        type_energy = type_energy_consumption[aircraft_type].fillna(0)
+        for pathway in pathways_manager.get(aircraft_type=aircraft_type):
+            derived[f"{pathway.name}_share_{aircraft_type}"] = (
+                volumes[pathway.name] / type_energy.replace(0, np.nan) * 100
+            )
+
+    for energy_origin in pathways_manager.get_all_types("energy_origin"):
+        origin_energy_consumption = sum(
+            volumes[pathway.name].fillna(0)
+            for pathway in pathways_manager.get(energy_origin=energy_origin)
+        )
+        for pathway in pathways_manager.get(energy_origin=energy_origin):
+            derived[f"{pathway.name}_share_{energy_origin}"] = (
+                volumes[pathway.name] / origin_energy_consumption.replace(0, np.nan) * 100
+            )
+        derived[f"{energy_origin}_share_total_energy"] = (
+            origin_energy_consumption / total_energy_consumption * 100
+        )
+
+        for aircraft_type in pathways_manager.get_all_types("aircraft_type"):
+            if pathways_manager.get(aircraft_type=aircraft_type, energy_origin=energy_origin):
+                type_energy = type_energy_consumption[aircraft_type]
+
+                origin_type_energy_consumption = sum(
+                    volumes[pathway.name].fillna(0)
+                    for pathway in pathways_manager.get(
+                        energy_origin=energy_origin, aircraft_type=aircraft_type
+                    )
+                )
+
+                derived[f"{aircraft_type}_{energy_origin}_energy_consumption"] = (
+                    origin_type_energy_consumption
+                )
+                derived[f"{energy_origin}_share_{aircraft_type}"] = (
+                    origin_type_energy_consumption / type_energy.replace(0, np.nan) * 100
+                )
+                derived[f"{aircraft_type}_share_{energy_origin}"] = (
+                    origin_type_energy_consumption
+                    / origin_energy_consumption.replace(0, np.nan)
+                    * 100
+                )
+                for pathway in pathways_manager.get(
+                    energy_origin=energy_origin, aircraft_type=aircraft_type
+                ):
+                    derived[f"{pathway.name}_share_{aircraft_type}_{energy_origin}"] = (
+                        volumes[pathway.name]
+                        / origin_type_energy_consumption.replace(0, np.nan)
+                        * 100
+                    )
+
+    # Mandatory for non_co2 to work even when no pathway of that origin is declared.
+    for output in (
+        "biomass_share_dropin_fuel",
+        "electricity_share_dropin_fuel",
+        "fossil_share_dropin_fuel",
+    ):
+        if output not in derived:
+            derived[output] = pd.Series(0.0, index=fallback_index)
+
+    return derived
+
+
 class EnergyUseChoice(AeroMAPSModel):
     """
     Central model to define volume consumed of each energy carrier considered depending on the mandate specified and priorities.
@@ -214,7 +326,8 @@ class EnergyUseChoice(AeroMAPSModel):
                                 ).fillna(0)
 
                                 modified_years = pathway_consumption.loc[original.index][
-                                    pathway_consumption.loc[original.index] != original.loc[original.index]
+                                    pathway_consumption.loc[original.index]
+                                    != original.loc[original.index]
                                 ]
 
                                 if not modified_years.empty:
@@ -316,89 +429,24 @@ class EnergyUseChoice(AeroMAPSModel):
                         index=pd.RangeIndex(start=self.historic_start_year, stop=self.end_year + 1),
                     )
 
-        # compute metrics derived from each patwhay consumption
-        total_energy_consumption = input_data["energy_consumption"]
-
-        # Compute share of each pathway in the total energy consumption
-        for pathway in self.pathways_manager.get_all():
-            output_data[f"{pathway.name}_share_total_energy"] = (
-                output_data[f"{pathway.name}_energy_consumption"] / total_energy_consumption * 100
+        # Every remaining family follows from the volumes just decided. Shared with the
+        # fuel market, which solves for those volumes instead of allocating them.
+        output_data.update(
+            derive_share_families(
+                volumes={
+                    pathway.name: output_data[f"{pathway.name}_energy_consumption"]
+                    for pathway in self.pathways_manager.get_all()
+                },
+                total_energy_consumption=input_data["energy_consumption"],
+                type_energy_consumption={
+                    aircraft_type: input_data[f"energy_consumption_{aircraft_type}"]
+                    for aircraft_type in self.pathways_manager.get_all_types("aircraft_type")
+                },
+                pathways_manager=self.pathways_manager,
+                fallback_index=range(self.historic_start_year, self.end_year + 1),
             )
+        )
 
-        # Compute share of each pathway in a given aircraft type energy consumption
-        for aircraft_type in self.pathways_manager.get_all_types("aircraft_type"):
-            type_energy_consumption = input_data[f"energy_consumption_{aircraft_type}"].fillna(0)
-            for pathway in self.pathways_manager.get(aircraft_type=aircraft_type):
-                output_data[f"{pathway.name}_share_{aircraft_type}"] = (
-                    output_data[f"{pathway.name}_energy_consumption"]
-                    / type_energy_consumption.replace(0, np.nan)
-                    * 100
-                )
-
-        for energy_origin in self.pathways_manager.get_all_types("energy_origin"):
-            # Get the total energy consumption for each energy origin
-            origin_energy_consumption = sum(
-                output_data[f"{pathway.name}_energy_consumption"].fillna(0)
-                for pathway in self.pathways_manager.get(energy_origin=energy_origin)
-            )
-            for pathway in self.pathways_manager.get(energy_origin=energy_origin):
-                output_data[f"{pathway.name}_share_{energy_origin}"] = (
-                    output_data[f"{pathway.name}_energy_consumption"]
-                    / origin_energy_consumption.replace(0, np.nan)
-                    * 100
-                )
-            output_data[f"{energy_origin}_share_total_energy"] = (
-                origin_energy_consumption / total_energy_consumption * 100
-            )
-
-            # get detail for each aircraft type
-            for aircraft_type in self.pathways_manager.get_all_types("aircraft_type"):
-                if self.pathways_manager.get(
-                    aircraft_type=aircraft_type, energy_origin=energy_origin
-                ):
-                    type_energy_consumption = input_data[f"energy_consumption_{aircraft_type}"]
-
-                    origin_type_energy_consumption = sum(
-                        output_data[f"{pathway.name}_energy_consumption"].fillna(0)
-                        for pathway in self.pathways_manager.get(
-                            energy_origin=energy_origin, aircraft_type=aircraft_type
-                        )
-                    )
-
-                    output_data[f"{aircraft_type}_{energy_origin}_energy_consumption"] = (
-                        origin_type_energy_consumption
-                    )
-
-                    output_data[f"{energy_origin}_share_{aircraft_type}"] = (
-                        origin_type_energy_consumption
-                        / type_energy_consumption.replace(0, np.nan)
-                        * 100
-                    )
-
-                    output_data[f"{aircraft_type}_share_{energy_origin}"] = (
-                        origin_type_energy_consumption
-                        / origin_energy_consumption.replace(0, np.nan)
-                        * 100
-                    )
-                    for pathway in self.pathways_manager.get(
-                        energy_origin=energy_origin, aircraft_type=aircraft_type
-                    ):
-                        output_data[f"{pathway.name}_share_{aircraft_type}_{energy_origin}"] = (
-                            output_data[f"{pathway.name}_energy_consumption"]
-                            / origin_type_energy_consumption.replace(0, np.nan)
-                            * 100
-                        )
-        # Fill with mandatory inputs for aeromaps models (non_co2) to work even if no pathway is defined for a given type
-        mandatory_outputs = [
-            "biomass_share_dropin_fuel",
-            "electricity_share_dropin_fuel",
-            "fossil_share_dropin_fuel",
-        ]
-        for output in mandatory_outputs:
-            if output not in output_data:
-                output_data[output] = pd.Series(
-                    0.0, index=range(self.historic_start_year, self.end_year + 1)
-                )
         # Add all output data in self.df and self.float_outputs
         self._store_outputs(output_data)
 
