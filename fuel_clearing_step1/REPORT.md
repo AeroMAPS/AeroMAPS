@@ -732,14 +732,15 @@ throughout. Delivered price % / RPK % against the no-scarcity run, region A 2050
 | **w=0**, γ=0.5 | +11.2 / −1.3 | +5.2 / −0.6 | +1.8 / −0.2 | +0.4 / −0.0 |
 | **w=0**, γ=1 | +21.9 / −2.5 | +10.2 / −1.2 | +3.6 / −0.4 | +0.8 / −0.1 |
 | **w=0**, γ=2 | +42.1 / −4.7 | +19.6 / −2.3 | +7.1 / −0.8 | +1.6 / −0.2 |
-| **w=1**, γ=0.5 | +99.6 / −10.5 | +84.2 / −9.0 | +71.8 / −7.8 | did not converge |
-| **w=1**, γ=1 | +131.9 / −13.5 | +102.9 / −10.8 | +80.4 / −8.7 | did not converge |
-| **w=1**, γ=2 | +186.2 / −18.0 | +133.2 / −13.6 | +94.7 / −10.0 | did not converge |
+| **w=1**, γ=0.5 | +99.6 / −10.5 | +84.2 / −9.0 | +71.8 / −7.8 | +64.3 / −7.0 |
+| **w=1**, γ=1 | +131.9 / −13.5 | +102.9 / −10.8 | +80.4 / −8.7 | +66.6 / −7.3 |
+| **w=1**, γ=2 | +186.2 / −18.0 | +133.2 / −13.6 | +94.7 / −10.0 | +70.9 / −7.7 |
 
-**21 of 24 cells converge** — all 12 at `w = 0` and 9 of 12 at `w = 1`, against 3 of 12
-before §8.6. The three remaining failures are the whole `n = 16` column, the stiffest
-saturation on the grid; that is a separate and still-open problem, not the active-set
-discontinuity, which no longer appears anywhere in the grid.
+**24 of 24 cells converge**, against 15 of 24 before §8.6. Both rows are monotone in `n`
+and in `γ`; the irregular pattern §8.3.2 tried and failed to explain was never a pattern,
+only a trend read off whichever cells happened to survive.
+
+Getting the last three took a second diagnosis, and it is not the same one — see §8.7.
 
 **The anchored run agrees with the rigid one wherever the rigid one worked.** This is
 the system-level version of the inertness argument in §8.6, and it is worth more than
@@ -906,6 +907,63 @@ building it to find that out.
 Secant acceleration is gone from `coupled_grid.py` along with the claim that it helped
 (§8.3's ⚠️). And `w > 0` is a scenario dial rather than a research problem, at the cost
 of one parameter that affects the route and not the destination.
+
+---
+
+### 8.7 The `n = 16` column was a tolerance mismatch, not a convergence failure
+
+After §8.6 three cells still failed: the whole stiffest-saturation column at `w = 1`.
+The obvious guess was that §8.6's demand slope is mis-set there, and the linearised
+iteration even supports it — with `e = e0 (beta - d) / (s + beta)`, a stiff supply curve
+drives `s = 1/S'` toward zero and leaves no tolerance for under-stating beta.
+
+**That guess was wrong, and the active-set signature said so immediately.**
+
+| `n = 16`, γ = 0.5, `w = 1` | active-set changes | tail price step | final \|a\|/D |
+|---|---|---|---|
+| `eta = 0.5` | **0** | 8.3e-11 | 5.8e-10 |
+| `eta = 2` | 0 | 7.5e-11 | 2.6e-7 |
+| `eta = 8` | 0 | 1.3e-6 | 1.2e-3 |
+
+The market has *converged*. No flipping, the price stationary to eleven digits, the
+anchor inert — and raising `eta` only makes it worse. So whatever is failing is not the
+kink and not the loop gain.
+
+Reading the residual contributors settles it: the largest are
+`region_B:hefa_fog_energy_consumption` at **2.87e+04 MJ** on volumes of ~1e13 — a
+relative **2.86e-9**, which is exactly the kernel's own `solver_tolerance` of 1e-9 once
+scaled. The MDA was asking for **1e-10**, one decade below the precision the market can
+produce.
+
+Tightening the solver instead does not work: at `solver_tolerance` 1e-11 or 1e-12
+**Clarabel refuses the stiff cone outright** and the kernel raises rather than returning
+a worse answer. There is no tighter answer to be had.
+
+So the stopping rule was the thing out of place:
+
+| `n = 16`, γ=0.5 | MDA tolerance 1e-10 | MDA tolerance 1e-8 |
+|---|---|---|
+| outcome | failed, residual 2.863e-9 | **converged** |
+| delivered 2050 | — | 0.032553681 |
+| `n = 8` control | 0.034053429 | **0.034053429** |
+
+The control is the point: a cell that converges either way returns a **bit-identical**
+answer at the looser tolerance. This loosens the stopping rule, not the result.
+
+**A finding about the code, not the model.** The tolerance was hard-coded at 1e-10 in
+two places in `multi_regional_process.py` and could not be set from a scenario — the
+`TODO` beside it said as much, and assigning it on the chain after construction silently
+does nothing, which is how the first attempt at this measurement produced a false
+negative. It is now `regionalisation.mda_tolerance` (with `mda_max_iter`), defaulting to
+what it was, so nothing that ran before runs differently.
+
+**The general point, and it is the third instance in this report.** A convergence
+tolerance is only meaningful against the precision of the disciplines underneath it.
+Coupling a conic solver into a fixed-point loop imports that solver's noise floor into
+the loop's stopping rule, and the symptom — a run that reports non-convergence having
+converged — is indistinguishable from a real failure unless you instrument the
+discipline. §5.4.1 was a program that solved and was wrong; §8.5 was a price that had no
+single value; this is a loop that had arrived and was told it had not.
 
 ---
 

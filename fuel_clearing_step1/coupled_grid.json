@@ -128,8 +128,13 @@
   "share": 70.00000001214141
  },
  "w1_g0.5_n16": {
-  "ok": false,
-  "error": "MDAConvergenceError: MDAGaussSeidel did not converge: residual 2.863e-09 is above the requested tolerance 1.0e-10 over 63 strongly coupled disciplines -- the residual stopped decreasing after 200 of 2"
+  "ok": true,
+  "delivered": 0.032553681241714316,
+  "compliance": 0.033414769113619354,
+  "rpk": 18426813592753.715,
+  "co2": 458.30627430561344,
+  "share": 70.00000001358889,
+  "mda_tolerance": 1e-08
  },
  "w1_g1_n2": {
   "ok": true,
@@ -156,8 +161,13 @@
   "share": 70.00000001029315
  },
  "w1_g1_n16": {
-  "ok": false,
-  "error": "MDAConvergenceError: MDAGaussSeidel did not converge: residual 5.320e-09 is above the requested tolerance 1.0e-10 over 63 strongly coupled disciplines -- the residual stopped decreasing after 200 of 2"
+  "ok": true,
+  "delivered": 0.03302427012899024,
+  "compliance": 0.0296946701760743,
+  "rpk": 18378988333994.605,
+  "co2": 457.1167787165381,
+  "share": 70.0000000030598,
+  "mda_tolerance": 1e-08
  },
  "w1_g2_n2": {
   "ok": true,
@@ -184,7 +194,12 @@
   "share": 70.00000000990062
  },
  "w1_g2_n16": {
-  "ok": false,
-  "error": "MDAConvergenceError: MDAGaussSeidel did not converge: residual 2.476e-10 is above the requested tolerance 1.0e-10 over 63 strongly coupled disciplines -- the residual stopped decreasing after 200 of 2"
+  "ok": true,
+  "delivered": 0.033873897391470176,
+  "compliance": 0.030908422106132673,
+  "rpk": 18293272950129.973,
+  "co2": 454.9848909214959,
+  "share": 70.00000000352031,
+  "mda_tolerance": 1e-08
  }
 }

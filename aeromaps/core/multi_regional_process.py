@@ -207,6 +207,20 @@ class MultiRegionalProcess(AeroMAPSProcess):
         # it in each region's config would let one region silently run the other
         # allocator, which is not a failure anything downstream could detect.
         self._fuel_market: bool = bool(self._regionalisation_config.get("fuel_market", False))
+
+        # The MDA's own stopping rule, previously hard-coded below and unreachable from a
+        # scenario (the TODO in _setup_unified_mda). The default is unchanged, so nothing
+        # that ran before runs differently.
+        #
+        # It is exposed because a tolerance is only meaningful against the precision of
+        # the disciplines underneath it. The fuel market solves a conic program whose
+        # duals are good to its own `solver_tolerance` -- about 3e-9 of demand on a stiff
+        # saturation cone, and Clarabel refuses the problem outright if asked for better.
+        # Demanding 1e-10 from that loop is asking for a digit that does not exist, and
+        # the symptom is a run that reports non-convergence having in fact converged.
+        self._mda_tolerance: float = float(self._regionalisation_config.get("mda_tolerance", 1e-10))
+        self._mda_max_iter: int = int(self._regionalisation_config.get("mda_max_iter", 200))
+
         if self._fuel_market and self._execution_mode != "unified_mda":
             raise NotImplementedError(
                 "'regionalisation.fuel_market' is on, but execution_mode is "
@@ -756,8 +770,8 @@ class MultiRegionalProcess(AeroMAPSProcess):
         self.disciplines = self._build_top_level_disciplines()
         self._top_level_mda_chain = MDAChain(
             disciplines=self.disciplines,
-            tolerance=1e-10,
-            max_mda_iter=200,
+            tolerance=self._mda_tolerance,
+            max_mda_iter=self._mda_max_iter,
             initialize_defaults=True,
             inner_mda_name="MDAGaussSeidel",
             log_convergence=False,
@@ -804,17 +818,18 @@ class MultiRegionalProcess(AeroMAPSProcess):
         # ``doc_net_energy_per_rpk_mean`` <-> ``rpk`` loop, and the GEMSEO default of 20
         # iterations stops well short of what a coupled scenario needs.
         #
-        # TODO: Make these kwargs available at a higher level (e.g. config file).
-        # Until then they are tuned from the notebook on the GEMSEO objects themselves,
-        # which is a minefield -- assign on the chain, not on its inner MDAs, and see
-        # "Tuning an MDAChain" in aeromaps/core/gemseo.py.
+        # `tolerance` and `max_mda_iter` come from `regionalisation.mda_tolerance` and
+        # `regionalisation.mda_max_iter`, defaulting to what they were. They have to be
+        # passed HERE: assigning them on the chain afterwards does not take, which is the
+        # minefield the note below is about -- see "Tuning an MDAChain" in
+        # aeromaps/core/gemseo.py.
         #
         # inner_mda_settings carries the MDAGaussSeidel defaults (no damping, no
         # acceleration) explicitly, because it is the only route to those two knobs.
         self.mda_chain = MDAChain(
             disciplines=all_disciplines,
-            tolerance=1e-10,
-            max_mda_iter=200,
+            tolerance=self._mda_tolerance,
+            max_mda_iter=self._mda_max_iter,
             initialize_defaults=True,
             inner_mda_name="MDAGaussSeidel",
             log_convergence=True,

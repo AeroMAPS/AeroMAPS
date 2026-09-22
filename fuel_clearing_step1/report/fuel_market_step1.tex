@@ -747,15 +747,16 @@ no-scarcity run:
 $w=0,\ \gamma=0.5$ & $+11.2 / -1.3$ & $+5.2 / -0.6$ & $+1.8 / -0.2$ & $+0.4 / -0.0$ \\
 $w=0,\ \gamma=1$   & $+21.9 / -2.5$ & $+10.2 / -1.2$ & $+3.6 / -0.4$ & $+0.8 / -0.1$ \\
 $w=0,\ \gamma=2$   & $+42.1 / -4.7$ & $+19.6 / -2.3$ & $+7.1 / -0.8$ & $+1.6 / -0.2$ \\
-$w=1,\ \gamma=0.5$ & $+99.6 / -10.5$ & $+84.2 / -9.0$ & $+71.8 / -7.8$ & \emph{n.c.} \\
-$w=1,\ \gamma=1$   & $+131.9 / -13.5$ & $+102.9 / -10.8$ & $+80.4 / -8.7$ & \emph{n.c.} \\
-$w=1,\ \gamma=2$   & $+186.2 / -18.0$ & $+133.2 / -13.6$ & $+94.7 / -10.0$ & \emph{n.c.} \\
+$w=1,\ \gamma=0.5$ & $+99.6 / -10.5$ & $+84.2 / -9.0$ & $+71.8 / -7.8$ & $+64.3 / -7.0$ \\
+$w=1,\ \gamma=1$   & $+131.9 / -13.5$ & $+102.9 / -10.8$ & $+80.4 / -8.7$ & $+66.6 / -7.3$ \\
+$w=1,\ \gamma=2$   & $+186.2 / -18.0$ & $+133.2 / -13.6$ & $+94.7 / -10.0$ & $+70.9 / -7.7$ \\
 \bottomrule
 \end{tabular}
-\caption{21 of 24 cells converge with the demand-anchored balance and \emph{no}
-acceleration --- all 12 at $w=0$ and 9 of 12 at $w=1$, against 3 of 12 before
-(\S\ref{sec:fix}). The three remaining failures are the whole $n=16$ column, the
-stiffest saturation on the grid; they are a separate and still-open problem.}
+\caption{\textbf{24 of 24} cells converge, on plain Gauss--Seidel with \emph{no}
+acceleration, against 15 of 24 before \S\ref{sec:fix}. Both rows are monotone in $n$ and
+in $\gamma$; the irregular pattern \S\ref{sec:convergence} once tried to explain was
+never a pattern, only a trend read off whichever cells happened to survive. The last
+three needed a second and unrelated diagnosis (\S\ref{sec:tolerance}).}
 \end{table}
 
 \begin{keybox}
@@ -950,6 +951,82 @@ the claim.
 \textbf{Practical consequence:} $w=0$ was already solid. $w>0$ is now a scenario dial
 rather than a research problem, at the cost of one parameter whose value affects the
 route and not the destination.
+
+\subsection{The last three cells: a tolerance below the solver's own precision}
+\label{sec:tolerance}
+
+After \S\ref{sec:fix} three cells still failed --- the whole stiffest-saturation column,
+$n=16$, at $w=1$. The natural guess is that the demand slope is mis-set there, and the
+linearised iteration supports it: writing the error propagation of the anchored step as
+\begin{equation}
+e \;=\; e_0\,\frac{\beta - d}{s + \beta},
+\qquad d = \Big|\tfrac{dD}{dp}\Big|,\quad s = 1/S'(q),
+\label{eq:contraction}
+\end{equation}
+a \emph{stiff} supply curve drives $s \to 0$ and removes all tolerance for under-stating
+$\beta$. (Equation~\eqref{eq:contraction} also explains Table~\ref{tab:ablation}: at
+$\beta = d$ it gives $e = 0$, one-step convergence, which is why $\eta=0.5$ beat
+$\eta=1.0$ --- the anchored scheme is a modified Newton method whose slope is set by hand.)
+
+\textbf{The guess was wrong, and the active-set signature said so at once.}
+
+\begin{table}[h]
+\centering\small
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+$n=16$, $\gamma=0.5$, $w=1$ & active-set changes & tail price step & $|a|/D$ final \\
+\midrule
+$\eta = 0.5$ & \textbf{0} & $8.3\times10^{-11}$ & $5.8\times10^{-10}$ \\
+$\eta = 2$   & 0 & $7.5\times10^{-11}$ & $2.6\times10^{-7}$ \\
+$\eta = 8$   & 0 & $1.3\times10^{-6}$ & $1.2\times10^{-3}$ \\
+\bottomrule
+\end{tabular}
+\caption{The market has converged. Raising $\eta$ only makes it worse.}
+\end{table}
+
+\noindent The residual's largest contributor is
+\var{region\_B:hefa\_fog\_energy\_consumption} at $2.87\times10^{4}$\,MJ on volumes of
+$\sim10^{13}$ --- a relative $2.86\times10^{-9}$, which is exactly the kernel's own
+\var{solver\_tolerance} of $10^{-9}$ once scaled. The MDA was asking for $10^{-10}$, one
+decade below the precision the market can produce. And it cannot produce more: at
+\var{solver\_tolerance} $10^{-11}$ or $10^{-12}$ \textbf{Clarabel refuses the stiff cone
+outright} and the kernel raises rather than returning a worse answer.
+
+\begin{table}[h]
+\centering\small
+\begin{tabular}{@{}lrr@{}}
+\toprule
+$n=16$, $\gamma=0.5$ & MDA tolerance $10^{-10}$ & MDA tolerance $10^{-8}$ \\
+\midrule
+outcome & failed, residual $2.863\times10^{-9}$ & \textbf{converged} \\
+delivered price 2050 & --- & $0.032553681$ \\
+$n=8$ control & $0.034053429$ & $\mathbf{0.034053429}$ \\
+\bottomrule
+\end{tabular}
+\caption{The control is the point: a cell that converges either way returns a
+\emph{bit-identical} answer at the looser tolerance. This loosens the stopping rule, not
+the result.}
+\end{table}
+
+\begin{keybox}
+\textbf{A convergence tolerance is only meaningful against the precision of the
+disciplines underneath it.} Coupling a conic solver into a fixed-point loop imports that
+solver's noise floor into the loop's stopping rule. The symptom --- a run reporting
+non-convergence having in fact converged --- is indistinguishable from a real failure
+unless the discipline itself is instrumented.
+
+This is the third instance of the report's recurring shape. \S\ref{sec:defects}: a
+programme that solved and was wrong. \S\ref{sec:convergence}: a price that had no single
+value. Here: a loop that had arrived and was told it had not.
+\end{keybox}
+
+\noindent \textbf{A finding about the code rather than the model.} That tolerance was
+hard-coded at $10^{-10}$ in two places in \var{multi\_regional\_process.py} and could not
+be set from a scenario; the \var{TODO} beside it said as much. Assigning it on the chain
+after construction silently does nothing, which is how the first attempt at this
+measurement produced a false negative. It is now \var{regionalisation.mda\_tolerance}
+(with \var{mda\_max\_iter}), defaulting to what it was, so nothing that ran before runs
+differently.
 
 \section{Policy cases}
 \label{sec:policy}
@@ -1148,6 +1225,10 @@ of the solver}.
         chosen does not affect the answer, but it is one more thing a user can set to a
         number that makes the run take 200 sweeps instead of 60. It should eventually be
         derived from the chain's own elasticity rather than configured.
+  \item \textbf{The MDA tolerance now has to be chosen against the solver's precision}
+        (\S\ref{sec:tolerance}). The market mode runs at $10^{-8}$; the default stays
+        $10^{-10}$. Nothing warns a user who pairs them badly, and the symptom looks
+        exactly like a modelling failure.
   \item \textbf{The elastic balance is a local linearisation.} It is exact at the fixed
         point and only there; away from it the demand curve it prices against is a
         straight line through one measured point. That is enough to select a price and

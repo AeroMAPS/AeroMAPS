@@ -49,6 +49,14 @@ SCARCE = dict(rampup_limit=0.20, rampup_seed_share=0.005, capacity=1.1e13, buyou
 # is inert at the fixed point, so it changes which cells converge and not what they
 # converge to; 0.5 is the fastest value on this bench (fuel_clearing_step1/convergence.py).
 ANCHOR = dict(demand_elasticity=0.5)
+# The loop is stopped at a tolerance the market can actually reach. Clarabel returns the
+# conic duals to `solver_tolerance` (1e-9), which is about 3e-9 of demand once scaled --
+# and refuses the stiffest cones outright if asked for better. The default 1e-10 is a
+# digit below that floor, so at n=16 the loop reported non-convergence having converged:
+# zero active-set changes, the price stationary to 1e-11, residual pinned at 2.86e-9.
+# Measured on a cell that converges either way (n=8), 1e-8 returns a bit-identical
+# answer, so this loosens the stopping rule and not the result.
+MDA_TOLERANCE = 1.0e-8
 STIFFNESSES = (2.0, 4.0, 8.0, 16.0)
 INTENSITIES = (0.5, 1.0, 2.0)
 WEIGHTS = (0.0, 1.0)
@@ -58,6 +66,7 @@ def _run_one(settings, tag):
     from aeromaps.core.multi_regional_process import MultiRegionalProcess
 
     config = yaml.safe_load(CONFIG.read_text())
+    config["regionalisation"]["mda_tolerance"] = MDA_TOLERANCE
     if settings:
         config["regionalisation"]["global_models"]["settings"] = {"fuel_clearing": settings}
     target = CONFIG.parent / f"_coupled_grid_{tag}.yaml"
