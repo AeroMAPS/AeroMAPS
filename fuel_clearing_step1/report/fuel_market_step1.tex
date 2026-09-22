@@ -251,29 +251,58 @@ the airline sees, \var{\{type\}\_mean\_mfsp} $= \sum_p \mathrm{share}_{p}\cdot
 \mathrm{mfsp}^{\mathrm{mkt}}_{p}$, which drives operating cost, airfare and demand.
 
 \begin{keybox}
-\textbf{So: fuel cost, or compliance, or both?}
+\textbf{So: fuel cost, or compliance, or both?} The honest answer is \emph{both, always}
+--- but not by addition, and this is the easiest thing in the model to get wrong.
 
-\begin{itemize}[leftmargin=*]
-  \item At $\boldsymbol{w=0}$ (the default) the airline pays \textbf{the production cost
-        of the fuel it buys, and nothing else}. $\lambda^{M}$ is computed and reported
-        but \emph{never reaches the airline}. It is a shadow price --- an economic
-        diagnostic saying what the obligation is worth --- not a charge.
-  \item At $\boldsymbol{w=1}$ the airline pays the marginal price, which by
-        \eqref{eq:marginal} \textbf{is} energy price \emph{plus} compliance price on
-        eligible pathways. Here compliance is passed through in full.
-  \item Between, it pays a $w$-weighted blend.
-  \item \textbf{It is never ``compliance only''.} Compliance is a premium \emph{on top
-        of} the energy price, not a substitute for it.
-  \item The \textbf{carbon tax} is added by \var{DirectOperatingCosts} as its own,
-        separate line --- which is precisely why \eqref{eq:marketmfsp} subtracts the tax
-        wedge back out (\S\ref{sec:netgross}).
-\end{itemize}
+\medskip
+\begin{center}\small
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+\textbf{Region A, 2050} & \textbf{Airline pays} & $\lambda^{M}$ & \textbf{SAF share} \\
+\midrule
+No obligation at all & 0.01200 & 0 & 0\,\% \\
+70\,\% obligation, $w=0$ & \textbf{0.01982} & 0.01117 & 70\,\% \\
+70\,\% obligation, $w=1$ & 0.01982 & 0.01117 & 70\,\% \\
+\;+ scarcity, $w=0$ & 0.02115 & 0.07917 & 70\,\% \\
+\;+ scarcity, $w=1$ & \textbf{0.06742} & 0.07917 & 70\,\% \\
+\bottomrule
+\end{tabular}
+\end{center}
+\medskip
 
-\textbf{One thing the airline does \emph{not} pay, and should:} the buy-out payment
-$B\,x$ appears in objective~\eqref{eq:objective} but in no price output. If the market
-releases part of the obligation, that penalty is currently borne by nobody in the cost
+\textbf{The obligation is paid for at $w=0$}: the bill goes from $0.01200$ to
+$0.01982$, \textbf{a 65\,\% increase}. It is paid through the \emph{mix} --- the
+obligation forces 70\,\% of the fuel to be the expensive kind --- not through a separate
+charge. The cost of compliance is \emph{embedded}, not itemised.
+
+\textbf{$\lambda^{M}$ is not added on top of that, and must not be.} It is the
+\emph{marginal} cost of the obligation --- what one more unit of it would cost. The
+average cost increment is $0.01982-0.01200 = 0.00782$, which is exactly
+$0.70 \times \lambda^{M}$: share times marginal cost. Adding $\lambda^{M}$ to the
+delivered price would give $0.03099$, a 158\,\% increase, \textbf{charging the obligation
+twice}.
+
+\textbf{What $w$ changes is average versus marginal, not paid versus unpaid.} At $w=1$
+every unit is priced at the \emph{last} unit's cost. With nothing scarce that is the same
+number (rows 2 and 3 are identical --- marginal equals average when the supply curve is
+flat). With scarcity it is not: $0.06742$ against $0.02115$, and the difference is
+inframarginal rent.
+
+\textbf{It is never ``compliance only''.} $\lambda^{M}$ is a premium on top of the energy
+price, never a substitute for it.
+
+\textbf{The carbon tax} arrives separately, as its own \var{DirectOperatingCosts} line
+--- which is exactly why \eqref{eq:marketmfsp} subtracts the tax wedge back out
+(\S\ref{sec:netgross}). Same double-counting logic, different instrument.
+\end{keybox}
+
+\begin{keybox}
+\textbf{One thing the airline does \emph{not} pay, and arguably should.} The buy-out
+payment $B\,x$ appears in objective~\eqref{eq:objective} but in no price output. If the
+market releases part of the obligation, that penalty is borne by nobody in the cost
 chain. At $w=1$ the \emph{rate} is signalled correctly ($\lambda^{M}$ is capped at $B$),
-but the \emph{payment} is not accounted. This is a known gap, not a modelling choice.
+but the \emph{payment} is not accounted anywhere. This is a known gap, not a modelling
+choice.
 \end{keybox}
 
 A useful consistency check falls out: with no scarcity at all, $\lambda^{E} = c_{k}$
