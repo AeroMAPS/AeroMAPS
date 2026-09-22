@@ -824,6 +824,144 @@ ramp-up is switched on, documented at `DEFAULT_SETTINGS`.
 
 ---
 
+## 10. Policy cases: five fuels, regional eligibility, sub-mandates, a carbon tax
+
+`policy_cases.py`. Two fuels and identical policy in both regions tests the machinery
+and nothing else — with one sustainable pathway the market has no choice to make, only
+a quantity to set. These cases are the smallest setting in which it behaves like a
+market. Run at the kernel level: the traffic loop scales every result by about a tenth
+(§8.4) and changes no ordering at `w = 0`, while an MDA per cell would cost minutes and
+put §8.3's convergence problem between the reader and the policy question.
+
+Five pathways — kerosene, HEFA from waste oil, HEFA from crop oil, alcohol-to-jet,
+e-fuel — with costs and capacities in the usual ordering. **The conclusions below are
+about orderings and mechanisms, not about the numbers**, which are illustrative.
+
+### 10.1 Eligibility is policy, not chemistry
+
+`is_sustainable` now accepts `(R, P)` as well as `(P,)`. This was not expressible
+before: the guard in `_shared_pathways_manager` requires every region to declare the
+same pathways, which is right for the arrays but says nothing about which of them a
+region *counts*. Eligibility governs the **mandate only**; the ramp-up follows
+"eligible in at least one region", because an industrial growth limit does not change
+because a jurisdiction declines to count the fuel. The residual must be ineligible
+everywhere, since it absorbs the balance.
+
+The case: one ReFuelEU-like region that excludes crop feedstock, against one that
+allows it, same headline obligation.
+
+| region A, 2050 | waste oil | crop oil | ATJ | e-fuel |
+|---|---|---|---|---|
+| crop **excluded** | 8.7 % | — | 20.3 % | **41.0 %** |
+| crop **allowed** | 9.0 % | 31.4 % | 21.2 % | **8.5 %** |
+
+**Excluding a cheap feedstock is dearer every year except the last**: +60 % on the
+compliance price in 2030, +139 % in 2040, and **−10 % in 2050**. The mechanism is the
+ramp-up. Denied the cheap option, region A builds e-fuel early and arrives at 2049 with
+a 30.9 % base; the permissive case coasts on crop oil and arrives with 5.0 %. When the
+obligation jumps 42 % → 70 %, all four of the permissive region's pathways hit their
+growth limits at once. **Cheap options early leave you worse placed for a steep step
+later** — a result a share-allocation model cannot produce, because it has no notion of
+what was built when.
+
+The feedstock sweep shows the same thing from the other side: more waste oil cuts the
+2040 compliance price by 60 % and leaves the 2050 price flat or higher, because every
+unit of cheap feedstock displaces a unit of the pathway that scales.
+
+**Metric warning, recorded because it inverted both results.** Reported as a *maximum
+over years*, the exclusion looked cheaper and more waste oil looked dearer. Both are
+true of the maximum and both hide the finding; the trajectory is the honest view.
+
+### 10.2 Sub-mandates
+
+ReFuelEU carries a separate synthetic-fuel target on top of the headline obligation.
+`submandate_share` plus `is_submandated` express it, with their own slack and release
+price. Absent by default, and when absent the program built is the one built before —
+no constraint, no slack variable, no objective term. A sub-mandated pathway carries
+**both** multipliers in `marginal_price`: one unit of e-fuel genuinely relaxes two
+distinct constraints. Guards: a sub-mandate must be a **subset** of the mandate (a fuel
+meeting the narrow obligation but not the broad one is a second unrelated policy, and
+the duals would not be comparable), and cannot exceed the obligation it narrows.
+
+With ReFuelEU's Annex I trajectory (1.2 % in 2030 to 35 % in 2048):
+
+| | 2030 | 2040 | 2050 |
+|---|---|---|---|
+| e-fuel, no sub-target | 0.0 % | 5.4 % | 41.0 % |
+| e-fuel, with sub-target | 1.2 % | 15.0 % | **46.2 %** |
+| main compliance price | 0.01800 → 0.01721 | 0.08718 → **0.04103** | 0.09100 → **0.06908** |
+
+By 2050 e-fuel *exceeds* the 35 % target, because the forced early build-out leaves a
+bigger base to grow from. Met by building throughout; nothing released.
+
+**The main compliance price falls in every year, and that is not a saving.** An extra
+constraint on the same program can only make the optimum dearer, and it does: total
+discounted production cost **+10.7 %**, fuel bill **+5.1 %**. What falls is the price of
+*one instrument* because the other is now doing that work. This is the same mechanism as
+§10.1 — force the scalable pathway early — but by design rather than by accident.
+
+### 10.3 A carbon tax, and nothing else
+
+Every obligation switched off; the only policy is a price on carbon. The kernel is
+handed tax-inclusive costs, since that is what decides which pathway is marginal (§8.1),
+and what the buyer pays is reported separately from what the fuel cost to make — a tax
+is a transfer, not a resource cost.
+
+| tax, EUR/t | 0–150 | 200 | 400 | **600** | 1200 |
+|---|---|---|---|---|---|
+| fuel intensity, gCO₂/MJ | **88.6** | 81.2 | 71.2 | **15.7** | 5.8 |
+| kerosene share | **100 %** | 85 % | 67 % | **0 %** | 0 % |
+
+**Below about 170 EUR/t a carbon tax on aviation fuel buys nothing at all.** It is pure
+revenue: the mix stays 100 % kerosene and the intensity does not move. First movement is
+crop oil at 200.
+
+**Then a cliff between 400 and 600**, where kerosene goes from 67 % to zero and intensity
+falls 71.2 → 15.7. That is not a numerical artefact: kerosene's tax-inclusive cost
+(`0.0120 + 88.6·τ/10⁶`) crosses e-fuel's (`0.0550 + 5.0·τ/10⁶`) at **τ = 514 EUR/t**, and
+the whole residual switches at once. A tax works by moving one crossing point at a time,
+so its effect is a staircase, not a slope.
+
+### 10.4 The same destination by two instruments
+
+Bisecting for the carbon tax that reaches ReFuelEU's 2050 sustainable share:
+
+| | production cost | fuel intensity | mix |
+|---|---|---|---|
+| **mandate** (70 % obligation) | 0.03427 EUR/MJ | **36.5** gCO₂/MJ | 30 % kero, 9 % waste, 20 % ATJ, 41 % e-fuel |
+| **tax** at 515 EUR/t | **0.03056** EUR/MJ | 41.3 gCO₂/MJ | 30 % kero, 6 % waste, 18 % crop, 13 % ATJ, 33 % e-fuel |
+
+Same sustainable *volume*, different outcome. The tax is **10.8 % cheaper in resource
+terms** and **13 % dirtier**, because it buys the cheapest sustainable fuel rather than
+the cleanest one, and crop oil at 45 gCO₂/MJ is the cheapest.
+
+**Read that carefully: the environmental work is being done by the feedstock
+restriction, not by the volume target.** A mandate expressed in volume is not an
+emissions instrument; it becomes one only through its eligibility rules.
+
+One confound, stated because it matters: the tax case has no mandate, so no eligibility
+rule applies and crop oil is available to it. That is realistic — eligibility rules only
+exist inside mandates — but it means the comparison is "restricted mandate" against
+"unrestricted tax", not instrument against instrument at equal restriction.
+
+### 10.5 What these cases cannot do
+
+- **No inter-regional trade.** Regions still do not interact (§2b), so there is no
+  leakage: a stricter region cannot import compliance from a looser one. That is the
+  single most important missing mechanism for policy work, and it is step 2.
+- **2050 is the horizon**, and also the steepest step, so every result turning on "what
+  is built by the final step" is partly a terminal condition.
+- **Region A and region B differ in traffic growth as well as eligibility** (3.0 against
+  4.5 % CAGR), so the side-by-side figure mixes two causes. `cost_of_exclusion` is the
+  like-for-like comparison.
+- **Emission factors are assumed**, and §10.4's conclusion depends on their ordering —
+  specifically on crop oil being dirtier than the alternatives it displaces.
+
+Figures: `policy_fuel_mix.png`, `policy_exclusion_cost.png`,
+`policy_feedstock_squeeze.png`, `policy_submandate.png`, `policy_carbon_tax.png`.
+
+---
+
 ---
 
 ## 7. Open, in priority order

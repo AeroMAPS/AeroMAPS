@@ -43,6 +43,8 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 
+from dataclasses import replace  # noqa: E402
+
 from aeromaps.models.impacts.generic_energy_model.fuel_clearing.kernel import (  # noqa: E402
     ClearingInputs,
     clear_market,
@@ -78,6 +80,19 @@ CAPACITY_SHARE = {
     "atj": 0.20,
     "efuel": 1.50,
 }
+# Well-to-wake CO2 intensity, gCO2/MJ. Kerosene and waste-oil HEFA are the bench's
+# measured values (88.6 and 20.6, REPORT.md section 8.1); the rest are placed in the
+# usual ordering, crop oil penalised for land-use change and e-fuel near zero on
+# renewable electricity. They set which fuel a carbon tax reaches first, so the
+# ordering matters more than the figures -- which is what the sweep below shows.
+EMISSION_FACTOR = {
+    "fossil_kerosene": 88.6,
+    "hefa_fog": 20.6,
+    "hefa_crop": 45.0,
+    "atj": 30.0,
+    "efuel": 5.0,
+}
+
 SATURATION = {"fossil_kerosene": 0.0, "hefa_fog": 2.0, "hefa_crop": 1.5, "atj": 1.5, "efuel": 0.5}
 
 # Region A is the ReFuelEU-like one: crop-based feedstock does not count towards its
@@ -461,11 +476,140 @@ def synthetic_submandate():
     return without, with_sub
 
 
+def _taxed(carbon_tax):
+    """Per-pathway cost with a carbon tax on it, EUR/MJ.
+
+    ``carbon_tax`` in EUR per tonne CO2, so ``tax/1e6`` is EUR per gram and the product
+    with an intensity in gCO2/MJ lands in EUR/MJ.
+    """
+    return {f: COST[f] + carbon_tax * EMISSION_FACTOR[f] / 1.0e6 for f in FUELS}
+
+
+def carbon_tax_only(taxes=(0, 50, 100, 150, 200, 300, 400, 600, 800, 1200)):
+    """No mandate at all. The carbon tax does the whole job, or fails to.
+
+    Every obligation is switched off and the only policy is a price on carbon, so the
+    market chooses purely on cost. This is the case the current AeroMAPS cannot answer:
+    it is told the shares, so it cannot say what a tax would buy.
+
+    The costs handed to the kernel are tax-inclusive, because that is what decides which
+    pathway is marginal (REPORT.md section 8.1). A carbon tax is a transfer rather than
+    a resource cost, so what the buyer pays and what the fuel cost to make are reported
+    separately -- they diverge by the whole tax take.
+    """
+    bench = load_bench()
+    demand = bench["demand"]
+    regions, years = demand.shape
+    no_mandate = np.zeros((regions, years))
+
+    mix, intensity, paid, resource = {f: [] for f in FUELS}, [], [], []
+    for tax in taxes:
+        inputs = replace(build(cost=_taxed(tax)), mandate_share=no_mandate)
+        outputs = clear_market(inputs)
+        total = outputs.volume[0].sum(axis=0)
+        weights = outputs.volume[0, :, -1] / demand[0, -1]
+        for p, fuel in enumerate(FUELS):
+            mix[fuel].append(100 * weights[p])
+        intensity.append(sum(weights[p] * EMISSION_FACTOR[FUELS[p]] for p in range(len(FUELS))))
+        delivered = np.sum(outputs.market_mfsp[0] * outputs.volume[0], axis=0) / total
+        paid.append(delivered[-1])
+        resource.append(sum(weights[p] * COST[FUELS[p]] for p in range(len(FUELS))))
+
+    figure, axes = plt.subplots(1, 3, figsize=(15.0, 4.3), constrained_layout=True)
+    for fuel in FUELS:
+        axes[0].plot(taxes, mix[fuel], "-o", color=COLOURS[fuel], label=LABELS[fuel], markersize=4)
+    axes[0].set_ylabel("share of drop-in energy in 2050, %")
+    axes[0].set_title("What a price on carbon buys", fontsize=10)
+    axes[0].legend(frameon=False, fontsize=8)
+
+    axes[1].plot(taxes, intensity, "-o", color="#a93226")
+    axes[1].axhline(EMISSION_FACTOR["fossil_kerosene"], color="0.6", linestyle=":", linewidth=1.2)
+    axes[1].annotate(
+        "all-kerosene",
+        xy=(taxes[-1], EMISSION_FACTOR["fossil_kerosene"]),
+        xytext=(-72, 4),
+        textcoords="offset points",
+        fontsize=8,
+        color="0.4",
+    )
+    axes[1].set_ylabel("fleet fuel intensity 2050, gCO2/MJ")
+    axes[1].set_title("...in emissions", fontsize=10)
+
+    axes[2].plot(taxes, paid, "-o", color="#1f5f8b", label="paid by the buyer (tax included)")
+    axes[2].plot(taxes, resource, "--s", color="#2f6b4f", label="production cost only")
+    axes[2].set_ylabel("2050 fuel price, EUR/MJ")
+    axes[2].set_title("...and in cost", fontsize=10)
+    axes[2].legend(frameon=False, fontsize=8)
+
+    for axis in axes:
+        axis.set_xlabel("carbon tax, EUR/tCO2")
+        axis.spines[["top", "right"]].set_visible(False)
+    figure.suptitle("A carbon tax alone: no mandate, no sub-target, region A", fontsize=11)
+    FIGURES.mkdir(parents=True, exist_ok=True)
+    target = FIGURES / "policy_carbon_tax.png"
+    figure.savefig(target, dpi=150)
+    plt.close(figure)
+    print(f"wrote {target}")
+
+    for i, tax in enumerate(taxes):
+        composition = ", ".join(f"{LABELS[f]} {mix[f][i]:.0f} %" for f in FUELS if mix[f][i] > 0.5)
+        print(
+            f"  {tax:5d} EUR/t: intensity {intensity[i]:5.1f} gCO2/MJ"
+            f"   paid {paid[i]:.4f}   made-for {resource[i]:.4f}   {composition}"
+        )
+    return taxes, mix, intensity, paid
+
+
+def tax_versus_mandate():
+    """Which carbon tax reaches what the ReFuelEU obligation reaches?
+
+    The two instruments are usually compared on ambition. The comparison worth having
+    is what each costs to arrive at the same place, and who pays: a tax is a transfer,
+    an obligation is a resource cost.
+    """
+    bench = load_bench()
+    demand = bench["demand"]
+    regions, years = demand.shape
+    mandated = clear_market(build())
+    target_share = 1.0 - mandated.volume[0, RESIDUAL, -1] / demand[0, -1]
+
+    low, high = 0.0, 3000.0
+    for _ in range(26):  # bisection on the 2050 sustainable share
+        mid = 0.5 * (low + high)
+        inputs = replace(build(cost=_taxed(mid)), mandate_share=np.zeros((regions, years)))
+        got = 1.0 - clear_market(inputs).volume[0, RESIDUAL, -1] / demand[0, -1]
+        low, high = (mid, high) if got < target_share else (low, mid)
+    equivalent = 0.5 * (low + high)
+
+    taxed = clear_market(
+        replace(build(cost=_taxed(equivalent)), mandate_share=np.zeros((regions, years)))
+    )
+    print(f"  ReFuelEU 2050 sustainable share: {100 * target_share:.1f} %")
+    print(f"  carbon tax reaching the same share: {equivalent:.0f} EUR/tCO2")
+    for label, outputs in (("mandate", mandated), ("tax", taxed)):
+        weights = outputs.volume[0, :, -1] / demand[0, -1]
+        made = sum(weights[p] * COST[FUELS[p]] for p in range(len(FUELS)))
+        intensity = sum(weights[p] * EMISSION_FACTOR[FUELS[p]] for p in range(len(FUELS)))
+        composition = ", ".join(
+            f"{LABELS[FUELS[p]]} {100 * weights[p]:.0f} %"
+            for p in range(len(FUELS))
+            if weights[p] > 0.005
+        )
+        print(
+            f"  {label:>8}: production cost {made:.5f} EUR/MJ"
+            f"   intensity {intensity:5.1f} gCO2/MJ   {composition}"
+        )
+    return equivalent, mandated, taxed
+
+
 if __name__ == "__main__":
-    fuel_mix()
-    print()
-    cost_of_exclusion()
-    print()
-    feedstock_squeeze()
-    print()
-    synthetic_submandate()
+    for step in (
+        fuel_mix,
+        cost_of_exclusion,
+        feedstock_squeeze,
+        synthetic_submandate,
+        carbon_tax_only,
+        tax_versus_mandate,
+    ):
+        print()
+        step()
