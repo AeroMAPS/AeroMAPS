@@ -183,11 +183,15 @@ def fuel_mix():
     figure, axes = plt.subplots(1, 2, figsize=(12.0, 4.4), constrained_layout=True, sharey=True)
     for r, (axis, region) in enumerate(zip(axes, regions)):
         shares = 100 * outputs.volume[r] / bench["demand"][r]
+        # Mandated fuels stacked FIRST, kerosene on top. With kerosene at the bottom the
+        # sustainable total is a floating band and the obligation line lines up with
+        # nothing; this way its top edge IS the obligation being met or missed.
+        order = [p for p, f in enumerate(FUELS) if f != "fossil_kerosene"] + [RESIDUAL]
         axis.stackplot(
             years,
-            *[shares[p] for p in range(len(FUELS))],
-            colors=[COLOURS[f] for f in FUELS],
-            labels=[LABELS[f] for f in FUELS],
+            *[shares[p] for p in order],
+            colors=[COLOURS[FUELS[p]] for p in order],
+            labels=[LABELS[FUELS[p]] for p in order],
         )
         axis.plot(
             years,
