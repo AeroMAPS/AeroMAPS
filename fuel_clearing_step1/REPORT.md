@@ -643,7 +643,7 @@ unified chain with `MDAGaussSeidel`, `over_relaxation_factor = 1.0` and
 `acceleration_method = NONE`; the residual stalls at 2.1e-1 after 200 iterations, in
 `ask` and `rpk` — the traffic loop, not the market.
 
-| inner MDA setting | residual |
+| inner MDA setting, at `γ = 1, n = 4` | residual |
 |---|---|
 | undamped (the default) | 2.1e-1 — stalls |
 | `over_relaxation_factor` 0.7 | 3.9e-8 |
@@ -651,11 +651,112 @@ unified chain with `MDAGaussSeidel`, `over_relaxation_factor = 1.0` and
 | **Secant** | **converged** |
 | **Alternate-2-delta** | **converged** |
 
-Damping alone does not reach the 1e-10 tolerance; acceleration does, and the two
-accelerated runs agree exactly. This is the measured answer to 4.5.2: **a strongly
-priced market needs an acceleration method, not more iterations.** It is also the
-reason `w` cannot be treated as a free scenario dial without saying which solver
-settings go with it — at `w = 0` the default settings are fine.
+> ⚠️ **An earlier version of this section stopped here and concluded "acceleration
+> fixes it". That is wrong and the coupled grid disproves it.** Acceleration fixes
+> *this cell*. Across the 4.5.1 grid with Secant on throughout, all 12 `w = 0` cells
+> converge and only **3 of 12** `w = 1` cells do (§8.4). Acceleration is necessary,
+> not sufficient.
+
+### 8.3.1 What actually fails, measured
+
+Instrumenting the market's outputs per MDA iteration locates it precisely. Everything
+is converged to 1e-12 except **two years**, where:
+
+| year | compliance-price spread | SAF-volume spread | demand spread |
+|---|---|---|---|
+| 2027–2039, 2048–2049 | 3.6e-5 | ~1e-12 | ~1e-13 |
+| **2044** | **1.000** | 8.9e-3 | 2.0e-2 |
+| **2045** | **0.426** | 2.0e-2 | 2.0e-2 |
+
+**The dual swings 100 % of its own magnitude while the primal moves 1–2 %.** That is
+not a gain problem — measured loop gain is ≈ 0.32, far below 1, and a gain that low
+cannot diverge. It is a *discontinuity*: a 2 % demand wobble flips the mandate
+constraint between binding and slack, and λ_M jumps between a positive value and zero
+when it does. The volumes barely notice; the multiplier is a step function across that
+boundary. The iterate settles into an exact period-3 limit cycle.
+
+**This is why `w` matters, and it is not "the price is more volatile".** At `w = 0` the
+delivered price is the average cost — a function of the *volumes*, which move 1 %. The
+jump never reaches the traffic loop and the MDA converges in 40 iterations. At `w = 1`
+the delivered price contains λ_M, so a discontinuous quantity is fed to the airfare.
+**`w` is the switch that decides whether the model couples to something that is a
+well-defined function of the state.** Volumes are; duals at an active-set boundary are
+not.
+
+This is the same defect family as §2b (a dual where the constraint is redundant) and
+§5.4.2 (a dual split where two constraints coincide). Those two were static wrong
+numbers. This one is dynamic, and it is the one that stops the solver.
+
+### 8.3.2 A hypothesis, tested and rejected
+
+2045 is a ReFuelEU step year, so the obvious explanation was that the **staircase**
+obligation puts the market on a constraint boundary. Tested by re-running the same
+case with the mandate interpolated `linear` between the same points instead of
+`previous`:
+
+| obligation | outcome |
+|---|---|
+| staircase, as the regulation reads | failed, residual 4.50e-2 |
+| smoothed, same points, linear | failed, residual 2.87e-2 |
+
+**Rejected.** Smoothing the policy moves the boundary rather than removing it: with a
+binding ramp-up there is still a year where it stops binding, whatever shape the
+obligation has. So this is not a property of ReFuelEU's staircase — it is intrinsic to
+coupling an MDA fixed point to the duals of a constrained intertemporal program.
+
+What remains unexplained is *which* cells survive: across the grid, `w = 1` converges
+at (γ=1, n=4), (γ=2, n=2) and (γ=2, n=4), and fails at all four `γ = 0.5` cells and at
+every `n ≥ 8`. Stronger saturation regularises the program — it is the term that makes
+the cost strictly convex in volume — so more of it should mean better-behaved duals,
+and `n ≥ 8` means a *weaker* markup here because `q/K < 1`. That ordering is
+suggestive but it does not fit cleanly (γ=1, n=2 fails while γ=2, n=2 converges), so
+it is recorded as an observation rather than a mechanism.
+
+**Practical consequence for the mode:** `w = 0` is solid — 12 of 12, default solver
+settings, converges in 40 iterations. **`w > 0` is a research problem, not a scenario
+dial**, and the report should not offer it as one until the boundary behaviour is
+understood.
+
+### 8.4 Measurement 4.5.1, coupled
+
+`coupled_grid.py` sweeps the saturation pair through the **full MDA**, so unlike the
+kernel-level map in §5.4 the volumes are free to respond: a higher price cuts demand,
+which cuts the volume, which relieves the scarcity that raised the price. Secant
+acceleration throughout, otherwise the `w = 1` half would be missing for a reason
+unrelated to saturation. Delivered price % / RPK % against the no-scarcity run,
+region A 2050:
+
+| | n=2 | n=4 | n=8 | n=16 |
+|---|---|---|---|---|
+| **w=0**, γ=0.5 | +11.2 / −1.3 | +5.2 / −0.6 | +1.8 / −0.2 | +0.4 / −0.0 |
+| **w=0**, γ=1 | +21.9 / −2.5 | +10.2 / −1.2 | +3.6 / −0.4 | +0.8 / −0.1 |
+| **w=0**, γ=2 | +42.1 / −4.7 | +19.6 / −2.3 | +7.1 / −0.8 | +1.6 / −0.2 |
+| **w=1**, γ=0.5 | did not converge | did not converge | did not converge | did not converge |
+| **w=1**, γ=1 | did not converge | +102.9 / −10.8 | did not converge | did not converge |
+| **w=1**, γ=2 | +186.2 / −18.0 | +133.2 / −13.6 | did not converge | did not converge |
+
+**15 of 24 cells converge: all 12 at `w = 0`, 3 of 12 at `w = 1`.** The failures are
+§8.3, not a saturation limit — the cells that fail are not the extreme ones.
+
+Two results survive the feedback loop intact:
+
+**The kernel-level ordering holds.** The uplift still falls monotonically in `n` at
+every γ, for the same reason: the bench runs below capacity, so `(q/K)^n` shrinks as
+`n` rises and a stiffer squeeze is a *smaller* markup until the limit is actually
+reached. The coupled magnitudes are close to the kernel-level ones, so the demand
+response damps the price effect only slightly at `w = 0`.
+
+**The traffic response is roughly a tenth of the price response,** consistently:
++42.1 % on price gives −4.7 % on RPK, +21.9 % gives −2.5 %, +10.2 % gives −1.2 %. That
+ratio is the product of the two transmissions measured in §8.3 (fuel is 13.1 % of the
+airfare; demand elasticity 0.888 → 0.116), and it holds across the whole grid. So for
+this bench a useful rule of thumb: **a 10 % fuel-price rise costs about 1.2 % of
+traffic.**
+
+`figures/coupled_grid.png` draws both panels. `coupled_grid.json` holds the raw cells,
+including the failures, so the figure does not silently interpolate over them.
+
+---
 
 ---
 
