@@ -41,6 +41,7 @@ class EnergyCarriersMeans(AeroMAPSModel):
         configuration_data,
         pathways_manager,
         *args,
+        use_market_mfsp=False,
         **kwargs,
     ):
         super().__init__(
@@ -51,6 +52,15 @@ class EnergyCarriersMeans(AeroMAPSModel):
         )
 
         self.pathways_manager = pathways_manager
+
+        # Fuel-market mode: weight by the price the market cleared at rather than by the
+        # production cost. The two differ by the scarcity rent, which is what the market
+        # exists to produce; weighting by cost would compute the volumes from a market
+        # and then price them as if there had been none.
+        #
+        # `{p}_market_mfsp` arrives on the same GROSS basis as `{p}_mean_mfsp`, so the
+        # carbon tax and the subsidy/tax lines below keep composing exactly as before.
+        self.use_market_mfsp = use_market_mfsp
 
         self.input_names = {}
         self.output_names = {}
@@ -106,6 +116,11 @@ class EnergyCarriersMeans(AeroMAPSModel):
                         f"{pathway.name}_net_mfsp": pd.Series([0.0]),
                         f"{pathway.name}_net_mfsp_without_carbon_tax": pd.Series([0.0]),
                         f"{pathway.name}_mean_mfsp": pd.Series([0.0]),
+                        **(
+                            {f"{pathway.name}_market_mfsp": pd.Series([0.0])}
+                            if self.use_market_mfsp
+                            else {}
+                        ),
                         f"{pathway.name}_share_{aircraft_type}_{pathway.energy_origin}": pd.Series(
                             [0.0]
                         ),
@@ -206,8 +221,13 @@ class EnergyCarriersMeans(AeroMAPSModel):
                             pathway_emission_factor * origin_share
                         ).fillna(0) / 100
 
-                        # MFSP and costs
-                        pathway_mfsp = input_data[f"{pathway.name}_mean_mfsp"]
+                        # MFSP and costs. In fuel-market mode the weighted quantity is
+                        # the cleared price, not the production cost.
+                        pathway_mfsp = input_data[
+                            f"{pathway.name}_market_mfsp"
+                            if self.use_market_mfsp
+                            else f"{pathway.name}_mean_mfsp"
+                        ]
                         mean_mfsp += (pathway_mfsp * share).fillna(0) / 100
                         origin_mean_mfsp += (pathway_mfsp * origin_share).fillna(0) / 100
 

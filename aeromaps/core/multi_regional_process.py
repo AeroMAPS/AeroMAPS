@@ -202,6 +202,18 @@ class MultiRegionalProcess(AeroMAPSProcess):
             "execution_mode", "separate_processes"
         )
 
+        # One key, default off, propagated to every region as a process keyword -- the
+        # same shape as `execution_mode` and `gemseo_settings.scenario_type`. Repeating
+        # it in each region's config would let one region silently run the other
+        # allocator, which is not a failure anything downstream could detect.
+        self._fuel_market: bool = bool(self._regionalisation_config.get("fuel_market", False))
+        if self._fuel_market and self._execution_mode != "unified_mda":
+            raise NotImplementedError(
+                "'regionalisation.fuel_market' is on, but execution_mode is "
+                f"'{self._execution_mode}'. The market is a global discipline spanning "
+                "every region at once, which only 'unified_mda' can execute."
+            )
+
         # Handle execution statistics based on mode
         if disable_execution_statistics is None:
             # Auto-disable for unified_mda mode (many disciplines = semaphore issues)
@@ -326,6 +338,7 @@ class MultiRegionalProcess(AeroMAPSProcess):
                     configuration_file=config_file,
                     custom_models=self._custom_models,
                     optimisation=False,
+                    fuel_market=self._fuel_market,
                 )
 
             self._regional_processes[region_id] = regional_process
@@ -552,7 +565,12 @@ class MultiRegionalProcess(AeroMAPSProcess):
         loaded = {}
         for model_name in global_config.get("standards", []):
             if hasattr(aeromaps_models, model_name):
-                loaded[model_name] = getattr(aeromaps_models, model_name)
+                # Deep-copied: the groups in aeromaps.core.models hold module-level
+                # instances, and a global model is MUTATED by _wrap_global_model --
+                # region list injected, grammar rebuilt in custom_setup(). Two processes
+                # sharing one instance would have the second silently rewrite the
+                # first's grammar, which matters as soon as a session runs two scenarios.
+                loaded[model_name] = deepcopy(getattr(aeromaps_models, model_name))
             else:
                 raise ValueError(
                     f"Global model '{model_name}' specified in 'regionalisation."
@@ -564,6 +582,35 @@ class MultiRegionalProcess(AeroMAPSProcess):
             loaded.update(self._load_custom_models_from_config(customs))
 
         self._register_models_into(loaded, self._global_model_names)
+
+        # Per-model settings, keyed by the model's own name:
+        #
+        #     global_models:
+        #       standards: [models_fuel_market]
+        #       settings:
+        #         fuel_clearing:
+        #           pricing_weight: 1.0
+        #
+        # A global model is not namespaced, so it has no region config to read from and
+        # nowhere else to be configured. Applied before _wrap_global_model calls
+        # custom_setup(), which is where a model turns its settings into a grammar.
+        settings = global_config.get("settings", {}) or {}
+        unknown = sorted(set(settings) - set(self._global_model_names))
+        if unknown:
+            raise ValueError(
+                f"'regionalisation.global_models.settings' has entries for {unknown}, "
+                f"which are not loaded global models ({self._global_model_names}). A "
+                "silently ignored settings block would look exactly like a setting that "
+                "did not take effect."
+            )
+        for model_name, model_settings in settings.items():
+            model = self.models[model_name]
+            if not hasattr(model, "configuration_data"):
+                raise ValueError(
+                    f"Global model '{model_name}' takes no settings, but "
+                    "'regionalisation.global_models.settings' provides some."
+                )
+            model.configuration_data = {**(model.configuration_data or {}), **model_settings}
 
         logging.info(
             f"Loaded {len(self._global_model_names)} global model(s): {self._global_model_names}"
@@ -608,6 +655,8 @@ class MultiRegionalProcess(AeroMAPSProcess):
             model.regions = list(self._region_ids)
         if hasattr(model, "global_namespace"):
             model.global_namespace = self._global_namespace
+        if hasattr(model, "pathways_manager"):
+            model.pathways_manager = self._shared_pathways_manager(model.name)
 
         if hasattr(model, "custom_setup"):
             model.custom_setup()
@@ -618,6 +667,63 @@ class MultiRegionalProcess(AeroMAPSProcess):
         if getattr(model, "model_type") == "custom":
             return AeroMAPSCustomModelWrapper(model=model)
         return AeroMAPSAutoModelWrapper(model=model)
+
+    def _shared_pathways_manager(self, model_name):
+        """The one pathway list a global model may use, or a refusal.
+
+        Each region builds its own ``pathways_manager`` from its own carriers yaml, and
+        nothing requires two regions to declare the same pathways. A global model sees
+        all regions at once through a single list, so that only means anything if the
+        regions agree. Where they do not, there is no correct answer to give it -- a
+        market indexed by one region's pathways would silently mis-price another's --
+        so this refuses rather than picking the first region's list and hoping.
+
+        Parameters
+        ----------
+        model_name
+            Named in the error, since the fix is usually to drop the global model rather
+            than to change the regions.
+
+        Returns
+        -------
+        The first region's manager, once every region is known to match it.
+        """
+        managers = {
+            region: self._regional_processes[region].pathways_manager for region in self._region_ids
+        }
+
+        def signature(manager):
+            if manager is None:
+                return None
+            return sorted(
+                (
+                    pathway.name,
+                    getattr(pathway, "aircraft_type", None),
+                    getattr(pathway, "energy_origin", None),
+                )
+                for pathway in manager.get_all()
+            )
+
+        reference_region = self._region_ids[0]
+        reference = signature(managers[reference_region])
+        if reference is None:
+            raise ValueError(
+                f"Global model '{model_name}' needs the energy pathways, but region "
+                f"'{reference_region}' has no pathways_manager -- its configuration "
+                "declares no energy carriers."
+            )
+
+        for region, manager in managers.items():
+            if signature(manager) != reference:
+                raise ValueError(
+                    f"Global model '{model_name}' spans every region through a single "
+                    f"pathway list, but '{region}' and '{reference_region}' do not "
+                    "declare the same energy pathways. Point both regions at the same "
+                    "energy carriers file, or do not use this global model: there is no "
+                    "meaningful single list to give it."
+                )
+
+        return managers[reference_region]
 
     def _build_global_disciplines(self):
         """Build the global model disciplines, deliberately WITHOUT namespacing.

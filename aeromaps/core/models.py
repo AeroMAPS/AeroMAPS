@@ -41,6 +41,9 @@ from aeromaps.models.impacts.costs.scenario.exogneous_carbon_price import (
 from aeromaps.models.impacts.generic_energy_model.common.energy_carriers_means import (
     EnergyCarriersMassicShares,
 )
+from aeromaps.models.impacts.generic_energy_model.fuel_clearing.fuel_clearing import (
+    FuelClearing,
+)
 
 from aeromaps.models.air_transport.air_traffic.total_aircraft_distance import TotalAircraftDistance
 
@@ -153,6 +156,13 @@ from aeromaps.models.impacts.costs.airlines.total_airline_cost_and_airfare impor
     PassengerAircraftTotalCost,
     PassengerAircraftMarginalCost,
 )
+
+# Global (non-namespaced) market discipline. Declared under
+# `regionalisation.global_models.standards`, which names a GROUP like the ones below
+# rather than a class.
+models_fuel_market = {
+    "fuel_clearing": FuelClearing("fuel_clearing"),
+}
 
 models_traffic = {
     # Per-market RPK / RTK / ASK / LoadFactor disciplines are registered by

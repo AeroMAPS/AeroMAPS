@@ -1,0 +1,39 @@
+# Step-1 fuel-clearing bench, WITH the market.
+#
+# Identical to regionalisation.yaml in every respect but two: `fuel_market: true`, and
+# the `global_models` block that carries FuelClearing. Running the two back to back on
+# one commit is the end-to-end analogue of kernel test 3.3.c -- with the settings below
+# (no saturation, no ramp-up limit, a buy-out far above any cost, w = 0) the market has
+# one degree of freedom left and must land on the reference allocation exactly.
+#
+# Turn the scarcity on by giving `hefa_fog` a capacity and a rampup_limit, and `w` a
+# non-zero value. That is the only difference between "reproduces AeroMAPS" and
+# "prices scarcity", which is the point of the mode.
+regionalisation:
+  execution_mode: "unified_mda"
+  global_namespace: "overall"
+
+  # Replaces EnergyUseChoice in every region with the global market below, and makes
+  # EnergyCarriersMeans weight by the cleared price instead of the production cost.
+  fuel_market: true
+
+  global_models:
+    standards:
+      - models_fuel_market
+
+  regions:
+    region_A:
+      config_file: "region_A/config.yaml"
+    region_B:
+      config_file: "region_B/config.yaml"
+
+  aggregation:
+    sum:
+      - co2_emissions
+      - rpk
+      - ask
+      - energy_consumption
+      - energy_consumption_dropin_fuel
+    weighted_average:
+      - variable: airfare_per_rpk
+        weight_by: rpk

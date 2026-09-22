@@ -163,7 +163,9 @@ class AviationEnergyCarriersFactory:
         return models
 
     @staticmethod
-    def instantiate_energy_carriers_models(energy_carriers_data, pathways_manager):
+    def instantiate_energy_carriers_models(
+        energy_carriers_data, pathways_manager, fuel_market=False
+    ):
         """
         Instantiates energy carriers related models. Energy use choice, means, mean LHV, ...
 
@@ -173,21 +175,32 @@ class AviationEnergyCarriersFactory:
             Configuration data for energy carriers.
         pathways_manager : PathwaysManager
             Manager for handling energy pathways.
+        fuel_market : bool
+            Whether the global fuel market decides the per-pathway volumes. When it does,
+            ``EnergyUseChoice`` is NOT instantiated: the market emits the same output
+            families itself, and two disciplines writing one variable is an error rather
+            than a tie-break. ``EnergyCarriersMeans`` then weights by the cleared price
+            instead of the production cost.
 
         Returns
         -------
         dict
             Dictionary of instantiated energy carriers models.
         """
-        return {
-            "energy_use_choice": EnergyUseChoice(
-                "energy_use_choice", energy_carriers_data, pathways_manager
-            ),
+        models = {
             "energy_carriers_means": EnergyCarriersMeans(
-                "energy_carriers_means", energy_carriers_data, pathways_manager
+                "energy_carriers_means",
+                energy_carriers_data,
+                pathways_manager,
+                use_market_mfsp=fuel_market,
             ),
             "energy_carriers_mean_lhv": EnergyCarriersMeanLHV("energy_carriers_mean_lhv"),
         }
+        if not fuel_market:
+            models["energy_use_choice"] = EnergyUseChoice(
+                "energy_use_choice", energy_carriers_data, pathways_manager
+            )
+        return models
 
     @staticmethod
     def instantiate_resource_consumption_models(resources_data, pathways_manager):

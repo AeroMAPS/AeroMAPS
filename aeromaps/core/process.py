@@ -231,6 +231,7 @@ class AeroMAPSProcess(object):
         custom_models=None,
         optimisation=False,
         disable_execution_statistics=False,
+        fuel_market=False,
     ):
         """Initialize an AeroMAPSProcess instance.
 
@@ -249,6 +250,13 @@ class AeroMAPSProcess(object):
             the standard models loaded from the configuration file's
             `models.standards` list. If None, only the standard models
             are used.
+        fuel_market
+            Whether a global fuel market decides the per-pathway volumes for this
+            process. Behaviour flag at process level, like ``optimisation``: it is set
+            once under ``regionalisation.fuel_market`` and propagated here, rather than
+            repeated in every region's configuration where it could drift out of step.
+            When true, ``EnergyUseChoice`` is not instantiated -- the market emits its
+            families instead -- and ``EnergyCarriersMeans`` weights by the cleared price.
         optimisation
             Whether to configure GEMSEO for optimization instead of a
             pure MDA chain.
@@ -287,6 +295,7 @@ class AeroMAPSProcess(object):
 
         # Store mode flags
         self._optimisation = optimisation
+        self._fuel_market = fuel_market
 
         # --- Standard initialization ---
         # Load standard models from config
@@ -1765,7 +1774,7 @@ class AeroMAPSProcess(object):
         # Instantiate the energy use choice model
         self.models.update(
             AviationEnergyCarriersFactory.instantiate_energy_carriers_models(
-                self.energy_carriers_data, self.pathways_manager
+                self.energy_carriers_data, self.pathways_manager, fuel_market=self._fuel_market
             )
         )
 
