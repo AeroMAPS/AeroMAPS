@@ -1092,3 +1092,256 @@ def test_the_active_signature_is_a_function_of_which_constraints_are_tight():
         relaxed.diagnostics["active_counts"]["at_zero"]
         > first.diagnostics["active_counts"]["at_zero"]
     )
+
+
+# --- scoring the answer against the objective, not against the solver ---------------
+#
+# The brief's last open item, and the one whose absence cost the most. The saturation
+# term was once written in a form that made Clarabel return a point 0.13 % dearer than
+# the optimum -- a 3.4 % error in the delivered price -- while reporting `optimal`. All
+# 22 tests in the suite at the time passed on it, because every one of them checked a
+# property of the returned point and none checked that it was the CHEAPEST point.
+#
+# A solver status is the solver's opinion of its own work. These helpers form a second
+# opinion: recompute the objective in numpy, then go looking for a feasible neighbour
+# that beats it.
+
+
+def _objective(inputs: ClearingInputs, volume, unmet, submandate_unmet=None) -> float:
+    """The programme's objective at an arbitrary point, recomputed independently.
+
+    Takes **validated** inputs: `is_sustainable` normalised to ``(R, P)``, the residual
+    pathway resolved, the sub-mandate buy-out defaulted. Callers pass
+    ``inputs.validate()``, as the kernel does before it builds anything.
+
+    Deliberately written out from the formulation rather than imported from the kernel:
+    a second opinion computed by the code under test is not a second opinion. If this
+    and the kernel ever disagree about what is being minimised, that disagreement is
+    the thing worth finding.
+    """
+    years = inputs.demand.shape[1]
+    discount = (1.0 + inputs.discount_rate) ** -np.arange(years, dtype=float)
+
+    saturating = (
+        np.isfinite(inputs.capacity) & (inputs.sat_gamma[..., None] > 0) & (inputs.capacity > 0)
+    )
+    capacity = np.where(saturating, inputs.capacity, 1.0)
+    utilisation = np.where(saturating, np.maximum(volume, 0.0) / capacity, 0.0)
+    squeeze = np.where(
+        saturating,
+        inputs.cost * inputs.sat_gamma[..., None] * capacity / (inputs.sat_n + 1.0),
+        0.0,
+    ) * utilisation ** (inputs.sat_n + 1.0)
+
+    total = float(np.sum((inputs.cost * volume + squeeze) * discount[None, None, :]))
+    total += float(np.sum(inputs.buyout_price * unmet * discount[None, :]))
+    if inputs.submandate_share is not None and submandate_unmet is not None:
+        total += float(
+            np.sum(inputs.submandate_buyout_price * submandate_unmet * discount[None, :])
+        )
+    return total
+
+
+def _violation(inputs: ClearingInputs, volume, unmet, submandate_unmet=None) -> float:
+    """Largest constraint violation, relative to demand. Zero means feasible.
+
+    Validated inputs, as :func:`_objective`.
+
+    Only the rigid balance is handled; an elastic one moves the right-hand side of both
+    the balance and the obligation, and a neighbour search over a moving feasible set
+    would be measuring the wrong thing.
+    """
+    scale = float(np.max(inputs.demand))
+    served = inputs.demand
+    worst = max(0.0, -float(np.min(volume)) / scale, -float(np.min(unmet)) / scale)
+    worst = max(worst, float(np.max(np.abs(volume.sum(axis=1) - served))) / scale)
+
+    supplied = np.where(inputs.is_sustainable[:, :, None], volume, 0.0).sum(axis=1) + unmet
+    worst = max(
+        worst, float(np.max(np.maximum(inputs.mandate_share * served - supplied, 0.0))) / scale
+    )
+
+    if inputs.submandate_share is not None and submandate_unmet is not None:
+        narrow = (
+            np.where(inputs.is_submandated[:, :, None], volume, 0.0).sum(axis=1) + submandate_unmet
+        )
+        worst = max(
+            worst,
+            float(np.max(np.maximum(inputs.submandate_share * served - narrow, 0.0))) / scale,
+        )
+
+    # The growth limit applies to rows sustainable in at least one region, as the kernel
+    # builds it -- not to rows eligible in this one.
+    rows = inputs.is_sustainable.any(axis=0)
+    if inputs.rampup_form == "relative" and rows.any():
+        previous = np.concatenate([inputs.q_init[:, :, None], volume[:, :, :-1]], axis=2)
+        allowed = (
+            inputs.rampup_seed[:, :, None] + (1.0 + inputs.rampup_limit[:, :, None]) * previous
+        )
+        worst = max(worst, float(np.max(np.maximum(volume - allowed, 0.0)[:, rows, :])) / scale)
+    return worst
+
+
+def _cheapest_neighbour(inputs: ClearingInputs, outputs, steps=(3e-2, 3e-3, 3e-4)):
+    """Search feasible neighbours of the returned point for a cheaper one.
+
+    Two move families, chosen because they are the two margins the programme trades on:
+
+    * **swap one pathway for another** within a (region, year), which preserves the
+      energy balance exactly. This is the direction the suboptimal solve got wrong;
+    * **build versus buy out**, in *both* directions: give up a unit of eligible fuel,
+      backfill the balance with the residual pathway and pay the release price on the
+      shortfall -- or the reverse, build the unit and stop paying. Both are needed. With
+      only the first, a solve that over-used the buy-out would pass the search, since
+      nothing would propose building instead.
+
+    Returns ``(best_relative_improvement, description)``. A correct solve returns
+    something at or below solver noise.
+    """
+    inputs = inputs.validate()
+    scale = float(np.max(inputs.demand))
+    base = _objective(inputs, outputs.volume, outputs.unmet, outputs.submandate_unmet)
+    regions, pathways, years = inputs.shape
+    residual = inputs.residual_pathway
+    best, where = 0.0, "none"
+
+    def consider(volume, unmet, label):
+        nonlocal best, where
+        if _violation(inputs, volume, unmet, outputs.submandate_unmet) > 1e-9:
+            return
+        value = _objective(inputs, volume, unmet, outputs.submandate_unmet)
+        gain = (base - value) / abs(base)
+        if gain > best:
+            best, where = gain, label
+
+    for step in steps:
+        delta = step * scale
+        for r in range(regions):
+            for t in range(years):
+                for source in range(pathways):
+                    if outputs.volume[r, source, t] < delta:
+                        continue
+                    for target in range(pathways):
+                        if target == source:
+                            continue
+                        trial = outputs.volume.copy()
+                        trial[r, source, t] -= delta
+                        trial[r, target, t] += delta
+                        consider(
+                            trial, outputs.unmet, f"swap p{source}->p{target} r{r} t{t} @{step:g}"
+                        )
+
+                    if inputs.is_sustainable[r, source] and source != residual:
+                        trial = outputs.volume.copy()
+                        trial[r, source, t] -= delta
+                        trial[r, residual, t] += delta
+                        relief = outputs.unmet.copy()
+                        relief[r, t] += delta
+                        consider(trial, relief, f"buy out instead of p{source} r{r} t{t} @{step:g}")
+
+                # ... and the same margin from the other side: stop paying, build.
+                if outputs.unmet[r, t] >= delta:
+                    for target in range(pathways):
+                        if not inputs.is_sustainable[r, target] or target == residual:
+                            continue
+                        if outputs.volume[r, residual, t] < delta:
+                            continue
+                        trial = outputs.volume.copy()
+                        trial[r, target, t] += delta
+                        trial[r, residual, t] -= delta
+                        relief = outputs.unmet.copy()
+                        relief[r, t] -= delta
+                        consider(
+                            trial,
+                            relief,
+                            f"build p{target} instead of buying out r{r} t{t} @{step:g}",
+                        )
+    return best, where
+
+
+@pytest.mark.parametrize(
+    "label, inputs",
+    [
+        ("single year, saturating", _single_year_case()),
+        ("multi year, rising mandate", _multi_year_case()),
+        ("multi year, tight ramp-up", _multi_year_case(rampup_limit=np.array([[0.15, 0.0]]))),
+        ("at the kink", _kinked_case()),
+    ],
+)
+def test_the_returned_point_beats_every_feasible_neighbour(label, inputs):
+    """No feasible neighbour is cheaper. The check the suite was missing.
+
+    This is what `optimal` does not tell you: the solver's status is its opinion of its
+    own work, and the historical failure was a point it called `optimal` that was 0.13 %
+    dearer than the optimum.
+
+    **What this is and is not verified to do.** It has teeth --
+    ``test_the_neighbour_search_can_actually_detect_a_worse_point`` degrades the answer
+    and the search finds its way back. It does not produce false alarms -- across the
+    four cases here, a 64-cell scan of (gamma, n, capacity) and the 30-cell bench grid,
+    the best neighbour is a loss in every direction.
+
+    It has **not** been shown to catch that specific historical solve. Restoring the
+    pre-rewrite saturation term reproduces the other half of that defect -- it refuses
+    to solve 13 of 64 scanned settings and 22 of 30 bench cells -- but wherever it does
+    solve it returns the same objective to 1e-7, so there is no longer a suboptimal
+    point there to catch. The reconstruction is behavioural, not the original code, and
+    that is the honest limit of what this test is known to guard.
+    """
+    outputs = clear_market(inputs)
+    gain, where = _cheapest_neighbour(inputs, outputs)
+    assert gain < 1e-7, (
+        f"{label}: a feasible neighbour is {gain:.3e} cheaper than the returned point "
+        f"({where}). The solver reported {outputs.diagnostics['status']!r}."
+    )
+
+
+def test_the_neighbour_search_can_actually_detect_a_worse_point():
+    """The guard on the guard: a test that never fails is not a test.
+
+    A deliberately degraded point -- eligible fuel swapped for kerosene down to the
+    obligation, which stays feasible -- must be caught. Without this, a bug in
+    `_violation` that rejected every neighbour would make the test above vacuous and
+    it would pass forever.
+    """
+    inputs = _multi_year_case().validate()
+    outputs = clear_market(inputs)
+
+    # Spoil it by paying the release price where building was cheaper: give up 1 % of
+    # demand from the eligible pathway in the FINAL year, backfill with kerosene, and
+    # buy out the shortfall. Feasible by construction -- lowering output can only relax
+    # a growth limit, the obligation is still met because the buy-out counts towards it,
+    # and the final year has no successor whose ramp-up could be tightened. Dearer by a
+    # lot: the release price is 0.5 against a substitution cost of about 0.012.
+    scale = float(np.max(inputs.demand))
+    delta = 0.01 * scale
+    last = inputs.demand.shape[1] - 1
+    assert outputs.volume[0, 0, last] > delta
+
+    spoiled = outputs.volume.copy()
+    spoiled[0, 0, last] -= delta
+    spoiled[0, 1, last] += delta
+    bought = outputs.unmet.copy()
+    bought[0, last] += delta
+    assert _violation(inputs, spoiled, bought) < 1e-9, "the spoiled point must be feasible"
+    assert _objective(inputs, spoiled, bought) > _objective(inputs, outputs.volume, outputs.unmet)
+
+    degraded = replace(outputs, volume=spoiled, unmet=bought)
+    gain, where = _cheapest_neighbour(inputs, degraded)
+    assert gain > 1e-4, f"the search failed to find the way back from a spoiled point ({where})"
+
+
+def test_the_independent_objective_agrees_with_the_solver():
+    """The numpy objective must be the same function Clarabel minimised.
+
+    Compared against the solver's own value, undone from the scaling the kernel applies.
+    A silent disagreement here would make every assertion above meaningless -- they
+    would be scoring a different programme.
+    """
+    inputs = _multi_year_case()
+    inputs = inputs.validate()
+    outputs = clear_market(inputs)
+    scaled = outputs.diagnostics["objective_scaled"]
+    reported = scaled * outputs.diagnostics["energy_scale"] * outputs.diagnostics["cost_scale"]
+    independent = _objective(inputs, outputs.volume, outputs.unmet, outputs.submandate_unmet)
+    assert independent == pytest.approx(reported, rel=1e-6)

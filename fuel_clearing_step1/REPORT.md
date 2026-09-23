@@ -1193,15 +1193,34 @@ Figures: `policy_fuel_mix.png`, `policy_exclusion_cost.png`,
 5. ~~**The remaining degeneracy candidates**~~ — settled, §9.1: both clean. A third
    candidate the brief did not list turned out *not* to be clean, and is §8.5.
 
-**Still open**
+**Closed after the brief, with a caveat worth reading**
 
 6. **Score solutions against the objective, not just the solver status** (§5.4.1).
-   **Not done, and it is the most valuable item left.** The suboptimal-but-`optimal`
-   solve was invisible to all 22 tests then in the suite; it was caught only by
-   recomputing the objective in numpy and finding a cheaper feasible point. Nothing in
-   the current 47 tests would catch a recurrence. Wanted: a helper that scores the
-   returned point against a perturbation of itself and asserts it wins, applied to every
-   case that exercises the saturation cone.
+   Done — six tests, suite now 53. `_objective` recomputes the programme's value in
+   numpy, written out from the formulation rather than imported (a second opinion
+   computed by the code under test is not a second opinion), and is checked against the
+   solver's own value to 1e-6. `_violation` scores feasibility. `_cheapest_neighbour`
+   then searches for a feasible neighbour that beats the returned point, over two move
+   families: **swapping one pathway for another** within a (region, year), which
+   preserves the balance exactly and is the direction the historical bad solve got
+   wrong; and **build versus buy out, in both directions** — the reverse move was
+   missing from the first draft, and without it a solve that over-used the buy-out would
+   have passed.
+
+   **What it is verified to do, and what it is not.** It has teeth:
+   `test_the_neighbour_search_can_actually_detect_a_worse_point` degrades the answer and
+   the search finds its way back. It does not produce false alarms: across four cases, a
+   64-cell (γ, n, capacity) scan and the 30-cell bench grid, the best neighbour is a loss
+   in every direction.
+
+   It has **not** been shown to catch that specific historical solve. Restoring the
+   pre-rewrite saturation term reproduces the *other* half of that defect — it refuses to
+   solve 13 of 64 scanned settings and 22 of 30 bench cells — but wherever it does solve
+   it now agrees with the rewritten form to 1e-7, so there is no suboptimal point left
+   there to catch. The reconstruction is behavioural rather than the original code, and
+   that is the honest limit of what this guard is known to cover.
+
+**Still open**
 
 **Opened by this week's work, for step 2 to decide**
 
