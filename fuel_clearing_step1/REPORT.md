@@ -1175,23 +1175,46 @@ Figures: `policy_fuel_mix.png`, `policy_exclusion_cost.png`,
 
 ## 7. Open, in priority order
 
-1. **J4–J5**: the `FuelClearing` global discipline, the mode, the coupled run, and
-   measurements 4.5.1 and 4.5.2. The landing spot exists and is documented —
-   `_load_global_models` uses `fuel_market` as its worked example.
-2. **Mode-flag plumbing** (INVENTORY §7). `EnergyUseChoice` is regional and
-   unconditional; the market is global. Recommended: one
-   `regionalisation.fuel_market` key propagated to `AeroMAPSProcess` as a keyword
-   beside `optimisation=False`, rather than repeated in every region's config.
-3. **Multi-type guard** (INVENTORY §4). The new mode must raise, not silently
-   under-serve, if a hydrogen or electric pathway is declared.
-4. **Ramp-up form for the headline comparison** (§2). Both are relaxations of Eq. 12
-   in different directions.
-5. **The remaining degeneracy candidates** (§5.4.2). Two multipliers have already been
-   found arbitrary where their constraint stopped being independent, at the two ends of
-   the mandate range. The ramp-up dual as `g → ∞` and the capacity as `γ → 0` are the
-   same shape of problem and are not tested. A dual that is silently arbitrary is worse
-   than one that is missing, because it is a plausible-looking price.
-6. **Score solutions against the objective, not just the solver status** (§5.4.1). The
-   suboptimal-but-`optimal` solve was invisible to every test until it was scored
-   independently. Worth a test helper that recomputes the objective in numpy and
-   asserts the returned point beats a perturbation of itself.
+> This section was written at the end of J3 and listed six items. Five of them closed
+> during J4-J5 and are struck through below rather than deleted, so that a reader
+> comparing this against the brief can see what the week actually consumed.
+
+**Closed this week**
+
+1. ~~**J4-J5**: the `FuelClearing` global discipline, the mode, the coupled run,
+   measurements 4.5.1 and 4.5.2.~~ Done — §8. Plus two things the brief did not
+   anticipate: the coupled loop's failure at `w > 0` diagnosed and fixed (§8.5-8.6), and
+   an MDA tolerance below the solver's own precision (§8.7).
+2. ~~**Mode-flag plumbing**~~ — `regionalisation.fuel_market`, one key, default off,
+   propagated as a process keyword. Refused outside `unified_mda`.
+3. ~~**Multi-type guard**~~ — `_collect_pathways` raises on any aircraft type other than
+   `dropin_fuel`, alongside two more guards (top-down costs only, exactly one residual).
+4. ~~**Ramp-up form for the headline comparison**~~ — settled, §9.2: `relative`.
+5. ~~**The remaining degeneracy candidates**~~ — settled, §9.1: both clean. A third
+   candidate the brief did not list turned out *not* to be clean, and is §8.5.
+
+**Still open**
+
+6. **Score solutions against the objective, not just the solver status** (§5.4.1).
+   **Not done, and it is the most valuable item left.** The suboptimal-but-`optimal`
+   solve was invisible to all 22 tests then in the suite; it was caught only by
+   recomputing the objective in numpy and finding a cheaper feasible point. Nothing in
+   the current 47 tests would catch a recurrence. Wanted: a helper that scores the
+   returned point against a perturbation of itself and asserts it wins, applied to every
+   case that exercises the saturation cone.
+
+**Opened by this week's work, for step 2 to decide**
+
+7. **Inter-regional trade.** The discipline is global in plumbing and per-region in
+   economics; nothing can leak. This is the single most important missing mechanism for
+   policy work and the reason the global (non-namespaced) form was adopted at all.
+8. **`cvxpy` as a real optional dependency** before the mode ships. It is in the `test`
+   group today, which is right for a spike and wrong for a release.
+9. **The buy-out payment reaches nobody.** `unmet` is priced and reported but the money
+   does not enter the cost chain.
+10. **Two numbers a user can now set badly with no warning.** `demand_elasticity`
+    (affects the route, not the destination — but 0.05 costs 200 sweeps and a failure)
+    and `mda_tolerance` against the kernel's `solver_tolerance` (§8.7, where the symptom
+    looks exactly like a modelling failure). Both want either a derivation or a guard.
+11. **Bottom-up costs** stay excluded while a vintage mix makes average cost fall with
+    volume — that turns the cost integral concave and the duals stop being prices (§6).
