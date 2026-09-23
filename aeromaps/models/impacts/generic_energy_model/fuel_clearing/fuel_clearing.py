@@ -96,6 +96,13 @@ DEFAULT_SETTINGS = {
 }
 
 
+# Settings that describe a pathway being *scarce*. A global value for these reaches
+# every pathway, which is wrong for the residual -- see `_pathway_setting`. The ramp-up
+# keys are not here because the kernel applies the growth limit to eligible rows only,
+# so a global value is already inert on the residual.
+_SCARCITY_SETTINGS = frozenset({"capacity", "saturation_intensity"})
+
+
 class FuelClearingConfigurationError(ValueError):
     """The market cannot be built from this scenario.
 
@@ -323,10 +330,27 @@ class FuelClearing(AeroMAPSModel):
     # -- solve ---------------------------------------------------------------
 
     def _pathway_setting(self, key, pathway, default):
-        """Per-pathway override under ``pathways: {name: {...}}``, else the global value."""
+        """Per-pathway override under ``pathways: {name: {...}}``, else the global value.
+
+        **The residual pathway is exempt from the global scarcity settings**, and takes
+        ``default`` unless it is named explicitly. Without that, a scenario saying
+        "capacity is 1.1e13" -- meaning the sustainable pathway it is studying -- also
+        saturates kerosene, and every bench script in this spike did exactly that: the
+        residual ran at 90 % utilisation, its marginal cost rose with it, and
+        ``energy_price`` stopped being the cost of the marginal conventional fuel. The
+        identity ``lambda_E = c_kerosene`` that the report asserts and publishes was
+        false by 2.2 % on the coupled grid for that reason alone.
+
+        The residual is the backstop that absorbs whatever the balance needs; a
+        *global* default that constrains it is almost never what was meant. Naming it
+        under ``pathways:`` still works, because a fossil supply limit is a legitimate
+        thing to model -- it just has to be asked for.
+        """
         per_pathway = self.configuration_data.get("pathways", {}).get(pathway, {})
         if key in per_pathway:
             return per_pathway[key]
+        if key in _SCARCITY_SETTINGS and pathway == self.residual_name:
+            return default
         return self.settings.get(key, default)
 
     def _prospective(self, series):

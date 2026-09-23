@@ -50,13 +50,13 @@ SCARCE = dict(rampup_limit=0.20, rampup_seed_share=0.005, capacity=1.1e13, buyou
 # converge to; 0.5 is the fastest value on this bench (fuel_clearing_step1/convergence.py).
 ANCHOR = dict(demand_elasticity=0.5)
 # The loop is stopped at a tolerance the market can actually reach. Clarabel returns the
-# conic duals to `solver_tolerance` (1e-9), which is about 3e-9 of demand once scaled --
-# and refuses the stiffest cones outright if asked for better. The default 1e-10 is a
-# digit below that floor, so at n=16 the loop reported non-convergence having converged:
-# zero active-set changes, the price stationary to 1e-11, residual pinned at 2.86e-9.
-# Measured on a cell that converges either way (n=8), 1e-8 returns a bit-identical
-# answer, so this loosens the stopping rule and not the result.
-MDA_TOLERANCE = 1.0e-8
+# conic duals to `solver_tolerance` (1e-9), and the chain amplifies that: the residual
+# floor measured here is 2-3e-8, so roughly 100x the solver's own figure. It is NOT a
+# constant to pick once -- it moved when the kerosene plumbing was fixed, because
+# removing a strictly convex term costs the solver accuracy. See REPORT.md section 8.7,
+# and the control there: a cell that converges at both tolerances returns a
+# bit-identical answer, so this loosens the stopping rule and not the result.
+MDA_TOLERANCE = 1.0e-7
 STIFFNESSES = (2.0, 4.0, 8.0, 16.0)
 INTENSITIES = (0.5, 1.0, 2.0)
 WEIGHTS = (0.0, 1.0)

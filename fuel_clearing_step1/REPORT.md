@@ -742,12 +742,12 @@ throughout. Delivered price % / RPK % against the no-scarcity run, region A 2050
 
 | | n=2 | n=4 | n=8 | n=16 |
 |---|---|---|---|---|
-| **w=0**, γ=0.5 | +11.2 / −1.3 | +5.2 / −0.6 | +1.8 / −0.2 | +0.4 / −0.0 |
-| **w=0**, γ=1 | +21.9 / −2.5 | +10.2 / −1.2 | +3.6 / −0.4 | +0.8 / −0.1 |
-| **w=0**, γ=2 | +42.1 / −4.7 | +19.6 / −2.3 | +7.1 / −0.8 | +1.6 / −0.2 |
-| **w=1**, γ=0.5 | +99.6 / −10.5 | +84.2 / −9.0 | +71.8 / −7.8 | +64.3 / −7.0 |
-| **w=1**, γ=1 | +131.9 / −13.5 | +102.9 / −10.8 | +80.4 / −8.7 | +66.6 / −7.3 |
-| **w=1**, γ=2 | +186.2 / −18.0 | +133.2 / −13.6 | +94.7 / −10.0 | +70.9 / −7.7 |
+| **w=0**, γ=0.5 | +10.7 / −1.3 | +5.2 / −0.6 | +1.8 / −0.2 | +0.4 / −0.0 |
+| **w=0**, γ=1 | +21.0 / −2.4 | +10.1 / −1.2 | +3.6 / −0.4 | +0.8 / −0.1 |
+| **w=0**, γ=2 | +40.5 / −4.6 | +19.5 / −2.2 | +7.1 / −0.8 | +1.6 / −0.2 |
+| **w=1**, γ=0.5 | +113.4 / −11.8 | +91.0 / −9.7 | +73.5 / −8.0 | +64.4 / −7.1 |
+| **w=1**, γ=1 | +138.8 / −14.1 | +115.4 / −12.0 | +83.6 / −9.0 | +66.9 / −7.3 |
+| **w=1**, γ=2 | +183.8 / −17.8 | +138.8 / −14.1 | +100.5 / −10.6 | +71.4 / −7.8 |
 
 **24 of 24 cells converge**, against 15 of 24 before §8.6. Both rows are monotone in `n`
 and in `γ`; the irregular pattern §8.3.2 tried and failed to explain was never a pattern,
@@ -990,13 +990,13 @@ two-region MDA. `price_regimes.py`, figure `figures/price_regimes.png`.
 
 | multiplier | 2050 obligation | compliance price | bought out | delivered 2050 | RPK 2050 | eligible share 2050 |
 |---|---|---|---|---|---|---|
-| ×0.50 | 35 % | 0.00778 | 0 | 0.016797 | 2.0172e13 | 35.0 % |
-| ×0.75 | 52.5 % | 0.02710 | 0 | 0.018537 | 1.9969e13 | 52.5 % |
-| **×1.00** | **70 %** | **0.04789** | **0** | **0.021839** | **1.9588e13** | **70.0 %** |
-| ×1.25 | 87.5 % | 0.07700 | 0 | 0.027277 | 1.8987e13 | 87.5 % |
-| ×1.50 | 100 % (clipped) | 0.10417 | 0 | 0.032832 | 1.8409e13 | 100 % |
-| ×1.75 | 100 % (clipped) | **0.08828** | 0 | 0.032832 | 1.8409e13 | 100 % |
-| ×2.00 | 100 % (clipped) | — | — | did not converge (residual 6.99e-8 vs 1e-8) | | |
+| ×0.50 | 35 % | 0.04005 | 0 | 0.015980 | 2.0272e13 | 35.0 % |
+| ×0.75 | 52.5 % | 0.05660 | 0 | 0.018374 | 1.9988e13 | 52.5 % |
+| **×1.00** | **70 %** | **0.05951** | **0** | **0.021824** | **1.9590e13** | **70.0 %** |
+| ×1.25 | 87.5 % | 0.07784 | 0 | 0.027277 | 1.8987e13 | 87.5 % |
+| ×1.50 | 100 % (clipped) | — | — | did not converge (1.84e-7) | | |
+| ×1.75 | 100 % (clipped) | 0.08831 | 0 | 0.032832 | 1.8409e13 | 100 % |
+| ×2.00 | 100 % (clipped) | — | — | did not converge (1.46e-6) | | |
 
 **The buy-out never engages.** `unmet` stays at solver noise — below 1e-9 % of demand —
 at every point. At the inventory's ramp-up the obligation is reachable across the whole
@@ -1012,17 +1012,13 @@ The first version of this figure drew the unmet volume anyway, on a 1e-9 axis, a
 produced a confident-looking V shape out of rounding error. Replaced with how the
 obligation is actually met, which is entirely by volume.
 
-**The compliance price rises, and then falls.** 0.0078 → 0.104 up to ×1.5, then back to
-0.0883 at ×1.75. Both of those have a 100 % obligation in 2050, so they differ only in
-the years before it: ×1.75 requires 73.5 % in 2045 against ×1.5's 63 %. The market
-therefore arrives at 2049 with a larger base, and the final step to 100 % is a smaller
-one to climb. **A stricter obligation earlier makes the last step cheaper.**
-
-That is the same mechanism as the crop-exclusion reversal (§10.1) and the sub-mandate
-result (§10.2), now seen a third time and from a third direction. It is the
-characteristic behaviour of this model: with a growth limit and perfect foresight, what
-a policy costs at its peak depends on what was built before it, not on how high it
-reaches.
+> ⚠️ **Withdrawn.** This section previously reported that the compliance price "rises,
+> and then falls" — 0.104 at ×1.5 against 0.0883 at ×1.75 — and read it as a third
+> sighting of the build-ahead mechanism. Fixing the kerosene plumbing (§8.9) moved every
+> number in the table and left ×1.5 non-convergent, so the comparison no longer exists.
+> The claim is withdrawn rather than re-fitted to whichever points survived: it rested on
+> two adjacent cells that differed only through the 100 % clipping, which was thin
+> evidence for a mechanism §10.1 and §10.2 already demonstrate on their own.
 
 **Above ×1.43 the 2050 obligation clips at 100 %.** The base is 70 %, so every 2050
 quantity — delivered price, traffic, share — stops moving beyond that point, and the
@@ -1040,6 +1036,50 @@ been diagnosed; it is recorded as the brief asks (*convergence oui ou non*) and 
 the first entry, calls the series integer-valued and rejects 3.5 at grammar validation.
 The scenario data type is a trap for any script that rewrites a series: always emit a
 decimal point.
+
+---
+
+### 8.9 A global setting that reached the wrong pathway
+
+Found by an external review, and present in **every** coupled measurement in this report.
+
+`_pathway_setting` resolves a per-pathway override if given, else the global value — for
+every pathway, the residual included. All three coupled scripts pass `capacity` and
+`saturation_intensity` at the top level, meaning them for the pathway under study. So
+**kerosene was saturating too**, at ~90 % utilisation, against BRIEF4 §3.1 (`inf` pour le
+kérosène).
+
+Re-running everything with the residual exempted:
+
+| | change |
+|---|---|
+| `w = 0` cells | at most −1.6 points — the delivered price there is an average cost |
+| `w = 1` cells | **up to +14 points** (+99.6 → +113.4 at γ=0.5, n=2) |
+| measurement 4.5.2 | lost 2 of 7 points, and its "rises then falls" finding with them |
+
+Saturating kerosene raised λ_E but lowered λ_M by more, so it was **suppressing the very
+scarcity signal the measurement exists to show**. The residual is now exempt from the
+global scarcity settings and takes the no-scarcity default unless named explicitly under
+`pathways:` — a fossil supply limit is legitimate, it just has to be asked for. Six tests
+in `test_fuel_clearing_discipline.py`, which is also the first test of the *discipline*
+rather than the kernel.
+
+**The tolerance had to move with it.** Six `w = 0` cells that converged before now failed
+at residual 2.3–3.0e-8 against the 1e-8 I had set. Same story as §8.7, and this time on
+me: removing a strictly convex term costs the solver accuracy, so a tolerance tuned
+against the buggy configuration was just a different arbitrary number. It is now derived
+in all three scripts as ~100× the kernel's own `solver_tolerance` — 1e-7 — with the same
+control as §8.7: a cell converging at both returns a bit-identical answer (0.021824076).
+Grid back to **24/24**.
+
+**And the check on the fix found a second thing.** With kerosene free, λ_E should equal
+the kerosene cost. It sits 3.6 % above it — by a gap identical in every year and both
+regions: **0.00044350**. That is exactly the carbon tax: 88.7 gCO₂/MJ × 5 EUR/tCO₂ =
+0.00044350. So the identity holds, on the **net** basis the program decides on (§8.1) —
+and `fuel_market_energy_price` is published on that net basis while `{p}_market_mfsp` is
+published gross, with the wedge stripped. Two published prices, two bases, nothing saying
+so; anyone differencing them finds a carbon tax they did not put there. **Recorded, not
+fixed:** which basis a dual should be published on is a design decision.
 
 ---
 

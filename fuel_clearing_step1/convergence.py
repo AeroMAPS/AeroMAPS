@@ -57,6 +57,15 @@ FIGURES = HERE / "figures"
 # The scarcity the coupled grid uses, so this diagnoses the same market that grid ran on.
 SCARCE = dict(rampup_limit=0.20, rampup_seed_share=0.005, capacity=1.1e13, buyout_price=0.30)
 
+# The loop is stopped at a tolerance the market can actually reach. Clarabel returns the
+# conic duals to `solver_tolerance` (1e-9), and the chain amplifies that: the residual
+# floor measured here is 2-3e-8, so roughly 100x the solver's own figure. It is NOT a
+# constant to pick once -- it moved when the kerosene plumbing was fixed, because
+# removing a strictly convex term costs the solver accuracy. See REPORT.md section 8.7,
+# and the control there: a cell that converges at both tolerances returns a
+# bit-identical answer, so this loosens the stopping rule and not the result.
+MDA_TOLERANCE = 1.0e-7
+
 CASES = {
     "w0": dict(pricing_weight=0.0),
     "w1_plain": dict(pricing_weight=1.0),
@@ -80,6 +89,7 @@ def _run_one(settings, tag):
     from aeromaps.core.multi_regional_process import MultiRegionalProcess
 
     config = yaml.safe_load(CONFIG.read_text())
+    config["regionalisation"]["mda_tolerance"] = MDA_TOLERANCE
     config["regionalisation"]["global_models"]["settings"] = {
         "fuel_clearing": {**SCARCE, **settings}
     }

@@ -753,12 +753,12 @@ no-scarcity run:
 \toprule
  & $n=2$ & $n=4$ & $n=8$ & $n=16$ \\
 \midrule
-$w=0,\ \gamma=0.5$ & $+11.2 / -1.3$ & $+5.2 / -0.6$ & $+1.8 / -0.2$ & $+0.4 / -0.0$ \\
-$w=0,\ \gamma=1$   & $+21.9 / -2.5$ & $+10.2 / -1.2$ & $+3.6 / -0.4$ & $+0.8 / -0.1$ \\
-$w=0,\ \gamma=2$   & $+42.1 / -4.7$ & $+19.6 / -2.3$ & $+7.1 / -0.8$ & $+1.6 / -0.2$ \\
-$w=1,\ \gamma=0.5$ & $+99.6 / -10.5$ & $+84.2 / -9.0$ & $+71.8 / -7.8$ & $+64.3 / -7.0$ \\
-$w=1,\ \gamma=1$   & $+131.9 / -13.5$ & $+102.9 / -10.8$ & $+80.4 / -8.7$ & $+66.6 / -7.3$ \\
-$w=1,\ \gamma=2$   & $+186.2 / -18.0$ & $+133.2 / -13.6$ & $+94.7 / -10.0$ & $+70.9 / -7.7$ \\
+$w=0,\ \gamma=0.5$ & $+10.7 / -1.3$ & $+5.2 / -0.6$ & $+1.8 / -0.2$ & $+0.4 / -0.0$ \\
+$w=0,\ \gamma=1$   & $+21.0 / -2.4$ & $+10.1 / -1.2$ & $+3.6 / -0.4$ & $+0.8 / -0.1$ \\
+$w=0,\ \gamma=2$   & $+40.5 / -4.6$ & $+19.5 / -2.2$ & $+7.1 / -0.8$ & $+1.6 / -0.2$ \\
+$w=1,\ \gamma=0.5$ & $+113.4 / -11.8$ & $+91.0 / -9.7$ & $+73.5 / -8.0$ & $+64.4 / -7.1$ \\
+$w=1,\ \gamma=1$   & $+138.8 / -14.1$ & $+115.4 / -12.0$ & $+83.6 / -9.0$ & $+66.9 / -7.3$ \\
+$w=1,\ \gamma=2$   & $+183.8 / -17.8$ & $+138.8 / -14.1$ & $+100.5 / -10.6$ & $+71.4 / -7.8$ \\
 \bottomrule
 \end{tabular}
 \caption{\textbf{24 of 24} cells converge, on plain Gauss--Seidel with \emph{no}
@@ -1053,13 +1053,13 @@ MDA.
 \textbf{multiplier} & \textbf{2050 obligation} & \textbf{$\lambda^{M}$} & \textbf{bought out}
  & \textbf{delivered 2050} & \textbf{RPK 2050} & \textbf{eligible share} \\
 \midrule
-$\times 0.50$ & 35\,\% & $0.00778$ & 0 & $0.016797$ & $2.017\times10^{13}$ & 35.0\,\% \\
-$\times 0.75$ & 52.5\,\% & $0.02710$ & 0 & $0.018537$ & $1.997\times10^{13}$ & 52.5\,\% \\
-$\times 1.00$ & 70\,\% & $0.04789$ & 0 & $0.021839$ & $1.959\times10^{13}$ & 70.0\,\% \\
-$\times 1.25$ & 87.5\,\% & $0.07700$ & 0 & $0.027277$ & $1.899\times10^{13}$ & 87.5\,\% \\
-$\times 1.50$ & 100\,\% & $0.10417$ & 0 & $0.032832$ & $1.841\times10^{13}$ & 100\,\% \\
-$\times 1.75$ & 100\,\% & $\mathbf{0.08828}$ & 0 & $0.032832$ & $1.841\times10^{13}$ & 100\,\% \\
-$\times 2.00$ & 100\,\% & \multicolumn{5}{l}{\emph{did not converge} (residual $6.99\times10^{-8}$ against $10^{-8}$)} \\
+$\times 0.50$ & 35\,\% & $0.04005$ & 0 & $0.015980$ & $2.027\times10^{13}$ & 35.0\,\% \\
+$\times 0.75$ & 52.5\,\% & $0.05660$ & 0 & $0.018374$ & $1.999\times10^{13}$ & 52.5\,\% \\
+$\times 1.00$ & 70\,\% & $0.05951$ & 0 & $0.021824$ & $1.959\times10^{13}$ & 70.0\,\% \\
+$\times 1.25$ & 87.5\,\% & $0.07784$ & 0 & $0.027277$ & $1.899\times10^{13}$ & 87.5\,\% \\
+$\times 1.50$ & 100\,\% & \multicolumn{5}{l}{\emph{did not converge} ($1.84\times10^{-7}$)} \\
+$\times 1.75$ & 100\,\% & $0.08831$ & 0 & $0.032832$ & $1.841\times10^{13}$ & 100\,\% \\
+$\times 2.00$ & 100\,\% & \multicolumn{5}{l}{\emph{did not converge} ($1.46\times10^{-6}$)} \\
 \bottomrule
 \end{tabular}
 \caption{Coupled, region A. The obligation clips at 100\,\% above $\times 1.43$, so every
@@ -1085,13 +1085,14 @@ question is not answered by this sweep}. It is answered by the growth-limit swee
 obligation does not, because perfect foresight builds ahead of it; tightening the growth
 limit does.
 
-\textbf{And the compliance price rises, then falls} --- $0.104$ at $\times 1.5$ against
-$0.088$ at $\times 1.75$. Both end at a 100\,\% obligation, so they differ only before
-it: $\times 1.75$ demands 73.5\,\% in 2045 where $\times 1.5$ demands 63\,\%. The market
-arrives at 2049 with a larger base and the final step is smaller. \textbf{A stricter
-obligation earlier makes the last step cheaper} --- the same mechanism as the
-crop-exclusion reversal and the sub-target result (\S\ref{sec:policy}), seen a third
-time and from a third direction.
+\textbf{An earlier version of this box reported that the compliance price ``rises, then
+falls'', on a $\times 1.5$ versus $\times 1.75$ comparison. That comparison no longer
+exists}: correcting the kerosene plumbing (\S\ref{sec:kerosene}) moved every number in
+this table and left $\times 1.5$ non-convergent. The remaining converged points are
+monotone. The claim is withdrawn rather than re-fitted to what survived --- it rested on
+two adjacent points that differed only through a clipping artefact, which was thin
+evidence for a mechanism the report already demonstrates twice elsewhere
+(\S\ref{sec:policy}).
 \end{keybox}
 
 \section{Policy cases}
@@ -1246,6 +1247,53 @@ arbitrary. The first two are pinned to their meaningful KKT values. The third co
 be pinned, because the discontinuity is real and neither branch is more meaningful than
 the other --- it needed information the cost side does not contain, which is what
 \S\ref{sec:fix} supplies.
+
+\subsection{A global setting that reached the wrong pathway}
+\label{sec:kerosene}
+
+Found by an external review of this report, and present in \emph{every} coupled
+measurement in it.
+
+\var{FuelClearing.\_pathway\_setting} resolves a per-pathway override if one is given and
+otherwise falls back to the global value --- for every pathway, including the residual.
+All three coupled bench scripts pass \var{capacity} and \var{saturation\_intensity} at
+the top level, meaning them for the pathway under study. So \textbf{kerosene was
+saturating too}, at about 90\,\% utilisation, and its marginal cost rose with output.
+
+The consequences were not confined to kerosene. Re-running the whole grid with the
+residual exempted:
+
+\begin{itemize}[nosep,leftmargin=5mm]
+  \item $w=0$ barely moves (at most $-1.6$ points, since the delivered price there is an
+        average cost);
+  \item $w=1$ moves \emph{up} by as much as \textbf{14 points} ($+99.6 \to +113.4$ at
+        $\gamma=0.5$, $n=2$). Saturating kerosene raised $\lambda^{E}$ but lowered
+        $\lambda^{M}$ by more, so it was suppressing the scarcity signal the measurement
+        exists to show;
+  \item measurement 4.5.2 lost two of its seven points and its ``rises then falls''
+        finding with them.
+\end{itemize}
+
+The residual is now exempt from the global scarcity settings and takes the no-scarcity
+default unless named explicitly under \var{pathways:} --- a fossil supply limit is a
+legitimate thing to model, it simply has to be asked for. Six tests in
+\var{test\_fuel\_clearing\_discipline.py}, which is also the first test of the discipline
+rather than the kernel.
+
+\begin{keybox}
+\textbf{And the check on the fix turned up a second thing.} With kerosene free,
+$\lambda^{E}$ should equal the kerosene cost. It does not --- it sits $3.6\,\%$ above it,
+by a gap that is \emph{identical in every year and both regions}: $0.00044350$.
+
+That is exactly the carbon tax. $88.7\,\mathrm{gCO_2/MJ} \times 5\,\mathrm{EUR/tCO_2} =
+0.00044350$. So the identity does hold, on the \emph{net} basis the programme decides on
+(\S\ref{sec:netgross}) --- and \var{fuel\_market\_energy\_price} is published on that net
+basis while \var{\{p\}\_market\_mfsp} is published gross, with the wedge stripped. Two
+published prices, two bases, no note saying so. The duals are correct; the reporting is
+inconsistent, and anyone differencing them would find a carbon tax they did not put
+there. Recorded, not yet fixed: which basis a dual should be published on is a design
+decision, not a bug fix.
+\end{keybox}
 
 \subsection*{Two claims this report previously made and now withdraws}
 

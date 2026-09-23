@@ -58,7 +58,14 @@ SETTINGS = dict(
     saturation_stiffness=4.0,
     demand_elasticity=0.5,
 )
-MDA_TOLERANCE = 1.0e-8
+# The loop is stopped at a tolerance the market can actually reach. Clarabel returns the
+# conic duals to `solver_tolerance` (1e-9), and the chain amplifies that: the residual
+# floor measured here is 2-3e-8, so roughly 100x the solver's own figure. It is NOT a
+# constant to pick once -- it moved when the kerosene plumbing was fixed, because
+# removing a strictly convex term costs the solver accuracy. See REPORT.md section 8.7,
+# and the control there: a cell that converges at both tolerances returns a
+# bit-identical answer, so this loosens the stopping rule and not the result.
+MDA_TOLERANCE = 1.0e-7
 MULTIPLIERS = (0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0)
 
 # The obligation, verbatim from energy_carriers_step1.yaml. Scaling is done on this
