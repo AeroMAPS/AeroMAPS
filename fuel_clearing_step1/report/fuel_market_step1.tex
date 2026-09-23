@@ -1028,6 +1028,63 @@ measurement produced a false negative. It is now \var{regionalisation.mda\_toler
 (with \var{mda\_max\_iter}), defaulting to what it was, so nothing that ran before runs
 differently.
 
+\subsection{Price regimes across the obligation (measurement 4.5.2)}
+\label{sec:regimes}
+
+The brief's third question is \emph{how do prices behave when the obligation becomes
+unreachable?} The measurement it specifies is a multiplier on the obligation swept
+$0.5 \to 2$ at the inventory's growth limit, recording the compliance price, the volume
+bought out, the delivered price and the traffic --- so every point is a full two-region
+MDA.
+
+\begin{table}[h]
+\centering\small
+\begin{tabular}{@{}lrrrrrr@{}}
+\toprule
+\textbf{multiplier} & \textbf{2050 obligation} & \textbf{$\lambda^{M}$} & \textbf{bought out}
+ & \textbf{delivered 2050} & \textbf{RPK 2050} & \textbf{eligible share} \\
+\midrule
+$\times 0.50$ & 35\,\% & $0.00778$ & 0 & $0.016797$ & $2.017\times10^{13}$ & 35.0\,\% \\
+$\times 0.75$ & 52.5\,\% & $0.02710$ & 0 & $0.018537$ & $1.997\times10^{13}$ & 52.5\,\% \\
+$\times 1.00$ & 70\,\% & $0.04789$ & 0 & $0.021839$ & $1.959\times10^{13}$ & 70.0\,\% \\
+$\times 1.25$ & 87.5\,\% & $0.07700$ & 0 & $0.027277$ & $1.899\times10^{13}$ & 87.5\,\% \\
+$\times 1.50$ & 100\,\% & $0.10417$ & 0 & $0.032832$ & $1.841\times10^{13}$ & 100\,\% \\
+$\times 1.75$ & 100\,\% & $\mathbf{0.08828}$ & 0 & $0.032832$ & $1.841\times10^{13}$ & 100\,\% \\
+$\times 2.00$ & 100\,\% & \multicolumn{5}{l}{\emph{did not converge} (residual $6.99\times10^{-8}$ against $10^{-8}$)} \\
+\bottomrule
+\end{tabular}
+\caption{Coupled, region A. The obligation clips at 100\,\% above $\times 1.43$, so every
+2050 quantity stops moving beyond that point.}
+\label{tab:regimes}
+\end{table}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{price_regimes.png}
+\caption{The obligation is met by volume throughout; the middle panel's earlier version
+plotted the unmet volume on a $10^{-9}$ axis and drew a shape out of rounding error.}
+\label{fig:regimes}
+\end{figure}
+
+\begin{keybox}
+\textbf{The buy-out never engages.} At the inventory's growth limit the obligation is
+reachable across the whole range the brief asks for --- up to 100\,\% eligible fuel in
+2050 --- so the unreachable regime is never entered and \textbf{the brief's third
+question is not answered by this sweep}. It is answered by the growth-limit sweep
+(\S\ref{sec:kernelresults}), where at 15\,\%/yr the buy-out engages exactly once, at the
+2035 step. \emph{Which instrument creates the shortfall matters}: tightening the
+obligation does not, because perfect foresight builds ahead of it; tightening the growth
+limit does.
+
+\textbf{And the compliance price rises, then falls} --- $0.104$ at $\times 1.5$ against
+$0.088$ at $\times 1.75$. Both end at a 100\,\% obligation, so they differ only before
+it: $\times 1.75$ demands 73.5\,\% in 2045 where $\times 1.5$ demands 63\,\%. The market
+arrives at 2049 with a larger base and the final step is smaller. \textbf{A stricter
+obligation earlier makes the last step cheaper} --- the same mechanism as the
+crop-exclusion reversal and the sub-target result (\S\ref{sec:policy}), seen a third
+time and from a third direction.
+\end{keybox}
+
 \section{Policy cases}
 \label{sec:policy}
 

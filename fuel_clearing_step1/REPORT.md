@@ -10,18 +10,23 @@ detail behind most of what follows.
 
 ## Status against §6
 
-| criterion | state |
-|---|---|
-| `_setup_unified_mda` fix merged, with a test | **Already on this base** — `a27bd252`. No work needed (§1.1) |
-| `INVENTORY.md` and the reference input set | **Done** |
-| Kernel, tests 3.3.a–3.3.i green | **Done** — 23 tests, plus 3.3.j timings |
-| New mode operational; current mode untouched; first coupled run | **Done** — §8 |
-| Measurement 4.5.2 (coupled convergence) | **Done** — §8.3 |
-| Measurement 4.5.1 (saturation grid), with figures | Kernel-level done (§5.4); coupled grid §8.4 |
+> **This table was audited against the brief on 2026-09-23**, once the brief itself was
+> committed (`docs/fuel_market_spike/BRIEF4.md` — until then none of this report's
+> references to §2.3, 3.3.a–j or decisions 4/6/9/10/11 resolved from the repository).
+> Three rows were wrong. They are corrected here and the corrections named, because a
+> status table that overstates is worse than no status table.
 
-Existing suite: **281 passed** (6 min 25 s) with the mode wired and shared code
-modified — which, unlike the earlier run against untouched code, is the guard-rail
-that actually means something.
+| criterion (§6 of the brief) | state |
+|---|---|
+| §2.1 `_setup_unified_mda` fix, with a test | **Done, in two parts.** The brief asked for three things: align the defaults, make both settings *configurable*, add a test. `a27bd252` had already aligned the defaults on this base (§1.1) — but it left them as literals at both construction sites, so the *configurable* half was open all week. Closed 2026-09-23 as `regionalisation.mda_tolerance` / `mda_max_iter`, with the test the brief asked for. §1.1 previously read "no work needed"; that was half right. |
+| §2.3 `INVENTORY.md` and §2.4 reference input set | **Done** |
+| §3.3 kernel, tests a–i green | **Done** — 53 tests, including 3.3.j timings |
+| §4.2/§4.4 new mode operational; current mode untouched; first coupled run | **Done** — §8. Existing suite green unmodified. |
+| §4.5.1 the `n` grid, table and figure | **Done with a substitution, §8.4.** The brief asks for `n` ∈ {2,4,6,8,12,16} across **two levels of capacity K**; this sweeps `n` ∈ {2,4,8,16} across **three levels of γ**. Kernel-level (§5.4) does use the brief's `n` values. The brief also asks each cell to record iterations, final residual, limit cycle and the operating-point elasticity; `coupled_grid.json` records convergence, price, traffic, CO₂ and share but not the four solver diagnostics. |
+| §4.5.2 price regimes, with figure | **Done 2026-09-23 — §8.8.** This row previously read "Measurement 4.5.2 (coupled convergence) — Done — §8.3", which was **wrong**: §8.3 measures whether the coupled fixed point is reached, a genuine finding but not what §4.5.2 asks for. The brief asks for a multiplier on the obligation swept 0.5→2 with the compliance price, unmet volume, ramp-up bite, delivered price and **traffic**. That measurement did not exist until now. |
+
+Existing suite: **305 passed** with the mode wired and shared code modified — which,
+unlike a run against untouched code, is the guard-rail that actually means something.
 
 ---
 
@@ -37,6 +42,14 @@ that 3bdbfb8c only claimed`, with its test and its CHANGELOG correction. `80fcbe
 also took the NaN flag out of the coupling vector and the clip out of `RPKElasticity`.
 So the one piece of shared-code work the week planned for does not exist, and J1 was
 the inventory and the bench alone.
+
+> ⚠️ **Half of that was wrong, and it cost a day.** `a27bd252` aligned the *defaults*.
+> It did not do the brief's other request — *rendre les deux réglables*. Both stayed
+> literals at the two construction sites, unreachable from a scenario. That went
+> unnoticed until §8.7 needed to change the tolerance and an attempt to assign it after
+> construction silently did nothing, producing a confident false negative. Closed on
+> 2026-09-23 as `regionalisation.mda_tolerance` / `mda_max_iter`, defaults unchanged,
+> with the test §2.1 asked for.
 
 **1.2 §2.2's gate is half-failed.** #158 (kerosene selectivity) is merged. **#157 is
 still open** against `main`. Its content is present on this branch line and has since
@@ -964,6 +977,69 @@ the loop's stopping rule, and the symptom — a run that reports non-convergence
 converged — is indistinguishable from a real failure unless you instrument the
 discipline. §5.4.1 was a program that solved and was wrong; §8.5 was a price that had no
 single value; this is a loop that had arrived and was told it had not.
+
+### 8.8 Measurement 4.5.2 — price regimes across the obligation
+
+**This measurement did not exist until 2026-09-23, and the status table said it did.**
+The row read "Measurement 4.5.2 (coupled convergence) — Done — §8.3". §8.3 measures
+whether the coupled fixed point is reached: a real finding, and not what §4.5.2 asks
+for. What it asks for is a multiplier on the obligation swept 0.5 → 2 at the
+inventory's ramp-up, recording the compliance price, the unmet volume, where the
+ramp-up bites, the delivered price and the **traffic** — so every point is a full
+two-region MDA. `price_regimes.py`, figure `figures/price_regimes.png`.
+
+| multiplier | 2050 obligation | compliance price | bought out | delivered 2050 | RPK 2050 | eligible share 2050 |
+|---|---|---|---|---|---|---|
+| ×0.50 | 35 % | 0.00778 | 0 | 0.016797 | 2.0172e13 | 35.0 % |
+| ×0.75 | 52.5 % | 0.02710 | 0 | 0.018537 | 1.9969e13 | 52.5 % |
+| **×1.00** | **70 %** | **0.04789** | **0** | **0.021839** | **1.9588e13** | **70.0 %** |
+| ×1.25 | 87.5 % | 0.07700 | 0 | 0.027277 | 1.8987e13 | 87.5 % |
+| ×1.50 | 100 % (clipped) | 0.10417 | 0 | 0.032832 | 1.8409e13 | 100 % |
+| ×1.75 | 100 % (clipped) | **0.08828** | 0 | 0.032832 | 1.8409e13 | 100 % |
+| ×2.00 | 100 % (clipped) | — | — | did not converge (residual 6.99e-8 vs 1e-8) | | |
+
+**The buy-out never engages.** `unmet` stays at solver noise — below 1e-9 % of demand —
+at every point. At the inventory's ramp-up the obligation is reachable across the whole
+range the brief asks for, right up to 100 % eligible fuel in 2050. So **the brief's
+third question — how do prices behave when the obligation becomes unreachable? — is
+not answered by this sweep.** It is answered by the ramp-up sweep instead (§5.6,
+`rampup_regimes`), where at a 15 %/yr growth limit the buy-out does engage, exactly
+once, at the 2035 step. Which instrument creates the shortfall matters: tightening the
+*obligation* does not, because perfect foresight builds ahead of it; tightening the
+*growth limit* does.
+
+The first version of this figure drew the unmet volume anyway, on a 1e-9 axis, and
+produced a confident-looking V shape out of rounding error. Replaced with how the
+obligation is actually met, which is entirely by volume.
+
+**The compliance price rises, and then falls.** 0.0078 → 0.104 up to ×1.5, then back to
+0.0883 at ×1.75. Both of those have a 100 % obligation in 2050, so they differ only in
+the years before it: ×1.75 requires 73.5 % in 2045 against ×1.5's 63 %. The market
+therefore arrives at 2049 with a larger base, and the final step to 100 % is a smaller
+one to climb. **A stricter obligation earlier makes the last step cheaper.**
+
+That is the same mechanism as the crop-exclusion reversal (§10.1) and the sub-mandate
+result (§10.2), now seen a third time and from a third direction. It is the
+characteristic behaviour of this model: with a growth limit and perfect foresight, what
+a policy costs at its peak depends on what was built before it, not on how high it
+reaches.
+
+**Above ×1.43 the 2050 obligation clips at 100 %.** The base is 70 %, so every 2050
+quantity — delivered price, traffic, share — stops moving beyond that point, and the
+information is in the earlier years. Worth knowing before reading the right-hand panel.
+
+**Through to traffic:** the delivered price runs from −23 % to +50 % against the
+obligation as written, and traffic from +3 % to −6 %. The ratio is the ~1/8 transmission
+of §8.4, again.
+
+**×2 does not converge** (6.99e-8 against a tolerance of 1e-8). Unlike §8.7 this has not
+been diagnosed; it is recorded as the brief asks (*convergence oui ou non*) and left.
+
+**One defect found while building it.** Scaling the obligation with `"%g"` produced
+`[0, 3.5, 10.5, 35, ...]` — a mixed int/float list. GEMSEO infers the element type from
+the first entry, calls the series integer-valued and rejects 3.5 at grammar validation.
+The scenario data type is a trap for any script that rewrites a series: always emit a
+decimal point.
 
 ---
 

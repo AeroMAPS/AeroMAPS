@@ -130,6 +130,58 @@ def test_the_gemseo_default_iteration_budget_is_the_one_being_guarded_against(
     assert SINGLE_REGION_MAX_ITER > 20
 
 
+@pytest.mark.parametrize(
+    ("mode", "attribute"),
+    [("unified_mda", "mda_chain"), ("separate_processes", "_top_level_mda_chain")],
+)
+def test_the_mda_settings_can_be_overridden_from_the_scenario(tutorial_dir, mode, attribute):
+    """``regionalisation.mda_tolerance`` and ``mda_max_iter`` reach the chain.
+
+    The other half of the step-1 brief's section 2.1, which asked for these two to be
+    made *configurable* as well as correctly defaulted. Aligning the defaults landed in
+    ``a27bd252``; until this they were still literals at the two construction sites and
+    could not be set from a scenario at all.
+
+    **Why it is worth having rather than just tidy.** A convergence tolerance is only
+    meaningful against the precision of the disciplines underneath it. The fuel-market
+    mode couples a conic solver into the loop, and that solver returns its duals to
+    about 3e-9 of demand on a stiff saturation -- refusing the problem outright if asked
+    for better. Held to the 1e-10 default the loop reports non-convergence having
+    converged, with a symptom indistinguishable from a modelling failure.
+
+    **It must be passed at construction.** Assigning ``chain.tolerance`` afterwards does
+    not take -- the value the solver reads is the one in ``chain.settings`` -- and the
+    failure is silent, which is what made the first attempt at that diagnosis return a
+    confident false negative. Asserting on ``settings`` is what pins it.
+    """
+    import yaml
+
+    source = tutorial_dir / CONFIGS[mode]
+    config = yaml.safe_load(source.read_text())
+    config["regionalisation"]["mda_tolerance"] = 1e-7
+    config["regionalisation"]["mda_max_iter"] = 42
+    target = tutorial_dir / f"_override_{mode}.yaml"
+    target.write_text(yaml.safe_dump(config))
+
+    process = create_multi_regional_process(
+        configuration_file=str(target), disable_execution_statistics=True
+    )
+    chain = getattr(process, attribute)
+    assert chain.settings.tolerance == 1e-7
+    assert chain.settings.max_mda_iter == 42
+
+
+def test_the_overridable_settings_still_default_to_the_single_region_values():
+    """Nothing that ran before the keys existed runs differently now."""
+    import inspect
+
+    from aeromaps.core.multi_regional_process import MultiRegionalProcess
+
+    source = inspect.getsource(MultiRegionalProcess.__init__)
+    assert 'get("mda_tolerance", 1e-10)' in source
+    assert 'get("mda_max_iter", 200)' in source
+
+
 # --------------------------------------------------------------------------------
 # Duplicated output columns on a repeated compute()
 # --------------------------------------------------------------------------------
