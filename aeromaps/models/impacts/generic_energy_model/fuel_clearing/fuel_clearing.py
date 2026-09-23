@@ -79,6 +79,12 @@ DEFAULT_SETTINGS = {
     "rampup_form": "relative",
     "buyout_price": 1.0e3,
     "capacity": np.inf,
+    # A HARD ceiling on production, as against `capacity`, which only sets the scale of
+    # the soft saturation cost. `inf` everywhere leaves the constraint family out of the
+    # program entirely, so the default costs nothing. The two are alternatives: a hard
+    # cap with `saturation_intensity = 0` is the staircase supply curve, a soft
+    # saturation with no cap is the bent one. See `kernel.capacity_limit`.
+    "capacity_limit": np.inf,
     "solver_tolerance": 1.0e-9,
     # Anchors the solve on the mix the previous coupling iteration produced, which is
     # what makes the price a continuous function of the loop's state instead of an
@@ -100,7 +106,7 @@ DEFAULT_SETTINGS = {
 # every pathway, which is wrong for the residual -- see `_pathway_setting`. The ramp-up
 # keys are not here because the kernel applies the growth limit to eligible rows only,
 # so a global value is already inert on the residual.
-_SCARCITY_SETTINGS = frozenset({"capacity", "saturation_intensity"})
+_SCARCITY_SETTINGS = frozenset({"capacity", "capacity_limit", "saturation_intensity"})
 
 
 class FuelClearingConfigurationError(ValueError):
@@ -399,6 +405,7 @@ class FuelClearing(AeroMAPSModel):
         cost = np.zeros(shape)
         gross = np.zeros(shape)
         capacity = np.full(shape, np.inf)
+        capacity_limit = np.full(shape, np.inf)
         mandate_share = np.zeros((len(regions), years))
         buyout = np.zeros((len(regions), years))
         sat_gamma = np.zeros((len(regions), len(pathways)))
@@ -436,6 +443,9 @@ class FuelClearing(AeroMAPSModel):
                     self._prospective(input_data[f"{region}:{pathway}_mean_mfsp"]), nan=0.0
                 )
                 capacity[r, p] = float(self._pathway_setting("capacity", pathway, np.inf))
+                capacity_limit[r, p] = float(
+                    self._pathway_setting("capacity_limit", pathway, np.inf)
+                )
                 sat_gamma[r, p] = float(self._pathway_setting("saturation_intensity", pathway, 0.0))
                 rampup_limit[r, p] = float(self._pathway_setting("rampup_limit", pathway, np.inf))
                 rampup_seed[r, p] = (
@@ -458,6 +468,10 @@ class FuelClearing(AeroMAPSModel):
                 mandate_share=mandate_share,
                 buyout_price=buyout,
                 capacity=capacity,
+                # None, not an array of infinities: it keeps the program the caller
+                # without a cap solves bit-identical to the one solved before the hard
+                # ceiling existed.
+                capacity_limit=None if np.all(np.isinf(capacity_limit)) else capacity_limit,
                 sat_gamma=sat_gamma,
                 sat_n=float(self.settings["saturation_stiffness"]),
                 rampup_limit=rampup_limit,
@@ -511,6 +525,10 @@ class FuelClearing(AeroMAPSModel):
                 "marginal": self._anchor_price.tolist(),
                 "energy_price": outputs.energy_price.tolist(),
                 "compliance_price": outputs.compliance_price.tolist(),
+                "capacity_price": outputs.capacity_price.tolist(),
+                "volume": outputs.volume.tolist(),
+                "average_cost": outputs.average_cost.tolist(),
+                "marginal_price": outputs.marginal_price.tolist(),
                 "demand": inputs.demand.tolist(),
             }
         )

@@ -1,0 +1,260 @@
+### STEP-1 FUEL-CLEARING BENCH -- five drop-in pathways ###
+#
+# Why a fifth file. The two-pathway bench (energy_carriers_step1.yaml) has one
+# sustainable pathway, so the market's allocation decision is trivial: the obligation
+# names the only fuel that can meet it. Nothing there distinguishes a supply curve that
+# BENDS (soft saturation) from one that JUMPS (a hard capacity ceiling), because a
+# one-step staircase has no steps to jump between.
+#
+# Five pathways in merit order give four steps and a real allocation problem:
+#
+#   fossil_kerosene  ~0.012 EUR/MJ   residual, uncapped
+#   hefa_fog          0.02317        waste oils: cheapest, and genuinely the scarcest
+#   ft_msw            0.0322         municipal waste gasification
+#   atj               0.0394         alcohol-to-jet
+#   electrofuel       0.0996         PtL: dearest, and the only one not feedstock-bound
+#
+# Every block below is lifted VERBATIM from
+# aeromaps/resources/data/default_energy_carriers/energy_carriers_data.yaml -- costs,
+# emission factors, resource consumptions, selectivities -- so the mix this bench
+# produces is comparable with a standard AeroMAPS run. The only edits are the mandate
+# blocks, and each says what it changed and why.
+#
+# No hydrogen and no electric pathway: step 1's market lives on
+# `energy_consumption_dropin_fuel` alone (see INVENTORY.md section 4).
+
+hefa_fog:
+  # Metadata
+  name: "hefa_fog"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "biomass"
+  default: False
+  # Until level two used to separate inputs. Then concatenated in variable name.
+  inputs:
+    # Policy
+    mandate:
+      mandate_type: "share"
+      # The WHOLE regional obligation, ReFuelEU Aviation's staircase, parked on one
+      # pathway. FuelClearing sums `{p}_mandate_share` over every eligible pathway into
+      # one obligation per region, so where the number is written makes no difference to
+      # the answer -- and writing it once keeps this bench's obligation identical to the
+      # two-pathway one it is meant to be comparable with. Which pathway actually SUPPLIES
+      # it is what the market decides; that is the whole point of the five-pathway case.
+      mandate_share: !AeroMapsCustomDataType
+        years: [ 2020, 2025, 2030, 2035, 2040, 2045, 2050 ]
+        values: [ 0.0, 2.0, 6.0, 20.0, 34.0, 42.0, 70.0 ]
+        method: previous
+    # Technical:
+    technical:
+      resource_names: [ "hefa_fog_biomass" ]
+      resource_specific_consumption:
+        hefa_fog_biomass: 1.14
+      kerosene_selectivity: 0.15
+      lhv: 44
+    # Environmental:
+    environmental:
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [20.7]
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0
+        soot: 6.0e-06
+        particles_number: 8.0e+13
+    # Economics:
+    economics:
+      mean_mfsp_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [0.02317] # Converted 0.815488 €/L to €/MJ with 0.8 density and 44 LHV
+        method: linear
+  outputs:
+
+ft_msw:
+  # Metadata
+  name: "ft_msw"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "biomass"
+  default: False
+  # Until level two used to separate inputs. Then concatenated in variable name.
+  inputs:
+    # Policy
+    mandate:
+      mandate_type: "share"
+      # Eligible, but carrying none of the obligation itself: `mandate_type: share` is
+      # what makes a pathway count towards the regional total, and the total is summed.
+      # A per-pathway share here would be a per-pathway sub-target, which is a different
+      # policy and needs the sub-mandate machinery.
+      mandate_share: !AeroMapsCustomDataType
+        years: [ 2020, 2050 ]
+        values: [ 0.0, 0.0 ]
+        method: linear
+    # Technical:
+    technical:
+      resource_names: [ "ft_msw_biomass" ]
+      resource_specific_consumption:
+        ft_msw_biomass: 2.17
+      kerosene_selectivity: 0.15
+      lhv: 44
+    # Environmental:
+    environmental:
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [27.6]
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0
+        soot: 6.0e-06
+        particles_number: 8.0e+13
+      # Economics:
+    economics:
+      mean_mfsp_without_resource: !AeroMapsCustomDataType 
+        years: []
+        values: [0.0322] # Converted 1.142423 €/L to €/MJ with 0.8 density and 44 LHV
+        method: linear
+  outputs:
+
+atj:
+  # Metadata
+  name: "atj"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "biomass"
+  default: False
+  # Until level two used to separate inputs. Then concatenated in variable name.
+  inputs:
+    # Policy
+    mandate:
+      mandate_type: "share"
+      # Eligible, but carrying none of the obligation itself: `mandate_type: share` is
+      # what makes a pathway count towards the regional total, and the total is summed.
+      # A per-pathway share here would be a per-pathway sub-target, which is a different
+      # policy and needs the sub-mandate machinery.
+      mandate_share: !AeroMapsCustomDataType
+        years: [ 2020, 2050 ]
+        values: [ 0.0, 0.0 ]
+        method: linear
+    # Technical:
+    technical:
+      resource_names: [ "atj_biomass" ]
+      resource_specific_consumption:
+        atj_biomass: 2.08
+      kerosene_selectivity: 0.15
+      lhv: 44
+    # Environmental:
+    environmental:
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [52.2]
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0
+        soot: 6.0e-06
+        particles_number: 8.0e+13
+      # Economics:
+    economics:
+      mean_mfsp_without_resource: !AeroMapsCustomDataType 
+        years: []
+        values: [0.0394] # Converted 1.38668 €/L to €/MJ with 0.8 density and 44 LHV
+        method: linear
+  outputs:
+
+electrofuel:
+  # Metadata
+  name: "electrofuel"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "electricity"
+  default: False
+  inputs:
+    mandate:
+      mandate_type: "share"
+      # Eligible, but carrying none of the obligation itself: `mandate_type: share` is
+      # what makes a pathway count towards the regional total, and the total is summed.
+      # A per-pathway share here would be a per-pathway sub-target, which is a different
+      # policy and needs the sub-mandate machinery.
+      mandate_share: !AeroMapsCustomDataType
+        years: [ 2020, 2050 ]
+        values: [ 0.0, 0.0 ]
+        method: linear
+    # Technical:
+    technical:
+      kerosene_selectivity: 0.5 # TODO chose
+      resource_names: [ "grid_electricity" ]
+      resource_specific_consumption:
+        # Add a list of resources and their consumption per unit of fuel.
+        grid_electricity: 2.32
+      lhv: 44
+    # Environmental:
+    environmental:
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [0.0]
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0
+        soot: 6.0e-06
+        particles_number: 8.0e+13
+    # Economics:
+    economics:
+      mean_mfsp_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [0.0996] # Converted 3.504428 €/L to €/MJ with 0.8 density and 44 LHV
+        method: linear
+  outputs:
+
+fossil_kerosene:
+  # Metadata
+  name: "fossil_kerosene"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "fossil"
+  default: True
+  inputs:
+    # Technical:
+    technical:
+      lhv: 44
+      plant_load_factor: 0.95
+      plant_lifespan: 25
+    # Environmental:
+    environmental:
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: [ 2000, 2050 ]
+        values: [ 88.7, 88.7 ]
+        method: linear
+      emission_index:
+        h2o: 1.231 # 
+        nox: 0.01514
+        sulfur: 0.0012
+        soot: 3.0e-05
+        particles_number: 2.0e+14
+    # Economics:
+    economics:
+      mean_mfsp_without_resource: !AeroMapsCustomDataType
+        years: [2000, 2001, 2002, 2003, 2004, 2005,
+                2006, 2007, 2008, 2009, 2010, 2011,
+                2012, 2013, 2014, 2015, 2016, 2017,
+                2018, 2019, 2020, 2021, 2022, 2023,
+                2024, 2050]
+        values: [0.008364654, 0.006916631, 0.006340188, 0.007424531, 0.010158403,
+        0.014797798, 0.016189765, 0.017474982, 0.023710593, 0.01277897,
+        0.016366254, 0.022487714, 0.022192747, 0.020655099, 0.018819777,
+        0.010615193, 0.008737464, 0.01085308, 0.013921201, 0.012684225,
+        0.007299796, 0.01202598, 0.019909217, 0.014922935, 0.012596014, 0.012]
+        method: linear
+  outputs:
+

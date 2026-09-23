@@ -1,0 +1,39 @@
+# Step-1 fuel-clearing bench, WITH the market, over FIVE drop-in pathways.
+#
+# Identical to regionalisation_market.yaml but for the region config files, which point
+# at energy_carriers_five.yaml. Everything else -- the two regions, the aggregation, the
+# `fuel_market: true` switch, the global model list -- is the same, so a difference
+# between the two benches is a difference in the pathway set and nothing else.
+#
+# What it exists for: with one sustainable pathway the market has no allocation to make,
+# so the SHAPE of its supply curve cannot show. Five pathways in merit order give four
+# steps, and the two ways of limiting a pathway -- bending its cost (`saturation_intensity`
+# with `capacity`) or capping its output outright (`capacity_limit`) -- then produce
+# visibly different mixes, prices and traffic. `fuel_clearing_step1/five_pathways.py`
+# is the measurement.
+regionalisation:
+  execution_mode: "unified_mda"
+  global_namespace: "overall"
+
+  fuel_market: true
+
+  global_models:
+    standards:
+      - models_fuel_market
+
+  regions:
+    region_A:
+      config_file: "region_A/config_five.yaml"
+    region_B:
+      config_file: "region_B/config_five.yaml"
+
+  aggregation:
+    sum:
+      - co2_emissions
+      - rpk
+      - ask
+      - energy_consumption
+      - energy_consumption_dropin_fuel
+    weighted_average:
+      - variable: airfare_per_rpk
+        weight_by: rpk

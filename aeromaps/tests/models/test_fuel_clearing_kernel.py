@@ -659,7 +659,15 @@ def _slackness_residuals(inputs, outputs):
     mandate_slack = np.maximum((supplied - inputs.mandate_share * inputs.demand) / scale, 0.0)
     mandate = float(np.max(outputs.compliance_price * mandate_slack) / cost_scale)
 
-    return rampup, mandate
+    if inputs.capacity_limit is None:
+        capacity = 0.0
+    else:
+        capped = np.isfinite(inputs.capacity_limit)
+        ceiling = np.where(capped, inputs.capacity_limit, 0.0)
+        capacity_slack = np.where(capped, np.maximum((ceiling - outputs.volume) / scale, 0.0), 0.0)
+        capacity = float(np.max(outputs.capacity_price * capacity_slack) / cost_scale)
+
+    return rampup, mandate, capacity
 
 
 @pytest.mark.parametrize(
@@ -683,13 +691,14 @@ def test_complementary_slackness_holds_in_every_regime(label, overrides):
     """
     inputs = _multi_year_case(**overrides)
     outputs = clear_market(inputs)
-    rampup, mandate = _slackness_residuals(inputs, outputs)
+    rampup, mandate, capacity = _slackness_residuals(inputs, outputs)
 
     # Clarabel runs at 1e-9 on a scaled problem, so a residual of order 1e-8 is the
     # solver's own accuracy rather than a modelling defect. The phantom compliance
     # price this replaces scored 0.46 on the same measure.
     assert rampup < 1e-6, f"{label}: ramp-up price on a slack constraint ({rampup:.2e})"
     assert mandate < 1e-6, f"{label}: compliance price on a slack mandate ({mandate:.2e})"
+    assert capacity < 1e-6, f"{label}: rent on a cap that is not binding ({capacity:.2e})"
 
 
 def test_capacity_is_inert_when_saturation_is_off():
@@ -1172,6 +1181,11 @@ def _violation(inputs: ClearingInputs, volume, unmet, submandate_unmet=None) -> 
 
     # The growth limit applies to rows sustainable in at least one region, as the kernel
     # builds it -- not to rows eligible in this one.
+    if inputs.capacity_limit is not None:
+        capped = np.isfinite(inputs.capacity_limit)
+        over = np.where(capped, volume - np.where(capped, inputs.capacity_limit, 0.0), 0.0)
+        worst = max(worst, float(np.max(np.maximum(over, 0.0))) / scale)
+
     rows = inputs.is_sustainable.any(axis=0)
     if inputs.rampup_form == "relative" and rows.any():
         previous = np.concatenate([inputs.q_init[:, :, None], volume[:, :, :-1]], axis=2)
@@ -1345,3 +1359,159 @@ def test_the_independent_objective_agrees_with_the_solver():
     reported = scaled * outputs.diagnostics["energy_scale"] * outputs.diagnostics["cost_scale"]
     independent = _objective(inputs, outputs.volume, outputs.unmet, outputs.submandate_unmet)
     assert independent == pytest.approx(reported, rel=1e-6)
+
+
+# --- the hard capacity ceiling --------------------------------------------------------
+#
+# The alternative to soft saturation: a staircase supply curve instead of a bent one.
+# The bench costs are the real ones, so the merit order these tests assert is the merit
+# order the five-pathway measurement runs on.
+
+STAIRCASE_COSTS = (0.012, 0.02317, 0.0322, 0.0394, 0.0996)
+STAIRCASE_CAPS = (np.inf, 0.15, 0.25, 0.40, np.inf)
+
+
+def _staircase_case(years: int = 12, caps=STAIRCASE_CAPS, **overrides) -> ClearingInputs:
+    """Five pathways, hard caps, no saturation: a literal supply staircase.
+
+    Pathway 0 is fossil and uncapped -- it is the residual, and the buy-out releases the
+    *obligation*, never the energy balance, so something has to be able to close it.
+    ``caps`` are fractions of demand; ``inf`` leaves a pathway uncapped.
+    """
+    demand = np.full((1, years), DEMAND)
+    cost = np.stack([np.full(years, c) for c in STAIRCASE_COSTS])[None, :, :]
+    limit = np.stack([np.full(years, np.inf if not np.isfinite(k) else k * DEMAND) for k in caps])[
+        None, :, :
+    ]
+    defaults = dict(
+        demand=demand,
+        cost=cost,
+        is_sustainable=np.array([False, True, True, True, True]),
+        mandate_share=np.linspace(0.0, 0.7, years)[None, :],
+        buyout_price=np.full((1, years), 0.30),
+        capacity=np.full((1, 5, years), np.inf),
+        capacity_limit=limit,
+        sat_gamma=np.zeros((1, 5)),
+        sat_n=4.0,
+        # Loose on purpose: the cap is meant to be the only scarcity in the baseline, so
+        # a ramp-up price mixed into the rent would make the identity below untestable.
+        rampup_limit=np.full((1, 5), 1.0e3),
+        rampup_seed=np.full((1, 5), DEMAND),
+        q_init=np.array([[DEMAND, 0.0, 0.0, 0.0, 0.0]]),
+        discount_rate=0.0,
+        pricing_weight=1.0,
+    )
+    defaults.update(overrides)
+    return ClearingInputs(**defaults)
+
+
+def test_a_hard_cap_is_never_exceeded():
+    inputs = _staircase_case()
+    outputs = clear_market(inputs)
+    over = outputs.volume - np.where(
+        np.isfinite(inputs.capacity_limit), inputs.capacity_limit, np.inf
+    )
+    assert float(np.max(over)) <= 1e-6 * DEMAND, f"cap exceeded by {np.max(over):.4g} MJ"
+
+
+def test_a_binding_cap_puts_its_whole_rent_in_the_capacity_dual():
+    """``marginal price = marginal cost + capacity rent + ramp-up rent``, per unit.
+
+    The identity the capacity dual has to satisfy to be a price at all, and the reason
+    ``capacity_price`` is deliberately *not* added into ``marginal_price``: what the
+    buyer pays is one thing, and how that payment splits between the producer's cost and
+    the producer's rent is another. With ``gamma = 0`` the marginal cost is just ``c``,
+    so the check is exact rather than approximate.
+    """
+    inputs = _staircase_case().validate()
+    outputs = clear_market(inputs)
+
+    produced = outputs.volume > 1e-6 * DEMAND
+    residual = np.zeros_like(outputs.volume, dtype=bool)
+    residual[:, inputs.residual_pathway, :] = True
+    # The residual absorbs the closure correction, so its volume is not a decision the
+    # KKT system made; every other producing entry is.
+    check = produced & ~residual
+
+    gap = outputs.marginal_price - inputs.cost - outputs.capacity_price - outputs.rampup_price
+    worst = float(np.max(np.abs(gap[check])))
+    assert worst < 1e-7, f"stationarity off by {worst:.3e} per MJ on a producing pathway"
+
+    # And it is not a vacuous check: some cap really is binding and really is earning.
+    assert float(np.max(outputs.capacity_price)) > 1e-3, "no cap bound; the case is not testing one"
+
+
+def test_the_marginal_pathway_sets_the_price_and_the_cheap_ones_collect_the_rent():
+    """Uniform pricing: everyone eligible is paid the same, nobody is paid their cost.
+
+    This is the property that makes the per-pathway price vector redundant at ``w = 1``
+    -- it takes one value per eligibility class, not one per pathway -- and it is what
+    the rent is.
+    """
+    inputs = _staircase_case().validate()
+    outputs = clear_market(inputs)
+    late = -1  # the obligation is at its highest, so several caps are binding
+
+    eligible = inputs.is_sustainable[0]
+    prices = outputs.marginal_price[0, eligible, late]
+    assert np.ptp(prices) < 1e-9, f"eligible pathways priced apart: {prices}"
+
+    # The rent is then cost-ordered: cheaper pathway, bigger rent, and the marginal one
+    # earns nothing.
+    volumes = outputs.volume[0, :, late]
+    rents = outputs.capacity_price[0, :, late]
+    producing = np.flatnonzero(eligible & (volumes > 1e-6 * DEMAND))
+    assert producing.size >= 2, "need at least two eligible producers for an ordering"
+    assert np.all(np.diff(rents[producing]) <= 1e-9), f"rents not cost-ordered: {rents[producing]}"
+
+
+def test_an_absent_ceiling_is_the_program_solved_before_it_existed():
+    """``None`` and an all-infinite array must agree, and both with no argument at all.
+
+    The guard that keeps this addition from changing any existing scenario: the
+    constraint family is built only over finite entries, so an uncapped run has to
+    produce the identical program, not merely a similar answer.
+    """
+    plain = clear_market(_staircase_case(caps=(np.inf,) * 5, capacity_limit=None))
+    infinite = clear_market(_staircase_case(caps=(np.inf,) * 5))
+
+    assert np.allclose(plain.volume, infinite.volume, rtol=0, atol=1e-6 * DEMAND)
+    assert np.allclose(plain.marginal_price, infinite.marginal_price, rtol=0, atol=1e-9)
+    assert float(np.max(np.abs(plain.capacity_price))) == 0.0
+    assert float(np.max(np.abs(infinite.capacity_price))) == 0.0
+
+
+def test_a_ceiling_that_cannot_meet_demand_is_refused_by_name():
+    """Capping every pathway makes the balance infeasible, which the solver would report
+    in its own vocabulary. Named here instead, with the year that ran out of plant."""
+    with pytest.raises(ValueError, match="capacity_limit cannot meet demand"):
+        _staircase_case(caps=(0.30, 0.15, 0.20, 0.20, 0.10)).validate()
+
+
+def test_a_ceiling_must_be_a_volume():
+    with pytest.raises(ValueError, match="capacity_limit must be non-negative"):
+        _staircase_case(capacity_limit=-np.ones((1, 5, 12))).validate()
+    with pytest.raises(ValueError, match="capacity_limit contains NaN"):
+        limit = np.full((1, 5, 12), np.inf)
+        limit[0, 1, 3] = np.nan
+        _staircase_case(capacity_limit=limit).validate()
+
+
+def test_the_staircase_satisfies_complementary_slackness():
+    inputs = _staircase_case()
+    outputs = clear_market(inputs)
+    rampup, mandate, capacity = _slackness_residuals(inputs, outputs)
+    assert rampup < 1e-6 and mandate < 1e-6 and capacity < 1e-6
+
+
+def test_the_staircase_point_beats_every_feasible_neighbour():
+    """The objective-scoring check, on the one case where the supply curve is vertical.
+
+    Run separately from the parametrised suite because this is the case where the
+    *price* is not pinned by the program -- so it is the one where "the solver said
+    optimal" is worth least, and an independent score worth most.
+    """
+    inputs = _staircase_case()
+    outputs = clear_market(inputs)
+    gain, where = _cheapest_neighbour(inputs, outputs)
+    assert gain < 1e-6, f"a feasible neighbour is {gain:.3%} cheaper: {where}"

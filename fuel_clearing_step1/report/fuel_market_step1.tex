@@ -403,6 +403,60 @@ price, never a substitute for it.
 \end{keybox}
 
 \begin{keybox}
+\textbf{``Why average across pathways at all? Should there not be \emph{one} market price
+--- or one per obligation, one for bio and one for e-SAF?''}
+
+\medskip
+\textbf{At $w=1$ there already is, and the weighted average is an identity rather than a
+modelling choice.} Under uniform pricing every eligible producer is paid the same, so
+\eqref{eq:marginal} takes one value per \emph{eligibility class}, not one per pathway.
+Measured on a five-pathway case with a 70\,\% obligation and a 25\,\% e-SAF sub-target:
+
+\medskip
+\begin{center}\small
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+ & $w = 0$ & $w = 0.5$ & $w = 1$ \\
+\midrule
+distinct per-pathway prices & 5 & 5 & \textbf{3} \\
+share-weighted average & 0.041184 & 0.042087 & 0.042990 \\
+$\lambda^{E} + m\lambda^{M} + m_s\lambda^{S}$ & 0.042990 & 0.042990 & \textbf{0.042990} \\
+gap & $-0.001806$ & $-0.000903$ & $\mathbf{8\times10^{-13}}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\medskip
+
+Five pathways, \textbf{three} prices: $0.012$ for fossil, $0.0322$ for ``counts towards the
+broad obligation'', $0.0996$ for ``counts towards both''. One per obligation, plus the
+energy price --- exactly the structure a certificate market has. \var{hefa\_fog} is paid
+$0.0322$ though it cost $0.02317$; the $0.00903$ difference is its rent.
+
+\medskip
+So $\lambda^{E}$, $\lambda^{M}$ and $\lambda^{S}$ \emph{are} the market prices.
+\var{\{p\}\_market\_mfsp} is those three numbers re-expressed per pathway so that
+AeroMAPS's existing per-pathway grammar can carry them, and the weighted average is the
+arithmetic that reassembles them. Writing $\lambda^{E} + \sum_o m_o \lambda^{o}$ directly
+would give the same number and would say more clearly what it is.
+
+\medskip
+\textbf{Below $w = 1$ the average stops being an identity and starts being an assumption},
+and the gap in the table is exactly $w$ times the rent per unit --- at $w=0$,
+$-0.001806 = 0.00903 \times 0.20$, \var{hefa\_fog}'s rent times its share. So $w$ is not
+``average versus marginal'' in the abstract. It is \textbf{the share of scarcity rent the
+airline is charged}, and the weighted average is how that dial is implemented.
+
+\medskip
+\textbf{One gap this exposes.} $\lambda^{S}$ is computed and never published: the
+discipline emits \var{fuel\_market\_energy\_price} and
+\var{fuel\_market\_compliance\_price} and no sub-mandate price, and it does not wire
+\var{submandate\_share} through from the scenario at all --- the sub-mandate lives in the
+kernel and is exercised only in \S\ref{sec:submandate}'s kernel-level case. A price vector
+that is genuinely ``one per obligation per region'' needs the discipline to carry an
+arbitrary number of obligations and publish a dual for each. It carries one.
+\end{keybox}
+
+\begin{keybox}
 \textbf{One thing the airline does \emph{not} pay, and arguably should.} The buy-out
 payment $B\,x$ appears in objective~\eqref{eq:objective} but in no price output. If the
 market releases part of the obligation, that penalty is borne by nobody in the cost
@@ -645,16 +699,93 @@ Given the reference run's shares, with saturation off and the growth limit loose
 market lands on the reference allocation with a residual below $10^{-8}$ of demand --- an
 order of magnitude under solver noise.
 
-\subsection{Perfect foresight builds ahead of the obligation}
+\subsection{The build-ahead is the ramp-up, not foresight --- and not behaviour}
+\label{sec:foresight}
+
 At $g = 15\,\%$/yr against the ReFuelEU steps, region A holds \textbf{more} sustainable
 fuel than it owes in every year between steps: 14.1\,\% in 2034 against a 6\,\%
 obligation, 28.9\,\% in 2039 against 20\,\%. The growth limit cannot take it from 6\,\% to
-20\,\% in the year the step lands, so it starts early. Sustainable fuel is the expensive
-option and discounting penalises early spend, so it overshoots by the \emph{minimum} that
-clears the next step --- which is what a firm reading a published mandate would do.
+20\,\% in the year the step lands, so it starts early, and it overshoots by the
+\emph{minimum} that clears the next step, discounting penalising early spend.
 
-The penalty is needed exactly once, at the 2035 step and only at the tightest growth
-limit. The compliance price is \textbf{zero in every year where the market is ahead}.
+\begin{keybox}
+\textbf{An earlier version of this report called that ``what a firm reading a published
+mandate would do''. It is not, and the claim is withdrawn.}
+
+\medskip
+\textbf{Nothing in the programme rewards buying early.} The obligation
+\eqref{eq:mandate} is written per year. There is no banking, no carry variable, no
+borrowing: a sustainable MJ produced in 2045 has no value whatsoever in 2046. An airline
+inside this model has no reason to buy ahead of its obligation, and a real one would not.
+
+\medskip
+\textbf{Measured.} Sustainable share against the obligation, five-pathway kernel case,
+hard capacities, varying only the growth limit:
+
+\medskip
+\begin{center}\small
+\begin{tabular}{@{}lrrrrrr@{}}
+\toprule
+& \textbf{2039} & \textbf{2040--44} & \textbf{2045--48} & \textbf{2049} & \textbf{2050}
+& \textbf{max over-compliance} \\
+\midrule
+obligation & 0.20 & 0.34 & 0.42 & 0.42 & 0.70 & --- \\
+$g = 1000$ (slack) & 0.200 & 0.340 & 0.420 & 0.420 & 0.700 & \textbf{0.0000} \\
+$g = 0.30$ & 0.060 & 0.138$\to$0.340 & 0.420 & 0.504 & 0.700 & 0.0838 \\
+$g = 0.15$ & 0.060 & 0.129$\to$0.340 & 0.420 & 0.557 & 0.700 & 0.1365 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\medskip
+
+\textbf{With a slack growth limit the build-ahead is exactly zero.} Perfect foresight buys
+the model nothing at all. What produces it is the ramp-up, and the ramp-up produces it
+because it is written on \emph{production}: to produce 70\,\% in 2050 you must have
+produced roughly 50\,\% in 2049. The only way the programme can say ``the plants have to
+exist by then'' is to make the fuel and burn it. Note that the same rows also
+\emph{under}-comply in 2039--41, paying the penalty because they cannot ramp fast enough;
+the constraint pushes in both directions and neither direction is a statement about
+anyone's behaviour.
+
+\medskip
+\textbf{The anticipation is attached to the wrong variable, and so to the wrong agent.}
+The fix is the one \S\ref{sec:next} already wants for calibration: give the programme a
+\textbf{capacity variable} with annuitised capex, constrain capacity \emph{additions}
+rather than production, and require $q \le \mathrm{capacity}$. Build-ahead then becomes
+capacity built ahead --- which a producer facing a credible mandate genuinely does do ---
+and the airline buys its obligation and not one MJ more.
+\end{keybox}
+
+\begin{keybox}
+\textbf{The wider version of the same objection, which this report should have stated in
+\S\ref{sec:limits} and did not.} A single convex programme minimising discounted system
+cost \emph{is} the benevolent planner's problem. Its multipliers are competitive-equilibrium
+prices only under the welfare theorems' conditions --- complete forward markets,
+price-taking, no financing constraints, a common discount rate --- and three of those are
+false here:
+
+\begin{itemize}[leftmargin=*,itemsep=1pt,topsep=2pt]
+  \item there is \textbf{no banking} of compliance, yet the ramp-up lets early abatement
+    substitute for late abatement, which no airline can do bilaterally;
+  \item \textbf{one discount rate} (4\,\%) prices an airline's fuel bill and a producer's
+    plant alike. Real SAF projects are financed at 8--15\,\%, and that gap is a first-order
+    determinant of how much capacity exists;
+  \item the 2050 obligation is assumed \textbf{fully credible} in 2035. Mandate
+    credibility is the binding constraint on SAF investment in practice, and this
+    formulation cannot represent doubt about it at all.
+\end{itemize}
+
+The cheap counterfactual that brackets all three is a \textbf{myopic or rolling-horizon
+solve} --- year by year, or with a $k$-year lookahead --- which is the problem an airline
+with a per-year obligation and no banking actually faces. Perfect foresight is then the
+optimistic bound and myopia the pessimistic one, and a \emph{range} is a far more
+defensible output than either endpoint. It is roughly a day of work on the kernel. It has
+not been done.
+\end{keybox}
+
+\noindent The penalty is needed exactly once, at the 2035 step and only at the tightest
+growth limit. The compliance price is \textbf{zero in every year where the market is
+ahead}.
 
 \subsection{Which parameters move the answer}
 
@@ -957,6 +1088,75 @@ Second, all of this runs on \textbf{plain Gauss--Seidel with no acceleration}. T
 acceleration that was previously thought to help is gone from the coupled grid along with
 the claim.
 
+\begin{keybox}
+\textbf{``Away from a kink the supply curve \emph{does} have a price at the quantity handed
+in. Is it not bizarre to take the price from demand there --- and might the answer not be
+the true crossing of supply and demand?''}
+
+\medskip
+The objection is right and the title of this section is what invites it. Away from a kink
+the price is \emph{not} taken from demand, in the following precise sense.
+
+\medskip
+\textbf{There are two loops, and $\beta$ lives in the wrong one to matter.} The market
+solves, given $(D, p^{0})$, for $q$ and $a$. The traffic loop then maps the price the
+market returns into a new $D$. At a fixed point of the \emph{outer} loop the price the
+market returns \emph{is} the price the demand was formed at, $p = p^{0}$; put that into
+\eqref{eq:inversedemand} and $a/\beta = 0$, so $a = 0$. \textbf{The converged solve is a
+solve of the rigid programme at the converged demand.} Where supply is single-valued the
+reported price is the supply curve's own value, exactly as it should be.
+
+\medskip
+\textbf{Off the fixed point it does a great deal, and that is its job.} On a flat supply
+segment at cost $c^{*}$ the solve picks $a = \beta(p^{0} - c^{*})$: the market anticipates
+that the traffic model is about to move demand, because the price it is about to quote
+differs from the one its demand was formed at, and it moves the quantity by its own
+estimate of that response before quoting. That is a \textbf{Newton step on the outer
+fixed-point equation}. $\beta$ is a \emph{preconditioner}, not an elasticity, and
+$e = e_{0}(\beta-d)/(s+\beta)$ is the statement of exactly that.
+
+\medskip
+\textbf{Measured}, on the five-pathway \var{hard} case of \S\ref{sec:five}, whose clearing
+sits on a flat segment in both regions --- precisely the case the objection is about:
+
+\medskip
+\begin{center}\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+$\eta$ & \textbf{sweeps} & $\lambda^{M}$ region A & \textbf{delivered} &
+  \textbf{spread vs $\eta=0.5$} \\
+\midrule
+0.25 & \multicolumn{4}{l}{\emph{did not converge} --- residual 0.105 after 900} \\
+0.50 & 91 & 0.08725278 & 0.07326695 & --- \\
+1.00 & \textbf{59} & 0.08725278 & 0.07326695 & $5.7\times10^{-11}$ \\
+2.00 & 128 & 0.08725278 & 0.07326695 & $3.1\times10^{-9}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\medskip
+
+A factor of four in $\beta$ moves the answer by $3\times10^{-9}$ --- the MDA tolerance,
+not a modelling difference --- while moving the work by a factor of two and, at
+$\eta = 0.25$, deciding whether there is an answer at all.
+
+\medskip
+\textbf{So the honest description is narrower than the title.} ``Quantity from supply,
+price from demand'' is what happens \textbf{on a vertical segment}, where it is the
+mechanism --- and \S\ref{sec:five} measures a case in which it charges $0.238$\,\EURMJ\
+for a fuel whose dearest producer charges $0.0997$. Everywhere else the same machinery
+runs as an accelerator and the price still comes from supply.
+
+\medskip
+\textbf{It is not free.} Off the fixed point the market has cleared $D + a$ while
+AeroMAPS's energy budget is $D$; \var{\_reconcile} takes the mix from the market and the
+level from the budget, so an intermediate iterate carries a price computed at one quantity
+and volumes scaled to another. They agree at convergence --- $|a|/D$ is $5.6\times10^{-8}$
+at $\eta=0.5$ above --- which means \textbf{the MDA tolerance is doing real work}: stop the
+loop early and the published price and the published volumes answer different questions.
+\var{demand\_adjustment} is published so that this is checkable. No test asserts on it
+today.
+\end{keybox}
+
 \textbf{Practical consequence:} $w=0$ was already solid. $w>0$ is now a scenario dial
 rather than a research problem, at the cost of one parameter whose value affects the
 route and not the destination.
@@ -1095,6 +1295,233 @@ evidence for a mechanism the report already demonstrates twice elsewhere
 (\S\ref{sec:policy}).
 \end{keybox}
 
+\section{Five pathways: a curve that bends against one that jumps}
+\label{sec:five}
+
+\emph{This section answers a question the rest of the report could not even pose.} Step 1
+limits a pathway in one of two ways. Either its cost \textbf{bends} --- $\gamma$ and $n$
+make marginal cost rise as output approaches $K$ --- or its output is \textbf{capped}, and
+cost stays flat right up to the wall. Decision 5 chose the first because a hard cap gives
+a step-function dual and a step-function price whipsawed the coupling loop. \S\ref{sec:fix}
+removed that failure at the source, so the cap is available again.
+
+The two-pathway bench cannot distinguish them: with one sustainable pathway the obligation
+names the only fuel that can meet it, so there is no allocation to make and a staircase
+with one step has no step to step between. \var{scenario/energy\_carriers\_five.yaml} adds
+the real merit order, lifted verbatim from the default carrier data:
+
+\begin{table}[h]
+\centering\small
+\begin{tabular}{@{}llp{7.4cm}@{}}
+\toprule
+\textbf{Pathway} & \textbf{Net cost 2050, \EURMJ} & \textbf{Capacity used here} \\
+\midrule
+\var{fossil\_kerosene} & 0.01244 & residual, uncapped \\
+\var{hefa\_fog} & 0.02327 & 2.0 PJ/yr \\
+\var{ft\_msw} & 0.03234 & 2.8 PJ/yr \\
+\var{atj} & 0.03966 & 2.8 PJ/yr \\
+\var{electrofuel} & 0.09970 & \textbf{uncapped} --- PtL is bound by electricity and
+  capital, not by a feedstock \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent Both configurations use the same $K$, the same loose ramp-up, the same penalty,
+the same demand anchor and the same MDA tolerance. Only what $K$ \emph{means} differs. The
+hard ceiling did not exist before this measurement; it is new in the kernel as
+\var{capacity\_limit}, with dual \var{capacity\_price}, and carries seven tests including
+the stationarity identity $\mathrm{MC}_{p} = c_{p} + \lambda^{K}_{p} + \lambda^{R}_{p}$ and
+an independent objective score.
+
+\subsection{What it does, 2050, $w=1$}
+
+\begin{table}[h]
+\centering\small
+\begin{tabular}{@{}lrrrrrrr@{}}
+\toprule
+\textbf{Region A} & $\lambda^{E}$ & $\lambda^{M}$ & \textbf{delivered} &
+  \textbf{airfare} & \textbf{RPK} & \textbf{CO$_2$} & \textbf{eligible} \\
+\midrule
+nothing scarce & 0.01244 & 0.01083 & 0.01982 & --- & --- & --- & 9.84 PJ \\
+bends, $n=4$ & 0.01244 & 0.06526 & 0.05787 & $+25.5\,\%$ & $-18.5\,\%$ & $-0.3\,\%$ & 8.29 PJ \\
+bends, $n=16$ & 0.01244 & 0.08222 & 0.06974 & $+33.5\,\%$ & $-22.9\,\%$ & $-4.6\,\%$ & 7.92 PJ \\
+\textbf{jumps} & 0.01244 & \textbf{0.08725} & \textbf{0.07327} & $\mathbf{+35.9\,\%}$ &
+  $\mathbf{-24.1\,\%}$ & $-6.4\,\%$ & 7.82 PJ \\
+\midrule
+\textbf{Region B} & & & & & & & \\
+\midrule
+nothing scarce & 0.01244 & 0.01083 & 0.01982 & --- & --- & --- & 14.33 PJ \\
+bends, $n=4$ & 0.01244 & \textbf{0.08725} & \textbf{0.07328} & $+35.9\,\%$ & $-24.1\,\%$ & $-10.7\,\%$ & \textbf{11.385 PJ} \\
+bends, $n=16$ & 0.01244 & \textbf{0.08725} & \textbf{0.07328} & $+35.9\,\%$ & $-24.1\,\%$ & $-12.1\,\%$ & \textbf{11.385 PJ} \\
+jumps & 0.01244 & \textbf{0.08725} & \textbf{0.07328} & $+35.9\,\%$ & $-24.1\,\%$ & $-12.5\,\%$ & \textbf{11.385 PJ} \\
+\bottomrule
+\end{tabular}
+\caption{The same capacities, enforced two ways, through the full two-region MDA.
+Percentages are against the same run with nothing scarce.}
+\label{tab:five}
+\end{table}
+
+\begin{keybox}
+\textbf{Read the two halves of table~\ref{tab:five} against each other.} In region B the
+three configurations give the \emph{same} $\lambda^{M}$ to five decimals, the same
+delivered price, the same airfare, the same traffic and the same eligible volume ---
+11.385 PJ in all three. Only the mix differs, and with it the CO$_2$. In region A they
+differ by a quarter.
+
+\medskip
+The difference between the regions is \textbf{which pathway is on the margin}. Region B's
+obligation is large enough to reach \var{electrofuel}, which is uncapped and unsaturated,
+so it sets the price at its own cost in every configuration --- and how the pathways
+\emph{below} it are limited cannot touch a price it alone determines. Region A's
+obligation stops inside the capped set, so the marginal unit is a limited one and the
+shape of its limit \emph{is} the price.
+
+\medskip
+\textbf{The shape of a supply limit matters only where a limited pathway is marginal.}
+Where an unlimited backstop is marginal, $\gamma$ and $n$ change who earns the rent and
+nothing else --- not the price, not the airfare, not the traffic.
+
+\medskip
+And where it does matter, it matters in one direction: \textbf{soft saturation understates
+scarcity}. That understatement is the whole gap between a 65\,\% rise in the compliance
+price and an 87\,\% one, and between 18.5\,\% and 24.1\,\% of traffic. $n = 16$ recovers
+most of the hard answer, which is the documented $n \to \infty$ limit arriving.
+\end{keybox}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{five_pathways_mix.png}
+\caption{The 2050 mix. Region A never needs \var{electrofuel} under soft saturation;
+under a hard cap it does. Region B's price is set by \var{electrofuel} throughout, so only
+the split below it moves.}
+\label{fig:fivemix}
+\end{figure}
+
+\subsection{So: keep $\gamma$, $n$, $K$?}
+
+\textbf{Keep $K$. Drop $\gamma$ and $n$ as the default.}
+
+The argument is not that the bent curve is wrong. It is that at $n=4$ the market charges
+$0.065$ for the marginal eligible unit --- a number that is not any pathway's cost, that no
+plant would quote, and that is an interpolation between $0.0397$ (\var{atj}) and $0.0997$
+(\var{electrofuel}). \textbf{It is a price for a fuel nobody makes.} The hard cap says
+instead that the next unit after \var{atj} runs out is an \var{electrofuel} unit at
+\var{electrofuel}'s cost --- a statement an engineer can check, and disagree with.
+
+$\gamma$ and $n$ also cannot be calibrated: there is no measurement whose answer is
+``$\gamma=1$, $n=4$''. $K$ can be. It is a plant fleet, in MJ/yr, and ENSPRESO and the
+ReFuelEU impact assessment have numbers for it.
+
+\textbf{And the reason for the soft form has expired.} It was chosen because a hard cap
+whipsawed the loop. The hard-cap runs here converge in 91 Gauss--Seidel sweeps, against 44
+for $n=4$ and 97 for $n=16$: the staircase is \emph{not} the slowest of the three.
+
+Keep $\gamma$ and $n$ available. They are the right tool for a pathway that genuinely has
+a rising cost curve rather than a wall --- a feedstock drawn from a graded resource, where
+the next tonne really is dearer than the last. That is a \emph{different} physical claim
+from ``the plant makes 2\,Mt/yr'', and the model should be able to say both.
+
+\subsection{The price/quantity plane, and where the price stops coming from cost}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.88\linewidth]{five_pathways_plane.png}
+\caption{Region A, 2050. $x$ is eligible volume, $y$ is what an eligible unit is paid,
+$\lambda^{E}+\lambda^{M}$. The bent curve lies \emph{below} the staircase over most of the
+range --- the understatement, in one picture. The obligation is drawn twice: vertical at
+fixed demand, and with the slope $-m^{2}\beta$ the elastic balance actually prices
+against.}
+\label{fig:fiveplane}
+\end{figure}
+
+\noindent The clearing point of the hard run sits at the \emph{foot of the}
+\var{electrofuel} \emph{step}, on a flat segment --- not on a riser. That bounds the whole
+concern about step-function duals: \textbf{with an uncapped backstop in the set, the
+staircase never leaves the price undefined.} Some pathway is always marginal at its own
+cost. The vertical segment can only bite when every eligible route is limited at once.
+
+So the \var{all\_capped} case builds exactly that: \var{electrofuel} capped too, at
+1.0 PJ/yr, putting total eligible capacity at 8.6 PJ/yr. The traffic loop then walks
+demand down until the obligation exhausts it --- and in one run, the two regions land in
+the two different regimes:
+
+\begin{table}[h]
+\centering\small
+\begin{tabular}{@{}lrrrrrr@{}}
+\toprule
+\textbf{2050, $w=1$} & \textbf{eligible/cap} & $\lambda^{E}$ & $\lambda^{M}$ &
+  \textbf{paid} & \textbf{dearest} & \textbf{rent above all} \\
+\midrule
+region A & 7.818/8.6 \textbf{spare} & 0.01244 & 0.08725 & 0.09970 & 0.09970 & $-0.00000$ \\
+region B & 8.600/8.6 \textbf{full} & 0.01244 & \textbf{0.22542} &
+  \textbf{0.23786} & 0.09970 & $\mathbf{+0.13817}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{keybox}
+\textbf{What the multipliers do when the price really does come from demand.}
+
+\medskip
+Region A sits on a flat segment: the eligible unit is paid exactly \var{electrofuel}'s
+cost to five decimals, and no multiplier exceeds a cost difference. $\lambda^{E}$ is the
+residual's cost, $\lambda^{M}$ is the marginal eligible cost minus it, and every
+inframarginal pathway's multiplier is the pure cost gap
+$\lambda^{K}_{p} = (\lambda^{E}+\lambda^{M}) - c_{p}$.
+
+\medskip
+Region B sits on the vertical. Supply fixes the \emph{quantity} --- $mD$ equals the
+capacity to the digit --- and says nothing about the price.
+Equation~\eqref{eq:inversedemand} picks it, with $a \to 0$, so $\lambda^{E} + m\lambda^{M}
+= p^{0}$; the split is still pinned from the supply side because kerosene is still
+available, so
+\[
+  \boxed{\;\lambda^{M} = \frac{p^{0} - c_{\mathrm{kerosene}}}{m}\;}
+\]
+\textbf{The compliance price becomes a demand-side object}: willingness to pay, net of the
+fossil cost, divided by the obligation share. Taking $p^{0}$ from the \emph{previous}
+iterate --- an independent number, not a rearrangement --- this reproduces $\lambda^{M}$ to
+$2.8\times10^{-13}$ in region A and $8.8\times10^{-13}$ in region B.
+
+\medskip
+The consequence is the $0.23786$ above: \textbf{2.4 times the most expensive thing anyone
+makes}, with $0.138$\,\EURMJ\ of it above every cost in the model. That is not an error.
+It is the scarcity rent, and it is what a price does when the last unit cannot be produced
+at any cost. Traffic falls 46.9\,\%.
+
+\medskip
+\textbf{Two things to be careful of.} The $1/m$ factor \emph{leverages} the compliance
+price: at $m=0.7$ a $0.01$ error in the delivered price is a $0.014$ error in
+$\lambda^{M}$. And on a vertical segment $\beta$ stops being a preconditioner and becomes
+the demand curve whose crossing sets the price --- so that $0.238$ should be read as
+``what this demand curve implies'', not as a forecast, until the coupled response is
+calibrated against the traffic model it stands in for.
+\end{keybox}
+
+\noindent Two costs. \var{all\_capped} needs $\eta = 2$, not the bench's $0.5$: on a
+vertical segment the loop's true response is stiff, and at $\eta=0.5$ it does not converge
+in 900 sweeps. \S\ref{sec:fix}'s rule --- over-state $\beta$ rather than under-state it ---
+is here the difference between an answer and none. And at $w=0$ the case does not converge
+at all (residual 0.09 after 900 sweeps), which is unexpected enough to record: $w=0$ prices
+at average cost, so the loop should be \emph{less} reactive. That is unexplained.
+
+\subsection{What this measurement does not establish}
+
+\begin{itemize}[leftmargin=*,nosep]
+  \item \textbf{The capacity levels are illustrative.} 2.0/2.8/2.8 PJ/yr were sized to put
+    the obligation inside the capped set, not taken from a resource assessment. Every
+    number in table~\ref{tab:five} moves with them. The \emph{structural} result does not:
+    it turns on which pathway is marginal, not on where the caps are.
+  \item \textbf{\var{capacity\_limit} is one number per pathway, for all regions and
+    years.} A real plant fleet grows; this one does not. Per-region and per-year ceilings
+    are a grammar change, not a kernel change --- the kernel already takes an $(R,P,T)$
+    array.
+  \item \textbf{Region A and region B differ in traffic growth too} (3.0 against
+    4.5\,\%/yr), so the contrast mixes two causes. The claim survives it --- an identical
+    $\lambda^{M}$ across three configurations cannot be explained by growth --- but the
+    \emph{sizes} are not like for like.
+\end{itemize}
+
 \section{Policy cases}
 \label{sec:policy}
 
@@ -1136,6 +1563,7 @@ Right: what it bought --- a built-out e-fuel industry.}
 \end{figure}
 
 \subsection{A sub-target within the target}
+\label{sec:submandate}
 
 ReFuelEU's synthetic-fuel trajectory, on top of the headline obligation:
 
@@ -1329,6 +1757,7 @@ of the solver}.
 \end{keybox}
 
 \section{Limitations}
+\label{sec:limits}
 
 \begin{itemize}[leftmargin=*,nosep]
   \item \textbf{Regions do not interact.} Every constraint is per region and the objective
@@ -1360,6 +1789,7 @@ of the solver}.
 \end{itemize}
 
 \section{Where this goes next}
+\label{sec:next}
 
 \begin{enumerate}[leftmargin=*,nosep]
   \item \textbf{Inter-regional trade}, which is what the global (non-namespaced)

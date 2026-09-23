@@ -15,6 +15,7 @@ vectorised solve with perfect foresight:
     s.t. sum_p q[r,p,t]                    =  S[r,t]           -> energy_price
          sum_{p sust} q[r,p,t] + x[r,t]    >= m[r,t] * S[r,t]  -> compliance_price
          ramp-up, sustainable pathways only                    -> rampup_price
+         q[r,p,t]                       <= L[r,p,t]           -> capacity_price
          q >= 0,  x >= 0
 
     with S = D by default, or S = D + a with `a` free and the objective carrying
@@ -154,6 +155,29 @@ class ClearingInputs:
         ``(R, P, T)`` saturation scale ``K``, MJ. ``inf`` disables saturation for that
         entry. Exogenous at step 1 (decision 4): the top-down cost is a full cost, so
         a capacity variable with no cost of its own would be built without limit.
+
+        This is the scale of the *soft* saturation cost only; it does not stop the
+        pathway. See :attr:`capacity_limit` for a limit that does.
+    capacity_limit
+        ``(R, P, T)`` hard ceiling ``L`` on production, MJ, or None. ``inf`` leaves an
+        entry uncapped. None disables the whole constraint family, and the kernel then
+        builds exactly the program it built before.
+
+        **The alternative to soft saturation, not a companion to it.** With
+        ``sat_gamma > 0`` the supply curve bends: cost rises smoothly with utilisation,
+        the marginal cost is a continuous function of volume, and the dual is
+        single-valued everywhere. With a hard cap instead (``sat_gamma = 0``,
+        ``capacity_limit`` finite) the supply curve is a literal staircase -- flat at
+        ``c_p`` until the cap, then vertical -- which is what an engineer means by "this
+        plant produces 2 Mt/yr and not a drop more". The staircase is the honest shape;
+        what it costs is that on a vertical segment the price is not determined by cost
+        at all, and has to come from the demand side (:attr:`demand_slope`).
+
+        The multiplier ``capacity_price`` is then the **scarcity rent** on that pathway:
+        at a binding cap, ``marginal_price - marginal_cost = capacity_price``, exactly.
+        It accrues to the producer and is NOT part of what the buyer pays, so it does not
+        enter :attr:`ClearingOutputs.marginal_price` -- it is the gap that identity
+        measures.
     sat_gamma
         ``(R, P)`` saturation intensity ``gamma``. Zero disables saturation.
     sat_n
@@ -252,6 +276,7 @@ class ClearingInputs:
     sat_n: float
     rampup_limit: np.ndarray
     q_init: np.ndarray
+    capacity_limit: np.ndarray | None = None
     discount_rate: float = 0.0
     pricing_weight: float = 0.0
     rampup_form: str = "relative"
@@ -338,6 +363,30 @@ class ClearingInputs:
         # switched off -- but never NaN.
         if np.any(np.isnan(capacity)):
             raise ValueError("capacity contains NaN; use inf to disable saturation.")
+
+        capacity_limit = self.capacity_limit
+        if capacity_limit is not None:
+            capacity_limit = _check("capacity_limit", capacity_limit, (regions, pathways, years))
+            if np.any(np.isnan(capacity_limit)):
+                raise ValueError(
+                    "capacity_limit contains NaN; use inf to leave a pathway uncapped."
+                )
+            if np.any(capacity_limit < 0):
+                raise ValueError("capacity_limit must be non-negative; it is a volume.")
+            # Without this the program is simply infeasible and the solver says so in its
+            # own vocabulary. The caller wants to be told which year ran out of plant.
+            reachable = capacity_limit.sum(axis=1)
+            short = reachable < demand * (1.0 - 1e-12)
+            if short.any():
+                where = np.argwhere(short)[0]
+                raise ValueError(
+                    "capacity_limit cannot meet demand: total capacity "
+                    f"{reachable[tuple(where)]:.6g} MJ is below demand "
+                    f"{demand[tuple(where)]:.6g} MJ at region {where[0]}, year index "
+                    f"{where[1]}. The buy-out releases the OBLIGATION, not the energy "
+                    "balance, so some pathway -- normally the residual -- must be left "
+                    "uncapped (inf)."
+                )
 
         if np.any(demand < 0):
             raise ValueError("demand must be non-negative.")
@@ -484,6 +533,7 @@ class ClearingInputs:
             mandate_share=mandate_share,
             buyout_price=buyout_price,
             capacity=capacity,
+            capacity_limit=capacity_limit,
             sat_gamma=sat_gamma,
             rampup_limit=rampup_limit,
             rampup_seed=rampup_seed,
@@ -520,6 +570,16 @@ class ClearingOutputs:
     rampup_price
         ``(R, P, T)`` multiplier on the ramp-up. Zero for non-sustainable pathways,
         which carry no ramp-up constraint.
+    capacity_price
+        ``(R, P, T)`` multiplier on the hard ceiling: the **scarcity rent** per unit
+        earned by a pathway running at its cap. Zero wherever no cap binds, and
+        identically zero when ``capacity_limit`` is None.
+
+        It is not part of what the buyer pays. It is the gap between what the buyer pays
+        and what the last unit cost to make:
+        ``marginal_price = marginal cost + capacity_price + rampup_price`` at every
+        pathway with volume, which is the identity
+        ``test_a_binding_cap_puts_its_whole_rent_in_the_capacity_dual`` checks.
     marginal_price
         ``(R, P, T)`` ``energy_price + compliance_price * is_sustainable``.
     market_mfsp
@@ -542,6 +602,7 @@ class ClearingOutputs:
     submandate_price: np.ndarray
     submandate_unmet: np.ndarray
     rampup_price: np.ndarray
+    capacity_price: np.ndarray
     marginal_price: np.ndarray
     market_mfsp: np.ndarray
     average_cost: np.ndarray
@@ -605,6 +666,7 @@ def _solve_scaled(inputs: ClearingInputs, energy_scale: float, cost_scale: float
     demand = inputs.demand / energy_scale
     cost = inputs.cost / cost_scale
     capacity = inputs.capacity / energy_scale
+    capacity_limit = None if inputs.capacity_limit is None else inputs.capacity_limit / energy_scale
     buyout = inputs.buyout_price / cost_scale
     q_init = inputs.q_init / energy_scale
     seed = inputs.rampup_seed / energy_scale
@@ -717,6 +779,18 @@ def _solve_scaled(inputs: ClearingInputs, energy_scale: float, cost_scale: float
             cp.multiply((inputs.submandate_buyout_price / cost_scale) * discount[None, :], x_sub)
         )
 
+    # --- hard capacity ceiling -----------------------------------------------
+    # Only the finite entries get a row. An `inf` bound is not a constraint, and writing
+    # it as one would hand the solver a row of infinities; masking also keeps the dual
+    # the size of the capped set rather than of the array.
+    capped = None
+    capacity_ceiling = None
+    if capacity_limit is not None:
+        capped = np.isfinite(capacity_limit).reshape(rows, years)
+        if capped.any():
+            capacity_ceiling = q[capped] <= capacity_limit.reshape(rows, years)[capped]
+            constraints.append(capacity_ceiling)
+
     # --- ramp-up, sustainable pathways only ----------------------------------
     sustainable_index = np.flatnonzero(rampup_rows)
     rampup = None
@@ -795,6 +869,8 @@ def _solve_scaled(inputs: ClearingInputs, energy_scale: float, cost_scale: float
         named.append(("submandate", submandate))
     if rampup is not None:
         named.append(("rampup", rampup))
+    if capacity_ceiling is not None:
+        named.append(("capacity", capacity_ceiling))
     tight = {
         name: np.abs(np.asarray(constraint.expr.value)) <= _ACTIVE_TOLERANCE
         for name, constraint in named
@@ -815,6 +891,10 @@ def _solve_scaled(inputs: ClearingInputs, energy_scale: float, cost_scale: float
         "submandate_dual": None if submandate is None else np.asarray(submandate.dual_value),
         "x_sub": None if x_sub is None else np.asarray(x_sub.value),
         "rampup_dual": None if rampup is None else np.asarray(rampup.dual_value),
+        "capacity_dual": (
+            None if capacity_ceiling is None else np.asarray(capacity_ceiling.dual_value)
+        ),
+        "capped": capped,
         "sustainable_index": sustainable_index,
         "discount": discount,
         "status": problem.status,
@@ -945,6 +1025,15 @@ def clear_market(inputs: ClearingInputs) -> ClearingOutputs:
     else:
         diagnostics_full_mandate = 0
 
+    capacity_price = np.zeros((regions * pathways, years))
+    if solved["capacity_dual"] is not None:
+        # The dual comes back flat over the capped entries only; scatter it back. Same
+        # discounting and scaling as every other inequality multiplier.
+        capped = solved["capped"]
+        current = np.broadcast_to(to_current_price, (regions * pathways, years))
+        capacity_price[capped] = solved["capacity_dual"] * current[capped]
+    capacity_price = capacity_price.reshape(regions, pathways, years)
+
     rampup_price = np.zeros((regions * pathways, years))
     if solved["rampup_dual"] is not None:
         # to_current_price is (1, T), so it broadcasts over the sustainable rows.
@@ -1000,6 +1089,7 @@ def clear_market(inputs: ClearingInputs) -> ClearingOutputs:
         compliance_price,
         submandate_price,
         rampup_price,
+        capacity_price,
         marginal_price,
         market_mfsp,
         average_cost,
@@ -1014,6 +1104,7 @@ def clear_market(inputs: ClearingInputs) -> ClearingOutputs:
             "compliance_price",
             "submandate_price",
             "rampup_price",
+            "capacity_price",
             "marginal_price",
             "market_mfsp",
             "average_cost",
@@ -1099,6 +1190,7 @@ def clear_market(inputs: ClearingInputs) -> ClearingOutputs:
         submandate_price=submandate_price,
         submandate_unmet=submandate_unmet,
         rampup_price=rampup_price,
+        capacity_price=capacity_price,
         marginal_price=marginal_price,
         market_mfsp=market_mfsp,
         average_cost=average_cost,
