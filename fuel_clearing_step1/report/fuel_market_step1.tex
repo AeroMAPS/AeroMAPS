@@ -499,12 +499,21 @@ is kernel-only; everything in \S\ref{sec:coupledresults} is coupled.}
 \end{table}
 
 \begin{keybox}
-\textbf{Why the policy cases are kernel-only, deliberately.} Chaining scales every price
-effect by roughly a tenth (\S\ref{sec:coupledgrid}) and changes no \emph{ordering} at
-$w=0$, while costing minutes per case. (At $w>0$ it also used to
+\textbf{Why the policy cases are kernel-only, deliberately.} Chaining changes no
+\emph{ordering} at $w=0$, while costing minutes per case. (At $w>0$ it also used to
 introduce a convergence problem, \S\ref{sec:convergence}; that is now resolved,
-\S\ref{sec:fix}, but the cost per case remains.) The kernel-level results are therefore the \emph{policy} answer; the coupled
-results are what tells you how much of it survives the demand response.
+\S\ref{sec:fix}, but the cost per case remains.) The kernel-level results are therefore
+the \emph{policy} answer.
+
+\textbf{How much the chain damps a price effect is NOT measured}, and an earlier version
+of this box said it was --- ``roughly a tenth'', cited to \S\ref{sec:coupledgrid}. That
+section says something different and correct: the \emph{traffic} response is about a
+tenth of the \emph{price} response. The two grids cannot be differenced to recover the
+damping, because they do not share a baseline --- the kernel grid sweeps $\gamma$ at a
+fixed growth limit of $0.30$, while the coupled grid compares \emph{no scarcity at all}
+against a growth limit of $0.20$ with a capacity and a $\gamma$. So every magnitude in
+\S\ref{sec:policy} should be read as kernel-level with an \emph{unquantified} coupled
+damping, which at $w=1$ is where it is most likely to matter.
 \end{keybox}
 
 \begin{figure}[h]

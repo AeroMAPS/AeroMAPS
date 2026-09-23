@@ -1114,7 +1114,7 @@ ramp-up is switched on, documented at `DEFAULT_SETTINGS`.
 `policy_cases.py`. Two fuels and identical policy in both regions tests the machinery
 and nothing else — with one sustainable pathway the market has no choice to make, only
 a quantity to set. These cases are the smallest setting in which it behaves like a
-market. Run at the kernel level: the traffic loop scales every result by about a tenth
+market. Run at the kernel level: the traffic loop changes no ordering
 (§8.4) and changes no ordering at `w = 0`, while an MDA per cell would cost minutes and
 put §8.3's convergence problem between the reader and the policy question.
 

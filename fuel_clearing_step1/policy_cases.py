@@ -17,7 +17,8 @@ identical, so any difference between the regions is the eligibility rule and not
 else.
 
 Run at the kernel level, not through the MDA. That is deliberate: the traffic loop
-scales every result by roughly a tenth (REPORT.md section 8.4) and at `w = 0` it does
+changes no ORDERING at `w = 0` (the damping itself is NOT measured -- the
+kernel and coupled grids do not share a baseline), and at `w = 0` it does
 not change any ordering, while an MDA per cell would cost minutes each and put the
 `w > 0` convergence problem between the reader and the policy question.
 
