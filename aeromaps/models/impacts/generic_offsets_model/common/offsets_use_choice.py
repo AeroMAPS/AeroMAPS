@@ -14,6 +14,8 @@ mean of the scheme prices, so the existing single-price cost chain is reproduced
 exactly: ``carbon_offset * carbon_offset_price`` is the sum of the scheme expenses.
 """
 
+import logging
+
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
@@ -59,6 +61,8 @@ class OffsetsUseChoice(AeroMAPSModel):
         super().__init__(name=name, model_type="custom", *args, **kwargs)
         # Metadata only (not a coupling variable); coupling variables go in input_names.
         self.offsets_manager = offsets_manager
+        # Consistency warnings already issued, so that MDA iterations do not repeat them.
+        self._warned = set()
 
         self.input_names = {
             "co2_emissions": pd.Series([0.0]),
@@ -140,9 +144,18 @@ class OffsetsUseChoice(AeroMAPSModel):
             ).where(prospective, 0.0)
 
         residual = co2_emissions.where(prospective, 0.0) - sum(quantities.values())
+        total_share = pd.Series(0.0, index=full_index)
         for scheme in (s for s in schemes if s.quantity_mode == "share_of_residual"):
             share = scheme_series(f"{scheme.name}_quantity_share", 0)
             quantities[scheme.name] = residual * share / 100
+            total_share = total_share + share
+        if (total_share > 100 + 1e-9).any():
+            self._warn_once(
+                "share",
+                "The shares of residual emissions of the offsetting schemes exceed 100 %% "
+                "in %s: more than the residual emissions are offset.",
+                list(total_share.index[total_share > 100 + 1e-9]),
+            )
 
         for scheme in (s for s in schemes if s.quantity_mode == "quantity"):
             quantities[scheme.name] = scheme_series(f"{scheme.name}_quantity_amount", 0)
@@ -171,6 +184,17 @@ class OffsetsUseChoice(AeroMAPSModel):
             output_data[offset_category_column(category)] = per_category_q[category]
             output_data[f"{category}_carbon_offset_expense"] = per_category_e[category]
 
+        excess = total - co2_emissions.where(prospective, 0.0).fillna(0.0)
+        if (excess > 1e-6).any():
+            self._warn_once(
+                "excess",
+                "The carbon offset exceeds the CO2 emissions in %s (by up to %.1f MtCO2): "
+                "check the schemes with a prescribed quantity, which are not deducted from "
+                "the residual that the share-based schemes apply to.",
+                list(excess.index[excess > 1e-6]),
+                excess.max(),
+            )
+
         output_data["carbon_offset"] = total
         output_data["carbon_offset_expense"] = expense
         output_data["carbon_offset_price"] = (expense / total).where(total != 0, 0.0)
@@ -178,3 +202,8 @@ class OffsetsUseChoice(AeroMAPSModel):
 
         self._store_outputs(output_data)
         return output_data
+
+    def _warn_once(self, key, message, *args):
+        if key not in self._warned:
+            self._warned.add(key)
+            logging.warning(message, *args)

@@ -18,6 +18,7 @@ from aeromaps.models.impacts.emissions.co2_emissions import (
 )
 
 CONFIG = os.path.join(os.path.dirname(__file__), "..", "tested_configs", "config_offsets.yaml")
+OFFSETS_DATA = os.path.join(os.path.dirname(CONFIG), "data", "offsets_data.yaml")
 
 TOL = 1e-9
 
@@ -157,3 +158,27 @@ def test_detailed_plot_splits_the_offset(process, granularity, expected):
     labels = {collection.get_label() for collection in plot.ax.collections}
     assert expected <= labels
     assert "Carbon offset" not in labels
+
+
+def _offsets_process(tmp_path, offsets_yaml):
+    """Compute the tested config with another offsets data file."""
+    (tmp_path / "offsets_data.yaml").write_text(offsets_yaml)
+    config = open(CONFIG).read().replace("./data/offsets_data.yaml", "./offsets_data.yaml")
+    (tmp_path / "config.yaml").write_text(config)
+    proc = create_process(configuration_file=str(tmp_path / "config.yaml"))
+    proc.compute()
+    return proc
+
+
+def test_over_offsetting_is_reported(tmp_path, caplog):
+    # The tested schemes offset 100 % of the residual in 2050 plus a prescribed quantity.
+    with caplog.at_level("WARNING"):
+        _offsets_process(tmp_path, open(OFFSETS_DATA).read())
+    assert "exceeds the CO2 emissions" in caplog.text
+
+
+def test_residual_shares_above_100_percent_are_reported(tmp_path, caplog):
+    offsets_yaml = open(OFFSETS_DATA).read().replace("values: [0.0, 100.0]", "values: [0.0, 150.0]")
+    with caplog.at_level("WARNING"):
+        _offsets_process(tmp_path, offsets_yaml)
+    assert "exceed 100 %" in caplog.text
