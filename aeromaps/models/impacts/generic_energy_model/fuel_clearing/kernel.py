@@ -264,6 +264,44 @@ class ClearingInputs:
         increasing, hence the price a continuous function of demand, hence the loop
         something that can converge. ``rho`` trades convergence speed against damping
         and nothing else.
+    pooled
+        ``(P,)`` boolean, or None. The pathways every region supplies to, and draws from,
+        **one global pool**. None -- the default -- builds exactly the program built
+        before the pool existed: each region consumes what it produces.
+
+        With a pool, a region's two sides separate. What it **produces** is described by
+        ``cost``, ``capacity``, ``capacity_limit``, ``sat_gamma``, the ramp-up and
+        ``q_init`` -- its plants and its feedstock. What it **consumes** is described by
+        ``demand``, the obligations and their eligibility -- its airlines and its
+        policies. The pool balances production against consumption per pathway and year,
+        and each region's **net flow** (produced minus consumed) is what it exports.
+        There are no routes and no transport costs: the pool says how much each region
+        puts in and takes out, not who ships to whom.
+
+        ``cost`` is then the **production** cost of the supplying region. A cost levied
+        where fuel is *burnt* -- a carbon tax on use -- has no place in this program yet:
+        passed through ``cost`` it would be charged to the producer's region, whoever
+        consumes the fuel. Where the regions' costs agree, as on the bench, the question
+        does not arise.
+
+        **Flows are not unique on their own.** Two regions producing the same fuel at
+        the same cost, with capacity to spare, can split the pool's supply any way at the
+        same total cost; the solver would return an arbitrary member of that set, and an
+        arbitrary flow cannot be tracked. So a pooled solve is followed by a second one,
+        at the optimal cost, that picks the **least traded volume**: a region exports only
+        what the pool actually needs from it. The prices come from the first solve and
+        hold for the second, since every optimal point shares the same multipliers.
+
+        That pins **how much** each region exports, not **which fuel**. An exporter
+        running two fuels at their caps sells both at the same price, so it can ship
+        either for the same cost and the same traded volume; the split returned is then
+        the solver's pick. On the five-pathway bench a 2.4 EJ/yr export could be any mix
+        of HEFA and FT-MSW (``fuel_clearing_step1/pool_flows.py``). Downstream this
+        decides which region's CO2 carries which emission factor, so it needs a rule --
+        open, see REPORT.md section 13.
+
+        Pathways not flagged stay local: produced and consumed in the same region, as
+        before, with a net flow of exactly zero.
     """
 
     demand: np.ndarray
@@ -294,6 +332,7 @@ class ClearingInputs:
     proximal_weight: float = 0.0
     anchor_price: np.ndarray | None = None
     demand_slope: np.ndarray | None = None
+    pooled: np.ndarray | None = None
 
     @property
     def shape(self) -> tuple[int, int, int]:
@@ -364,6 +403,24 @@ class ClearingInputs:
         if np.any(np.isnan(capacity)):
             raise ValueError("capacity contains NaN; use inf to disable saturation.")
 
+        pooled = self.pooled
+        if pooled is not None:
+            pooled = _check("pooled", pooled, (pathways,), bool)
+            if not pooled.any():
+                # Not an error of meaning, but almost certainly one of intent: an all-False
+                # mask asks for a pool and pools nothing. None is how to say "no pool".
+                raise ValueError(
+                    "pooled flags no pathway. Pass None for separate regional markets."
+                )
+            if self.proximal_anchor is not None:
+                # The anchor is a volume per (region, pathway), and with a pool there are
+                # two of those -- production and consumption -- with nothing yet to say
+                # which one it should pull. Refused rather than guessed.
+                raise ValueError(
+                    "proximal_anchor is not supported with a pool. Use the demand slope "
+                    "(anchor_price, demand_slope) to pin prices instead."
+                )
+
         capacity_limit = self.capacity_limit
         if capacity_limit is not None:
             capacity_limit = _check("capacity_limit", capacity_limit, (regions, pathways, years))
@@ -375,18 +432,36 @@ class ClearingInputs:
                 raise ValueError("capacity_limit must be non-negative; it is a volume.")
             # Without this the program is simply infeasible and the solver says so in its
             # own vocabulary. The caller wants to be told which year ran out of plant.
-            reachable = capacity_limit.sum(axis=1)
-            short = reachable < demand * (1.0 - 1e-12)
-            if short.any():
-                where = np.argwhere(short)[0]
-                raise ValueError(
-                    "capacity_limit cannot meet demand: total capacity "
-                    f"{reachable[tuple(where)]:.6g} MJ is below demand "
-                    f"{demand[tuple(where)]:.6g} MJ at region {where[0]}, year index "
-                    f"{where[1]}. The buy-out releases the OBLIGATION, not the energy "
-                    "balance, so some pathway -- normally the residual -- must be left "
-                    "uncapped (inf)."
-                )
+            if pooled is None:
+                reachable = capacity_limit.sum(axis=1)
+                short = reachable < demand * (1.0 - 1e-12)
+                if short.any():
+                    where = np.argwhere(short)[0]
+                    raise ValueError(
+                        "capacity_limit cannot meet demand: total capacity "
+                        f"{reachable[tuple(where)]:.6g} MJ is below demand "
+                        f"{demand[tuple(where)]:.6g} MJ at region {where[0]}, year index "
+                        f"{where[1]}. The buy-out releases the OBLIGATION, not the energy "
+                        "balance, so some pathway -- normally the residual -- must be left "
+                        "uncapped (inf)."
+                    )
+            else:
+                # With a pool a region needs no plant of its own: what its local pathways
+                # cannot cover it draws from the pool, and the pool has to cover every
+                # region's shortfall at once.
+                local = capacity_limit[:, ~pooled, :].sum(axis=1)
+                shortfall = np.maximum(demand - local, 0.0).sum(axis=0)
+                reachable = capacity_limit[:, pooled, :].sum(axis=(0, 1))
+                short = reachable < shortfall * (1.0 - 1e-12)
+                if short.any():
+                    where = int(np.flatnonzero(short)[0])
+                    raise ValueError(
+                        "capacity_limit cannot meet demand: the pool's capacity "
+                        f"{reachable[where]:.6g} MJ is below the {shortfall[where]:.6g} MJ "
+                        f"the regions cannot cover locally, at year index {where}. The "
+                        "buy-out releases the OBLIGATION, not the energy balance, so some "
+                        "pathway -- normally the residual -- must be left uncapped (inf)."
+                    )
 
         if np.any(demand < 0):
             raise ValueError("demand must be non-negative.")
@@ -543,6 +618,7 @@ class ClearingInputs:
             proximal_anchor=proximal_anchor,
             anchor_price=anchor_price,
             demand_slope=demand_slope,
+            pooled=pooled,
         )
 
 
@@ -553,7 +629,25 @@ class ClearingOutputs:
     Attributes
     ----------
     volume
-        ``(R, P, T)`` production = consumption, MJ. No trade at step 1.
+        ``(R, P, T)`` what each region **consumes**, MJ. Without a pool it is also what
+        it produces. With one, see :attr:`supply`.
+    supply
+        ``(R, P, T)`` what each region **produces**, MJ. Equal to :attr:`volume` without
+        a pool and for every pathway left out of it. Capacity, saturation and the growth
+        limit apply here, not to consumption.
+    net_flow
+        ``(R, P, T)`` ``supply - volume``, MJ: positive for a region that exports that
+        fuel to the pool, negative for one that draws on it. Sums to zero over regions
+        exactly, and is exactly zero for a pathway that is not pooled. With a pool, the
+        least trade consistent with the optimal cost (see
+        :attr:`ClearingInputs.pooled`).
+    pool_price
+        ``(P, T)`` multiplier on the pool balance, in current money: what one more MJ of
+        that fuel in the pool would save. The price every supplier to the pool is paid,
+        and for a pooled pathway it takes the place of ``marginal_price`` in the identity
+        under :attr:`capacity_price`: ``pool_price = marginal cost + capacity_price +
+        rampup_price - ...`` at every region supplying it. Zero for a pathway that is not
+        pooled, and everywhere without a pool.
     unmet
         ``(R, T)`` energy covered by the buy-out instead of by fuel, MJ.
     demand_adjustment
@@ -575,18 +669,28 @@ class ClearingOutputs:
         earned by a pathway running at its cap. Zero wherever no cap binds, and
         identically zero when ``capacity_limit`` is None.
 
-        It is not part of what the buyer pays. It is the gap between what the buyer pays
-        and what the last unit cost to make:
-        ``marginal_price = marginal cost + capacity_price + rampup_price`` at every
-        pathway with volume, which is the identity
-        ``test_a_binding_cap_puts_its_whole_rent_in_the_capacity_dual`` checks.
+        It is not part of what the buyer pays. It is part of how that payment splits,
+        at every pathway with volume, between cost and rent (``"relative"`` ramp-up):
+
+            marginal_price = marginal cost + capacity_price + rampup_price
+                             - (1 + g) * rampup_price[t + 1] / (1 + discount_rate)
+
+        The last term is what producing now is worth to next year's growth allowance --
+        the anticipation of a tighter year. Without a binding growth limit it is zero and
+        the price is cost plus capacity rent. Checked, both ways, by
+        ``test_a_binding_cap_puts_its_whole_rent_in_the_capacity_dual``.
     marginal_price
         ``(R, P, T)`` ``energy_price + compliance_price * is_sustainable``.
     market_mfsp
         ``(R, P, T)`` decision 10's blend of average cost and marginal price.
     average_cost
         ``(R, P, T)`` ``c * (1 + gamma/(n+1) * (q/K)**n)``, the average unit cost of
-        the volume produced. The gap to ``marginal_price`` is the rent.
+        the volume produced. The gap to ``marginal_price`` is the rent. For a pooled
+        pathway every region is charged the **pool's** average -- the production-weighted
+        mean over the regions supplying it -- because what it draws is a share of the
+        pool, not of its own plants. A convention, not yet a settled question: it is what
+        ``w = 0`` passes to the buyer, and whether regions should see the pool's average
+        or something else is part of how pooling moves prices, which is open.
     rent
         ``(R, P, T)`` ``(marginal_price - average_cost) * volume``.
     diagnostics
@@ -607,6 +711,9 @@ class ClearingOutputs:
     market_mfsp: np.ndarray
     average_cost: np.ndarray
     rent: np.ndarray
+    supply: np.ndarray
+    net_flow: np.ndarray
+    pool_price: np.ndarray
     diagnostics: dict = field(default_factory=dict)
 
 
@@ -679,6 +786,34 @@ def _solve_scaled(inputs: ClearingInputs, energy_scale: float, cost_scale: float
 
     q = cp.Variable((rows, years), nonneg=True, name="volume")
     x = cp.Variable((regions, years), nonneg=True, name="unmet")
+
+    # --- the pool ------------------------------------------------------------
+    # `q` is always what a region PRODUCES: cost, saturation, the cap and the growth limit
+    # are written on it below and none of them changes with a pool. What changes is what a
+    # region CONSUMES, which the balance and the obligations are written on. Without a pool
+    # the two are the same expression; with one, a pooled row's consumption is its own
+    # variable `draws`, and the pool balance ties the draws of all regions to the
+    # production of all regions, pathway by pathway.
+    pool = inputs.pooled is not None
+    if pool:
+        pooled_rows = np.tile(inputs.pooled, regions)
+        pooled_index = np.flatnonzero(pooled_rows)
+        pooled_pathways = np.flatnonzero(inputs.pooled)
+        draws = cp.Variable((pooled_index.size, years), nonneg=True, name="draws")
+        keep_local = np.diag((~pooled_rows).astype(float))
+        place_draws = np.zeros((rows, pooled_index.size))
+        place_draws[pooled_index, np.arange(pooled_index.size)] = 1.0
+        use = keep_local @ q + place_draws @ draws
+
+        # One row per pooled pathway, summing over regions: production on one side,
+        # consumption on the other.
+        produced_into_pool = np.zeros((pooled_pathways.size, rows))
+        for k, p in enumerate(pooled_pathways):
+            produced_into_pool[k, np.arange(regions) * pathways + p] = 1.0
+        drawn_from_pool = produced_into_pool[:, pooled_index]
+    else:
+        draws = None
+        use = q
 
     # --- the elastic balance --------------------------------------------------
     # `a` is how far the cleared quantity departs from the demand handed in. Zero when
@@ -758,9 +893,16 @@ def _solve_scaled(inputs: ClearingInputs, energy_scale: float, cost_scale: float
     rampup_rows = np.tile(inputs.is_sustainable.any(axis=0), regions)
     mandate_selector[region_of_row, np.arange(rows)] = sustainable_rows.astype(float)
 
-    energy_balance = balance_selector @ q == served
-    mandate = mandate_selector @ q + x >= cp.multiply(inputs.mandate_share, served)
+    energy_balance = balance_selector @ use == served
+    mandate = mandate_selector @ use + x >= cp.multiply(inputs.mandate_share, served)
     constraints = [energy_balance, mandate] + extra_constraints
+
+    # Oriented as the energy balance is -- supply on the left, what is taken on the
+    # right -- so its dual is negated the same way to become a price.
+    pool_balance = None
+    if pool:
+        pool_balance = produced_into_pool @ q == drawn_from_pool @ draws
+        constraints.append(pool_balance)
 
     # The sub-mandate is the same shape of constraint on a narrower row set, with its
     # own slack and its own release price. Built only when asked for, so a scenario
@@ -773,7 +915,9 @@ def _solve_scaled(inputs: ClearingInputs, energy_scale: float, cost_scale: float
             float
         )
         x_sub = cp.Variable((regions, years), nonneg=True, name="unmet_submandate")
-        submandate = submandate_selector @ q + x_sub >= cp.multiply(inputs.submandate_share, served)
+        submandate = submandate_selector @ use + x_sub >= cp.multiply(
+            inputs.submandate_share, served
+        )
         constraints.append(submandate)
         objective = objective + cp.sum(
             cp.multiply((inputs.submandate_buyout_price / cost_scale) * discount[None, :], x_sub)
@@ -878,8 +1022,12 @@ def _solve_scaled(inputs: ClearingInputs, energy_scale: float, cost_scale: float
     tight["at_zero"] = np.asarray(q.value) <= _ACTIVE_TOLERANCE
     pattern = np.concatenate([value.ravel() for value in tight.values()])
 
-    return {
+    # Everything is read off the first solve before a second one can overwrite it: cvxpy
+    # keeps values and duals on the variables and constraints themselves, which the
+    # second problem below shares.
+    solved = {
         "q": np.asarray(q.value).reshape(regions, pathways, years),
+        "use": np.asarray(use.value).reshape(regions, pathways, years),
         "x": np.asarray(x.value),
         "a": None if a is None else np.asarray(a.value),
         "tight": tight,
@@ -900,7 +1048,73 @@ def _solve_scaled(inputs: ClearingInputs, energy_scale: float, cost_scale: float
         "status": problem.status,
         "solve_seconds": elapsed,
         "objective": float(problem.value),
+        "pool_dual": None if pool_balance is None else np.asarray(pool_balance.dual_value),
+        "pooled_pathways": None if not pool else pooled_pathways,
     }
+    if not pool:
+        return solved
+
+    # --- the least-trade pass ------------------------------------------------
+    # The first solve fixes the cost and the prices; it does not fix the flows. Where two
+    # regions make the same fuel at the same cost with capacity to spare, every split of
+    # the pool's supply between them is optimal, and an interior-point solver returns the
+    # middle of that set -- each region producing for the other for no reason. So the
+    # optimal cost becomes a constraint, and the second solve minimises what is exported.
+    #
+    # The prices stay those of the first solve. That is not an approximation: in a convex
+    # program every optimal primal point pairs with every optimal dual point, so the
+    # multipliers already read are multipliers of the point this returns.
+    first_trade = float(
+        np.sum(np.maximum(np.asarray(q.value)[pooled_index] - np.asarray(draws.value), 0.0))
+    )
+    # How far above the optimal cost this pass may go: the solver tolerance, relative. The
+    # first solve's value is itself only good to that, so a bound set exactly at it could
+    # be infeasible by rounding. What the allowance permits is giving up trade worth less
+    # than that fraction of the whole program's cost, and the flows move with it --
+    # measured on a two-region staircase, a flow of 0.2 of demand came back 4e-8 of demand
+    # short at 1e-8, 4e-9 at 1e-9, and 4e-10 (the solver's floor) at zero. Tying it to the
+    # tolerance puts flows at the same accuracy as every other volume.
+    optimum = float(problem.value)
+    allowance = inputs.solver_tolerance * max(abs(optimum), 1.0)
+    exports = cp.Variable((pooled_index.size, years), nonneg=True, name="exports")
+    least_trade = cp.Problem(
+        cp.Minimize(cp.sum(exports)),
+        constraints + [exports >= q[pooled_index, :] - draws, objective <= optimum + allowance],
+    )
+    started = time.perf_counter()
+    try:
+        least_trade.solve(
+            solver=cp.CLARABEL,
+            tol_gap_abs=inputs.solver_tolerance,
+            tol_gap_rel=inputs.solver_tolerance,
+            tol_feas=inputs.solver_tolerance,
+        )
+    except cp.error.SolverError as exc:
+        raise ClearingError(
+            f"The fuel market cleared, but the least-trade pass failed ({exc}); the flows "
+            f"between regions are undetermined. {context}"
+        ) from exc
+    if least_trade.status != _ACCEPTED_STATUS:
+        raise ClearingError(
+            f"The fuel market cleared, but the least-trade pass returned "
+            f"{least_trade.status!r}; the flows between regions are undetermined. {context}"
+        )
+
+    solved.update(
+        {
+            "q": np.asarray(q.value).reshape(regions, pathways, years),
+            "use": np.asarray(use.value).reshape(regions, pathways, years),
+            "x": np.asarray(x.value),
+            "a": None if a is None else np.asarray(a.value),
+            "x_sub": None if x_sub is None else np.asarray(x_sub.value),
+            "trade_seconds": time.perf_counter() - started,
+            # Scaled volumes; clear_market puts them back in MJ.
+            "traded_first_pass": first_trade,
+            "traded": float(least_trade.value),
+            "objective_after_trade": float(objective.value),
+        }
+    )
+    return solved
 
 
 def clear_market(inputs: ClearingInputs) -> ClearingOutputs:
@@ -940,7 +1154,9 @@ def clear_market(inputs: ClearingInputs) -> ClearingOutputs:
 
     solved = _solve_scaled(inputs, energy_scale, cost_scale)
 
-    volume = solved["q"] * energy_scale
+    # Consumption and production. The same array without a pool.
+    volume = solved["use"] * energy_scale
+    supply = solved["q"] * energy_scale
     unmet = solved["x"] * energy_scale
     discount = solved["discount"]
 
@@ -963,6 +1179,12 @@ def clear_market(inputs: ClearingInputs) -> ClearingOutputs:
     # analytic case in test_kernel.py, which is the only reliable way to settle this.
     energy_price = -solved["energy_dual"] * to_current_price
     compliance_price = solved["mandate_dual"] * to_current_price
+
+    # The pool balance is an equality written the same way round as the energy balance
+    # (production == consumption), so its dual is negated the same way.
+    pool_price = np.zeros((pathways, years))
+    if solved["pool_dual"] is not None:
+        pool_price[solved["pooled_pathways"], :] = -solved["pool_dual"] * to_current_price
 
     # Where the obligation is zero the mandate constraint reads `sum q_s + x >= 0`,
     # which the variable bounds already guarantee. It is redundant, so the KKT system
@@ -1009,11 +1231,19 @@ def clear_market(inputs: ClearingInputs) -> ClearingOutputs:
     full_mandate = inputs.mandate_share >= 1.0 - _FULL_MANDATE_TOLERANCE
     if full_mandate.any():
         total = energy_price + compliance_price
-        # Per region: the cheapest pathway that region's own obligation excludes.
+        # Per region: the cheapest pathway that region's own obligation excludes. For a
+        # pooled pathway that is the cheapest SUPPLIER's cost, wherever it is -- the region
+        # can draw it from the pool.
         excluded = ~inputs.is_sustainable
+        entry_cost = inputs.cost
+        if inputs.pooled is not None:
+            cheapest_supplier = np.broadcast_to(
+                np.min(inputs.cost, axis=0, keepdims=True), inputs.cost.shape
+            )
+            entry_cost = np.where(inputs.pooled[None, :, None], cheapest_supplier, inputs.cost)
         pinned = np.where(
             excluded.any(axis=1)[:, None],
-            np.min(np.where(excluded[:, :, None], inputs.cost, np.inf), axis=1),
+            np.min(np.where(excluded[:, :, None], entry_cost, np.inf), axis=1),
             total,
         )
         # lambda_M stays a multiplier: non-negative, and capped by the buy-out, which is
@@ -1063,6 +1293,36 @@ def clear_market(inputs: ClearingInputs) -> ClearingOutputs:
         )
     volume[:, residual, :] = np.maximum(closed, 0.0)
 
+    # --- exact closure of the pool --------------------------------------------
+    # The same invariant on the other side: what the regions produce of a pooled fuel is
+    # what they consume of it, to the last MJ, so the net flows sum to zero exactly. The
+    # consumption is fixed now; production absorbs the solver's remainder, in proportion.
+    if inputs.pooled is None:
+        supply = volume.copy()
+        worst_pool = 0.0
+    else:
+        pooled = inputs.pooled
+        supply = np.maximum(supply, 0.0)
+        supply[:, ~pooled, :] = volume[:, ~pooled, :]
+        drawn = volume[:, pooled, :].sum(axis=0)
+        produced = supply[:, pooled, :].sum(axis=0)
+        # Relative to the whole market that year, as the energy balance's check is to the
+        # region's demand. Relative to the fuel's own volume it would not do: a fuel
+        # drawn at 1e-6 of demand carries the same absolute solver error as one drawn at
+        # half of it, and the ratio then measures the solver's last digit.
+        size = np.maximum(served.sum(axis=0), 1e-9 * energy_scale)[None, :]
+        worst_pool = float(np.max(np.abs(drawn - produced) / size))
+        if worst_pool > inputs.closure_tolerance:
+            where = np.unravel_index(np.argmax(np.abs(drawn - produced) / size), drawn.shape)
+            raise ClearingError(
+                f"Closing the pool needs a relative correction of {worst_pool:.3e} for "
+                f"pooled pathway {np.flatnonzero(pooled)[where[0]]}, year index {where[1]}, "
+                f"above the tolerance of {inputs.closure_tolerance:.1e}."
+            )
+        ratio = np.divide(drawn, produced, out=np.zeros_like(drawn), where=produced > 0)
+        supply[:, pooled, :] = supply[:, pooled, :] * ratio[None, :, :]
+    net_flow = supply - volume
+
     # --- prices and rent -----------------------------------------------------
     # A sub-mandated unit satisfies the narrow obligation AND the broad one, so it
     # carries both multipliers. That is not double counting: they price two distinct
@@ -1074,9 +1334,37 @@ def clear_market(inputs: ClearingInputs) -> ClearingOutputs:
         marginal_price = marginal_price + (
             submandate_price[:, None, :] * inputs.is_submandated[:, :, None]
         )
+    # A pooled fuel that nobody draws has no price of its own. The pool balance then reads
+    # 0 == 0 for it, and its multiplier may sit anywhere between what the first unit would
+    # be worth to the region that values it most -- its delivered price there -- and what
+    # the cheapest supplier would need to make it. Measured on a two-region staircase:
+    # 0.0353 and 0.0468 EUR/MJ for two fuels in that position, from an interval
+    # [0.0322, 0.0394] and [0.0322, 0.0996]. The lower end is the one the program does
+    # determine: a free MJ in the pool would displace the dearest eligible MJ somewhere,
+    # and save exactly that. Same remedy as a compliance price without an obligation.
+    if inputs.pooled is not None:
+        untraded = volume.sum(axis=0) <= _ACTIVE_TOLERANCE * energy_scale
+        first_unit = marginal_price.max(axis=0)
+        pool_price = np.where(inputs.pooled[:, None] & untraded, first_unit, pool_price)
+
     average_cost = _average_cost(
-        inputs.cost, volume, inputs.capacity, inputs.sat_gamma, inputs.sat_n
+        inputs.cost, supply, inputs.capacity, inputs.sat_gamma, inputs.sat_n
     )
+    if inputs.pooled is not None:
+        # What a region draws is a share of the pool, so it is charged the pool's average:
+        # each supplier's own average cost, weighted by what it put in. Years where nobody
+        # produces the fuel take the plain mean over regions, as `_delivered_price` does,
+        # rather than a zero that would invent a free fuel.
+        pooled = inputs.pooled
+        produced = supply[:, pooled, :]
+        total = produced.sum(axis=0)
+        weighted = (average_cost[:, pooled, :] * produced).sum(axis=0)
+        pool_average = np.where(
+            total > 0,
+            weighted / np.where(total > 0, total, 1.0),
+            average_cost[:, pooled, :].mean(axis=0),
+        )
+        average_cost[:, pooled, :] = pool_average[None, :, :]
     weight = inputs.pricing_weight
     market_mfsp = (1.0 - weight) * average_cost + weight * marginal_price
     rent = (marginal_price - average_cost) * volume
@@ -1094,6 +1382,9 @@ def clear_market(inputs: ClearingInputs) -> ClearingOutputs:
         market_mfsp,
         average_cost,
         rent,
+        supply,
+        net_flow,
+        pool_price,
     ]
     for name, array in zip(
         (
@@ -1109,6 +1400,9 @@ def clear_market(inputs: ClearingInputs) -> ClearingOutputs:
             "market_mfsp",
             "average_cost",
             "rent",
+            "supply",
+            "net_flow",
+            "pool_price",
         ),
         outputs,
     ):
@@ -1138,6 +1432,22 @@ def clear_market(inputs: ClearingInputs) -> ClearingOutputs:
         "active_signature": solved["active_signature"],
         "active_counts": {name: int(value.sum()) for name, value in solved["tight"].items()},
     }
+
+    if inputs.pooled is not None:
+        # What the least-trade pass did. `traded_first_pass` is what the cost-minimising
+        # solve happened to return; the gap to `traded` is the part of it that was an
+        # arbitrary pick from a set of equally cheap splits, not a flow the pool needed.
+        diagnostics["pool"] = {
+            "pooled_pathways": np.flatnonzero(inputs.pooled).tolist(),
+            "traded_first_pass": solved["traded_first_pass"] * energy_scale,
+            "traded": solved["traded"] * energy_scale,
+            "relative_objective_increase": (
+                (solved["objective_after_trade"] - solved["objective"])
+                / max(abs(solved["objective"]), 1.0)
+            ),
+            "trade_seconds": solved["trade_seconds"],
+            "max_relative_closure_correction": worst_pool,
+        }
 
     if solved["a"] is not None:
         with np.errstate(invalid="ignore", divide="ignore"):
@@ -1195,6 +1505,9 @@ def clear_market(inputs: ClearingInputs) -> ClearingOutputs:
         market_mfsp=market_mfsp,
         average_cost=average_cost,
         rent=rent,
+        supply=supply,
+        net_flow=net_flow,
+        pool_price=pool_price,
         diagnostics=diagnostics,
     )
 

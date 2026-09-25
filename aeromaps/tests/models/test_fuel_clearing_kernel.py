@@ -645,17 +645,23 @@ def _slackness_residuals(inputs, outputs):
     reports the slack of any year whose dual carries solver noise, and dividing by
     ``max(lambda)`` blows up precisely in the slack case the check exists for. The
     product, against the cost scale, is stable in both limits.
+
+    The growth limit and the cap are read on what a region *produces*, the obligation on
+    what it *consumes* -- the same array without a pool, two different ones with one.
     """
     scale = float(np.max(inputs.demand))
     cost_scale = float(np.max(inputs.cost))
     sustainable = inputs.is_sustainable
+    produced = outputs.supply
 
-    previous = np.concatenate([inputs.q_init[:, :, None], outputs.volume[:, :, :-1]], axis=2)
+    previous = np.concatenate([inputs.q_init[:, :, None], produced[:, :, :-1]], axis=2)
     allowance = inputs.rampup_seed[..., None] + (1.0 + inputs.rampup_limit[..., None]) * previous
-    rampup_slack = np.maximum((allowance - outputs.volume) / scale, 0.0)[:, sustainable, :]
-    rampup = float(np.max(outputs.rampup_price[:, sustainable, :] * rampup_slack) / cost_scale)
+    growing = np.asarray(sustainable).reshape(-1, np.shape(inputs.cost)[1]).any(axis=0)
+    rampup_slack = np.maximum((allowance - produced) / scale, 0.0)[:, growing, :]
+    rampup = float(np.max(outputs.rampup_price[:, growing, :] * rampup_slack) / cost_scale)
 
-    supplied = outputs.volume[:, sustainable, :].sum(axis=1) + outputs.unmet
+    eligible = np.broadcast_to(sustainable, inputs.cost.shape[:2])[:, :, None]
+    supplied = np.where(eligible, outputs.volume, 0.0).sum(axis=1) + outputs.unmet
     mandate_slack = np.maximum((supplied - inputs.mandate_share * inputs.demand) / scale, 0.0)
     mandate = float(np.max(outputs.compliance_price * mandate_slack) / cost_scale)
 
@@ -664,7 +670,7 @@ def _slackness_residuals(inputs, outputs):
     else:
         capped = np.isfinite(inputs.capacity_limit)
         ceiling = np.where(capped, inputs.capacity_limit, 0.0)
-        capacity_slack = np.where(capped, np.maximum((ceiling - outputs.volume) / scale, 0.0), 0.0)
+        capacity_slack = np.where(capped, np.maximum((ceiling - produced) / scale, 0.0), 0.0)
         capacity = float(np.max(outputs.capacity_price * capacity_slack) / cost_scale)
 
     return rampup, mandate, capacity
@@ -1414,16 +1420,36 @@ def test_a_hard_cap_is_never_exceeded():
     assert float(np.max(over)) <= 1e-6 * DEMAND, f"cap exceeded by {np.max(over):.4g} MJ"
 
 
-def test_a_binding_cap_puts_its_whole_rent_in_the_capacity_dual():
-    """``marginal price = marginal cost + capacity rent + ramp-up rent``, per unit.
+@pytest.mark.parametrize(
+    "label, overrides",
+    [
+        ("growth limit loose", {}),
+        (
+            "growth limit binding, discounted",
+            {
+                "rampup_limit": np.full((1, 5), 0.15),
+                "rampup_seed": np.full((1, 5), 0.015 * DEMAND),
+                "discount_rate": 0.04,
+            },
+        ),
+    ],
+)
+def test_a_binding_cap_puts_its_whole_rent_in_the_capacity_dual(label, overrides):
+    """Price paid = cost + capacity rent + growth-limit rent, net of next year's.
 
     The identity the capacity dual has to satisfy to be a price at all, and the reason
     ``capacity_price`` is deliberately *not* added into ``marginal_price``: what the
     buyer pays is one thing, and how that payment splits between the producer's cost and
     the producer's rent is another. With ``gamma = 0`` the marginal cost is just ``c``,
     so the check is exact rather than approximate.
+
+    The growth-limit term is intertemporal. Producing in year ``t`` tightens year ``t``'s
+    limit and loosens year ``t+1``'s by ``1 + g``, so the price carries
+    ``rampup_price[t] - (1 + g) * rampup_price[t+1] / (1 + r)``. An earlier version of this
+    test ran with the growth limit loose only, where that term vanishes, and the
+    docstrings stated the identity without it -- off by 0.11 EUR/MJ once the limit binds.
     """
-    inputs = _staircase_case().validate()
+    inputs = _staircase_case(**overrides).validate()
     outputs = clear_market(inputs)
 
     produced = outputs.volume > 1e-6 * DEMAND
@@ -1433,12 +1459,25 @@ def test_a_binding_cap_puts_its_whole_rent_in_the_capacity_dual():
     # KKT system made; every other producing entry is.
     check = produced & ~residual
 
-    gap = outputs.marginal_price - inputs.cost - outputs.capacity_price - outputs.rampup_price
+    growth = inputs.rampup_limit[:, :, None]
+    following = np.concatenate(
+        [outputs.rampup_price[:, :, 1:], np.zeros_like(outputs.rampup_price[:, :, :1])], axis=2
+    )
+    carried = (1.0 + growth) * following / (1.0 + inputs.discount_rate)
+    gap = (
+        outputs.marginal_price
+        - inputs.cost
+        - outputs.capacity_price
+        - outputs.rampup_price
+        + carried
+    )
     worst = float(np.max(np.abs(gap[check])))
-    assert worst < 1e-7, f"stationarity off by {worst:.3e} per MJ on a producing pathway"
+    assert worst < 1e-7, f"{label}: stationarity off by {worst:.3e} per MJ"
 
     # And it is not a vacuous check: some cap really is binding and really is earning.
     assert float(np.max(outputs.capacity_price)) > 1e-3, "no cap bound; the case is not testing one"
+    if "rampup_limit" in overrides:
+        assert float(np.max(outputs.rampup_price)) > 1e-3, "growth limit never bound"
 
 
 def test_the_marginal_pathway_sets_the_price_and_the_cheap_ones_collect_the_rent():
@@ -1515,3 +1554,276 @@ def test_the_staircase_point_beats_every_feasible_neighbour():
     outputs = clear_market(inputs)
     gain, where = _cheapest_neighbour(inputs, outputs)
     assert gain < 1e-6, f"a feasible neighbour is {gain:.3%} cheaper: {where}"
+
+
+# --- one global pool ------------------------------------------------------------------
+#
+# Every region supplies the pool with what it produces and draws from it what it
+# consumes. Two regions on the staircase costs: A has waste oil to spare, B has none of
+# its own and a tighter obligation. Fractions of DEMAND throughout.
+
+HEFA, FT, ATJ, EFUEL = 1, 2, 3, 4
+POOL_CAPS_A = (np.inf, 0.30, 0.20, 0.20, np.inf)
+POOL_CAPS_B = (np.inf, 0.00, 0.20, 0.20, np.inf)
+
+
+def _pool_case(
+    years: int = 6,
+    caps=(POOL_CAPS_A, POOL_CAPS_B),
+    mandate=(0.10, 0.30),
+    demand=(1.0, 1.0),
+    pooled=True,
+    **overrides,
+) -> ClearingInputs:
+    """Two regions, five pathways, hard caps, flat mandates. ``pooled=True`` pools all
+    five, ``False`` none (separate markets), an array exactly those flagged."""
+    regions = len(caps)
+    level = np.array(demand, dtype=float)[:, None] * DEMAND * np.ones((1, years))
+    cost = np.broadcast_to(np.array(STAIRCASE_COSTS)[None, :, None], (regions, 5, years)).copy()
+    limit = np.stack(
+        [
+            np.stack([np.full(years, k * DEMAND if np.isfinite(k) else np.inf) for k in row])
+            for row in caps
+        ]
+    )
+    if pooled is True:
+        pooled = np.ones(5, dtype=bool)
+    elif pooled is False:
+        pooled = None
+    defaults = dict(
+        demand=level,
+        cost=cost,
+        is_sustainable=np.array([False, True, True, True, True]),
+        mandate_share=np.array(mandate, dtype=float)[:, None] * np.ones((1, years)),
+        buyout_price=np.full((regions, years), 0.30),
+        capacity=np.full((regions, 5, years), np.inf),
+        capacity_limit=limit,
+        sat_gamma=np.zeros((regions, 5)),
+        sat_n=4.0,
+        rampup_limit=np.full((regions, 5), 1.0e3),
+        rampup_seed=np.full((regions, 5), DEMAND),
+        q_init=np.stack([[d * DEMAND, 0.0, 0.0, 0.0, 0.0] for d in demand]),
+        discount_rate=0.0,
+        pricing_weight=1.0,
+        pooled=pooled,
+    )
+    defaults.update(overrides)
+    return ClearingInputs(**defaults)
+
+
+def test_without_a_pool_nothing_flows_and_production_is_consumption():
+    """The new outputs, in the program solved before the pool existed."""
+    outputs = clear_market(_pool_case(pooled=False))
+    assert np.array_equal(outputs.supply, outputs.volume)
+    assert float(np.max(np.abs(outputs.net_flow))) == 0.0
+    assert float(np.max(np.abs(outputs.pool_price))) == 0.0
+    assert "pool" not in outputs.diagnostics
+
+
+def test_a_region_without_feedstock_draws_the_spare_capacity_of_another():
+    """The mechanism the pool exists for, with numbers that can be written down.
+
+    A needs 0.10 of eligible fuel and owns 0.30 of HEFA; B needs 0.30 and owns none.
+    Separately, B has to climb to FT and ATJ. Pooled, B takes A's spare 0.20 of HEFA and
+    tops up with 0.10 of its own FT: the HEFA in the pool is exhausted, jointly.
+    """
+    atol = _energy_atol(np.full(1, DEMAND))
+    separate = clear_market(_pool_case(pooled=False))
+    pooled = clear_market(_pool_case())
+
+    # Separately, B has no HEFA to burn.
+    assert np.allclose(separate.volume[1, HEFA], 0.0, atol=atol)
+    assert np.allclose(separate.volume[1, ATJ], 0.10 * DEMAND, atol=atol)
+
+    # Pooled: A runs its HEFA plant at the cap and exports everything it does not burn.
+    assert np.allclose(pooled.supply[0, HEFA], 0.30 * DEMAND, atol=atol)
+    assert np.allclose(pooled.volume[0, HEFA], 0.10 * DEMAND, atol=atol)
+    assert np.allclose(pooled.net_flow[0, HEFA], 0.20 * DEMAND, atol=atol)
+    assert np.allclose(pooled.net_flow[1, HEFA], -0.20 * DEMAND, atol=atol)
+    # B makes up the rest from its own FT, and nobody makes ATJ any more.
+    assert np.allclose(pooled.volume[1, FT], 0.10 * DEMAND, atol=atol)
+    assert np.allclose(pooled.supply[:, ATJ], 0.0, atol=atol)
+    # And nothing else moves: only HEFA had to.
+    others = np.delete(pooled.net_flow, HEFA, axis=1)
+    assert float(np.max(np.abs(others))) < atol
+
+
+def test_the_net_flows_balance_and_consumption_still_closes_exactly():
+    inputs = _pool_case().validate()
+    outputs = clear_market(inputs)
+    total_flow = outputs.net_flow.sum(axis=0)
+    # "Exactly" in floating point: the closure rescales production onto consumption.
+    assert float(np.max(np.abs(total_flow))) <= 1e-12 * DEMAND
+    assert np.allclose(outputs.volume.sum(axis=1), inputs.demand, rtol=1e-14, atol=0)
+
+
+def test_the_pool_price_is_what_every_supplier_is_paid_and_every_buyer_pays():
+    """The two sides of the pool balance, as identities on the multipliers.
+
+    Supply side: at every region producing a pooled fuel,
+    ``pool_price = cost + capacity rent + growth-limit rent - next year's``. Demand side:
+    wherever a region draws it, its delivered marginal price for that fuel IS the pool
+    price. Checked with the growth limit binding, so the intertemporal term is live.
+    """
+    overrides = {
+        "rampup_limit": np.full((2, 5), 0.15),
+        "rampup_seed": np.full((2, 5), 0.015 * DEMAND),
+        "discount_rate": 0.04,
+    }
+    inputs = _pool_case(years=10, **overrides).validate()
+    outputs = clear_market(inputs)
+    noise = 1e-6 * DEMAND
+
+    growth = inputs.rampup_limit[:, :, None]
+    following = np.concatenate(
+        [outputs.rampup_price[:, :, 1:], np.zeros_like(outputs.rampup_price[:, :, :1])], axis=2
+    )
+    carried = (1.0 + growth) * following / (1.0 + inputs.discount_rate)
+    paid = np.broadcast_to(outputs.pool_price[None], outputs.supply.shape)
+    gap = paid - inputs.cost - outputs.capacity_price - outputs.rampup_price + carried
+    producing = outputs.supply > noise
+    producing[:, inputs.residual_pathway, :] = False
+    worst = float(np.max(np.abs(gap[producing])))
+    assert worst < 1e-7, f"supplier stationarity off by {worst:.3e} per MJ"
+    assert float(np.max(outputs.rampup_price)) > 1e-3, "growth limit never bound"
+
+    drawn = outputs.volume > noise
+    delivered_gap = np.abs(outputs.marginal_price - paid)[drawn]
+    assert float(np.max(delivered_gap)) < 1e-7
+
+
+def test_once_the_pool_is_exhausted_both_regions_pay_one_price_for_eligible_fuel():
+    """Common exhaustion, seen in the prices. Separately B pays for ATJ and A for HEFA;
+    pooled, the marginal eligible fuel is FT for both, and A's HEFA plant earns the gap
+    to it as rent."""
+    separate = clear_market(_pool_case(pooled=False))
+    pooled = clear_market(_pool_case())
+    eligible_price = separate.energy_price + separate.compliance_price
+    assert np.allclose(eligible_price[0], STAIRCASE_COSTS[HEFA], atol=1e-7)
+    assert np.allclose(eligible_price[1], STAIRCASE_COSTS[ATJ], atol=1e-7)
+
+    eligible_price = pooled.energy_price + pooled.compliance_price
+    assert np.allclose(eligible_price, STAIRCASE_COSTS[FT], atol=1e-7)
+    assert np.allclose(pooled.pool_price[HEFA], STAIRCASE_COSTS[FT], atol=1e-7)
+    assert np.allclose(
+        pooled.capacity_price[0, HEFA], STAIRCASE_COSTS[FT] - STAIRCASE_COSTS[HEFA], atol=1e-7
+    )
+
+
+def test_a_fuel_nobody_draws_is_priced_at_what_its_first_unit_is_worth():
+    """The pool price of an idle fuel is an interval; the kernel reports its lower end,
+    the delivered price in the region that values it most."""
+    outputs = clear_market(_pool_case())
+    for pathway in (ATJ, EFUEL):
+        assert np.allclose(outputs.volume[:, pathway], 0.0, atol=_energy_atol(np.full(1, DEMAND)))
+        assert np.allclose(
+            outputs.pool_price[pathway], outputs.marginal_price[:, pathway].max(axis=0), atol=0
+        )
+        assert np.all(outputs.pool_price[pathway] <= STAIRCASE_COSTS[pathway] + 1e-9)
+
+
+def test_the_least_trade_pass_removes_trade_the_pool_does_not_need():
+    """Both regions self-sufficient, different sizes: the pool needs no trade at all.
+
+    The first solve still returns some -- the supply of the marginal fuel split between
+    two equally cheap plants -- which is exactly why the second pass exists. If a solver
+    upgrade ever stops doing that, the first assertion fails and this test needs a case
+    where the split is less symmetric, not deleting.
+    """
+    caps = ((np.inf, 0.30, 0.30, 0.30, np.inf),) * 2
+    inputs = _pool_case(caps=caps, mandate=(0.40, 0.40), demand=(1.0, 1.5))
+    outputs = clear_market(inputs)
+    pool = outputs.diagnostics["pool"]
+    atol = _energy_atol(np.full(1, 1.5 * DEMAND))
+
+    assert pool["traded_first_pass"] > 1e-3 * DEMAND, "first pass traded nothing to remove"
+    assert pool["traded"] < atol * inputs.demand.shape[1]
+    assert float(np.max(np.abs(outputs.net_flow))) < atol
+    assert pool["relative_objective_increase"] <= 2 * inputs.solver_tolerance
+
+
+def test_a_pool_never_costs_more_than_separate_markets():
+    """Separate markets are the pool with every flow held at zero, so pooling can only
+    lower the total cost -- and leaves it unchanged where nobody needs to trade."""
+    for kwargs, gains in (
+        ({}, True),
+        ({"mandate": (0.10, 0.10), "caps": (POOL_CAPS_A,) * 2}, False),
+    ):
+        separate = clear_market(_pool_case(pooled=False, **kwargs)).diagnostics
+        pooled = clear_market(_pool_case(**kwargs)).diagnostics
+        assert separate["energy_scale"] == pooled["energy_scale"]
+        assert separate["cost_scale"] == pooled["cost_scale"]
+        saving = separate["objective_scaled"] - pooled["objective_scaled"]
+        if gains:
+            assert saving > 1e-3 * abs(separate["objective_scaled"])
+        else:
+            assert abs(saving) <= 1e-8 * abs(separate["objective_scaled"])
+
+
+def test_a_pathway_left_out_of_the_pool_stays_local():
+    """Pool HEFA only: B still draws A's HEFA, but FT and kerosene stay home, exactly."""
+    only_hefa = np.array([False, True, False, False, False])
+    outputs = clear_market(_pool_case(pooled=only_hefa))
+    local = ~only_hefa
+    assert float(np.max(np.abs(outputs.net_flow[:, local]))) == 0.0
+    assert float(np.max(np.abs(outputs.pool_price[local]))) == 0.0
+    assert np.allclose(
+        outputs.net_flow[0, HEFA], 0.20 * DEMAND, atol=_energy_atol(np.full(1, DEMAND))
+    )
+
+
+def test_the_growth_limit_binds_production_not_consumption():
+    """A's HEFA plant ramps up under the limit; B's consumption of it does not have to.
+
+    B owns no HEFA, so its own growth limit is irrelevant to what it can burn -- the
+    constraint that matters is on the plant, in A.
+    """
+    overrides = {
+        "rampup_limit": np.full((2, 5), 0.5),
+        "rampup_seed": np.full((2, 5), 0.02 * DEMAND),
+    }
+    inputs = _pool_case(years=8, **overrides).validate()
+    outputs = clear_market(inputs)
+    previous = np.concatenate([inputs.q_init[:, :, None], outputs.supply[:, :, :-1]], axis=2)
+    allowed = inputs.rampup_seed[:, :, None] + 1.5 * previous
+    assert float(np.max((outputs.supply - allowed)[:, 1:])) <= 1e-6 * DEMAND
+
+    # Consumption in B jumps faster than B's own growth limit would ever allow a plant to.
+    drawn = outputs.volume[1, HEFA]
+    own_limit = inputs.rampup_seed[1, HEFA] + 1.5 * np.concatenate([[0.0], drawn[:-1]])
+    assert np.any(drawn > own_limit + 1e-3 * DEMAND), "B's draw never outran a local ramp-up"
+
+
+def test_the_pooled_staircase_satisfies_complementary_slackness():
+    inputs = _pool_case(
+        years=10,
+        rampup_limit=np.full((2, 5), 0.15),
+        rampup_seed=np.full((2, 5), 0.015 * DEMAND),
+    ).validate()
+    rampup, mandate, capacity = _slackness_residuals(inputs, clear_market(inputs))
+    assert rampup < 1e-6 and mandate < 1e-6 and capacity < 1e-6
+
+
+def test_a_region_with_no_plant_at_all_is_served_by_the_pool():
+    """Refused without a pool -- B cannot meet its demand -- and feasible with one."""
+    caps = ((np.inf, 0.30, 0.20, 0.20, np.inf), (0.0, 0.0, 0.0, 0.0, 0.0))
+    with pytest.raises(ValueError, match="capacity_limit cannot meet demand"):
+        _pool_case(caps=caps, pooled=False).validate()
+    outputs = clear_market(_pool_case(caps=caps))
+    assert np.allclose(outputs.supply[1], 0.0, atol=_energy_atol(np.full(1, DEMAND)))
+    assert np.allclose(-outputs.net_flow[1].sum(axis=0), DEMAND, rtol=1e-9)
+
+
+def test_a_pool_that_cannot_cover_the_shortfall_is_refused_by_name():
+    caps = ((0.5, 0.0, 0.0, 0.0, 0.0), (0.5, 0.0, 0.0, 0.0, 0.0))
+    with pytest.raises(ValueError, match="the pool's capacity"):
+        _pool_case(caps=caps, mandate=(0.0, 0.0)).validate()
+
+
+def test_the_pool_flags_are_checked():
+    with pytest.raises(ValueError, match="pooled must have shape"):
+        _pool_case(pooled=np.ones(4, dtype=bool)).validate()
+    with pytest.raises(ValueError, match="pooled flags no pathway"):
+        _pool_case(pooled=np.zeros(5, dtype=bool)).validate()
+    with pytest.raises(ValueError, match="proximal_anchor is not supported with a pool"):
+        _pool_case(proximal_anchor=np.zeros((2, 5, 6)), proximal_weight=1.0).validate()
