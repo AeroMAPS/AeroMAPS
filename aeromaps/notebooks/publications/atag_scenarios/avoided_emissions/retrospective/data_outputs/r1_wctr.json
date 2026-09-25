@@ -1,0 +1,53 @@
+{
+  "config": {
+    "frozen_factors": [
+      "load_factor",
+      "seats_per_aircraft",
+      "energy_per_aircraft_km",
+      "co2_per_energy"
+    ],
+    "driver": "rpk",
+    "scope": 0.832,
+    "window": [
+      1990,
+      2023
+    ],
+    "anchor": "klower",
+    "e_1990": 457.28021248,
+    "horizon": 2050,
+    "adaptation": "wctr",
+    "elasticity": -0.34504782729982275,
+    "pass_through": 1.0,
+    "fuel_cost_share": 0.2,
+    "lf_adjustment": 0.0,
+    "splice_year": 2019,
+    "klower_rescale": 1.0,
+    "klower_rescale_spread": 0.02845655664229696,
+    "seam_discontinuity": 0.07809199837078418,
+    "observed_scenario": "s1-TTW"
+  },
+  "elasticity": -0.34504782729982275,
+  "delay_years": 1.2562195408290782,
+  "elasticity_basis": "energy cost per RPK",
+  "avoided_gt": 8.781760770766335,
+  "report_method_avoided_gt": 14.901843765402367,
+  "reduction_pct": 41.069300490487215,
+  "demand_ratio": {
+    "1990": 1.0,
+    "2000": 0.9112987809204528,
+    "2010": 0.8122807022703041,
+    "2019": 0.755329394297904,
+    "2023": 0.7655582738557617
+  },
+  "energy_cost_ratio": {
+    "1990": 1.0,
+    "2000": 1.3089077565124678,
+    "2010": 1.826775038468435,
+    "2019": 2.2551680268877017,
+    "2023": 2.168943806347798
+  },
+  "model_years": [
+    2000,
+    2023
+  ]
+}

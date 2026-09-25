@@ -5,7 +5,7 @@ data:
     json_outputs_file: ../data_outputs/f1.json
 models:
   climate:
-    climate_model_data_file: default
+    climate_model_data_file: ../../climate_models/climate_model_fair_contrail_efficacy.yaml
   energy:
     energy_carriers_model_data_file: ../../atag_3rd_edition_light/data_inputs/s0_energy.yaml
     resources_model_data_file: default

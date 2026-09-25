@@ -1,0 +1,111 @@
+# The non-CO2 assumptions this work runs on, at each band
+# =======================================================
+#
+# One row per quantity the climate analysis varies, with the value it takes in
+# each band and where that value comes from. It is the summary of what the other
+# tables compare: contrail_forcing.yaml for the first three rows, saf_contrails
+# for the next two, and contrail_avoidance for
+# the last three.
+#
+# The columns are named for the climate they produce, not for the magnitude of
+# the parameter. Reading down the avoidance rows the gain therefore decreases,
+# because the low-warming band carries the strongest mitigation; the same
+# convention is used in non_co2_uncertainty.yaml and contrail_variants.yaml,
+# whose headers explain it at length.
+
+columns:
+  - {header: Quantity, width: "0.24"}
+  - {header: Low warming, width: "0.13"}
+  - {header: Central, width: "0.13"}
+  - {header: High warming, width: "0.13"}
+  - {header: Source, width: "0.22"}
+
+label: tab:climate_assumptions
+
+caption_head: Non-CO$_2$ assumptions, by band.
+caption_body: >-
+  Values varied in the climate analysis. Bands are named by their warming, so the
+  low band has the weakest contrail forcing and the strongest mitigation. The first
+  two rows are set together, on one standard deviation of their product. The
+  particle index is the value that gives the fuel reduction above it. The avoidance
+  measures are run as separate variants.
+
+caption_body: >-
+  The quantities the climate analysis varies, at each of its three bands. The
+  bands are named for the climate outcome they produce rather than for the
+  magnitude of the parameters, so the low-warming band carries the smallest
+  contrail forcing together with the strongest mitigation, and reading down the
+  avoidance rows the gain decreases. The first two rows multiply: the band is set
+  on one standard deviation of their product and split between them in proportion
+  to the variance each contributes, which is why neither is at an extreme of its
+  own literature range. The particle number emission index is not an assumption in
+  its own right but the number that reproduces the row above it under the square
+  root relation the model uses. The three avoidance families are run as separate
+  variants rather than together, the reports including none of them.
+
+rows:
+  - cells:
+      - Contrail RF per flight km [pW m$^{-2}$ km$^{-1}$]
+      - "1.25"
+      - "2.05"
+      - "2.59"
+      - >-
+        Lee et al. (2021), 2018 total of 111.4 mW m$^{-2}$, matched on this
+        model's own distance
+    source: climate_models/climate_model_fair_contrail_efficacy.yaml
+
+  - cells:
+      - Contrail efficacy (ERF/RF)
+      - "0.21"
+      - "0.37"
+      - "0.48"
+      - Wang et al. (2026), sampling 0.20, 0.31 and 0.60
+    source: non_co2_uncertainty.yaml
+
+  - cells:
+      - Contrail ERF per flight km [pW m$^{-2}$ km$^{-1}$]
+      - "0.26"
+      - "0.76"
+      - "1.26"
+      - the product of the two rows above
+    source: derived
+
+  - cells:
+      - Contrail reduction, 100 \% SAF
+      - 67 \%
+      - 52 \%
+      - 35 \%
+      - Wang et al. (2026), 15.2 \% fuel hydrogen content
+    source: non_co2_uncertainty.yaml
+
+  - cells:
+      - SAF particle number index [per kg]
+      - "$2.178 \\times 10^{13}$"
+      - "$4.608 \\times 10^{13}$"
+      - "$8.45 \\times 10^{13}$"
+      - the index reproducing the row above under the square root relation
+    source: the ATAG energy files
+
+  - cells:
+      - Avoidance, low-risk diversion
+      - 23.0 \%
+      - 20.0 \%
+      - 17.4 \%
+      - Teoh et al. (2020), 95 \% interval
+    source: contrail_variants.yaml
+
+  - cells:
+      - "Avoidance, small-scale diversion"
+      - "65.6 \\%, 0.017 \\% fuel"
+      - "59.3 \\%, 0.014 \\% fuel"
+      - "52.4 \\%, 0.010 \\% fuel"
+      - Teoh et al. (2020), 95 \% interval
+    source: contrail_variants.yaml
+
+  - cells:
+      - Avoidance, combustor technology
+      - 82.1 \%
+      - 68.8 \%
+      - 45.2 \%
+      - Teoh et al. (2020), 95 \% interval, from 2035
+    source: contrail_variants.yaml

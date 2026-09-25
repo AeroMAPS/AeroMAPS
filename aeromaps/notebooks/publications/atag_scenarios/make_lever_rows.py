@@ -41,16 +41,22 @@ Run from this directory, once the T1 technology run exists::
 """
 
 import json
+import shutil
+import tempfile
 from pathlib import Path
 
 import yaml
 
 from aeromaps import create_process
-from aeromaps.utils.scenarios import find_scenario
+from aeromaps.utils.scenarios import find_scenario, prepare_scenario
 
 HERE = Path(__file__).parent
 FULL = HERE / "3rd_edition_full"  # results live here
 FULL_SCENARIO = find_scenario("atag_3rd_edition_full")  # its definition is packaged
+# The run configurations and inputs written below are part of the scenario's
+# definition, so they go where it lives; the runs themselves happen in a sandbox.
+SCENARIO_CONFIGS = FULL_SCENARIO.path / "config_files"
+SCENARIO_INPUTS = FULL_SCENARIO.path / "data_inputs"
 
 # F0's energy file is T1's own, read once rather than hand-copied, so a change
 # to T1 cannot leave this script quietly stale.
@@ -90,7 +96,7 @@ OPERATIONS_RUNS = {
 # the same level are the same run in every respect but technology and operations.
 FUEL_RUNS = {
     "f1": (
-        "../../3rd_edition_light/data_inputs/s0_energy.yaml",
+        "../../atag_3rd_edition_light/data_inputs/s0_energy.yaml",
         "default",
         "default",
     ),
@@ -108,7 +114,7 @@ FUEL_RUNS = {
 
 
 def _base_config():
-    return yaml.safe_load((FULL / "config_files" / "config_t1.yaml").read_text(encoding="utf-8"))
+    return yaml.safe_load((SCENARIO_CONFIGS / "config_t1.yaml").read_text(encoding="utf-8"))
 
 
 def write_operations_run(name, overrides):
@@ -119,13 +125,13 @@ def write_operations_run(name, overrides):
     ]
     for market in ("short_range", "medium_range", "long_range"):
         inputs[f"{market}_load_factor_end_year"] = overrides["load_factor"]
-    inputs_path = FULL / "data_inputs" / f"{name}_inputs.json"
+    inputs_path = SCENARIO_INPUTS / f"{name}_inputs.json"
     inputs_path.write_text(json.dumps(inputs, indent=4) + "\n", encoding="utf-8")
 
     config = _base_config()
     config["data"]["inputs"]["json_inputs_file"] = f"../data_inputs/{name}_inputs.json"
     config["data"]["outputs"]["json_outputs_file"] = f"../data_outputs/{name}.json"
-    config_path = FULL / "config_files" / f"config_{name}.yaml"
+    config_path = SCENARIO_CONFIGS / f"config_{name}.yaml"
     config_path.write_text(yaml.safe_dump(config, sort_keys=False), encoding="utf-8")
     return config_path
 
@@ -133,7 +139,7 @@ def write_operations_run(name, overrides):
 def write_fuel_run(name, carriers_file, resources_file, processes_file):
     # No inputs.json changes: the SAF mandate lives entirely inside the energy
     # carrier YAML, so swapping the file is the whole lever.
-    inputs_path = FULL / "data_inputs" / f"{name}_inputs.json"
+    inputs_path = SCENARIO_INPUTS / f"{name}_inputs.json"
     inputs_path.write_text(json.dumps(_T1_INPUTS, indent=4) + "\n", encoding="utf-8")
 
     config = _base_config()
@@ -142,16 +148,31 @@ def write_fuel_run(name, carriers_file, resources_file, processes_file):
     config["models"]["energy"]["energy_carriers_model_data_file"] = carriers_file
     config["models"]["energy"]["resources_model_data_file"] = resources_file
     config["models"]["energy"]["processes_model_data_file"] = processes_file
-    config_path = FULL / "config_files" / f"config_{name}.yaml"
+    config_path = SCENARIO_CONFIGS / f"config_{name}.yaml"
     config_path.write_text(yaml.safe_dump(config, sort_keys=False), encoding="utf-8")
     return config_path
 
 
 def run(config_path):
-    process = create_process(configuration_file=str(config_path))
-    process.compute()
-    process.write_json()
-    return process
+    """Run one configuration in a fresh sandbox and publish its output here.
+
+    The sandbox is rebuilt for each run, after its configuration is written, so it
+    always carries the files just generated rather than an older copy.
+    """
+    sandbox_root = Path(tempfile.mkdtemp(prefix="lever_rows_"))
+    try:
+        sandbox = prepare_scenario(FULL_SCENARIO.folder, workdir=sandbox_root)
+        process = create_process(
+            configuration_file=str(sandbox / "config_files" / config_path.name)
+        )
+        process.compute()
+        process.write_json()
+        output = sandbox / "data_outputs" / f"{config_path.stem.removeprefix('config_')}.json"
+        (FULL / "data_outputs").mkdir(exist_ok=True)
+        shutil.copy2(output, FULL / "data_outputs" / output.name)
+        return process
+    finally:
+        shutil.rmtree(sandbox_root, ignore_errors=True)
 
 
 def main():

@@ -1,0 +1,150 @@
+# Contrail forcing and efficacy in the literature
+# ===============================================
+#
+# Every number here is read from the source it is attributed to, in the unit that
+# source uses, with the page or table it comes from recorded beside it. Nothing is
+# converted by hand: make_literature_tables.py does the arithmetic, so a value in
+# this file can always be checked against its source, and the harmonised columns
+# of the table can always be recomputed.
+#
+# The comparison is difficult precisely because the sources do not report the same
+# quantity. Three differences matter:
+#
+# 1. What is scaled. Most studies report a forcing per flight kilometre, which is
+#    how AeroMAPS scales contrails too. Wang et al. (2026) instead scale Lee et
+#    al.'s global total with annual fuel use. The `scaling` field records which,
+#    and the harmonised columns apply each rule to the same activity.
+# 2. Whether the number is an RF or an ERF. Lee et al. and the meta-analysis of
+#    Zheng et al. (2025) report both, separated by a factor called ERF/RF in one
+#    and efficacy in the other; CoCiP studies report RF alone.
+# 3. Where the factor belongs in the model. AeroCM splits it in two:
+#    `ratio_erf_rf` converts RF to ERF, and `efficacy_erf` is passed to FaIR as a
+#    forcing efficacy. A source that publishes a single factor fills the first and
+#    leaves the second at one, which is what Lee et al. do explicitly (their
+#    Table 2 lists an efficacy of 1.0 beside the contrail ERF).
+#
+# The harmonised columns put every row on one activity, AeroMAPS's own 2019
+# distance and fuel burn, read from a committed scenario rather than restated
+# here. A distance-scaled row is multiplied by that distance; a fuel-scaled row
+# carries its own base year's total, rescaled by the ratio of the two years' fuel
+# burn. The point of the exercise is that the resulting 2019 forcings are directly
+# comparable, which the published numbers are not.
+
+common_activity:
+  # AeroMAPS's own activity, from a committed run: the scenarios agree on history,
+  # so any of them would give these numbers.
+  results: 3rd_edition_full/data_outputs/s1.json
+  year: 2019
+  kerosene_lhv_mj_per_kg: 44.0  # as in the ATAG energy files
+
+studies:
+
+  - key: lee_contribution_2021
+    label: Lee et al. (2021)
+    approach: GCM ensemble, four studies, 2002 and 2006
+    scaling: distance
+    rf_per_km: 1.82e-9  # Table 3, mW m-2 km-1
+    rf_per_km_range: [0.546e-9, 3.094e-9]  # 5-95 %, stated as +-70 %
+    rf_total: 111.4  # Table 3, 2018, mW m-2
+    rf_total_range: [33.0, 189.0]
+    erf_per_km: 9.36e-10  # Table 2, mW m-2 km-1
+    erf_total: 57.4  # Table 2, 2018
+    erf_total_range: [17.0, 98.0]
+    erf_rf: 0.42
+    erf_rf_note: >-
+      stated as the mean of three model studies, 0.59 (Ponater et al. 2005),
+      0.31 (Rap et al. 2010) and 0.35 (Bickel et al. 2020); their own tabulated
+      sensitivities imply 0.51, because Chen and Gettelman (2013) enters the
+      ensemble as an ERF and is not scaled
+    efficacy: 1.0
+    efficacy_note: listed as unity in their Table 2, the adjustment being in ERF/RF
+    source: Lee et al. (2021), Atmos. Environ. 244, 117834, Tables 2 and 3
+
+  - key: teoh_global_2024
+    label: Teoh et al. (2024)
+    approach: CoCiP trajectories, 2019
+    scaling: distance
+    rf_total: 62.1  # mW m-2, 2019
+    rf_total_range: [13.7, 74.8]
+    own_distance_km: 6.09e+10
+    erf_rf: null
+    erf_rf_note: >-
+      none of its own; Zheng et al. (2025) apply their triangular efficacy to it,
+      and Lee et al.'s 0.42 gives the ERF quoted in the harmonised column
+    efficacy: null
+    source: >-
+      as compiled by Zheng et al. (2025), Table C1, from Teoh et al. (2024),
+      Atmos. Chem. Phys. 24, 6071; the interval spans nvPM number indices of
+      1e14 to 1e15 per kg of fuel
+
+  - key: zheng_aviation_2025_meta
+    label: ICCT meta-analysis (2025)
+    approach: meta-analysis of 18 estimates to 2023
+    scaling: distance
+    erf_per_km: 7.03e-10
+    erf_per_km_range: [1.04e-10, 20.1e-10]  # 95 %
+    erf_per_km_mode: 2.72e-10
+    erf_rf: 0.36
+    erf_rf_range: [0.14, 0.70]
+    erf_rf_note: >-
+      triangular, the midpoint being the mean of Ponater et al. (2005) 0.59,
+      Rap et al. (2010) 0.31, Bickel et al. (2020) 0.35 and Bickel (2023) 0.21;
+      already applied inside the per-kilometre ERF above
+    efficacy: 1.0
+    source: Zheng et al. (2025), ICCT, pp. 10 and 56-59, Tables C1 to C3
+
+  - key: zheng_aviation_2025_cocip
+    label: ICCT CoCiP run (2025)
+    approach: CoCiP trajectories, 2023
+    scaling: distance
+    rf_total: 42.3
+    erf_total: 17.8
+    own_distance_km: 5.68e+10
+    erf_per_km: 3.13e-10
+    erf_rf: 0.42
+    efficacy: 1.0
+    source: Zheng et al. (2025), ICCT, p. 10
+
+  - key: wang_fuel_2026
+    label: Wang et al. (2026)
+    approach: Lee et al.'s 2018 total, carried forward
+    scaling: fuel
+    rf_total: 111.4  # Lee et al.'s 2018 RF, rescaled with fuel use
+    rf_total_range: [33.0, 189.0]
+    rf_total_year: 2018
+    erf_rf: 0.37
+    erf_rf_range: [0.20, 0.60]
+    erf_rf_note: >-
+      called an RF-based efficacy and sampled over 0.20 (Bickel et al.),
+      0.31 (Rap et al. 2010) and 0.60 (Ponater), mean 0.37; it multiplies RF, so
+      it occupies AeroCM's ERF/RF slot
+    efficacy: 1.0
+    source: Wang et al. (2026), preprint, Methods, "OSCAR-Aviation"
+
+  - key: aeromaps_default
+    label: AeroMAPS default
+    approach: Lee et al.'s ERF divided by 0.42
+    scaling: distance
+    rf_per_km: 2.23e-9
+    erf_rf: 0.42
+    efficacy: 1.0
+    source: >-
+      aeromaps/resources/data/climate_models/climate_model.yaml, sensitivity_rf
+      2.23e-12 W m-2 km-1; 23 % above Lee et al.'s own RF sensitivity, being
+      their ERF sensitivity divided by 0.42
+
+  - key: this_work
+    label: This work
+    approach: Lee et al.'s 2018 total, on this model's own distance
+    scaling: distance
+    rf_per_km: 2.05236e-9
+    rf_per_km_range: [1.25353e-9, 2.59353e-9]
+    erf_rf: 0.37
+    erf_rf_range: [0.2101, 0.4841]
+    erf_rf_note: >-
+      the band splits one standard deviation of the product between the two
+      factors, in proportion to the variance each contributes
+    efficacy: 1.0
+    source: >-
+      aeromaps/resources/scenarios/climate_models/climate_model_fair_contrail_efficacy.yaml
+      and climate_analysis/non_co2_uncertainty.yaml

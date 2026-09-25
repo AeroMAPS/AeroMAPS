@@ -1,0 +1,124 @@
+# Coupling aviation demand to price
+# =================================
+#
+# One row per approach rather than per work, methods and values in the same
+# table. The approaches are the frame of Costa Alves et al. (2026), Table 1,
+# collapsed: what the demand responds to, if anything, and how. The roadmaps that
+# the ATAG reports cite when setting the question aside are added, since they are
+# what the coupled scenarios of this paper should be read against.
+#
+# Values are as each work publishes them, and none of the demand effects are on
+# the same basis: a change against a work's own uncoupled counterfactual, a change
+# in a growth rate, and a share of an emissions reduction attributed to demand are
+# three different statements. The cells say which.
+#
+# Works appearing here and not read directly are classified as Costa Alves et al.
+# classify them; everything with a number beside it was read from the work named.
+
+columns:
+  - {header: Approach, width: "0.19"}
+  - {header: Works, width: "0.20"}
+  - {header: Price and elasticity, width: "0.18"}
+  - {header: Carbon price, width: "0.14"}
+  - {header: Demand effect by 2050, width: "0.17"}
+
+label: tab:demand_price
+
+caption_head: Demand and price in comparable studies.
+caption_body: >-
+  How studies link demand to the cost of decarbonising, grouped by approach,
+  extending Costa Alves et al. (2026) with the roadmaps cited by the reports. The
+  price differs between rows (fuel price, fuel cost or airfare), so elasticities
+  compare only in sign and size. Each demand effect states its own basis. The last
+  row is this work, with and without SAF.
+
+caption_body: >-
+  How comparable studies let demand respond to the cost of decarbonising, grouped
+  by approach, extending the comparison of Costa Alves et al. (2026) with the
+  roadmaps the reports themselves cite before setting the question aside. The
+  price is not the same quantity across rows, a fuel price, a fuel cost per unit
+  of demand and an airfare reaching the traveller differently, so the elasticities
+  are comparable in sign and order of magnitude rather than cell for cell. Neither
+  are the demand effects on one basis: each cell states whether it is a change
+  against the work's own uncoupled counterfactual, a change in a growth rate, or a
+  share of an emissions reduction. The last row is this work, whose two figures
+  are the fixed-share mandate and the no-SAF counterfactual it is drawn against.
+
+rows:
+  - cells:
+      - Exogenous traffic, no price at all
+      - >-
+        ATAG Waypoint 2050; ICAO LTAG (2022); Plan\`es et al. (2021); Grewe et al.
+        (2021); Kl\"ower et al. (2021); Sacchi et al. (2023)
+      - none
+      - none
+      - none by construction
+    source: >-
+      the reports state it themselves; the academic works as classified by
+      Costa Alves et al. (2026), Table 1
+
+  - cells:
+      - Logistic in income, saturating, no price
+      - Vedantham and Oppenheimer (1994); Vidal et al. (2022)
+      - none
+      - none
+      - not stated
+    source: as classified by Costa Alves et al. (2026), Table 1
+
+  - cells:
+      - Constant elasticity on a growth rate
+      - "G\\\"ossling et al. (2021)"
+      - "ticket price, $-0.75$ to $-1.25$"
+      - a CO$_2$ price with a synthetic fuel quota
+      - >-
+        growth of 57 to 187 \% over 2018--2050 against 250 \% without
+    source: Gössling et al. (2021), Environ. Res. Lett. 16, 034063
+
+  - cells:
+      - Elasticity inside an integrated assessment model
+      - >-
+        Franz et al. (2022), EDGE-T; Napp et al. (2019), TIAM; Speizer et al.
+        (2024), GCAM; Sharmina et al. (2021), IMAGE
+      - >-
+        service cost; Franz et al. set the price elasticity to zero and vary
+        income, 1.55 declining
+      - >-
+        100 to 300 \$/t (Napp); break-even 135 to 496 \$/t for aviation (Speizer)
+      - >-
+        small; the difference between elasticity on and off
+    source: >-
+      Franz et al. (2022), Methods; Napp et al. (2019), Table 1; Speizer et al.
+      (2024), Table 2; Sharmina et al. (2021), sections 3 and 4
+
+  - cells:
+      - Airfare elasticity on a sectoral model
+      - >-
+        Dray et al. (2022), AIM; Destination 2050 (2025); GIFAS and DGAC (2023);
+        Sustainable Aviation UK (2026); T\&E (2025); Zheng et al. (2025)
+      - >-
+        airfare; $-1.0$ and $-1.5$ by segment (D2050), $-0.9$ and $-0.6$ by market
+        (DGAC), $-0.9$ on fares (DfT), IATA (2007) by region pair (AIM)
+      - >-
+        300 to 400 \$/t over 2030--35 (Dray); EU ETS 100 then 200 EUR/t (T\&E);
+        UK ETS (SA UK); implied by the fuel mix (ICCT)
+      - >-
+        16 \% of the 2050 CO$_2$ cut (D2050); growth 2.1 to 1.1 \%/yr (GIFAS);
+        15 \% of the cut (SA UK); leisure $-12$ to $-22$ \% (T\&E)
+    source: >-
+      Dray et al. (2022) and its supplement; Destination 2050 (2025), p. 12 and
+      pp. 80-81; GIFAS (2023), p. 94; the SA UK roadmap summary with the DfT
+      elasticity report, Table 2; T\&E roadmap, sections 4.5 and 10.5; Zheng et
+      al. (2025), pp. 13 and 40
+
+  - cells:
+      - Price-adjusted logistic, saturating in income
+      - Costa Alves et al. (2026); this work
+      - >-
+        fuel cost per RPK, $-0.345$ with a 1.26 year delay
+      - >-
+        AR6 SSP2: 43, 212 and 1034 \$(2010)/t in 2050, none before 2027
+      - >-
+        $-2.9$, $-7.5$ and $-22.0$ \%; $+2.2$, $-14.9$ and $-41.8$ \% without SAF
+    source: >-
+      Costa Alves et al. (2026), Table 2; this work's coupled runs, against each
+      run's own uncoupled traffic

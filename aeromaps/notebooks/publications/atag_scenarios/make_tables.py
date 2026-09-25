@@ -12,13 +12,20 @@ report_data/digitise_scenarios.py. Both sides are gross, that is, before any
 offsetting: `co2_emissions_including_energy` on ours, and the upper boundary of
 the market-based band on theirs.
 
-Table 2 is the internal decomposition: what each mitigation pillar removes from
-the frozen-fleet baseline in 2050. Every row, headline scenarios and individual
-lever levels alike, is read from a standalone run rather than from the sweep
-grid: the sweep's cells inherit S1's full configuration, load factor included,
-so a lever level read from it carries S1's load-factor gain on top of whatever
-the lever itself varies. make_lever_rows.py builds the levels that do not
-already exist as a scenario or a technology run.
+Table 2 is the same validation carried out lever by lever: what each pillar
+abates in the reproduction against the thickness of the matching band in the
+report's own scenario charts, traced per pixel by
+report_data/digitise_scenarios.py. It is laid out like Table 1, at the same
+reporting years and over the same cumulative span.
+
+Printed beside the two tables, but not emitted as one, is the internal
+decomposition the Discussion cites: what each mitigation pillar removes from the
+frozen-fleet baseline in 2050, for the headline scenarios and for the individual
+lever levels. Every one of those rows is read from a standalone run rather than
+from the sweep grid, whose cells inherit S1's full configuration, load factor
+included, so a lever level read from it carries S1's load-factor gain on top of
+whatever the lever itself varies. make_lever_rows.py builds the levels that do
+not already exist as a scenario or a technology run.
 
 Run from this directory::
 
@@ -86,7 +93,7 @@ def validation_rows():
             continue
         curve = report["technology_scenarios"][name]
         ours = series(load_results(path), "co2_emissions_including_energy")
-        rows.append((name, _errors(ours, curve["years"], curve["values"])))
+        rows.append((name, _band_pairs(ours, curve["years"], curve["values"], thin=0.0)))
 
     # The scenarios sit in a different edition folder from the technology runs,
     # and S0 only exists in the light edition.
@@ -103,7 +110,7 @@ def validation_rows():
             continue
         curve = report["scenarios"][name]
         ours = series(load_results(path), "co2_emissions_including_energy")
-        rows.append((name, _errors(ours, curve["years"], curve["mbm_top"])))
+        rows.append((name, _band_pairs(ours, curve["years"], curve["mbm_top"], thin=0.0)))
     return rows
 
 
@@ -171,6 +178,197 @@ def lever_rows():
     return rows
 
 
+# --------------------------------------------------------------------------- 2, validation
+
+# The scenario outputs each lever row is read from: tank-to-wake, the report's own
+# scope, since the traced bands are its tank-to-wake charts.
+SCENARIO_TTW = {
+    "S0": ("3rd_edition_light", "s0-TTW.json"),
+    "S1": ("3rd_edition_full", "s1-TTW.json"),
+    "S2": ("3rd_edition_full", "s2-TTW.json"),
+}
+SCENARIO_LABELS = {"S0": "S0 reference", "S1": "S1 SAF-focused", "S2": "S2 technology-centric"}
+
+
+def our_lever_series(view, t0, t1):
+    """Each pillar's annual abatement, as the decomposition figure stacks it.
+
+    The wedge boundaries run frozen fleet, renewal only, the scenario's own
+    technology, after alternative aircraft, after operations, gross, and net of
+    offsets, so consecutive differences are the pillars. Alternative aircraft join
+    next generation technology, as the reports count them.
+    """
+    from aeromaps.utils.decomposition import mitigation_wedges
+
+    _, b = mitigation_wedges(view, anchors=(t0, t1))
+    return {
+        "fleet_renewal": b[0] - b[1],
+        "next_generation": (b[1] - b[2]) + (b[2] - b[3]),
+        "operations": b[3] - b[4],
+        "saf": b[4] - b[5],
+        "market_based": b[5] - b[6],
+        "gross": b[5],
+    }
+
+
+# Below this, a band is under one pixel of the report's chart, so its thickness
+# cannot be read off: the cell says so rather than quoting a number the tracing
+# cannot support.
+MIN_BAND_MT = 5.0
+
+# The cumulative column is reported in Gt, the annual ones in Mt, since a lever
+# integrated over twenty-seven years runs to thousands of Mt.
+MT_PER_GT = 1000.0
+
+
+def _band_pairs(ours, years, values, thin=MIN_BAND_MT):
+    """``(reproduction, report)`` per reporting year, then over the cumulative span.
+
+    Both sides are abatement in Mt, and the cumulative pair in Gt. The report's
+    side is ``None`` where its band is thinner than a pixel of its own chart.
+    """
+    ours = np.asarray(ours, dtype=float)
+    pairs = []
+    for year in ERROR_YEARS:
+        traced = float(np.interp(year, years, values))
+        pairs.append((at(ours, year), traced if traced >= thin else None))
+
+    span = np.arange(CUMULATIVE_SPAN[0], CUMULATIVE_SPAN[1] + 1)
+    reproduced = float(sum(at(ours, year) for year in span)) / MT_PER_GT
+    traced = float(np.interp(span, years, values).sum()) / MT_PER_GT
+    pairs.append((reproduced, traced))
+    return pairs
+
+
+def lever_validation_rows():
+    """Abatement per lever, reproduction against the report's own traced bands.
+
+    Returns ``{scenario: [(lever label, pairs), ...]}``, one pair per reporting
+    year and one for the cumulative span, each ``(reproduction, report)``.
+    """
+    report = yaml.safe_load(
+        (HERE / "report_data" / "atag_3rd_edition_figures.yaml").read_text(encoding="utf-8")
+    )["scenarios"]
+    full = HERE / "3rd_edition_full" / "data_outputs"
+    t0, t1 = load_results(full / "t0-TTW.json"), load_results(full / "t1-TTW.json")
+
+    table = {}
+    for name, (edition, filename) in SCENARIO_TTW.items():
+        curve = report[name]
+        bands, years = curve["bands"], curve["years"]
+        ours = our_lever_series(load_results(HERE / edition / "data_outputs" / filename), t0, t1)
+        hatched = any(value > 0 for value in bands["saf_hatched"])
+        saf_total = [s + h for s, h in zip(bands["saf_solid"], bands["saf_hatched"])]
+
+        rows = [
+            ("Fleet renewal", _band_pairs(ours["fleet_renewal"], years, bands["fleet_renewal"])),
+            (
+                "Next gen. tech.",
+                _band_pairs(ours["next_generation"], years, bands["next_generation"]),
+            ),
+            ("Operations, infra.", _band_pairs(ours["operations"], years, bands["operations"])),
+        ]
+        if hatched:
+            rows.append(("SAF, solid band", _band_pairs(ours["saf"], years, bands["saf_solid"])))
+            rows.append(("SAF + increment", _band_pairs(ours["saf"], years, saf_total)))
+        else:
+            rows.append(("SAF", _band_pairs(ours["saf"], years, saf_total)))
+        rows.append(
+            ("Market-based", _band_pairs(ours["market_based"], years, bands["market_based"]))
+        )
+        rows.append(("Gross residual", _band_pairs(ours["gross"], years, curve["mbm_top"])))
+        table[name] = rows
+    return table
+
+
+# Errors are stated in Mt (Gt in the cumulative column) and, in brackets, as a
+# share of the frozen-fleet (T0) emissions of the same year or span: an absolute
+# figure says how much CO2 is at stake, and the share puts every row, thin band or
+# thick, on one common base.
+SPAN_YEARS = CUMULATIVE_SPAN[1] - CUMULATIVE_SPAN[0] + 1
+
+# Cell shading by the error as a share of T0: one hue, light to dark, so the eye
+# finds the large errors before reading a number. The share already puts every
+# column, the cumulative one included, on one base, so one scale serves them all.
+# Below the first bound the cell is left white; the darkest tint still carries
+# black text.
+ERROR_SHADES_PCT = (
+    (1.0, None),
+    (2.5, "FDE9D9"),
+    (5.0, "F9C9A6"),
+    (10.0, "F2A06E"),
+    (float("inf"), "E4733F"),
+)
+
+_T0 = []
+
+
+def t0_reference():
+    """Frozen-fleet tank-to-wake emissions: each reporting year in Mt, then the span in Gt."""
+    if not _T0:
+        t0 = series(
+            load_results(HERE / "3rd_edition_full" / "data_outputs" / "t0-TTW.json"),
+            "co2_emissions_including_energy",
+        )
+        span = np.arange(CUMULATIVE_SPAN[0], CUMULATIVE_SPAN[1] + 1)
+        _T0.extend([at(t0, year) for year in ERROR_YEARS])
+        _T0.append(float(sum(at(t0, year) for year in span)) / MT_PER_GT)
+    return _T0
+
+
+def _shade(share):
+    """The cell colour command for an error in % of T0, or nothing below 1 %."""
+    for bound, colour in ERROR_SHADES_PCT:
+        if abs(share) < bound:
+            return r"\cellcolor[HTML]{%s}" % colour if colour else ""
+    return ""
+
+
+def _pair_cell(pair, column, latex=True):
+    """Error in Mt (Gt in the cumulative column), with its share of T0 in brackets.
+
+    Where the report's band is too thin to trace there is no error to report.
+    """
+    reproduced, reference = pair
+    if reference is None:
+        return "--"
+    error = reproduced - reference
+    share = 100.0 * error / t0_reference()[column]
+    if abs(share) < 0.05:
+        share = 0.0  # no "-0.0" for an error that rounds to nothing
+    cumulative = column == len(ERROR_YEARS)
+    value = ("%+.2f" if cumulative else "%+.1f") % error
+    if not latex:
+        return "%s (%+.1f%%)" % (value, share)
+    return r"%s$%s$ ($%+.1f$~\%%)" % (_shade(share), value, share)
+
+
+def _cells(pairs, latex=True):
+    return [_pair_cell(pair, column, latex) for column, pair in enumerate(pairs)]
+
+
+def hatched_errors(year=2050):
+    """2050 error of S0 and S2 in Mt, against the gross curve and with the hatch as fuel."""
+    report = yaml.safe_load(
+        (HERE / "report_data" / "atag_3rd_edition_figures.yaml").read_text(encoding="utf-8")
+    )["scenarios"]
+    out = {}
+    for name in ("S0", "S2"):
+        edition, filename = SCENARIO_TTW[name]
+        ours = at(
+            series(
+                load_results(HERE / edition / "data_outputs" / filename),
+                "co2_emissions_including_energy",
+            ),
+            year,
+        )
+        curve = report[name]
+        top = float(np.interp(year, curve["years"], curve["mbm_top"]))
+        hatch = float(np.interp(year, curve["years"], curve["bands"]["saf_hatched"]))
+        out[name] = (ours - top, ours - (top + hatch))
+    return out
+
+
 # --------------------------------------------------------------------------- output
 
 
@@ -179,16 +377,28 @@ def _fmt(value, width=7, places=1):
 
 
 def print_tables():
-    print("Table 1 - reproduced tank-to-wake against the report's published curves [%]\n")
+    print(
+        "Table 1 - reproduced tank-to-wake against the report's curves, error in Mt "
+        "(Gt cumulative) and share of T0\n"
+    )
     header = "  ".join(f"{year}" for year in ERROR_YEARS)
     print(f"  scenario   {header}   {CUMULATIVE_SPAN[0]}-{CUMULATIVE_SPAN[1]}")
     for name, errors in validation_rows():
         if errors is None:
             print(f"  {name:<9}  PENDING, no committed tank-to-wake output")
             continue
-        print(f"  {name:<9}  " + "  ".join(f"{value:+6.1f}" for value in errors))
+        print(f"  {name:<9}  " + "".join(f"{cell:>18}" for cell in _cells(errors, latex=False)))
 
-    print("\n\nTable 2 - 2050 pillar contributions [MtCO2]\n")
+    print("\n\nTable 2 - lever abatement, error in Mt (Gt cumulative) and share of T0\n")
+    span = "%d-%d" % CUMULATIVE_SPAN
+    print(f"  {'lever':<22}" + "".join(f"{year:>16}" for year in ERROR_YEARS) + f"{span:>16}")
+    for name, rows in lever_validation_rows().items():
+        print(f"  {SCENARIO_LABELS[name]}")
+        for label, pairs in rows:
+            cells = "".join(f"{cell:>18}" for cell in _cells(pairs, latex=False))
+            print(f"    {label:<20}{cells}")
+
+    print("\n\nStandalone lever runs, cited in the Discussion - 2050 pillars [MtCO2]\n")
     print(
         f"  {'scenario':<22} "
         + " ".join(f"{name:>20}" for name in PILLARS)
@@ -204,132 +414,93 @@ def print_tables():
 
 
 TABLE1_CAPTION = (
-    r"\textcolor{Highlight}{Reproduction against the report's own published curves.} "
-    r"\textcolor{red}{Relative error in annual CO$_2$ emissions between this reproduction and the "
-    r"third edition's own trajectories, in \%, in the tank-to-wake scope adopted by the report. A "
-    r"positive value indicates an overestimate by the reproduction. The technology scenarios T0 to "
-    r"T4 are compared against curves digitised by hand, whereas S0 to S2 are compared against "
-    r"curves traced per pixel from the published charts. T0 is the notional frozen-fleet "
-    r"trajectory and T1 corresponds to emissions with no improvement beyond ongoing fleet renewal, "
-    r"neither of which includes reductions from operations, fuels or market-based measures. "
-    r"Both sides of the comparison are gross, that is, before any offsetting: the reproduction "
-    r"reports \texttt{co2\_emissions\_including\_energy}, and the traced curve is the upper "
-    r"boundary of the market-based band, which represents the emissions remaining once every "
-    r"physical lever has acted. The dashed line drawn on the same charts is net of offsets and "
-    r"reaches zero in 2050, and is therefore not used. Regarding S0 and S2, a hatched band lies "
-    r"above that boundary, labelled as an increment to be covered by carbon removals should "
-    r"sustainable aviation fuel not deliver it. Taking the increment as delivered by fuel instead "
-    r"moves the 2050 error from $+32.4$~\% to $+12.6$~\% for S0, and from $-27.3$~\% to "
-    r"$-58.7$~\% for S2. The cumulative column starts in @START@ rather than in 2019 because the "
-    r"published curves begin there, the preceding years being observed and therefore identical on "
-    r"both sides.}"
+    r"\textcolor{Highlight}{Validation against the report's curves.} "
+    r"\textcolor{red}{Error of the reproduced annual CO$_2$ emissions against the third "
+    r"edition, tank-to-wake, in Mt (Gt for the cumulative column), with in brackets the error "
+    r"as a share of the frozen-fleet (T0) emissions of the same year. Positive values mean the "
+    r"reproduction is higher. T0 to T4 are compared with hand-digitised curves, S0 to S2 with "
+    r"curves traced from the report charts. T0 is the frozen fleet and T1 the fleet renewed "
+    r"with existing aircraft; neither includes operations, fuels or market-based measures. Both "
+    r"sides are gross emissions, before offsets. The report adds a hatched band above S0 and "
+    r"S2, to be covered by carbon removals if SAF falls short. Counting it as SAF moves the 2050 "
+    r"error from @S0A@ to @S0B@~Mt for S0, and from @S2A@ to @S2B@~Mt for S2. The cumulative "
+    r"column starts in @START@, where the report curves begin. Shading marks errors of 1 to "
+    r"2.5, 2.5 to 5, 5 to 10 and over 10~\% of T0, from light to dark.}"
 ).replace("@START@", str(CUMULATIVE_SPAN[0]))
 
 TABLE2_CAPTION = (
-    r"\textcolor{Highlight}{Reproduced 2050 lever contributions.} "
-    r"\textcolor{red}{What each mitigation pillar removes from the frozen-fleet baseline in 2050, "
-    r"in MtCO$_2$. The pillars follow the decomposition adopted by the reports, so that next "
-    r"generation technology carries the battery-electric contribution rather than the fuel column, "
-    r"and operations carries load factor. The first three rows correspond to the published "
-    r"scenarios. The remaining rows correspond to standalone single-lever runs, each starting from "
-    r"the technology-only T1 configuration (zero operations gain, no drop-in SAF) and varying "
-    r"exactly one lever, so that T1, O1 and F0 designate the same run and appear three times by "
-    r"construction; O2 and O3 vary the operations gain and load factor together, since the reports "
-    r"bundle both into that pillar, and F1 to F3 vary the energy carrier file alone. Every "
-    r"row closes on the common frozen-fleet baseline of 2835.0~Mt once the gross residual is "
-    r"added to the four pillars, which verifies that the "
-    r"decomposition constitutes a partition rather than an attribution; T0 is included as an "
-    r"ordinary row and closes the same way, every one of its pillars being zero since it is "
-    r"the baseline the other columns are measured against. The rows carrying no operations lever "
-    r"report exactly zero for it because the load factor is held at its last observed value, "
-    r"82.116~\% in 2023, rather than at the 82.4~\% the reports state: 82.4~\% is the pre-COVID "
-    r"2019 value, so reaching it by 2050 is a small recovery rather than no change, and booking "
-    r"that recovery as an operations gain would credit the pillar in rows built to exclude it. "
-    r"The operations axis proper stays anchored on the reports' own published pair, O3 at "
-    r"88.389~\% and O2 interpolated midway between it and 82.4~\%, the reports giving no "
-    r"intermediate value. Two "
-    r"cautions apply when reading across rows. First, market-based measures carry no column of "
-    r"their own, since the reports define them as removing whatever gross residual the physical "
-    r"levers leave: their contribution is the Gross WtW column read a second time, rather than an "
-    r"independent lever. Second, the value of a given pillar depends on what else is deployed "
-    r"alongside it, "
-    r"which explains why next generation technology amounts to 529.1~Mt under T4 alone and to "
-    r"500.2~Mt under S2, where sustainable aviation fuel competes for the same joules. Gross "
-    r"residuals are reported in both accounting scopes for the published scenarios, the reports "
-    r"headlining tank-to-wake emissions while this reproduction is run well-to-wake, so that the "
-    r"difference between those two columns is attributable to the accounting scope alone.}"
-)
+    r"\textcolor{Highlight}{Validation of each lever.} "
+    r"\textcolor{red}{Error of the abatement of each lever against the report's charts, "
+    r"tank-to-wake, in Mt (Gt for the cumulative column), with in brackets the error as a share "
+    r"of the frozen-fleet (T0) emissions of the same year. Positive values mean the reproduction "
+    r"attributes more abatement to the lever. The report bands are traced from the report at "
+    r"600~dpi and match its printed 2050 shares within 1.0 point. Bands thinner than one pixel, "
+    r"about @MIN@~Mt, cannot be read and are marked with a dash. SAF is compared with and "
+    r"without the hatched band. Two rows differ by construction: S0 fuel comes from stated "
+    r"country policies, and market-based measures follow the offset path harmonised in the "
+    r"Methods. Shading as in Table \ref{tab:validation}.}"
+).replace("@MIN@", "%.0f" % MIN_BAND_MT)
+
+
+def _table1_caption():
+    """Table 1's caption, with the hatched-band errors computed rather than typed."""
+    errors = hatched_errors()
+    caption = TABLE1_CAPTION
+    for name in ("S0", "S2"):
+        caption = caption.replace("@%sA@" % name, "$%+.0f$" % errors[name][0])
+        caption = caption.replace("@%sB@" % name, "$%+.0f$" % errors[name][1])
+    return caption
 
 
 def _latex_tables():
     """Both tables as one LaTeX fragment."""
-    # Blank separator rows are passed through verbatim, so the widths of the two
-    # tables can differ without the emitter having to guess how many columns a
-    # spacer needs.
-    blank1 = r"        &     &    &    &    \\"
-    blank2 = r"        &     &    &    &    &    &    \\"
+    # Blank separator rows are passed through verbatim, so the emitter never
+    # has to guess how many columns a spacer needs.
+    blank = r"        &     &    &    &    \\"
 
-    rows1 = [blank1]
+    rows1 = [blank]
     for name, errors in validation_rows():
         # The two blocks are validated against differently sourced curves, so they
         # are separated rather than run together.
         if name == "S0":
-            rows1.append(blank1)
+            rows1.append(blank)
         if errors is None:
             rows1.append(r"%-6s & \multicolumn{4}{c}{pending} \\" % name)
             continue
-        rows1.append(["%-6s" % name] + ["$%+.1f$" % value for value in errors])
+        rows1.append(["%-6s" % name] + _cells(errors))
 
     table1 = latex_table(
-        headers=["Scenario"] + [str(year) for year in ERROR_YEARS] + ["%d--%d" % CUMULATIVE_SPAN],
+        headers=["Scenario"]
+        + ["%d [Mt]" % year for year in ERROR_YEARS]
+        + ["%d--%d [Gt]" % CUMULATIVE_SPAN],
         rows=rows1,
         # m{} in the label column rather than p{}: p is top-aligned while M is
         # vertically centred, so a heading wrapping to two lines left "Scenario"
         # riding above the others in the header row.
-        widths=["0.18", "0.12", "0.12", "0.12", "0.15"],
-        caption=TABLE1_CAPTION,
+        widths=["0.12", "0.18", "0.18", "0.18", "0.18"],
+        caption=_table1_caption(),
         label="tab:validation",
     )
 
-    # Seven columns, not eight: the market-based pillar is numerically identical
-    # to Gross WtW in every row, being defined as the gross residual the measures
-    # are assumed to remove, so printing it twice spent a column on a duplicate.
-    #
-    # Widths sum to 0.82	extwidth rather than the 0.88 the eight-column version
-    # used. With 	abcolsep at 6pt each of the seven columns also carries 12pt of
-    # padding, or 84pt over the row, and the text block is 7.2in (letterpaper less
-    # the 0.65in margins), so anything above roughly 0.84 overflows. The old
-    # layout did overflow; this one leaves a little room, and the width freed by
-    # dropping the column goes to the two headings that wrap worst.
-    rows2 = [blank2]
-    # Blank separator before each block: the published scenarios, the five
-    # technology runs T0-T4, the three operations runs O1-O3, and the four
-    # fuel runs F0-F3.
-    for index, (label, pillars, gross, gross_ttw) in enumerate(lever_rows()):
-        if index in (3, 8, 11):
-            rows2.append(blank2)
-        rows2.append(
-            ["%-22s" % label]
-            # pillars[:-1] drops the market-based entry; it is kept in PILLARS and
-            # in decompose() because the console table still shows it and the sum
-            # check needs it to close on the frozen-fleet baseline.
-            + ["%.1f" % value for value in pillars[:-1]]
-            + ["%.1f" % gross, "%.1f" % gross_ttw if gross_ttw is not None else "--"]
-        )
-    rows2.append(r" &     &    &    &    &    &    \\")
+    # The frame of Table 1, one block per scenario: the same reporting years and
+    # the same cumulative span, so that the two tables are read the same way.
+    rows2 = []
+    for name, rows in lever_validation_rows().items():
+        rows2.append(blank)
+        rows2.append(r"\multicolumn{5}{l}{\textbf{%s}} \\" % SCENARIO_LABELS[name])
+        for label, pairs in rows:
+            rows2.append(["%-22s" % label] + _cells(pairs))
+    rows2.append(blank)
 
     table2 = latex_table(
-        headers=[
-            "Scenario",
-            "Fleet renewal",
-            "Next gen. technology",
-            "Operations, infra.",
-            "SAF",
-            "Gross WtW",
-            "Gross TtW",
-        ],
+        headers=["Lever"]
+        + ["%d [Mt]" % year for year in ERROR_YEARS]
+        + ["%d--%d [Gt]" % CUMULATIVE_SPAN],
         rows=rows2,
-        widths=["0.17", "0.10", "0.13", "0.12", "0.10", "0.10", "0.10"],
+        # A wider first column than Table 1, the lever names being longer than the
+        # scenario names they are grouped under, and wider value columns, each
+        # carrying two numbers rather than one.
+        widths=["0.19", "0.175", "0.175", "0.175", "0.175"],
         caption=TABLE2_CAPTION,
         label="tab:levers",
     )
@@ -337,12 +508,51 @@ def _latex_tables():
     return table1 + "\n" + table2
 
 
+# The document includes this rather than displaying it from a code cell, because
+# a table displayed from a cell does not survive the typst export.
+MARKDOWN_TABLE = HERE / "report_data" / "lever_validation.md"
+
+
+def write_markdown(target=MARKDOWN_TABLE):
+    """Table 2 as Markdown, for the document to include."""
+    header = ["Scenario", "Lever"]
+    header += ["%d [Mt]" % year for year in ERROR_YEARS] + ["%d--%d [Gt]" % CUMULATIVE_SPAN]
+    lines = ["| " + " | ".join(header) + " |", "|" + "---|" * len(header)]
+    for name, rows in lever_validation_rows().items():
+        for index, (label, pairs) in enumerate(rows):
+            scenario = SCENARIO_LABELS[name] if index == 0 else ""
+            cells = _cells(pairs, latex=False)
+            lines.append("| " + " | ".join([scenario, label] + cells) + " |")
+    lines.append("")
+    lines.append(
+        "*Error of the abatement attributed to each lever against the report's own charts, "
+        "tank-to-wake, in Mt (Gt for the cumulative column), with in brackets the error as a "
+        "share of the frozen-fleet (T0) emissions of the same year. A band thinner than a "
+        "pixel of the report's chart, about %d Mt, cannot be read off it, which a dash "
+        "marks (%d Mt). The fuel lever is compared against the solid band alone and against that band "
+        "plus the hatched increment the report assigns to carbon removals. S0's fuel row and "
+        "every market-based row deviate by construction rather than by error, the first "
+        "deriving its volumes from stated policies and the second carrying an offsetting "
+        "trajectory harmonised across scenarios.*" % (MIN_BAND_MT, MIN_BAND_MT)
+    )
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
+    return target
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--write", metavar="DIR", help="also write table.tex into this directory")
+    parser.add_argument(
+        "--no-markdown",
+        action="store_true",
+        help="skip refreshing the Markdown copy the document includes",
+    )
     arguments = parser.parse_args()
     print_tables()
+    if not arguments.no_markdown:
+        print("\nwrote %s" % write_markdown())
     if arguments.write:
         target = Path(arguments.write) / "table.tex"
         target.write_text(_latex_tables(), encoding="utf-8", newline="\n")
-        print("\nwrote %s" % target)
+        print("wrote %s" % target)

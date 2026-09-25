@@ -223,6 +223,6 @@ generic_saf:
         nox: 0.01514
         sulfur: 0.0
         soot: 6.0e-06
-        particles_number: 80000000000000.0
+        particles_number: 46080000000000.0
     economics: null
   outputs: null

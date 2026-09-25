@@ -29,9 +29,10 @@ from typing import List, Optional
 
 from aeromaps.utils.yaml import read_yaml_file
 
-# The shared market definitions several scenarios reach through ``../../markets``.
-# Not a scenario itself, and travels with every sandbox for that reason.
-SHARED_DIRS = ("markets",)
+# Folders several scenarios reach through ``../../<folder>``: the shared market
+# definitions, and the climate models a scenario family runs against. Neither is a
+# scenario itself, and both travel with every sandbox for that reason.
+SHARED_DIRS = ("markets", "climate_models")
 
 METADATA_FILE = "scenario.yaml"
 

@@ -1,0 +1,84 @@
+# Contrail avoidance
+# ==================
+#
+# Grouped by intervention rather than by work: diverting only where it is free,
+# diverting the flights that matter, diverting airspace-wide, and changing the
+# engine. The reports include none of them, so the last row is a set of variants
+# run beside the reproduction.
+#
+# Reductions are not in one quantity either: an energy forcing for Teoh et al., a
+# contrail length for the only flight trial, a share of contrail warming for the
+# ICCT. Fuel penalties are fleetwide except for the trial, which is per flight.
+
+columns:
+  - {header: Intervention, width: "0.22"}
+  - {header: Works, width: "0.18"}
+  - {header: Contrail reduction, width: "0.17"}
+  - {header: Fuel penalty, width: "0.15"}
+  - {header: Start, width: "0.13"}
+
+label: tab:contrail_avoidance
+
+caption_head: Contrail avoidance.
+caption_body: >-
+  Avoidance assumptions, grouped by intervention, with 95 \% intervals where given.
+  Reductions are in contrail forcing (Teoh et al.), contrail length (flight trial)
+  or contrail warming (ICCT). Penalties are fleetwide, except per diverted flight
+  for the trial. The reports assume no avoidance, so the last row lists variants of
+  this work.
+
+caption_body: >-
+  Assumptions on avoiding contrails, grouped by intervention. Intervals are 95 \%
+  where the study gives them. Reductions are in contrail energy forcing for Teoh
+  et al., in contrail length for the flight trial, which is what a trial can
+  measure, and in contrail warming for the ICCT; penalties are fleetwide except
+  for the trial, which is per diverted flight. The reproduced reports assume no
+  avoidance at all, so the last row is a set of variants run beside them, at
+  levels named for the warming they produce, the low level carrying the strongest
+  reduction.
+
+rows:
+  - cells:
+      - Divert only where there is no fuel penalty
+      - Teoh et al. (2020)
+      - "20 \\% [17, 23]"
+      - none by construction
+      - not stated
+    source: Teoh et al. (2020), doi:10.1021/acs.est.9b05608
+
+  - cells:
+      - Divert the 1.7 \% of flights that form the most forcing
+      - Teoh et al. (2020)
+      - "59 \\% [52, 66]"
+      - "0.014 \\% [0.010, 0.017]"
+      - not stated
+    source: Teoh et al. (2020)
+
+  - cells:
+      - Divert airspace-wide, by income group
+      - >-
+        Zheng et al. (2025); flight trial by Sonabend-W et al. (2024)
+      - >-
+        95 \% assumed; 54 \% of contrail length measured in the trial
+      - >-
+        about 1 \%; 2 \% per flight in the trial
+      - >-
+        2032, then 2037, over a ten-year S-curve
+    source: Zheng et al. (2025), ICCT, pp. 23-25
+
+  - cells:
+      - New combustor technology, lower black carbon
+      - Teoh et al. (2020)
+      - "69 \\% [45, 82]"
+      - none
+      - fleet renewal
+    source: Teoh et al. (2020)
+
+  - cells:
+      - The three above as separate variants, on a logistic ramp
+      - This work
+      - as Teoh et al., by level
+      - as Teoh et al., by level
+      - >-
+        2030 for diversion, 2035 for combustors
+    source: climate_analysis/contrail_variants.yaml

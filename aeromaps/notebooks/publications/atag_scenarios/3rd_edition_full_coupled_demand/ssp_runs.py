@@ -71,22 +71,50 @@ MANDATES = {
 }
 
 
+# First year carrying a carbon price. The AR6 pathways price carbon from 2020
+# onwards, so without this the three differ already in 2026, the first year the
+# demand model projects, and the comparison between them starts from three
+# different costs of flying. Holding the price at zero through 2026 gives them a
+# common starting point and lets them separate only once the price bites.
+CARBON_TAX_START_YEAR = 2027
+
+
+def delayed_carbon_tax(ar6_years, values):
+    """The AR6 price trajectory, held at zero until ``CARBON_TAX_START_YEAR``.
+
+    The AR6 grid is decadal, so the series keeps its own anchors from the first
+    decade at or after the start year and adds a zero at the year before it: the
+    price is zero through that year and rises linearly from the start year to the
+    next AR6 anchor.
+    """
+    kept = [
+        (year, value) for year, value in zip(ar6_years, values) if year >= CARBON_TAX_START_YEAR
+    ]
+    years = [ar6_years[0], CARBON_TAX_START_YEAR - 1] + [year for year, _ in kept]
+    prices = [0.0, 0.0] + [value for _, value in kept]
+    return years, prices
+
+
 def build(pathway, ar6_data, ar6_years, mandate="quantity"):
     """A coupled process for one SSP pathway under one mandate reading.
 
     Population, GDP per capita and the carbon price all come from the same pathway, so
     each run is internally consistent: a world that prices carbon aggressively is also
-    the world whose income trajectory the demand model sees.
+    the world whose income trajectory the demand model sees. The price is the only one
+    of the three that is delayed, since it is the only one a policy sets.
     """
     process = create_process(configuration_file=str(CONFIGS / MANDATES[mandate]["config"]))
     for parameter, values in (
         ("population", ar6_data["population"][pathway]),
         ("gdp_per_capita", ar6_data["gdp_per_capita"][pathway]),
-        ("carbon_tax", ar6_data["carbon_tax"][pathway]),
-        ("exogenous_carbon_price", ar6_data["carbon_tax"][pathway]),
     ):
         setattr(process.parameters, f"{parameter}_reference_years", ar6_years)
         setattr(process.parameters, f"{parameter}_reference_years_values", values)
+
+    tax_years, tax_values = delayed_carbon_tax(ar6_years, ar6_data["carbon_tax"][pathway])
+    for parameter in ("carbon_tax", "exogenous_carbon_price"):
+        setattr(process.parameters, f"{parameter}_reference_years", tax_years)
+        setattr(process.parameters, f"{parameter}_reference_years_values", tax_values)
     return process
 
 
@@ -132,3 +160,24 @@ def summarise(processes, mandate="quantity"):
             }
         )
     return pd.DataFrame(rows).set_index("pathway")
+
+
+def main():
+    """Refresh every mandate reading, the no-SAF counterfactual included.
+
+    The two comparison notebooks each run one reading, so the counterfactual they
+    are drawn against has no notebook of its own and would otherwise keep whatever
+    inputs it was last run with. Run this whenever the coupled inputs change::
+
+        python ssp_runs.py
+    """
+    from get_data import get_ar6_input_data
+
+    ar6_data, ar6_years = get_ar6_input_data(start_year=2010, end_year=2100, plot_data=False)
+    for mandate in MANDATES:
+        processes = run_all(ar6_data, ar6_years, mandate=mandate)
+        print(summarise(processes, mandate).round(2), end="\n\n")
+
+
+if __name__ == "__main__":
+    main()

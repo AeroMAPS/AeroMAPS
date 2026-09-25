@@ -1,0 +1,62 @@
+# What sustainable aviation fuel does to contrails
+# ================================================
+#
+# Grouped by approach rather than by work, since what separates the estimates is
+# how the effect is derived and in what quantity it is expressed, not who derived
+# it. The works pooled inside an approach are named in the second column.
+#
+# The quantities are not interchangeable: a fall in soot number emissions is
+# larger than the fall in ice crystal number it causes, which is larger than the
+# fall in forcing. AeroMAPS relates the particle number index to forcing by a
+# square root, which returns 29.3 % when fed the ICCT's own 50 % fall in ice
+# crystal number, against the 30 % fall in radiative forcing the ICCT derives.
+
+columns:
+  - {header: Approach, width: "0.22"}
+  - {header: Works, width: "0.20"}
+  - {header: Metric, width: "0.16"}
+  - {header: Effect at 100 \%, width: "0.14"}
+  - {header: Blend response, width: "0.13"}
+
+label: tab:saf_contrails
+
+caption_head: SAF and contrails.
+caption_body: >-
+  Effect of pure SAF on contrails, grouped by method. Rows report different
+  quantities: soot falls more than ice crystals, which fall more than forcing. Fed
+  the ICCT's 50 \% fall in ice crystals, the square root used here gives 29.3 \%.
+
+caption_body: >-
+  Reported effect of neat sustainable aviation fuel on contrails, grouped by how
+  the effect is derived. The quantities differ between rows and are not
+  interchangeable: soot number falls by more than the ice crystal number it
+  causes, which falls by more than the forcing. The two treatments agree where
+  they overlap, the square root used here returning 29.3 \% when fed the ICCT's
+  own 50 \% fall in ice crystal number.
+
+rows:
+  - cells:
+      - Fitted chain, blend to soot to ice to forcing
+      - >-
+        Zheng et al. (2025), pooling Teoh et al. (2022), M\"arkl et al. (2024),
+        Burkhardt et al. (2018), Bock and Burkhardt (2019)
+      - nvPM number, ice number, annual mean RF
+      - "$-43$, $-50$, $-30$ \\%"
+      - fitted polynomial
+    source: Zheng et al. (2025), ICCT, pp. 21-22 and Appendix B
+
+  - cells:
+      - CoCiP with soot predicted from fuel hydrogen content
+      - Wang et al. (2026)
+      - contrail energy forcing
+      - "$-52$ \\% [35, 67]"
+      - linear in blend
+    source: Wang et al. (2026), abstract and Methods
+
+  - cells:
+      - Particle number index in a square root law
+      - AeroMAPS default, then this work
+      - contrail forcing
+      - "$-37$ \\%, then $-52$ \\% [35, 67]"
+      - linear in blend
+    source: the ATAG energy files, and climate_analysis/non_co2_uncertainty.yaml

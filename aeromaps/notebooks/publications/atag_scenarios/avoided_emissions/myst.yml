@@ -1,0 +1,38 @@
+version: 1
+
+# Second standalone MyST project in this directory tree, alongside the
+# reproduction one level up. They are separate projects on purpose: this paper
+# reads the reproduction's committed outputs but must never require rebuilding
+# it, and neither project should be able to break the other's build. Both sit
+# outside docs/, so `mkdocs build` never sees these MyST directives.
+project:
+  id: aeromaps-atag-avoided-emissions
+  title: The avoided-emissions fallacy in aviation transition scenarios
+  description: >-
+    A reproduction and critique of the ATAG Waypoint 2050 claim that efficiency
+    measures have already saved 14.6 Gt of CO2 since 1990, drawn as a family of
+    counterfactuals rather than as a single line.
+  keywords:
+    - avoided emissions
+    - net impacts accounting
+    - rebound effect
+    - counterfactual baselines
+    - aviation decarbonisation
+    - open-source modelling
+  bibliography:
+    - references.bib
+  settings:
+    # Notebook cells ending on a plot call leave a repr like
+    # "<matplotlib.legend.Legend at 0x...>" in the outputs; drop it rather than
+    # requiring a trailing semicolon on every plotting cell.
+    output_matplotlib_strings: remove
+  # Only the document is part of the MyST project. `retrospective/frozen_baseline.ipynb`
+  # stays out of the toc for the same reason the reproduction's notebooks do:
+  # `myst build --execute` runs every page from the project root, and the
+  # notebook resolves `models/` and `data_outputs/` relative to its own folder,
+  # so it must be run in place. The document reads what it wrote and names it.
+  toc:
+    - file: index.md
+
+site:
+  template: book-theme

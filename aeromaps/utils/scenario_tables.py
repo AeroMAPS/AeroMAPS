@@ -94,8 +94,11 @@ def latex_table(headers, rows, widths, caption, label, caption_margin="0.5in", s
     if len(headers) != len(widths):
         raise ValueError(f"{len(headers)} headers against {len(widths)} column widths")
 
+    # The label column is set ragged right rather than justified: a label that
+    # wraps, which happens as soon as a table names studies rather than
+    # scenarios, is otherwise stretched to the column width word by word.
     spec = "".join(
-        r"%s{%s\textwidth}" % ("m" if index == 0 else "M", width)
+        r"%s{%s\textwidth}" % (r">{\raggedright\arraybackslash}m" if index == 0 else "M", width)
         for index, width in enumerate(widths)
     )
 

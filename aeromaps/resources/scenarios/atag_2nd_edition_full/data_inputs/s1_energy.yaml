@@ -45,7 +45,7 @@ hefa_waste_residue_lipids:
         nox: 0.01514
         sulfur: 0.0
         soot: 6.0e-06
-        particles_number: 8.0e+13
+        particles_number: 4.608e+13
     # Economics:
     economics:
       mean_mfsp_without_resource: !AeroMapsCustomDataType
@@ -106,7 +106,7 @@ hefa_oil_crops_trees:
         nox: 0.01514
         sulfur: 0.0
         soot: 6.0e-06
-        particles_number: 8.0e+13
+        particles_number: 4.608e+13
       # Economics:
     economics:
       mean_mfsp_without_resource: !AeroMapsCustomDataType
@@ -165,7 +165,7 @@ ft_municipal_solid_waste:
         nox: 0.01514
         sulfur: 0.0
         soot: 6.0e-06
-        particles_number: 8.0e+13
+        particles_number: 4.608e+13
       # Economics:
     economics:
       mean_mfsp_without_resource: !AeroMapsCustomDataType
@@ -225,7 +225,7 @@ ft_woody_biomass:
         nox: 0.01514
         sulfur: 0.0
         soot: 6.0e-06
-        particles_number: 8.0e+13
+        particles_number: 4.608e+13
       # Economics:
     economics:
       mean_mfsp_without_resource: !AeroMapsCustomDataType
@@ -286,7 +286,7 @@ atj_cellulosic_cover_crops:
         nox: 0.01514
         sulfur: 0.0
         soot: 6.0e-06
-        particles_number: 8.0e+13
+        particles_number: 4.608e+13
       # Economics:
     economics:
       mean_mfsp_without_resource: !AeroMapsCustomDataType
@@ -349,7 +349,7 @@ atj_agricultural_residues:
         nox: 0.01514
         sulfur: 0.0
         soot: 6.0e-06
-        particles_number: 8.0e+13
+        particles_number: 4.608e+13
       # Economics:
     economics:
       mean_mfsp_without_resource: !AeroMapsCustomDataType
@@ -412,7 +412,7 @@ atj_waste_gas:
         nox: 0.01514
         sulfur: 0.0
         soot: 6.0e-06
-        particles_number: 8.0e+13
+        particles_number: 4.608e+13
       # Economics:
     economics:
       mean_mfsp_without_resource: !AeroMapsCustomDataType
@@ -472,7 +472,7 @@ electrofuel:
         nox: 0.01514
         sulfur: 0.0
         soot: 6.0e-06
-        particles_number: 8.0e+13
+        particles_number: 4.608e+13
     # Economics:
     economics:
       mean_mfsp_without_resource: !AeroMapsCustomDataType

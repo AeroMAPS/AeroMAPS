@@ -19,7 +19,7 @@ quantifying emissions reductions achieved from each of the mitigation levers pre
 methodology behind reproduction is described, scenarios are simulated using the AeroMAPS open-source
 framework, and extensions of the Waypoint scope is presented by: coupling traffic growth to rising
 energy costs, and incorporating contrails avoidance.
- {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">The three published scenarios are reproduced with well-to-wake residual emissions of about 1,820, 420 and 360 MtCO₂ in 2050, and of 1,510, 350 and 260 Mt on the tank-to-wake basis adopted by the reports. Sweeping the full lever grid places these three points within a range spanning 208 to 2,359 Mt, so that the published scenarios constitute a sparse sample of their own design space rather than its bounds. Closing the demand-price loop left open by the reports reduces 2050 traffic by 1 to 15 % depending on the carbon price, a range which brackets the 14 to 16 % quoted by the reports themselves from other studies before the question is set aside. Regarding climate impacts, extending the accounting beyond CO₂ yields a sharper result: the non-CO₂ uncertainty band carried by a single scenario is roughly 3.2 times wider than the entire spread between the published scenarios, so that the choice between them is, on current knowledge, a smaller question than the uncertainty each of them carries.</span>{raw:typst}`]`
+ {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">The three published scenarios are reproduced with well-to-wake residual emissions of about 1,820, 420 and 360 MtCO₂ in 2050, and of 1,510, 350 and 260 Mt on the tank-to-wake basis adopted by the reports. Sweeping the full lever grid places these three points within a range spanning 208 to 2,359 Mt, so that the published scenarios constitute a sparse sample of their own design space rather than its bounds. Closing the demand-price loop left open by the reports reduces 2050 traffic by 3 to 22 % depending on the carbon price, spanning the 14 to 16 % quoted by the reports themselves from other studies before the question is set aside. Regarding climate impacts, extending the accounting beyond CO₂ yields a sharper result: the non-CO₂ uncertainty band carried by a single scenario is roughly 2.8 times wider than the entire spread between the published scenarios, so that the choice between them is, on current knowledge, a smaller question than the uncertainty each of them carries.</span>{raw:typst}`]`
 While the ATAG reports address the modeling methods used for the quantification of aviation
 emissions, there is limited transparency in the provenance of data, calibration methodology, and
 mathematical formulation, which further difficult comparisons and their overall impact for policy
@@ -453,6 +453,13 @@ estimated based on supply cost.
 
 {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">The mechanism constitutes a closed loop rather than a correction applied afterwards. A carbon price raises the energy component of direct operating cost per available seat-kilometre, which propagates to the net cost per revenue passenger-kilometre. A first-order lag then converts cost into the fare actually faced by travellers, a price index relative to a reference year drives demand through the calibrated elasticity, and the resulting traffic feeds back into fuel burn, energy demand, and therefore cost again. The loop is closed by the MDA solver of the framework as a fixed point, so that the reported traffic remains consistent with the cost of achieving the abatement of the scenario itself.</span>{raw:typst}`]`
 
+{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">The price that loop carries forward is the one observed in 2026 rather than the one the reports assumed. Fuel prices enter the model in roughly constant 2019 euros per megajoule, so the series is built from the spot quotations of kerosene deflated by the consumer price index: the observed history through 2024, 0.0113 EUR/MJ in 2025, and 0.0170 EUR/MJ from 2026 onwards, the latter being the mean of the 2026 quotations, 3.31 dollars per gallon in August 2026 terms and 2.53 in 2019 terms. Holding a spike year flat to 2050 treats the shock as lasting, which is an assumption rather than a forecast, and it is a consequential one: it places the fossil counterfactual about 42 % above the level the report-era price implies, which raises the cost of not decarbonising as much as it raises the cost of doing so. The uncoupled reproductions keep the report-era price, so that the two families stay separable.</span>{raw:typst}`]`
+
+{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">The table below sets this formulation beside the studies that model the same question, grouped by approach and carrying both the method and the values each one assumes. It extends the frame of </span>{raw:typst}`]` {cite:t}`costa-alves_modeling_2026` {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000"> with the industry and institutional roadmaps that the reports themselves cite before setting demand aside, which are the rows this work should be read against.</span>{raw:typst}`]`
+
+:::{include} literature/tables/demand_price.md
+:::
+
 
 ### Climate response and contrail avoidance
 
@@ -489,13 +496,38 @@ flights instead of spread over many flights for minimizing climate impact with a
 
 {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">Emissions are converted into warming by a reduced-complexity climate model of the FaIR family, run per forcing mechanism rather than on CO₂ alone, so that CO₂, contrail cirrus, the four NOx pathways, water vapour, soot and sulfur each yield their own effective radiative forcing and their own contribution to the temperature response. The decomposition is verified rather than assumed, the sum of the mechanism groups reproducing the reported total to machine precision in every scenario, as asserted in `climate_analysis/climate_analysis.ipynb`.</span>{raw:typst}`]`
 
-{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">Contrail forcing is driven by distance flown rather than by fuel burn, which is a necessary condition for contrail avoidance to be representable at all, since a strategy lengthening routes in order to avoid ice-supersaturated regions reduces forcing while increasing fuel consumption, and the two effects must therefore be able to move in opposite directions. A mitigation lever scales that forcing by a final gain phased in along a logistic ramp from a start year, together with a paired overconsumption penalty, both parameterised from Teoh et al. {cite:p}`teoh_mitigating_2020` in `contrail_variants.yaml`.</span>{raw:typst}`]`
+{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">Contrail forcing is driven by distance flown rather than by fuel burn, which is a necessary condition for contrail avoidance to be representable at all, since a strategy lengthening routes in order to avoid ice-supersaturated regions reduces forcing while increasing fuel consumption, and the two effects must therefore be able to move in opposite directions. A mitigation lever scales that forcing by a final gain phased in along a logistic ramp from a start year, together with a paired overconsumption penalty, both parameterised from </span>{raw:typst}`]` {cite:t}`teoh_mitigating_2020` {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000"> in `contrail_variants.yaml`, and set against the rest of the avoidance literature below.</span>{raw:typst}`]`
+
+{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">How strongly contrails warm is the largest single uncertainty carried here, and the literature does not state it in one form. </span>{raw:typst}`]` {cite:t}`lee_contribution_2021` {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000"> pool four global climate model studies run on 2002 and 2006 inventories, and publish a radiative forcing per flight kilometre together with an effective forcing obtained from it through a ratio of 0.42. </span>{raw:typst}`]` {cite:t}`teoh2024` {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000"> instead simulate individual trajectories with CoCiP for 2019 and obtain a global total well below that ensemble. The ICCT </span>{raw:typst}`]` {cite:p}`zheng_aviation_2025` {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000"> repeat the pooling exercise with eighteen estimates reaching 2023, drawn from climate models, from CoCiP and from satellite retrievals, normalise each per flight kilometre and sample them against a triangular efficacy. </span>{raw:typst}`]` {cite:t}`wang_fuel_2026` {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000"> take a fourth route and carry Lee et al.'s 2018 total forward with annual fuel burn rather than with distance.</span>{raw:typst}`]`
+
+{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">Those four are not comparable as published. Two of the three quantities that separate them are structural: what the forcing is scaled by, distance or fuel, and whether the number reported is a radiative forcing or an effective one. The third is nomenclature, the factor between the two being called a ratio by some and an efficacy by others. The table below therefore states each approach in its own terms and then puts all of them on one activity, the distance flown and the fuel burned by this model in 2019. Read that way the central estimates span a factor of three, from 17.6 mW m⁻² for the ICCT's own CoCiP run to 52.6 for Lee et al., with the ICCT's meta-analysis at 39.5 and Wang et al. at 41.7 between them.</span>{raw:typst}`]`
+
+:::{include} literature/tables/contrail_forcing.md
+:::
+
+{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">This work follows Wang et al. in anchoring on Lee et al.'s 2018 radiative forcing, and departs from the packaged AeroMAPS default in two respects. First, the calibration matches the published 2018 total of 111.4 mW m⁻² on the distance this model itself flies in that year rather than on the inventory Lee et al. used, which is about an eighth longer; the resulting sensitivity of 2.05 pW m⁻² km⁻¹ therefore sits above their own per-kilometre figure and reproduces their total rather than their intensity. Second, the packaged default carries 2.23 pW m⁻² km⁻¹, which is their *effective* forcing divided by 0.42 and therefore some 23 % above their radiative forcing; the two are not interchangeable and the default is replaced here. The values live in a shared climate file, `resources/scenarios/climate_models/climate_model_fair_contrail_efficacy.yaml`, which every ATAG scenario reads, the packaged default being left untouched for every other publication.</span>{raw:typst}`]`
+
+{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">The efficacy is carried as an uncertainty of its own rather than folded into the forcing. The climate model separates the two factors standing between a radiative forcing and a temperature: a ratio of effective to radiative forcing, and a forcing efficacy passed to the emulator. A study publishing a single factor fills the first and leaves the second at unity, which is what Lee et al. state explicitly. Their 0.42 is the mean of three model studies, 0.59, 0.31 and 0.35; the ICCT add a fourth at 0.21 and sample the four triangularly between 0.14 and 0.70 with a midpoint of 0.36; Wang et al. sample 0.20, 0.31 and 0.60, a mean of 0.37. The mean of Wang et al. is adopted here, being the lowest of the three central values and the one drawn from the most recent set, and their spread is carried into the bands rather than being replaced by a single figure.</span>{raw:typst}`]`
 
 {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">Fuel composition enters through soot. Cleaner fuels emit fewer non-volatile particles, seeding fewer and larger ice crystals, and the model represents this effect as a scaling of contrail forcing with the square root of the particle number emission index, weighted by the massic share of each pathway. The square-root form allows the percentage reductions in contrail forcing reported in the literature to be mapped directly onto an emission index.</span>{raw:typst}`]`
 
-{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">Two independent uncertainties are propagated rather than fixed. The first concerns how strongly contrails warm at all. Lee et al. {cite:p}`lee_contribution_2021` give a 2018 contrail radiative forcing whose 95 % interval spans roughly a factor of six, whereas Teoh et al. {cite:p}`teoh2024` simulate actual trajectories and obtain a 2019 central value well below it, with a sensitivity range of 34.8 to 74.8 mW m⁻². The second concerns how much cleaner fuel reduces that forcing, the modelling literature surveyed by Teoh et al. {cite:p}`teoh2022` spanning a 15 % reduction at one end and 50 % at the other for fleet-wide adoption. Both bounds are recorded with their sources in `climate_analysis/non_co2_uncertainty.yaml` and combined into three bands named by climate impact, so that the high band pairs the largest contrail sensitivity with the weakest fuel benefit and the low band the reverse. The central band retains the calibrated values of the repository on both axes, so that the centre of every band reproduces the published scenarios exactly.</span>{raw:typst}`]`
+{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">What cleaner fuel does to contrails is prescribed at the pathway level in models of this kind, as </span>{raw:typst}`]` {cite:t}`wang_fuel_2026` {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000"> observe of the earlier assessments: the benefit is attached to a fuel label rather than derived from a measurable property of the fuel. They propose fuel hydrogen content as that property and show that it predicts soot number emissions, and through them ice crystal numbers, with the first in-flight validation of the relation. AeroMAPS is such a pathway-level model, so the benefit is attached to a pathway here too, but the value attached is the one that pathway's hydrogen content implies: 15.2 % for a fully synthetic paraffinic kerosene gives 52 % [35, 67] less contrail energy forcing. The alternatives are set beside it in the table below. The ICCT chain three fitted correlations, from blending ratio to soot, soot to ice crystals and ice crystals to forcing, and arrive at 30 % for neat fuel; the square-root relation used here returns 29.3 % when fed their own 50 % fall in ice crystal number, so that the two treatments agree on the step they share and differ in what they take the fuel to change.</span>{raw:typst}`]`
 
-{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">The wider context for treating this as a first-order question rather than as a refinement is set by the ICCT's *Aviation Vision 2050* {cite:p}`icct_vision_2022` and by {cite:p}`arriolabengoa_lightweight_2024`. According to their accounting, the majority of the warming that aviation can still avoid between now and 2050 is short-lived, and contrail avoidance rather than fuel substitution constitutes the largest single contributor to it.</span>{raw:typst}`]`
+:::{include} literature/tables/saf_contrails.md
+:::
+
+
+{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">Three quantities are then propagated rather than fixed: the radiative forcing per flight kilometre, the efficacy, and the reduction that cleaner fuel delivers. The first two multiply, so the band is set on their product. One standard deviation of that product, obtained by combining the 95 % interval of Lee et al. with the spread of the three efficacies of Wang et al., is split between the two factors in proportion to the variance each contributes, so that the low band carries 1.25 pW m⁻² km⁻¹ with an efficacy of 0.21 and the high band 2.59 with 0.48, neither factor being driven to an extreme on its own. The fuel axis moves with them, at 67 % and 35 % against a central 52 %. Every value and the derivation behind it are recorded in `climate_analysis/non_co2_uncertainty.yaml`, which the loader re-derives and checks on each run. The bands are named by climate outcome rather than by parameter magnitude, so the high band pairs the strongest forcing with the weakest fuel benefit and the low band the reverse, and the central band reproduces the committed scenarios exactly.</span>{raw:typst}`]`
+
+:::{include} literature/tables/climate_assumptions.md
+:::
+
+:::{include} literature/tables/contrail_avoidance.md
+:::
+
+{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">Hydrogen is left outside the contrail accounting. Burning or oxidising it emits no soot, so the ice crystals its contrails form nucleate on ambient particles instead, and the soot-based relation used above does not describe them. </span>{raw:typst}`]` {cite:t}`braun_fuel_2026` {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000"> report the first in-flight measurements behind a fuel-cell exhaust emulator and find an apparent ice emission index rising from 1.4 × 10¹³ to 4 × 10¹⁵ per kilogram of hydrogen across three to five kelvin below the homogeneous freezing threshold. Two orders of magnitude across a few kelvin is not a sensitivity that a scenario model can carry as one coefficient, and it would have no purchase on these scenarios in any case: the non-drop-in energy deployed by 2050 in the reproduction is battery-electric throughout, the liquid hydrogen pathway being defined in the energy files but carrying no energy.</span>{raw:typst}`]`
+
+{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">The wider context for treating this as a first-order question rather than as a refinement is set by the ICCT's *Aviation Vision 2050* </span>{raw:typst}`]` {cite:p}`zheng_aviation_2025` {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000"> and by </span>{raw:typst}`]` {cite:p}`arriolabengoa_lightweight_2024`{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">. According to their accounting, the majority of the warming that aviation can still avoid between now and 2050 is short-lived, and contrail avoidance rather than fuel substitution constitutes the largest single contributor to it.</span>{raw:typst}`]`
 
 ## Results
 
@@ -530,45 +562,83 @@ time. Correcting the emission factor alone removes about a third of the 2050 res
 ```{code-cell} python
 :tags: [hide-input]
 
-# One figure for the three scenarios: a row each, tank-to-wake on the left and
-# well-to-wake on the right. Every panel shares one y-axis, across the pair and
-# down the column, so both the scope difference and the scenario difference are
-# readable as distances rather than inferred from tick labels.
+# One figure per accounting scope, a row per scenario. The paper reports
+# tank-to-wake throughout, as the reports do, so that is the figure the text
+# carries and the well-to-wake twin goes to the appendix. Both are drawn before
+# either is written, so that they share one vertical scale and the pair can still
+# be read as the scope comparison it was.
 TRIPLETS = [
     ("S0", S0_TTW, S0), ("S1", S1_TTW, S1), ("S2", S2_TTW, S2),
 ]
 available = [(name, ttw, wtw) for name, ttw, wtw in TRIPLETS if ttw is not None and wtw is not None]
 
 if available:
-    fig, all_axes = plt.subplots(len(available), 2, figsize=(13.0, 12.6), sharey=True,
-                                 sharex=True, layout="constrained")
-    all_axes = np.atleast_2d(all_axes)
-    for (name, ttw, wtw), axes in zip(available, all_axes):
-        # The legend goes on the first row only: the bands are the same in all
-        # three, and repeating it would cover the wedges it describes.
-        ttw.plot("mitigation_wedges", fig=fig, ax=axes[0],
-                 anchors=(T0_TTW, T1_TTW),
-                 legend=name == available[0][0],
-                 title=f"{name} - tank-to-wake")
-        wtw.plot("mitigation_wedges", fig=fig, ax=axes[1],
-                 anchors=(T0, T1), legend=False,
-                 title=f"{name} - well-to-wake")
-        axes[1].set_ylabel("")
+    scopes = [
+        ("tank-to-wake", "atag_decomposition", 1, (T0_TTW, T1_TTW)),
+        ("well-to-wake", "atag_decomposition_wtw", 2, (T0, T1)),
+    ]
+    # The wedges only exist from the last observed year, the energy split being
+    # measured against it, so the history the helper would draw is empty before
+    # 2023. It is taken here from the scenario's own passenger and freight
+    # emissions instead, which are observed data in every scope and meet the
+    # gross trajectory exactly at the handover.
+    HISTORY_END = 2023
+    # Observed data, in both figures that carry it: grey, solid, with a small dot
+    # on each observed year, so it reads as data rather than as a scenario.
+    HISTORY_STYLE = dict(color="grey", linestyle="-", linewidth=1.6, marker=".",
+                         markersize=4)
 
-    # One scale for all six panels, taken from the drawn data and applied before
-    # anything is written, so no curve is clipped and the exported PDF agrees
-    # with the page. Reading the limits back only works because the helper
-    # leaves autoscaling alone.
-    top = max(ax.get_ylim()[1] for axes in all_axes for ax in axes)
-    for axes in all_axes:
+    def draw_history(ax, view, scope):
+        outputs = view.data["vector_outputs"]
+        history = (outputs["co2_emissions_passenger"] + outputs["co2_emissions_freight"])
+        history = history.loc[:HISTORY_END]
+        label = "Historical combustion CO$_2$" if scope == "tank-to-wake" else "Historical CO$_2$"
+        for line in ax.get_lines():
+            if line.get_label().startswith("Historical"):
+                line.set_data(history.index.to_numpy(), history.to_numpy(dtype=float))
+                line.set_label(label)
+                line.set(**HISTORY_STYLE)
+                return
+        ax.plot(history.index, history.to_numpy(dtype=float), label=label, zorder=5,
+                **HISTORY_STYLE)
+
+    drawn = []
+    for scope, export_name, position, anchors in scopes:
+        # One row, a panel per scenario, so the three read left to right against
+        # one vertical axis the way the reports lay theirs out.
+        fig, axes = plt.subplots(1, len(available), figsize=(13.0, 4.9), sharey=True,
+                                 sharex=True, layout="constrained")
+        axes = np.atleast_1d(axes)
+        for entry, ax in zip(available, axes):
+            name = entry[0]
+            view = entry[position]
+            view.plot("mitigation_wedges", fig=fig, ax=ax, anchors=anchors,
+                      legend=False, title=f"{name} - {scope}")
+            draw_history(ax, view, scope)
+            legend = ax.get_legend()
+            if legend is not None:
+                legend.remove()
+        for ax in axes[1:]:
+            ax.set_ylabel("")
+        # One legend for the row, beneath it: the bands are the same in all three
+        # panels, and inside any of them it would cover the history it names.
+        handles, labels = axes[0].get_legend_handles_labels()
+        fig.legend(handles, labels, loc="outside lower center", ncol=5, fontsize=8,
+                   frameon=False)
+        drawn.append((fig, axes, export_name))
+
+    # One scale across both figures, taken from the drawn data and applied before
+    # anything is written, so no curve is clipped and the exported PDFs agree with
+    # the page. Reading the limits back only works because the helper leaves
+    # autoscaling alone.
+    top = max(ax.get_ylim()[1] for _, axes, _ in drawn for ax in axes)
+    for fig, axes, export_name in drawn:
         for ax in axes:
             ax.set_ylim(0, top)
-    for ax in all_axes[:-1].ravel():
-        ax.set_xlabel("")
-    save_fig(fig, name="atag_decomposition")
+        save_fig(fig, name=export_name)
 ```
 
-*Annual CO2 emissions decomposed by mitigation lever, following the pillars and colours ATAG uses. One row per reproduced scenario, tank-to-wake on the left and well-to-wake on the right, with all six panels on one vertical axis so that both the gap between scopes and the gap between scenarios read as distances.. All six panels share one vertical axis, so both the gap between the two accounting scopes and the gap between scenarios read as distances. Each band is what one pillar removes from the frozen-fleet baseline (dotted). Fleet renewal is the T0-to-T1 distance and next generation technology everything below it, which is where battery-electric aircraft sit rather than in the fuel band; the dashed line is emissions net of market-based measures. Offsetting after 2035 is an assumption rather than a reproduction, because the policy the reports invoke to reach net zero does not exist: CORSIA-derived offsets are modelled through 2035, and from 2036 net emissions are taken to fall linearly to zero at 2050 from wherever 2035 leaves them. That is the shape all three published scenarios draw, and it is what makes the dashed line continuous at the handover. One caveat on reading the bands: the wedges sum to a determinate total, but how that total divides between the technology and fuel pillars depends on the order they are peeled off in, by a factor of 35 on S2. See the Discussion.*
+*Annual CO2 emissions decomposed by mitigation lever, following the pillars and colours ATAG uses. One panel per reproduced scenario, tank-to-wake, with the observed emissions from 2000 drawn in grey, a dot per year, up to the last historical year; the well-to-wake twin is exported beside it on the same vertical axis, so the gap between scopes and the gap between scenarios both read as distances. Each band is what one pillar removes from the frozen-fleet baseline (dotted). Fleet renewal is the T0-to-T1 distance and next generation technology everything below it, which is where battery-electric aircraft sit rather than in the fuel band; the dashed line is emissions net of market-based measures. Offsetting after 2035 is an assumption rather than a reproduction, because the policy the reports invoke to reach net zero does not exist: CORSIA-derived offsets are modelled through 2035, and from 2036 net emissions are taken to fall linearly to zero at 2050 from wherever 2035 leaves them. That is the shape all three published scenarios draw, and it is what makes the dashed line continuous at the handover. One caveat on reading the bands: the wedges sum to a determinate total, but how that total divides between the technology and fuel pillars depends on the order they are peeled off in, by a factor of 35 on S2. See the Discussion.*
 
 ```{important}
 **How the tank-to-wake panels are built.** The reports headline tank-to-wake emissions, and the
@@ -604,9 +674,13 @@ with open(HERE / "report_data" / "atag_3rd_edition_figures.yaml") as handle:
     report = yaml.safe_load(handle)
 
 if tech_wtw and tech_ttw:
-    fig, (ax_ttw, ax_wtw) = plt.subplots(1, 2, figsize=(11, 4.2), sharey=True, layout="constrained")
-    assemble_processes(tech_ttw).plot("co2_emissions_comparison", fig=fig, ax=ax_ttw)
-    assemble_processes(tech_wtw).plot("co2_emissions_comparison", fig=fig, ax=ax_wtw)
+    # As with the decomposition, one figure per scope: the tank-to-wake one
+    # carries the comparison against the report's own curves and belongs with the
+    # text, and the well-to-wake twin goes to the appendix on the same scale.
+    fig_ttw, ax_ttw = plt.subplots(figsize=(6.4, 4.2), layout="constrained")
+    assemble_processes(tech_ttw).plot("co2_emissions_comparison", fig=fig_ttw, ax=ax_ttw)
+    fig_wtw, ax_wtw = plt.subplots(figsize=(6.4, 4.2), layout="constrained")
+    assemble_processes(tech_wtw).plot("co2_emissions_comparison", fig=fig_wtw, ax=ax_wtw)
 
     for index, (name, curve) in enumerate(sorted(report["technology_scenarios"].items())):
         ax_ttw.plot(curve["years"], curve["values"], ":", color=f"C{index}", linewidth=1.6,
@@ -615,11 +689,11 @@ if tech_wtw and tech_ttw:
 
     ax_ttw.set_title("Tank-to-wake, against the report")
     ax_wtw.set_title("Well-to-wake")
-    ax_wtw.set_ylabel("")
     y_max = max(ax_wtw.get_ylim()[1], ax_ttw.get_ylim()[1])
     ax_ttw.set_ylim(0, y_max)
     ax_wtw.set_ylim(0, y_max)
-    save_fig(fig, name="technology_scopes")
+    save_fig(fig_ttw, name="technology_scopes")
+    save_fig(fig_wtw, name="technology_scopes_wtw")
 
     at_2050 = {name: np.interp(2050, curve["years"], curve["values"])
                for name, curve in report["technology_scenarios"].items()}
@@ -639,6 +713,99 @@ else:
 
 
 {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">Two observations follow directly. On one hand, the energy lever dominates, carrying several times the combined technology, operations and load-factor wedges, which constitutes a statement regarding fuel supply and capital rather than regarding aircraft engineering. On the other hand, the technology, operations and load-factor wedges are near-identical between S1 and S2, confirming that the two published scenarios differ almost exclusively in how much SAF is deployed and how fast. The nominal distinction between a "SAF-focused" and a "technology-centric" scenario is therefore, in the quantities reaching the atmosphere, mostly a distinction in fuel volume.</span>{raw:typst}`]`
+
+{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">The validation above compares whole trajectories, and the decomposition can be checked the same way, lever by lever, against the bands of the report's own charts. Those bands are traced per pixel from the report rendered at 600 dpi and agree with the shares printed beside the charts within 1.0 percentage point, so the comparison below is limited by the reproduction rather than by the tracing. Each cell gives the error in Mt and, in brackets, as a share of the frozen-fleet (T0) emissions of the same year. Fleet renewal is reproduced 65 to 70 Mt low at 2050 across the three scenarios (2.7 to 3.0 % of T0) and operations 10 to 42 Mt high (0.4 to 1.8 %), the two systematic gaps; the fuel lever agrees within 80 Mt under S1, where the report publishes the volume directly, and deviates by construction under S0, whose fuel comes from stated country-level policies instead. The market-based row compares two offsetting assumptions rather than a reproduction against a source, since the offsetting trajectory used here is harmonised across scenarios. A dash marks a year in which the report's own band is thinner than a pixel of its chart, about 5 Mt, so that its thickness cannot be read at all.</span>{raw:typst}`]`
+
+:::{include} report_data/lever_validation.md
+:::
+
+```{code-cell} python
+:tags: [hide-input]
+
+import itertools
+
+# The lever grid on one chart: a spoke per lever, each ordered outward from the
+# least to the most mitigation, so that a larger polygon is a more ambitious
+# scenario. Traffic therefore runs from high to low, and SAF by its 2050 volume,
+# which puts F3 (about 280 to 380 Mt) before F2 (about 430 Mt). The 144 swept
+# combinations are drawn faintly behind the three published scenarios.
+RADAR_LEVERS = [
+    ("Traffic", ["High", "Central", "Low"]),
+    ("Aircraft technology", ["T1", "T2", "T3", "T4"]),
+    ("Operations", ["O1", "O2", "O3"]),
+    ("SAF", ["F0", "F1", "F3", "F2"]),
+]
+RADAR_SCENARIOS = {
+    "S0": (["Central", "T2", "O2", "F1"], "#2a78d6", "-", "o"),
+    "S1": (["Central", "T3", "O3", "F2"], "#eb6834", "--", "s"),
+    "S2": (["Central", "T4", "O3", "F3"], "#1baf7a", ":", "D"),
+}
+
+
+def radar_radius(lever, level):
+    levels = dict(RADAR_LEVERS)[lever]
+    return (levels.index(level) + 1) / len(levels)
+
+
+# Drawn on plain axes rather than polar ones, so each level label can sit beside
+# its spoke, offset at right angles to it, instead of on top of the markers.
+radar_angles = np.linspace(0, 2 * np.pi, len(RADAR_LEVERS), endpoint=False)
+
+
+def radar_xy(angle, radius):
+    return radius * np.sin(angle), radius * np.cos(angle)
+
+
+def radar_polygon(radii):
+    xs, ys = zip(*[radar_xy(angle, radius) for angle, radius in zip(radar_angles, radii)])
+    return list(xs) + [xs[0]], list(ys) + [ys[0]]
+
+
+fig, ax = plt.subplots(figsize=(6.2, 6.4), layout="constrained")
+ax.set_aspect("equal")
+ax.axis("off")
+ax.set_xlim(-1.45, 1.75)
+ax.set_ylim(-1.3, 1.3)
+
+for angle, (name, levels) in zip(radar_angles, RADAR_LEVERS):
+    ax.plot(*zip(radar_xy(angle, 0), radar_xy(angle, 1.0)), color="0.75", linewidth=0.8,
+            zorder=0)
+    # Names on the side spokes are anchored at their inner edge, so a long one
+    # grows away from the chart instead of over its last level.
+    horizontal = "left" if np.sin(angle) > 0.5 else "right" if np.sin(angle) < -0.5 else "center"
+    ax.text(*radar_xy(angle, 1.1 if horizontal != "center" else 1.17), name, fontsize=10,
+            ha=horizontal, va="center")
+    # Unit vector at right angles to the spoke, for the level labels.
+    side = np.array([np.cos(angle), -np.sin(angle)]) * 0.08
+    for level in levels:
+        x, y = radar_xy(angle, radar_radius(name, level))
+        ax.plot(x, y, marker="o", markersize=3, color="0.6", zorder=1)
+        ax.text(x + side[0], y + side[1], level, fontsize=7.5, color="0.3",
+                ha="center", va="center", zorder=5,
+                bbox=dict(boxstyle="round,pad=0.12", facecolor="white", edgecolor="none",
+                          alpha=0.85))
+
+# The swept grid, faint.
+for combination in itertools.product(*[levels for _, levels in RADAR_LEVERS]):
+    radii = [radar_radius(name, level) for (name, _), level in zip(RADAR_LEVERS, combination)]
+    ax.plot(*radar_polygon(radii), color="0.55", linewidth=0.5, alpha=0.08, zorder=1)
+
+# The three published scenarios, each with its own colour, line style and marker,
+# so they stay apart where S1 and S2 share a level.
+for label, (levels, colour, style, marker) in RADAR_SCENARIOS.items():
+    radii = [radar_radius(name, level) for (name, _), level in zip(RADAR_LEVERS, levels)]
+    xs, ys = radar_polygon(radii)
+    ax.plot(xs, ys, color=colour, linestyle=style, linewidth=2, marker=marker, markersize=6,
+            label=f"{label} ({'-'.join(levels)})", zorder=3)
+    ax.fill(xs, ys, color=colour, alpha=0.06, zorder=2)
+ax.plot([], [], color="0.55", linewidth=0.8, alpha=0.5, label="The 144 swept combinations")
+fig.legend(loc="outside lower center", ncol=2, fontsize=8.5, frameon=False)
+save_fig(fig, name="lever_radar")
+```
+
+*The lever grid. One spoke per lever, each ordered outward from least to most mitigation;
+traffic runs from high to low, and SAF by its 2050 volume, so F3 sits before F2. The three
+published scenarios are drawn in colour, and the 144 combinations the sweep below runs in grey.*
 
 
 ```{code-cell} python
@@ -810,7 +977,7 @@ else:
     display(pd.DataFrame(rows).set_index("scenario").round(1))
 ```
 
-{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">Demand falls by 1 to 15 % by 2050, and by more the harder carbon is priced: −1.0 % under SSP2-4.5, −4.6 % under SSP2-2.6 and −15.0 % under SSP2-1.9. The range brackets those quoted by the reports themselves before the question is set aside, Destination 2050 reporting about −16 % and a national roadmap −14 %, which those two figures approach only under the carbon price consistent with the Paris Agreement. The response scales with the extent to which the transition raises the cost of flying, and correcting the electrofuel double-count lowered that cost substantially, since the same coupling run against the uncorrected fuel price gave 11 to 20 %, in apparent agreement with the cited studies for the wrong reason. What survives is therefore the direction and the ordering rather than a match in magnitude, the elasticity having in any case been calibrated jointly with a price reference that has since been re-anchored.</span>{raw:typst}`]`
+{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">Demand falls by 3 to 22 % by 2050, and by more the harder carbon is priced: −2.9 % under SSP2-4.5, −7.5 % under SSP2-2.6 and −22.0 % under SSP2-1.9. The carbon price is held at zero until 2027 in every pathway, so the three share a cost of flying in 2026 and separate only once a price is charged. The range spans those quoted by the reports themselves before the question is set aside, Destination 2050 reporting about −16 % and a national roadmap −14 %, which fall between the responses under SSP2-2.6 and SSP2-1.9. The response scales with the extent to which the transition raises the cost of flying, so it moves with every assumption that sets that cost: correcting an electrofuel double-count lowered it substantially at one point, and carrying kerosene forward at its 2026 level rather than its report-era one raises the fossil counterfactual against which the mandate is read. What survives across those revisions is the direction and the ordering rather than a match in magnitude, the elasticity having in any case been calibrated jointly with a price reference that has since been re-anchored.</span>{raw:typst}`]`
 
 {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">The two mandate readings cross over, which constitutes the main result of this comparison. Under a strong carbon price the fixed volume covers a larger share of a reduced demand and leaves *less* residual CO₂ than a fixed share, namely 372.0 against 406.1 Mt under SSP2-1.9, an advantage of 34.1 Mt. Under weak carbon prices the ordering reverses, and by considerably more, with 643.6 against 475.7 Mt under SSP2-2.6 and 797.0 against 500.4 Mt under SSP2-4.5, a penalty of 296.6 Mt. A fixed volume constitutes a constraint of absolute size, so that it tightens automatically as demand falls and slackens as demand grows, whereas a fixed share does neither. Which of the two readings applies therefore determines whether a mandate becomes more or less demanding exactly when the carbon price moves, and the reports do not state which one they intend.</span>{raw:typst}`]`
 
@@ -860,15 +1027,23 @@ PANEL_ROWS = [
     ],
 ]
 
-# The reports' own traffic forecasts, drawn on the traffic panel as the exogenous
-# reference the coupling departs from. They are the same three variants the sweep
-# uses, and they carry no demand response at all.
-EXOGENOUS_TRAFFIC = {
-    "ATAG low": "3rd_edition_full/data_outputs/s1-traffic-low.json",
-    "ATAG central": "3rd_edition_full/data_outputs/s1.json",
-    "ATAG high": "3rd_edition_full/data_outputs/s1-traffic-high.json",
+# The uncoupled reference: S1, the published scenario the coupled runs are built
+# on, with the reports' central traffic forecast held exogenous. It is drawn in
+# black on the three bottom panels, traffic, cost and emissions, so the coupled
+# bands read as departures from it. It carries the report-era kerosene price
+# rather than the 2026 one, which is part of why the cost panel separates it
+# from the bands.
+REFERENCE_PATH = "3rd_edition_full/data_outputs/s1.json"
+REFERENCE_LABEL = "S1, central traffic (uncoupled)"
+REFERENCE_SERIES = {
+    "rpk_comparison": ("vector_outputs", "rpk", 1e-12),
+    "doc_net_energy_per_rpk_comparison": ("vector_outputs", "doc_net_energy_per_rpk_mean", 1.0),
+    "co2_emissions_comparison": ("climate_outputs", "co2_emissions", 1.0),
 }
-EXOGENOUS_STYLE = {"ATAG low": ":", "ATAG central": "-", "ATAG high": "--"}
+# Every run shares the observed years, so the history is drawn once, in grey
+# with a small dot on each observed year,
+# and each coupled curve and the reference start where the projection does.
+LAST_HISTORICAL_YEAR = 2024
 
 # Two named groups sharing one comparison, SAF in dark green and no SAF in dark
 # red, so the colour itself carries the counterfactual rather than requiring the
@@ -886,7 +1061,7 @@ DEMAND_GROUP_COLORS = {"SAF (fixed share)": "darkgreen", "No SAF": "darkred"}
 # fainter fill and a thinner line put it behind the mandate it is there to be
 # read against, without changing what either band says.
 DEMAND_GROUP_ALPHA = {"SAF (fixed share)": 0.25, "No SAF": 0.10}
-DEMAND_GROUP_LINEWIDTH = {"SAF (fixed share)": 1.5, "No SAF": 0.9}
+DEMAND_GROUP_LINEWIDTH = {"SAF (fixed share)": 2.6, "No SAF": 1.6}
 
 if share_only and nosaf_only:
     fig, all_axes = plt.subplots(2, 3, figsize=(15.6, 8.4), layout="constrained")
@@ -926,20 +1101,77 @@ if share_only and nosaf_only:
             # nothing in the bottom one.
             ax.set_xlim(2010, 2050)
 
-    # The exogenous references are drawn thinner than the coupled pathways, so
-    # that the reference reads as background and the result as foreground. This
-    # is done by keeping them thin rather than by thickening the coupled lines
-    # in this panel alone, which would have given a group two different widths
-    # depending on which panel it was read in.
-    for label, path in EXOGENOUS_TRAFFIC.items():
-        exogenous = load_results(HERE / path, name=label)
-        series = np.asarray(exogenous.data["vector_outputs"]["rpk"], dtype=float) * 1e-12
-        years = np.arange(2000, 2000 + len(series))
-        all_axes[1][0].plot(years, series, color="black", linewidth=1.0,
-                            linestyle=EXOGENOUS_STYLE[label], label=label, zorder=5)
+    # The top row is the background the runs are given, identical with and without
+    # SAF, so the two families are not told apart there: each carbon-price pathway
+    # is drawn once, in grey, and its line style alone names it. The families are
+    # named on the bottom row, where they differ.
+    for ax in all_axes[0]:
+        for collection in list(ax.collections):
+            collection.remove()
+        for line in list(ax.get_lines()):
+            label = line.get_label()
+            if label.endswith(", no SAF"):
+                line.remove()
+                continue
+            line.set_color("grey")
+            line.set_linewidth(1.8)
+            if label.endswith(", SAF"):
+                line.set_label(label[: -len(", SAF")])
+        # One grey envelope between the pathways, as the bottom row has per family.
+        members = [line for line in ax.get_lines() if not line.get_label().startswith("_")]
+        if members:
+            x = np.asarray(members[0].get_xdata(), dtype=float)
+            ys = np.array([np.interp(x, np.asarray(m.get_xdata(), dtype=float),
+                                     np.asarray(m.get_ydata(), dtype=float)) for m in members])
+            ax.fill_between(x, ys.min(axis=0), ys.max(axis=0), color="grey", alpha=0.2,
+                            linewidth=0, zorder=1)
 
-    all_axes[0][0].legend(fontsize=8)
-    all_axes[1][0].legend(fontsize=7, loc="upper left")
+    # The history, once per panel. Every coupled curve carries the same observed
+    # years, so they are cut at the last of them and the shared part is redrawn
+    # as a single grey line, taken from the first curve before it is cut.
+    # The envelopes need no cut: their members coincide there, so they have no
+    # width to show.
+    history_handle = None
+    for ax in all_axes.ravel():
+        history = None
+        for line in ax.get_lines():
+            x = np.asarray(line.get_xdata(), dtype=float)
+            y = np.asarray(line.get_ydata(), dtype=float)
+            if x.size == 0 or x.min() >= LAST_HISTORICAL_YEAR:
+                continue
+            if history is None:
+                observed = x <= LAST_HISTORICAL_YEAR
+                history = (x[observed], y[observed])
+            projected = x >= LAST_HISTORICAL_YEAR
+            line.set_data(x[projected], y[projected])
+        if history is not None:
+            history_handle, = ax.plot(*history, color="grey", linestyle="-", linewidth=1.6,
+                                      marker=".", markersize=4, label="Historical",
+                                      zorder=6)
+
+    # S1 uncoupled, in black, on the three panels that carry a result. The traffic
+    # panel also names the two families, since the top row no longer does.
+    from matplotlib.patches import Patch
+
+    family_handles = [
+        Patch(facecolor=colour, edgecolor=colour, alpha=0.4, label=family)
+        for family, colour in DEMAND_GROUP_COLORS.items()
+    ]
+    reference = load_results(HERE / REFERENCE_PATH, name=REFERENCE_LABEL)
+    for ax, (plot_name, _, _) in zip(all_axes[1], PANEL_ROWS[1]):
+        block, key, scale = REFERENCE_SERIES[plot_name]
+        series = np.asarray(reference.data[block][key], dtype=float) * scale
+        first = 1940 if block == "climate_outputs" else 2000
+        years = np.arange(first, first + len(series))
+        projected = years >= LAST_HISTORICAL_YEAR
+        line, = ax.plot(years[projected], series[projected], color="black", linewidth=1.6,
+                        label=REFERENCE_LABEL, zorder=5)
+        extra = family_handles if plot_name == "rpk_comparison" else []
+        ax.legend(handles=extra + [line, history_handle], fontsize=8, loc="upper left")
+
+    # The pathway legend, on the first panel, in grey with the history.
+    handles, labels = all_axes[0][0].get_legend_handles_labels()
+    all_axes[0][0].legend(handles, labels, fontsize=8)
     save_fig(fig, name="coupled_demand_share")
 ```
 
@@ -949,18 +1181,19 @@ identical. The top row is the background the scenarios are given, and the bottom
 follows from it. Population is identical across the three and across both families, and GDP per
 capita nearly so, since SSP2 is a single socioeconomic pathway and neither family touches the
 background; the two bands collapse onto one line there, leaving the carbon price, which spans a
-factor of 24 at 2050, as the only driver separating the six pathways below. The traffic panel also
-carries the reports' own three exogenous forecasts as thin black lines, which carry no demand
-response at all. Line weight ranks the three: the SAF mandate heaviest, the exogenous
-forecasts next, and the no-SAF counterfactual lightest, each keeping its weight in every
-panel so a family reads the same wherever it is met. The gap
+factor of 24 at 2050, as the only driver separating the six pathways below. The three bottom panels also
+carry S1 uncoupled, on the reports' central traffic forecast, as a black line, which carries no
+demand response at all; the history every run shares is drawn once, in grey with a dot per observed year. Line weight ranks
+the families: the SAF mandate heaviest, the uncoupled reference next, and the no-SAF
+counterfactual lightest, each keeping its weight in every panel so a family reads the same
+wherever it is met. The gap
 between the two bands is what the SAF mandate's own cost does to traffic, and it grows with the
 carbon price precisely because fossil kerosene is both the cheapest and the dirtiest pathway
-available: at 2050, removing SAF turns a 15.0 % demand reduction into a 35.6 % one under SSP2-1.9,
-a 4.6 % reduction into an 8.0 % one under SSP2-2.6, and a 1.0 % reduction into a 13.8 % *increase*
+available: at 2050, removing SAF turns a 22.0 % demand reduction into a 41.8 % one under SSP2-1.9,
+a 7.5 % reduction into a 14.9 % one under SSP2-2.6, and a 2.9 % reduction into a 2.2 % *increase*
 under SSP2-4.5, where the carbon price is too weak to offset cheaper, dirtier fuel. Residual CO₂
-follows the same split: 406 against 1,392 Mt under SSP2-1.9, 476 against 1,997 Mt under SSP2-2.6,
-and 500 against 2,458 Mt under SSP2-4.5. All six panels carry the observed period as well as the
+follows the same split: 377 against 1,281 Mt under SSP2-1.9, 463 against 1,865 Mt under SSP2-2.6,
+and 492 against 2,232 Mt under SSP2-4.5. All six panels carry the observed period as well as the
 projection.*
 
 The panel above gives the total cost per revenue passenger-kilometre. What it does not show is
@@ -1006,6 +1239,43 @@ if share_only:
     for ax in price_axes:
         ax.set_xlim(2025, 2050)
 
+    # One pathway the eleven-carrier file above does not carry, drawn here because
+    # the paper uses it: the generic SAF the light edition's S0 runs on, which is an
+    # aggregate of country-level policies rather than a production route. It takes
+    # a colour of its own, outside the palette the panels use for the production
+    # pathways, so that it is not mistaken for one of them. Black rather than a
+    # purple: the palette already carries one for woody biomass.
+    EXTRA_COLOUR = "#000000"
+    reference_view = share_only[reference]
+    kerosene_mfsp = np.asarray(
+        reference_view.data["vector_outputs"]["fossil_kerosene_mean_mfsp"], dtype=float
+    )
+    kerosene_factor = np.asarray(
+        reference_view.data["vector_outputs"]["fossil_kerosene_mean_co2_emission_factor"],
+        dtype=float,
+    )
+    extra_years = np.arange(2000, 2000 + len(kerosene_mfsp))
+
+    extras = []
+    if S0 is not None:
+        # The light edition's generic carrier aggregates country-level mandates
+        # and their emission factors; it carries no production cost of its own,
+        # so it appears on the intensity panel alone rather than as a zero.
+        s0_outputs = S0.data["vector_outputs"]
+        extras.append((
+            "Generic SAF (S0)",
+            "-",
+            None,
+            np.asarray(s0_outputs["generic_saf_mean_co2_emission_factor"], dtype=float),
+        ))
+
+    for label, style, mfsp, factor in extras:
+        if mfsp is not None:
+            price_axes[0].plot(extra_years[: len(mfsp)], mfsp, color=EXTRA_COLOUR, linestyle=style,
+                               linewidth=2.0, label=label, zorder=6)
+        price_axes[1].plot(extra_years[: len(factor)], factor, color=EXTRA_COLOUR, linestyle=style,
+                           linewidth=2.0, label=label, zorder=6)
+
     # Both panels resolve the same pathways, so one legend serves them; placing it
     # outside to the right stops it covering the curves it names.
     handles, labels = price_axes[1].get_legend_handles_labels()
@@ -1036,6 +1306,18 @@ none of it at all.
 # strongest carbon price. Both rows are the same plot on different views, so the
 # only thing that changes down a column is which mandate applied, and the only
 # thing that changes across a row is the carbon price.
+# Seven biomass routes and an electrofuel are more detail than the cost argument
+# needs: what moves the cost per RPK is how much fossil kerosene is replaced, and
+# by which family of fuel. Drop-in pathways are grouped by where their energy
+# comes from; anything that is not a drop-in fuel would keep a band of its own.
+DOC_GROUP_LABELS = {"fossil": "Fossil kerosene", "biomass": "Bio-SAF", "electricity": "e-SAF"}
+DOC_GROUP_COLORS = {"Fossil kerosene": "#8c8c8c", "Bio-SAF": "#1baf7a", "e-SAF": "#2a78d6"}
+DOC_GROUPS = {
+    p.name: DOC_GROUP_LABELS[p.energy_origin]
+    for p in pathways_manager.get_all()
+    if p.aircraft_type == "dropin_fuel" and p.energy_origin in DOC_GROUP_LABELS
+}
+
 if share_only and nosaf_only:
     ssp_columns = [pathway for pathway in SSP_ORDER if pathway in share_only and pathway in nosaf_only]
     # sharey=True, not "row": scaling the two rows independently would make the
@@ -1050,9 +1332,11 @@ if share_only and nosaf_only:
     # columns would only repeat them over the stacks they describe.
     for col, pathway in enumerate(ssp_columns):
         nosaf_only[pathway].plot("doc_net_energy_per_rpk_breakdown", fig=fig, ax=axes[0, col],
-                                 legend=col == 0)
+                                 legend=col == 0, groups=DOC_GROUPS,
+                                 group_colors=DOC_GROUP_COLORS)
         share_only[pathway].plot("doc_net_energy_per_rpk_breakdown", fig=fig, ax=axes[1, col],
-                                 legend=col == 0)
+                                 legend=col == 0, groups=DOC_GROUPS,
+                                 group_colors=DOC_GROUP_COLORS)
         axes[0, col].set_title(f"{with_warming(pathway)} -- no SAF")
         axes[1, col].set_title(f"{with_warming(pathway)} -- SAF (fixed share)")
         for ax in (axes[0, col], axes[1, col]):
@@ -1069,14 +1353,14 @@ fixed-share SAF blend. Within a row the fuel is identical across columns, so wha
 three panels is carbon tax alone; within a column the fuel differs instead, so what separates the
 two rows is the SAF mandate's own price premium against the tax fossil kerosene alone would carry.
 That premium changes sign with the carbon price, mirroring the fixed-volume/fixed-share crossover
-above. Under the weak carbon price of SSP2-4.5, SAF costs more than doing nothing: 0.0187 EUR/RPK
-against a no-SAF 0.0123, a premium of 0.0064. Under SSP2-2.6 the ordering has already reversed, SAF
-costing less at 0.0214 against 0.0240, and by SSP2-1.9 the reversal is large, SAF at 0.0345 against
-a no-SAF 0.0808, a saving of 0.0463 EUR/RPK: taxing fossil kerosene outright costs more than
+above. Under the weak carbon price of SSP2-4.5, SAF costs more than doing nothing: 0.0191 EUR/RPK
+against a no-SAF 0.0162, a premium of 0.0029. Under SSP2-2.6 the ordering has already reversed, SAF
+costing less at 0.0218 against 0.0279, and by SSP2-1.9 the reversal is large, SAF at 0.0349 against
+a no-SAF 0.0847, a saving of 0.0498 EUR/RPK: taxing fossil kerosene outright costs more than
 switching away from it. Stacked by carrier with the cost components distinguished by hatch and the
 total drawn in black over a dashed line for the delayed cost travellers actually perceive.*
 
-{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">The demand response operates through the cost side of the same loop. Energy expenses rise steeply as the SAF mandate ramps, since the mandated fuel is several times costlier per unit energy than the kerosene it displaces, and that increase reaches the traveller through direct operating cost. This is the mechanism left unmodelled by the reports, and it does not constitute a second-order correction, a demand reduction of 1 to 15 % by 2050 being comparable in magnitude to what the technology and operations levers are together assumed to deliver. Removing SAF entirely, rather than merely leaving its cost unmodelled, shows how much of that mechanism the mandate itself is responsible for: the SAF-versus-no-SAF comparison above is the sharper counterfactual, isolating what the mandate's own cost does to traffic from everything the exogenous forecast already leaves out.</span>{raw:typst}`]`
+{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">The demand response operates through the cost side of the same loop. Energy expenses rise steeply as the SAF mandate ramps, since the mandated fuel is several times costlier per unit energy than the kerosene it displaces, and that increase reaches the traveller through direct operating cost. This is the mechanism left unmodelled by the reports, and it does not constitute a second-order correction, a demand reduction of 3 to 22 % by 2050 being comparable in magnitude to what the technology and operations levers are together assumed to deliver. Removing SAF entirely, rather than merely leaving its cost unmodelled, shows how much of that mechanism the mandate itself is responsible for: the SAF-versus-no-SAF comparison above is the sharper counterfactual, isolating what the mandate's own cost does to traffic from everything the exogenous forecast already leaves out.</span>{raw:typst}`]`
 
 ### Temperature impacts and contrail avoidance strategies
 
@@ -1085,12 +1369,22 @@ total drawn in black over a dashed line for the delayed cost travellers actually
 
 T_TOTAL = "temperature_increase_from_aviation"
 T_CONTRAILS = "temperature_increase_from_contrails_from_aviation"
+T_CO2 = "temperature_increase_from_co2_from_aviation"
+
+# CO2 warming carries its own uncertainty, smaller than the non-CO2 one. The
+# climate model runs one central FaIR configuration, so the range is taken from
+# the transient climate response to cumulative CO2 emissions (TCRE), to which
+# CO2-induced warming is proportional: IPCC AR6 WG1 (SPM D.1.1) gives a likely
+# range of 1.0 to 2.3 K per 1000 PgC around a best estimate of 1.65. The central
+# run is scaled by the ratio of each bound to the best estimate.
+TCRE_BEST, TCRE_LIKELY = 1.65, (1.0, 2.3)
+CO2_BAND = tuple(bound / TCRE_BEST for bound in TCRE_LIKELY)
 
 band_csv = HERE / "climate_analysis" / "baseline_uncertainty_results.csv.gz"
 bands_tidy = pd.read_csv(band_csv)
 band_scenarios = list(bands_tidy["scenario"].unique())
 
-fig, axes = plt.subplots(3, len(band_scenarios), figsize=(15.6, 10.4), sharex=True,
+fig, axes = plt.subplots(4, len(band_scenarios), figsize=(15.6, 13.6), sharex=True,
                          layout="constrained")
 for column, scenario in enumerate(band_scenarios):
     subset = bands_tidy[bands_tidy["scenario"] == scenario]
@@ -1099,21 +1393,35 @@ for column, scenario in enumerate(band_scenarios):
         rows = subset[subset["band_key"] == key]
         return rows.set_index("year")[column_name]
 
-    # rows 1 and 2: the same envelope, on contrails then on the total
+    # row 1: CO2 warming. The non-CO2 bands leave it unchanged, so its band is the
+    # TCRE range above, applied to the scenario's own stored climate outputs.
+    ax = axes[0, column]
+    view = scenarios.get(scenario)
+    if view is not None:
+        co2 = view.data["climate_outputs"][T_CO2]
+        ax.fill_between(co2.index, 1000 * co2 * CO2_BAND[0], 1000 * co2 * CO2_BAND[1],
+                        alpha=0.25, color="#4C72B0")
+        ax.plot(co2.index, 1000 * co2, color="#4C72B0", linewidth=2)
+    ax.set_title(f"{scenario} - CO$_2$ warming", fontsize=9)
+    ax.grid(alpha=0.3)
+    if column == 0:
+        ax.set_ylabel("Warming [mK]")
+
+    # rows 2 and 3: the same envelope, on contrails then on the total
     for row, (metric, title) in enumerate(
-        ((T_CONTRAILS, "Contrail warming"), (T_TOTAL, "Total warming from aviation"))
+        ((T_CONTRAILS, "Contrail warming"), (T_TOTAL, "Total warming from aviation")), start=1
     ):
         ax = axes[row, column]
         low, central, high = (band(k, metric) for k in ("low", "central", "high"))
         ax.fill_between(low.index, 1000 * low, 1000 * high, alpha=0.25, color="#4C72B0")
         ax.plot(central.index, 1000 * central, color="#4C72B0", linewidth=2)
-        ax.set_title(f"{scenario} - {title}" if row == 0 else title, fontsize=9)
+        ax.set_title(title, fontsize=9)
         ax.grid(alpha=0.3)
         if column == 0:
             ax.set_ylabel("Warming [mK]")
 
-    # row 3: what the central case is made of, stacked by mechanism
-    ax = axes[2, column]
+    # row 4: what the central case is made of, stacked by mechanism
+    ax = axes[3, column]
     view = scenarios.get(scenario)
     if view is not None:
         climate = view.data["climate_outputs"]
@@ -1130,7 +1438,7 @@ for column, scenario in enumerate(band_scenarios):
         ax.set_ylabel("Warming [mK]")
         ax.legend(fontsize=6, loc="upper left")
 
-# One scale across all nine panels. The bottom is left free rather than pinned
+# One scale across all twelve panels. The bottom is left free rather than pinned
 # at zero, because the mechanism decomposition carries genuinely negative terms
 # and clipping them would misreport the stack.
 flat_axes = [ax for row in axes for ax in row]
@@ -1150,87 +1458,202 @@ the figure: the band on any one scenario is wider than the distance between the 
 the stack shows CO2 to be the minority of the total in 2050 in every scenario, with contrail
 cirrus the largest single term.*
 
-{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">Decarbonisation does not act on non-CO₂ effects in proportion to its action on CO₂, and the two diverge sharply by 2050. Every reproduced scenario drives CO₂ emissions steeply down, yet the warming each of them still causes remains dominated by non-CO₂ terms, principally contrail cirrus. A CO₂ target and a temperature target are therefore not interchangeable statements regarding the same trajectory, since a scenario can approach net-zero CO₂ while the majority of its contribution to warming remains untouched by the levers that brought it there.</span>{raw:typst}`]`
+```{code-cell} python
+:tags: [hide-input]
 
-{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">A partial coupling nevertheless exists, and it operates through soot. Cleaner fuels emit fewer non-volatile particles, which seeds fewer and larger ice crystals and reduces contrail forcing, an effect represented in the model as a scaling of contrail forcing with the square root of the particle number emission index, weighted by the mass share of each pathway. However, the magnitude of that benefit remains genuinely open. For fleet-wide SAF adoption, the modelling literature surveyed by Teoh et al. {cite:p}`teoh2022` spans a 15 % reduction in contrail net radiative forcing at one end and 50 % at the other, with their own estimate at 44 %, and one regional study reporting a possible *increase*.</span>{raw:typst}`]`
+# What each scenario asks of four shared budgets, against the share of each that
+# the framework's assessment allocates to aviation. Read from the committed runs:
+# the carbon budget and the temperature target come from the sustainability
+# assessment models, and the biomass and green electricity from the resource
+# models, which count what the fuels draw on against the global availability
+# assumed for each. The allocations are the framework's defaults, not a
+# finding: 2.6 % of the carbon budget to 2050, 3.8 % of the warming left to 2 C,
+# and 5 % of the global biomass and green electricity.
+SHARE_COLOURS = {"S0 reference": "#2a78d6", "S1 SAF-focused": "#eb6834",
+                 "S2 technology-centric": "#1baf7a"}
+SHORT = {"S0 reference": "S0", "S1 SAF-focused": "S1", "S2 technology-centric": "S2"}
 
-{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">That uncertainty compounds with a larger one, concerning how much contrails warm at all. Lee et al. {cite:p}`lee_contribution_2021` give a contrail radiative forcing for 2018 with a 95 % interval spanning roughly a factor of six, whereas Teoh et al. {cite:p}`teoh2024`, simulating actual trajectories rather than extrapolating, obtain a 2019 central value 44 % below that estimate, with a sensitivity analysis spanning 34.8 to 74.8 mW m⁻². Both uncertainties bear directly on scenario results, so that `climate_analysis/baseline_uncertainty.ipynb` propagates them jointly, as three bands named by climate impact: the high band pairs the largest contrail sensitivity with the weakest fuel benefit, the low band the reverse, and the central band reproduces the published scenarios exactly.</span>{raw:typst}`]`
+rows = []
+for name, view in scenarios.items():
+    floats, vectors = view.data["float_outputs"], view.data["vector_outputs"]
+    frame = bands_tidy[bands_tidy["scenario"] == name]
+    warming = {
+        key: 1000 * (lambda s: s.loc[2050] - s.loc[2024])(
+            frame[frame["band_key"] == key].set_index("year")["temperature_increase_from_aviation"]
+        )
+        for key in ("low", "central", "high")
+    }
+    room_mk = 1000 * floats["world_temperature_target"]
+    allocated_mk = 1000 * floats["aviation_temperature_target"]
+    # The central band is the stored run, so the two routes to the same number agree.
+    assert abs(100 * warming["central"] / room_mk - floats["temperature_target_consumed_share"]) < 0.05
+
+    biomass_allocated = vectors.loc[2050, "biomass_consumed_global_share"] / (
+        vectors.loc[2050, "biomass_consumed_aviation_allocated_share"] / 100
+    )
+    electricity = vectors.loc[2050].get("electricity_consumed_aviation_allocated_share", 0.0)
+    rows.append({
+        "scenario": name,
+        "temperature": 100 * warming["central"] / allocated_mk,
+        "temperature_low": 100 * warming["low"] / allocated_mk,
+        "temperature_high": 100 * warming["high"] / allocated_mk,
+        "carbon": 100 * vectors.loc[2050, "cumulative_co2_emissions"] / floats["aviation_carbon_budget"],
+        "biomass": vectors.loc[2050, "biomass_consumed_aviation_allocated_share"],
+        "biomass_mobilised": 100 * vectors.loc[2050, "biomass_necessary_global_share_with_selectivity"]
+        / biomass_allocated,
+        "electricity": 0.0 if electricity != electricity else electricity,
+    })
+shares = pd.DataFrame(rows).set_index("scenario")
+
+PANELS = [
+    ("temperature", "Warming, 2024 to 2050", "3.8 % of the 0.8 K left to 2 C"),
+    ("carbon", "Cumulative CO$_2$, 2020 to 2050", "2.6 % of the carbon budget"),
+    ("biomass", "Biomass, 2050", "5 % of global availability"),
+    ("electricity", "Green electricity, 2050", "5 % of global availability"),
+]
+
+fig, axes = plt.subplots(1, 4, figsize=(11.0, 3.6), sharey=True, layout="constrained")
+for ax, (key, title, allocation) in zip(axes, PANELS):
+    positions = np.arange(len(shares))
+    colours = [SHARE_COLOURS[name] for name in shares.index]
+    ax.bar(positions, shares[key], color=colours, width=0.62, zorder=3)
+    if key == "temperature":
+        ax.errorbar(positions, shares[key],
+                    yerr=[shares[key] - shares["temperature_low"],
+                          shares["temperature_high"] - shares[key]],
+                    fmt="none", ecolor="0.25", capsize=4, lw=1.2, zorder=4)
+    if key == "biomass":
+        # What the feedstock actually mobilised amounts to once the co-products of
+        # each process, which come with the jet fraction, are counted.
+        ax.bar(positions, shares["biomass_mobilised"], color=colours, alpha=0.3, width=0.62,
+               zorder=2)
+    for x, name in zip(positions, shares.index):
+        # A label sits on top of the bar it names; the temperature one clears its
+        # error bar, and the mobilised biomass gets its own above the light bar.
+        height = (shares.loc[name, "temperature_high"] if key == "temperature"
+                  else shares.loc[name, key])
+        ax.text(x, height + 8, f"{shares.loc[name, key]:.0f} %", ha="center", fontsize=8.5,
+                color="0.15", zorder=5)
+        if key == "biomass":
+            ax.text(x, shares.loc[name, "biomass_mobilised"] + 8,
+                    f"{shares.loc[name, 'biomass_mobilised']:.0f} %", ha="center", fontsize=8.5,
+                    color="0.15", zorder=5)
+    ax.axhline(100, color="0.2", lw=1.1, ls="--", zorder=1)
+    ax.set_xticks(positions, [SHORT[name] for name in shares.index])
+    ax.set_title(title, fontsize=10)
+    ax.set_xlabel(f"allocated: {allocation}", fontsize=8, color="0.3")
+    ax.grid(axis="y", alpha=0.3, zorder=0)
+    ax.spines[["top", "right"]].set_visible(False)
+axes[0].set_ylabel("% of the share allocated to aviation")
+axes[0].set_title("Warming, 2024 to 2050\n(bar: central, line: low to high)", fontsize=10)
+axes[2].set_title("Biomass, 2050\n(solid: used, light: mobilised)", fontsize=10)
+save_fig(fig, name="resource_shares")
+```
+
+*What each reproduced scenario draws on, against the share of each budget the framework allocates
+to aviation (dashed line, 100 %). Warming is the rise from 2024 to 2050 at the central non-CO2
+assumptions, with the low and high band as a line. CO2 is the physical emissions added up over
+2020 to 2050, before offsets. Biomass and green electricity are the 2050 use of the fuels, against
+5 % of the global availability the framework assumes for each. The light bar on biomass counts the
+feedstock the processes mobilise once their co-products are included. S0 uses no electricity in this
+reproduction, since its generic SAF is modelled as biomass only.*
+
+{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">Decarbonisation does not act on non-CO₂ effects in proportion to its action on CO₂, and the two diverge sharply by 2050. Every reproduced scenario drives CO₂ emissions steeply down, yet non-CO₂ terms, principally contrail cirrus, still carry at least half of the warming each of them causes in 2050: 1.34 times the CO₂ contribution under S0, 1.13 under S1 and 1.01 under S2, the margin narrowing as a scenario deploys cleaner fuel, which acts on contrails as well as on CO₂. A CO₂ target and a temperature target are therefore not interchangeable statements regarding the same trajectory, since a scenario can approach net-zero CO₂ while the majority of its contribution to warming remains untouched by the levers that brought it there.</span>{raw:typst}`]`
+
+{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">A partial coupling nevertheless exists, and it operates through soot. Cleaner fuels emit fewer non-volatile particles, which seeds fewer and larger ice crystals and reduces contrail forcing, an effect represented in the model as a scaling of contrail forcing with the square root of the particle number emission index, weighted by the mass share of each pathway. However, the magnitude of that benefit remains genuinely open. The value used here, 52 % [35, 67] for neat fuel, is the contrail energy forcing reduction simulated by </span>{raw:typst}`]` {cite:t}`wang_fuel_2026` {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000"> for the hydrogen content of a fully synthetic kerosene, and its interval spans the difference between high-soot and low-soot conditions alone; the ICCT </span>{raw:typst}`]` {cite:p}`zheng_aviation_2025`{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">, fitting a different chain of correlations, put the same quantity at 30 %.</span>{raw:typst}`]`
+
+{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">That uncertainty compounds with a larger one, concerning how much contrails warm at all. </span>{raw:typst}`]` {cite:t}`lee_contribution_2021` {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000"> give a contrail radiative forcing for 2018 with a 95 % interval spanning roughly a factor of six, whereas </span>{raw:typst}`]` {cite:t}`teoh2024`{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">, simulating actual trajectories rather than extrapolating, obtain a 2019 central value 44 % below that estimate, with a sensitivity analysis spanning 34.8 to 74.8 mW m⁻². Both uncertainties bear directly on scenario results, so that `climate_analysis/baseline_uncertainty.ipynb` propagates them jointly, as three bands named by climate impact: the high band pairs the largest contrail sensitivity with the weakest fuel benefit, the low band the reverse, and the central band reproduces the published scenarios exactly.</span>{raw:typst}`]`
 
 
-{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">The result reframes the comparison between the scenarios. In 2050 the central estimates of total warming from aviation amount to 105, 89 and 84 mK for S0, S1 and S2, a spread of 21 mK between the most and the least ambitious published scenario. The uncertainty band carried by any *single* one of them amounts to about 70 mK, roughly 3.2 times wider. Decomposing that band, the contrail sensitivity contributes about 54 mK and the SAF benefit about 15 mK, so that the dominant term is how strongly contrails warm rather than how much cleaner fuel helps. Choosing between the published scenarios therefore constitutes, on current knowledge, a smaller question than the uncertainty carried by whichever one is chosen, which is an argument for reporting bands rather than points, and not for delaying action.</span>{raw:typst}`]`
+{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">The result reframes the comparison between the scenarios. In 2050 the central estimates of total warming from aviation amount to 93, 75 and 71 mK for S0, S1 and S2, a spread of 22.5 mK between the most and the least ambitious published scenario. The uncertainty band carried by any *single* one of them amounts to as much as 64 mK, roughly 2.8 times wider. Decomposing that band on S1, the efficacy contributes 23.8 mK, the forcing per flight kilometre 21.1 mK and the SAF benefit 10.8 mK, against 53.3 mK when the three move together, so that the dominant terms are how strongly contrails warm and how much of that warming reaches the surface, rather than how much cleaner fuel helps. Choosing between the published scenarios therefore constitutes, on current knowledge, a smaller question than the uncertainty carried by whichever one is chosen, which is an argument for reporting bands rather than points, and not for delaying action.</span>{raw:typst}`]`
 
-{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">Contrail mitigation is absent from all three editions, every scenario being run with the contrail lever switched off, in accordance with the stated scope of the reports, the third edition being explicit that contrail quantification carries low confidence. Since contrails nevertheless constitute the largest single warming term in 2050 in every reproduced scenario, the omission is worth quantifying rather than inheriting. `climate_analysis/climate_analysis.ipynb` runs three strategy families parameterised on Teoh et al. {cite:p}`teoh_mitigating_2020`: low-risk diversion, small-scale diversion of about 1.7 % of flights, and combustor technology reducing black carbon emissions, each across the same three bands.</span>{raw:typst}`]`
+{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">Contrail mitigation is absent from all three editions, every scenario being run with the contrail lever switched off, in accordance with the stated scope of the reports, the third edition being explicit that contrail quantification carries low confidence. Since contrails nevertheless constitute the largest single warming term in 2050 in every reproduced scenario, the omission is worth quantifying rather than inheriting. `climate_analysis/climate_analysis.ipynb` runs three strategy families parameterised on </span>{raw:typst}`]` {cite:t}`teoh_mitigating_2020`{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">: low-risk diversion, small-scale diversion of about 1.7 % of flights, and combustor technology reducing black carbon emissions, each across the same three bands.</span>{raw:typst}`]`
 
 {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">Three findings survive the checks carried in that notebook. First, **diversion buys contrail reduction by burning more fuel**, and under a fixed-quantity SAF mandate the marginal fuel is fossil kerosene, so that CO₂ rises by proportionally more than energy does. Second, **timing prevails over ultimate effectiveness on a 2050 horizon**, combustor technology being the stronger measure while depending on fleet renewal and starting five years later, which suffices to reverse the ranking against small-scale diversion by 2050. Third, **the value of avoidance scales with the uncertainty**, since the high band starts from considerably more contrail warming, so that the same strategies avoid several times more absolute warming there than in the low band. Avoidance is therefore worth most precisely in the cases where contrails turn out to be worst, which is an argument for treating it as insurance rather than as a central-estimate investment.</span>{raw:typst}`]`
 
 ```{code-cell} python
 :tags: [hide-input]
 
+# Every non-CO2 measure in a row, the same experiment each time: the lever
+# applied to S1 across the three bands, against the same scenario without it at
+# the same band. Pairing each variant with a reference at its own band matters,
+# since otherwise the band's own change in forcing would read as something the
+# measure achieved. The left column is the share of contrail warming removed,
+# which is what makes the three bands comparable, and the right column the total
+# warming that follows; both columns share their scale down the figure.
 LEVEL_STYLE = {"Low": ":", "Central": "-", "High": "--"}
+BANDS = ("Low", "Central", "High")
 
 variants = pd.read_csv(HERE / "climate_analysis" / "contrail_variants_results.csv.gz")
-mitigating = [f for f in variants["family"].unique() if f != "No mitigation"]
 
 
-def no_mitigation(level, column):
-    """The no-mitigation run at one band: the like-for-like reference for that level."""
-    rows = variants[(variants["family"] == "No mitigation") & (variants["level"] == level)]
+def _band_rows(frame, family, level, column):
+    rows = frame[(frame["family"] == family) & (frame["level"] == level)]
     return rows.set_index("year")[column]
 
 
-fig, axes = plt.subplots(2, len(mitigating), figsize=(15.6, 8.4), sharex=True,
-                         layout="constrained")
-for column, family in enumerate(mitigating):
-    top, bottom = axes[0, column], axes[1, column]
-    for level in ("Low", "Central", "High"):
-        rows = variants[(variants["family"] == family) & (variants["level"] == level)]
+MEASURES = [(family, variants) for family in variants["family"].unique() if family != "No mitigation"]
 
-        total = rows.set_index("year")[T_TOTAL]
-        top.plot(total.index, 1000 * total, color="#4C72B0", linestyle=LEVEL_STYLE[level],
-                 label=f"{level} band")
-        reference_total = no_mitigation(level, T_TOTAL)
-        top.plot(reference_total.index, 1000 * reference_total, color="0.6",
-                 linestyle=LEVEL_STYLE[level], linewidth=1)
-
-        # Share of the contrail warming that would otherwise have occurred, so the
-        # bands are comparable where the absolute figure is not.
-        contrails = rows.set_index("year")[T_CONTRAILS]
-        reference = no_mitigation(level, T_CONTRAILS)
+# One column per measure: the share of contrail warming avoided on the top row,
+# total warming on the bottom one, each row on one scale.
+fig, grid = plt.subplots(
+    2, len(MEASURES), figsize=(4.2 * len(MEASURES), 6.6), sharex=True, layout="constrained"
+)
+all_axes = list(zip(grid[0], grid[1]))
+for row, (family, frame) in enumerate(MEASURES):
+    share_axis, warming_axis = all_axes[row]
+    for level in BANDS:
+        treated = _band_rows(frame, family, level, T_CONTRAILS)
+        reference = _band_rows(frame, "No mitigation", level, T_CONTRAILS)
         with np.errstate(invalid="ignore", divide="ignore"):
-            share = 100 * (reference - contrails) / reference.where(reference.abs() > 1e-12)
-        bottom.plot(share.index, share, color="#C44E52", linestyle=LEVEL_STYLE[level],
-                    label=f"{level} band")
+            share = 100 * (reference - treated) / reference.where(reference.abs() > 1e-12)
+        share_axis.plot(share.index, share, color="#C44E52", linewidth=1.8,
+                        linestyle=LEVEL_STYLE[level], label=f"{level} band")
 
-    top.set_title(family, fontsize=9)
-    top.grid(alpha=0.3)
-    bottom.set_xlabel("Year")
-    bottom.grid(alpha=0.3)
-    bottom.set_xlim(2024, 2050)
-axes[0, 0].set_ylabel("Total warming from aviation [mK]")
-axes[0, 0].legend(fontsize=8)
-axes[1, 0].set_ylabel("Contrail warming avoided [%]")
+        total = _band_rows(frame, family, level, T_TOTAL)
+        reference_total = _band_rows(frame, "No mitigation", level, T_TOTAL)
+        warming_axis.plot(total.index, 1000 * total, color="#4C72B0", linewidth=1.8,
+                          linestyle=LEVEL_STYLE[level], label=f"{level} band")
+        warming_axis.plot(reference_total.index, 1000 * reference_total, color="0.6",
+                          linewidth=1.0, linestyle=LEVEL_STYLE[level])
 
-# Each row on its own common scale, so the families are comparable across the
-# row; the share row starts at zero, since a share below it has no meaning here.
-for row, bottom in ((0, 0.0), (1, 0.0)):
-    top = max(axes[row, column].get_ylim()[1] for column in range(len(mitigating)))
-    for column in range(len(mitigating)):
-        axes[row, column].set_ylim(bottom, top)
+    share_axis.set_title(family, fontsize=10)
+    if row == 0:
+        share_axis.set_ylabel("Contrail warming avoided [%]", fontsize=9)
+        warming_axis.set_ylabel("Total warming [mK]", fontsize=9)
+    for axis in (share_axis, warming_axis):
+        axis.grid(alpha=0.3)
+        axis.set_xlim(2024, 2050)
+
+all_axes[0][0].legend(fontsize=8, loc="upper left")
+all_axes[0][1].legend(fontsize=8, loc="upper left")
+for axis in grid[1]:
+    axis.set_xlabel("Year")
+
+# One scale per row, so a measure is read against the others rather than against
+# its own axis: the share row starts at zero, and the warming row spans every
+# band of every measure.
+share_top = max(axes[0].get_ylim()[1] for axes in all_axes)
+warming_low = min(axes[1].get_ylim()[0] for axes in all_axes)
+warming_top = max(axes[1].get_ylim()[1] for axes in all_axes)
+for axes in all_axes:
+    axes[0].set_ylim(0.0, share_top)
+    axes[1].set_ylim(warming_low, warming_top)
 save_fig(fig, name="contrail_strategies")
 ```
 
-*Each contrail-mitigation family in a column, read two ways. The top row is total warming from
-aviation under the strategy, in blue, against the no-mitigation run at the same non-CO2 band, in
-grey; the bottom row is the share of contrail warming the strategy removes, as a percentage of the
-contrail warming that would otherwise have occurred at that band. Line style encodes the band:
-dotted Low, solid Central, dashed High. Pairing each variant with a reference at its own band
-matters, since otherwise the band's own reduction in forcing would read as something the
-mitigation achieved. Taking the bottom row as a share rather than in millikelvin is what makes the
-three bands comparable, and it is where the timing result shows: the combustor family depends on
-fleet renewal and starts five years later, so it crosses the diversion families only after 2050.*
+*Every non-CO2 measure in a column, read two ways. On top, the share of contrail warming the
+measure removes, as a percentage of the contrail warming that would otherwise have occurred at
+that band; below, total warming from aviation under the measure, in blue, against the
+no-mitigation run at the same band, in grey. Line style encodes the band: dotted Low, solid
+Central, dashed High. Both rows share their scale across the figure, so the columns are comparable
+as drawn. Taking the top row as a share rather than in millikelvin is what makes the three
+bands comparable, and it is where the timing result shows: the combustor family depends on fleet
+renewal and starts five years later, so it crosses the diversion families only after 2050.*
 
 
-{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">For external comparison, the ICCT's *Aviation Vision 2050* {cite:p}`icct_vision_2022` reports added aviation warming over 2025–2050 in the same units. Its historical-trends case adds 60 mK, whereas the S0 reference reproduced here adds 55 mK centrally, S1 and S2 being lower at 39 and 34 mK, as their mitigation would imply. The scenario definitions and the climate models differ, so that this constitutes an indicative check rather than a validation, but the reproduction falls within the same range.</span>{raw:typst}`]`
+
+{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">For external comparison, the ICCT's *Aviation Vision 2050* </span>{raw:typst}`]` {cite:p}`zheng_aviation_2025` {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000"> reports added aviation warming over 2025–2050 in the same units. Its historical-trends case adds 60 mK, whereas the S0 reference reproduced here adds 48 mK centrally, S1 and S2 being lower at 30 and 26 mK, as their mitigation would imply. The scenario definitions and the climate models differ, so that this constitutes an indicative check rather than a validation, but the reproduction falls within the same range.</span>{raw:typst}`]`
 
 Offsets deserve a separate note. They carry a growing share of the residual abatement in the
 reports' accounting, but they act outside the sector's physical emissions: swapping the entire
@@ -1245,7 +1668,7 @@ asserted-in-passing, in the climate notebook.
 > The current priority for industry and government climate action should continue to be CO2
 > emissions reduction.
 
-{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">The first sentence is correct, whereas the second does not follow from it. Uncertainty regarding a warming term is an argument for continued research and for reporting bands rather than points, and not for assigning that term the value zero, which is the effect of leaving it out of a scenario. Furthermore, the uncertainty is not symmetric in its consequences, the reproduction presented here finding that contrail avoidance is worth several times more warming avoided in the high band than in the low one, so that the case for acting on contrails is strongest precisely in the cases where the science turns out worst. Nor is the sign of the benefit in doubt, only its magnitude. The ICCT reach the same conclusion from a different direction {cite:p}`icct_vision_2022`, attributing the majority of avoidable warming to short-lived effects and placing contrail mitigation ahead of fuel substitution on that basis, on the grounds that avoidance and hydrotreating are relatively mature whereas e-fuels are not, and that CO₂ already emitted remains for centuries.</span>{raw:typst}`]`
+{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">The first sentence is correct, whereas the second does not follow from it. Uncertainty regarding a warming term is an argument for continued research and for reporting bands rather than points, and not for assigning that term the value zero, which is the effect of leaving it out of a scenario. Furthermore, the uncertainty is not symmetric in its consequences, the reproduction presented here finding that contrail avoidance is worth several times more warming avoided in the high band than in the low one, so that the case for acting on contrails is strongest precisely in the cases where the science turns out worst. Nor is the sign of the benefit in doubt, only its magnitude. The ICCT reach the same conclusion from a different direction </span>{raw:typst}`]` {cite:p}`icct_vision_2022`{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">, attributing the majority of avoidable warming to short-lived effects and placing contrail mitigation ahead of fuel substitution on that basis, on the grounds that avoidance is relatively mature whereas e-fuels are not, and that CO₂ already emitted remains for centuries.</span>{raw:typst}`]`
 
 ## Discussion
 
@@ -1255,7 +1678,7 @@ asserted-in-passing, in the climate notebook.
 
 {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">The baseline against which reductions are measured moves between editions as well. A roadmap redrawing its own frozen-technology baseline while keeping the same terminal target will report changing lever contributions even when nothing physical has changed, so that percentage contributions quoted across editions are not directly comparable. This does not constitute a criticism unique to these reports, but rather a generic hazard of scenario accounting, which only becomes visible once the scenarios are rebuilt from their inputs.</span>{raw:typst}`]`
 
-{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">The avoided-emissions framing deserves particular scrutiny, since the demand coupling quantifies its central weakness. When each lever is credited against a counterfactual traffic volume that the levers themselves would have suppressed, the credited abatement is inflated, the fuel that a carbon price prevents from being burned being counted as abated by the SAF that was never required to replace it. Closing the loop moves 2050 traffic down by 1 to 15 %, which is of the same order as the technology and operations levers combined, so that the double-count does not constitute a rounding error.</span>{raw:typst}`]`
+{raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">The avoided-emissions framing deserves particular scrutiny, since the demand coupling quantifies its central weakness. When each lever is credited against a counterfactual traffic volume that the levers themselves would have suppressed, the credited abatement is inflated, the fuel that a carbon price prevents from being burned being counted as abated by the SAF that was never required to replace it. Closing the loop moves 2050 traffic down by 3 to 22 %, which is of the same order as the technology and operations levers combined, so that the double-count does not constitute a rounding error.</span>{raw:typst}`]`
 
 {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">A second and sharper form of the same fallacy is built into the wedge chart itself. A decomposition of this kind does not measure what each lever contributed, but rather what each lever contributed *given an order*, the order being chosen by whoever draws the chart. The levers overlap, since SAF and a battery-electric fleet decarbonise the same joule, so that whichever of them is peeled off first is credited with it while the other is credited with what remains. Measured on S2 at 2050, where the energy term amounts to 1,475 MtCO₂, taking SAF first gives SAF 1,469 Mt and alternative aircraft 6 Mt, taking alternative aircraft first gives 1,257 and 218 Mt, and a Shapley value, that is, the symmetric attribution averaging over orders, gives 1,363 and 112 Mt. The fleet is identical in all three cases, nothing physical distinguishing them. The alternative-aircraft pillar therefore moves by a factor of 35 on the strength of a presentational choice, whereas the same fleet change in the T4 technology scenario, where no SAF competes for the credit, amounts to 247 Mt.</span>{raw:typst}`]`
 

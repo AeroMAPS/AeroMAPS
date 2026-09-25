@@ -30,7 +30,7 @@ __pycache__/
 /aeromaps/notebooks/private/
 # The sandbox prepare_scenario copies a reference scenario into, so a notebook
 # run never edits the packaged originals.
-/workdir/
+workdir/
 /aeromaps/notebooks/tutorials/07_life_cycle_assessment/data/config_files/lca/tmp/
 /aeromaps/notebooks/publications/ecats_2026/data/config_files/lca/tmp/
 # The LCA cache the process writes and re-reads; 49 MB rewritten by every suite run.
