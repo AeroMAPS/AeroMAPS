@@ -46,6 +46,7 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
+from matplotlib.transforms import blended_transform_factory  # noqa: E402
 import numpy as np  # noqa: E402
 import yaml  # noqa: E402
 
@@ -72,10 +73,13 @@ CASES = {
     "w1_anchored": dict(pricing_weight=1.0, demand_elasticity=0.5),
 }
 
+# What each line is. At w = 0 airlines pay the AVERAGE cost of the fuel bought, so the
+# marginal price drawn for that run is reported by the market but paid by nobody: the
+# solver's pick at a kink never reaches traffic, which is why that run settles at once.
 LABELS = {
-    "w0": "w = 0  (price from volumes)",
-    "w1_plain": "w = 1, rigid balance",
-    "w1_anchored": "w = 1, demand-anchored",
+    "w0": "w = 0: marginal price reported, not paid",
+    "w1_plain": "w = 1, no demand slope: paid, and flips",
+    "w1_anchored": "w = 1, with demand slope: paid, settles",
 }
 COLOURS = {"w0": "#2f6b4f", "w1_plain": "#a93226", "w1_anchored": "#1f5f8b"}
 
@@ -154,7 +158,7 @@ def _worst_cell(trace, key="marginal"):
 def plot(results=None):
     results = results or json.loads(RESULTS.read_text())
 
-    figure, axes = plt.subplots(1, 3, figsize=(13.5, 4.2), constrained_layout=True)
+    figure, axes = plt.subplots(1, 3, figsize=(13.5, 4.9), constrained_layout=True)
 
     # -- left: the price, at the cell the failing run cannot settle -------------
     failing = results.get("w1_plain", {}).get("trace") or next(
@@ -200,6 +204,41 @@ def plot(results=None):
             bbox=dict(boxstyle="round,pad=0.35", facecolor="white", edgecolor="0.75", alpha=0.95),
             arrowprops=dict(arrowstyle="->", color="0.35", linewidth=1.0),
         )
+    # What w = 0 actually charges, so the reader is not left comparing a paid price with
+    # an unpaid one: the average cost, flat from the first sweeps.
+    paid = results.get("w0", {}).get("trace")
+    if paid:
+        average = _series(paid, "delivered", region=region, year=year)[-1]
+        axes[0].axhline(
+            average,
+            color=COLOURS["w0"],
+            linestyle="--",
+            linewidth=1.2,
+            label=f"w = 0: price paid (average cost) {average:.5f}",
+        )
+    # The two ends of the interval are two readings of the same point: the obligation is
+    # the binding constraint (no rent, compliance price = cost gap), or the growth limit is
+    # (compliance price includes the rent on growing faster).
+    # Labelled just outside the axis, where no line can run through them.
+    beside = blended_transform_factory(axes[0].transAxes, axes[0].transData)
+    axes[0].text(
+        1.01,
+        high,
+        "growth limit\nbinds:\nrent in",
+        transform=beside,
+        fontsize=7.5,
+        color="0.3",
+        va="center",
+    )
+    axes[0].text(
+        1.01,
+        low,
+        "obligation\nbinds:\nno rent",
+        transform=beside,
+        fontsize=7.5,
+        color="0.3",
+        va="center",
+    )
     axes[0].set_xlabel("market solve (coupling iteration)")
     axes[0].set_ylabel(f"marginal price, region {'AB'[region]} {2020 + year}")
     axes[0].set_title(
@@ -207,7 +246,9 @@ def plot(results=None):
         f"(the cell that moves most; first {_LEFT_PANEL_SWEEPS} sweeps, the rest repeat)",
         fontsize=10,
     )
-    axes[0].legend(frameon=True, framealpha=0.95, edgecolor="0.8", fontsize=8, loc="lower right")
+    axes[0].legend(
+        frameon=False, fontsize=8, loc="upper center", bbox_to_anchor=(0.5, -0.16), ncol=2
+    )
 
     # -- middle: the active set, as a category per iteration --------------------
     # Signatures are hashes, so they are mapped to integers in order of first
@@ -246,7 +287,7 @@ def plot(results=None):
     axes[2].set_xlabel("market solve (coupling iteration)")
     axes[2].set_ylabel("max |a| / demand")
     axes[2].set_title(
-        "How far the balance was bent\n(at zero the term is inert and the prices are exact)",
+        "How far the balance was bent\n(at zero it is inert: the prices are exact)",
         fontsize=10,
     )
 

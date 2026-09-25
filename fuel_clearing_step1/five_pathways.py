@@ -61,7 +61,7 @@ CAPACITY = {"hefa_fog": 2.0e12, "ft_msw": 2.8e12, "atj": 2.8e12}
 # The same three, plus a ceiling on the backstop. With `electrofuel` uncapped some pathway
 # is always marginal at its own cost and the staircase never leaves a price undefined --
 # so the one thing the demand anchor exists for is never exercised. Capping it puts total
-# eligible capacity at 8.6 PJ/yr and lets the traffic loop drive demand down until the
+# eligible capacity at 8.6 EJ/yr and lets the traffic loop drive demand down until the
 # obligation exactly exhausts it. See `all_capped` in CASES.
 CAPACITY_ALL = {**CAPACITY, "electrofuel": 1.0e12}
 # electrofuel deliberately has none: PtL is bound by electricity and capital, not by a
@@ -113,6 +113,20 @@ CASES = {
     ),
 }
 WEIGHTS = (0.0, 1.0)
+
+# Extra runs whose only job is to put more points on each region's DEMAND curve. At a
+# converged w = 1 run the pair (obligation volume m*D, eligible price lambda_E + lambda_M)
+# is a point where AeroMAPS's own traffic chain meets the market -- and since every w = 1
+# run shares that chain and differs only in supply, all of them lie on one demand curve
+# per region. Moving the capacities moves the crossing along it. Used by `plot_plane`
+# only; nothing in the tables depends on them.
+_PROBE_BASE = {**CAPACITY_ALL}
+DEMAND_PROBES = {
+    "efuel_2": {**CAPACITY, "electrofuel": 2.0e12},
+    "efuel_3": {**CAPACITY, "electrofuel": 3.0e12},
+    "all_x0.8": {p: 0.8 * k for p, k in _PROBE_BASE.items()},
+    "all_x0.65": {p: 0.65 * k for p, k in _PROBE_BASE.items()},
+}
 
 LABELS = {
     "reference": "nothing scarce",
@@ -218,6 +232,29 @@ def run():
     return results
 
 
+def run_probes():
+    """The demand-curve probes, appended to the saved results under ``probes``."""
+    warnings.resetwarnings()
+    warnings.simplefilter("ignore")
+    logging.disable(logging.INFO)
+    results = json.loads(RESULTS.read_text())
+    results.setdefault("probes", {})
+    for tag, caps in DEMAND_PROBES.items():
+        settings = {
+            **COMMON,
+            "saturation_intensity": 0.0,
+            "demand_elasticity": 2.0,
+            "pricing_weight": 1.0,
+            "pathways": {p: {"capacity_limit": k} for p, k in caps.items()},
+        }
+        results["probes"][tag] = _run_one(settings, f"probe_{tag}")
+        cell = results["probes"][tag]
+        status = "ok" if cell["ok"] else f"FAILED {cell.get('error', '')[:80]}"
+        print(f"probe {tag:10s} {status}", flush=True)
+        RESULTS.write_text(json.dumps(results, indent=1))
+    return results
+
+
 # --- figures --------------------------------------------------------------------------
 
 
@@ -299,148 +336,209 @@ def plot_effects(results):
     _save(figure, "five_pathways_effects.png")
 
 
-def plot_plane(results):
-    """The price/quantity plane for the obligation, region A, 2050.
+def _soft_supply(prices, cost, gamma, sat_n):
+    """Eligible volume supplied at each price by the saturating pathways, summed.
 
-    The x axis is eligible (mandate-counting) volume; the y axis is what an eligible unit
-    is paid, ``lambda^E + lambda^M``. In this plane the two configurations are two supply
-    curves over the same four pathways:
-
-    * **hard cap** -- flat at each pathway's cost for the width of its capacity, then
-      vertical. A staircase.
-    * **soft saturation** -- the aggregate inverse of ``q_p(pi) = K_p((pi/c_p - 1)/gamma)^(1/n)``,
-      which is the same staircase with its corners rounded off.
-
-    And the obligation is drawn twice, which is the whole point of the figure:
-
-    * as the **vertical** line ``m * D`` it is at a fixed total demand -- and where that
-      line crosses a vertical stretch of supply there is no crossing *point* at all, only
-      a crossing segment. That is the dual interval, drawn;
-    * as the **sloped** line the elastic balance actually prices against. Demand for
-      eligible fuel is ``m * (D + a)`` with ``a = beta * (p0 - lambda^E - m*(pi - lambda^E))``,
-      so its slope is ``-m^2 beta``: steep, because a 1 EUR/MJ rise in the eligible price
-      raises the delivered price by only ``m`` of that, and only ``m`` of the demand it
-      withdraws was eligible. Steep, but not vertical -- and that is the difference
-      between a price and an interval.
+    Inverting marginal cost ``c (1 + gamma (q/K)^n)``: ``q = K ((pi/c - 1)/gamma)^(1/n)``.
+    Uncapped pathways are not included -- they supply anything at their own cost, which
+    the caller draws as a flat line.
     """
-    region = REGIONS[0]
-    hard = results["hard_w1"]
-    soft = results["smoothed_n4_w1"]
-    if not (hard["ok"] and soft["ok"]):
-        print("plane: need both the hard and the soft run")
-        return
-    reference = hard[region]
-
-    cost = {p: reference["net_mfsp"][p] for p in ELIGIBLE}
-    order = sorted(ELIGIBLE, key=lambda p: cost[p])
-    demand = reference["dropin_demand"][-1]
-    mandate = reference["mandate"]
-    obligation = mandate * demand
-
-    figure, axis = plt.subplots(figsize=(7.6, 5.2), constrained_layout=True)
-    unit = 1.0e12
-
-    # --- the staircase ---------------------------------------------------------------
-    x, y = [0.0], [cost[order[0]]]
-    for pathway in order:
-        width = CAPACITY.get(pathway)
-        y[-1] = cost[pathway]
-        if width is None:  # the uncapped backstop: flat from here on
-            x.append(1.35 * obligation)
-            y.append(cost[pathway])
-            break
-        x.extend([x[-1] + width, x[-1] + width])
-        y.extend([cost[pathway], cost[pathway]])
-    axis.step(
-        np.array(x) / unit,
-        y,
-        where="post",
-        color="#a93226",
-        linewidth=2.0,
-        label="hard cap: marginal cost is a staircase",
-    )
-
-    # --- the bent curve --------------------------------------------------------------
-    gamma = CASES["smoothed_n4"]["saturation_intensity"]
-    sat_n = CASES["smoothed_n4"]["saturation_stiffness"]
-    backstop = cost[order[-1]]
-    prices = np.linspace(min(cost.values()) * 1.0001, backstop, 600)
     quantity = np.zeros_like(prices)
-    for pathway in order:
-        capacity = CAPACITY.get(pathway)
-        if capacity is None:
-            continue
+    for pathway, capacity in CAPACITY.items():
         ratio = np.maximum(prices / cost[pathway] - 1.0, 0.0) / gamma
         quantity += capacity * ratio ** (1.0 / sat_n)
-    axis.plot(
-        quantity / unit,
-        prices,
-        color="#1f5f8b",
-        linewidth=2.0,
-        label=f"soft saturation: bent ($\\gamma={gamma:g}$, $n={sat_n:g}$)",
-    )
-    # Above the backstop's cost the aggregate curve is flat: an uncapped pathway supplies
-    # whatever is asked at its own cost, so nothing is ever paid more than that.
-    axis.plot(
-        [quantity[-1] / unit, 1.35 * obligation / unit],
-        [backstop, backstop],
-        color="#1f5f8b",
-        linewidth=2.0,
-    )
+    return quantity
 
-    # --- the obligation, twice -------------------------------------------------------
-    axis.axvline(
-        obligation / unit,
-        color="0.35",
-        linestyle="--",
-        linewidth=1.4,
-        label="obligation $mD$ at fixed demand (vertical)",
-    )
+
+def _demand_points(results, region):
+    """(obligation volume m*D, eligible price) at every converged w = 1 run, sorted by price.
+
+    Every w = 1 run shares AeroMAPS's traffic chain and differs only in supply, so each
+    converged run is one point of the SAME demand curve for that region. Nothing here is
+    fitted: the curve drawn through them is only an interpolation between measured points.
+    """
+    cells = [results[f"{case}_w1"] for case in CASES]
+    cells += list(results.get("probes", {}).values())
+    points = set()
+    for cell in cells:
+        if not cell.get("ok"):
+            continue
+        data = cell[region]
+        volume = data["mandate"] * data["dropin_demand"][-1]
+        price = data["energy_price"][-1] + data["compliance_price"][-1]
+        points.add((round(volume / 1.0e12, 4), round(price, 5)))
+    return np.array(sorted(points, key=lambda xy: xy[1]))
+
+
+def plot_plane(results):
+    """The price/quantity plane for the obligation, 2050, w = 1. Two panels.
+
+    Left: the supply side alone -- the same capacities K made into a staircase (hard cap)
+    or bent (soft saturation) at several (gamma, n). The bend starts BEFORE K, because a
+    plant's cost is already rising as it approaches K and the next fuel becomes the
+    cheaper one sooner; and it runs PAST K, because nothing stops a soft pathway there.
+
+    Right: both regions' demand for eligible fuel crossing that supply. Each region has
+    its OWN copy of the staircase -- capacities are per region at step 1 -- and the demand
+    curves are made of measured equilibria, not assumed. Three crossings: region A on a
+    flat step (spare capacity, price = cost), region B on a flat step with e-fuel
+    uncapped, and region B on a vertical riser once e-fuel is capped too -- where supply
+    fixes the quantity and demand the price.
+    """
+    reference = results["hard_w1"]["region_A"]
+    cost = {p: reference["net_mfsp"][p] for p in ELIGIBLE}
+    order = sorted(ELIGIBLE, key=lambda p: cost[p])
+    backstop = cost["electrofuel"]
     energy_price = reference["energy_price"][-1]
-    anchor = energy_price + reference["compliance_price"][-1]
-    slope = mandate**2 * (0.5 * demand / (energy_price + mandate * (anchor - energy_price)))
-    span = np.linspace(anchor - 0.055, anchor + 0.02, 50)
-    axis.plot(
-        (obligation - slope * (span - anchor)) / unit,
-        span,
-        color="#2f6b4f",
-        linewidth=1.6,
-        label="what the market prices against (slope $-m^2\\beta$)",
+    ceiling = energy_price + COMMON["buyout_price"]
+    unit = 1.0e12
+
+    def staircase(extra_cap=None, right=15.0):
+        x, y = [0.0], [cost[order[0]]]
+        for pathway in order:
+            width = CAPACITY.get(pathway, extra_cap if pathway == "electrofuel" else None)
+            y[-1] = cost[pathway]
+            if width is None:
+                x.append(right)
+                y.append(cost[pathway])
+                return np.array(x), np.array(y)
+            x.extend([x[-1] + width / unit, x[-1] + width / unit])
+            y.extend([cost[pathway], cost[pathway]])
+        # every eligible route capped: vertical up to the penalty, flat beyond it
+        x.extend([x[-1], right])
+        y.extend([ceiling, ceiling])
+        return np.array(x), np.array(y)
+
+    figure, (left, right) = plt.subplots(
+        1, 2, figsize=(14.0, 5.6), constrained_layout=True, gridspec_kw={"width_ratios": [1, 1.25]}
     )
 
-    for case, colour, marker in (("hard_w1", "#a93226", "o"), ("smoothed_n4_w1", "#1f5f8b", "s")):
-        cell = results[case][region]
-        eligible = sum(cell["volumes"][p][-1] for p in ELIGIBLE)
-        price = cell["energy_price"][-1] + cell["compliance_price"][-1]
-        axis.plot(
-            eligible / unit,
-            price,
-            marker,
+    # --- left: the shapes ---------------------------------------------------------------
+    x, y = staircase(right=11.0)
+    left.plot(x, y, color="#a93226", linewidth=2.2, label="hard cap: stops at K")
+    prices = np.linspace(min(cost.values()) * 1.0001, backstop, 800)
+    shapes = (
+        (1.0, 2.0, "#a1d99b", "-"),
+        (1.0, 4.0, "#41ab5d", "-"),
+        (1.0, 16.0, "#006d2c", "-"),
+        (3.0, 4.0, "#41ab5d", "--"),
+    )
+    for gamma, sat_n, colour, style in shapes:
+        q = _soft_supply(prices, cost, gamma, sat_n) / unit
+        left.plot(
+            np.append(q, 11.0),
+            np.append(prices, backstop),
+            style,
             color=colour,
-            markersize=9,
-            zorder=5,
-            markeredgecolor="white",
+            linewidth=1.8,
+            label=f"bends: $\\gamma$={gamma:g}, n={sat_n:g}",
         )
-
+    cumulative = np.cumsum([CAPACITY[p] for p in order if p in CAPACITY]) / unit
+    for k, pathway in zip(cumulative, [p for p in order if p in CAPACITY]):
+        left.axvline(k, color="0.75", linewidth=0.8, linestyle=":")
+        left.text(k, 0.004, f" K ends\n {pathway}", fontsize=7.5, color="0.4", va="bottom")
     for pathway in order:
-        axis.annotate(
-            pathway,
-            (1.30 * obligation / unit, cost[pathway]),
+        left.text(10.9, cost[pathway], pathway, fontsize=8, color="0.35", ha="right", va="bottom")
+    left.set_xlim(0, 11.0)
+    left.set_ylim(0, backstop * 1.12)
+    left.set_title(
+        "Same capacities K, different shapes:\nthe bend starts before K and runs past it",
+        fontsize=10,
+    )
+    left.legend(frameon=False, fontsize=8, loc="upper left")
+
+    # --- right: the crossings -----------------------------------------------------------
+    x, y = staircase(right=15.0)
+    right.plot(x, y, color="#a93226", linewidth=2.2, label="supply, e-fuel uncapped")
+    x, y = staircase(extra_cap=CAPACITY_ALL["electrofuel"], right=15.0)
+    right.plot(x, y, "--", color="#a93226", linewidth=1.6, label="supply, e-fuel capped at 1 EJ")
+    right.axhline(ceiling, color="0.55", linestyle=":", linewidth=1.0)
+    right.text(
+        14.9,
+        ceiling,
+        "penalty: nobody pays more",
+        fontsize=7.5,
+        color="0.4",
+        ha="right",
+        va="bottom",
+    )
+    q = _soft_supply(prices, cost, 1.0, 4.0) / unit
+    right.plot(
+        np.append(q, 15.0),
+        np.append(prices, backstop),
+        color="#41ab5d",
+        linewidth=1.3,
+        alpha=0.8,
+        label="supply, bends ($\\gamma$=1, n=4)",
+    )
+
+    colours = {"region_A": "#1f5f8b", "region_B": "#c9772e"}
+    for region in REGIONS:
+        points = _demand_points(results, region)
+        if len(points) >= 2:
+            from scipy.interpolate import PchipInterpolator
+
+            curve = PchipInterpolator(points[:, 1], points[:, 0])
+            grid = np.linspace(points[0, 1], points[-1, 1], 300)
+            right.plot(
+                curve(grid),
+                grid,
+                color=colours[region],
+                linewidth=2.0,
+                label=f"demand, {region.replace('_', ' ')} (measured)",
+            )
+        right.plot(points[:, 0], points[:, 1], "o", color=colours[region], markersize=3.5)
+
+    def mark(case, region, text, offset):
+        cell = results.get(case, {})
+        if not cell.get("ok"):
+            return
+        data = cell[region]
+        xy = (
+            data["mandate"] * data["dropin_demand"][-1] / unit,
+            data["energy_price"][-1] + data["compliance_price"][-1],
+        )
+        right.plot(
+            *xy,
+            "o",
+            markersize=11,
+            markerfacecolor="none",
+            markeredgecolor=colours[region],
+            markeredgewidth=2.0,
+        )
+        right.annotate(
+            text,
+            xy,
+            xytext=offset,
+            textcoords="offset points",
             fontsize=8,
-            color="0.3",
-            va="center",
-            ha="right",
+            color="0.15",
+            arrowprops=dict(arrowstyle="-", color="0.5", linewidth=0.8),
         )
 
-    axis.set_xlabel("eligible (mandate-counting) volume, PJ/yr")
-    axis.set_ylabel("price of an eligible unit, $\\lambda^E + \\lambda^M$, EUR/MJ")
-    axis.set_xlim(0, 1.35 * obligation / unit)
-    axis.set_ylim(0, backstop * 1.15)
-    axis.legend(frameon=False, fontsize=8, loc="upper left")
-    axis.spines[["top", "right"]].set_visible(False)
-    axis.set_title(
-        "Region A, 2050: where the crossing is a point and where it is a segment", fontsize=10
+    mark("hard_w1", "region_A", "A: spare capacity,\nprice = e-fuel cost", (-150, 30))
+    mark("hard_w1", "region_B", "B: price = e-fuel cost", (-30, 40))
+    mark(
+        "all_capped_w1",
+        "region_B",
+        "B, e-fuel capped: all fuels at\ntheir limit, price from demand",
+        (-200, 12),
     )
+    mark("smoothed_n4_w1", "region_A", "A with bends: cheaper,\nno e-fuel needed", (60, -75))
+
+    right.set_xlim(0, 15.0)
+    right.set_ylim(0, ceiling * 1.08)
+    right.set_title(
+        "Where each region's obligation meets supply (each region has its own staircase)",
+        fontsize=10,
+    )
+    right.legend(frameon=False, fontsize=8, loc="upper right", bbox_to_anchor=(1.0, 0.93))
+
+    for axis in (left, right):
+        axis.set_xlabel("eligible (mandate-counting) volume, EJ/yr")
+        axis.spines[["top", "right"]].set_visible(False)
+    left.set_ylabel("price of an eligible MJ, $\\lambda_E + \\lambda_M$, EUR/MJ")
+    figure.suptitle("2050, w = 1", fontsize=10, x=0.02, ha="left")
     _save(figure, "five_pathways_plane.png")
 
 
@@ -541,4 +639,9 @@ def plot(results=None):
 
 
 if __name__ == "__main__":
-    plot() if "--plot" in sys.argv else plot(run())
+    if "--probes" in sys.argv:
+        plot(run_probes())
+    elif "--plot" in sys.argv:
+        plot()
+    else:
+        plot(run())
