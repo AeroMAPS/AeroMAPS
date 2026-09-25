@@ -30,25 +30,117 @@ load factor and aircraft energy, each lever being the difference between two suc
 these levers can be further decomposed into sub-levers. Each decomposition is exact by construction: the sub-levers, 
 including an explicit residual term, sum to the lever they split.
 
-- **Aircraft efficiency per aircraft** (bottom-up fleet model). The fleet model measures the contribution of each 
-aircraft as the shift of the mean energy intensity with respect to the recent reference aircraft. The evolution of 
-these contributions since the reference year is converted into avoided emissions with the reference-year factors. 
-The sub-levers are the fleet renewal (replacement of the old reference aircraft by the recent one), the continuous 
-improvement of the recent reference aircraft itself, one sub-lever per new aircraft (its additional gain beyond fleet 
-renewal, weighted by the share of the market it serves), the freight fleet, and a residual that is the traffic mix 
-between markets.
-- **Fleet operations per operational concept** (generic operations module). The operational gains of the concepts 
-compose multiplicatively and the aggregate gain is shared between the concepts in proportion to the logarithm of 
-their individual factors, so that the sub-levers do not depend on the order in which the concepts are declared. The 
-sub-levers are also aggregated per category of concepts.
-- **Aircraft energy per pathway** (generic energy models). Each pathway is credited with its energy consumption 
-multiplied by the difference between the mean carbon intensity of the reference year and its own carbon intensity. 
-The reference is the mean of the reference year rather than that of fossil kerosene, so that the sub-levers sum 
-exactly to the energy lever; when low-carbon fuels are already used in the reference year, fossil kerosene carries a 
-small negative sub-lever.
-- **Every lever per market**. The cascade is recomputed for each passenger and freight market with its own traffic 
-and energy intensities. The global cascade uses fleet-wide mean intensities, so the sum over markets differs from the 
-global lever by a cross-market mix term, reported as a residual for each lever.
+The notations below are common to all decompositions. The reference year $t_0$ is the last historical year. For 
+passenger traffic, $e(t)$ is the fleet mean energy per ASK and $e^{*}(t)$ the same quantity before the operational 
+gain, $LF_0$ the load factor and $EF_0$ the mean CO<sub>2</sub> emission factor of the energy used, both at $t_0$. 
+Index $0$ denotes values at $t_0$. Unit conversion factors are omitted.
+
+##### Aircraft efficiency per aircraft
+
+This decomposition requires the bottom-up fleet model. The fleet model measures the contribution $C_a(t)$ of each 
+aircraft $a$ as the shift it causes in the mean energy per ASK of its fleet category, with respect to the recent 
+reference aircraft of that category. The evolution of this contribution since $t_0$ is converted into avoided 
+emissions with the reference-year factors of the cascade, and weighted by the share of ASK of the market $m$ served 
+by the category:
+
+$$
+\Delta CO_2^{a}(t) = \frac{RPK(t)}{LF_0} \, \frac{e_0}{e^{*}_0} \, EF_0 \, \frac{ASK_m(t)}{ASK(t)} \, \big[ C_a(t) - C_a(t_0) \big]
+$$
+
+The same expression gives the other passenger sub-levers:
+
+- **fleet renewal**, with the contribution of the old reference aircraft, which measures the replacement of the old 
+reference aircraft by the recent one; each new aircraft is then only credited for its additional gain beyond fleet 
+renewal;
+- **continuous improvement**, with the opposite of the contribution of the recent reference aircraft baseline, which 
+drifts over time when a continuous improvement factor is set and would otherwise belong to none of the aircraft.
+
+The freight sub-lever is computed from the freight energy per RTK before operations $e^{*}_{f}(t)$:
+
+$$
+\Delta CO_2^{freight}(t) = RTK(t) \, \big[ e^{*}_{f,0} - e^{*}_{f}(t) \big] \, \frac{e_{f,0}}{e^{*}_{f,0}} \, EF_0
+$$
+
+The residual is the aircraft efficiency lever minus all the terms above. It carries the traffic mix between markets 
+of different energy intensity, and the gain of any aircraft added to the fleet after the process was set up (as the 
+graphical interface does), since the list of output variables is fixed at setup.
+
+##### Fleet operations per operational concept
+
+This decomposition requires the generic operations module (see the [air transport documentation](documentation_airtransport.md#operational-concepts)). The gains $g_i$ of 
+the operational concepts compose multiplicatively into the aggregate operational gain $G$, each concept acting on the 
+consumption left by the others:
+
+$$
+1 - G(t) = \prod_i \big( 1 - g_i(t) \big)
+$$
+
+The aggregate gain is shared between the concepts in proportion to the logarithm of their individual factors:
+
+$$
+c_i(t) = G(t) \, \frac{\ln \big( 1 - g_i(t) \big)}{\ln \big( 1 - G(t) \big)}
+$$
+
+The contributions $c_i$ sum exactly to $G$ and do not depend on the order in which the concepts are declared, which 
+a sequential attribution would. Since the operations lever $L_{ops}$ is proportional to $G$ for passenger and freight 
+traffic alike, each concept receives the share $c_i / G$ of the lever. The sub-levers are also summed per category of 
+concepts. The residual is zero unless the operational gain is applied differently to some traffic.
+
+##### Aircraft energy per pathway
+
+This decomposition requires the generic energy models. Each pathway $p$ is credited with its energy consumption 
+$E_p(t)$ multiplied by the difference between the reference emission factor and its own mean emission factor 
+$EF_p(t)$:
+
+$$
+\Delta CO_2^{p}(t) = E_p(t) \, \big[ EF_0 - EF_p(t) \big]
+$$
+
+The reference is the mean emission factor of the reference year rather than that of fossil kerosene, so that the 
+sub-levers sum exactly to the energy lever. When low-carbon fuels are already used in the reference year, fossil 
+kerosene therefore carries a small negative sub-lever. The residual collects what the pathway terms do not cover.
+
+##### Every lever per market
+
+The cascade is recomputed for each passenger and freight market with its own traffic (and baseline traffic for the 
+demand lever), its own energy intensities per energy type, and its own emission factors for the energy lever. Freight 
+markets have no load factor lever. The global cascade uses fleet-wide mean intensities, so the sum over markets 
+differs from the global lever by a cross-market mix term, reported as a residual for each lever. This term is the 
+effect of traffic shifting between markets of different intensity; it is not a numerical error.
+
+##### Using the decompositions
+
+The decomposition models are part of the standard model bundles and need no configuration:
+
+| Decomposition | Model | Registered with |
+|---|---|---|
+| Aircraft efficiency per aircraft | `DetailedCo2EmissionsPerAircraft` | `models_efficiency_bottom_up` |
+| Fleet operations per concept | `DetailedCo2EmissionsPerOperationalConcept` | the generic operations module, when `models.operations` is declared |
+| Aircraft energy per pathway | `DetailedCo2EmissionsPerPathway` | `models_energy_without_fuel_effect`, `models_energy_with_fuel_effect` |
+| Every lever per market | `DetailedCo2EmissionsPerMarket` | the top-down, push and bottom-up efficiency bundles |
+
+The sub-levers are output columns in MtCO<sub>2</sub> avoided, named `co2_emissions_lever_<lever>_<kind>_<name>`, 
+for instance `co2_emissions_lever_efficiency_aircraft_<category>_<aircraft>`, 
+`co2_emissions_lever_operations_concept_<concept>`, `co2_emissions_lever_energy_pathway_<pathway>` or 
+`co2_emissions_lever_energy_market_<market>`; residuals end with `_other` or `_market_cross_mix`. Values below 
+10<sup>-9</sup> MtCO<sub>2</sub> are set to zero so that the outputs are deterministic. The helper functions of 
+`aeromaps/models/impacts/emissions/co2_emissions.py` (`aircraft_efficiency_sub_lever_columns`, 
+`pathway_energy_sub_lever_columns`, `operations_concept_column`, `market_lever_dataframe`) list the columns, so that 
+no name has to be typed by hand.
+
+Four plots show the sub-levers:
+
+- `air_transport_co2_emissions_detailed` replaces each decomposable wedge by its sub-wedges, with the keywords 
+`efficiency_granularity` (`"aircraft"` or `"category"`) and `energy_granularity` (`"pathway"` or `"family"`); a lever 
+whose decomposition is not available is drawn as a single band;
+- `air_transport_co2_emissions_grouped` is the same plot per fleet category and per fuel family;
+- `air_transport_co2_emissions_per_market` draws each lever per market in one panel per lever, since some market 
+contributions become negative and a stacked chart would depend on the stacking order;
+- `operations_gain_by_concept`, `operations_gain_by_category` and `operations_contrails_gain_by_concept` show the 
+operational gains themselves.
+
+The tutorial [Decompose the CO2 levers of action into sub-levers](https://github.com/AeroMAPS/AeroMAPS/blob/main/aeromaps/notebooks/tutorials/15_decompose_co2_levers_of_action/decompose_co2_levers_of_action.ipynb) 
+goes through all of them and checks that each decomposition is exact.
 
 #### Non-CO<sub>2</sub> emissions
 
