@@ -337,17 +337,17 @@ corsia:
       mode: "level"                     # emissions above a baseline, times a coverage
       reference_year: 2019
       baseline_level_vs_reference_year: !AeroMapsCustomDataType   # [%]
-        years: [2024, 2035]
+        years: [2020, 2050]
         values: [85.0, 85.0]
         method: linear
       coverage: !AeroMapsCustomDataType # [%] of emissions in scope
-        years: [2024, 2027, 2035]
-        values: [50.0, 60.0, 60.0]
+        years: [2020, 2023, 2024, 2027, 2050]
+        values: [0.0, 0.0, 50.0, 60.0, 60.0]
         method: linear
     economics:
       price: !AeroMapsCustomDataType    # [€/tCO2]
-        years: [2024, 2035]
-        values: [20.0, 60.0]
+        years: [2020, 2024, 2035, 2050]
+        values: [20.0, 20.0, 60.0, 60.0]
         method: linear
 
 removals:
@@ -357,13 +357,13 @@ removals:
     quantity:
       mode: "share_of_residual"         # share of the emissions left after level schemes
       share: !AeroMapsCustomDataType    # [%]
-        years: [2035, 2050]
-        values: [0.0, 100.0]
+        years: [2020, 2035, 2050]
+        values: [0.0, 0.0, 100.0]
         method: linear
     economics:
       price: !AeroMapsCustomDataType    # [€/tCO2]
-        years: [2035, 2050]
-        values: [200.0, 100.0]
+        years: [2020, 2035, 2050]
+        values: [200.0, 200.0, 100.0]
         method: linear
 ```
 
