@@ -20,7 +20,7 @@ columns:
 label: tab:contrail_avoidance
 
 caption_head: Contrail avoidance.
-caption_body: >-
+caption_body_short: >-
   Avoidance assumptions, grouped by intervention, with 95 \% intervals where given.
   Reductions are in contrail forcing (Teoh et al.), contrail length (flight trial)
   or contrail warming (ICCT). Penalties are fleetwide, except per diverted flight
@@ -29,9 +29,8 @@ caption_body: >-
 
 caption_body: >-
   Assumptions on avoiding contrails, grouped by intervention. Intervals are 95 \%
-  where the study gives them. Reductions are in contrail energy forcing for Teoh
-  et al., in contrail length for the flight trial, which is what a trial can
-  measure, and in contrail warming for the ICCT; penalties are fleetwide except
+  where the study gives them. Reductions are in contrail energy forcing \citep{teoh2020}, in contrail length for the flight trial, which is what a trial can
+  measure, and in contrail warming for the ICCT \citep{zheng_aviation_2025}; penalties are fleetwide except
   for the trial, which is per diverted flight. The reproduced reports assume no
   avoidance at all, so the last row is a set of variants run beside them, at
   levels named for the warming they produce, the low level carrying the strongest
@@ -40,7 +39,7 @@ caption_body: >-
 rows:
   - cells:
       - Divert only where there is no fuel penalty
-      - Teoh et al. (2020)
+      - \citep{teoh2020}
       - "20 \\% [17, 23]"
       - none by construction
       - not stated
@@ -48,7 +47,7 @@ rows:
 
   - cells:
       - Divert the 1.7 \% of flights that form the most forcing
-      - Teoh et al. (2020)
+      - \citep{teoh2020}
       - "59 \\% [52, 66]"
       - "0.014 \\% [0.010, 0.017]"
       - not stated
@@ -57,7 +56,7 @@ rows:
   - cells:
       - Divert airspace-wide, by income group
       - >-
-        Zheng et al. (2025); flight trial by Sonabend-W et al. (2024)
+        \citep{zheng_aviation_2025}; flight trial \citep{sonabend_feasibility_2024}
       - >-
         95 \% assumed; 54 \% of contrail length measured in the trial
       - >-
@@ -68,7 +67,7 @@ rows:
 
   - cells:
       - New combustor technology, lower black carbon
-      - Teoh et al. (2020)
+      - \citep{teoh2020}
       - "69 \\% [45, 82]"
       - none
       - fleet renewal
@@ -77,8 +76,8 @@ rows:
   - cells:
       - The three above as separate variants, on a logistic ramp
       - This work
-      - as Teoh et al., by level
-      - as Teoh et al., by level
+      - from \citep{teoh2020}, by level
+      - from \citep{teoh2020}, by level
       - >-
         2030 for diversion, 2035 for combustors
     source: climate_analysis/contrail_variants.yaml

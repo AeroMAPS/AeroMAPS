@@ -189,8 +189,8 @@ FORCING_CAPTION = (
     r"radiative (RF) or effective (ERF) forcing. RF per km is in pW~m$^{-2}$~km$^{-1}$, with the "
     r"reported interval; a dagger marks a value derived from an ERF or from the study's rule. The "
     r"last column applies each study's rule to this model's @YEAR@ activity (@DIST@~billion~km, "
-    r"@FUEL@~Mt of fuel), in mW~m$^{-2}$; where a study gives no ratio, Lee et al.'s "
-    r"@FALLBACK@ is used.}"
+    r"@FUEL@~Mt of fuel), in mW~m$^{-2}$; where a study gives no ratio, the ratio of "
+    r"@FALLBACK@ is used \citep{lee_contribution_2021}.}"
 )
 
 
@@ -296,6 +296,16 @@ SUPERSCRIPTS = str.maketrans("-0123456789", "⁻⁰¹²³⁴⁵⁶⁷⁸⁹")
 
 def _plain(text):
     """A LaTeX cell as plain text, for the Markdown rendering."""
+    # Citations become MyST roles, so the documentation resolves them as the paper
+    # does. They are set aside first, since the braces are stripped further down.
+    roles = []
+
+    def _role(match):
+        keys = ",".join(key.strip() for key in match.group(2).split(","))
+        roles.append("{cite:%s}`%s`" % (match.group(1), keys))
+        return "@CITE%d@" % (len(roles) - 1)
+
+    text = re.sub(r"\\cite([pt])\{([^}]*)\}", _role, text)
     for latex, plain in _PLAIN:
         text = text.replace(latex, plain)
     text = re.sub(r"\^\{([-\d]+)\}", lambda m: m.group(1).translate(SUPERSCRIPTS), text)
@@ -303,6 +313,8 @@ def _plain(text):
     text = re.sub(r"\\textcolor\{[^}]*\}\{", "", text).replace("}", "")
     # Whatever math is left is plain arithmetic, so the delimiters can go.
     text = text.replace("$", "").replace("|", r"\|")
+    for number, role in enumerate(roles):
+        text = text.replace("@CITE%d@" % number, role)
     return " ".join(text.split())
 
 

@@ -23,7 +23,7 @@ columns:
 label: tab:climate_assumptions
 
 caption_head: Non-CO$_2$ assumptions, by band.
-caption_body: >-
+caption_body_short: >-
   Values varied in the climate analysis. Bands are named by their warming, so the
   low band has the weakest contrail forcing and the strongest mitigation. The first
   two rows are set together, on one standard deviation of their product. The
@@ -50,8 +50,8 @@ rows:
       - "2.05"
       - "2.59"
       - >-
-        Lee et al. (2021), 2018 total of 111.4 mW m$^{-2}$, matched on this
-        model's own distance
+        2018 total of 111.4 mW m$^{-2}$ \citep{lee_contribution_2021},
+        matched on this model's own distance
     source: climate_models/climate_model_fair_contrail_efficacy.yaml
 
   - cells:
@@ -59,7 +59,7 @@ rows:
       - "0.21"
       - "0.37"
       - "0.48"
-      - Wang et al. (2026), sampling 0.20, 0.31 and 0.60
+      - \citep{wang_fuel_2026}, sampling 0.20, 0.31 and 0.60
     source: non_co2_uncertainty.yaml
 
   - cells:
@@ -75,7 +75,7 @@ rows:
       - 67 \%
       - 52 \%
       - 35 \%
-      - Wang et al. (2026), 15.2 \% fuel hydrogen content
+      - \citep{wang_fuel_2026}, 15.2 \% fuel hydrogen content
     source: non_co2_uncertainty.yaml
 
   - cells:
@@ -87,11 +87,27 @@ rows:
     source: the ATAG energy files
 
   - cells:
+      - Contrail reduction, hydroprocessed kerosene
+      - 48 \%
+      - 39 \%
+      - 30 \%
+      - \citep{wang_fuel_2026}, 14.6 \% fuel hydrogen content
+    source: climate_analysis/make_hydro_files.py
+
+  - cells:
+      - Hydroprocessing cost and CO$_2$ penalty
+      - "$+2$ \\% and $+2.5$ \\%"
+      - "$+2$ \\% and $+2.5$ \\%"
+      - "$+2$ \\% and $+2.5$ \\%"
+      - \citep{faber_potential_2022}, held at all bands
+    source: climate_analysis/make_hydro_files.py
+
+  - cells:
       - Avoidance, low-risk diversion
       - 23.0 \%
       - 20.0 \%
       - 17.4 \%
-      - Teoh et al. (2020), 95 \% interval
+      - \citep{teoh2020}, 95 \% interval
     source: contrail_variants.yaml
 
   - cells:
@@ -99,7 +115,7 @@ rows:
       - "65.6 \\%, 0.017 \\% fuel"
       - "59.3 \\%, 0.014 \\% fuel"
       - "52.4 \\%, 0.010 \\% fuel"
-      - Teoh et al. (2020), 95 \% interval
+      - \citep{teoh2020}, 95 \% interval
     source: contrail_variants.yaml
 
   - cells:
@@ -107,5 +123,5 @@ rows:
       - 82.1 \%
       - 68.8 \%
       - 45.2 \%
-      - Teoh et al. (2020), 95 \% interval, from 2035
+      - \citep{teoh2020}, 95 \% interval, from 2035
     source: contrail_variants.yaml

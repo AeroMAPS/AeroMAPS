@@ -26,30 +26,20 @@ label: tab:demand_price
 
 caption_head: Demand and price in comparable studies.
 caption_body: >-
-  How studies link demand to the cost of decarbonising, grouped by approach,
-  extending Costa Alves et al. (2026) with the roadmaps cited by the reports. The
-  price differs between rows (fuel price, fuel cost or airfare), so elasticities
-  compare only in sign and size. Each demand effect states its own basis. The last
-  row is this work, with and without SAF.
-
-caption_body: >-
   How comparable studies let demand respond to the cost of decarbonising, grouped
-  by approach, extending the comparison of Costa Alves et al. (2026) with the
-  roadmaps the reports themselves cite before setting the question aside. The
-  price is not the same quantity across rows, a fuel price, a fuel cost per unit
-  of demand and an airfare reaching the traveller differently, so the elasticities
-  are comparable in sign and order of magnitude rather than cell for cell. Neither
-  are the demand effects on one basis: each cell states whether it is a change
-  against the work's own uncoupled counterfactual, a change in a growth rate, or a
-  share of an emissions reduction. The last row is this work, whose two figures
-  are the fixed-share mandate and the no-SAF counterfactual it is drawn against.
+  by approach, extending the comparison of \citet{costaalves_wctr}. The price
+  proxy used is not the same quantity across rows, a fuel price, a fuel cost per
+  unit of demand and an airfare reaching the traveller differently, so the
+  elasticities are comparable in sign and order of magnitude rather than cell for
+  cell.
 
 rows:
   - cells:
       - Exogenous traffic, no price at all
       - >-
-        ATAG Waypoint 2050; ICAO LTAG (2022); Plan\`es et al. (2021); Grewe et al.
-        (2021); Kl\"ower et al. (2021); Sacchi et al. (2023)
+        ATAG Waypoint 2050 \citep{atag2020_waypoint, atag2021_waypoint,
+        atag2026_waypoint}; ICAO LTAG \citep{icao}; \citep{planes_2021, grewe,
+        klower, sacchi}
       - none
       - none
       - none by construction
@@ -59,7 +49,7 @@ rows:
 
   - cells:
       - Logistic in income, saturating, no price
-      - Vedantham and Oppenheimer (1994); Vidal et al. (2022)
+      - \citep{vedantham_1994, vidal_2022}
       - none
       - none
       - not stated
@@ -67,7 +57,7 @@ rows:
 
   - cells:
       - Constant elasticity on a growth rate
-      - "G\\\"ossling et al. (2021)"
+      - \citep{gossling_covid_2021}
       - "ticket price, $-0.75$ to $-1.25$"
       - a CO$_2$ price with a synthetic fuel quota
       - >-
@@ -77,13 +67,14 @@ rows:
   - cells:
       - Elasticity inside an integrated assessment model
       - >-
-        Franz et al. (2022), EDGE-T; Napp et al. (2019), TIAM; Speizer et al.
-        (2024), GCAM; Sharmina et al. (2021), IMAGE
+        EDGE-T \citep{franz}; TIAM \citep{napp_2019}; GCAM
+        \citep{speizer_integrated_2024}; IMAGE \citep{sharmina2021decarbonising}
       - >-
-        service cost; Franz et al. set the price elasticity to zero and vary
-        income, 1.55 declining
+        service cost; price elasticity set to zero and income elasticity of 1.55,
+        declining \citep{franz}
       - >-
-        100 to 300 \$/t (Napp); break-even 135 to 496 \$/t for aviation (Speizer)
+        100 to 300 \$/t \citep{napp_2019}; break-even 135 to 496 \$/t for
+        aviation \citep{speizer_integrated_2024}
       - >-
         small; the difference between elasticity on and off
     source: >-
@@ -93,17 +84,22 @@ rows:
   - cells:
       - Airfare elasticity on a sectoral model
       - >-
-        Dray et al. (2022), AIM; Destination 2050 (2025); GIFAS and DGAC (2023);
-        Sustainable Aviation UK (2026); T\&E (2025); Zheng et al. (2025)
+        AIM \citep{dray_cost_2022}; Destination 2050 \citep{destination2050_2025};
+        \citep{gifas_dgac_2023, sustainable_aviation_uk_2026, te_roadmap_2025,
+        zheng_aviation_2025}
       - >-
-        airfare; $-1.0$ and $-1.5$ by segment (D2050), $-0.9$ and $-0.6$ by market
-        (DGAC), $-0.9$ on fares (DfT), IATA (2007) by region pair (AIM)
+        airfare; $-1.0$ and $-1.5$ by segment \citep{destination2050_2025}, $-0.9$
+        and $-0.6$ by market \citep{gifas_dgac_2023}, $-0.9$ on fares
+        \citep{dft_elasticities}, by region pair \citep{intervistas2007}
       - >-
-        300 to 400 \$/t over 2030--35 (Dray); EU ETS 100 then 200 EUR/t (T\&E);
-        UK ETS (SA UK); implied by the fuel mix (ICCT)
+        300 to 400 \$/t over 2030--35 \citep{dray_cost_2022}; EU ETS 100 then 200
+        EUR/t \citep{te_roadmap_2025}; UK ETS \citep{sustainable_aviation_uk_2026};
+        implied by the fuel mix \citep{zheng_aviation_2025}
       - >-
-        16 \% of the 2050 CO$_2$ cut (D2050); growth 2.1 to 1.1 \%/yr (GIFAS);
-        15 \% of the cut (SA UK); leisure $-12$ to $-22$ \% (T\&E)
+        16 \% of the 2050 CO$_2$ cut \citep{destination2050_2025}; growth 2.1 to
+        1.1 \%/yr \citep{gifas_dgac_2023}; 15 \% of the cut
+        \citep{sustainable_aviation_uk_2026}; leisure $-12$ to $-22$ \%
+        \citep{te_roadmap_2025}
     source: >-
       Dray et al. (2022) and its supplement; Destination 2050 (2025), p. 12 and
       pp. 80-81; GIFAS (2023), p. 94; the SA UK roadmap summary with the DfT
@@ -112,9 +108,9 @@ rows:
 
   - cells:
       - Price-adjusted logistic, saturating in income
-      - Costa Alves et al. (2026); this work
+      - \citep{costaalves_wctr}; this work
       - >-
-        fuel cost per RPK, $-0.345$ with a 1.26 year delay
+        energy cost per RPK, $-0.345$ with a 1.26 year delay
       - >-
         AR6 SSP2: 43, 212 and 1034 \$(2010)/t in 2050, none before 2027
       - >-

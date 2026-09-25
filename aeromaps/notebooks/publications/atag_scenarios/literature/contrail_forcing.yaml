@@ -40,7 +40,7 @@ common_activity:
 studies:
 
   - key: lee_contribution_2021
-    label: Lee et al. (2021)
+    label: \citep{lee_contribution_2021}
     approach: GCM ensemble, four studies, 2002 and 2006
     scaling: distance
     rf_per_km: 1.82e-9  # Table 3, mW m-2 km-1
@@ -61,7 +61,7 @@ studies:
     source: Lee et al. (2021), Atmos. Environ. 244, 117834, Tables 2 and 3
 
   - key: teoh_global_2024
-    label: Teoh et al. (2024)
+    label: \citep{teoh2024}
     approach: CoCiP trajectories, 2019
     scaling: distance
     rf_total: 62.1  # mW m-2, 2019
@@ -78,7 +78,7 @@ studies:
       1e14 to 1e15 per kg of fuel
 
   - key: zheng_aviation_2025_meta
-    label: ICCT meta-analysis (2025)
+    label: ICCT meta-analysis \citep{zheng_aviation_2025}
     approach: meta-analysis of 18 estimates to 2023
     scaling: distance
     erf_per_km: 7.03e-10
@@ -94,7 +94,7 @@ studies:
     source: Zheng et al. (2025), ICCT, pp. 10 and 56-59, Tables C1 to C3
 
   - key: zheng_aviation_2025_cocip
-    label: ICCT CoCiP run (2025)
+    label: ICCT CoCiP run \citep{zheng_aviation_2025}
     approach: CoCiP trajectories, 2023
     scaling: distance
     rf_total: 42.3
@@ -106,8 +106,8 @@ studies:
     source: Zheng et al. (2025), ICCT, p. 10
 
   - key: wang_fuel_2026
-    label: Wang et al. (2026)
-    approach: Lee et al.'s 2018 total, carried forward
+    label: \citep{wang_fuel_2026}
+    approach: 2018 total \citep{lee_contribution_2021}, carried forward
     scaling: fuel
     rf_total: 111.4  # Lee et al.'s 2018 RF, rescaled with fuel use
     rf_total_range: [33.0, 189.0]
@@ -123,7 +123,7 @@ studies:
 
   - key: aeromaps_default
     label: AeroMAPS default
-    approach: Lee et al.'s ERF divided by 0.42
+    approach: ERF \citep{lee_contribution_2021} divided by 0.42
     scaling: distance
     rf_per_km: 2.23e-9
     erf_rf: 0.42
@@ -135,7 +135,7 @@ studies:
 
   - key: this_work
     label: This work
-    approach: Lee et al.'s 2018 total, on this model's own distance
+    approach: 2018 total \citep{lee_contribution_2021}, on this model's own distance
     scaling: distance
     rf_per_km: 2.05236e-9
     rf_per_km_range: [1.25353e-9, 2.59353e-9]
