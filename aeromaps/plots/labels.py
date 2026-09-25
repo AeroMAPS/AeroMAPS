@@ -1,7 +1,22 @@
 """Readable labels for identifiers coming from the configuration files."""
 
 # Acronyms kept upper case when a snake_case identifier is turned into a label.
-_ACRONYMS = {"atm": "ATM", "apu": "APU", "saf": "SAF", "co2": "CO2"}
+_ACRONYMS = {
+    "atm": "ATM",
+    "apu": "APU",
+    "saf": "SAF",
+    "co2": "CO2",
+    # Energy pathways
+    "hefa": "HEFA",
+    "fog": "FOG",
+    "ft": "FT",
+    "msw": "MSW",
+    "atj": "ATJ",
+    "ccs": "CCS",
+    # Offsetting schemes
+    "corsia": "CORSIA",
+    "ets": "ETS",
+}
 
 
 def readable_label(raw_name):

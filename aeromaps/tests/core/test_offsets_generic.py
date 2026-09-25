@@ -147,7 +147,7 @@ def test_offsets_plots(process, plot):
 @pytest.mark.parametrize(
     "granularity, expected",
     [
-        ("scheme", {"Corsia", "Ets", "Removals"}),
+        ("scheme", {"CORSIA", "ETS", "Removals"}),
         ("category", {"Offsets", "Allowances", "Removals"}),
     ],
 )

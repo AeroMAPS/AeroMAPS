@@ -484,7 +484,7 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
             else:
                 pathway_colors = colormap(np.linspace(0.4, 0.8, len(pathways)))
                 for (pathway_name, column), color in zip(pathways, pathway_colors):
-                    bands.append((pathway_name.replace("_", " ").title(), self._col(column), color))
+                    bands.append((readable_label(pathway_name), self._col(column), color))
         # Residual energy effects are not an identity band -> neutral grey.
         bands.append(("Other energy effects", self._col(ENERGY_SUB_LEVER_OTHER), colors.NEUTRAL))
         return bands
