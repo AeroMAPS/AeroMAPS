@@ -13,6 +13,9 @@ models:
   operations:
     operations_model_data_file: default
 
+  offsets:
+    offsets_model_data_file: default
+
   energy:
     energy_carriers_model_data_file: default
     resources_model_data_file: default
