@@ -1296,6 +1296,8 @@ class AeroMAPSProcess(object):
                                 os.path.join(DEFAULT_RESOURCES_DATA_DIR, default_value)
                             )
                         )
+                elif default_filename is not None:
+                    resolved_path = Path(os.path.join(DEFAULT_RESOURCES_DATA_DIR, default_filename))
             elif os.path.isabs(user_value):
                 resolved_path = Path(user_value)
             else:

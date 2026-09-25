@@ -182,3 +182,10 @@ def test_residual_shares_above_100_percent_are_reported(tmp_path, caplog):
     with caplog.at_level("WARNING"):
         _offsets_process(tmp_path, offsets_yaml)
     assert "exceed 100 %" in caplog.text
+
+
+def test_default_keyword_loads_the_packaged_schemes(tmp_path):
+    config = open(CONFIG).read().replace('"./data/offsets_data.yaml"', "default")
+    (tmp_path / "config.yaml").write_text(config)
+    proc = create_process(configuration_file=str(tmp_path / "config.yaml"))
+    assert [s.name for s in proc.offsets_manager.get_all()] == ["corsia", "removals"]
