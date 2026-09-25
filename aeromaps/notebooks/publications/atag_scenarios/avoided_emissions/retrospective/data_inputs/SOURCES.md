@@ -62,3 +62,13 @@ Both are read from Part A's committed outputs, in `3rd_edition_full/data_outputs
 
 `../../params_elasticity.yaml` holds the elasticity, the pass-through and the
 fuel cost share. It is the only place any of the three is set.
+
+## Population and income, 1990 to 1999
+
+`world_bank_world_population_gdp.csv`
+
+World Bank World Development Indicators, World aggregate (`WLD`), release of
+2023-06-29: `SP.POP.TOTL` (population) and `NY.GDP.MKTP.CD` (GDP, current US$),
+1960-2022. The coupled runs carry the same two series from 2000, identical to the
+digit, so this file only fills 1990 to 1999 and lets the WCTR demand model run on
+population, income per capita and energy cost per RPK over the whole window.

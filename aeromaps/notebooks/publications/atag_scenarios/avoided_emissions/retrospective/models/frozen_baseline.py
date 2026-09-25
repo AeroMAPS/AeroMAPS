@@ -573,15 +573,26 @@ def wctr_model():
     return RPKLogisticIncomePriceElasticity(name="wctr", passenger_market_ids=[])
 
 
+#: World population and GDP (current US$), World Bank World Development Indicators
+#: (SP.POP.TOTL and NY.GDP.MKTP.CD, World aggregate, release of 2023-06-29). It is the
+#: same source the coupled runs carry from 2000, to the digit, and fills 1990 to 1999.
+WORLD_BANK = RETROSPECTIVE / "data_inputs" / "world_bank_world_population_gdp.csv"
+
+
 def wctr_history():
-    """Population, income per capita and energy cost per RPK, 2000 to 2023."""
+    """Population, income per capita and energy cost per RPK, 1990 to 2023.
+
+    From 2000, all three come from the coupled run. Before that, population and
+    income come from :data:`WORLD_BANK`, and the energy cost is left NaN: the model
+    has no series of its own there, and :func:`wctr_counterfactual` extends it.
+    """
     from aeromaps.utils.results_view import load_results
 
     run = load_results(COUPLED_RUN, name="history")
     inputs, outputs = run.data["vector_inputs"], run.data["vector_outputs"]
     population = np.asarray(inputs["population_init"], dtype=float)
     years = np.arange(2000, 2000 + len(population))
-    return pd.DataFrame(
+    coupled = pd.DataFrame(
         {
             "population": population,
             "gdp_per_capita": np.asarray(inputs["gdp_per_capita_init"], dtype=float),
@@ -589,6 +600,21 @@ def wctr_history():
         },
         index=years,
     )
+    world_bank = pd.read_csv(WORLD_BANK, index_col="year")
+    early = world_bank.loc[WINDOW[0] : years[0] - 1]
+    before = pd.DataFrame(
+        {
+            "population": early["population"],
+            "gdp_per_capita": early["gdp_current_usd"] / early["population"],
+            "price": np.nan,
+        }
+    )
+    # The two sources are the same series where they overlap.
+    overlap = coupled.index.intersection(world_bank.index)[:20]
+    assert np.allclose(
+        coupled.loc[overlap, "population"], world_bank.loc[overlap, "population"], rtol=1e-6
+    )
+    return pd.concat([before, coupled])
 
 
 def wctr_counterfactual(window=WINDOW, scope=SCOPE_WTW_TO_TTW, anchor="klower", scenario="s1-TTW"):
@@ -599,10 +625,9 @@ def wctr_counterfactual(window=WINDOW, scope=SCOPE_WTW_TO_TTW, anchor="klower", 
     first-order delay, and total traffic as that times population. Income and
     population are the same in the frozen world and the observed one, so they
     cancel from the ratio of the two; what is left is the ratio of the two
-    delayed energy costs per RPK raised to the elasticity. From 2000 the model is
-    evaluated in full on the population and income parameters, and the ratio is
-    asserted to equal the price-only one. Before 2000 those parameters do not
-    exist, and the price-only ratio, which is the same expression, is used.
+    delayed energy costs per RPK raised to the elasticity. The model is evaluated
+    in full over the whole window, on World Bank population and income, and the
+    ratio is asserted to equal the price-only one.
 
     Energy cost per RPK is fuel price times energy per RPK. Frozen 1990 efficiency
     means the 1990 energy per RPK, so at the same fuel price the frozen cost is
@@ -636,9 +661,9 @@ def wctr_counterfactual(window=WINDOW, scope=SCOPE_WTW_TO_TTW, anchor="klower", 
     history = wctr_history()
     fuel = jet_fuel_price().reindex(years).ffill().to_numpy(dtype=float)
     proxy = pd.Series(fuel * observed / rpk, index=years)
-    first = int(history.index[0])
+    first = int(history["price"].first_valid_index())
     cost_observed = proxy * (float(history["price"].loc[first]) / float(proxy.loc[first]))
-    overlap = [year for year in history.index if year in cost_observed.index]
+    overlap = [year for year in history["price"].dropna().index if year in cost_observed.index]
     cost_observed.loc[overlap] = history["price"].loc[overlap].to_numpy()
     cost_frozen = cost_observed * intensity_ratio
 
@@ -648,8 +673,9 @@ def wctr_counterfactual(window=WINDOW, scope=SCOPE_WTW_TO_TTW, anchor="klower", 
     price_ratio = (delayed_frozen / delayed_observed).to_numpy()
     traffic_ratio = price_ratio**elasticity
 
-    # The model evaluated in full where its drivers exist, as a check that income
-    # and population do drop out of the ratio.
+    # The model evaluated in full, on population, income and the delayed energy
+    # cost of each world. Income and population are shared, so they drop out of the
+    # ratio, which is checked against the price-only expression.
     years_full = [y for y in history.index if y in delayed_observed.index]
     trend = generalised_logistic_function(
         history["gdp_per_capita"].loc[years_full],
@@ -675,6 +701,8 @@ def wctr_counterfactual(window=WINDOW, scope=SCOPE_WTW_TO_TTW, anchor="klower", 
     offset = years_full[0] - start
     assert np.allclose(modelled_ratio, traffic_ratio[offset : offset + len(years_full)], rtol=1e-9)
 
+    assert len(years_full) == len(years)
+    traffic_ratio = modelled_ratio
     counterfactual = e_1990 * activity * traffic_ratio
     avoided = counterfactual - observed
     return {

@@ -1461,102 +1461,67 @@ cirrus the largest single term.*
 ```{code-cell} python
 :tags: [hide-input]
 
-# What each scenario asks of four shared budgets, against the share of each that
-# the framework's assessment allocates to aviation. Read from the committed runs:
-# the carbon budget and the temperature target come from the sustainability
-# assessment models, and the biomass and green electricity from the resource
-# models, which count what the fuels draw on against the global availability
-# assumed for each. The allocations are the framework's defaults, not a
-# finding: 2.6 % of the carbon budget to 2050, 3.8 % of the warming left to 2 C,
-# and 5 % of the global biomass and green electricity.
-SHARE_COLOURS = {"S0 reference": "#2a78d6", "S1 SAF-focused": "#eb6834",
-                 "S2 technology-centric": "#1baf7a"}
-SHORT = {"S0 reference": "S0", "S1 SAF-focused": "S1", "S2 technology-centric": "S2"}
+# What each scenario asks of four shared budgets, drawn with the framework's own
+# multidisciplinary assessment plot: warming from 2019 to 2050 against the 0.8 K
+# left to 2 C, cumulative CO2 over 2019 to 2050 against the 2 C carbon budget, and
+# the biomass and electricity the fuels use in 2050 against global availability.
+# The allocations to aviation are the framework's grandfathering defaults: 3.8 %
+# of the warming, 2.6 % of the carbon budget, 5 % of biomass and electricity.
+#
+# The light S0 and the full S1 and S2 were run with different global
+# availabilities (164 against 617.5 EJ of biomass, 250 against 224.1 EJ of
+# electricity), so comparing their shares as stored would compare the inputs as
+# much as the scenarios. All three are put on the framework's "Realistic"
+# presets instead, those of the graphical interface, before drawing.
+from copy import deepcopy
+from types import SimpleNamespace
 
-rows = []
-for name, view in scenarios.items():
-    floats, vectors = view.data["float_outputs"], view.data["vector_outputs"]
-    frame = bands_tidy[bands_tidy["scenario"] == name]
-    warming = {
-        key: 1000 * (lambda s: s.loc[2050] - s.loc[2024])(
-            frame[frame["band_key"] == key].set_index("year")["temperature_increase_from_aviation"]
+from aeromaps.plots.single_scenario.sustainability_assessment import (
+    MultidisciplinaryAssessmentPlot,
+)
+
+BIOMASS_AVAILABLE_MJ = 164.01e12
+ELECTRICITY_AVAILABLE_MJ = 200.0e12
+RESOURCE_ALLOCATED_SHARE = 0.05
+
+
+def harmonised(view):
+    data = deepcopy(view.data)
+    vectors = data["vector_outputs"]
+    for resource, available in (("biomass", BIOMASS_AVAILABLE_MJ),
+                                ("electricity", ELECTRICITY_AVAILABLE_MJ)):
+        vectors[f"{resource}_availability_global"] = available
+        vectors[f"{resource}_availability_aviation_allocated"] = (
+            RESOURCE_ALLOCATED_SHARE * available
         )
-        for key in ("low", "central", "high")
-    }
-    room_mk = 1000 * floats["world_temperature_target"]
-    allocated_mk = 1000 * floats["aviation_temperature_target"]
-    # The central band is the stored run, so the two routes to the same number agree.
-    assert abs(100 * warming["central"] / room_mk - floats["temperature_target_consumed_share"]) < 0.05
+    return SimpleNamespace(data=data, pathways_manager=None)
 
-    biomass_allocated = vectors.loc[2050, "biomass_consumed_global_share"] / (
-        vectors.loc[2050, "biomass_consumed_aviation_allocated_share"] / 100
-    )
-    electricity = vectors.loc[2050].get("electricity_consumed_aviation_allocated_share", 0.0)
-    rows.append({
-        "scenario": name,
-        "temperature": 100 * warming["central"] / allocated_mk,
-        "temperature_low": 100 * warming["low"] / allocated_mk,
-        "temperature_high": 100 * warming["high"] / allocated_mk,
-        "carbon": 100 * vectors.loc[2050, "cumulative_co2_emissions"] / floats["aviation_carbon_budget"],
-        "biomass": vectors.loc[2050, "biomass_consumed_aviation_allocated_share"],
-        "biomass_mobilised": 100 * vectors.loc[2050, "biomass_necessary_global_share_with_selectivity"]
-        / biomass_allocated,
-        "electricity": 0.0 if electricity != electricity else electricity,
-    })
-shares = pd.DataFrame(rows).set_index("scenario")
 
-PANELS = [
-    ("temperature", "Warming, 2024 to 2050", "3.8 % of the 0.8 K left to 2 C"),
-    ("carbon", "Cumulative CO$_2$, 2020 to 2050", "2.6 % of the carbon budget"),
-    ("biomass", "Biomass, 2050", "5 % of global availability"),
-    ("electricity", "Green electricity, 2050", "5 % of global availability"),
-]
+fig, axes = plt.subplots(1, len(scenarios), figsize=(4.0 * len(scenarios), 4.4),
+                         subplot_kw={"projection": "polar"})
+shares = {}
+for ax, (name, view) in zip(np.atleast_1d(axes), scenarios.items()):
+    MultidisciplinaryAssessmentPlot(harmonised(view), fig=fig, ax=ax, legend=False)
+    ax.set_title(name, fontsize=11, y=1.08)
+    # The first four bars are the uses, drawn at their share of the world budget.
+    shares[name] = [bar.get_height() for bar in ax.patches][:4]
+# One radial scale, so a panel reads against the others.
+top = max(max(v) for v in shares.values()) * 1.05
+for ax in np.atleast_1d(axes):
+    ax.set_ylim(0, top)
+handles, labels = np.atleast_1d(axes)[0].get_legend_handles_labels()
+fig.legend(handles, ["Used by the scenario", "Allocated to aviation"], loc="lower center", ncol=2)
+fig.subplots_adjust(wspace=0.45, bottom=0.14, top=0.82)
+save_fig(fig, name="multidisciplinary_assessment")
 
-fig, axes = plt.subplots(1, 4, figsize=(11.0, 3.6), sharey=True, layout="constrained")
-for ax, (key, title, allocation) in zip(axes, PANELS):
-    positions = np.arange(len(shares))
-    colours = [SHARE_COLOURS[name] for name in shares.index]
-    ax.bar(positions, shares[key], color=colours, width=0.62, zorder=3)
-    if key == "temperature":
-        ax.errorbar(positions, shares[key],
-                    yerr=[shares[key] - shares["temperature_low"],
-                          shares["temperature_high"] - shares[key]],
-                    fmt="none", ecolor="0.25", capsize=4, lw=1.2, zorder=4)
-    if key == "biomass":
-        # What the feedstock actually mobilised amounts to once the co-products of
-        # each process, which come with the jet fraction, are counted.
-        ax.bar(positions, shares["biomass_mobilised"], color=colours, alpha=0.3, width=0.62,
-               zorder=2)
-    for x, name in zip(positions, shares.index):
-        # A label sits on top of the bar it names; the temperature one clears its
-        # error bar, and the mobilised biomass gets its own above the light bar.
-        height = (shares.loc[name, "temperature_high"] if key == "temperature"
-                  else shares.loc[name, key])
-        ax.text(x, height + 8, f"{shares.loc[name, key]:.0f} %", ha="center", fontsize=8.5,
-                color="0.15", zorder=5)
-        if key == "biomass":
-            ax.text(x, shares.loc[name, "biomass_mobilised"] + 8,
-                    f"{shares.loc[name, 'biomass_mobilised']:.0f} %", ha="center", fontsize=8.5,
-                    color="0.15", zorder=5)
-    ax.axhline(100, color="0.2", lw=1.1, ls="--", zorder=1)
-    ax.set_xticks(positions, [SHORT[name] for name in shares.index])
-    ax.set_title(title, fontsize=10)
-    ax.set_xlabel(f"allocated: {allocation}", fontsize=8, color="0.3")
-    ax.grid(axis="y", alpha=0.3, zorder=0)
-    ax.spines[["top", "right"]].set_visible(False)
-axes[0].set_ylabel("% of the share allocated to aviation")
-axes[0].set_title("Warming, 2024 to 2050\n(bar: central, line: low to high)", fontsize=10)
-axes[2].set_title("Biomass, 2050\n(solid: used, light: mobilised)", fontsize=10)
-save_fig(fig, name="resource_shares")
+print(pd.DataFrame(shares, index=["climate", "co2", "biomass", "electricity"]).round(1))
 ```
 
-*What each reproduced scenario draws on, against the share of each budget the framework allocates
-to aviation (dashed line, 100 %). Warming is the rise from 2024 to 2050 at the central non-CO2
-assumptions, with the low and high band as a line. CO2 is the physical emissions added up over
-2020 to 2050, before offsets. Biomass and green electricity are the 2050 use of the fuels, against
-5 % of the global availability the framework assumes for each. The light bar on biomass counts the
-feedstock the processes mobilise once their co-products are included. S0 uses no electricity in this
-reproduction, since its generic SAF is modelled as biomass only.*
+*What each reproduced scenario uses (orange) against the share allocated to aviation (green), as
+a percentage of the world budget. Climate: warming from 2019 to 2050 against the 0.8 K left to
+2 °C. CO₂: emissions over 2019 to 2050, before offsets, against the 2 °C carbon budget. Biomass
+and electricity: use in 2050 against global availability. S0 uses no electricity, since its
+generic SAF is modelled as biomass only.*
 
 {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">Decarbonisation does not act on non-CO₂ effects in proportion to its action on CO₂, and the two diverge sharply by 2050. Every reproduced scenario drives CO₂ emissions steeply down, yet non-CO₂ terms, principally contrail cirrus, still carry at least half of the warming each of them causes in 2050: 1.34 times the CO₂ contribution under S0, 1.13 under S1 and 1.01 under S2, the margin narrowing as a scenario deploys cleaner fuel, which acts on contrails as well as on CO₂. A CO₂ target and a temperature target are therefore not interchangeable statements regarding the same trajectory, since a scenario can approach net-zero CO₂ while the majority of its contribution to warming remains untouched by the levers that brought it there.</span>{raw:typst}`]`
 

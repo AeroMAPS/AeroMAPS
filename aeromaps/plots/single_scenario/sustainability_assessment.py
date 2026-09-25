@@ -1126,7 +1126,10 @@ class MultidisciplinaryAssessmentPlot(SingleScenarioPlot):
 
     def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize, subplot_kw={"projection": "polar"})
+        # A caller passing its own fig and ax (which must be polar) keeps them.
+        if kwargs.get("ax") is None:
+            kwargs.setdefault("subplot_kw", {"projection": "polar"})
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_2_x, plot_2_y)

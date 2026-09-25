@@ -554,15 +554,15 @@ if WCTR is not None and WCTR_SERIES is not None and R0 is not None:
     ax.fill_between(curves.index, curves["observed"], curves["wctr"], color="#d97706",
                     alpha=0.25, lw=0)
     ax.plot(curves.index, curves["report_method"], "--", color="#c00000", lw=1.9,
-            label=f"Report method: {WCTR['report_method_avoided_gt']:.1f} Gt "
-                  f"(printed {reported_gt:.1f})")
+            label=f"1990 efficiency, fixed traffic: {WCTR['report_method_avoided_gt']:.1f} Gt "
+                  f"(report: {reported_gt:.1f})")
     ax.plot(curves.index, curves["wctr"], "--", color="#d97706", lw=1.9,
-            label=f"With price sensitivity: {WCTR['avoided_gt']:.1f} Gt")
+            label=f"1990 efficiency, traffic responds to cost: {WCTR['avoided_gt']:.1f} Gt")
     ax.plot(curves.index, curves["observed"], "-", color="#1f3864", lw=2.2, label="Observed")
     ax.set_xlim(curves.index.min(), curves.index.max())
     ax.set_ylim(0, None)
     ax.set_xlabel("Year")
-    ax.set_ylabel("CO2 (millions of tonnes)")
+    ax.set_ylabel("Tank-to-wake CO$_2$ [Mt]")
     ax.grid(alpha=0.3)
     ax.legend(fontsize=7, loc="upper left", framealpha=0.92)
 
