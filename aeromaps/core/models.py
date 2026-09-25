@@ -44,6 +44,7 @@ from aeromaps.models.impacts.generic_energy_model.common.energy_carriers_means i
 from aeromaps.models.impacts.generic_energy_model.fuel_clearing.fuel_clearing import (
     FuelClearing,
 )
+from aeromaps.models.impacts.generic_energy_model.fuel_trade.fuel_trade import FuelTrade
 
 from aeromaps.models.air_transport.air_traffic.total_aircraft_distance import TotalAircraftDistance
 
@@ -162,6 +163,13 @@ from aeromaps.models.impacts.costs.airlines.total_airline_cost_and_airfare impor
 # rather than a class.
 models_fuel_market = {
     "fuel_clearing": FuelClearing("fuel_clearing"),
+}
+
+# Global (non-namespaced) flows between regions, from an explicit sourcing matrix. Goes
+# with `regionalisation.fuel_trade: true`, which makes each region book feedstock use on
+# the production this emits rather than on its own consumption.
+models_fuel_trade = {
+    "fuel_trade": FuelTrade("fuel_trade"),
 }
 
 models_traffic = {

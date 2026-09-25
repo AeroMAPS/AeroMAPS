@@ -232,6 +232,7 @@ class AeroMAPSProcess(object):
         optimisation=False,
         disable_execution_statistics=False,
         fuel_market=False,
+        fuel_trade=False,
     ):
         """Initialize an AeroMAPSProcess instance.
 
@@ -257,6 +258,15 @@ class AeroMAPSProcess(object):
             repeated in every region's configuration where it could drift out of step.
             When true, ``EnergyUseChoice`` is not instantiated -- the market emits its
             families instead -- and ``EnergyCarriersMeans`` weights by the cleared price.
+        fuel_trade
+            Whether fuel is traded between regions, and which stand-in decides the flows:
+            None (no trade), ``"matrix"`` or ``"pool"``. Set from
+            ``regionalisation.fuel_trade``, like ``fuel_market``. With either, this
+            region's production (``{pathway}_energy_production``, from the global
+            ``FuelTrade`` model) differs from its consumption: feedstock use is computed
+            on production, and the unit values of what it burns are the makers'
+            (``{pathway}_delivered_*``). With ``"pool"``, ``EnergyUseChoice`` is not
+            instantiated either: the pool says what the region burns.
         optimisation
             Whether to configure GEMSEO for optimization instead of a
             pure MDA chain.
@@ -296,6 +306,7 @@ class AeroMAPSProcess(object):
         # Store mode flags
         self._optimisation = optimisation
         self._fuel_market = fuel_market
+        self._fuel_trade = fuel_trade
 
         # --- Standard initialization ---
         # Load standard models from config
@@ -1762,6 +1773,7 @@ class AeroMAPSProcess(object):
                     self.energy_carriers_data,
                     self.energy_resources_data,
                     self.energy_processes_data,
+                    fuel_trade=bool(self._fuel_trade),
                 )
             )
         # Instantiate resources use models
@@ -1774,7 +1786,10 @@ class AeroMAPSProcess(object):
         # Instantiate the energy use choice model
         self.models.update(
             AviationEnergyCarriersFactory.instantiate_energy_carriers_models(
-                self.energy_carriers_data, self.pathways_manager, fuel_market=self._fuel_market
+                self.energy_carriers_data,
+                self.pathways_manager,
+                fuel_market=self._fuel_market,
+                fuel_trade=self._fuel_trade,
             )
         )
 
@@ -2028,6 +2043,11 @@ class AeroMAPSProcess(object):
                                 "Add 'models.energy' to your configuration."
                             )
                         model.pathways_manager = self.pathways_manager
+                        needs_custom_setup = True
+                    if hasattr(model, "fuel_trade_mode") and hasattr(model, "custom_setup"):
+                        # Before custom_setup: under trade the model reads the makers'
+                        # unit values instead of the region's own.
+                        model.fuel_trade_mode = self._fuel_trade
                         needs_custom_setup = True
                     if hasattr(self, "fleet_model"):
                         model.fleet_model = self.fleet_model

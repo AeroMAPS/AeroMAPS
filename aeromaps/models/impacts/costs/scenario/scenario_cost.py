@@ -42,6 +42,9 @@ class NonDiscountedScenarioCost(AeroMAPSModel):
     def __init__(self, name="non_discounted_scenario_cost", *args, **kwargs):
         super().__init__(name=name, model_type="custom", *args, **kwargs)
         self.pathways_manager = None
+        # Injected by AeroMAPSProcess from regionalisation.fuel_trade. Under trade a
+        # region pays for what it burns at the price of the fuel as it was made.
+        self.fuel_trade_mode = None
         # TODO rename in EnergyCost. Same for discounted function below.
         #   Provide detailed i/o documentation.
 
@@ -57,11 +60,15 @@ class NonDiscountedScenarioCost(AeroMAPSModel):
         self.input_names = {}
         if self.pathways_manager is not None:
             for p in self.pathways_manager.get_all():
-                self.input_names[f"{p.name}_net_mfsp"] = pd.Series([0.0])
-                self.input_names[f"{p.name}_mean_mfsp"] = pd.Series([0.0])
+                self.input_names[self._price_name(p, "net_mfsp")] = pd.Series([0.0])
+                self.input_names[self._price_name(p, "mean_mfsp")] = pd.Series([0.0])
                 self.input_names[f"{p.name}_energy_consumption"] = pd.Series([0.0])
                 if p.name == "fossil_kerosene":
                     self.input_names["fossil_kerosene_mean_co2_emission_factor"] = pd.Series([0.0])
+                    # The business-as-usual counterfactual is priced at this region's own
+                    # kerosene, traded or not; declared here since, under trade, the loop
+                    # above declares the delivered price instead.
+                    self.input_names["fossil_kerosene_mean_mfsp"] = pd.Series([0.0])
 
         # Add BAU computation
         self.input_names["co2_emissions_last_historical_year_technology"] = pd.Series([0.0])
@@ -74,6 +81,12 @@ class NonDiscountedScenarioCost(AeroMAPSModel):
             "non_discounted_bau_energy_expenses": pd.Series([0.0]),
             "non_discounted_full_kero_energy_expenses": pd.Series([0.0]),
         }
+
+    def _price_name(self, pathway, value):
+        """``{p}_{value}``, or the delivered one when fuel is traded between regions."""
+        if self.fuel_trade_mode:
+            return f"{pathway.name}_delivered_{value}"
+        return f"{pathway.name}_{value}"
 
     def compute(self, input_data) -> dict:
         """
@@ -94,8 +107,8 @@ class NonDiscountedScenarioCost(AeroMAPSModel):
         non_discounted_energy_expenses = None
         non_discounted_net_energy_expenses = None
         for p in self.pathways_manager.get_all():
-            net_mfsp = input_data.get(f"{p.name}_net_mfsp", pd.Series([0.0])).fillna(0)
-            mfsp = input_data.get(f"{p.name}_mean_mfsp", pd.Series([0.0])).fillna(0)
+            net_mfsp = input_data.get(self._price_name(p, "net_mfsp"), pd.Series([0.0])).fillna(0)
+            mfsp = input_data.get(self._price_name(p, "mean_mfsp"), pd.Series([0.0])).fillna(0)
             energy_consumption = input_data.get(
                 f"{p.name}_energy_consumption", pd.Series([0.0])
             ).fillna(0)

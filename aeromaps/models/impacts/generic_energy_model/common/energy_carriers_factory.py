@@ -44,7 +44,9 @@ class AviationEnergyCarriersFactory:
     """
 
     @staticmethod
-    def create_carrier(pathway_name, energy_carriers_data, resources_data, process_data):
+    def create_carrier(
+        pathway_name, energy_carriers_data, resources_data, process_data, fuel_trade=False
+    ):
         """
         Create energy carrier models based on the configuration data.
 
@@ -58,6 +60,11 @@ class AviationEnergyCarriersFactory:
             Configuration data for energy resources.
         process_data : dict
             Configuration data for processes.
+        fuel_trade : bool
+            Whether fuel is traded between regions (``regionalisation.fuel_trade``), so
+            that what this region produces differs from what it consumes. Feedstock use
+            then follows production, and the CO2 total the makers' emission factor.
+            Top-down pathways only, for now.
 
         Returns
         -------
@@ -70,6 +77,15 @@ class AviationEnergyCarriersFactory:
         # case distinction between energy model types
         # TODO split the config file into two separate files here instead in the inits ?
         models = {}
+        if fuel_trade and "bottom-up" in (environmental_model_type, cost_model_type):
+            # A bottom-up pathway sizes its plants on the volume it is handed, and that
+            # volume is consumption. With trade the plants are wherever the fuel is made,
+            # so they would be built in the wrong region, silently.
+            raise NotImplementedError(
+                f"Pathway '{pathway_name}' uses a bottom-up model, which sizes plants on "
+                "consumption. With regionalisation.fuel_trade on, plants follow "
+                "production; only top-down pathways support that so far."
+            )
         if environmental_model_type == "top-down":
             models.update(
                 {
@@ -78,6 +94,7 @@ class AviationEnergyCarriersFactory:
                         pathway_data,
                         resources_data,
                         process_data,
+                        traded=fuel_trade,
                     )
                 }
             )
@@ -164,7 +181,7 @@ class AviationEnergyCarriersFactory:
 
     @staticmethod
     def instantiate_energy_carriers_models(
-        energy_carriers_data, pathways_manager, fuel_market=False
+        energy_carriers_data, pathways_manager, fuel_market=False, fuel_trade=None
     ):
         """
         Instantiates energy carriers related models. Energy use choice, means, mean LHV, ...
@@ -181,6 +198,12 @@ class AviationEnergyCarriersFactory:
             families itself, and two disciplines writing one variable is an error rather
             than a tie-break. ``EnergyCarriersMeans`` then weights by the cleared price
             instead of the production cost.
+        fuel_trade : str or None
+            ``regionalisation.fuel_trade``: None, ``"matrix"`` or ``"pool"``. With
+            either, ``EnergyCarriersMeans`` averages the unit values of the fuel as it
+            was made (``{p}_delivered_*``, from ``FuelTrade``). With ``"pool"``,
+            ``EnergyUseChoice`` is not instantiated, for the same reason as with the
+            market: the pool emits the volumes and their share families.
 
         Returns
         -------
@@ -193,10 +216,11 @@ class AviationEnergyCarriersFactory:
                 energy_carriers_data,
                 pathways_manager,
                 use_market_mfsp=fuel_market,
+                use_delivered_values=bool(fuel_trade),
             ),
             "energy_carriers_mean_lhv": EnergyCarriersMeanLHV("energy_carriers_mean_lhv"),
         }
-        if not fuel_market:
+        if not fuel_market and fuel_trade != "pool":
             models["energy_use_choice"] = EnergyUseChoice(
                 "energy_use_choice", energy_carriers_data, pathways_manager
             )

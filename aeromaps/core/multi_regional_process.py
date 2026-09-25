@@ -207,6 +207,12 @@ class MultiRegionalProcess(AeroMAPSProcess):
         # it in each region's config would let one region silently run the other
         # allocator, which is not a failure anything downstream could detect.
         self._fuel_market: bool = bool(self._regionalisation_config.get("fuel_market", False))
+        # Same shape, for fuel traded between regions: every region must know that what it
+        # produces is no longer what it consumes, or its feedstock accounting stays on
+        # consumption while the flows say otherwise. The value is the stand-in that decides
+        # the flows, because it also decides how a region wires itself: under 'pool' no
+        # region runs EnergyUseChoice, since the pool says what each one burns.
+        self._fuel_trade = self._read_fuel_trade_mode()
 
         # The MDA's own stopping rule, previously hard-coded below and unreachable from a
         # scenario (the TODO in _setup_unified_mda). The default is unchanged, so nothing
@@ -226,6 +232,18 @@ class MultiRegionalProcess(AeroMAPSProcess):
                 "'regionalisation.fuel_market' is on, but execution_mode is "
                 f"'{self._execution_mode}'. The market is a global discipline spanning "
                 "every region at once, which only 'unified_mda' can execute."
+            )
+        if self._fuel_trade and self._execution_mode != "unified_mda":
+            raise NotImplementedError(
+                "'regionalisation.fuel_trade' is on, but execution_mode is "
+                f"'{self._execution_mode}'. Flows between regions are computed by a global "
+                "discipline, which only 'unified_mda' can execute."
+            )
+        if self._fuel_trade == "pool" and self._fuel_market:
+            raise ValueError(
+                "'regionalisation.fuel_trade' is 'pool' and 'fuel_market' is on, but both "
+                "decide what every region burns, and one variable cannot have two writers. "
+                "The pool is the market's stand-in: use one or the other."
             )
 
         # Handle execution statistics based on mode
@@ -256,6 +274,7 @@ class MultiRegionalProcess(AeroMAPSProcess):
         # Load optional global models: disciplines that are NOT namespaced and whose
         # grammar spans several regions at once (see _load_global_models).
         self._load_global_models()
+        self._check_fuel_trade_declaration()
 
         # Reference parameters (year indexing, etc.) from the first region. Needed
         # before building top-level disciplines so models can initialize their dataframes.
@@ -353,6 +372,7 @@ class MultiRegionalProcess(AeroMAPSProcess):
                     custom_models=self._custom_models,
                     optimisation=False,
                     fuel_market=self._fuel_market,
+                    fuel_trade=self._fuel_trade,
                 )
 
             self._regional_processes[region_id] = regional_process
@@ -630,6 +650,97 @@ class MultiRegionalProcess(AeroMAPSProcess):
             f"Loaded {len(self._global_model_names)} global model(s): {self._global_model_names}"
         )
 
+    def _read_fuel_trade_mode(self):
+        """``regionalisation.fuel_trade``: None (off), ``"matrix"`` or ``"pool"``."""
+        from aeromaps.models.impacts.generic_energy_model.fuel_trade.fuel_trade import MODES
+
+        mode = self._regionalisation_config.get("fuel_trade", None)
+        if mode in (None, False):
+            return None
+        if mode not in MODES:
+            # `true` included: the two stand-ins wire the regions differently, so "on"
+            # does not say enough.
+            raise ValueError(
+                f"'regionalisation.fuel_trade' is {mode!r}; it must be one of {MODES} -- "
+                "'matrix' for flows from an explicit sourcing matrix, 'pool' for every "
+                "region burning its demand share of what all regions offer -- or absent."
+            )
+        return mode
+
+    def _check_fuel_trade_declaration(self):
+        """``fuel_trade`` and the ``FuelTrade`` global model come together, or not at all.
+
+        Each half is inert without the other, and silently so: the flag alone makes every
+        region read a production nobody emits (the chain then fails to build, far from
+        the cause); the model alone emits a production nobody reads, and feedstock stays
+        booked where the fuel is burnt while the flows say it was made elsewhere.
+
+        Then hands the model its mode, and checks what only the regions can tell: that
+        every region offers every pooled pathway, and that no region taxes one pathway's
+        carbon differently from the others (the delivered carbon tax is the burner's one
+        rate on the maker's emission factor, and a per-pathway rate would be dropped).
+        """
+        from aeromaps.models.impacts.generic_energy_model.fuel_trade.fuel_trade import FuelTrade
+
+        declared = [
+            self.models[name]
+            for name in self._global_model_names
+            if isinstance(self.models[name], FuelTrade)
+        ]
+        if self._fuel_trade and not declared:
+            raise ValueError(
+                "'regionalisation.fuel_trade' is on, but no FuelTrade model is declared. "
+                "Add 'models_fuel_trade' to regionalisation.global_models.standards."
+            )
+        if declared and not self._fuel_trade:
+            raise ValueError(
+                "A FuelTrade model is declared under regionalisation.global_models, but "
+                "'regionalisation.fuel_trade' is off, so no region would book its feedstock "
+                "on production. Set it to 'matrix' or 'pool'."
+            )
+        if not self._fuel_trade:
+            return
+        for model in declared:
+            model.mode = self._fuel_trade
+
+        for region_id, process in self._regional_processes.items():
+            carriers = getattr(process, "energy_carriers_data", {}) or {}
+            differential = sorted(
+                pathway
+                for pathway in carriers
+                if hasattr(process.parameters, f"{pathway}_carbon_tax")
+            )
+            if differential:
+                raise NotImplementedError(
+                    f"Region '{region_id}' sets a pathway-specific carbon tax on "
+                    f"{differential}. With fuel_trade on, a region pays its carbon tax on "
+                    "the emission factor of the fuel it burns, wherever it was made, and "
+                    "only the region-wide 'carbon_tax' is carried over so far."
+                )
+
+        if self._fuel_trade != "pool":
+            return
+        missing = []
+        for region_id, process in self._regional_processes.items():
+            carriers = getattr(process, "energy_carriers_data", {}) or {}
+            for pathway, data in carriers.items():
+                if data.get("aircraft_type") != "dropin_fuel" or data.get("default"):
+                    continue
+                declared_inputs = set()
+                for block in (data.get("inputs") or {}).values():
+                    if isinstance(block, dict):
+                        declared_inputs.update(block)
+                if f"{pathway}_energy_offered" not in declared_inputs:
+                    missing.append(f"{region_id}:{pathway}")
+        if missing:
+            # No silent zero: a pathway a region forgot to offer would simply never be
+            # made there, which looks exactly like a region choosing not to make it.
+            raise ValueError(
+                f"fuel_trade is 'pool', but {missing} declare no offer. Every non-default "
+                "drop-in pathway of every region needs one, zero included, e.g. under the "
+                "pathway's inputs: 'supply: {energy_offered: ...}' (MJ)."
+            )
+
     def _wrap_global_model(self, model):
         """Initialize and wrap a single global model as a NON-namespaced discipline.
 
@@ -709,11 +820,15 @@ class MultiRegionalProcess(AeroMAPSProcess):
         def signature(manager):
             if manager is None:
                 return None
+            # `default` included: it names the pathway that closes each energy balance,
+            # and a global model that fills demand with it (the market's residual, the
+            # trade pool's) would fill one region with the wrong fuel.
             return sorted(
                 (
                     pathway.name,
                     getattr(pathway, "aircraft_type", None),
                     getattr(pathway, "energy_origin", None),
+                    bool(getattr(pathway, "default", False)),
                 )
                 for pathway in manager.get_all()
             )
@@ -965,6 +1080,40 @@ class MultiRegionalProcess(AeroMAPSProcess):
         # Checked after the outputs have been harvested, so that a failed run is still
         # inspectable by whoever catches the error.
         check_mda_convergence(self.mda_chain, on_failure=self.on_mda_failure)
+        self._warn_unused_fuel()
+
+    def _warn_unused_fuel(self):
+        """Say, once and from the converged state, which offered fuel went unused, and when.
+
+        The trade pool uses a pathway's offers at a rate below one when more is offered
+        than its eligible regions can burn. That is a result, not an error -- nothing is
+        scaled down, the rest is reported as ``{p}_energy_unused`` -- but one a reader
+        should not have to go looking for. Warned here rather than by the model, whose
+        every MDA sweep sees a different demand.
+        """
+        prefix, suffix = f"{self._global_namespace}:", "_pool_use_rate"
+        vectors = self.data["vector_outputs"]
+        short = []
+        for column in vectors.columns:
+            if not (column.startswith(prefix) and column.endswith(suffix)):
+                continue
+            pathway = column[len(prefix) : -len(suffix)]
+            if pathway == "fuel":  # fuel_pool_use_rate: all pathways together
+                continue
+            rate = vectors[column]
+            years = [int(year) for year in rate.index[rate < 1.0]]
+            if years:
+                short.append(
+                    f"{pathway} in {years[0]}-{years[-1]} ({len(years)} years, lowest use rate "
+                    f"{float(rate.min()):.3f})"
+                )
+        if short:
+            warnings.warn(
+                "FuelTrade pool: more fuel is offered than its eligible regions burn -- "
+                + "; ".join(short)
+                + ". Every offer of a pathway is used at the same rate; the rest is reported "
+                "as {pathway}_energy_unused, and is neither burnt nor counted as made."
+            )
 
     def _compute_separate_processes(
         self,

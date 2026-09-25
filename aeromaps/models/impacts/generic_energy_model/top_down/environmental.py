@@ -25,6 +25,14 @@ class TopDownEnvironmental(AeroMAPSModel):
         Configuration data for the energy resources from the config file.
     processes_data : dict
         Configuration data for the energy processes from the config file.
+    traded : bool
+        Set when fuel is traded between regions (``regionalisation.fuel_trade``), so this
+        region makes something other than what it burns. Feedstock use is then computed
+        from ``{pathway}_energy_production`` -- the feedstock is used where the fuel is
+        made -- and the CO2 total from the consumption at the emission factor of the fuel
+        as it was made, ``{pathway}_delivered_mean_co2_emission_factor``. This model's own
+        emission factor stays the one of the fuel made HERE, which is what other regions
+        receive.
     """
 
     MODEL_APPROACH = "top_down"
@@ -36,6 +44,7 @@ class TopDownEnvironmental(AeroMAPSModel):
         resources_data,
         processes_data,
         *args,
+        traded=False,
         **kwargs,
     ):
         super().__init__(
@@ -68,6 +77,13 @@ class TopDownEnvironmental(AeroMAPSModel):
         # -- None
         # Individual inputs defined by EnergyUseChoice
         self.input_names[f"{self.pathway_name}_energy_consumption"] = pd.Series([0.0])
+        # ... and, with trade between regions, by FuelTrade.
+        self.traded = traded
+        if traded:
+            self.input_names[f"{self.pathway_name}_energy_production"] = pd.Series([0.0])
+            self.input_names[f"{self.pathway_name}_delivered_mean_co2_emission_factor"] = pd.Series(
+                [0.0]
+            )
 
         # TODO find a better way to get the resource inputs ? Now better with the list(str) argument of each pathway .yaml
         # 3. Getting resources is a bit more complex as we need to get necessary resources for the pathway
@@ -188,6 +204,13 @@ class TopDownEnvironmental(AeroMAPSModel):
 
         # Get the total energy consumption of the pathway
         energy_consumption = input_data[f"{self.pathway_name}_energy_consumption"]
+        # The volume feedstock use scales with: what this region MAKES. The same as what it
+        # burns unless fuel is traded between regions.
+        feedstock_volume = (
+            input_data[f"{self.pathway_name}_energy_production"]
+            if self.traded
+            else energy_consumption
+        )
 
         # Pathway selectivity
         pathway_kerosene_selectivity = input_data.get(
@@ -203,7 +226,7 @@ class TopDownEnvironmental(AeroMAPSModel):
             total_ressource_mobilised_with_selectivity = optional_null_series.copy()
 
             if specific_consumption is not None:
-                ressource_consumption = energy_consumption * specific_consumption
+                ressource_consumption = feedstock_volume * specific_consumption
                 ressource_required_with_selectivity = (
                     ressource_consumption / pathway_kerosene_selectivity
                 )
@@ -239,7 +262,7 @@ class TopDownEnvironmental(AeroMAPSModel):
                     f"{process_key}_resource_specific_consumption_{key}"
                 )
                 if specific_consumption is not None:
-                    ressource_consumption = energy_consumption * specific_consumption
+                    ressource_consumption = feedstock_volume * specific_consumption
                     ressource_required_with_selectivity = (
                         ressource_consumption / pathway_kerosene_selectivity
                     )
@@ -330,8 +353,14 @@ class TopDownEnvironmental(AeroMAPSModel):
                     year
                 ] = generic_discounted_cumul_em
 
-        # Calculate the total CO2 emissions
-        total_co2_emissions = energy_consumption * co2_emission_factor
+        # Calculate the total CO2 emissions: what this region burns, at the emission factor
+        # of the fuel as it was made -- its own, unless some was made elsewhere.
+        burnt_emission_factor = (
+            input_data[f"{self.pathway_name}_delivered_mean_co2_emission_factor"]
+            if self.traded
+            else co2_emission_factor
+        )
+        total_co2_emissions = energy_consumption * burnt_emission_factor
         output_data[f"{self.pathway_name}_total_co2_emissions"] = total_co2_emissions
 
         self._store_outputs(output_data)
