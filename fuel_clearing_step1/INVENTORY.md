@@ -6,6 +6,11 @@ Answers to §2.3 of the step-1 brief, measured on
 
 Read §0 first: four of the brief's premises no longer hold on this base.
 
+> **Updated 2026-09-23.** §0–§8 are the inventory as measured before the mode existed and
+> are left as written. §9's questions are now answered in place. **§10 describes the
+> interface as built** — what `FuelClearing` reads, emits and can be configured with — and
+> **§11 what each step-2 option would add to it** ([`REPORT.md`](REPORT.md) §12).
+
 ---
 
 ## 0. Premises of the brief that have changed
@@ -423,7 +428,184 @@ The 2025 step starting from zero is the zero-lock case again: `q_init = 0`, and 
 1. **Ramp-up form** — `relative` and `share_increment` are both relaxations of the
    live Eq. 12, in different directions. Which one goes in the report's headline
    comparison? (§1.1)  *Resolved for the bench: implement both, default `relative`.*
-2. **Historical years** — option 1 or option 2? (§5)
+2. **Historical years** — option 1 or option 2? (§5)  *Resolved: the residual pathway
+   carries the historical budget and every other pathway emits zero, never NaN
+   (decision 9; `REPORT.md` §4).*
 3. **Mode flag plumbing** — new `AeroMAPSProcess` keyword, or per-region config? (§7)
+   *Resolved: one key, `regionalisation.fuel_market`, default off, propagated as a
+   process keyword and refused outside `unified_mda`.*
 4. **Multi-type guard** — hard error when the new mode meets a hydrogen or electric
-   pathway, or fall back to `EnergyUseChoice` for those types only? (§4)
+   pathway, or fall back to `EnergyUseChoice` for those types only? (§4)  *Resolved: hard
+   error, raised by `FuelClearing._collect_pathways` at setup.*
+
+---
+
+## 10. The interface as built
+
+`FuelClearing`
+([`fuel_clearing.py`](../aeromaps/models/impacts/generic_energy_model/fuel_clearing/fuel_clearing.py))
+is a **global** discipline: its grammar is written in `{region}:variable` terms and it
+reads every region in one call. It calls the kernel
+([`kernel.py`](../aeromaps/models/impacts/generic_energy_model/fuel_clearing/kernel.py),
+a pure numpy-in/numpy-out function) once per MDA sweep.
+
+### 10.1 Declaring it
+
+```yaml
+regionalisation:
+  execution_mode: "unified_mda"          # the mode is refused elsewhere
+  fuel_market: true                      # replaces EnergyUseChoice in every region
+  mda_tolerance: 1.0e-7                  # ~100x solver_tolerance -- REPORT §8.7
+  mda_max_iter: 200
+  global_models:
+    standards: [models_fuel_market]
+    settings:
+      fuel_clearing:                     # top-level keys: every pathway but the residual
+        pricing_weight: 1.0
+        demand_elasticity: 0.5
+        buyout_price: 0.30
+        pathways:                        # per-pathway overrides
+          hefa_fog: {capacity_limit: 2.0e12}
+```
+
+### 10.2 What it reads, per region
+
+| variable | role |
+|---|---|
+| `energy_consumption_dropin_fuel` | the demand the market clears (MJ) |
+| `energy_consumption` | denominator of two share families only |
+| `{p}_net_mfsp` | **decision** cost — what the buyer faces, carbon tax and subsidies included |
+| `{p}_mean_mfsp` | **publication** basis — gross, so `DirectOperatingCosts` adds the carbon tax once |
+| `{p}_mandate_share` | %, on every eligible pathway; **summed** into one obligation per region |
+
+### 10.3 What it emits, per region
+
+| variable | meaning |
+|---|---|
+| `{p}_energy_consumption` | volume per pathway — replaces `EnergyUseChoice`'s |
+| share families | same names as `EnergyUseChoice`, from the shared `derive_share_families` |
+| `{p}_market_mfsp` | the price paid for pathway `p`, gross basis; `EnergyCarriersMeans` weights it by volume into `dropin_fuel_mean_mfsp`. At `w = 1` that average is exactly `λ_E + m·λ_M` (`REPORT.md` §11.8) |
+| `fuel_market_energy_price` | λ_E, **net** basis |
+| `fuel_market_compliance_price` | λ_M, **net** basis — the basis differs from `{p}_market_mfsp` (`REPORT.md` §8.9) |
+| `fuel_market_unmet_obligation` | volume released through the buy-out (MJ) |
+
+### 10.4 Settings
+
+| key | default | what it does |
+|---|---|---|
+| `pricing_weight` (w) | 0.0 | share of the scarcity rent charged to airlines: 0 = average cost, 1 = marginal price |
+| `discount_rate` | 0.04 | discounting inside the objective |
+| `buyout_price` | 1e3 | penalty per MJ of unmet obligation; caps λ_M |
+| `rampup_limit`, `rampup_seed_share`, `rampup_form` | 1e3, 1.0, `relative` | growth limit on eligible production (loose by default) |
+| `capacity_limit` | inf | **hard** ceiling on production (MJ/yr); dual = scarcity rent. New 2026-09-23 |
+| `capacity`, `saturation_intensity` (γ), `saturation_stiffness` (n) | inf, 0, 4 | **soft** saturation: cost bends as output nears `capacity` |
+| `demand_elasticity` (η) | 0.0 | slope of the linearised demand the market prices against; a convergence device, inert at the fixed point (`REPORT.md` §11.10). Required for `w > 0` |
+| `proximal_weight` | 0.0 | volume anchor; kept, off — it cannot fix a pinned primal (`REPORT.md` §8.6) |
+| `solver_tolerance` | 1e-9 | Clarabel tolerance; `mda_tolerance` must sit ~100x above it |
+| `demand_seed`, `cost_seed` | 1e13, 0.02 | initial values for the coupled inputs, first sweep only |
+
+The **residual pathway is exempt** from the top-level `capacity`, `capacity_limit` and
+`saturation_intensity`: a global scarcity setting reaching kerosene is almost never what
+was meant (`REPORT.md` §8.9). Naming it under `pathways:` still works.
+
+### 10.5 Guards at setup
+
+`dropin_fuel` pathways only; top-down costs only (decision 6); exactly one `default`
+pathway (the residual); at least one pathway with `mandate_type: share`; `unified_mda`
+only.
+
+### 10.6 Computed but not published
+
+Available in `ClearingOutputs` and, with `record_trace = True`, in the discipline's
+per-sweep `trace` — but not in the grammar, so not reachable from a scenario's outputs:
+
+- `capacity_price` (rent per unit at a binding cap), `rampup_price`, `marginal_price`,
+  `average_cost`, `rent`;
+- `demand_adjustment` — the coupling loop's convergence measure;
+- `active_signature` — which constraints are tight, for diagnosing flips.
+
+### 10.7 In the kernel, not reachable from a scenario
+
+- **The sub-mandate** (`submandate_share`, `is_submandated`, its own buy-out) and its
+  dual λ_S — exercised by `policy_cases.py` only.
+- **Region-specific eligibility** — the kernel takes `(R, P)`; the discipline passes one
+  list for all regions.
+- **Per-region and per-year capacities** — the kernel takes `(R, P, T)`; the settings
+  give one number per pathway.
+- The operating-point elasticity diagnostic (`compute_elasticity`).
+
+---
+
+## 11. What the step-2 options would add to the interface
+
+Each corresponds to a section of `REPORT.md` §12; none is implemented.
+
+### 11.1 Demand inside the kernel (§12.2, diagnostics D1–D2)
+
+New inputs per region, all **upstream of the fuel-price loop** — which is the condition:
+an input that depends on the fuel price would recreate the loop the change removes.
+
+| input | from | to check |
+|---|---|---|
+| `rpk_no_elasticity` | `RPKAggregator` (`_no_elasticity` suffix) | — |
+| `price_elasticity`, `initial_airfare_per_rpk` | `markets.yaml` | — |
+| the year the elasticity starts | max of `{market}_covid_end_year` + 1 | before it demand is vertical, so kinks remain there |
+| airline supply calibration: base-year cost per RPK, non-fuel cost per RPK by year | `PassengerAircraftMarginalCost`'s inputs | that non-fuel costs do not depend on RPK in the top-down chain |
+| extra taxes and subsidies per RPK | same | where the carbon tax sits — inside or outside the supply function |
+| drop-in MJ per RPK | energy intensity and load factor | exogenous in top-down; **not** under fleet-push |
+| freight and other drop-in energy | energy models | price-elastic or fixed? |
+
+New outputs: the RPK and airfare the market cleared at, for the one-sweep consistency
+check against AeroMAPS's own chain.
+
+### 11.2 Capacity variable (§12.3, D3)
+
+Per pathway, the `BottomUpCost` inputs: `{p}_eis_capex`, `{p}_eis_fixed_opex`,
+`{p}_eis_variable_opex`, `{p}_eis_plant_lifespan`, `{p}_eis_construction_time`,
+`{p}_eis_plant_load_factor`, `private_discount_rate`, resource costs. For top-down
+pathways, one new parameter — the capex share of the MFSP — plus lifespan and load factor.
+New output: `{p}_energy_production_commissioned`, which `BottomUpCost` already reads, so it
+can report costs and vintages downstream.
+
+### 11.3 Several obligations per region (§12.4)
+
+A list per region instead of a summed share — each with a name, a share trajectory, its
+eligible pathways and its own buy-out — and one published dual per obligation,
+`fuel_market_{obligation}_price`. The same list carries region-specific eligibility, and
+later GHG-intensity standards, emissions caps and budgeted subsidies.
+
+### 11.4 One global pool (§12.5, D5)
+
+> **2026-09-24: built in the kernel, not in the discipline** — REPORT.md §13. What was
+> built matches the paragraph below except in naming: the supply variable is the existing
+> `q` (production), the draw is `draws`, the outputs are `supply`, `net_flow` and
+> `pool_price`. The discipline needs, beyond the outputs listed here, a **use-side cost**
+> input per region (the carbon tax on use, split out of `{p}_net_mfsp`) and a rule for which
+> fuel is traded where the market leaves it open (REPORT §13.5).
+
+No new AeroMAPS inputs for fuel. The kernel gains two variables per region, pathway and
+year: what the region **supplies** to the pool (its production, bound by its own capacity
+and feedstock) and what it **draws** (its consumption, where its obligations apply), with
+one pool balance per pathway. New outputs: each region's net flow per pathway, and one pool
+price per pathway in the global namespace. A feedstock pool, the long-run target, adds the
+same pair for each feedstock and needs the resource availability AeroMAPS already carries
+per region.
+
+## 12. Flows between regions (`FuelTrade`, REPORT §14-15)
+
+Built 2026-09-24 as a stand-in for the market's flow logic, to test the plumbing. Two
+modes, named by `regionalisation.fuel_trade` (`true` is refused: the two wire the regions
+differently).
+
+| | `matrix` (§14) | `pool` (§15) |
+|---|---|---|
+| declare | `fuel_trade: matrix` + `models_fuel_trade`; the matrix under `global_models.settings.fuel_trade.sourcing` | `fuel_trade: pool` + `models_fuel_trade`; every non-default drop-in pathway of every region declares `supply: {energy_offered: ...}` (MJ), zero included |
+| what decides what a region burns | its own `EnergyUseChoice` (mandates) | the pool: its demand share of every pathway's world offer; fossil kerosene fills the rest. `EnergyUseChoice` is **not instantiated** |
+| reads, per region | `{p}_energy_consumption` | `energy_consumption_dropin_fuel`, `energy_consumption`, `{p}_energy_offered` |
+| reads, per region, both | `carbon_tax`; `{p}_mean_co2_emission_factor`, `_mean_mfsp`, `_net_mfsp_without_carbon_tax`, `_mean_unit_subsidy`, `_mean_unit_tax` (the maker's own) | same |
+| emits, per region, both | `{p}_energy_production`, `{p}_energy_net_export`; `{p}_delivered_{value}` for the five values above plus `mean_unit_carbon_tax` and `net_mfsp` | same |
+| emits, per region, pool only | — | `{p}_energy_consumption` and every share family (`derive_share_families`, as `FuelClearing`); `{p}_energy_unused` |
+| emits, global | `overall:{p}_energy_flow_{from}_to_{to}`, traded pathways, every ordered pair | same, pooled pathways; `overall:{p}_pool_use_rate` per pathway and `overall:fuel_pool_use_rate` all together |
+| optional setting | — | `eligibility: {pathway: {region: false}}` (§15.10): may a region burn a pathway; eligible by default; the default pathway cannot be excluded |
+| read downstream | `{p}_energy_production` by `TopDownEnvironmental` (feedstock); `{p}_delivered_*` by `EnergyCarriersMeans`, `NonDiscountedScenarioCost`, and `TopDownEnvironmental` for its CO2 total | same |
+| refused | `separate_processes`; flag without model or model without flag; bottom-up pathways; a pathway-specific carbon tax (`{p}_carbon_tax`) | the same, plus: with `fuel_market`; any setting but `eligibility`; aircraft types other than drop-in; not exactly one default pathway; a missing or negative offer; excluding the default pathway |

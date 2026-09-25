@@ -5,6 +5,11 @@ Branch `feat/fuel-clearing-step1`, off the rebased spike
 
 Companion documents: [`INVENTORY.md`](INVENTORY.md) answers §2.3 and carries the
 detail behind most of what follows.
+For colleagues, a slide-by-slide overview of where the spike stands and the step-2
+options (2026-09-23): https://claude.ai/artifact/BE2c5zPC2GeCceipW5F9hB — private until
+shared. The flows-between-regions plumbing of §14-15, with a live example and the pool
+prototype (2026-09-24, second version): https://claude.ai/artifact/KEVcxWWfBZpnxNFMFUFscT
+— also private until shared.
 
 ---
 
@@ -20,12 +25,12 @@ detail behind most of what follows.
 |---|---|
 | §2.1 `_setup_unified_mda` fix, with a test | **Done, in two parts.** The brief asked for three things: align the defaults, make both settings *configurable*, add a test. `a27bd252` had already aligned the defaults on this base (§1.1) — but it left them as literals at both construction sites, so the *configurable* half was open all week. Closed 2026-09-23 as `regionalisation.mda_tolerance` / `mda_max_iter`, with the test the brief asked for. §1.1 previously read "no work needed"; that was half right. |
 | §2.3 `INVENTORY.md` and §2.4 reference input set | **Done** |
-| §3.3 kernel, tests a–i green | **Done** — 53 tests, including 3.3.j timings |
+| §3.3 kernel, tests a–i green | **Done** — 53 kernel tests at the close of the brief, including 3.3.j timings; 61 on 2026-09-23 (the hard capacity ceiling of §11 added 8), plus 6 discipline tests |
 | §4.2/§4.4 new mode operational; current mode untouched; first coupled run | **Done** — §8. Existing suite green unmodified. |
 | §4.5.1 the `n` grid, table and figure | **Done with a substitution, §8.4.** The brief asks for `n` ∈ {2,4,6,8,12,16} across **two levels of capacity K**; this sweeps `n` ∈ {2,4,8,16} across **three levels of γ**. Kernel-level (§5.4) does use the brief's `n` values. The brief also asks each cell to record iterations, final residual, limit cycle and the operating-point elasticity; `coupled_grid.json` records convergence, price, traffic, CO₂ and share but not the four solver diagnostics. |
 | §4.5.2 price regimes, with figure | **Done 2026-09-23 — §8.8.** This row previously read "Measurement 4.5.2 (coupled convergence) — Done — §8.3", which was **wrong**: §8.3 measures whether the coupled fixed point is reached, a genuine finding but not what §4.5.2 asks for. The brief asks for a multiplier on the obligation swept 0.5→2 with the compliance price, unmet volume, ramp-up bite, delivered price and **traffic**. That measurement did not exist until now. |
 
-Existing suite: **305 passed** with the mode wired and shared code modified — which,
+Existing suite: **305 passed** at the close of the brief, **330** on 2026-09-23, with the mode wired and shared code modified — which,
 unlike a run against untouched code, is the guard-rail that actually means something.
 
 ---
@@ -1028,8 +1033,8 @@ information is in the earlier years. Worth knowing before reading the right-hand
 obligation as written, and traffic from +3 % to −6 %. The ratio is the ~1/8 transmission
 of §8.4, again.
 
-**×2 does not converge** (6.99e-8 against a tolerance of 1e-8). Unlike §8.7 this has not
-been diagnosed; it is recorded as the brief asks (*convergence oui ou non*) and left.
+**×1.5 and ×2 do not converge** (residuals 1.84e-7 and 1.46e-6 against a tolerance of
+1e-7, after the kerosene fix of §8.9). Unlike §8.7 this has not been diagnosed; it is recorded as the brief asks (*convergence oui ou non*) and left.
 
 **One defect found while building it.** Scaling the obligation with `"%g"` produced
 `[0, 3.5, 10.5, 35, ...]` — a mixed int/float list. GEMSEO infers the element type from
@@ -1271,9 +1276,11 @@ exist inside mandates — but it means the comparison is "restricted mandate" ag
 
 ### 10.5 What these cases cannot do
 
-- **No inter-regional trade.** Regions still do not interact (§2b), so there is no
-  leakage: a stricter region cannot import compliance from a looser one. That is the
-  single most important missing mechanism for policy work, and it is step 2.
+- **Regions do not interact.** Every constraint is per region (§2b), so there is no
+  leakage: a stricter region cannot draw supply away from a looser one. That is the most
+  important missing mechanism for the background objective. It is to come from a global
+  pool that every region supplies and draws on — flows tracked, no routes, no transport
+  costs (§12.5).
 - **2050 is the horizon**, and also the steepest step, so every result turning on "what
   is built by the final step" is partly a terminal condition.
 - **Region A and region B differ in traffic growth as well as eligibility** (3.0 against
@@ -1295,9 +1302,9 @@ real merit order, lifted verbatim from the default carrier data:
 | pathway | net cost 2050, EUR/MJ | capacity used here |
 |---|---|---|
 | `fossil_kerosene` | 0.01244 | residual, uncapped |
-| `hefa_fog` | 0.02327 | 2.0 PJ/yr |
-| `ft_msw` | 0.03234 | 2.8 PJ/yr |
-| `atj` | 0.03966 | 2.8 PJ/yr |
+| `hefa_fog` | 0.02327 | 2.0 EJ/yr |
+| `ft_msw` | 0.03234 | 2.8 EJ/yr |
+| `atj` | 0.03966 | 2.8 EJ/yr |
 | `electrofuel` | 0.09970 | **uncapped** — PtL is bound by electricity and capital, not by a feedstock |
 
 ### 11.1 Why the two-pathway bench could not answer this
@@ -1326,17 +1333,17 @@ including the stationarity identity and an independent objective score.
 
 | region A | λ_E | λ_M | delivered | airfare | RPK | CO₂ | eligible volume |
 |---|---|---|---|---|---|---|---|
-| nothing scarce | 0.01244 | 0.01083 | 0.01982 | — | — | — | 9.84 PJ |
-| bends, n = 4 | 0.01244 | 0.06526 | 0.05787 | +25.5 % | −18.5 % | −0.3 % | 8.29 PJ |
-| bends, n = 16 | 0.01244 | 0.08222 | 0.06974 | +33.5 % | −22.9 % | −4.6 % | 7.92 PJ |
-| **jumps** | 0.01244 | **0.08725** | **0.07327** | **+35.9 %** | **−24.1 %** | −6.4 % | 7.82 PJ |
+| nothing scarce | 0.01244 | 0.01083 | 0.01982 | — | — | — | 9.84 EJ |
+| bends, n = 4 | 0.01244 | 0.06526 | 0.05787 | +25.5 % | −18.5 % | −0.3 % | 8.29 EJ |
+| bends, n = 16 | 0.01244 | 0.08222 | 0.06974 | +33.5 % | −22.9 % | −4.6 % | 7.92 EJ |
+| **jumps** | 0.01244 | **0.08725** | **0.07327** | **+35.9 %** | **−24.1 %** | −6.4 % | 7.82 EJ |
 
 | region B | λ_E | λ_M | delivered | airfare | RPK | CO₂ | eligible volume |
 |---|---|---|---|---|---|---|---|
-| nothing scarce | 0.01244 | 0.01083 | 0.01982 | — | — | — | 14.33 PJ |
-| bends, n = 4 | 0.01244 | 0.08725 | 0.07328 | +35.9 % | −24.1 % | −10.7 % | 11.385 PJ |
-| bends, n = 16 | 0.01244 | 0.08725 | 0.07328 | +35.9 % | −24.1 % | −12.1 % | 11.385 PJ |
-| jumps | 0.01244 | 0.08725 | 0.07328 | +35.9 % | −24.1 % | −12.5 % | 11.385 PJ |
+| nothing scarce | 0.01244 | 0.01083 | 0.01982 | — | — | — | 14.33 EJ |
+| bends, n = 4 | 0.01244 | 0.08725 | 0.07328 | +35.9 % | −24.1 % | −10.7 % | 11.385 EJ |
+| bends, n = 16 | 0.01244 | 0.08725 | 0.07328 | +35.9 % | −24.1 % | −12.1 % | 11.385 EJ |
+| jumps | 0.01244 | 0.08725 | 0.07328 | +35.9 % | −24.1 % | −12.5 % | 11.385 EJ |
 
 Mix, 2050, w = 1, as % of drop-in fuel:
 
@@ -1355,7 +1362,7 @@ Figures: `five_pathways_mix.png`, `five_pathways_effects.png`, `five_pathways_pl
 
 **Read the two tables against each other.** In region B the three configurations give the
 *same* λ_M to five decimals, the *same* delivered price, the same airfare, the same
-traffic and the same eligible volume — 11.385 PJ in all three. Only the mix differs, and
+traffic and the same eligible volume — 11.385 EJ in all three. Only the mix differs, and
 with it the CO₂. In region A they differ by a quarter: λ_M 0.065 against 0.087, traffic
 −18.5 % against −24.1 %.
 
@@ -1404,16 +1411,27 @@ the next tonne really is dearer than the last. That is a *different* physical cl
 
 ### 11.6 The price/quantity plane
 
-`five_pathways_plane.png`, region A, 2050. The x axis is eligible volume; the y axis is
-what an eligible unit is paid, λ_E + λ_M. Three things are drawn:
+`five_pathways_plane.png`, 2050, `w = 1`, two panels (redrawn 2026-09-23). The x axis is
+eligible volume, the y axis what an eligible MJ is paid, λ_E + λ_M.
 
-- the **staircase** (hard cap): flat at each pathway's cost for the width of its capacity,
-  then vertical;
-- the **bent curve** (soft): the aggregate inverse of `q_p(π) = K_p((π/c_p − 1)/γ)^{1/n}`
-   — the same staircase with its corners rounded off, and it is visibly *below* the
-   staircase over most of the range, which is the understatement of §11.4 in one picture;
-- the obligation, **twice**: as the vertical line mD at fixed demand, and as the line the
-  elastic balance actually prices against, whose slope is −m²β.
+**Left — the supply side alone.** The same capacities K as a staircase (hard cap) and as
+bent curves for (γ, n) = (1, 2), (1, 4), (1, 16), (3, 4): the aggregate inverse of
+`q_p(π) = K_p((π/c_p − 1)/γ)^{1/n}`. The bends **start before K**: a fuel's cost is already
+rising as it approaches K, so the next fuel becomes the cheaper one sooner — at n = 4,
+`ft_msw` enters at 1.58 EJ instead of 2.0 (`(q/K)^4 = c_ft/c_hefa − 1`). And they **run
+past K**, because nothing stops a soft pathway there. Higher n tends to the staircase;
+higher γ bends harder and reaches the backstop sooner.
+
+**Right — both regions' demand crossing supply.** Each region has its *own* identical
+staircase (capacities are per region at step 1). The demand curves are **measured**: every
+converged `w = 1` run shares AeroMAPS's traffic chain and differs only in supply, so each
+one is a point `(m·D, λ_E + λ_M)` of the same demand curve for its region; the lines are a
+monotone interpolation between them, nothing fitted. Four probes were added to move the
+crossing along the curves (e-fuel capped at 2 and 3 EJ; every capacity ×0.8 and ×0.65); the
+last two did not converge (§7, item 18), so region B's curve has five points and region A's
+four. The earlier version of this figure drew the demand side as the market's own
+linearisation, slope −m²β — a tangent that passes through the right point with an arbitrary
+slope, and so the wrong picture of demand.
 
 The clearing point of the hard run sits at the *foot of the `electrofuel` step*, on a flat
 segment — not on a riser. That is worth saying plainly, because it bounds the whole
@@ -1433,8 +1451,10 @@ demand. λ_E is the residual's cost (0.01244 in every run above, because kerosen
 uncapped); λ_M is the marginal eligible pathway's cost minus λ_E — 0.0997 − 0.01244 =
 0.08726, against 0.08725 measured; and every *inframarginal* pathway's multiplier is a
 pure cost difference, λ^K_p = (λ_E + λ_M) − c_p. That last is an identity the kernel is
-now tested on: `marginal_price = c_p + λ^K_p + λ^R_p` at every producing pathway, to
-better than 1e-7 EUR/MJ. The demand anchor is **inert**: it changes which iterate the loop
+now tested on: `marginal_price = c_p + λ^K_p + λ^R_p,t − (1+g)·λ^R_p,t+1/(1+r)` at every
+producing pathway, to better than 1e-7 EUR/MJ. (Corrected 2026-09-23: the last term — what
+producing now is worth to next year's growth allowance — was missing, and the test ran only
+with the growth limit loose, where it vanishes. Once the limit binds, it is worth 0.11 EUR/MJ.) The demand anchor is **inert**: it changes which iterate the loop
 passes through and not what it converges to.
 
 **At a kink — two constraints tight at once.** The multiplier is an interval; every member
@@ -1462,18 +1482,18 @@ about that is pathological — it is what a price does when supply is vertical, 
 Two honest caveats. The 1/m factor means the compliance price on a vertical segment is
 *leveraged*: at m = 0.7 a 0.01 EUR/MJ error in the delivered price is a 0.014 error in
 λ_M. And λ^K then exceeds every cost gap in the model, so the rent is large and entirely
-determined by a demand curve nobody has calibrated (§11.12).
+determined by a demand curve nobody has calibrated (§11.11).
 
 **Measured, coupled, end to end.** The `all_capped` case of `five_pathways.py` caps
-`electrofuel` too, at 1.0 PJ/yr, putting total eligible capacity at 8.6 PJ/yr. The traffic
+`electrofuel` too, at 1.0 EJ/yr, putting total eligible capacity at 8.6 EJ/yr. The traffic
 loop then walks demand down until the obligation exactly exhausts it. One run, two regions,
 and they land in the two different regimes — which is the cleanest possible contrast,
 because nothing else about the run differs:
 
 | 2050, w = 1 | eligible / capacity | λ_E | λ_M | paid per eligible unit | dearest cost | rent above **every** cost | RPK |
 |---|---|---|---|---|---|---|---|
-| region A | 7.818 / 8.6 PJ — **spare** | 0.01244 | 0.08725 | 0.09970 | 0.09970 | −0.00000 | −24.1 % |
-| region B | 8.600 / 8.6 PJ — **exhausted** | 0.01244 | **0.22542** | **0.23786** | 0.09970 | **+0.13817** | −46.9 % |
+| region A | 7.818 / 8.6 EJ — **spare** | 0.01244 | 0.08725 | 0.09970 | 0.09970 | −0.00000 | −24.1 % |
+| region B | 8.600 / 8.6 EJ — **exhausted** | 0.01244 | **0.22542** | **0.23786** | 0.09970 | **+0.13817** | −46.9 % |
 
 Region A sits on a flat segment: the eligible unit is paid exactly `electrofuel`'s cost,
 to five decimals, and no multiplier exceeds a cost difference. Region B sits on the
@@ -1539,15 +1559,22 @@ Two things follow that are worth acting on.
    an arbitrary number of obligations and publish a dual for each. It currently carries
    one. **That is the single most useful piece of step-2 plumbing**, and it is small.
 
-### 11.9 The build-ahead of §5.2 is an artefact, and the report should say so
+### 11.9 The build-ahead of §5.2: right motive, wrong instrument
 
-§5.2 presents early over-compliance as a *result* of perfect foresight. It is not. There
-is no mechanism in the programme that rewards buying early: the obligation is written per
-year, there is no banking or carry variable, and a sustainable MJ produced in 2045 has
-no value in 2046. Nothing in the model gives an airline a reason to buy ahead, and you are
-right that no airline would.
+> **Corrected 2026-09-23.** A first version of this section said that nothing in the
+> programme rewards buying early. That was too strong, and the correction changes how
+> §5.2 should be read.
 
-Measured, on the five-pathway kernel case, sustainable share against the obligation:
+**The motive is real, and it is penalty avoidance.** The obligation is written per year
+and there is no banking, so a sustainable MJ produced in 2045 has no value *as fuel* in
+2046. But the ramp-up `q_t ≤ (1+g)·q_{t-1} + seed` ties what can be produced next year to
+what is produced this year. Producing early therefore has a value: it relaxes every later
+ramp-up constraint, and the value of that relaxation is the discounted compliance cost —
+up to the buy-out penalty — that it saves in the years when the step lands. A buyer with
+perfect foresight who knows a step is coming *should* pay to be able to meet it. The
+build-ahead is anticipation of penalties, exactly as it looks.
+
+Measured on the five-pathway kernel case, sustainable share against the obligation:
 
 | ramp-up | 2039 | 2040–44 | 2045–48 | 2049 | 2050 | max over-compliance |
 |---|---|---|---|---|---|---|
@@ -1556,43 +1583,33 @@ Measured, on the five-pathway kernel case, sustainable share against the obligat
 | g = 0.30 | 0.060 | 0.138 → 0.340 | 0.420 | 0.504 | 0.700 | 0.0838 |
 | g = 0.15 | 0.060 | 0.129 → 0.340 | 0.420 | 0.557 | 0.700 | 0.1365 |
 
-**With a slack ramp-up the build-ahead is exactly zero.** Perfect foresight buys the model
-nothing. What produces it is the ramp-up, and the ramp-up produces it because it is
-written on **production**: `q_t ≤ (1+g) q_{t-1} + seed`. To produce 70 % in 2050 you must
-have produced 50 % in 2049, and the only way the programme can express "the plants have to
-exist by then" is to make the fuel and burn it. Note the same rows under-comply in
-2039–41, paying the buy-out because they cannot ramp fast enough — the constraint pushes
-in both directions, and neither direction is a behavioural statement.
+With a slack ramp-up the build-ahead is exactly zero: without a growth limit there is no
+future penalty to anticipate. With one, the over-compliance sits in the years just before
+a step (2049, before 70 %) — where it buys the most relief — and the same rows
+*under*-comply in 2039–41, where no amount of anticipation could have ramped fast enough
+and the penalty is simply paid.
 
-So the defect is not perfect foresight as such. It is that the anticipation is attached to
-the wrong variable and therefore to the wrong agent. The fix is the one already on the
-table for calibration: **give the programme a capacity variable** with annuitised capex,
-constrain capacity *additions* rather than production, and require `q ≤ capacity`. Then
-build-ahead is capacity built ahead — which is a decision a producer facing a credible
-mandate genuinely makes — and the airline buys its obligation and not a MJ more.
+**What is wrong is the instrument the programme uses to anticipate.** Because the growth
+limit is written on *production*, the only way it can say "be able to meet 2050" is to make
+the fuel in 2049 and burn it. In reality the same anticipation takes the form of
+capacity built ahead — plants commissioned and ramped before the step — or of airlines
+signing offtake contracts early so that the plants reach financing. Neither requires
+burning 8 to 14 extra points of the fuel mix a year early. So the quantity that is
+overstated is the *volume* of early sustainable fuel, and with it the early fuel bill and
+early CO₂ savings; the *existence* of anticipation is not an artefact.
 
-Your wider point stands beyond §5.2 and should be in §9 (Limitations), not buried here.
-A single convex programme minimising discounted system cost **is** the benevolent
-planner's problem. Its duals are competitive-equilibrium prices only under the welfare
-theorems' conditions — complete forward markets, price-taking, no financing constraints,
-a common discount rate — and three of those are false here:
+**The fix is the capacity variable** (§12.3): growth limits on capacity additions,
+`q ≤ capacity`, annuitised capex. Anticipation then moves onto the capacity, where it
+belongs, and the airline buys its obligation each year.
 
-- there is no banking of compliance, yet the ramp-up lets early abatement substitute for
-  late abatement, which no airline can do bilaterally;
-- everything is discounted at one rate (4 %), so a SAF plant is financed as cheaply as an
-  airline's fuel bill. Real SAF projects are financed at 8–15 %, and that gap is a first-
-  order determinant of how much gets built;
-- the 2050 obligation is assumed fully credible in 2035. Mandate credibility is the
-  binding constraint on SAF investment in practice, and the model cannot represent doubt
-  about it at all.
+**Perfect foresight is kept** (decision, §12.1). It is how the policy-optimisation work
+has always been framed, and the case against it — a planner's programme standing in for
+separate agents — reduces to three assumptions worth stating plainly rather than changing:
+there is no banking of compliance; one discount rate prices the airline's fuel bill and
+the producer's plant alike (the capacity variable fixes this, by annuitising capex at a
+producer financing rate); and every announced obligation is taken as fully credible.
 
-The cheap counterfactual that brackets all three is a **myopic or rolling-horizon solve** —
-year by year, or with a k-year lookahead — which is the problem an airline with a per-year
-obligation and no banking actually faces. Perfect foresight is the optimistic bound and
-myopia the pessimistic one; the truth is between, and a range is a more defensible output
-than either endpoint. That is a day of work on the kernel and it is not yet done.
-
-### 11.11 Question: away from a kink, why take the price from demand at all?
+### 11.10 Question: away from a kink, why take the price from demand at all?
 
 The objection is right, and §6.5's title is what invites it. Away from a kink the supply
 curve *does* have a well-defined price at the quantity handed in, and overriding it with a
@@ -1653,16 +1670,16 @@ volumes answer different questions. `demand_adjustment` is published exactly so 
 is checkable, and it is the right quantity for a regression test to assert on. There is no
 test that asserts on it today.
 
-### 11.12 What this measurement does not establish
+### 11.11 What this measurement does not establish
 
-- **The capacity levels are illustrative.** 2.0/2.8/2.8 PJ/yr were sized against region A's
+- **The capacity levels are illustrative.** 2.0/2.8/2.8 EJ/yr were sized against region A's
   2050 demand to put the obligation inside the capped set, not taken from a resource
   assessment. Every number in §11.3 moves with them. The *structural* result of §11.4 does
   not, because it turns on which pathway is marginal and not on where the caps are.
 - **`capacity_limit` is one number per pathway for all regions and years.** A real plant
   fleet grows; this one does not. Per-region and per-year ceilings are a grammar change,
   not a kernel change — the kernel already takes an (R, P, T) array.
-- **The demand elasticity η is not calibrated**, and §11.11 shows why that is tolerable
+- **The demand elasticity η is not calibrated**, and §11.10 shows why that is tolerable
   where it is tolerable: on a flat segment β is a preconditioner and a factor of four in it
   moves the answer by 3e-9. Every cell of §11.3 is on a flat segment, so none of those
   numbers depends on it. `all_capped`'s region B is **not**, and there β is not a
@@ -1673,6 +1690,745 @@ test that asserts on it today.
   marginal** (3.0 against 4.5 % CAGR), so §11.4's contrast mixes two causes. The claim
   survives it — the identical λ_M in region B across all three configurations cannot be
   explained by growth — but the *sizes* are not like for like.
+
+---
+
+## 12. Where step 2 starts: decisions taken, options still open
+
+Written 2026-09-23, after a step back from the modelling. Nothing in this section is
+implemented. It records what was decided, what each open problem is, and which
+measurement decides it — because step 2 is meant to be taken one diagnosed step at a
+time, not as a full-scale model.
+
+The purpose it serves, restated because every option below is judged against it:
+**estimate what airlines will pay for fuel under a variety of policies worldwide, and the
+effect on traffic growth; eventually tune those policies; and, in the background, see how
+regions interact through a globalised fuel market.**
+
+### 12.1 Decisions
+
+| decision | reason |
+|---|---|
+| **Keep one convex programme** rather than separate optimisations for airlines, producers and planners | With price-taking agents, convex costs and shared information, agents optimising separately and linked by market clearing reach *exactly* the solution of the single programme (the welfare theorems). Splitting would be a different algorithm for the same model — slower, and with the coupling loop of §8.5 multiplied. It would not remove the price intervals at kinks either: those belong to the market, not to the solver. Separate agents only buy something for market power, strategic regulators or differing beliefs (§12.7). |
+| **Perfect foresight; no myopic mode** | Policy planning is framed with foresight, as in the bilevel optimisation work. The anticipation it produces is penalty avoidance (§11.9); what needs fixing is the instrument it acts through, not the foresight. |
+| **Flows through one global pool; no routes, no transport costs** | Each region supplies a global pool with what it produces and draws what it consumes; the market arbitrates and each region's net flow is tracked. Bilateral routes and transport costs are out of scope (§12.5). *Corrected the same day: a first version of this row read "no physical trade flows", which is not what was meant.* |
+| **Instruments beyond ReFuelEU are in scope** | The mode is currently shaped around one share mandate with a buy-out. Carbon taxes, subsidies and their interaction across regions must be first-class (§12.4). |
+| **Diagnose before implementing** | Each open problem below has a measurement that decides it (§12.8). |
+
+### 12.2 Market and traffic: put the demand inside the kernel?
+
+**The problem.** The kernel is a supply-side market. Traffic lives outside it, in
+AeroMAPS, and the two meet through a Gauss–Seidel loop. That loop is where most of the
+spike's difficulty came from: price intervals at kinks (§8.5), a demand slope η that must
+be over- rather than under-stated (§8.6, §11.10), tolerances tied to the solver's
+precision (§8.7), and a case that converges only at η = 2 (§11.7).
+
+**What AeroMAPS's traffic block actually is.** In `models_operation_cost_top_down_feedback`
+it is already a small market in equilibrium — a linear airline supply curve
+(`PassengerAircraftMarginalCost`) crossing an iso-elastic passenger demand
+(`RPKElasticity`):
+
+```
+airline supply     A  = a_t·RPK + b + (C_nonfuel,t − C_0) + e_t·p_fuel + taxes_t
+passenger demand   RPK = RPK0_t · (A / A_init)^ε            ε = −0.9 on the bench
+fuel demand        E  = e_t·RPK + E_other                    e_t = drop-in MJ per RPK
+```
+
+with `a_t = 2(A_init − C_0)/RPK0_t`, `b = 2C_0 − A_init`, and `RPK0_t` the traffic before
+any price effect. Both curves integrate into terms a convex solver accepts: passenger
+surplus is a power of RPK (exponent 1 + 1/ε = −0.111 here), airline cost is quadratic.
+So one programme can hold fuel supply, airline supply and passenger demand at once:
+
+```
+            TODAY                                         OPTION: DEMAND INSIDE
+ ┌───────────────────────┐   fuel price               ┌──────────────────────────────────┐
+ │ kernel: fuel supply   │ ─────────────┐             │ kernel: fuel supply              │
+ │  + linearised demand  │              ▼             │       + airline supply curve     │
+ │    (slope η, guessed) │    DOC → airfare → RPK     │       + passenger demand curve   │
+ └───────────────────────┘              │             └──────────────────────────────────┘
+            ▲            energy demand  │                  │ fuel price, airfare, RPK
+            └───────────────────────────┘                  ▼ (one solve)
+      Gauss–Seidel loop: 11–128 sweeps           AeroMAPS recomputes the same chain:
+                                                 one sweep, residual ≈ 0 is the check
+```
+
+Its optimality condition in RPK *is* AeroMAPS's airfare equation, with the fuel cost term
+equal to `e·(λ_E + m·λ_M)` — the single market price of §11.8. What moves with the fuel price — fuel
+price and mix, airline costs and airfare, traffic, energy demand, fuel bill — is solved
+inside; what does not — `RPK0`, non-fuel costs, MJ per RPK, taxes, base-year calibration,
+pathway costs — arrives as ordinary inputs computed upstream, with no dry run. The first
+list is exactly the loop the MDA iterates today, so with demand inside that loop no longer
+needs an MDA. The current elastic
+balance is the first-order version of this; η is the slope of a tangent to a curve the
+kernel could hold exactly.
+
+**What it would buy.** No η to choose. Vertical supply segments priced in one certified
+solve. The MDA reduced to a consistency check. Outcomes that vary continuously with
+policy parameters, which matters for tuning them (§12.6).
+
+**What it would cost.**
+- **Airlines pay the marginal price.** The solve chooses fuel and traffic together, and at
+  its optimum the last passenger-km is worth its *marginal* cost, `e·(λ_E + mλ_M)` — that is
+  what an optimum is. Average cost can be imposed as a constraint tying traffic to
+  `Σ c·q / Σ q`, but that ratio of the solve's own variables makes the problem non-convex.
+  So: `w = 1` with demand inside, one solve; `w < 1` stays in today's loop, which converges
+  easily at `w = 0` (16 solves, §8.5). Average cost and rents are reported either way. `w`
+  moved the delivered price by 37 % in §5.4, so this is a real modelling choice.
+  *(Revised 2026-09-24: an earlier version proposed an outer loop around the demand-inside
+  solve for `w < 1`.)*
+- **Only some demand models can go inside.** `RPKElasticity`: yes (iso-elastic, year by
+  year). `logistic_income`: probably (a multiplicative price index; unverified).
+  Fleet-push: no — deliveries make energy demand depend on the traffic *path*. Those
+  keep today's linearised anchor and the MDA, which stays as the general fallback.
+- **The airline calibration is duplicated in the kernel.** Mitigated by extracting the
+  coefficients from the disciplines and making "one sweep, zero residual" a test.
+- **It forces a pending AeroMAPS decision**: whether the carbon tax sits inside or outside
+  the airline supply function (the open comment in `PassengerAircraftMarginalCost`).
+- **To verify first:** whether freight energy responds to price in this mode or is a
+  fixed `E_other`.
+
+**Decided by D1–D2** (§12.8).
+
+### 12.3 Supply: a capacity variable, using bottom-up data but not the bottom-up model
+
+**The problem.** Supply is limited either by a soft cost bend (γ, n — uncalibratable,
+§11.5) or by a fixed hard cap (a plant fleet that never grows), and the growth limit acts
+on production, which puts anticipation on the wrong instrument (§11.9).
+
+**The option.** Decide capacity additions by vintage, each with its own annuitised capex;
+production ≤ installed capacity × load factor; growth limits on *additions*. Everything
+this needs is what `BottomUpCost` already reads: per-vintage capex, fixed and variable
+opex, lifespan, construction time, load factor, `private_discount_rate`, and the annuity
+of `_spread_capital`. Decision 6's objection — mean cost falling with volume makes the cost
+integral concave — does not arise, because the programme chooses vintages rather than
+reading a mean. And `BottomUpCost` takes `{p}_energy_production_commissioned` as an input,
+so the market's additions can be fed to it and it becomes the downstream reporter of costs.
+
+For pathways documented only top-down, one extra parameter — the capex share of the MFSP,
+plus lifespan and load factor — is enough to split annuitised capex from opex, so the
+bibliographic base stays easy to extend. Capex falling with the commissioning *year* fits;
+**endogenous learning** (capex falling with *cumulative* capacity) does not — it is
+non-convex, and is the one bottom-up feature this cannot carry.
+
+What it would give: anticipation on capacity; scarcity rents that are **temporary**,
+because a rent is what finances the next plant; every parameter physical (resource
+potential, build rate, capex, opex); capex financed at a producer rate (8–15 %) while the
+programme discounts at another. **Decided by D3.**
+
+### 12.4 Policy instruments: from one mandate to a policy mix
+
+**The problem.** The mode was built around a ReFuelEU-style share mandate. The objective
+needs carbon taxes, subsidies and their interaction across regions.
+
+| instrument | real-world example | today | fits the convex programme? |
+|---|---|---|---|
+| Share mandate + buy-out | ReFuelEU, UK SAF mandate | kernel and discipline, **one** obligation per region | yes |
+| Sub-mandate | ReFuelEU synthetic sub-target | kernel only; dual λ_S not published | yes — needs plumbing |
+| Eligibility differing by region | feedstock caps and exclusions | kernel only; the discipline passes one list for all regions | yes — needs plumbing |
+| Carbon tax on fuel CO₂ (exogenous price) | national carbon taxes, ETS price as input | yes, upstream, through `{p}_net_mfsp`; can differ by region | yes |
+| Fixed per-MJ subsidy or tax by pathway | per-gallon production credits | yes, upstream, through `{p}_net_mfsp` | yes |
+| Emissions cap with an endogenous carbon price | an ETS-style cap | no | yes — a cap constraint, whose dual is the carbon price |
+| Greenhouse-gas intensity standard | California LCFS, German GHG quota | no | yes — one linear constraint on Σ q·(EF_ref − EF_p) |
+| Subsidy with a fixed budget | national SAF funds | no | yes — a budget constraint; its dual prices the scarce money |
+| Price-dependent support | contracts for difference, support as a % of price, recycled buy-out revenue | no | **no** — needs a complementarity formulation (§12.7) |
+
+Most of the gap is plumbing and linear constraints, not a change of method. The one
+structural step is the discipline carrying **an arbitrary list of obligations per region
+and publishing one dual per obligation** — which is also what §11.8 asks for. Without
+trade, however, instruments in different regions do not interact: every constraint is per
+region (§2b). That interaction is §12.5.
+
+### 12.5 Regions interacting through one global pool
+
+**The problem.** Today the regions are solved together but share nothing, so a mandate
+in one cannot move the price in another. The background objective is precisely that
+interaction.
+
+**The option, within the decision of §12.1.** Each region **supplies** a global pool with
+what it produces — its own plants and feedstock, where production-side policies such as
+per-litre production credits act — and **draws** from it what it consumes, where use-side
+policies such as mandates, eligibility and fuel taxes act. The market arbitrates; each
+region's net flow (supplied minus drawn) is tracked, without routes or transport costs.
+The pool can hold fuel, feedstock (a global waste-oil pool) or both — the long-run goal is
+feedstock, so that policy A and policy B interact through it. Each pathway then has one
+pool price, and each region's delivered price is that price plus its own policy wedges. This is the mechanism behind the question the objective asks: a
+mandate in one region draws the cheap feedstock and raises the price everyone else pays.
+Certificate trade between regions (book-and-claim) can be added later on the same
+structure. **Decided by D5.**
+
+### 12.6 Tuning policies
+
+Policy tuning is an **outer optimisation** over policy parameters (mandate trajectory,
+tax levels) with the market as the inner model — a GEMSEO scenario, not an MDA; in the
+vocabulary of §12.7, an MPEC. It needs no change to the market's foresight. Sensitivities
+of outcomes to policy are available by implicit differentiation of the convex programme on
+each smooth piece of its solution, and only as subgradients where the active set changes;
+derivative-free methods or designs of experiments are the safer first choice. With demand
+inside the kernel the outcomes vary continuously with policy, which makes this
+better-behaved. **D4 measures it.**
+
+### 12.7 MCP, MPEC, EPEC — defined
+
+- **Optimisation (what the kernel is).** One objective, one solve; its optimality
+  conditions *are* the market equilibrium. Valid whenever the equilibrium is "as if" one
+  planner minimised total cost.
+- **MCP — mixed complementarity problem.** Instead of one objective, write every agent's
+  optimality conditions and the market-clearing conditions directly, as pairs of the form
+  "either this quantity is zero, or its margin is zero" (`x ≥ 0`, `F(x) ≥ 0`,
+  `x·F(x) = 0`). Every convex optimisation can be rewritten this way — that is its KKT
+  system — but an MCP can also describe equilibria no single objective produces: support
+  that depends on the market price, recycled revenues, agents with different discount
+  rates or beliefs. Cost: no objective to minimise, so existence and uniqueness have to be
+  argued case by case, and the solvers (PATH is the standard one) are Newton-type methods
+  that need a reasonable starting point.
+- **MPEC — mathematical programme with equilibrium constraints.** One leader optimises
+  while anticipating an equilibrium: the regulator chooses a mandate, the market responds.
+  This is the bilevel policy optimisation already done with an MDA.
+- **EPEC — equilibrium problem with equilibrium constraints.** Several leaders, each
+  solving an MPEC, in equilibrium with each other: every region setting its own mandate or
+  tax while anticipating the global fuel market and the other regions' policies.
+  Non-convex; an equilibrium may not exist or may not be unique; solved by iterating over
+  the leaders. Research grade.
+
+When they would be needed: an MCP if price-dependent instruments become central (§12.4,
+last row); an EPEC only if strategic interaction *between* regions' policies becomes the
+question. Neither now. Keeping the kernel's optimality conditions explicit — as the
+identity tests already do — keeps a later move to an MCP a reformulation, not a rewrite.
+
+### 12.8 Diagnostics, in order
+
+| # | diagnostic | what it decides | effort |
+|---|---|---|---|
+| **D1** | Extract the airline and demand coefficients from converged `hard` and `all_capped` runs; solve the joint programme in a scratch script; compare RPK, airfare, λ_E, λ_M with the MDA | Whether demand inside the kernel is **exact** (to ~1e-6) or which AeroMAPS term is missing | ~1 day |
+| D2 | D1 at `w = 0` and `0.5` | What `w < 1` costs once demand is inside — the marginal-pricing decision | ½ day |
+| D3 | Kernel prototype with a capacity variable, top-down split vs bottom-up data on one pathway | Whether anticipation moves onto capacity; the time profile of rents | 1–2 days |
+| D4 | Fine sweep of the mandate level, current kernel vs demand inside | Whether outcomes are smooth enough in policy for outer tuning | ½ day |
+| D5 | Two regions sharing one global supply per pathway, with different mandates and carbon taxes | How much one region's policy moves the other's price | 1 day |
+
+Before D1, one scoping choice: which demand models must be embeddable (constant
+elasticity only; plus `logistic_income`; plus fleet-push)?
+
+---
+
+## 13. One global pool: regions draw on a common supply, flows tracked
+
+Written 2026-09-24. The first step of §12.5, taken on its **volume** side only: each
+region supplies one global pool with what it produces and draws what it consumes, and
+the flows between them are tracked. How pooling moves each region's *price* is D5's
+question and is deliberately not answered here — the prices are recorded in
+`pool_flows.json`, not interpreted.
+
+### 13.1 What the kernel now builds
+
+One new, optional input, `ClearingInputs.pooled` — a flag per pathway. `None`, the
+default, builds exactly the program built before: the 62 earlier kernel tests pass, and the
+one helper touched (`_slackness_residuals`, which now reads the cap and growth limit on
+production) computes the same thing without a pool. 13 pool tests added, 75 in all. With a pool, a region's two sides separate:
+
+| side | variables | constraints that act there |
+|---|---|---|
+| **produces** | `q[r,p,t]`, as before | cost, soft saturation, hard cap, growth limit, `q_init` — plants and feedstock |
+| **consumes** | `draws[r,p,t]` for pooled pathways | energy balance, obligation, sub-obligation, eligibility — airlines and policy |
+| **pool** | — | `Σ_r q[r,p,t] = Σ_r draws[r,p,t]` per pooled pathway and year |
+
+A pathway not flagged stays local (`q = draws` in each region). New outputs: `supply`
+(production), `net_flow` (`supply − volume`, positive = exports; sums to zero over regions
+exactly, and exactly zero for a local pathway) and `pool_price` (the multiplier on the pool
+balance, per pathway and year). `volume` is now what a region **consumes**, which is what
+AeroMAPS reads as `{p}_energy_consumption`.
+
+Two identities hold on the multipliers and are tested: at every region **producing** a
+pooled fuel, `pool_price = cost + capacity rent + growth-limit rent − next year's`; and
+wherever a region **draws** it, its delivered marginal price for that fuel *is* the pool
+price.
+
+`cost` is read as the **production** cost of the supplying region. A cost levied where fuel
+is burnt — a carbon tax on use — has no place in the program yet (§13.5).
+
+### 13.2 Flows are not unique on their own, so a second solve picks the least trade
+
+Two regions making the same fuel at the same cost with capacity to spare can split the
+pool's supply any way at the same total cost. An interior-point solver returns the middle
+of that set: each region producing for the other for no reason. Measured on the bench
+below, the first solve traded **35.1 EJ** over 2020–2050 where the pool needed **1.7**, and
+72.3 where it needed 36.0.
+
+So a pooled solve is followed by a second one that fixes the optimal cost as a constraint
+and minimises the exported volume. The prices stay those of the first solve — exact, since
+in a convex program every optimal primal point pairs with every optimal dual point. The
+cost allowance is the solver tolerance: at 1e-8 a 0.2-of-demand flow came back 4e-8 of
+demand short, at 1e-9 4e-9, at zero 4e-10. Cost: a few milliseconds.
+
+Pool prices of a fuel **nobody draws** are an interval — on the two-region test case, 0.0353
+and 0.0468 EUR/MJ were returned from intervals [0.0322, 0.0394] and [0.0322, 0.0996]. They
+are pinned to the lower end, the value of a first free unit (the delivered price in the
+region that values it most), the same remedy as the compliance price without an obligation.
+
+### 13.3 The bench: `pool_flows.py`
+
+Kernel only, at **fixed demand**: each region's demand and the pathway costs are taken from
+the converged `hard_w1` run of §11, so traffic does not respond to pooling. That isolates
+the flows, and gives a check: the separate case, re-solved, returns that run's volumes to
+**3.3e-8** of demand. An independent year-by-year LP (in the script, not the kernel) agrees
+with the kernel's cost to **1.3e-7** in every year.
+
+| case | plants | traded 2020–50 | e-fuel made 2020–50 | discounted cost |
+|---|---|---|---|---|
+| separate | HEFA 2.0, FT 2.8, ATJ 2.8 EJ/yr in each region | — | 4.0 EJ | 7.1047e12 |
+| pooled | same | 1.7 EJ | 4.0 EJ | −0.08 % |
+| separate, waste oil in A | HEFA 4.0 in A, 0 in B | — | **16.4 EJ** | 7.4777e12 |
+| pooled, waste oil in A | same | 36.0 EJ | 4.0 EJ | **−5.1 %** |
+
+- **Same plants in both regions:** trade happens in 2040–2044 only (0.42 → 0.26 EJ/yr from A
+  to B), the years when A still runs on FT-MSW while B would otherwise climb to ATJ. In every
+  other year both regions sit on the same marginal fuel and nothing needs to move.
+- **Waste oil all in A:** separately, B never gets a litre of it and climbs to e-fuel from
+  2042; A alone uses the resource up only in 2040. Pooled, B draws A's surplus from 2025
+  (0.24 EJ/yr), the resource is **used up from 2035**, and B burns 25 EJ of it over the
+  period. Four times less e-fuel is made.
+- **Where the plants sit stops mattering to the totals.** The two pooled cases have the same
+  cost to 4e-10: without transport costs, relocating a plant changes who exports, nothing
+  else. That is the decision of §12.1 showing, not a defect.
+
+![Common exhaustion](figures/pool_exhaustion.png)
+
+### 13.4 What the pool determines, and what it does not
+
+The least-trade pass pins **how much** each region exports. It does not pin **which fuel**.
+Once an exporter runs two fuels at their caps, both earn a rent and both sell at the price of
+the marginal fuel above them, so shipping either costs the same and trades the same volume.
+The script measures the range directly — the smallest and largest net flow of each fuel
+over all points optimal in cost *and* in traded volume:
+
+- waste oil in A, 2025–2039: A's only capped eligible fuel is HEFA, and every flow is
+  determined to the MJ;
+- from 2040, A exports 2.42 EJ/yr, and its HEFA share can be **anything from 0 to 2.42** — the
+  kernel's 1.43 / 0.99 split is the solver's pick. The same from 2045 with ATJ, and in
+  2040–2044 in the same-plants case.
+
+![Flows and what is decided](figures/pool_flows.png)
+
+This matters beyond tidiness: which fuel a region burns decides which emission factor its
+CO2 carries, and at `w < 1` its delivered average price. An arbitrary split in a coupled
+loop is also a quantity that can flicker from one sweep to the next, which is the failure
+§8.5 was about.
+
+### 13.5 Open, for decision
+
+1. **Which fuel is traded when the market does not say.** Options: *pro rata to production*
+   (an exporter ships a slice of what it makes — local, continuous, one extra solve);
+   *common mix* (every region burns the pool's average of the fuels it treats as
+   interchangeable — mass-balance accounting of the pile; needs defining those classes per
+   region); or *leave it*, and publish flows only per price tier, where they are determined.
+   Worth knowing before choosing — read off the stationarity conditions, not yet measured:
+   **differing** use-side carbon taxes or eligibility rules break these ties by themselves
+   (the high-tax region takes the low-carbon fuel); a **uniform** carbon tax does not.
+2. **Where use-side costs sit.** `{p}_net_mfsp` mixes production-side terms (subsidies) with a
+   carbon tax on use. In a pool the first belongs on `q`, the second on `draws`, in the
+   consuming region. The kernel needs a use-side cost input before the discipline can be
+   wired — and this is the first place pooling reaches prices, so it is D5's entry point.
+3. **The average cost a region pays at `w < 1`** is taken as the pool's production-weighted
+   average, per fuel. A convention, recorded as such.
+4. **The discipline is not wired.** `FuelClearing` still clears separate markets. Wiring is
+   plumbing (a `pool` setting; `{region}:{p}_energy_production`, `{region}:{p}_net_flow`,
+   `fuel_market_{p}_pool_price`) once 1 and 2 are decided.
+
+Noticed on the way, not caused by the pool: the capacity rent on a pathway capped at **zero**
+is undetermined (the cap and non-negativity coincide) and came back as 0.87 and 1.28 EUR/MJ.
+It is a diagnostic output only — nothing downstream reads `capacity_price` — but a
+region with "no feedstock of its own" is exactly how a pool bench is written.
+
+**Decided 2026-09-24**, on 1 and 2: the market will say which fuel is traded, once it has
+the logic to (use-side costs among it); until then an **explicit matrix** stands in for
+the market's flow logic, and the first thing to establish is whether the multi-regional
+plumbing carries flows at all — §14. The carbon tax goes to the consumer side; how far
+that moves the market is for later.
+
+---
+
+## 14. Plumbing for flows between regions: an explicit matrix, checked end to end
+
+Written 2026-09-24. **No market logic here.** The flows are stated by hand, as a sourcing
+matrix, and the question is only whether the multi-regional process carries them: a
+region producing what it does not burn, each side reaching the models that belong to it,
+every MJ accounted for once. The kernel's pool (§13) is not used; it is the market logic
+meant to replace the matrix later.
+
+### 14.1 What was added
+
+| piece | where | what it does |
+|---|---|---|
+| `FuelTrade` | `generic_energy_model/fuel_trade/fuel_trade.py`, group `models_fuel_trade` | Global model (not namespaced, like `FuelClearing`). Reads every region's `{p}_energy_consumption`; applies the matrix; emits `{r}:{p}_energy_production`, `{r}:{p}_energy_net_export` and `overall:{p}_energy_flow_{from}_to_{to}`. Prospective years only — the historical data describe no trade. |
+| `regionalisation.fuel_trade` | `MultiRegionalProcess` → `AeroMAPSProcess(fuel_trade=)` → energy factory | Tells every region that production is no longer consumption. Same route as `fuel_market`. Since §15 the value names the stand-in, `matrix` or `pool`; `true` is refused. |
+| `TopDownEnvironmental(traded=)` | `top_down/environmental.py` | Feedstock use computed on **production**; CO2 on **consumption** (since §15 at the makers' emission factor). Off by default: nothing changes without trade. Written `resources_follow_production=` until §15. |
+| Guards | `MultiRegionalProcess`, factory | Flag and model declared together or not at all; `unified_mda` only; bottom-up pathways refused under trade (they size plants on consumption). |
+
+The matrix, in `scenario/regionalisation_trade.yaml`:
+
+```yaml
+sourcing:
+  hefa_fog:          # all the HEFA B burns is made in A
+    region_B: {region_A: 1.0}
+  fossil_kerosene:   # a quarter of A's kerosene is made in B
+    region_A: {region_A: 0.75, region_B: 0.25}
+```
+
+Each row is a consuming region and must sum to one; anything not listed is made where it
+is burnt.
+
+### 14.2 How it sits in the architecture
+
+Nothing structural changed. Each region is still a full AeroMAPS process, namespaced
+`{region}:`, all in one `MDAChain`; `FuelTrade` joins `FuelClearing` among the global
+models and, like it, writes other regions' variables directly. Two couplings are new:
+regional consumption → `FuelTrade` → regional production → that region's feedstock models,
+and production → the aggregator. Both are feed-forward, so trade adds no loop: the MDA
+takes the same number of sweeps with and without it (9 in the standard mode, 11 with the
+market).
+
+> **Superseded by §15.** Since the delivered unit values, `FuelTrade` also feeds every
+> region's means, whose fuel price reaches the airfare and so the demand it reads: trade
+> now closes a loop. Standard mode 9 → 11 sweeps with trade; market mode 11 either way.
+
+### 14.3 The checks (`trade_plumbing.py`)
+
+Four full two-region runs, five pathways: the standard mode and the market mode
+(`FuelClearing`, nothing scarce), each without and with trade. Worst relative error, same in
+both modes:
+
+| check | result |
+|---|---|
+| Everything a consumer sees is unchanged — 17 series × 2 regions: consumption per pathway, CO2 (passenger, freight, cumulative, per pathway), airfare, RPK, delivered fuel price | **0**, bit-identical, as first run. **Since §15: 1.5e-11** (standard) **and 2e-8** (market) — the delivered values put `FuelTrade` inside the loop, so the two runs agree to the MDA's tolerance and, with the market on, to the kernel's solver tolerance, not bit for bit. The regions share unit values, so the blend changes nothing but the path to the fixed point. |
+| Production is what the matrix says | 0 |
+| World production = world consumption, per pathway and year | 2e-16 |
+| ... and through the aggregator (`overall:{p}_energy_production` vs `_consumption`) | 2e-16 |
+| Tracked flows add up to each region's net export | 3e-16 |
+| Feedstock = 1.14 × production, in each region | 1e-11 |
+| World feedstock use unchanged | 1e-16 |
+| Historical years: production = consumption | 0 |
+
+What moves, 2050 (EJ): A burns 9.8 of HEFA and makes 24.2; B burns 14.3 and makes none;
+the tracked flow A→B is 14.3. A's waste-oil use goes from 11.2 to 27.6, B's from 16.3 to 0.
+Kerosene flows 1.1 EJ the other way. In AeroMAPS terms, B's demand now exhausts **A's**
+resource (`hefa_fog_biomass_consumed_global_share`: A 1122 % → 2756 %, B 1634 % → 0 %).
+The percentages are absurd because this bench puts the whole 70 % obligation on HEFA,
+against the default 1 EJ availability — a property of the bench, not of the plumbing.
+
+14 tests in `aeromaps/tests/models/test_fuel_trade.py` (42 since §15), including one end-to-end MDA run of
+the bench. They were checked against two deliberate breakages — feedstock booked on
+consumption again, the matrix transposed — and each is caught.
+
+### 14.4 What this does not do yet
+
+- ~~**Nothing reads production except feedstock.** Costs (`{p}_mean_mfsp`) are still each
+  region's own: B pays B's cost for HEFA made in A.~~ **Done in §15**: a region burning fuel
+  made elsewhere now pays the maker's cost and books the maker's emission factor, blended by
+  origin, and pays its own carbon tax on it — in both modes.
+- **With the market on, caps would act on consumption.** `FuelClearing` clears separate
+  regional markets, so a `capacity_limit` there limits what a region *burns*, while the
+  matrix says the fuel is made elsewhere. Harmless on this bench (nothing is capped); a
+  real combination needs the pool (§13) to decide flows, which is the point of it.
+- **Bottom-up pathways** are refused under trade until their plant sizing reads production.
+- The matrix is constant in time. A per-year matrix is a small extension if a case needs it.
+
+## 15. The market's stand-in: a pro-rata pool, and what the current models needed
+
+Written 2026-09-24, after §14. Still **no market logic**. §14 proved that production can
+differ from consumption; this section makes consumption the thing that is *decided
+globally* — as a market will — and measures what every existing model needed to live with
+that.
+
+### 15.1 Decisions recorded (2026-09-24)
+
+- **The long-run goal** is regions buying each other's fuel under their constraints, an
+  eligibility matrix and their willingness to pay; producers sell to the highest bidder.
+  How that untangles is open, and not this section's task (ideas in §15.9, none built).
+- **Mandates retire as the mix-setter.** AeroMAPS decides how much drop-in fuel each region
+  burns; mandates currently decide the mix within it, a mechanism inherited from
+  applications of ReFuelEU. Under trade or a market the mix is decided globally; a mandate,
+  where it is the policy, returns as a constraint the market enforces.
+- **The stand-in:** each region *offers* volumes per pathway; every pathway's world offer
+  is split between regions in proportion to their share of drop-in demand. **Full pooling
+  only** — no partial "home share".
+- **Offers above world demand** are not scaled down: every offered MJ is used at the same
+  rate, the rest tracked as unused, with a warning. Feedstock follows what is **used**.
+  (A market would leave the most expensive unused; the stand-in deliberately does not rank.)
+- **Unit values: the maker's cost and CO2, blended by origin; the burner's carbon tax.**
+- **Interface: the market's.** The stand-in emits consumption, as `FuelClearing` does, so
+  one can replace the other without anything downstream noticing.
+- **Bottom-up models: quantify, do not implement.** **Eligibility: design now, build after
+  the pool is checked.** **Prototype: the A/B bench, made asymmetric.**
+
+### 15.2 The rule
+
+Per prospective year, with `D_c` the drop-in demand of region `c`, `W = Σ_c D_c`, and
+`O_{r,p}` what region `r` offers of non-default pathway `p`:
+
+```
+use rate      u = min(1, W / Σ_{r,p} O_{r,p})           one number for every offered MJ
+made          q_{r,p} = u · O_{r,p}                       unused = (1 − u) · O_{r,p}
+flow          f_{r→c,p} = (D_c / W) · q_{r,p}             each producer's output split by demand share
+burnt         x_{c,p} = Σ_r f_{r→c,p} = (D_c / W) · Σ_r q_{r,p}
+fossil        D_c − Σ_p x_{c,p}  ≥ 0, made where burnt     (u caps what a pool delivers at W)
+```
+
+So every region burns the world mix. Historical years are data and describe no trade:
+there each region is its own pool. The unit values of what `c` burns are the makers',
+weighted by where it came from, and `c`'s own carbon tax on the result:
+
+```
+v_{c,p}^del  = Σ_r (f_{r→c,p} / x_{c,p}) · v_{r,p}      v ∈ {EF, MFSP, net MFSP w/o carbon tax, subsidy, tax}
+tax_{c,p}^del = τ_c · EF_{c,p}^del                       net MFSP^del = net w/o tax^del + tax^del
+```
+
+Where `c` burns none of `p`, or nothing is traded, the blend has one term: the region's own
+values, to the last bit (tested). The same blend serves the matrix mode of §14, which until
+now priced imported fuel at the importer's own cost.
+
+### 15.3 What each current model needed — the quantification asked for
+
+Every model class that reads a per-pathway volume or unit value, with the side it belongs to
+once production and consumption separate:
+
+| model | reads | side | change needed | done |
+|---|---|---|---|---|
+| `EnergyUseChoice` | mandates × demand | decides the mix | **not instantiated** under the pool (the market-mode switch, reused); unchanged under the matrix | yes, 0 lines in the model |
+| `FuelTrade` (new) | offers, demand, makers' unit values | global | pool mode; delivered values for both modes | yes, 580 lines |
+| `TopDownEnvironmental` | volume × specific consumption; volume × EF | feedstock: **maker**; CO2 total: **burner** | feedstock on production (§14); CO2 total at the delivered EF | yes, +33 −4 |
+| `TopDownCost` | unit values only | **maker** | none — its outputs *are* the maker's values the blend reads | nothing to do |
+| `EnergyCarriersMeans` | shares × unit values | **burner** | read `{p}_delivered_*` instead of `{p}_*` (one name switch, `_value_name`) | yes, +34 −23 |
+| `NonDiscountedScenarioCost` | consumption × MFSP | **burner** | delivered prices; BAU kerosene stays the region's own | yes, +17 −4 |
+| `EnergyResourceConsumption`, `OverallResourcesConsumption` | per-pathway feedstock totals | **maker** | none — they inherit production from `TopDownEnvironmental` | nothing to do |
+| `EnergyCarriersMassicShares`, `EnergyCarriersMeanLHV` | consumption | **burner** | none — the pool emits consumption under the same name | nothing to do |
+| non-CO2 indices and `NonCO2Emissions` | massic shares, per-origin consumption | **burner** | none — share families emitted by the pool | nothing to do |
+| `KayaFactors`, CO2 models, DOC, airfare, elasticity | type-level means | **burner** | none — they read the means | nothing to do |
+| `RegionalAggregator` | whatever it is told to sum | — | none | nothing to do |
+| `FuelClearing` (market) | own costs, mandates | — | refused with the pool (two writers of consumption); works with the matrix | guard |
+| `BottomUpCapacity` | consumption → plants to build | **maker** | size plants on production (used) | **quantified only** — refused under trade |
+| `BottomUpCost`, `BottomUpEnvironmental` | commissioned capacity; consumption as vintage weights | **maker** | weights on production; their unit outputs then feed the blend unchanged | **quantified only** |
+| `EnergyAbatementEffective` | consumption × (EF_ref − EF) | **burner** (decided 2026-09-25) | consumption × (EF_ref − delivered EF): abatement is credited to the region that uses the fuel | **quantified only** — bottom-up, refused under trade |
+| `EnergyAbatementCost`, `ReferenceAbatementCost` | vintage costs | **maker** | none beyond their bottom-up inputs | nothing further |
+| plots (`energy_mix`, `costs_generic`, …) | consumption, unit values | burner | none to run; production / flow plots are new work | later |
+
+Plus the wiring: `AeroMAPSProcess` (+21 −1: the mode keyword, the `fuel_trade_mode`
+injection), the energy factory (+27 −3), `MultiRegionalProcess` (+137: mode parsing, guards,
+offer check, the post-MDA warning, `default` added to the shared-pathways signature).
+
+**In short:** of the ~20 model classes that read per-pathway volumes or unit values, four
+needed a change to run top-down (`EnergyUseChoice` switched off, `TopDownEnvironmental`,
+`EnergyCarriersMeans`, `NonDiscountedScenarioCost`), each a name switch rather than new
+arithmetic; everything else reads consumption and its share families, which the pool emits
+under the names `EnergyUseChoice` used. The bottom-up side is the real remaining work —
+three models sizing and weighting on consumption — and one accounting choice, since
+settled: abatement is credited to the region that uses the fuel.
+
+### 15.4 The bench: two regions made to differ
+
+`scenario/regionalisation_pool.yaml`, the five pathways of §11, each region its own
+carriers, resources and carbon-tax files:
+
+| | offers 2050 | grid 2050 | e-fuel cost | carbon tax | CAGR |
+|---|---|---|---|---|---|
+| region A | 9.0 EJ (HEFA 1.5, FT 1.5, ATJ 3.0, e-fuel 3.0) | 5 gCO2/MJ | 0.0996 €/MJ | 100 €/t | 3.0 % |
+| region B | 3.0 EJ (HEFA 0.5, FT 0.5, e-fuel 2.0) | 40 gCO2/MJ | 0.075 €/MJ | 5 €/t | 4.5 % |
+
+`pool_plumbing.py` runs it three ways: **autarky** (no trade; each region burns exactly its
+offers, through `EnergyUseChoice` with quantity mandates equal to them), **pool**, and
+**oversupply** (every offer ×3.5, so the world is offered more than it burns from 2041).
+
+### 15.5 The checks
+
+Worst relative error over 2020–2050, both pooled runs:
+
+| identity | pool | oversupply |
+|---|---|---|
+| each region burns exactly its demand | 2e-16 | 2e-16 |
+| every region burns the world mix | 3e-16 | 3e-16 |
+| made + unused = offered; made = offered × use rate | 2e-16 | 2e-16 |
+| world made = world burnt, per pathway — summed, and through the aggregator | 2e-16 | 2e-16 |
+| tracked flows = net exports | 2e-16 | 3e-16 |
+| feedstock = specific use × made, per region and pathway | 3e-16 | 4e-16 |
+| region's CO2 from its means = sum of its per-pathway totals | 3e-11 * | 9e-12 * |
+| world CO2 counted where burnt = counted where made | 2e-16 | 1e-16 |
+| world spending before carbon tax = makers' revenue | 3e-16 | 3e-16 |
+| carbon tax = burner's rate × makers' emission factor | 2e-16 | 2e-16 |
+| no fossil burnt in years where offers go unused | — | 2e-16 |
+
+and, pool against autarky: **feedstock unchanged region by region** (2e-16 — the same fuel
+is made in the same places; only who burns it moved) and **historical years identical** (0).
+
+\* The two sides come from different Gauss-Seidel sweeps, so they agree to the MDA's
+tolerance, not to the bit: at `mda_tolerance` 1e-13 the gap is 1.9e-14 (38 sweeps
+instead of 29).
+
+Sweeps: autarky 33, pool 29, oversupply 41; 10–17 s per run. 42 tests in
+`test_fuel_trade.py` (14 before), one of them the full pool MDA. Eight deliberate
+breakages were each caught: the maker's carbon tax instead of the burner's; an equal split
+instead of demand shares; no use rate; the burner's own unit values instead of the makers';
+the means, the CO2 total or the scenario cost reading own values; a missing offer accepted.
+Full suite 387 passed.
+
+### 15.6 What the prototype shows
+
+Not market outcomes — a pro-rata split is not a market — but the plumbing carrying real
+consequences through the whole model:
+
+| | 2030 A | 2030 B | 2050 A | 2050 B |
+|---|---|---|---|---|
+| SAF share burnt, autarky → pool | 16.8 % → 9.4 % | 3.0 % → 9.4 % | 73.0 % → 36.7 % | 14.6 % → 36.7 % |
+| CO2 per MJ burnt (gCO2/MJ) | 78.8 → 84.0 | 88.5 → 84.0 | 45.4 → 70.6 | 86.0 → 70.6 |
+| fuel cost incl. carbon tax (c€/MJ) | 2.43 → 2.31 | 1.37 → 1.51 | 4.83 → 3.54 | 1.93 → 2.87 |
+| drop-in demand (EJ) | 11.29 → 11.39 | 13.34 → 13.19 | 12.33 → 13.05 | 20.55 → 19.62 |
+
+- **The maker's CO2 matters.** B's e-fuel, on B's grid, is 92.8 gCO2/MJ in 2050 — above
+  kerosene — and 255 in 2030. Pooled, every region's e-fuel is the blend: 44.1 in 2050,
+  where A's own would be 11.6. Booking it at the burner's own factor, as §14 did, would
+  have credited A with a clean grid it does not import from.
+- **The burner's tax matters.** Pooled, A burns a dirtier mix and pays its 100 €/t on it:
+  its carbon tax per MJ rises (0.45 → 0.71 c€/MJ in 2050) even as its fuel cost falls.
+- **Demand answers through the loop.** A's fuel gets cheaper (it burns less SAF), so it
+  flies more (+5.8 % of drop-in demand in 2050); B's gets dearer, so it flies less
+  (−4.5 %). World cumulative
+  drop-in CO2 2020–2050 barely moves (63.85 → 63.58 Gt) — the same fuel is burnt, by
+  different regions.
+- **Oversupply:** from 2041 the use rate falls below one (0.81 in 2045, 0.69 in 2050);
+  12.9 EJ of 42 offered goes unused in 2050, no fossil is burnt at all, and feedstock is
+  booked only on what is used.
+
+The pool's dilution of A's effort is the stand-in's defining property, and exactly what a
+market would contest: A's carbon tax gives it a higher willingness to pay for SAF, so in a
+market SAF would flow **towards** A rather than being spread evenly. That is the first
+thing the market logic will change in these figures.
+
+### 15.7 Two things building it found
+
+- **A NaN whose position depends on the iterate.** In oversupply years fossil kerosene is
+  zero, so "share of fossil kerosene within fossil" is 0/0. `EnergyUseChoice` emits NaN
+  there, which is harmless when *which* years are empty is fixed by the inputs. In the
+  pool it is decided by demand, which moves between sweeps, and the MDA's NaN guard
+  (correctly) refused a coupling that turned NaN where it had held a value. In prospective
+  years every pool volume is finite, so a NaN share there can only be 0/0: the pool emits 0.
+  Historical years keep `EnergyUseChoice`'s NaN.
+- **A warning from a sweep names the wrong years.** The first draft warned from inside the
+  model and reported offers unused from 2038; the converged answer is 2041 — an early
+  sweep's demand is not the final one. The warning now comes once, after the MDA, from the
+  converged `overall:fuel_pool_use_rate`.
+
+### 15.8 Step 2: the eligibility matrix — designed here, built in §15.10
+
+`E[c, p] ∈ {0, 1}`: may region `c` burn pathway `p`. Stated per feedstock where that is how
+policy reads ("no crop-based fuel"), and mapped to pathways through each pathway's
+`resource_names` — a pathway is ineligible if it uses an excluded feedstock.
+
+Proposed rule, the smallest change to §15.2 that stays neutral (no ranking):
+
+1. Split each pool among its **eligible** regions only, by demand share:
+   `x_{c,p} = E_{c,p} · D_c / Σ_{c'} E_{c',p} D_{c'} · q_p`.
+2. A region eligible for pools others are not can be handed more than it burns. Cap it at
+   its demand (it then burns no fossil), and hand the excess back to the other eligible
+   regions of those pools, again by demand share; repeat until nothing moves (water-
+   filling). What no eligible region can take is **unused** — the same variable as today.
+3. Fossil fills each region's remainder, as now.
+
+The mix is then no longer uniform — an excluded region burns more of what it may burn —
+and only the flow computation changes: delivered values, feedstock, share families and
+every downstream model take flows as they come. An alternative worth keeping in view is
+iterative proportional fitting (RAS) on the region × pathway matrix: the unique
+maximum-entropy allocation meeting both totals, closer to pro-rata than water-filling
+when many cells are excluded, but less easy to explain.
+
+Questions for then: can a region be excluded from fossil kerosene (if so, fossil can no
+longer close every balance); and is eligibility constant in time. **Answered 2026-09-25:**
+fossil is never excluded; eligibility may vary in time eventually, not in the
+demonstrator.
+
+### 15.9 Ideas for the market (not implemented, as asked)
+
+- **A spatial price equilibrium.** Regions as demand nodes with a willingness to pay,
+  producers as supply nodes with costs, one convex programme maximising total surplus
+  (Samuelson 1952; Takayama and Judge 1971). It is §13's kernel pool with draw variables per
+  (consumer, pathway), eligibility as the draw variables that do not exist. "Producers sell
+  to the highest bidder" is its complementary slackness: a flow is positive only where the
+  buyer's price covers the seller's. With no transport costs and full eligibility there is
+  one world price per pathway; **regional prices differ exactly where eligibility or a cap
+  binds**, which is how an exclusion would show in the price.
+- **Willingness to pay is burner-side**: the region's carbon tax on the fuel's emission
+  factor (the delivered values already compute it), its mandate's dual where a mandate is
+  the policy, and a penalty or buy-out price where there is one.
+- **"The most expensive left unused"** is the merit order at the pool; it replaces the
+  stand-in's uniform use rate and needs no new output — `{p}_energy_unused` stays.
+- **Nothing downstream changes** when the market replaces the stand-in: it emits the same
+  consumption, share families, production and flows. The one exception is the price a
+  burner pays — the market's clearing price instead of the blend of makers' costs — which
+  `EnergyCarriersMeans` can already take (`use_market_mfsp`, §8).
+
+### 15.10 Eligibility, built (2026-09-25)
+
+Decisions (user, 2026-09-25): abatement is credited to the region that **uses** the fuel;
+fossil kerosene is **never** excluded; eligibility may vary in time eventually, but is
+constant in the demonstrator; it is declared as **one matrix** in the trade settings and
+called **eligibility** — not the fuel market's eligibility (`is_sustainable`), which says
+whether a fuel counts towards a mandate, where this one says whether a region may burn it
+at all.
+
+```yaml
+global_models:
+  settings:
+    fuel_trade:
+      eligibility:
+        hefa_fog: {region_A: false}   # anything not listed is eligible
+```
+
+**The rule, `FuelTrade.fill_pools`**, is §15.8's: each pool shared among its eligible
+regions by demand share; a region handed more than it burns keeps a proportional slice of
+each pool that fills it exactly and drops out; the excess goes back to the regions still
+eligible and not full, by demand share; repeat (one round per region at most). What no
+eligible region can take is unused. With nothing excluded it *is* §15.2's rule: all regions
+fill at the same rate, so none or all are capped at once, by one factor — every existing
+pool test passed unchanged under the new code. What changed with it:
+
+- the use rate is now **per pathway** (`overall:{p}_pool_use_rate`); `fuel_pool_use_rate`
+  is all pathways together. The post-MDA warning names each pathway and its years;
+- each pathway's makers supply its burners pro rata to their offers, so every maker of a
+  pathway sees that pathway's use rate;
+- historical years take no eligibility rule, as they take no trade;
+- refused: excluding the default pathway, an unknown pathway or region, a non-boolean, and
+  any setting the mode does not read (`eligibility` in matrix mode, `sourcing` in pool
+  mode, a typo). The last replaces the ad hoc sourcing-in-pool check of §15.
+
+**Demonstrator:** `scenario/regionalisation_pool_eligibility.yaml`, the §15.4 bench with
+region A barred from waste-oil HEFA — the region that makes most of it (1.5 of 2.0 EJ in
+2050). `pool_plumbing.py` now runs five cases; the two new ones are this rule, and this
+rule with every offer ×3.5.
+
+| 2050 | pool | eligibility | eligibility + oversupply |
+|---|---|---|---|
+| HEFA burnt, A / B (EJ) | 0.80 / 1.20 | **0 / 2.00** | 0 / 4.36 |
+| HEFA net flow A → B (EJ) | 0.70 | **1.50** (all A makes) | 3.27 |
+| sustainable share, A / B | 36.7 % / 36.7 % | 30.6 % / 40.8 % | 100 % / 100 % |
+| CO2 per MJ burnt, A / B | 70.6 / 70.6 | 74.8 / 67.8 | 43.2 / 37.6 |
+| use rate, HEFA / others | 1 / 1 | 1 / 1 | **0.623 / 0.704** |
+
+- A makes the HEFA and uses the waste oil for it, and burns none: production and
+  consumption fully uncoupled, feedstock still booked where the fuel is made (unchanged
+  from the pool run, 3e-16).
+- World cumulative CO2 2020–2050: 63.58 Gt pooled, 63.51 with the rule — the fuel is
+  burnt elsewhere, not less.
+- **Oversupply shows the cap-and-return step.** HEFA goes unused from **2038**, the other
+  pathways from 2042: B, HEFA's only taker, fills first, and from then on A still burns
+  fossil kerosene while HEFA goes unused — it may not take it. From 2042 both regions are
+  full and every pool is short, HEFA most.
+
+**Checks**, the §15.5 set on every pooled run, plus: *the excluded region burns none of
+it* (0); *every eligible region burns the same share of each pool* where no region is
+capped (2e-16); *made = offered × the pathway's use rate* (3e-16); and *no pool is left
+unused by an eligible region with room* — wherever a region still burns fossil, every pool
+it may draw on is fully used (0 in all four runs). Two identities sit at the MDA tolerance
+(1e-11) rather than 1e-16, for §15.5's reason: their two sides come from different sweeps.
+Tests: 55 in `test_fuel_trade.py`, one of them the full eligibility MDA; five deliberate
+breakages of the rule were each caught (no hand-back after a cap; a full region still
+offered; eligibility ignored; an equal instead of a demand split; full regions never
+dropping out).
 
 ---
 
@@ -1727,9 +2483,16 @@ test that asserts on it today.
 
 **Opened by this week's work, for step 2 to decide**
 
-7. **Inter-regional trade.** The discipline is global in plumbing and per-region in
-   economics; nothing can leak. This is the single most important missing mechanism for
-   policy work and the reason the global (non-namespaced) form was adopted at all.
+7. **Regions sharing supply.** The discipline is global in plumbing and per-region in
+   economics; nothing can leak. Re-scoped 2026-09-23: every region supplies and draws on
+   one global pool of fuel and feedstock, flows tracked, no routes and no transport costs
+   (§12.5). Decided by diagnostic D5. **2026-09-24: the fuel pool is in the kernel, not yet
+   in the discipline — §13.** Two decisions stand before wiring it: which fuel is traded
+   where the market leaves it open, and where use-side costs sit (§13.5). **Later the same
+   day:** the plumbing is proven with two stand-ins for the market's flow logic, an explicit
+   matrix (§14) and a pro-rata pool (§15), which settle where use-side costs sit (maker's
+   cost and CO2, burner's carbon tax). **2026-09-25:** the eligibility matrix is built
+   (§15.10). Next: the market in place of the stand-in.
 8. **`cvxpy` as a real optional dependency** before the mode ships. It is in the `test`
    group today, which is right for a spike and wrong for a release.
 9. **The buy-out payment reaches nobody.** `unmet` is priced and reported but the money
@@ -1740,3 +2503,27 @@ test that asserts on it today.
     looks exactly like a modelling failure). Both want either a derivation or a guard.
 11. **Bottom-up costs** stay excluded while a vintage mix makes average cost fall with
     volume — that turns the cost integral concave and the duals stop being prices (§6).
+
+**Opened on 2026-09-23 (§11 and §12)**
+
+12. **Anticipation acts through the wrong instrument.** It is penalty avoidance, and
+    rightly so, but it burns fuel early instead of building capacity early (§11.9). Fix:
+    the capacity variable (§12.3), decided by D3.
+13. **The discipline carries one obligation per region.** The sub-mandate and
+    region-specific eligibility exist only in the kernel, and the sub-mandate price λ_S is
+    computed but never published (§11.8, §12.4).
+14. **`all_capped` does not converge at `w = 0`** (residual 0.09 after 900 sweeps), which
+    runs against expectation: average-cost pricing should make the loop *less* reactive.
+    Unexplained (§11.7).
+15. **No test asserts `demand_adjustment ≈ 0` at convergence**, which is the guard on the
+    price/volume consistency `_reconcile` depends on (§11.10).
+16. **`capacity_limit` is one number per pathway, for every region and year** (§11.11).
+17. **Instrument coverage.** An emissions cap, a GHG-intensity standard and a budgeted
+    subsidy are linear constraints the programme can take; price-dependent support is not
+    (§12.4).
+18. **Two tighter-capacity cases do not converge.** Probes added to `five_pathways.py`
+    to trace the demand curves — every capacity scaled ×0.8 and ×0.65, `w = 1`, η = 2 —
+    stop at residuals of 0.049 and 0.11 within 900 sweeps. Both push at least one region
+    towards the penalty ceiling. With item 14 this makes three undiagnosed failures, all
+    where every eligible route is at its limit.
+
