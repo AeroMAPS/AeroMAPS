@@ -9,6 +9,8 @@ from aeromaps.models.impacts.emissions.co2_emissions import (
     efficiency_sub_lever_column,
     market_lever_column,
     market_lever_names,
+    offset_category_column,
+    offset_scheme_column,
     operations_category_column,
     operations_concept_column,
     pathway_energy_column,
@@ -243,17 +245,20 @@ class AirTransportCO2EmissionsPlot(SingleScenarioPlot):
 
 class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
     """
-    Variant of AirTransportCO2EmissionsPlot where the "Aircraft efficiency" and/or
-    "Aircraft energy" levers of action are decomposed into sub-levers: fleet
-    renewal and each new aircraft of the fleet for the efficiency lever, and each
-    energy pathway for the energy lever.
+    Variant of AirTransportCO2EmissionsPlot where the levers of action are
+    decomposed into sub-levers: fleet renewal and each new aircraft of the fleet for
+    the efficiency lever, each category of operational concepts for the operations
+    lever, each energy pathway for the energy lever, and each offsetting scheme for
+    the carbon offset.
 
     Each decomposition is independent and optional: the efficiency lever is only
     decomposed when the bottom-up fleet model and DetailedCo2EmissionsPerAircraft
-    are used, and the energy lever only when the generic energy models and
-    DetailedCo2EmissionsPerPathway are used. Any lever whose sub-levers are not
-    available (e.g. a top-down fleet model, or non-generic energy models) simply
-    falls back to a single aggregated band, exactly like AirTransportCO2EmissionsPlot.
+    are used, the operations lever when the generic operations module is used, the
+    energy lever when the generic energy models and DetailedCo2EmissionsPerPathway
+    are used, and the carbon offset when the generic offsets module is used. Any
+    lever whose sub-levers are not available (e.g. a top-down fleet model, or
+    non-generic energy models) simply falls back to a single aggregated band,
+    exactly like AirTransportCO2EmissionsPlot.
     """
 
     required_outputs = [
@@ -272,6 +277,7 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
 
     EFFICIENCY_GRANULARITIES = ("aircraft", "category")
     ENERGY_GRANULARITIES = ("pathway", "family")
+    OFFSET_GRANULARITIES = ("scheme", "category")
 
     def __init__(
         self,
@@ -279,6 +285,7 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
         figsize=None,
         efficiency_granularity="aircraft",
         energy_granularity="pathway",
+        offset_granularity="scheme",
         **kwargs,
     ):
         """
@@ -293,6 +300,10 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
             pathway (default) or one band per fuel family (biofuels / electrofuels
             / fossil-derived / hydrogen / electric). Hydrogen is its own family and
             is never merged with drop-in electrofuels.
+        offset_granularity : {"scheme", "category"}
+            Granularity of the carbon offset decomposition, when the generic offsets
+            module is used: one band per offsetting scheme (default) or one band per
+            category of schemes.
         """
         if efficiency_granularity not in self.EFFICIENCY_GRANULARITIES:
             raise ValueError(
@@ -304,8 +315,14 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
                 f"energy_granularity must be one of {self.ENERGY_GRANULARITIES}, "
                 f"got {energy_granularity!r}"
             )
+        if offset_granularity not in self.OFFSET_GRANULARITIES:
+            raise ValueError(
+                f"offset_granularity must be one of {self.OFFSET_GRANULARITIES}, "
+                f"got {offset_granularity!r}"
+            )
         self._efficiency_granularity = efficiency_granularity
         self._energy_granularity = energy_granularity
+        self._offset_granularity = offset_granularity
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize, **kwargs)
 
@@ -472,6 +489,34 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
         bands.append(("Other energy effects", self._col(ENERGY_SUB_LEVER_OTHER), colors.NEUTRAL))
         return bands
 
+    def _offset_bands(self):
+        """Return the (label, values, color) list of the carbon offset sub-levers.
+
+        One band per offsetting scheme or, when ``offset_granularity="category"``,
+        per category of schemes. The schemes sum exactly to the carbon offset, so
+        there is no residual band. Returns None when the generic offsets module is
+        not used, so that the caller falls back to a single offset band.
+        """
+        offsets_manager = getattr(self.process, "offsets_manager", None)
+        if offsets_manager is None:
+            return None
+
+        if self._offset_granularity == "category":
+            keys = offsets_manager.get_all_types("category")
+            columns = [(key, offset_category_column(key)) for key in keys]
+        else:
+            columns = [(s.name, offset_scheme_column(s.name)) for s in offsets_manager.get_all()]
+        columns = [(key, column) for key, column in columns if column in self.df.columns]
+        if not columns:
+            return None
+
+        # Offsets are not a technology lever: shades of the neutral offset grey.
+        ramp = colors.LEVER_SEQUENTIAL_CMAP["offset"](np.linspace(0.45, 0.85, len(columns)))
+        return [
+            (readable_label(key), self._col(column), color)
+            for (key, column), color in zip(columns, ramp)
+        ]
+
     def _plot_sub_lever_bands(self, upper, bands):
         """Stack sub-lever bands downwards from the given upper curve.
 
@@ -603,17 +648,35 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
                 label="Aircraft energy",
             )
 
-        # Carbon offset
+        # Carbon offset: decomposed per scheme when the generic offsets module is
+        # used, otherwise a single band (same as AirTransportCO2EmissionsPlot)
         plt.rc("hatch", linewidth=4)
-        self.ax.fill_between(
-            self.years,
-            self.df_climate.loc[self.years, "co2_emissions"],
-            self.df_climate.loc[self.years, "co2_emissions"] - self.df["carbon_offset"],
-            color="white",
-            facecolor=colors.LEVER_COLORS["offset"],
-            hatch="//",
-            label="Carbon offset",
-        )
+        offset_bands = self._offset_bands()
+        if offset_bands is not None:
+            upper = self.df_climate.loc[self.years, "co2_emissions"]
+            for label, values, color in offset_bands:
+                lower = upper - values
+                if values.abs().max() > self.NEGLIGIBLE_BAND_THRESHOLD:
+                    self.ax.fill_between(
+                        self.years,
+                        upper,
+                        lower,
+                        color="white",
+                        facecolor=color,
+                        hatch="//",
+                        label=label,
+                    )
+                upper = lower
+        else:
+            self.ax.fill_between(
+                self.years,
+                self.df_climate.loc[self.years, "co2_emissions"],
+                self.df_climate.loc[self.years, "co2_emissions"] - self.df["carbon_offset"],
+                color="white",
+                facecolor=colors.LEVER_COLORS["offset"],
+                hatch="//",
+                label="Carbon offset",
+            )
 
     def _update_plot_elements(self):
         self.line_co2_emissions_no_action.set_ydata(
@@ -644,9 +707,10 @@ class AirTransportCO2EmissionsGroupedPlot(AirTransportCO2EmissionsDetailedPlot):
     aircraft-efficiency lever is decomposed per fleet category (rather than per
     individual aircraft) and the aircraft-energy lever per fuel family (biofuels /
     electrofuels / fossil-derived / hydrogen / electric, rather than per pathway;
-    hydrogen is kept separate from electrofuels). For a mixed choice, use
-    AirTransportCO2EmissionsDetailedPlot directly with the
-    ``efficiency_granularity`` / ``energy_granularity`` keywords.
+    hydrogen is kept separate from electrofuels), and the carbon offset per category
+    of offsetting schemes. For a mixed choice, use AirTransportCO2EmissionsDetailedPlot
+    directly with the ``efficiency_granularity`` / ``energy_granularity`` /
+    ``offset_granularity`` keywords.
     """
 
     def __init__(
@@ -655,6 +719,7 @@ class AirTransportCO2EmissionsGroupedPlot(AirTransportCO2EmissionsDetailedPlot):
         figsize=None,
         efficiency_granularity="category",
         energy_granularity="family",
+        offset_granularity="category",
         **kwargs,
     ):
         super().__init__(
@@ -662,6 +727,7 @@ class AirTransportCO2EmissionsGroupedPlot(AirTransportCO2EmissionsDetailedPlot):
             figsize=figsize,
             efficiency_granularity=efficiency_granularity,
             energy_granularity=energy_granularity,
+            offset_granularity=offset_granularity,
             **kwargs,
         )
 

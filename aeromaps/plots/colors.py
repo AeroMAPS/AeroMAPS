@@ -49,6 +49,7 @@ LEVER_SEQUENTIAL_CMAP = {
     "efficiency": plt.cm.Blues,
     "operations": plt.cm.BuGn,
     "energy": plt.cm.Greens,
+    "offset": plt.cm.Greys,
 }
 
 # --- Energy sub-levers: fuel-family convention ---------------------------------

@@ -141,3 +141,19 @@ def test_category_aggregates_sum_to_total(process):
 )
 def test_offsets_plots(process, plot):
     process.plot(plot, save=False)
+
+
+@pytest.mark.parametrize(
+    "granularity, expected",
+    [
+        ("scheme", {"Corsia", "Ets", "Removals"}),
+        ("category", {"Offsets", "Allowances", "Removals"}),
+    ],
+)
+def test_detailed_plot_splits_the_offset(process, granularity, expected):
+    plot = process.plot(
+        "air_transport_co2_emissions_detailed", save=False, offset_granularity=granularity
+    )
+    labels = {collection.get_label() for collection in plot.ax.collections}
+    assert expected <= labels
+    assert "Carbon offset" not in labels
