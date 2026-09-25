@@ -1,0 +1,57 @@
+# Plumbing bench for fuel TRADED between regions, from an explicit sourcing matrix.
+#
+# The two regions and five pathways of regionalisation_five.yaml, run in the STANDARD mode
+# (EnergyUseChoice in each region, no market), plus one global model, FuelTrade, that
+# says where each region's consumption is produced. Nothing decides the flows: the matrix
+# below states them. What this bench checks is that they travel -- production differing
+# from consumption region by region, feedstock booked where fuel is made, CO2 and costs
+# where it is burnt, and every MJ accounted for once. See fuel_clearing_step1/
+# trade_plumbing.py, which also runs it with the market on.
+regionalisation:
+  execution_mode: "unified_mda"
+  global_namespace: "overall"
+
+  # Tells every region that what it produces is no longer what it consumes, and that an
+  # explicit matrix says where it is made (the other stand-in, 'pool', is
+  # regionalisation_pool.yaml). Goes with the FuelTrade model below; either without the
+  # other is refused.
+  fuel_trade: matrix
+
+  global_models:
+    standards:
+      - models_fuel_trade
+    settings:
+      fuel_trade:
+        # For each traded pathway and consuming region: where its consumption is made.
+        # Each row sums to 1; a region or pathway not listed makes what it consumes.
+        sourcing:
+          # All the waste-oil fuel B burns is made in A -- the "waste oil in A" case of
+          # pool_flows.py, written as a matrix instead of decided by a market.
+          hefa_fog:
+            region_B: {region_A: 1.0}
+          # And the other way round, so flows run in both directions.
+          fossil_kerosene:
+            region_A: {region_A: 0.75, region_B: 0.25}
+
+  regions:
+    region_A:
+      config_file: "region_A/config_five.yaml"
+    region_B:
+      config_file: "region_B/config_five.yaml"
+
+  aggregation:
+    sum:
+      - co2_emissions
+      - rpk
+      - ask
+      - energy_consumption
+      - energy_consumption_dropin_fuel
+      # Summed on both sides, so conservation is checked through the aggregator too.
+      - hefa_fog_energy_consumption
+      - hefa_fog_energy_production
+      - hefa_fog_biomass_total_consumption
+      - fossil_kerosene_energy_consumption
+      - fossil_kerosene_energy_production
+    weighted_average:
+      - variable: airfare_per_rpk
+        weight_by: rpk

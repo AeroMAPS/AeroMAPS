@@ -1,0 +1,202 @@
+### POOL BENCH, REGION A -- five drop-in pathways, offered rather than mandated ###
+#
+# The pathways, costs and emission factors of ../energy_carriers_five.yaml, verbatim, with
+# two edits:
+#
+#   1. No `mandate` blocks. Under `regionalisation.fuel_trade: pool` nothing allocates a
+#      region's own mix -- EnergyUseChoice is not instantiated -- so the mandates that set
+#      it are gone. What a region burns is its share of the world pool.
+#   2. A `supply` block per non-default pathway: the volume this region OFFERS to the
+#      pool, in MJ per year (`{p}_energy_offered`). The pool bench requires one for every
+#      non-default pathway of every region, zero included.
+#
+# Region A is the SAF-rich one: waste oils, municipal waste, alcohols and power for
+# e-fuels, on a clean grid (resources_pool.yaml) but at a dear power price. Region B
+# (../region_B/energy_carriers_pool.yaml) offers far less, on a dirty grid, cheaper.
+
+hefa_fog:
+  name: "hefa_fog"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "biomass"
+  default: False
+  inputs:
+    supply:
+      energy_offered: !AeroMapsCustomDataType
+        years: [ 2020, 2030, 2040, 2050 ]
+        values: [ 0.1e+12, 1.0e+12, 1.5e+12, 1.5e+12 ]
+        method: linear
+    technical:
+      resource_names: [ "hefa_fog_biomass" ]
+      resource_specific_consumption:
+        hefa_fog_biomass: 1.14
+      kerosene_selectivity: 0.15
+      lhv: 44
+    environmental:
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [20.7]
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0
+        soot: 6.0e-06
+        particles_number: 8.0e+13
+    economics:
+      mean_mfsp_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [0.02317]
+        method: linear
+  outputs:
+
+ft_msw:
+  name: "ft_msw"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "biomass"
+  default: False
+  inputs:
+    supply:
+      energy_offered: !AeroMapsCustomDataType
+        years: [ 2020, 2030, 2040, 2050 ]
+        values: [ 0.0, 0.3e+12, 1.0e+12, 1.5e+12 ]
+        method: linear
+    technical:
+      resource_names: [ "ft_msw_biomass" ]
+      resource_specific_consumption:
+        ft_msw_biomass: 2.17
+      kerosene_selectivity: 0.15
+      lhv: 44
+    environmental:
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [27.6]
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0
+        soot: 6.0e-06
+        particles_number: 8.0e+13
+    economics:
+      mean_mfsp_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [0.0322]
+        method: linear
+  outputs:
+
+atj:
+  name: "atj"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "biomass"
+  default: False
+  inputs:
+    supply:
+      energy_offered: !AeroMapsCustomDataType
+        years: [ 2020, 2030, 2040, 2050 ]
+        values: [ 0.0, 0.4e+12, 1.5e+12, 3.0e+12 ]
+        method: linear
+    technical:
+      resource_names: [ "atj_biomass" ]
+      resource_specific_consumption:
+        atj_biomass: 2.08
+      kerosene_selectivity: 0.15
+      lhv: 44
+    environmental:
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [52.2]
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0
+        soot: 6.0e-06
+        particles_number: 8.0e+13
+    economics:
+      mean_mfsp_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [0.0394]
+        method: linear
+  outputs:
+
+electrofuel:
+  name: "electrofuel"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "electricity"
+  default: False
+  inputs:
+    supply:
+      energy_offered: !AeroMapsCustomDataType
+        years: [ 2020, 2030, 2040, 2050 ]
+        values: [ 0.0, 0.2e+12, 1.2e+12, 3.0e+12 ]
+        method: linear
+    technical:
+      kerosene_selectivity: 0.5
+      resource_names: [ "grid_electricity" ]
+      resource_specific_consumption:
+        grid_electricity: 2.32
+      lhv: 44
+    environmental:
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [0.0]
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0
+        soot: 6.0e-06
+        particles_number: 8.0e+13
+    economics:
+      # Dear power: the five-pathway bench's value.
+      mean_mfsp_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [0.0996]
+        method: linear
+  outputs:
+
+fossil_kerosene:
+  name: "fossil_kerosene"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "fossil"
+  default: True
+  inputs:
+    technical:
+      lhv: 44
+      plant_load_factor: 0.95
+      plant_lifespan: 25
+    environmental:
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: [ 2000, 2050 ]
+        values: [ 88.7, 88.7 ]
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0012
+        soot: 3.0e-05
+        particles_number: 2.0e+14
+    economics:
+      mean_mfsp_without_resource: !AeroMapsCustomDataType
+        years: [2000, 2001, 2002, 2003, 2004, 2005,
+                2006, 2007, 2008, 2009, 2010, 2011,
+                2012, 2013, 2014, 2015, 2016, 2017,
+                2018, 2019, 2020, 2021, 2022, 2023,
+                2024, 2050]
+        values: [0.008364654, 0.006916631, 0.006340188, 0.007424531, 0.010158403,
+        0.014797798, 0.016189765, 0.017474982, 0.023710593, 0.01277897,
+        0.016366254, 0.022487714, 0.022192747, 0.020655099, 0.018819777,
+        0.010615193, 0.008737464, 0.01085308, 0.013921201, 0.012684225,
+        0.007299796, 0.01202598, 0.019909217, 0.014922935, 0.012596014, 0.012]
+        method: linear
+  outputs:

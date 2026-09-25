@@ -1,0 +1,58 @@
+# The pool bench of regionalisation_pool.yaml with ONE eligibility rule: region A may not
+# burn waste-oil HEFA. Everything else -- regions, offers, grids, taxes, aggregation -- is
+# identical, so any difference between the two runs is the rule and nothing else.
+#
+# A is the region that makes most of the HEFA (1.5 of the 2.0 EJ offered in 2050). Barred
+# from burning it, A makes a fuel it may not use: every MJ of its HEFA must leave, and B,
+# the only eligible region, burns the whole HEFA pool. The other pools are still split
+# by demand share between both regions. See fuel_clearing_step1/pool_plumbing.py, which
+# also runs this rule with every offer x3.5, so that B fills up and the cap-and-return
+# step of the rule (FuelTrade.fill_pools) is exercised.
+regionalisation:
+  execution_mode: "unified_mda"
+  global_namespace: "overall"
+
+  # The stand-in that decides the flows, and how every region wires itself for it.
+  fuel_trade: pool
+
+  global_models:
+    standards:
+      - models_fuel_trade
+    settings:
+      fuel_trade:
+        # May a region burn a pathway at all. Anything not listed is eligible; fossil
+        # kerosene cannot be excluded. Not the fuel market's eligibility, which says
+        # whether a fuel counts towards a mandate.
+        eligibility:
+          hefa_fog: {region_A: false}
+
+  regions:
+    region_A:
+      config_file: "region_A/config_pool.yaml"
+    region_B:
+      config_file: "region_B/config_pool.yaml"
+
+  aggregation:
+    sum:
+      - co2_emissions
+      - rpk
+      - ask
+      - energy_consumption
+      - energy_consumption_dropin_fuel
+      # Both sides of every pooled pathway, so the world balance is checked through the
+      # aggregator too.
+      - hefa_fog_energy_consumption
+      - hefa_fog_energy_production
+      - hefa_fog_energy_offered
+      - hefa_fog_energy_unused
+      - ft_msw_energy_consumption
+      - ft_msw_energy_production
+      - atj_energy_consumption
+      - atj_energy_production
+      - electrofuel_energy_consumption
+      - electrofuel_energy_production
+      - fossil_kerosene_energy_consumption
+      - hefa_fog_biomass_total_consumption
+    weighted_average:
+      - variable: airfare_per_rpk
+        weight_by: rpk

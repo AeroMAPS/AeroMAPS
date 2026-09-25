@@ -1,0 +1,350 @@
+{
+ "standard": {
+  "seconds": {
+   "without trade": 5.7206394170061685,
+   "with trade": 6.644424957979936
+  },
+  "iterations": {
+   "without trade": 9,
+   "with trade": 11
+  },
+  "checks": {
+   "consumer side unchanged": 1.4760880406602608e-11,
+   "production follows the matrix": 0.0,
+   "world production = world consumption": 1.5140352079251073e-16,
+   "... and through the aggregator": 1.5140352079251073e-16,
+   "flows add up to net exports": 3.2635863090748605e-16,
+   "feedstock = specific use x production": 1.0350750007194683e-11,
+   "world feedstock unchanged": 1.3733861286552651e-11,
+   "historical: production = consumption": 0.0
+  },
+  "with trade": {
+   "region_A:hefa_fog_energy_consumption": {
+    "2030": 735035653408.2635,
+    "2040": 4466861162586.847,
+    "2050": 9841711725177.92
+   },
+   "region_A:hefa_fog_energy_production": {
+    "2030": 1536681967022.2773,
+    "2040": 10096331122225.701,
+    "2050": 24174356892667.19
+   },
+   "region_A:hefa_fog_energy_net_export": {
+    "2030": 801646313614.0138,
+    "2040": 5629469959638.8545,
+    "2050": 14332645167489.271
+   },
+   "region_A:fossil_kerosene_energy_consumption": {
+    "2030": 11515558570062.797,
+    "2040": 8670965786197.995,
+    "2050": 4217876453647.6816
+   },
+   "region_A:fossil_kerosene_energy_production": {
+    "2030": 8636668927547.098,
+    "2040": 6503224339648.496,
+    "2050": 3163407340235.761
+   },
+   "region_A:hefa_fog_biomass_total_consumption": {
+    "2030": 1751817442409.3958,
+    "2040": 11509817479410.242,
+    "2050": 27558766857925.85
+   },
+   "region_A:hefa_fog_biomass_consumed_global_share": {
+    "2030": 175.18174424093957,
+    "2040": 1150.9817479410242,
+    "2050": 2755.876685792585
+   },
+   "region_A:co2_emissions_passenger": {
+    "2030": 883.7335550232376,
+    "2040": 734.8962847515323,
+    "2050": 493.0399935479775
+   },
+   "region_B:hefa_fog_energy_consumption": {
+    "2030": 801646313614.0139,
+    "2040": 5629469959638.8545,
+    "2050": 14332645167489.271
+   },
+   "region_B:hefa_fog_energy_production": {
+    "2030": 0.0,
+    "2040": 0.0,
+    "2050": 0.0
+   },
+   "region_B:hefa_fog_energy_net_export": {
+    "2030": -801646313614.0139,
+    "2040": -5629469959638.8545,
+    "2050": -14332645167489.271
+   },
+   "region_B:fossil_kerosene_energy_consumption": {
+    "2030": 12559125579952.885,
+    "2040": 10927794627534.246,
+    "2050": 6142562214638.26
+   },
+   "region_B:fossil_kerosene_energy_production": {
+    "2030": 15438015222468.584,
+    "2040": 13095536074083.744,
+    "2050": 7197031328050.18
+   },
+   "region_B:hefa_fog_biomass_total_consumption": {
+    "2030": 0.0,
+    "2040": 0.0,
+    "2050": 0.0
+   },
+   "region_B:hefa_fog_biomass_consumed_global_share": {
+    "2030": 0.0,
+    "2040": 0.0,
+    "2050": 0.0
+   },
+   "region_B:co2_emissions_passenger": {
+    "2030": 963.8195689099362,
+    "2040": 926.1708407482924,
+    "2050": 718.0221772627276
+   },
+   "overall:fossil_kerosene_energy_flow_region_A_to_region_B": {
+    "2030": 0.0,
+    "2040": 0.0,
+    "2050": 0.0
+   },
+   "overall:fossil_kerosene_energy_flow_region_B_to_region_A": {
+    "2030": 2878889642515.699,
+    "2040": 2167741446549.4988,
+    "2050": 1054469113411.9204
+   },
+   "overall:hefa_fog_energy_flow_region_A_to_region_B": {
+    "2030": 801646313614.0139,
+    "2040": 5629469959638.8545,
+    "2050": 14332645167489.271
+   },
+   "overall:hefa_fog_energy_flow_region_B_to_region_A": {
+    "2030": 0.0,
+    "2040": 0.0,
+    "2050": 0.0
+   }
+  },
+  "without trade": {
+   "region_A:hefa_fog_energy_consumption": {
+    "2030": 735035653408.4229,
+    "2040": 4466861162589.095,
+    "2050": 9841711725185.348
+   },
+   "region_A:fossil_kerosene_energy_consumption": {
+    "2030": 11515558570065.293,
+    "2040": 8670965786202.36,
+    "2050": 4217876453650.8633
+   },
+   "region_A:hefa_fog_biomass_total_consumption": {
+    "2030": 837940644883.9001,
+    "2040": 5092221725334.104,
+    "2050": 11219551366664.87
+   },
+   "region_A:hefa_fog_biomass_consumed_global_share": {
+    "2030": 83.79406448839002,
+    "2040": 509.22217253341034,
+    "2050": 1121.9551366664869
+   },
+   "region_A:co2_emissions_passenger": {
+    "2030": 883.733555023462,
+    "2040": 734.896284751966,
+    "2050": 493.0399935484139
+   },
+   "region_B:hefa_fog_energy_consumption": {
+    "2030": 801646313614.1874,
+    "2040": 5629469959641.6875,
+    "2050": 14332645167500.092
+   },
+   "region_B:fossil_kerosene_energy_consumption": {
+    "2030": 12559125579955.604,
+    "2040": 10927794627539.744,
+    "2050": 6142562214642.896
+   },
+   "region_B:hefa_fog_biomass_total_consumption": {
+    "2030": 913876797518.3177,
+    "2040": 6417595753969.515,
+    "2050": 16339215490882.494
+   },
+   "region_B:hefa_fog_biomass_consumed_global_share": {
+    "2030": 91.38767975183177,
+    "2040": 641.7595753969515,
+    "2050": 1633.9215490882495
+   },
+   "region_B:co2_emissions_passenger": {
+    "2030": 963.8195689101808,
+    "2040": 926.1708407488388,
+    "2050": 718.0221772633627
+   }
+  }
+ },
+ "market": {
+  "seconds": {
+   "without trade": 6.4005290839704685,
+   "with trade": 6.6927996660233475
+  },
+  "iterations": {
+   "without trade": 11,
+   "with trade": 11
+  },
+  "checks": {
+   "consumer side unchanged": 2.0471386914871008e-08,
+   "production follows the matrix": 0.0,
+   "world production = world consumption": 1.514035207997111e-16,
+   "... and through the aggregator": 1.514035207997111e-16,
+   "flows add up to net exports": 3.2635863092439277e-16,
+   "feedstock = specific use x production": 1.0351316977987161e-11,
+   "world feedstock unchanged": 1.2898572416262066e-13,
+   "historical: production = consumption": 0.0
+  },
+  "with trade": {
+   "region_A:hefa_fog_energy_consumption": {
+    "2030": 735035653423.5828,
+    "2040": 4466861162142.049,
+    "2050": 9841711724479.232
+   },
+   "region_A:hefa_fog_energy_production": {
+    "2030": 1536681967035.2217,
+    "2040": 10096331121389.871,
+    "2050": 24174356891321.066
+   },
+   "region_A:hefa_fog_energy_net_export": {
+    "2030": 801646313611.6389,
+    "2040": 5629469959247.822,
+    "2050": 14332645166841.834
+   },
+   "region_A:fossil_kerosene_energy_consumption": {
+    "2030": 11515558569519.498,
+    "2040": 8670965785718.776,
+    "2050": 4217876453107.0273
+   },
+   "region_A:fossil_kerosene_energy_production": {
+    "2030": 8636668927139.623,
+    "2040": 6503224339289.082,
+    "2050": 3163407339830.2705
+   },
+   "region_A:hefa_fog_biomass_total_consumption": {
+    "2030": 1751817442424.1526,
+    "2040": 11509817478457.395,
+    "2050": 27558766856391.28
+   },
+   "region_A:hefa_fog_biomass_consumed_global_share": {
+    "2030": 175.18174424241525,
+    "2040": 1150.9817478457394,
+    "2050": 2755.876685639128
+   },
+   "region_A:co2_emissions_passenger": {
+    "2030": 883.7335549968345,
+    "2040": 734.8962847316825,
+    "2050": 493.0399935275615
+   },
+   "region_B:hefa_fog_energy_consumption": {
+    "2030": 801646313611.639,
+    "2040": 5629469959247.822,
+    "2050": 14332645166841.834
+   },
+   "region_B:hefa_fog_energy_production": {
+    "2030": 0.0,
+    "2040": 0.0,
+    "2050": 0.0
+   },
+   "region_B:hefa_fog_energy_net_export": {
+    "2030": -801646313611.639,
+    "2040": -5629469959247.822,
+    "2050": -14332645166841.834
+   },
+   "region_B:fossil_kerosene_energy_consumption": {
+    "2030": 12559125579459.768,
+    "2040": 10927794627097.46,
+    "2050": 6142562214062.178
+   },
+   "region_B:fossil_kerosene_energy_production": {
+    "2030": 15438015221839.643,
+    "2040": 13095536073527.154,
+    "2050": 7197031327338.935
+   },
+   "region_B:hefa_fog_biomass_total_consumption": {
+    "2030": 0.0,
+    "2040": 0.0,
+    "2050": 0.0
+   },
+   "region_B:hefa_fog_biomass_consumed_global_share": {
+    "2030": 0.0,
+    "2040": 0.0,
+    "2050": 0.0
+   },
+   "region_B:co2_emissions_passenger": {
+    "2030": 963.8195688863327,
+    "2040": 926.1708407299366,
+    "2050": 718.0221772398387
+   },
+   "overall:fossil_kerosene_energy_flow_region_A_to_region_B": {
+    "2030": 0.0,
+    "2040": 0.0,
+    "2050": 0.0
+   },
+   "overall:fossil_kerosene_energy_flow_region_B_to_region_A": {
+    "2030": 2878889642379.8745,
+    "2040": 2167741446429.694,
+    "2050": 1054469113276.7568
+   },
+   "overall:hefa_fog_energy_flow_region_A_to_region_B": {
+    "2030": 801646313611.639,
+    "2040": 5629469959247.822,
+    "2050": 14332645166841.834
+   },
+   "overall:hefa_fog_energy_flow_region_B_to_region_A": {
+    "2030": 0.0,
+    "2040": 0.0,
+    "2050": 0.0
+   }
+  },
+  "without trade": {
+   "region_A:hefa_fog_energy_consumption": {
+    "2030": 735035653423.5903,
+    "2040": 4466861162142.091,
+    "2050": 9841711724479.303
+   },
+   "region_A:fossil_kerosene_energy_consumption": {
+    "2030": 11515558569519.621,
+    "2040": 8670965785718.861,
+    "2050": 4217876453107.0566
+   },
+   "region_A:hefa_fog_biomass_total_consumption": {
+    "2030": 837940644904.63,
+    "2040": 5092221724873.292,
+    "2050": 11219551366021.012
+   },
+   "region_A:hefa_fog_biomass_consumed_global_share": {
+    "2030": 83.794064490463,
+    "2040": 509.22217248732926,
+    "2050": 1121.9551366021012
+   },
+   "region_A:co2_emissions_passenger": {
+    "2030": 883.7335549968452,
+    "2040": 734.8962847316907,
+    "2050": 493.0399935275651
+   },
+   "region_B:hefa_fog_energy_consumption": {
+    "2030": 801646313611.6475,
+    "2040": 5629469959247.875,
+    "2050": 14332645166841.934
+   },
+   "region_B:fossil_kerosene_energy_consumption": {
+    "2030": 12559125579459.896,
+    "2040": 10927794627097.566,
+    "2050": 6142562214062.219
+   },
+   "region_B:hefa_fog_biomass_total_consumption": {
+    "2030": 913876797519.1721,
+    "2040": 6417595753582.033,
+    "2050": 16339215490366.717
+   },
+   "region_B:hefa_fog_biomass_consumed_global_share": {
+    "2030": 91.38767975191722,
+    "2040": 641.7595753582034,
+    "2050": 1633.9215490366716
+   },
+   "region_B:co2_emissions_passenger": {
+    "2030": 963.8195688863449,
+    "2040": 926.1708407299467,
+    "2050": 718.0221772398443
+   }
+  }
+ }
+}

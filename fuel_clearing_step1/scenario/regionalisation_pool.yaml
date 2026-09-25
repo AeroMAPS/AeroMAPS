@@ -1,0 +1,60 @@
+# Plumbing bench for fuel POOLED between regions: the market's stand-in, end to end.
+#
+# Each region OFFERS volumes of the four sustainable pathways (region_*/energy_carriers_
+# pool.yaml, `supply.energy_offered`). Every pathway's offers form one world pool, and each
+# region burns a slice of every pool in proportion to its share of world drop-in demand;
+# fossil kerosene fills the rest, made where it is burnt. No mandate sets any region's mix:
+# EnergyUseChoice is not instantiated, and FuelTrade emits consumption in its place --
+# the same interface the market has.
+#
+# The two regions are made to differ, so that the pool has something to move and the
+# unit values something to blend:
+#
+#                  offers 2050   grid 2050     e-fuel cost   carbon tax   CAGR
+#   region_A       9.0 EJ        5 gCO2/MJ     0.0996 EUR/MJ  100 EUR/t    3.0 %
+#   region_B       3.0 EJ        40 gCO2/MJ    0.075 EUR/MJ   5 EUR/t      4.5 %
+#
+# A region burning fuel made elsewhere pays the maker's cost, books the maker's emission
+# factor, and pays its own carbon tax on it. See fuel_clearing_step1/pool_plumbing.py,
+# which also runs each region on its own offers without trade for comparison.
+regionalisation:
+  execution_mode: "unified_mda"
+  global_namespace: "overall"
+
+  # The stand-in that decides the flows, and how every region wires itself for it.
+  fuel_trade: pool
+
+  global_models:
+    standards:
+      - models_fuel_trade
+
+  regions:
+    region_A:
+      config_file: "region_A/config_pool.yaml"
+    region_B:
+      config_file: "region_B/config_pool.yaml"
+
+  aggregation:
+    sum:
+      - co2_emissions
+      - rpk
+      - ask
+      - energy_consumption
+      - energy_consumption_dropin_fuel
+      # Both sides of every pooled pathway, so the world balance is checked through the
+      # aggregator too.
+      - hefa_fog_energy_consumption
+      - hefa_fog_energy_production
+      - hefa_fog_energy_offered
+      - hefa_fog_energy_unused
+      - ft_msw_energy_consumption
+      - ft_msw_energy_production
+      - atj_energy_consumption
+      - atj_energy_production
+      - electrofuel_energy_consumption
+      - electrofuel_energy_production
+      - fossil_kerosene_energy_consumption
+      - hefa_fog_biomass_total_consumption
+    weighted_average:
+      - variable: airfare_per_rpk
+        weight_by: rpk
