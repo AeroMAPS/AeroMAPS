@@ -37,6 +37,8 @@ including the advanced notebooks.
 
 - [Change the prospection start year](https://github.com/AeroMAPS/AeroMAPS/blob/main/aeromaps/notebooks/tutorials/13_change_the_prospection_start_year/change_the_prospection_start_year.ipynb)
 
+- [Decompose the CO2 levers of action into sub-levers](https://github.com/AeroMAPS/AeroMAPS/blob/main/aeromaps/notebooks/tutorials/15_decompose_co2_levers_of_action/decompose_co2_levers_of_action.ipynb)
+
 
 ## Advanced applications
   

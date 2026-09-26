@@ -7,6 +7,7 @@ from abc import ABC, abstractmethod
 import warnings
 import itertools
 
+from aeromaps.plots.labels import readable_label
 from aeromaps.plots.single_scenario_plot import plot_1_x, plot_1_y
 
 
@@ -1042,4 +1043,4 @@ class MultiScenarioPlot(ABC):
     @staticmethod
     def _readable_label(raw_name):
         """Turn a snake_case pathway / origin name into a readable label."""
-        return raw_name.replace("_", " ").title()
+        return readable_label(raw_name)

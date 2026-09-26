@@ -176,7 +176,7 @@ models:
 - Custom models are merged on top of the standard bundles, so a custom model can
   override a standard one by reusing its name.
 
-### 3.5 `models.<climate|fleet|energy|life_cycle_assessment>`
+### 3.5 `models.<climate|fleet|energy|operations|offsets|life_cycle_assessment>`
 
 Each block points to that model's own data file. **A model is only initialised if
 its block is present in *your* config** (the merge fills paths, but presence is
@@ -195,6 +195,12 @@ models:
     energy_carriers_model_data_file: "./default_energy_carriers/energy_carriers_data.yaml"
     resources_model_data_file: "./default_energy_carriers/resources_data.yaml"
     processes_model_data_file: "./default_energy_carriers/processes_data.yaml"
+
+  operations:
+    operations_model_data_file: "./default_operations/operations_data.yaml"
+
+  offsets:
+    offsets_model_data_file: "./default_offsets/offsets_data.yaml"
 
   life_cycle_assessment:
     lca_model_data_file: "./default_lca/default_lca_model.json"
@@ -270,6 +276,100 @@ its `mandate` is ignored.
 (GWP\*), `climate_model_ipcc.yaml`, `climate_model_lwe.yaml`. Each declares a
 `climate_model` name and per-species `species_settings` (sensitivities,
 ERF/RF ratios, efficacies).
+
+### operations
+
+`operations_model_data_file` declares the operational concepts of the generic
+operations module. Declaring the `models.operations` block replaces the simple
+operations and contrails models by this module; without it, the operational gain
+comes from the parameters of the simple models as before. Each top-level key is a
+concept with a `name`, an optional `category` (concepts of a category are summed
+in the outputs and plots) and one or two input channels:
+
+```yaml
+airline_operations:
+  name: "airline_operations"
+  category: "airline_operations"
+  inputs:
+    fuel_efficiency:
+      gain: !AeroMapsCustomDataType     # [%] reduction of the energy per ASK
+        years: [2020, 2030, 2040, 2050]
+        values: [0.0, 3.5, 4.3, 4.7]
+        method: linear
+
+contrail_avoidance:
+  name: "contrail_avoidance"
+  category: "contrails"
+  inputs:
+    contrails:
+      gain: !AeroMapsCustomDataType     # [%] reduction of the contrail climate impact
+        years: [2020, 2035, 2050]
+        values: [0.0, 30.0, 60.0]
+        method: linear
+      overconsumption: !AeroMapsCustomDataType   # [%] fuel penalty of avoidance
+        years: [2020, 2050]
+        values: [0.0, 0.5]
+        method: linear
+```
+
+The gains of the concepts compose multiplicatively (see
+[the operations documentation](documentation_airtransport.md#operational-concepts)).
+The packaged
+[`operations_data.yaml`](https://github.com/AeroMAPS/AeroMAPS/blob/main/aeromaps/resources/data/default_operations/operations_data.yaml)
+holds the three blocks of the DESTINATION 2050 roadmap and documents how their
+values were derived.
+
+### offsets
+
+`offsets_model_data_file` declares the offsetting schemes of the generic offsets
+module. Declaring the `models.offsets` block replaces the simple offset models
+(`level_carbon_offset`, `residual_carbon_offset`, `manual_carbon_offset`) and the
+single offset price by this module; without it, the parameters of the simple models
+apply as before. Each top-level key is a scheme with a `name`, an optional
+`category`, a `quantity` rule and a `price`:
+
+```yaml
+corsia:
+  name: "corsia"
+  category: "offsets"
+  inputs:
+    quantity:
+      mode: "level"                     # emissions above a baseline, times a coverage
+      reference_year: 2019
+      baseline_level_vs_reference_year: !AeroMapsCustomDataType   # [%]
+        years: [2020, 2050]
+        values: [85.0, 85.0]
+        method: linear
+      coverage: !AeroMapsCustomDataType # [%] of emissions in scope
+        years: [2020, 2023, 2024, 2027, 2050]
+        values: [0.0, 0.0, 50.0, 60.0, 60.0]
+        method: linear
+    economics:
+      price: !AeroMapsCustomDataType    # [€/tCO2]
+        years: [2020, 2024, 2035, 2050]
+        values: [20.0, 20.0, 60.0, 60.0]
+        method: linear
+
+removals:
+  name: "removals"
+  category: "removals"
+  inputs:
+    quantity:
+      mode: "share_of_residual"         # share of the emissions left after level schemes
+      share: !AeroMapsCustomDataType    # [%]
+        years: [2020, 2035, 2050]
+        values: [0.0, 0.0, 100.0]
+        method: linear
+    economics:
+      price: !AeroMapsCustomDataType    # [€/tCO2]
+        years: [2020, 2035, 2050]
+        values: [200.0, 200.0, 100.0]
+        method: linear
+```
+
+The third mode, `quantity`, takes an `amount` [MtCO2] per year. The rules are
+described in
+[the impacts documentation](documentation_impacts.md#carbon-offset-per-scheme).
 
 ### regionalisation (multi-region studies)
 

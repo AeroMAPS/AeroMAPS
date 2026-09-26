@@ -1,5 +1,8 @@
 from aeromaps.plots.single_scenario.main import (
     AirTransportCO2EmissionsPlot,
+    AirTransportCO2EmissionsDetailedPlot,
+    AirTransportCO2EmissionsGroupedPlot,
+    AirTransportCO2EmissionsPerMarketPlot,
     AirTransportClimateImpactsPlot,
 )
 from aeromaps.plots.single_scenario.sustainability_assessment import (
@@ -90,8 +93,22 @@ from aeromaps.plots.single_scenario.costs_generic import (
     ScenarioEnergyCapitalPlot,
 )
 
+from aeromaps.plots.single_scenario.offsets_generic import (
+    CarbonOffsetByCategoryPlot,
+    CarbonOffsetBySchemePlot,
+    CarbonOffsetExpenseBySchemePlot,
+)
+from aeromaps.plots.single_scenario.operations_generic import (
+    OperationsGainByConceptPlot,
+    OperationsGainByCategoryPlot,
+    OperationsContrailsGainByConceptPlot,
+)
+
 available_plots = {
     "air_transport_co2_emissions": AirTransportCO2EmissionsPlot,
+    "air_transport_co2_emissions_detailed": AirTransportCO2EmissionsDetailedPlot,
+    "air_transport_co2_emissions_grouped": AirTransportCO2EmissionsGroupedPlot,
+    "air_transport_co2_emissions_per_market": AirTransportCO2EmissionsPerMarketPlot,
     "air_transport_climate_impacts": AirTransportClimateImpactsPlot,
     "carbon_budget_assessment": CarbonBudgetAssessmentPlot,
     "temperature_target_assessment": TemperatureTargetAssessmentPlot,
@@ -145,6 +162,14 @@ available_plots = {
     "drop_in_supply_breakdown": DropInSupplyBreakdownPlot,
     "biofuel_mix": BiofuelMixPlot,
     "drop_in_shares_breakdown": DropInSharesBreakdownPlot,
+    # Generic operations-manager-driven plots
+    # Generic offsets-manager-driven plots
+    "carbon_offset_by_scheme": CarbonOffsetBySchemePlot,
+    "carbon_offset_by_category": CarbonOffsetByCategoryPlot,
+    "carbon_offset_expense_by_scheme": CarbonOffsetExpenseBySchemePlot,
+    "operations_gain_by_concept": OperationsGainByConceptPlot,
+    "operations_gain_by_category": OperationsGainByCategoryPlot,
+    "operations_contrails_gain_by_concept": OperationsContrailsGainByConceptPlot,
     "annual_MACC_simple_fleet": AnnualMACCSimple,
     "shadow_carbon_pricing_simple_fleet": ShadowCarbonPriceSimple,
 }
