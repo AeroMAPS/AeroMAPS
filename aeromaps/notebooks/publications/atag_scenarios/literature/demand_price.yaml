@@ -126,19 +126,21 @@ rows:
           - \citet{dray_cost_2022}, AIM
           - airfare
           - "0"
-          - "--"
+          - $-11$ to $-9$
         source: >-
-          Dray et al. (2022): mandates, no carbon price (300 to 400 $/t over
-          2030-35 would give the same uptake, SI); higher airfares cut 2050 CO2 by
-          up to 10 %
+          Dray et al. (2022), p. 959: mandates, no carbon price (300 to 400 $/t
+          over 2030-35 would give the same uptake, SI); ticket prices lower RTK
+          growth by 0.3 to 0.4 % a year over 2019-2050 in the middle-demand
+          combined pathways, so 2050 RTK 9 to 11 % lower; 2050 CO2 up to 10 % lower
       - cells:
           - \citet{destination2050_2025}
           - ticket price
           - "347"
-          - "--"
+          - "$-17$"
         source: >-
-          Destination 2050 (2025), section 2.4.2 and footnote 11; EU ETS 315 EUR/t
-          in 2050; demand reductions are 19 % of the CO2 cut (1, 16 and 2 %)
+          Destination 2050 (2025), section 2.4.2, footnotes 11 and 15: 1.21 against
+          1.45 billion departing passengers in 2050 (flights 9.7 against 11.1
+          million); EU ETS 315 EUR/t in 2050; demand is 19 % of the CO2 cut
       - cells:
           - \citet{gifas}
           - ticket price
@@ -151,24 +153,31 @@ rows:
           - \citet{sustainable_aviation_uk_2026}
           - ticket price
           - "125"
-          - "--"
+          - "$-15$"
         source: >-
-          SA UK technical report (2026), section 6.4: UK ETS allowance 98.09 GBP/t
-          in 2050; demand is 15 % of the CO2 cut
+          SA UK technical report (2026), appendix 6.1: RPK growth of 54 % against
+          82 % in the DfT policy-off forecast, 1.54/1.82 - 1; section 6.4: UK ETS
+          allowance 98.09 GBP/t in 2050; demand is 15 % of the CO2 cut
       - cells:
           - \citet{te_roadmap_2022}
           - airfare
           - "220"
-          - $-22$ to $-12$ (leisure)
-        source: T\&E (2022), sections 4.5 and 10.5; EU ETS 200 EUR/t in 2050
+          - "$-18$"
+        source: >-
+          T&E (2022), p. 35: kerosene tax and ETS reform reduce travel demand by up
+          to 18 %; section 4.5: SAF costs cut leisure travel 12 to 22 %; EU ETS 200
+          EUR/t in 2050
       - cells:
-          - \citet{zheng_aviation_2025}
+          - \citet{icct}; \citet{zheng_aviation_2025}
           - airfare
           - "--"
-          - "--"
+          - $-7$ to $-4$
         source: >-
-          Zheng et al. (2025), p. 13 and Table 14: carbon price implied by the SAF
-          blend; demand response is 0.8 % of the avoided warming
+          Zheng et al. (2025), p. 13: airfare and demand elasticities unchanged from
+          the 2022 Vision 2050, which gives 2050 passenger traffic 4 % lower (p. 16)
+          and 7 % lower (demand response section) in the Breakthrough scenario;
+          carbon price implied by the SAF blend; demand response is 0.8 % of the
+          avoided warming in 2025
 
   - approach: Price-adjusted logistic
     works:
