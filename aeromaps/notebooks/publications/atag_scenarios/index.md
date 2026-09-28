@@ -861,6 +861,11 @@ BIOMASS_PATHWAYS = [
     "atj_agricultural_residues", "atj_waste_gas", "ft_woody_biomass",
     "ft_municipal_solid_waste", "generic_biofuel", "generic_saf",
 ]
+# One colour per pathway across the panels. The generic carriers of the light
+# edition take a grey the production pathways do not use, so S0's single band is
+# not read as one of S1's or S2's.
+PATHWAY_COLOURS = dict(zip(BIOMASS_PATHWAYS[:7], plt.cm.tab10.colors[:7]))
+PATHWAY_COLOURS.update({"generic_biofuel": "#7f7f7f", "generic_saf": "#7f7f7f"})
 
 if scenarios:
     fig, axes = plt.subplots(1, len(scenarios), figsize=(15.6, 4.2), sharey=True,
@@ -868,7 +873,7 @@ if scenarios:
     for ax, (name, view) in zip(np.atleast_1d(axes), scenarios.items()):
         vectors = view.data["vector_outputs"]
         years = np.arange(2000, 2000 + len(vectors["energy_consumption_dropin_fuel"]))
-        stack, labels = [], []
+        stack, labels, colours = [], [], []
         for pathway in BIOMASS_PATHWAYS:
             column = f"{pathway}_energy_consumption"
             if column not in vectors:
@@ -877,8 +882,9 @@ if scenarios:
             if series.sum() > 0:
                 stack.append(series)
                 labels.append(pathway.replace("_", " "))
+                colours.append(PATHWAY_COLOURS[pathway])
         if stack:
-            ax.stackplot(years, *stack, labels=labels)
+            ax.stackplot(years, *stack, labels=labels, colors=colours)
             ax.legend(fontsize=6, loc="upper left")
         ax.set_xlim(2020, years[-1])
         ax.set_title(name)
@@ -1238,6 +1244,11 @@ if share_only:
     share_only[reference].plot("emission_factor_per_fuel", fig=fig, ax=price_axes[1], legend=False)
     for ax in price_axes:
         ax.set_xlim(2025, 2050)
+        # The framework draws the years a pathway is not deployed as grey dotted
+        # lines; they carry no information here, so they go.
+        for line in list(ax.lines):
+            if line.get_linestyle() == ":" and line.get_color() == "grey":
+                line.remove()
 
     # One pathway the eleven-carrier file above does not carry, drawn here because
     # the paper uses it: the generic SAF the light edition's S0 runs on, which is an
@@ -1279,14 +1290,15 @@ if share_only:
     # Both panels resolve the same pathways, so one legend serves them; placing it
     # outside to the right stops it covering the curves it names.
     handles, labels = price_axes[1].get_legend_handles_labels()
+    kept = [(h, lb) for h, lb in zip(handles, labels) if lb != "Not used"]
+    handles, labels = [h for h, _ in kept], [lb for _, lb in kept]
     price_axes[1].legend(handles, labels, loc="center left", bbox_to_anchor=(1.02, 0.5),
                          frameon=False, fontsize=8)
     save_fig(fig, name="fuel_price_intensity")
 ```
 
 *What a megajoule of each production pathway costs to produce, excluding the carbon tax, and what
-emitting it releases; pathways the scenario does not deploy are drawn dotted and labelled as
-unused. Fossil kerosene is the cheapest and the dirtiest of them, at 88.7 gCO2/MJ in 2050 against
+emitting it releases, over the years each pathway is deployed. Fossil kerosene is the cheapest and the dirtiest of them, at 88.7 gCO2/MJ in 2050 against
 5.2 to 48.8 for the alternative pathways, a spread of roughly a factor of nine among the
 alternatives themselves, and the mandate is what displaces it. Only one scenario is shown, because
 under a fixed-share mandate the blend follows the mandate rather than the carbon price, so all
@@ -1471,8 +1483,15 @@ cirrus the largest single term.*
 # The light S0 and the full S1 and S2 were run with different global
 # availabilities (164 against 617.5 EJ of biomass, 250 against 224.1 EJ of
 # electricity), so comparing their shares as stored would compare the inputs as
-# much as the scenarios. All three are put on the framework's "Realistic"
-# presets instead, those of the graphical interface, before drawing.
+# much as the scenarios. All three are put on one basis before drawing.
+#
+# Biomass takes the world supply of the third edition (pp. 20, 48, 50): 27.1 EJ a
+# year of feedstock for SAF in 2050, stated as 15 to 20 % of the world's
+# sustainable supply, so about 155 EJ (135 to 181) at the middle of that range.
+# The framework's own "Realistic" preset, 164 EJ, is the median of estimates of
+# technical potential (IRENA and others, see the impacts documentation), close in
+# total but reached another way. The share given to aviation stays at the
+# framework's 5 %, not the reports' 15 to 20 %. Electricity keeps the preset.
 from copy import deepcopy
 from types import SimpleNamespace
 
@@ -1480,14 +1499,10 @@ from aeromaps.plots.single_scenario.sustainability_assessment import (
     MultidisciplinaryAssessmentPlot,
 )
 
-# Biomass can instead be put on the third edition's own basis (pp. 20, 48, 50):
-# 27.1 EJ a year of feedstock for SAF in 2050, taken as 15 to 20 % of the world's
-# sustainable supply, so 17.5 % of about 155 EJ. The world total is close to the
-# framework's 164 EJ; what changes is the share claimed by aviation.
-BIOMASS_BASIS = "aeromaps"  # or "atag"
+BIOMASS_BASIS = "atag"  # or "aeromaps"
 BIOMASS = {
     "aeromaps": (164.01e12, 0.05),
-    "atag": (27.1e12 / 0.175, 0.175),
+    "atag": (27.1e12 / 0.175, 0.05),
 }
 ELECTRICITY = (200.0e12, 0.05)
 
@@ -1525,8 +1540,9 @@ print(pd.DataFrame(shares, index=["climate", "co2", "biomass", "electricity"]).r
 *What each reproduced scenario uses (orange) against the share allocated to aviation (green), as
 a percentage of the world budget. Climate: warming from 2019 to 2050 against the 0.8 K left to
 2 °C. CO₂: emissions over 2019 to 2050, before offsets, against the 2 °C carbon budget. Biomass
-and electricity: use in 2050 against global availability. S0 uses no electricity, since its
-generic SAF is modelled as biomass only.*
+and electricity: use in 2050 against global availability, 155 EJ of biomass (the world supply
+implied by the third edition) and 200 EJ of electricity, 5 % of each allocated to aviation. S0
+uses no electricity, since its generic SAF is modelled as biomass only.*
 
 {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">Decarbonisation does not act on non-CO₂ effects in proportion to its action on CO₂, and the two diverge sharply by 2050. Every reproduced scenario drives CO₂ emissions steeply down, yet non-CO₂ terms, principally contrail cirrus, still carry at least half of the warming each of them causes in 2050: 1.34 times the CO₂ contribution under S0, 1.13 under S1 and 1.01 under S2, the margin narrowing as a scenario deploys cleaner fuel, which acts on contrails as well as on CO₂. A CO₂ target and a temperature target are therefore not interchangeable statements regarding the same trajectory, since a scenario can approach net-zero CO₂ while the majority of its contribution to warming remains untouched by the levers that brought it there.</span>{raw:typst}`]`
 
