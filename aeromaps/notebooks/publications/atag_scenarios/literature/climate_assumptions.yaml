@@ -4,8 +4,13 @@
 # One row per quantity the climate analysis varies, with the value it takes in
 # each band and where that value comes from. It is the summary of what the other
 # tables compare: contrail_forcing.yaml for the first three rows, saf_contrails
-# for the next two, and contrail_avoidance for
-# the last three. The hydroprocessing rows were taken out of the paper's table.
+# for the next two, and contrail_avoidance for the last four. The hydroprocessing
+# rows were taken out of the paper's table.
+#
+# Cells are kept short; the text explains how each value is obtained (the RF is
+# Lee et al.'s 2018 total matched on this model's distance, the efficacy samples
+# Wang et al.'s 0.20, 0.31 and 0.60, the SAF reduction is at 15.2 % hydrogen
+# content, the avoidance values are Teoh et al.'s 95 % interval).
 #
 # The columns are named for the climate they produce, not for the magnitude of
 # the parameter. Reading down the avoidance rows the gain therefore decreases,
@@ -14,11 +19,11 @@
 # whose headers explain it at length.
 
 columns:
-  - {header: Quantity, width: "0.24"}
+  - {header: Quantity, width: "0.33"}
   - {header: Low warming, width: "0.13"}
   - {header: Central, width: "0.13"}
   - {header: High warming, width: "0.13"}
-  - {header: Source, width: "0.22"}
+  - {header: Source, width: "0.16"}
 
 label: tab:climate_assumptions
 size: scriptsize
@@ -26,13 +31,6 @@ size: scriptsize
 caption_head: Non-CO$_2$ assumptions, by band.
 # The body is the author's text, so it is not wrapped in red.
 caption_red: false
-caption_body_short: >-
-  Values varied in the climate analysis. Bands are named by their warming, so the
-  low band has the weakest contrail forcing and the strongest mitigation. The first
-  two rows are set together, on one standard deviation of their product. The
-  particle index is the value that gives the fuel reduction above it. The avoidance
-  measures are run as separate variants.
-
 caption_body: >-
   The bands are named for the climate outcome they produce, so the low-warming
   band carries the smallest contrail forcing together with the strongest
@@ -44,13 +42,11 @@ caption_body: >-
 
 rows:
   - cells:
-      - Contrail RF per flight km [pW m$^{-2}$ km$^{-1}$]
+      - Contrail RF [pW m$^{-2}$ km$^{-1}$]
       - "1.25"
       - "2.05"
       - "2.59"
-      - >-
-        \citet{lee_contribution_2021}, 2018 total of 111.4 mW m$^{-2}$, matched on
-        this model's own distance
+      - \citet{lee_contribution_2021}
     source: climate_models/climate_model_fair_contrail_efficacy.yaml
 
   - cells:
@@ -58,15 +54,15 @@ rows:
       - "0.21"
       - "0.37"
       - "0.48"
-      - \citet{wang_fuel_2026}, sampling 0.20, 0.31 and 0.60
+      - \citet{wang_fuel_2026}
     source: non_co2_uncertainty.yaml
 
   - cells:
-      - Contrail ERF per flight km [pW m$^{-2}$ km$^{-1}$]
+      - Contrail ERF [pW m$^{-2}$ km$^{-1}$]
       - "0.26"
       - "0.76"
       - "1.26"
-      - the product of the two rows above
+      - rows above
     source: derived
 
   - cells:
@@ -74,15 +70,15 @@ rows:
       - 67 \%
       - 52 \%
       - 35 \%
-      - \citet{wang_fuel_2026}, 15.2 \% fuel hydrogen content
+      - \citet{wang_fuel_2026}
     source: non_co2_uncertainty.yaml
 
   - cells:
       - SAF particle number index [per kg]
-      - "$2.178 \\times 10^{13}$"
-      - "$4.608 \\times 10^{13}$"
+      - "$2.18 \\times 10^{13}$"
+      - "$4.61 \\times 10^{13}$"
       - "$8.45 \\times 10^{13}$"
-      - the index reproducing the row above under the square root relation
+      - row above
     source: the ATAG energy files
 
   - cells:
@@ -90,21 +86,29 @@ rows:
       - 23.0 \%
       - 20.0 \%
       - 17.4 \%
-      - \citet{teoh2020}, 95 \% interval
+      - \citet{teoh2020}
     source: contrail_variants.yaml
 
   - cells:
-      - "Avoidance, small-scale diversion"
-      - "65.6 \\%, 0.017 \\% fuel"
-      - "59.3 \\%, 0.014 \\% fuel"
-      - "52.4 \\%, 0.010 \\% fuel"
-      - \citet{teoh2020}, 95 \% interval
+      - Avoidance, small-scale diversion
+      - 65.6 \%
+      - 59.3 \%
+      - 52.4 \%
+      - \citet{teoh2020}
     source: contrail_variants.yaml
 
   - cells:
-      - Avoidance, combustor technology
+      - Fuel penalty, small-scale diversion
+      - "0.017 \\%"
+      - "0.014 \\%"
+      - "0.010 \\%"
+      - \citet{teoh2020}
+    source: contrail_variants.yaml
+
+  - cells:
+      - Avoidance, combustor (from 2035)
       - 82.1 \%
       - 68.8 \%
       - 45.2 \%
-      - \citet{teoh2020}, 95 \% interval, from 2035
+      - \citet{teoh2020}
     source: contrail_variants.yaml

@@ -11,18 +11,15 @@
 # price, a service cost and an airfare are different quantities, and an
 # elasticity calibrated on one does not compare with one calibrated on another.
 #
-# None of the demand effects are on the same basis either: a change against a
-# work's own uncoupled counterfactual, a change in a growth rate, and a share of
-# an emissions reduction attributed to demand are three different statements.
-# The cells say which. Every entry was read from the work it sits beside; the
-# page is in `source`.
+# Cells are kept short: the detail belongs in the text, and in `source`, which
+# gives where each entry was read and the fuller statement behind it.
 
 columns:
-  - {header: Approach, width: "0.14"}
-  - {header: Works, width: "0.22"}
-  - {header: Price proxy, width: "0.17"}
-  - {header: Carbon price, width: "0.19"}
-  - {header: Demand effect by 2050, width: "0.19"}
+  - {header: Approach, width: "0.17"}
+  - {header: Works, width: "0.24"}
+  - {header: Price proxy, width: "0.15"}
+  - {header: Carbon price, width: "0.16"}
+  - {header: Demand effect by 2050, width: "0.18"}
 
 label: tab:demand_price
 size: scriptsize
@@ -36,12 +33,11 @@ caption_body: >-
   by approach, extending the comparison of \citet{costaalves_wctr}. The price
   proxy used is not the same quantity across rows, a fuel price, a fuel cost per
   unit of demand and an airfare reaching the traveller differently,
-  \textcolor{red}{so an elasticity calibrated on one does not compare with an
-  elasticity calibrated on another, and only the proxy is given. Works on one
-  line share every entry.}
+  \textcolor{red}{so only the proxy is given. Works on one line share every
+  entry.}
 
 rows:
-  - approach: Exogenous traffic, no price at all
+  - approach: Exogenous traffic
     works:
       - cells:
           - >-
@@ -49,12 +45,12 @@ rows:
             \citet{grewe}; \citet{klower}; \citet{sacchi}
           - none
           - none
-          - none by construction
+          - none
         source: >-
           the reports state it themselves; the academic works as classified by
           Costa Alves et al. (2026), Table 1
 
-  - approach: Logistic in income, saturating, no price
+  - approach: Logistic in income
     works:
       - cells:
           - \citet{vedantham_aircraft_1994}; \citet{vidal_modelling_2021}
@@ -63,117 +59,102 @@ rows:
           - not stated
         source: as classified by Costa Alves et al. (2026), Table 1
 
-  - approach: Constant elasticity on a growth rate
+  - approach: Elasticity on a growth rate
     works:
       - cells:
           - \citet{gossling_covid-19_2021}
-          - fuel price per kg, through a 24.5 \% fuel share of costs
-          - >-
-            50 to 400 \$/t over 2022--2050, charged again on non-CO$_2$, with a
-            synthetic fuel quota
-          - >-
-            growth of 57 to 187 \% over 2018--2050 against 250 \% without
+          - fuel price
+          - 50 to 400 \$/t
+          - growth of 57 to 187 \% instead of 250 \%
         source: >-
-          Gössling et al. (2021), Environ. Res. Lett. 16, 034063, section 4.1
-          (fuel cost in US$ per kg, carbon price) and 4.2 (fuel cost share)
+          Gössling et al. (2021), sections 4.1 and 4.2: fuel price in US$ per kg,
+          through a 24.5 % fuel share of costs; carbon price 50 to 400 $/t over
+          2022-2050, charged again on non-CO2, with a synthetic fuel quota;
+          growth over 2018-2050
 
-  - approach: Elasticity inside an integrated assessment model
+  - approach: Elasticity in an integrated assessment model
     works:
       - cells:
           - \citet{franz}, EDGE-T
-          - transport price, held constant (price elasticity set to zero)
+          - transport price, held constant
           - none
-          - none from price; income only
-        source: Franz et al. (2022), Eq. 1 and the paragraph below it
+          - none from price
+        source: Franz et al. (2022), Eq. 1; price elasticity set to zero
       - cells:
           - \citet{napp_role_2019}, TIAM
-          - energy service price, elasticity on or off
-          - 100 to 300 \$(2005)/t from 2020
-          - not stated for aviation
-        source: Napp et al. (2019), Table 1, Fig. 1 and the low demand case
+          - energy service price
+          - 100 to 300 \$/t
+          - not stated
+        source: >-
+          Napp et al. (2019), Table 1 and Fig. 1; 2005 USD from 2020, elasticity
+          on or off; no aviation result
       - cells:
           - \citet{speizer_integrated_2024}, GCAM
-          - service cost per passenger-km, fuel and non-fuel
-          - >-
-            1.5 \textdegree C emissions constraint; break-even 135 to 496 \$(2020)/t
-            for aviation
-          - >-
-            at least 40 \% less service over 2020--2100 with low technology,
-            over half from the carbon price for short-haul
+          - service cost per pkm
+          - 1.5 \textdegree C constraint
+          - not stated for 2050
         source: >-
-          Speizer et al. (2024), Results (service by mode) and Methods (cost
-          and emissions constraint); Supplementary Table 4
+          Speizer et al. (2024), Results and Methods; break-even 135 to 496
+          $(2020)/t for aviation; at least 40 % less service over 2020-2100 with
+          low technology
       - cells:
           - \citet{sharmina_decarbonising_2021}, IMAGE
-          - travel cost, within a travel money budget
-          - IMAGE 1.5 and 2 \textdegree C pathways
+          - travel cost
+          - 1.5 and 2 \textdegree C pathways
           - small
         source: Sharmina et al. (2021), section 2.1 and the discussion of IMAGE
 
-  - approach: Airfare elasticity on a sectoral model
+  - approach: Airfare elasticity in a sectoral model
     works:
       - cells:
           - \citet{dray_cost_2022}, AIM
-          - airfare, from airline operating costs
-          - >-
-            fuel mandates; 300 to 400 \$/t over 2030--35 would be equivalent
-          - up to 10 \% lower CO$_2$ in 2050 from higher airfares
+          - airfare
+          - none, mandates
+          - up to 10 \% less CO$_2$
         source: >-
-          Dray et al. (2022), main text (demand effects of higher airfares);
-          Supplementary Information (carbon price giving the same uptake)
+          Dray et al. (2022), main text; SI: 300 to 400 $/t over 2030-35 would
+          give the same uptake
       - cells:
           - \citet{destination2050_2025}
-          - ticket price, costs passed through in full
-          - EU ETS 130 EUR/t in 2030 and 315 in 2050; CORSIA 25 EUR/t
-          - 16 \% of the 2050 CO$_2$ cut
+          - ticket price
+          - EU ETS, 315 EUR/t
+          - 16 \% of the CO$_2$ cut
         source: >-
-          Destination 2050 (2025), section 2.4.2 and footnote 11 (ticket
-          prices, elasticities), market-based measures (EU ETS and CORSIA
-          prices), roadmap chart (demand share)
+          Destination 2050 (2025), section 2.4.2 and footnote 11; EU ETS 130 EUR/t
+          in 2030 and 315 in 2050, CORSIA 25 EUR/t
       - cells:
           - \citet{gifas}
-          - ticket price, DGAC model
+          - ticket price
           - not stated
-          - growth 2.1 to 1.1 \%/yr on international traffic
-        source: GIFAS and DGAC (2023), p. 94
+          - growth 2.1 to 1.1 \%/yr
+        source: GIFAS and DGAC (2023), p. 94; international traffic
       - cells:
           - \citet{sustainable_aviation_uk_2026}
-          - ticket price, averaged over UK departures
+          - ticket price
           - UK ETS
-          - 15 \% of the cut
-        source: >-
-          SA UK technical report (2026), demand method and Table 1 (DfT
-          elasticities); summary report, roadmap chart (15 %)
+          - 15 \% of the CO$_2$ cut
+        source: SA UK technical report (2026), Table 1 (DfT elasticities); summary
       - cells:
           - \citet{te_roadmap_2022}
-          - airfare, through the fuel share of the ticket price
-          - EU ETS 100 EUR/t in 2030 and 200 in 2050
-          - leisure travel $-12$ to $-22$ \%
-        source: T\&E (2022), sections 4.5, 10.3 and 10.5
+          - airfare
+          - EU ETS, 200 EUR/t
+          - leisure $-12$ to $-22$ \%
+        source: T\&E (2022), sections 4.5 and 10.5; 100 EUR/t in 2030
       - cells:
           - \citet{zheng_aviation_2025}
           - airfare
-          - implied by the SAF blend
-          - 0.8 \% of the avoidable warming in 2050
+          - implied by SAF
+          - 0.8 \% of avoided warming
         source: Zheng et al. (2025), p. 13 and Table 14
 
-  - approach: Price-adjusted logistic, saturating in income
+  - approach: Price-adjusted logistic
     works:
       - cells:
-          - \citet{costaalves_wctr}
+          - \citet{costaalves_wctr}; this work
           - energy cost per RPK
-          - >-
-            AR6 SSP2-4.5, 2.6 and 1.9; kerosene at its 2000--2019 minimum,
-            maximum or 2019 value
-          - >-
-            not stated for 2050; $-14$ \% in 2070 with SAF under SSP2-4.5
-        source: Costa Alves et al. (2026), prospective scenarios section
-      - cells:
-          - this work
-          - energy cost per RPK
-          - >-
-            AR6 SSP2: 43, 212 and 1034 \$(2010)/t in 2050, none before 2027
-          - >-
-            $-2.9$, $-7.5$ and $-22.0$ \%; $+2.2$, $-14.9$ and $-41.8$ \% without
-            SAF
-        source: this work's coupled runs, against each run's own uncoupled traffic
+          - AR6 SSP2
+          - $-2.9$ to $-22.0$ \%
+        source: >-
+          same model; the demand effect is this work's coupled runs, 43, 212 and
+          1034 $(2010)/t in 2050 from 2027, +2.2 to -41.8 % without SAF. Costa
+          Alves et al. (2026) give no 2050 value (-14 % traffic in 2070 with SAF).
