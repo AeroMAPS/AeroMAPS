@@ -245,28 +245,77 @@ def forcing_table():
 # ------------------------------------------------------------- 2, generic tables
 
 
-def generic_table(name):
-    """A table whose cells are written out in its own file."""
-    document = read(name)
+def _caption(document):
+    """The caption, its body in red unless the file says it is already marked."""
+    body = " ".join(document["caption_body"].split())
+    if document.get("caption_red", True):
+        body = r"\textcolor{red}{%s}" % body
+    return r"\textcolor{Highlight}{%s} %s" % (document["caption_head"].strip(), body)
+
+
+def _grouped_row(group, widths):
+    """One approach and its works, as a single row of the outer table.
+
+    The works sit in a tabular nested in the row, so the approach is centred on
+    all of them whatever their height, which a multirow cannot do once the cells
+    wrap. The nested columns keep the outer widths and the outer padding at the
+    ends, so they line up with the headings.
+    """
+    spec = "".join(r"M{%s\textwidth}" % width for width in widths[1:])
+    lines = [
+        " & ".join(" ".join(cell.split()) for cell in work["cells"]) + r" \\"
+        for work in group["works"]
+    ]
+    inner = ("\n" + r"\cmidrule{1-%d}" % (len(widths) - 1) + "\n").join(lines)
+    return "%s & \\multicolumn{%d}{l}{\\begin{tabular}{@{}%s@{}}\n%s\n\\end{tabular}} \\\\" % (
+        group["approach"].strip(),
+        len(widths) - 1,
+        spec,
+        inner,
+    )
+
+
+def _check_cells(name, cells, expected):
     # A row of the wrong length is a LaTeX error several pages later, and the
     # usual cause is an unquoted comma inside a flow-style cell, so check here.
-    for row in document["rows"]:
-        if len(row["cells"]) != len(document["columns"]):
-            raise ValueError(
-                "%s: row %r has %d cells against %d columns"
-                % (name, row["cells"][0], len(row["cells"]), len(document["columns"]))
-            )
-    caption = r"\textcolor{Highlight}{%s} \textcolor{red}{%s}" % (
-        document["caption_head"].strip(),
-        " ".join(document["caption_body"].split()),
-    )
-    return latex_table(
-        headers=[column["header"] for column in document["columns"]],
-        rows=[[cell.strip() for cell in row["cells"]] for row in document["rows"]],
-        widths=[column["width"] for column in document["columns"]],
-        caption=caption,
+    if len(cells) != expected:
+        raise ValueError(
+            "%s: row %r has %d cells against %d" % (name, cells[0], len(cells), expected)
+        )
+
+
+def generic_table(name):
+    """A table whose cells are written out in its own file.
+
+    A row is either ``cells``, one line, or an ``approach`` with ``works``, one
+    line per work beside the approach, separated by thin rules.
+    """
+    document = read(name)
+    columns = document["columns"]
+    widths = [column["width"] for column in columns]
+    rows = []
+    for index, row in enumerate(document["rows"]):
+        if "works" in row:
+            for work in row["works"]:
+                _check_cells(name, work["cells"], len(columns) - 1)
+            if index:
+                rows.append(r"\midrule")
+            rows.append(_grouped_row(row, widths))
+        else:
+            _check_cells(name, row["cells"], len(columns))
+            rows.append([cell.strip() for cell in row["cells"]])
+    table = latex_table(
+        headers=[column["header"] for column in columns],
+        rows=rows,
+        widths=widths,
+        caption=_caption(document),
         label=document["label"],
     )
+    size = document.get("size")
+    if size:
+        table = table.replace(r"\begin{small}", r"\begin{%s}" % size)
+        table = table.replace(r"\end{small}", r"\end{%s}" % size)
+    return table
 
 
 # ----------------------------------------------------------------------- markdown
@@ -276,7 +325,8 @@ def generic_table(name):
 # one shows up as a stray backslash rather than being silently dropped.
 _PLAIN = (
     (r"\%", "%"),
-    (r"\$", "$"),
+    # A currency sign is held aside, or it goes with the math delimiters below.
+    (r"\$", "@DOLLAR@"),
     (r"\&", "&"),
     (r"\_", "_"),
     (r"\"a", "ä"),
@@ -288,6 +338,8 @@ _PLAIN = (
     (r"\times", "×"),
     (r"_2$e", "₂e"),
     (r"_2$", "₂"),
+    (r"\textdegree ", "°"),
+    (r"\textdegree", "°"),
     (r"~", " "),
 )
 
@@ -313,6 +365,7 @@ def _plain(text):
     text = re.sub(r"\\textcolor\{[^}]*\}\{", "", text).replace("}", "")
     # Whatever math is left is plain arithmetic, so the delimiters can go.
     text = text.replace("$", "").replace("|", r"\|")
+    text = text.replace("@DOLLAR@", r"\$")
     for number, role in enumerate(roles):
         text = text.replace("@CITE%d@" % number, role)
     return " ".join(text.split())
@@ -328,11 +381,14 @@ def markdown_table(name):
     else:
         document = read(name)
         headers = [column["header"] for column in document["columns"]]
-        body = [row["cells"] for row in document["rows"]]
-        caption = r"\textcolor{Highlight}{%s} \textcolor{red}{%s}" % (
-            document["caption_head"].strip(),
-            " ".join(document["caption_body"].split()),
-        )
+        # Grouped rows are flattened, the approach repeated on each of its works.
+        body = []
+        for row in document["rows"]:
+            if "works" in row:
+                body += [[row["approach"]] + work["cells"] for work in row["works"]]
+            else:
+                body.append(row["cells"])
+        caption = _caption(document)
 
     lines = [
         "| " + " | ".join(_plain(header) for header in headers) + " |",
@@ -373,6 +429,14 @@ def print_tables():
         document = read(name)
         print("\n\n%s\n" % document["caption_head"].strip())
         for row in document["rows"]:
+            if "works" in row:
+                print("  %s" % row["approach"])
+                for work in row["works"]:
+                    cells = [" ".join(cell.split()) for cell in work["cells"]]
+                    for header, cell in zip(document["columns"][1:], cells):
+                        print("      %-20s %s" % (header["header"] + ":", cell))
+                    print()
+                continue
             cells = [" ".join(cell.split()) for cell in row["cells"]]
             print("  %s" % cells[0])
             for header, cell in zip(document["columns"][1:], cells[1:]):

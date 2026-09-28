@@ -1480,20 +1480,25 @@ from aeromaps.plots.single_scenario.sustainability_assessment import (
     MultidisciplinaryAssessmentPlot,
 )
 
-BIOMASS_AVAILABLE_MJ = 164.01e12
-ELECTRICITY_AVAILABLE_MJ = 200.0e12
-RESOURCE_ALLOCATED_SHARE = 0.05
+# Biomass can instead be put on the third edition's own basis (pp. 20, 48, 50):
+# 27.1 EJ a year of feedstock for SAF in 2050, taken as 15 to 20 % of the world's
+# sustainable supply, so 17.5 % of about 155 EJ. The world total is close to the
+# framework's 164 EJ; what changes is the share claimed by aviation.
+BIOMASS_BASIS = "aeromaps"  # or "atag"
+BIOMASS = {
+    "aeromaps": (164.01e12, 0.05),
+    "atag": (27.1e12 / 0.175, 0.175),
+}
+ELECTRICITY = (200.0e12, 0.05)
 
 
 def harmonised(view):
     data = deepcopy(view.data)
     vectors = data["vector_outputs"]
-    for resource, available in (("biomass", BIOMASS_AVAILABLE_MJ),
-                                ("electricity", ELECTRICITY_AVAILABLE_MJ)):
+    for resource, (available, share) in (("biomass", BIOMASS[BIOMASS_BASIS]),
+                                         ("electricity", ELECTRICITY)):
         vectors[f"{resource}_availability_global"] = available
-        vectors[f"{resource}_availability_aviation_allocated"] = (
-            RESOURCE_ALLOCATED_SHARE * available
-        )
+        vectors[f"{resource}_availability_aviation_allocated"] = share * available
     return SimpleNamespace(data=data, pathways_manager=None)
 
 
