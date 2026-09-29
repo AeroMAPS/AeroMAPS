@@ -1358,16 +1358,22 @@ if share_only and nosaf_only:
                             zorder=5)
             line, = ax.plot(mean.index, mean, color="black", linewidth=1.6,
                             label=REFERENCE_LABEL, zorder=6)
-            # The three kerosene prices behind the shade and the coupled pathways, on a
-            # price axis of their own: lower quartile, mean, upper quartile.
-            price_axis = ax.twinx()
-            for price, name in ((2.22, "lower quartile"), (3.03, "mean"), (3.95, "upper quartile")):
-                price_axis.hlines(price, 2026, 2050, color="0.35", linestyle=":", linewidth=1.0)
-                price_axis.text(2049.5, price, f"{name}, {price:.2f} \\$/gal", ha="right",
-                                va="bottom", fontsize=7, color="0.35")
-            price_axis.set_ylim(0.0, 10.0)
-            price_axis.set_ylabel("Kerosene price from 2026 [2026 \\$/gal]", color="0.35")
-            price_axis.tick_params(axis="y", colors="0.35")
+            # The three kerosene prices behind the shade and the coupled pathways, put on
+            # this panel's own unit: the energy cost per RPK of an all-fossil fleet at S1's
+            # energy intensity, without carbon price. The same product reproduces the
+            # model's cost per RPK exactly before the carbon price starts.
+            s1_vectors = reference.data["vector_outputs"]
+            intensity = (s1_vectors["energy_consumption_passenger"]
+                         / s1_vectors["rpk"]).loc[2026:2050]
+            for case, short in (("lower quartile", "Q1"), ("mean", "mean"), ("upper quartile", "Q3")):
+                price = kerosene[(kerosene["scenario"] == "S1") & (kerosene["kerosene"] == case)]
+                price = price.set_index("year")["fossil_kerosene_mean_mfsp"].loc[2026:2050]
+                fossil = price * intensity
+                kerosene_line, = ax.plot(fossil.index, fossil, color="0.3", linestyle=":",
+                                         linewidth=1.2, zorder=7,
+                                         label="Kerosene only, no carbon price")
+                ax.text(2049.6, fossil.iloc[-1], short, ha="right", va="bottom", fontsize=7,
+                        color="0.3", zorder=8)
         else:
             series = np.asarray(reference.data[block][key], dtype=float) * scale
             first = 1940 if block == "climate_outputs" else 2000
@@ -1376,6 +1382,8 @@ if share_only and nosaf_only:
             line, = ax.plot(years[projected], series[projected], color="black", linewidth=1.6,
                             label=REFERENCE_LABEL, zorder=5)
         extra = family_handles if plot_name == "rpk_comparison" else []
+        if plot_name == "doc_net_energy_per_rpk_comparison":
+            extra = [kerosene_line]
         ax.legend(handles=extra + [line, history_handle], fontsize=8, loc="upper left")
 
     # The pathway legend, on the first panel, in grey with the history.
