@@ -28,18 +28,16 @@ label: tab:demand_price
 size: scriptsize
 
 caption_head: Demand and price in comparable studies.
-# The body is the author's text, with the changes in red, so it is not wrapped in
-# red as a whole.
+# The body is the author's text, as in the manuscript, so it is not wrapped in red.
 caption_red: false
 caption_body: >-
   How comparable studies let demand respond to the cost of decarbonising, grouped
   by approach, extending the comparison of \citet{costaalves_wctr}. The price
   proxy used is not the same quantity across rows, a fuel price, a fuel cost per
-  unit of demand and an airfare reaching the traveller differently,
-  \textcolor{red}{so only the proxy is given. Works on one line share every
-  entry. Carbon prices are converted at 1.1~\$/EUR and 1.27~\$/GBP, in the
-  currency year of each work. Traffic changes are against each work's own case
-  without the price effect. A dash marks a value not published on this basis.}
+  unit of demand and an airfare reaching the traveller differently. Carbon prices
+  are converted at 1.1~\$/EUR and 1.27~\$/GBP, in the currency year of each work.
+  Traffic changes are against each work's own case without the price effect. A
+  dash marks a value not published on this basis.
 
 rows:
   - approach: Exogenous traffic
