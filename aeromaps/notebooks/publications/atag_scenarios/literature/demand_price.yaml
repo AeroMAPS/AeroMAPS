@@ -185,8 +185,9 @@ rows:
           - \citet{costaalves_wctr}; this work
           - energy cost per RPK
           - 43 to 1034
-          - $-22.0$ to $-2.9$
+          - $-22.3$ to $-2.0$
         source: >-
           same model; AR6 SSP2-4.5, 2.6 and 1.9, $(2010)/t, from 2027 in this
-          work; traffic from this work's coupled runs (+2.2 to -41.8 % without
+          work, with kerosene at the 2006-2026 lower quartile, mean and upper
+          quartile; traffic from this work's coupled runs (+14.0 to -42.4 % without
           SAF). Costa Alves et al. (2026) give no 2050 value.

@@ -32,16 +32,21 @@ analysis assumes.
 The kerosene price
     Demand responds to the price of fuel, so the coupled runs cannot inherit the
     report-era price the uncoupled reproduction carries, which declines from
-    0.0126 EUR/MJ in 2024 to 0.012 in 2050 and sits on the 1990-2026 real mean.
-    From 2026 they hold the observed 2026 mean flat instead, with the observed
-    2025 annual mean between the two. All three coupled energy files get the same
-    trajectory: the two generated here, and the hand-maintained
-    ``s1_energy.yaml``, whose kerosene block alone is rewritten so its comments
-    survive. The uncoupled S1 and S2 keep the report-era price.
+    0.0126 EUR/MJ in 2024 to 0.012 in 2050. From 2026 they hold a price flat taken
+    from the distribution of the weekly EIA spot price over the last 20 years
+    (22 September 2006 to 18 September 2026, in August-2026 dollars): real mean
+    3.03 $/gal, lower quartile 2.22, upper quartile 3.95. The observed 2025 annual
+    mean sits between the history and that level.
 
-    2026 is a spike year, rising from 2.03 $/gal in January to 3.70 in March, so
-    holding it flat treats that shock as lasting. That is the assumption, and the
-    paper states it.
+    The files written here carry the mean. Each carbon-price pathway then sets its
+    own level (``KEROSENE_BY_PATHWAY``, applied in ``ssp_runs.build``): the upper
+    quartile under SSP2-1.9, the mean under SSP2-2.6 and the lower quartile under
+    SSP2-4.5, so that the pathway with the strongest mitigation also sees the
+    dearest fossil fuel. All three coupled energy files get the same trajectory:
+    the two generated here, and the hand-maintained ``s1_energy.yaml``, whose
+    kerosene block alone is rewritten so its comments survive. The uncoupled S1 and
+    S2 keep the report-era price; ``kerosene_variants.py`` reruns them at the three
+    levels for the figures that compare costs.
 
 Run from this directory::
 
@@ -101,17 +106,29 @@ CPI_AUG_2026 = 334.980
 # 2025 has no CPI-U, as BLS did not publish it, so it is interpolated between
 # September and November.
 PRICE_2025_IN_2019_USD_PER_GAL = 1.68088
-# 2026: mean of the EIA weekly spot price, 1 January to 11 September 2026, in
-# August-2026 dollars (median 3.51, interquartile range 2.80-3.95).
-PRICE_2026_MEAN_REAL_AUG2026_USD_PER_GAL = 3.31
+# From 2026: the EIA weekly spot price over the last 20 years, 22 September 2006 to
+# 18 September 2026 (1044 weeks), in August-2026 dollars: mean 3.03, median 2.80,
+# interquartile range 2.22-3.95, minimum 0.60, maximum 6.39.
+PRICE_20Y_REAL_AUG2026_USD_PER_GAL = {"lower quartile": 2.22, "mean": 3.03, "upper quartile": 3.95}
+
+
+def eur_per_mj(real_aug2026_usd_per_gal):
+    """An August-2026 dollar price per gallon in the model's 2019 EUR per MJ."""
+    return real_aug2026_usd_per_gal * CPI_2019_MEAN / CPI_AUG_2026 * EUR_PER_MJ_PER_2019_USD_PER_GAL
+
 
 KEROSENE_PRICE_2025 = PRICE_2025_IN_2019_USD_PER_GAL * EUR_PER_MJ_PER_2019_USD_PER_GAL
-KEROSENE_PRICE_FROM_2026 = (
-    PRICE_2026_MEAN_REAL_AUG2026_USD_PER_GAL
-    * CPI_2019_MEAN
-    / CPI_AUG_2026
-    * EUR_PER_MJ_PER_2019_USD_PER_GAL
-)
+KEROSENE_LEVELS = {
+    case: eur_per_mj(price) for case, price in PRICE_20Y_REAL_AUG2026_USD_PER_GAL.items()
+}
+KEROSENE_PRICE_FROM_2026 = KEROSENE_LEVELS["mean"]
+# The strongest mitigation pathway sees the dearest fossil fuel, the weakest the
+# cheapest, so the carbon-price and kerosene-price uncertainties widen together.
+KEROSENE_BY_PATHWAY = {
+    "SSP2-19": "upper quartile",
+    "SSP2-26": "mean",
+    "SSP2-45": "lower quartile",
+}
 LAST_HISTORICAL_YEAR = 2024
 END_YEAR = 2050
 
@@ -127,8 +144,9 @@ SHARE_HEADER = """\
 # a function of total demand, which is itself a coupling variable, and the MDA fails with
 # a coupling shape mismatch. See the module docstring of make_energy_files.py.
 #
-# Fossil kerosene holds the observed 2026 mean price from 2026, not the report-era
-# price of the uncoupled S1, since demand here responds to it.
+# Fossil kerosene holds the 2006-2026 real mean price from 2026, not the report-era
+# price of the uncoupled S1, since demand here responds to it. Each carbon-price
+# pathway replaces it with its own level in ssp_runs.build.
 """
 
 NOSAF_HEADER = """\
@@ -156,15 +174,19 @@ def realised_shares():
     return shares
 
 
-def kerosene_price(years, values):
-    """History to 2024 unchanged, observed 2025, then the 2026 mean held flat."""
+def kerosene_price(years, values, level=None):
+    """History to 2024 unchanged, observed 2025, then ``level`` held flat from 2026.
+
+    ``level`` is in EUR/MJ and defaults to the 20-year mean.
+    """
+    level = KEROSENE_PRICE_FROM_2026 if level is None else level
     history = [(int(y), float(v)) for y, v in zip(years, values) if int(y) <= LAST_HISTORICAL_YEAR]
     if not history or history[-1][0] != LAST_HISTORICAL_YEAR:
         raise ValueError(f"the kerosene price history must run to {LAST_HISTORICAL_YEAR}")
     tail = [
         (2025, round(KEROSENE_PRICE_2025, 6)),
-        (2026, round(KEROSENE_PRICE_FROM_2026, 6)),
-        (END_YEAR, round(KEROSENE_PRICE_FROM_2026, 6)),
+        (2026, round(level, 6)),
+        (END_YEAR, round(level, 6)),
     ]
     points = history + tail
     return [y for y, _ in points], [v for _, v in points]
@@ -250,8 +272,11 @@ def main():
     set_kerosene_price_in_place(QUANTITY_FILE)
     print("set the kerosene price in %s" % QUANTITY_FILE.name)
     print(
-        "kerosene: %.6f EUR/MJ in 2025, %.6f from 2026"
-        % (KEROSENE_PRICE_2025, KEROSENE_PRICE_FROM_2026)
+        "kerosene: %.6f EUR/MJ in 2025, from 2026 %s"
+        % (
+            KEROSENE_PRICE_2025,
+            ", ".join("%s %.6f" % (case, level) for case, level in KEROSENE_LEVELS.items()),
+        )
     )
 
 

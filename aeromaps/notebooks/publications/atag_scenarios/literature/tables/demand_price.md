@@ -14,6 +14,6 @@
 | Airfare elasticity in a sectoral model | {cite:t}`sustainable_aviation_uk_2026` | ticket price | 125 | -15 |
 | Airfare elasticity in a sectoral model | {cite:t}`te_roadmap_2022` | airfare | 220 | -18 |
 | Airfare elasticity in a sectoral model | {cite:t}`icct`; {cite:t}`zheng_aviation_2025` | airfare | -- | -7 to -4 |
-| Price-adjusted logistic | {cite:t}`costaalves_wctr`; this work | energy cost per RPK | 43 to 1034 | -22.0 to -2.9 |
+| Price-adjusted logistic | {cite:t}`costaalves_wctr`; this work | energy cost per RPK | 43 to 1034 | -22.3 to -2.0 |
 
 *Demand and price in comparable studies. How comparable studies let demand respond to the cost of decarbonising, grouped by approach, extending the comparison of {cite:t}`costaalves_wctr`. The price proxy used is not the same quantity across rows, a fuel price, a fuel cost per unit of demand and an airfare reaching the traveller differently, so only the proxy is given. Works on one line share every entry. Carbon prices are converted at 1.1 \$/EUR and 1.27 \$/GBP, in the currency year of each work. Traffic changes are against each work's own case without the price effect. A dash marks a value not published on this basis.*

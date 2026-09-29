@@ -962,8 +962,24 @@ co2_bars += [
     (f"Highest\n{_cell_label(_highest)}", _cells[_highest]),
 ]
 
-# Panel 2: cumulative energy expenses, the coupled runs spanning the three carbon prices.
-cost_bars = [(SHORT[n], _cumulative_expenses(v), None) for n, v in published.items()]
+# Panel 2: cumulative energy expenses. The uncoupled scenarios are taken at the 20-year
+# mean kerosene price, spanning its lower to upper quartile; the coupled runs span the
+# three pathways, each with its own carbon and kerosene price.
+_kerosene = pd.read_csv(HERE / "3rd_edition_full_coupled_demand" / "data_outputs"
+                        / "kerosene_variants.csv.gz")
+
+
+def _kerosene_expenses(scenario, case):
+    rows = _kerosene[(_kerosene["scenario"] == scenario) & (_kerosene["kerosene"] == case)]
+    series = rows.set_index("year")["non_discounted_net_energy_expenses"]
+    return series.loc[OVERVIEW_FIRST:OVERVIEW_LAST].sum() / 1e6
+
+
+cost_bars = [
+    (SHORT[n], _kerosene_expenses(SHORT[n], "mean"),
+     (_kerosene_expenses(SHORT[n], "lower quartile"), _kerosene_expenses(SHORT[n], "upper quartile")))
+    for n in published
+]
 for label, suffix in (("S1\ncoupled", "_share"), ("S1 coupled\nno SAF", "_nosaf")):
     values = {
         ssp: _cumulative_expenses(_vectors(_COUPLED / f"{key}{suffix}.json"))
@@ -1045,9 +1061,11 @@ print(pd.DataFrame({"warming [mK]": {b[0].replace("\n", " "): b[1] for b in warm
 
 *Outcomes of the published scenarios against the ends of the lever sweep, the coupled runs and the
 contrail avoidance measures, each applied to S1. Cumulative CO₂ is well-to-wake over 2024 to 2050, before offsets.
-Energy expenses include the carbon tax; the error bars on the coupled runs span the SSP2-4.5 and
-SSP2-1.9 carbon prices around SSP2-2.6. Warming bars are central, with the low- and high-warming
-bands of Table 4, CO₂ uncertainty included, as error bars.*
+Energy expenses include the carbon tax. The uncoupled scenarios are at the 2006–2026 real mean
+kerosene price, with error bars from its lower to its upper quartile; the coupled runs are at
+SSP2-2.6 with the mean price, with error bars from SSP2-4.5 with the lower quartile to SSP2-1.9
+with the upper quartile. Warming bars are central, with the low- and high-warming bands of Table 4,
+CO₂ uncertainty included, as error bars.*
 
 ### Demand-side impacts of transition costs
 
@@ -1312,14 +1330,31 @@ if share_only and nosaf_only:
         for family, colour in DEMAND_GROUP_COLORS.items()
     ]
     reference = load_results(HERE / REFERENCE_PATH, name=REFERENCE_LABEL)
+    # Its cost is drawn at the same kerosene price uncertainty as the coupled runs,
+    # the 20-year lower quartile to upper quartile, as a shade. Traffic is exogenous
+    # and emissions do not depend on the price, so those two stay a single line.
+    kerosene = pd.read_csv(HERE / "3rd_edition_full_coupled_demand" / "data_outputs"
+                           / "kerosene_variants.csv.gz")
+    kerosene_s1 = kerosene[kerosene["scenario"] == "S1"]
     for ax, (plot_name, _, _) in zip(all_axes[1], PANEL_ROWS[1]):
         block, key, scale = REFERENCE_SERIES[plot_name]
-        series = np.asarray(reference.data[block][key], dtype=float) * scale
-        first = 1940 if block == "climate_outputs" else 2000
-        years = np.arange(first, first + len(series))
-        projected = years >= LAST_HISTORICAL_YEAR
-        line, = ax.plot(years[projected], series[projected], color="black", linewidth=1.6,
-                        label=REFERENCE_LABEL, zorder=5)
+        if plot_name == "doc_net_energy_per_rpk_comparison":
+            by_case = {
+                case: rows.set_index("year")[key] * scale
+                for case, rows in kerosene_s1.groupby("kerosene")
+            }
+            low, high = by_case["lower quartile"], by_case["upper quartile"]
+            low, high = low.loc[LAST_HISTORICAL_YEAR:], high.loc[LAST_HISTORICAL_YEAR:]
+            ax.fill_between(low.index, low, high, color="black", alpha=0.18, linewidth=0,
+                            zorder=5)
+            line = Patch(facecolor="black", alpha=0.18, label=REFERENCE_LABEL)
+        else:
+            series = np.asarray(reference.data[block][key], dtype=float) * scale
+            first = 1940 if block == "climate_outputs" else 2000
+            years = np.arange(first, first + len(series))
+            projected = years >= LAST_HISTORICAL_YEAR
+            line, = ax.plot(years[projected], series[projected], color="black", linewidth=1.6,
+                            label=REFERENCE_LABEL, zorder=5)
         extra = family_handles if plot_name == "rpk_comparison" else []
         ax.legend(handles=extra + [line, history_handle], fontsize=8, loc="upper left")
 

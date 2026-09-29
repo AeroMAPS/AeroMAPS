@@ -9,8 +9,9 @@
 # a function of total demand, which is itself a coupling variable, and the MDA fails with
 # a coupling shape mismatch. See the module docstring of make_energy_files.py.
 #
-# Fossil kerosene holds the observed 2026 mean price from 2026, not the report-era
-# price of the uncoupled S1, since demand here responds to it.
+# Fossil kerosene holds the 2006-2026 real mean price from 2026, not the report-era
+# price of the uncoupled S1, since demand here responds to it. Each carbon-price
+# pathway replaces it with its own level in ssp_runs.build.
 hefa_oil_crops_trees:
   name: hefa_oil_crops_trees
   environmental_model: top-down
@@ -903,8 +904,8 @@ fossil_kerosene:
         - 0.014922935
         - 0.012596014
         - 0.01133
-        - 0.017027
-        - 0.017027
+        - 0.015587
+        - 0.015587
         method: linear
   outputs: null
 liquid_hydrogen:

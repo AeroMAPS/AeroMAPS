@@ -895,8 +895,8 @@ fossil_kerosene:
         - 0.014922935
         - 0.012596014
         - 0.01133
-        - 0.017027
-        - 0.017027
+        - 0.015587
+        - 0.015587
         method: linear
   outputs: null
 liquid_hydrogen:

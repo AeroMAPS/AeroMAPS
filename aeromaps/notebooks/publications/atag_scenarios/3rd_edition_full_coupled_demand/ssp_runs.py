@@ -31,6 +31,7 @@ from pathlib import Path
 
 from aeromaps import create_process
 from aeromaps.utils.scenarios import find_scenario
+from make_energy_files import KEROSENE_BY_PATHWAY, KEROSENE_LEVELS, kerosene_price
 
 HERE = Path(__file__).resolve().parent
 # The configurations ship with the package; the results they produce stay here.
@@ -115,7 +116,20 @@ def build(pathway, ar6_data, ar6_years, mandate="quantity"):
     for parameter in ("carbon_tax", "exogenous_carbon_price"):
         setattr(process.parameters, f"{parameter}_reference_years", tax_years)
         setattr(process.parameters, f"{parameter}_reference_years_values", tax_values)
+    set_kerosene_level(process, KEROSENE_LEVELS[KEROSENE_BY_PATHWAY[pathway]])
     return process
+
+
+def set_kerosene_level(process, level):
+    """Hold fossil kerosene at ``level`` EUR/MJ from 2026, keeping its history."""
+    key = "fossil_kerosene_mean_mfsp_without_resource"
+    years, values = kerosene_price(
+        getattr(process.parameters, f"{key}_years"),
+        getattr(process.parameters, f"{key}_values"),
+        level=level,
+    )
+    setattr(process.parameters, f"{key}_years", years)
+    setattr(process.parameters, f"{key}_values", values)
 
 
 def output_path(pathway, mandate="quantity"):
