@@ -1009,9 +1009,9 @@ warming_bars = [
     for n in published
 ]
 _FAMILY_SHORT = {
-    "Low-risk diversion": "Low-risk\ndiversion",
-    "Small-scale diversion": "Small-scale\ndiversion",
-    "Long-term combustor technology": "Combustor\ntechnology",
+    "Low-risk diversion": "S1 +\nlow-risk\ndiversion",
+    "Small-scale diversion": "S1 +\nsmall-scale\ndiversion",
+    "Long-term combustor technology": "S1 +\ncombustor\ntechnology",
 }
 for family, label in _FAMILY_SHORT.items():
     warming_bars.append(
@@ -1048,8 +1048,16 @@ def _bars(ax, bars, n_published, ylabel, title, fmt):
 _bars(axes[0], co2_bars, 3, "Cumulative CO$_2$, 2024-2050 [Gt]", "Cumulative CO$_2$ emissions", "{:.1f}")
 _bars(axes[1], cost_bars, 3, "Cumulative energy expenses, 2024-2050 [trillion EUR]",
       "Energy expenses, carbon tax included", "{:.1f}")
-_bars(axes[2], warming_bars, 3, "Warming in 2050 [mK]",
-      "Temperature impact in 2050 (measures applied to S1)", "{:.0f}")
+# The reports' scenarios carry no carbon price, the coupled runs carry the AR6 one:
+# said on the panel, since it is most of the gap between the two groups.
+_top = 1.15 * axes[1].get_ylim()[1]
+axes[1].set_ylim(0, _top)
+for _centre, _text in ((1.0, "ATAG scenarios\nno carbon price"),
+                       (3.5, "Coupled S1\nAR6 carbon price")):
+    axes[1].text(_centre, 0.93 * _top, _text, ha="center", va="top", fontsize=8,
+                 color="0.25")
+axes[1].axvline(2.5, color="0.6", linewidth=0.8, linestyle="--")
+_bars(axes[2], warming_bars, 3, "Warming in 2050 [mK]", "Temperature impact in 2050", "{:.0f}")
 save_fig(fig, name="overview")
 
 print(pd.DataFrame({"CO2 [Gt]": dict((b[0].replace("\n", " "), b[1]) for b in co2_bars)}).round(2))
@@ -1344,10 +1352,22 @@ if share_only and nosaf_only:
                 for case, rows in kerosene_s1.groupby("kerosene")
             }
             low, high = by_case["lower quartile"], by_case["upper quartile"]
+            mean = by_case["mean"].loc[LAST_HISTORICAL_YEAR:]
             low, high = low.loc[LAST_HISTORICAL_YEAR:], high.loc[LAST_HISTORICAL_YEAR:]
-            ax.fill_between(low.index, low, high, color="black", alpha=0.18, linewidth=0,
+            ax.fill_between(low.index, low, high, color="black", alpha=0.3, linewidth=0,
                             zorder=5)
-            line = Patch(facecolor="black", alpha=0.18, label=REFERENCE_LABEL)
+            line, = ax.plot(mean.index, mean, color="black", linewidth=1.6,
+                            label=REFERENCE_LABEL, zorder=6)
+            # The three kerosene prices behind the shade and the coupled pathways, on a
+            # price axis of their own: lower quartile, mean, upper quartile.
+            price_axis = ax.twinx()
+            for price, name in ((2.22, "lower quartile"), (3.03, "mean"), (3.95, "upper quartile")):
+                price_axis.hlines(price, 2026, 2050, color="0.35", linestyle=":", linewidth=1.0)
+                price_axis.text(2049.5, price, f"{name}, {price:.2f} \\$/gal", ha="right",
+                                va="bottom", fontsize=7, color="0.35")
+            price_axis.set_ylim(0.0, 10.0)
+            price_axis.set_ylabel("Kerosene price from 2026 [2026 \\$/gal]", color="0.35")
+            price_axis.tick_params(axis="y", colors="0.35")
         else:
             series = np.asarray(reference.data[block][key], dtype=float) * scale
             first = 1940 if block == "climate_outputs" else 2000
