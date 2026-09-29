@@ -542,7 +542,7 @@ the figure quoted is combustion. The scenarios reproduced here are *well-to-wake
 pathway's full life-cycle emission factor, so their residuals are **expected to sit above** the
 report's numbers, not alongside them. Both scopes are now available from committed outputs, so the
 comparison can be made directly rather than argued: S1 reproduces at 424 Mt well-to-wake and 352 Mt
-tank-to-wake in 2050, against a reported ~400 Mt; S0 at 1,816 Mt and 1,511 Mt against
+tank-to-wake in 2050, against a reported ~400 Mt; S0 at 1,549 Mt and 1,288 Mt against
 ~1,150–1,350 Mt. The tank-to-wake twins are derived from the well-to-wake files by
 `aeromaps.utils.emission_scopes`, following the CORSIA accounting the reports describe.
 
@@ -900,6 +900,154 @@ if scenarios:
 
 
 {raw:typst}`#text(fill: rgb("#c00000"))[`<span style="color:#c00000">Offsets constitute the residual rather than an independent assumption, being computed as whatever volume closes the gap between the combined effect of the other four levers and the stated target of the scenario. Their trajectory is therefore a direct readout of how much the other levers under-deliver relative to the goal, which corresponds to the accounting property discussed below.</span>{raw:typst}`]`
+
+### Overview of scenario outcomes
+
+```{code-cell} python
+:tags: [hide-input]
+
+# The three outcomes the paper compares, one panel each, read from committed outputs.
+# Cumulative CO2 and energy expenses run over the prospective window, 2024 to 2050;
+# warming is the 2050 value. Error bars are the range of an uncertain input: the carbon
+# price of the three SSP2 pathways for the coupled runs, and the low- and high-warming
+# bands, CO2 uncertainty included, for temperature.
+from aeromaps.utils.results_view import load_results as _load
+
+OVERVIEW_FIRST, OVERVIEW_LAST = 2024, 2050
+_TCRE_BEST, _TCRE_LIKELY = 1.65, (1.0, 2.3)
+_CO2_SCALE = {"low": _TCRE_LIKELY[0] / _TCRE_BEST, "central": 1.0, "high": _TCRE_LIKELY[1] / _TCRE_BEST}
+_T_TOTAL = "temperature_increase_from_aviation"
+_T_CO2 = "temperature_increase_from_co2_from_aviation"
+_COUPLED = HERE / "3rd_edition_full_coupled_demand" / "data_outputs"
+_SSPS = {"SSP2-4.5": "ssp2_45", "SSP2-2.6": "ssp2_26", "SSP2-1.9": "ssp2_19"}
+
+
+def _vectors(path):
+    return _load(path).data["vector_outputs"]
+
+
+def _cumulative_expenses(vectors):
+    # Energy expenses including the carbon tax, in trillion EUR.
+    series = vectors["non_discounted_net_energy_expenses"]
+    return series.loc[OVERVIEW_FIRST:OVERVIEW_LAST].sum() / 1e6
+
+
+def _cumulative_co2(vectors):
+    # Before offsets; the sweep stores the same series as co2_emissions.
+    return vectors["co2_emissions_including_energy"].loc[OVERVIEW_FIRST:OVERVIEW_LAST].sum() / 1e3
+
+
+published = {name: view.data["vector_outputs"] for name, view in scenarios.items()}
+SHORT = {name: name.split()[0] for name in published}
+
+# Panel 1: cumulative CO2, published scenarios and the two ends of the lever sweep.
+import sweep as _sweep  # noqa: E402  (on sys.path from the lever-grid cell)
+
+_tidy = _sweep.read_results()
+_co2 = _tidy[_tidy["variable"] == "co2_emissions"]
+_co2 = _co2[(_co2["year"] >= OVERVIEW_FIRST) & (_co2["year"] <= OVERVIEW_LAST)]
+_cells = _co2.groupby(["traffic", "technology", "operations", "saf"])["value"].sum() / 1e3
+_lowest, _highest = _cells.idxmin(), _cells.idxmax()
+_TRAFFIC = {"low": "L", "central": "C", "high": "H"}
+
+
+def _cell_label(cell):
+    traffic, technology, operations, saf = cell
+    return f"{_TRAFFIC[traffic]}$\\cdot${technology}$\\cdot${operations}$\\cdot${saf}"
+
+
+co2_bars = [(SHORT[n], _cumulative_co2(v)) for n, v in published.items()]
+co2_bars += [
+    (f"Lowest\n{_cell_label(_lowest)}", _cells[_lowest]),
+    (f"Highest\n{_cell_label(_highest)}", _cells[_highest]),
+]
+
+# Panel 2: cumulative energy expenses, the coupled runs spanning the three carbon prices.
+cost_bars = [(SHORT[n], _cumulative_expenses(v), None) for n, v in published.items()]
+for label, suffix in (("S1\ncoupled", "_share"), ("S1 coupled\nno SAF", "_nosaf")):
+    values = {
+        ssp: _cumulative_expenses(_vectors(_COUPLED / f"{key}{suffix}.json"))
+        for ssp, key in _SSPS.items()
+    }
+    cost_bars.append((label, values["SSP2-2.6"], (min(values.values()), max(values.values()))))
+
+# Panel 3: 2050 warming, with the low- and high-warming bands and the CO2 uncertainty.
+_bands = pd.read_csv(HERE / "climate_analysis" / "baseline_uncertainty_results.csv.gz")
+_variants = pd.read_csv(HERE / "climate_analysis" / "contrail_variants_results.csv.gz")
+
+
+def _scenario_warming(name, key):
+    row = _bands[(_bands["scenario"] == name) & (_bands["band_key"] == key) & (_bands["year"] == 2050)]
+    co2 = scenarios[name].data["climate_outputs"][_T_CO2].loc[2050]
+    return 1000 * (float(row[_T_TOTAL].iloc[0]) + (_CO2_SCALE[key] - 1.0) * co2)
+
+
+def _variant_warming(family, level):
+    row = _variants[(_variants["family"] == family) & (_variants["level"] == level) & (_variants["year"] == 2050)]
+    key = level.lower()
+    return 1000 * (float(row[_T_TOTAL].iloc[0]) + (_CO2_SCALE[key] - 1.0) * float(row[_T_CO2].iloc[0]))
+
+
+warming_bars = [
+    (SHORT[n], _scenario_warming(n, "central"), (_scenario_warming(n, "low"), _scenario_warming(n, "high")))
+    for n in published
+]
+_FAMILY_SHORT = {
+    "Low-risk diversion": "Low-risk\ndiversion",
+    "Small-scale diversion": "Small-scale\ndiversion",
+    "Long-term combustor technology": "Combustor\ntechnology",
+}
+for family, label in _FAMILY_SHORT.items():
+    warming_bars.append(
+        (label, _variant_warming(family, "Central"),
+         (_variant_warming(family, "Low"), _variant_warming(family, "High")))
+    )
+
+PUBLISHED_COLOUR, VARIANT_COLOUR = "#4C72B0", "#9AA7B8"
+fig, axes = plt.subplots(1, 3, figsize=(15.6, 4.6), layout="constrained")
+
+
+def _bars(ax, bars, n_published, ylabel, title, fmt):
+    labels = [b[0] for b in bars]
+    values = [b[1] for b in bars]
+    colours = [PUBLISHED_COLOUR if i < n_published else VARIANT_COLOUR for i in range(len(bars))]
+    x = np.arange(len(bars))
+    ax.bar(x, values, color=colours, width=0.62)
+    for i, bar in enumerate(bars):
+        spread = bar[2] if len(bar) > 2 else None
+        if spread is not None:
+            ax.errorbar(i, bar[1], yerr=[[bar[1] - spread[0]], [spread[1] - bar[1]]],
+                        color="black", capsize=4, linewidth=1.2)
+        # The value sits at the foot of its bar, below where any error bar reaches.
+        ax.text(i, 0.04 * max(values), fmt.format(bar[1]), ha="center", va="bottom",
+                fontsize=8, color="white", fontweight="bold")
+    ax.set_xticks(x)
+    ax.set_xticklabels(labels, fontsize=8)
+    ax.set_ylabel(ylabel)
+    ax.set_title(title, fontsize=10)
+    ax.grid(alpha=0.3, axis="y")
+    ax.set_ylim(0, max((b[2][1] if len(b) > 2 and b[2] else b[1]) for b in bars) * 1.15)
+
+
+_bars(axes[0], co2_bars, 3, "Cumulative CO$_2$, 2024-2050 [Gt]", "Cumulative CO$_2$ emissions", "{:.1f}")
+_bars(axes[1], cost_bars, 3, "Cumulative energy expenses, 2024-2050 [trillion EUR]",
+      "Energy expenses, carbon tax included", "{:.1f}")
+_bars(axes[2], warming_bars, 3, "Warming in 2050 [mK]",
+      "Temperature impact in 2050 (measures applied to S1)", "{:.0f}")
+save_fig(fig, name="overview")
+
+print(pd.DataFrame({"CO2 [Gt]": dict((b[0].replace("\n", " "), b[1]) for b in co2_bars)}).round(2))
+print(pd.DataFrame({"expenses [T EUR]": {b[0].replace("\n", " "): b[1] for b in cost_bars},
+                    "range": {b[0].replace("\n", " "): b[2] for b in cost_bars}}))
+print(pd.DataFrame({"warming [mK]": {b[0].replace("\n", " "): b[1] for b in warming_bars},
+                    "range": {b[0].replace("\n", " "): b[2] for b in warming_bars}}))
+```
+
+*Outcomes of the published scenarios against the ends of the lever sweep, the coupled runs and the
+contrail avoidance measures, each applied to S1. Cumulative CO₂ is well-to-wake over 2024 to 2050, before offsets.
+Energy expenses include the carbon tax; the error bars on the coupled runs span the SSP2-4.5 and
+SSP2-1.9 carbon prices around SSP2-2.6. Warming bars are central, with the low- and high-warming
+bands of Table 4, CO₂ uncertainty included, as error bars.*
 
 ### Demand-side impacts of transition costs
 
@@ -1419,12 +1567,17 @@ for column, scenario in enumerate(band_scenarios):
     if column == 0:
         ax.set_ylabel("Warming [mK]")
 
-    # rows 2 and 3: the same envelope, on contrails then on the total
+    # rows 2 and 3: the same envelope, on contrails then on the total. The total also
+    # carries the CO2 uncertainty, the low-warming band taking the low TCRE and the
+    # high-warming band the high one, as Table 4 lists them.
     for row, (metric, title) in enumerate(
         ((T_CONTRAILS, "Contrail warming"), (T_TOTAL, "Total warming from aviation")), start=1
     ):
         ax = axes[row, column]
         low, central, high = (band(k, metric) for k in ("low", "central", "high"))
+        if metric == T_TOTAL and view is not None:
+            low = low + (CO2_BAND[0] - 1.0) * co2.reindex(low.index)
+            high = high + (CO2_BAND[1] - 1.0) * co2.reindex(high.index)
         ax.fill_between(low.index, 1000 * low, 1000 * high, alpha=0.25, color="#4C72B0")
         ax.plot(central.index, 1000 * central, color="#4C72B0", linewidth=2)
         ax.set_title(title, fontsize=9)
@@ -1569,6 +1722,7 @@ uses no electricity, since its generic SAF is modelled as biomass only.*
 # warming that follows; both columns share their scale down the figure.
 LEVEL_STYLE = {"Low": ":", "Central": "-", "High": "--"}
 BANDS = ("Low", "Central", "High")
+CO2_SCALE = {"Low": CO2_BAND[0], "Central": 1.0, "High": CO2_BAND[1]}
 
 variants = pd.read_csv(HERE / "climate_analysis" / "contrail_variants_results.csv.gz")
 
@@ -1596,8 +1750,14 @@ for row, (family, frame) in enumerate(MEASURES):
         share_axis.plot(share.index, share, color="#C44E52", linewidth=1.8,
                         linestyle=LEVEL_STYLE[level], label=f"{level} band")
 
-        total = _band_rows(frame, family, level, T_TOTAL)
-        reference_total = _band_rows(frame, "No mitigation", level, T_TOTAL)
+        # CO2 uncertainty on the total, at the TCRE bound of the same band.
+        tcre = CO2_SCALE[level]
+        total = _band_rows(frame, family, level, T_TOTAL) + (tcre - 1.0) * _band_rows(
+            frame, family, level, T_CO2
+        )
+        reference_total = _band_rows(frame, "No mitigation", level, T_TOTAL) + (
+            tcre - 1.0
+        ) * _band_rows(frame, "No mitigation", level, T_CO2)
         warming_axis.plot(total.index, 1000 * total, color="#4C72B0", linewidth=1.8,
                           linestyle=LEVEL_STYLE[level], label=f"{level} band")
         warming_axis.plot(reference_total.index, 1000 * reference_total, color="0.6",

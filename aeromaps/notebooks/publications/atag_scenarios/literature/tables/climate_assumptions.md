@@ -2,9 +2,10 @@
 |---|---|---|---|---|
 | Contrail RF [pW m⁻² km⁻¹] | 1.25 | 2.05 | 2.59 | {cite:t}`lee_contribution_2021` |
 | Contrail efficacy (ERF/RF) | 0.21 | 0.37 | 0.48 | {cite:t}`wang_fuel_2026` |
-| Contrail ERF [pW m⁻² km⁻¹] | 0.26 | 0.76 | 1.26 | rows above |
+| Contrail ERF [pW m⁻² km⁻¹] | 0.26 | 0.76 | 1.26 | Multiplication of the two rows above |
+| CO₂ warming per 1000 PgC (TCRE) [K] | 1.0 | 1.65 | 2.3 | {cite:t}`ipcc_ar6_wg1` |
 | Contrail reduction, 100 % SAF | 67 % | 52 % | 35 % | {cite:t}`wang_fuel_2026` |
-| SAF particle number index [per kg] | 2.18 × 10¹³ | 4.61 × 10¹³ | 8.45 × 10¹³ | row above |
+| SAF particle number index [per kg] | 2.18 × 10¹³ | 4.61 × 10¹³ | 8.45 × 10¹³ | Calculated from row above |
 | Avoidance, low-risk diversion | 23.0 % | 20.0 % | 17.4 % | {cite:t}`teoh2020` |
 | Avoidance, small-scale diversion | 65.6 % | 59.3 % | 52.4 % | {cite:t}`teoh2020` |
 | Fuel penalty, small-scale diversion | 0.017 % | 0.014 % | 0.010 % | {cite:t}`teoh2020` |

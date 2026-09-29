@@ -66,12 +66,8 @@ SCENARIOS = {
         "s2_inputs.json",
         "s2.json",
     ),
-    "3rd edition light S0": (
-        "atag_3rd_edition_light",
-        "3rd_edition_light",
-        "s0_inputs.json",
-        "s0.json",
-    ),
+    # S0 is absent on purpose: it models current policies only, so its offsets are
+    # the regional study's CORSIA offsets, with no glide to net zero (set in s0.ipynb).
     "3rd edition light S1": (
         "atag_3rd_edition_light",
         "3rd_edition_light",

@@ -62,8 +62,19 @@ rows:
       - "0.26"
       - "0.76"
       - "1.26"
-      - rows above
+      - Multiplication of the two rows above
     source: derived
+
+  - cells:
+      - CO$_2$ warming per 1000 PgC (TCRE) [K]
+      - "1.0"
+      - "1.65"
+      - "2.3"
+      - \citet{ipcc_ar6_wg1}
+    source: >-
+      IPCC AR6 WG1, SPM D.1.1, likely range and best estimate; applied in index.md as
+      a scaling of each run's CO2 warming, since the climate model runs one central
+      FaIR configuration
 
   - cells:
       - Contrail reduction, 100 \% SAF
@@ -78,7 +89,7 @@ rows:
       - "$2.18 \\times 10^{13}$"
       - "$4.61 \\times 10^{13}$"
       - "$8.45 \\times 10^{13}$"
-      - row above
+      - Calculated from row above
     source: the ATAG energy files
 
   - cells:
