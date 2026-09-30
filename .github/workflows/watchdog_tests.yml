@@ -75,11 +75,13 @@ jobs:
       - name: List installed packages
         run: uv pip list
 
-      - name: Register venv as Jupyter kernel
+      - name: Register venv as python3 kernel
         run: |
-          uv run python -m ipykernel install --user --name python3
-          # Verify it points to the venv
-          uv run jupyter kernelspec list
+          VENV_PYTHON=$(uv run which python)
+          uv run python -m ipykernel install --user --name python3 \
+            --argv "$VENV_PYTHON -m ipykernel_launcher -f {connection_file}"
+          # Verify
+          cat ~/.local/share/jupyter/kernels/python3/kernel.json
 
       - name: Notebook tests
         run: |
