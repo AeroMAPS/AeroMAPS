@@ -70,11 +70,10 @@ jobs:
       - name: Install dependencies
         run: |
           uv lock
-          uv sync --dev
-
-      - name: Debug
-        run: |
-          uv run python -c "import aeromaps; print(aeromaps.__file__)"   
+          uv sync --dev  
+      
+      - name: Register venv as Jupyter kernel
+        run: uv run python -m ipykernel install --user --name aeromaps-venv
 
       - name: Notebook tests
         run: |
