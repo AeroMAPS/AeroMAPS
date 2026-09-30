@@ -72,6 +72,9 @@ jobs:
           uv lock
           uv sync --dev  
       
+      - name: List installed packages
+        run: uv pip list
+
       - name: Register venv as Jupyter kernel
         run: |
           uv run python -m ipykernel install --user --name python3 --replace

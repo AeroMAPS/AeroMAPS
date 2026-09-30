@@ -86,9 +86,15 @@ jobs:
 
       - name: Install dependencies
         run: uv sync --locked --dev
+      
+      - name: List installed packages
+        run: uv pip list
+
+      - name: Collect only
+        run: uv run pytest aeromaps --collect-only   
 
       - name: Unit tests
-        run: uv run pytest aeromaps
+        run: uv run pytest aeromaps 
 
       - name: Notebook tests
         run: |
