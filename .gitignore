@@ -8,6 +8,8 @@
 /.ipynb_checkpoints
 
 /aeromaps/notebooks/.env
+/aeromaps/aeromaps/aeromaps.egg-info
+/aeromaps/aeromaps.egg-info
 
 __pycache__/
 .python-version
@@ -46,3 +48,11 @@ aeromaps/notebooks/tutorials/11_custom_markets_multi_regions/custom_data_excel/a
 # export/logs rule needs the **/ prefix to match nested notebook folders.
 unlinked.log
 **/export/logs/
+aeromaps.egg-info/dependency_links.txt
+aeromaps.egg-info/entry_points.txt
+aeromaps.egg-info/PKG-INFO
+aeromaps.egg-info/requires.txt
+aeromaps.egg-info/scm_file_list.json
+aeromaps.egg-info/scm_version.json
+aeromaps.egg-info/SOURCES.txt
+aeromaps.egg-info/top_level.txt

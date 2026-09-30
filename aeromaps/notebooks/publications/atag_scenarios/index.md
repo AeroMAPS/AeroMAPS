@@ -1297,7 +1297,7 @@ Scenario configurations and their inputs ship with the package, under
 `scenario.yaml` giving its name, its category and its tags, and
 `aeromaps.utils.scenarios.list_scenarios` reads them. The results those configurations produce stay
 here, in each edition's `data_outputs/`, because a result belongs to the work that reports it. The
-environment is pinned by the repository's `poetry.lock`.
+environment is pinned by the repository's `uv.lock`.
 
 ```{note}
 The figures on this page are produced by code cells that read the committed `data_outputs/` files.
