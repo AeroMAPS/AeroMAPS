@@ -72,6 +72,10 @@ jobs:
           uv lock
           uv sync --dev
 
+      - name: Debug
+        run: |
+          uv run python -c "import aeromaps; print(aeromaps.__file__)"   
+
       - name: Notebook tests
         run: |
           # Find all notebooks to test, excluding specified paths
