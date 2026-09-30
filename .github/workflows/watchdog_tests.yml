@@ -77,7 +77,7 @@ jobs:
 
       - name: Register venv as Jupyter kernel
         run: |
-          uv run python -m ipykernel install --user --name python3 --replace
+          uv run python -m ipykernel install --user --name python3
           # Verify it points to the venv
           uv run jupyter kernelspec list
 
