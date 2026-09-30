@@ -76,10 +76,7 @@ jobs:
         run: uv pip list
 
       - name: Register venv as python3 kernel
-        run: |
-          VENV_PYTHON=$(uv run which python)
-          uv run python -m ipykernel install --user --name python3 \
-            --argv "$VENV_PYTHON -m ipykernel_launcher -f {connection_file}"
+        run: uv run python -m ipykernel install --user --name python3   
           # Verify
           cat ~/.local/share/jupyter/kernels/python3/kernel.json
 
