@@ -6,6 +6,9 @@ All plots discover operational concepts dynamically via ``operations_manager``
 operational effects are built up from the per-concept contributions.
 """
 
+from aeromaps.models.impacts.generic_operations_model.common.operations_use_choice import (
+    category_contribution_column,
+)
 from aeromaps.plots import colors
 from aeromaps.plots.labels import readable_label
 from aeromaps.plots.single_scenario_plot import SingleScenarioPlot, plot_3_x, plot_3_y
@@ -99,7 +102,7 @@ class OperationsGainByCategoryPlot(_OperationsPlot):
         self._stack_columns(
             [
                 (
-                    f"{cat}_operations_gain_contribution",
+                    category_contribution_column(cat, "operations_gain_contribution"),
                     readable_label(cat),
                     category_color[cat],
                 )

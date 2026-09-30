@@ -14,6 +14,9 @@ import os
 import numpy as np
 import pytest
 from aeromaps import create_process
+from aeromaps.models.impacts.generic_operations_model.common.operations_use_choice import (
+    category_contribution_column,
+)
 
 CONFIG = os.path.join(os.path.dirname(__file__), "..", "tested_configs", "config_operations.yaml")
 
@@ -83,7 +86,9 @@ def test_per_concept_contributions_sum_to_aggregate(process):
 def test_category_aggregates_sum_to_total(process):
     df = process.data["vector_outputs"]
     categories = process.operations_manager.get_all_types("category")
-    category_total = sum(df[f"{cat}_operations_gain_contribution"] for cat in categories)
+    category_total = sum(
+        df[category_contribution_column(cat, "operations_gain_contribution")] for cat in categories
+    )
     residual = (df["operations_gain"] - category_total).abs().max()
     assert residual == pytest.approx(0.0, abs=1e-9)
 

@@ -72,11 +72,11 @@ class OperationalConceptManager:
         return self.concepts
 
     def get_all_types(self, parameter: str) -> List:
-        """Return the unique non-None values of an attribute across all concepts."""
+        """Return the unique non-None values of an attribute across all concepts, in declaration order."""
         return list(
-            {
-                getattr(concept, parameter, None)
+            dict.fromkeys(
+                getattr(concept, parameter)
                 for concept in self.concepts
                 if getattr(concept, parameter, None) is not None
-            }
+            )
         )

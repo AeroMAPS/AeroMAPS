@@ -23,6 +23,17 @@ from aeromaps.models.impacts.emissions.co2_emissions import (
     offset_category_column,
     offset_scheme_column,
 )
+from aeromaps.utils.functions import check_unique_names
+
+
+def category_expense_column(category: str) -> str:
+    """Output column of the offset expense of a category of schemes [MEUR].
+
+    The ``category_`` prefix keeps it apart from the per-scheme column
+    ``<scheme>_carbon_offset_expense``: categories are often named like one of their
+    schemes, and a shared name would let the category total overwrite that scheme.
+    """
+    return f"category_{category}_carbon_offset_expense"
 
 
 class OffsetsUseChoice(AeroMAPSModel):
@@ -83,21 +94,23 @@ class OffsetsUseChoice(AeroMAPSModel):
 
         # Aggregates consumed downstream (replace the simple offset models and the
         # single-price carbon offset cost model).
-        self.output_names = {
-            "carbon_offset": pd.Series([0.0]),
-            "carbon_offset_price": pd.Series([0.0]),
-            "carbon_offset_expense": pd.Series([0.0]),
-            "noc_carbon_offset_per_ask": pd.Series([0.0]),
-        }
+        names = [
+            "carbon_offset",
+            "carbon_offset_price",
+            "carbon_offset_expense",
+            "noc_carbon_offset_per_ask",
+        ]
         # Per-scheme quantity (the sub-lever), price and expense.
         for scheme in self.offsets_manager.get_all():
-            self.output_names[offset_scheme_column(scheme.name)] = pd.Series([0.0])
-            self.output_names[f"{scheme.name}_carbon_offset_price"] = pd.Series([0.0])
-            self.output_names[f"{scheme.name}_carbon_offset_expense"] = pd.Series([0.0])
+            names.append(offset_scheme_column(scheme.name))
+            names.append(f"{scheme.name}_carbon_offset_price")
+            names.append(f"{scheme.name}_carbon_offset_expense")
         # Per-category aggregates.
         for category in self.offsets_manager.get_all_types("category"):
-            self.output_names[offset_category_column(category)] = pd.Series([0.0])
-            self.output_names[f"{category}_carbon_offset_expense"] = pd.Series([0.0])
+            names.append(offset_category_column(category))
+            names.append(category_expense_column(category))
+        check_unique_names(self.name, names)
+        self.output_names = {name: pd.Series([0.0]) for name in names}
 
     def compute(self, input_data) -> dict:
         """
@@ -182,7 +195,7 @@ class OffsetsUseChoice(AeroMAPSModel):
 
         for category in per_category_q:
             output_data[offset_category_column(category)] = per_category_q[category]
-            output_data[f"{category}_carbon_offset_expense"] = per_category_e[category]
+            output_data[category_expense_column(category)] = per_category_e[category]
 
         excess = total - co2_emissions.where(prospective, 0.0).fillna(0.0)
         if (excess > 1e-6).any():

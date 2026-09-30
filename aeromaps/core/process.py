@@ -1824,6 +1824,12 @@ class AeroMAPSProcess(object):
                 raise ValueError(
                     "The operational concept configuration file should contain its name"
                 )
+            if concept_data["name"] != concept:
+                # The concept is registered under its key and its inputs under its name.
+                raise ValueError(
+                    f"Operational concept '{concept}': its name field "
+                    f"('{concept_data['name']}') must match its key."
+                )
             if "inputs" not in concept_data:
                 raise ValueError("The operational concept configuration file should contain inputs")
 
@@ -1893,6 +1899,12 @@ class AeroMAPSProcess(object):
             scheme_data = self.offsets_data[scheme]
             if "name" not in scheme_data:
                 raise ValueError("The offsetting scheme configuration file should contain its name")
+            if scheme_data["name"] != scheme:
+                # The scheme is registered under its key and its inputs under its name.
+                raise ValueError(
+                    f"Offsetting scheme '{scheme}': its name field "
+                    f"('{scheme_data['name']}') must match its key."
+                )
             if "inputs" not in scheme_data or "quantity" not in scheme_data["inputs"]:
                 raise ValueError(
                     "The offsetting scheme configuration file should contain inputs with a quantity rule"

@@ -16,6 +16,9 @@ from aeromaps.models.impacts.emissions.co2_emissions import (
     offset_category_column,
     offset_scheme_column,
 )
+from aeromaps.models.impacts.generic_offsets_model.common.offsets_use_choice import (
+    category_expense_column,
+)
 
 CONFIG = os.path.join(os.path.dirname(__file__), "..", "tested_configs", "config_offsets.yaml")
 OFFSETS_DATA = os.path.join(os.path.dirname(CONFIG), "data", "offsets_data.yaml")
@@ -130,7 +133,7 @@ def test_category_aggregates_sum_to_total(process):
     categories = process.offsets_manager.get_all_types("category")
     by_category = sum(df[offset_category_column(c)] for c in categories)
     assert (df["carbon_offset"] - by_category).loc[years].abs().max() == pytest.approx(0.0, abs=TOL)
-    by_category_expense = sum(df[f"{c}_carbon_offset_expense"] for c in categories)
+    by_category_expense = sum(df[category_expense_column(c)] for c in categories)
     assert (df["carbon_offset_expense"] - by_category_expense).loc[
         years
     ].abs().max() == pytest.approx(0.0, abs=TOL)

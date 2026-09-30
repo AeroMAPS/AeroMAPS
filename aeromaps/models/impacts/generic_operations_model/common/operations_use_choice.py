@@ -20,6 +20,24 @@ import numpy as np
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
+from aeromaps.utils.functions import check_unique_names
+
+# Output channels decomposed per concept and per category.
+CONTRIBUTION_CHANNELS = (
+    "operations_gain_contribution",
+    "operations_contrails_gain_contribution",
+    "operations_contrails_overconsumption_contribution",
+)
+
+
+def category_contribution_column(category: str, channel: str) -> str:
+    """Output column of a category aggregate.
+
+    The ``category_`` prefix keeps it apart from the per-concept column
+    ``<concept>_<channel>``: categories are often named like one of their concepts,
+    and a shared name would let the category total overwrite that concept.
+    """
+    return f"category_{category}_{channel}"
 
 
 class OperationsUseChoice(AeroMAPSModel):
@@ -59,31 +77,24 @@ class OperationsUseChoice(AeroMAPSModel):
 
         # Aggregate operational effects consumed downstream (replace the simple
         # operations and contrails models).
-        self.output_names = {
-            "operations_gain": pd.Series([0.0]),
-            "operations_contrails_gain": pd.Series([0.0]),
-            "operations_contrails_overconsumption": pd.Series([0.0]),
-        }
+        names = [
+            "operations_gain",
+            "operations_contrails_gain",
+            "operations_contrails_overconsumption",
+        ]
         # Per-concept contributions (percentage points of the aggregate).
         for concept in self.operations_manager.get_all():
             if concept.has_fuel_efficiency:
-                self.output_names[f"{concept.name}_operations_gain_contribution"] = pd.Series([0.0])
+                names.append(f"{concept.name}_operations_gain_contribution")
             if concept.has_contrails:
-                self.output_names[f"{concept.name}_operations_contrails_gain_contribution"] = (
-                    pd.Series([0.0])
-                )
-                self.output_names[
-                    f"{concept.name}_operations_contrails_overconsumption_contribution"
-                ] = pd.Series([0.0])
+                names.append(f"{concept.name}_operations_contrails_gain_contribution")
+                names.append(f"{concept.name}_operations_contrails_overconsumption_contribution")
         # Per-category aggregates.
         for category in self.operations_manager.get_all_types("category"):
-            self.output_names[f"{category}_operations_gain_contribution"] = pd.Series([0.0])
-            self.output_names[f"{category}_operations_contrails_gain_contribution"] = pd.Series(
-                [0.0]
-            )
-            self.output_names[f"{category}_operations_contrails_overconsumption_contribution"] = (
-                pd.Series([0.0])
-            )
+            for channel in CONTRIBUTION_CHANNELS:
+                names.append(category_contribution_column(category, channel))
+        check_unique_names(self.name, names)
+        self.output_names = {name: pd.Series([0.0]) for name in names}
 
     def compute(self, input_data) -> dict:
         """
@@ -148,18 +159,14 @@ class OperationsUseChoice(AeroMAPSModel):
         # --- Per-category aggregates (sum of the concept contributions in the category) ---
         for category in self.operations_manager.get_all_types("category"):
             concepts = self.operations_manager.get(category=category)
-            for channel in (
-                "operations_gain_contribution",
-                "operations_contrails_gain_contribution",
-                "operations_contrails_overconsumption_contribution",
-            ):
+            for channel in CONTRIBUTION_CHANNELS:
                 columns = [
                     output_data[f"{concept.name}_{channel}"]
                     for concept in concepts
                     if f"{concept.name}_{channel}" in output_data
                 ]
                 total = sum(columns) if columns else pd.Series(0.0, index=full_index)
-                output_data[f"{category}_{channel}"] = total
+                output_data[category_contribution_column(category, channel)] = total
 
         self._store_outputs(output_data)
         return output_data
