@@ -10,6 +10,8 @@
 /aeromaps/notebooks/.env
 /aeromaps/aeromaps/aeromaps.egg-info
 /aeromaps/aeromaps.egg-info
+/aeromaps.egg-info
+
 
 __pycache__/
 .python-version
