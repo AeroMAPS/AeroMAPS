@@ -73,7 +73,10 @@ jobs:
           uv sync --dev  
       
       - name: Register venv as Jupyter kernel
-        run: uv run python -m ipykernel install --user --name aeromaps-venv
+        run: |
+          uv run python -m ipykernel install --user --name python3 --replace
+          # Verify it points to the venv
+          uv run jupyter kernelspec list
 
       - name: Notebook tests
         run: |
