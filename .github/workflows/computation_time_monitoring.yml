@@ -105,10 +105,10 @@ jobs:
           git checkout $BRANCH_NAME
           git stash pop || true
       
-      # # TODO: Removed once migrated to uv
-      # - uses: astral-sh/setup-uv@v7
-      #   with:
-      #     python-version: ${{ matrix.python-version }}
+      # TODO: Removed once migrated to uv
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
         run: |
