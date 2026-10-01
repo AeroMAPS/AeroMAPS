@@ -66,9 +66,7 @@ jobs:
           git fetch origin main:main
           git checkout main
 
-
-      # TODO: change to uv sync --locked --dev once the main 
-      # branch has been updated to use uv
+      #TODO: Removed once migrated to uv
       - name: Install Poetry (for main branch)
         uses: snok/install-poetry@v1
         with:
@@ -76,6 +74,8 @@ jobs:
           virtualenvs-in-project: true
 
       - name: Install dependencies (main)
+      # TODO: change to uv sync --locked --dev once the main 
+      # branch has been updated to use uv
         run: |
           poetry env use ${{ matrix.python-version }}
           poetry install
@@ -103,6 +103,11 @@ jobs:
         run: |
           git checkout $BRANCH_NAME
           git stash pop || true
+      
+      # TODO: Removed once migrated to uv
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
         run: uv sync --locked --dev
