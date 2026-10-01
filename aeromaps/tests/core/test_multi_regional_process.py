@@ -26,6 +26,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import pytest
+import yaml
 
 from aeromaps import create_multi_regional_process
 from aeromaps.core.multi_regional_process import _concat_series
@@ -390,3 +391,62 @@ def test_a_failed_top_level_chain_still_harvests_its_outputs(tutorial_dir, monke
     outputs = process.data["vector_outputs"]
     assert "EU_DOM:rpk" in outputs
     assert "overall:rpk" in outputs
+
+
+# --------------------------------------------------------------------------------
+# A global model, actually instantiated
+# --------------------------------------------------------------------------------
+
+GLOBAL_MODEL = '''
+import pandas as pd
+
+from aeromaps.models.base import AeroMAPSModel
+
+
+class WorldRpk(AeroMAPSModel):
+    """Reads every region's ``{region}:rpk`` and writes one un-namespaced total."""
+
+    def __init__(self, name="world_rpk", *args, **kwargs):
+        super().__init__(name=name, model_type="custom", *args, **kwargs)
+        self.regions = []  # injected by MultiRegionalProcess before custom_setup()
+        self.input_names = {}
+        self.output_names = {"world_rpk": pd.Series([0.0])}
+
+    def custom_setup(self):
+        self.input_names = {f"{region}:rpk": pd.Series([0.0]) for region in self.regions}
+
+    def compute(self, input_data):
+        total = sum(input_data[f"{region}:rpk"] for region in self.regions)
+        self.df.loc[:, "world_rpk"] = total
+        return {"world_rpk": total}
+'''
+
+
+def _with_global_model(tutorial_dir, mode):
+    (tutorial_dir / "world_rpk.py").write_text(GLOBAL_MODEL)
+    config = yaml.safe_load((tutorial_dir / CONFIGS[mode]).read_text())
+    config["regionalisation"]["global_models"] = {
+        "customs": {"world_rpk": "world_rpk.py::WorldRpk"}
+    }
+    path = tutorial_dir / f"global_model_{mode}.yaml"
+    path.write_text(yaml.dump(config))
+    return create_multi_regional_process(
+        configuration_file=str(path), disable_execution_statistics=True
+    )
+
+
+def test_a_global_model_reads_every_region_and_writes_an_unnamespaced_output(tutorial_dir):
+    process = _with_global_model(tutorial_dir, "unified_mda")
+    assert process.models["world_rpk"].regions == process.list_regions()
+
+    process.compute(parallel=False)
+
+    outputs = process.data["vector_outputs"]
+    expected = sum(outputs[f"{region}:rpk"] for region in process.list_regions())
+    np.testing.assert_allclose(outputs["world_rpk"], expected, rtol=1e-12)
+
+
+def test_a_global_model_is_refused_in_separate_processes(tutorial_dir):
+    """Separate processes solve each region alone, so no loop across regions can close."""
+    with pytest.raises(NotImplementedError, match="global_models"):
+        _with_global_model(tutorial_dir, "separate_processes")
