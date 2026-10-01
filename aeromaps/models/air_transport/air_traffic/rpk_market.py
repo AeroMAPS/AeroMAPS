@@ -480,7 +480,7 @@ class RPKElasticity(AeroMAPSModel):
     MARKET_SCOPE = "cross_market"
 
     REFERENCE_AIRFARE_PER_RPK = 0.09236379319842411
-    """The 2019 airfare [EUR/RPK], matching ``global.elasticity.initial_airfare_per_rpk``."""
+    """The 2019 airfare [EUR/RPK], used when the parameters carry no ``initial_airfare_per_rpk``."""
 
     # The physical domain of ``airfare_per_rpk``, as multiples of the 2019 reference: a
     # tenth of it to twenty times it. Declared here as ``_coupling_bounds`` and enforced by
@@ -547,21 +547,24 @@ class RPKElasticity(AeroMAPSModel):
 
     def _initialize_df(self):
         super()._initialize_df()
-        # Seed the airfare ↔ RPK coupling for MDA initialization with the 2019
-        # reference airfare (matches ``global.elasticity.initial_airfare_per_rpk``
-        # in markets.yaml). Saves the user from manually seeding
+        # The reference ``compute`` divides by, so a market file with its own
+        # ``global.elasticity.initial_airfare_per_rpk`` gets a seed and a band around it.
+        reference = (
+            getattr(self.parameters, "initial_airfare_per_rpk", None)
+            or self.REFERENCE_AIRFARE_PER_RPK
+        )
+        # Seed the airfare ↔ RPK coupling for MDA initialization with the reference
+        # airfare. Saves the user from manually seeding
         # ``process.parameters.airfare_per_rpk`` before the first MDA iteration.
         self._coupling_defaults = {
             "airfare_per_rpk": pd.Series(
-                self.REFERENCE_AIRFARE_PER_RPK,
+                reference,
                 index=range(self.historic_start_year, self.end_year + 1),
             )
         }
         # The solver is told the domain; this model does not police it. See
         # AIRFARE_BOUNDS_RELATIVE.
-        low, high = (
-            factor * self.REFERENCE_AIRFARE_PER_RPK for factor in self.AIRFARE_BOUNDS_RELATIVE
-        )
+        low, high = (factor * reference for factor in self.AIRFARE_BOUNDS_RELATIVE)
         self._coupling_bounds = {"airfare_per_rpk": (low, high)}
 
     def compute(self, input_data: dict) -> dict:
