@@ -70,8 +70,8 @@ jobs:
       - name: Install dependencies
         run: |
           uv lock
-          uv sync --dev  
-      
+          uv sync --dev
+
       - name: Register venv as python3 kernel
         run: uv run python -m ipykernel install --user --name python3   
           # Verify
