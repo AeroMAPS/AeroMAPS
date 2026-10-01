@@ -34,18 +34,14 @@ jobs:
 
     steps:
 
-      - name: Checkout current branch
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up uv
-        uses: astral-sh/setup-uv@v7
+      - uses: astral-sh/setup-uv@v7
         with:
           python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
-        run: |
-          uv lock
-          uv sync --locked --dev
+        run: uv sync --locked --dev
 
       - name: Set notebook list
         shell: bash
@@ -71,7 +67,11 @@ jobs:
           git checkout main
 
       - name: Install dependencies (main)
-        run: uv sync --locked --dev
+      # TODO: change to uv sync --locked --dev once the main 
+      # branch has been updated to use uv
+        run: |
+          poetry env use ${{ matrix.python-version }}
+          poetry install
 
       - name: Run notebooks on main branch
         shell: bash
