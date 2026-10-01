@@ -202,3 +202,13 @@ def test_doc_breakdown_groups_pathways(process):
         if isinstance(child, Legend) and child.get_title().get_text().startswith("Energy carrier")
     ]
     assert [text.get_text() for text in carrier_legends[0].get_texts()] == ["All drop-in fuels"]
+
+
+def test_doc_breakdown_rejects_group_label_clashing_with_omitted_pathway(process):
+    """A label equal to an ungrouped pathway's name would silently merge it in."""
+    from aeromaps.plots.single_scenario.costs_generic import NetEnergyDOCPerRPKBreakdown
+
+    active = [p.name for p in NetEnergyDOCPerRPKBreakdown(process)._get_active_pathways()]
+    assert len(active) >= 2
+    with pytest.raises(ValueError, match="not in"):
+        NetEnergyDOCPerRPKBreakdown(process, groups={active[0]: active[1]})

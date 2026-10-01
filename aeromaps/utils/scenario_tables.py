@@ -27,7 +27,8 @@ def output_series(view, name):
     """
     raw = view["vector_outputs"][name] if isinstance(view, dict) else view.data["vector_outputs"][name]
     if isinstance(raw, dict):
-        raw = list(raw.values())
+        # JSON keys are strings: sort them as years, not as text or insertion order.
+        raw = [raw[key] for key in sorted(raw, key=float)]
     return np.asarray(raw, dtype=float)
 
 

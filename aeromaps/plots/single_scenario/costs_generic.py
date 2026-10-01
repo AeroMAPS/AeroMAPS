@@ -3322,6 +3322,17 @@ class NetEnergyDOCPerRPKBreakdown(SingleScenarioPlot):
             return pathways, data, pathway_colors
         from types import SimpleNamespace
 
+        # A label equal to the name of a pathway left out of ``groups`` would merge that
+        # pathway into the group, against the promise that omitted pathways keep a band.
+        ungrouped = {p.name for p in pathways if p.name not in self.groups}
+        clashes = sorted(ungrouped & set(self.groups.values()))
+        if clashes:
+            raise ValueError(
+                f"Group labels {clashes} are also the names of pathways that are not in "
+                "`groups`, which would merge them into the group. Rename the label, or "
+                "map those pathways too."
+            )
+
         order, merged, colors = [], {}, {}
         for p in pathways:
             label = self.groups.get(p.name, p.name)
