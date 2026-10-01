@@ -924,6 +924,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Improvements in aircraft operations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#operational-concepts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Operational concepts
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -6175,6 +6192,62 @@ the achievable consumption gain. The parameter <span class="arithmatex">\(k\)</s
 while the parameter <span class="arithmatex">\(x_0\)</span> allows to set the timing of the implementation. To model the improvement of the operations 
 more finely, it is possible to superimpose different sigmoid functions, for example when the implementation times or 
 the commissioning dates differ.</p>
+<h4 id="operational-concepts">Operational concepts<a class="headerlink" href="#operational-concepts" title="Permanent link">&para;</a></h4>
+<p>The generic operations module describes the operational improvements as a set of concepts, each with its own gain 
+trajectory, instead of a single aggregate gain. It is activated by the <code>models.operations</code> block of the 
+configuration file, and then replaces the simple operations and contrails models. Each concept is declared in a YAML 
+file with a category and one or two channels:</p>
+<ul>
+<li><code>fuel_efficiency</code>, the reduction <span class="arithmatex">\(g_i\)</span> of the energy consumed per ASK [%];</li>
+<li><code>contrails</code>, the reduction of the contrail climate impact [%] and the fuel overconsumption that contrail avoidance 
+causes [%].</li>
+</ul>
+<p>The concepts act on the consumption left by the others, so their gains compose multiplicatively rather than add up. 
+The aggregate operational gain <span class="arithmatex">\(G\)</span> used by the efficiency models is:</p>
+<div class="arithmatex">\[
+G(t) = 1 - \prod_i \big( 1 - g_i(t) \big)
+\]</div>
+<p>The contrail gains compose in the same way, and the overconsumptions compose as increases. The gains only apply from 
+the first prospective year, and to passenger and freight traffic alike. Each aggregate is also attributed to the 
+concepts and to their categories, which gives the per-concept decomposition of the operations lever described in the 
+<a href="../documentation_impacts/#fleet-operations-per-operational-concept">impacts documentation</a>.</p>
+<p>The default concepts are the three blocks of the "Improvements in ATM and aircraft operations" pillar of the 
+DESTINATION 2050 roadmap, 2025 edition: airline operations, airspace and air traffic management, and airports and 
+ground operations. Their fuel burn reductions are given for 2030 and 2050 by the roadmap, and interpolated for 2040:</p>
+<table>
+<thead>
+<tr>
+<th>Concept</th>
+<th style="text-align: center;">2030</th>
+<th style="text-align: center;">2040</th>
+<th style="text-align: center;">2050</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Airline operations</td>
+<td style="text-align: center;">3.5 %</td>
+<td style="text-align: center;">4.3 %</td>
+<td style="text-align: center;">4.7 %</td>
+</tr>
+<tr>
+<td>Airspace and ATM</td>
+<td style="text-align: center;">3.5 %</td>
+<td style="text-align: center;">4.2 %</td>
+<td style="text-align: center;">5.7 %</td>
+</tr>
+<tr>
+<td>Airports and ground operations</td>
+<td style="text-align: center;">0.8 %</td>
+<td style="text-align: center;">1.0 %</td>
+<td style="text-align: center;">1.2 %</td>
+</tr>
+</tbody>
+</table>
+<p>The roadmap values are for flights departing the EU+ region and are applied here to all traffic. The split between 
+airspace and ground operations is an estimate, whose derivation is documented in the default data file. Since the 
+roadmap adds the measures while AeroMAPS composes them, the aggregate gain in 2050 is 11.1 % instead of 11.6 %. 
+Contrail avoidance is not part of this pillar; the default data file shows how to declare it.</p>
 <h3 id="improvements-in-aircraft-load-factor">Improvements in aircraft load factor<a class="headerlink" href="#improvements-in-aircraft-load-factor" title="Permanent link">&para;</a></h3>
 <p>To model the evolution of the load factor, a similar approach to the one used for the 
 energy consumption per ASK is used. The results are summarized in Fig.5. </p>

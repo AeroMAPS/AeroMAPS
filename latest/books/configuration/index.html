@@ -833,10 +833,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#35-modelsclimatefleetenergylife_cycle_assessment" class="md-nav__link">
+  <a href="#35-modelsclimatefleetenergyoperationsoffsetslife_cycle_assessment" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.5 models.&lt;climate|fleet|energy|life_cycle_assessment&gt;
+        3.5 models.&lt;climate|fleet|energy|operations|offsets|life_cycle_assessment&gt;
       
     </span>
   </a>
@@ -898,6 +898,28 @@
     <span class="md-ellipsis">
       
         climate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        operations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#offsets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        offsets
       
     </span>
   </a>
@@ -6117,7 +6139,7 @@ operation-cost bundles must be consistent with the fleet block (see
 <li>Custom models are merged on top of the standard bundles, so a custom model can
   override a standard one by reusing its name.</li>
 </ul>
-<h3 id="35-modelsclimatefleetenergylife_cycle_assessment">3.5 <code>models.&lt;climate|fleet|energy|life_cycle_assessment&gt;</code><a class="headerlink" href="#35-modelsclimatefleetenergylife_cycle_assessment" title="Permanent link">&para;</a></h3>
+<h3 id="35-modelsclimatefleetenergyoperationsoffsetslife_cycle_assessment">3.5 <code>models.&lt;climate|fleet|energy|operations|offsets|life_cycle_assessment&gt;</code><a class="headerlink" href="#35-modelsclimatefleetenergyoperationsoffsetslife_cycle_assessment" title="Permanent link">&para;</a></h3>
 <p>Each block points to that model's own data file. <strong>A model is only initialised if
 its block is present in <em>your</em> config</strong> (the merge fills paths, but presence is
 checked against the user file) — this is how you switch a model on or off.</p>
@@ -6133,6 +6155,12 @@ checked against the user file) — this is how you switch a model on or off.</p>
     energy_carriers_model_data_file: &quot;./default_energy_carriers/energy_carriers_data.yaml&quot;
     resources_model_data_file: &quot;./default_energy_carriers/resources_data.yaml&quot;
     processes_model_data_file: &quot;./default_energy_carriers/processes_data.yaml&quot;
+
+  operations:
+    operations_model_data_file: &quot;./default_operations/operations_data.yaml&quot;
+
+  offsets:
+    offsets_model_data_file: &quot;./default_offsets/offsets_data.yaml&quot;
 
   life_cycle_assessment:
     lca_model_data_file: &quot;./default_lca/default_lca_model.json&quot;
@@ -6211,6 +6239,90 @@ its <code>mandate</code> is ignored.</p>
 (GWP*), <code>climate_model_ipcc.yaml</code>, <code>climate_model_lwe.yaml</code>. Each declares a
 <code>climate_model</code> name and per-species <code>species_settings</code> (sensitivities,
 ERF/RF ratios, efficacies).</p>
+<h3 id="operations">operations<a class="headerlink" href="#operations" title="Permanent link">&para;</a></h3>
+<p><code>operations_model_data_file</code> declares the operational concepts of the generic
+operations module. Declaring the <code>models.operations</code> block replaces the simple
+operations and contrails models by this module; without it, the operational gain
+comes from the parameters of the simple models as before. Each top-level key is a
+concept with a <code>name</code>, an optional <code>category</code> (concepts of a category are summed
+in the outputs and plots) and one or two input channels:</p>
+<pre><code class="language-yaml">airline_operations:
+  name: &quot;airline_operations&quot;
+  category: &quot;airline_operations&quot;
+  inputs:
+    fuel_efficiency:
+      gain: !AeroMapsCustomDataType     # [%] reduction of the energy per ASK
+        years: [2020, 2030, 2040, 2050]
+        values: [0.0, 3.5, 4.3, 4.7]
+        method: linear
+
+contrail_avoidance:
+  name: &quot;contrail_avoidance&quot;
+  category: &quot;contrails&quot;
+  inputs:
+    contrails:
+      gain: !AeroMapsCustomDataType     # [%] reduction of the contrail climate impact
+        years: [2020, 2035, 2050]
+        values: [0.0, 30.0, 60.0]
+        method: linear
+      overconsumption: !AeroMapsCustomDataType   # [%] fuel penalty of avoidance
+        years: [2020, 2050]
+        values: [0.0, 0.5]
+        method: linear
+</code></pre>
+<p>The gains of the concepts compose multiplicatively (see
+<a href="../documentation_airtransport/#operational-concepts">the operations documentation</a>).
+The packaged
+<a href="https://github.com/AeroMAPS/AeroMAPS/blob/main/aeromaps/resources/data/default_operations/operations_data.yaml"><code>operations_data.yaml</code></a>
+holds the three blocks of the DESTINATION 2050 roadmap and documents how their
+values were derived.</p>
+<h3 id="offsets">offsets<a class="headerlink" href="#offsets" title="Permanent link">&para;</a></h3>
+<p><code>offsets_model_data_file</code> declares the offsetting schemes of the generic offsets
+module. Declaring the <code>models.offsets</code> block replaces the simple offset models
+(<code>level_carbon_offset</code>, <code>residual_carbon_offset</code>, <code>manual_carbon_offset</code>) and the
+single offset price by this module; without it, the parameters of the simple models
+apply as before. Each top-level key is a scheme with a <code>name</code>, an optional
+<code>category</code>, a <code>quantity</code> rule and a <code>price</code>:</p>
+<pre><code class="language-yaml">corsia:
+  name: &quot;corsia&quot;
+  category: &quot;offsets&quot;
+  inputs:
+    quantity:
+      mode: &quot;level&quot;                     # emissions above a baseline, times a coverage
+      reference_year: 2019
+      baseline_level_vs_reference_year: !AeroMapsCustomDataType   # [%]
+        years: [2020, 2050]
+        values: [85.0, 85.0]
+        method: linear
+      coverage: !AeroMapsCustomDataType # [%] of emissions in scope
+        years: [2020, 2023, 2024, 2027, 2050]
+        values: [0.0, 0.0, 50.0, 60.0, 60.0]
+        method: linear
+    economics:
+      price: !AeroMapsCustomDataType    # [€/tCO2]
+        years: [2020, 2024, 2035, 2050]
+        values: [20.0, 20.0, 60.0, 60.0]
+        method: linear
+
+removals:
+  name: &quot;removals&quot;
+  category: &quot;removals&quot;
+  inputs:
+    quantity:
+      mode: &quot;share_of_residual&quot;         # share of the emissions left after level schemes
+      share: !AeroMapsCustomDataType    # [%]
+        years: [2020, 2035, 2050]
+        values: [0.0, 0.0, 100.0]
+        method: linear
+    economics:
+      price: !AeroMapsCustomDataType    # [€/tCO2]
+        years: [2020, 2035, 2050]
+        values: [200.0, 200.0, 100.0]
+        method: linear
+</code></pre>
+<p>The third mode, <code>quantity</code>, takes an <code>amount</code> [MtCO2] per year. The rules are
+described in
+<a href="../documentation_impacts/#carbon-offset-per-scheme">the impacts documentation</a>.</p>
 <h3 id="regionalisation-multi-region-studies">regionalisation (multi-region studies)<a class="headerlink" href="#regionalisation-multi-region-studies" title="Permanent link">&para;</a></h3>
 <p>For multi-region runs use <code>MultiRegionalProcess</code> with an entry config that
 contains a top-level <code>regionalisation</code> block instead of (or alongside) the

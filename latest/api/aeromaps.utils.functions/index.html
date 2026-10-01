@@ -1380,6 +1380,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#aeromaps.utils.functions.check_unique_names" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        check_unique_names
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -7688,6 +7699,53 @@ offending callable, and patches GEMSEO's docstring parser to support NumPy
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✅ Cleaned up </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">to_delete</span><span class="p">)</span><span class="si">}</span><span class="s2"> variables&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;⏭ Skipping cleanup during notebook run&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="aeromaps.utils.functions.check_unique_names" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">check_unique_names</span>
+
+
+<a href="#aeromaps.utils.functions.check_unique_names" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">check_unique_names</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">names</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Raise if two outputs share a name, which would make one silently overwrite the other.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>aeromaps/utils/functions.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">813</span>
+<span class="normal">814</span>
+<span class="normal">815</span>
+<span class="normal">816</span>
+<span class="normal">817</span>
+<span class="normal">818</span>
+<span class="normal">819</span>
+<span class="normal">820</span>
+<span class="normal">821</span>
+<span class="normal">822</span>
+<span class="normal">823</span>
+<span class="normal">824</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">check_unique_names</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">names</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raise if two outputs share a name, which would make one silently overwrite the other.&quot;&quot;&quot;</span>
+    <span class="n">seen</span><span class="p">,</span> <span class="n">duplicates</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(),</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">:</span>
+            <span class="n">duplicates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">seen</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">duplicates</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Model &#39;</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">&#39;: output names </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">duplicates</span><span class="p">))</span><span class="si">}</span><span class="s2"> are declared twice. &quot;</span>
+            <span class="s2">&quot;Rename the concepts, schemes or categories involved.&quot;</span>
+        <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
