@@ -25,16 +25,20 @@ from typing import Dict, List, Optional, Literal
 # Third-party imports
 import numpy as np
 import pandas as pd
+from gemseo.algos.sequence_transformer.acceleration import AccelerationMethod
 from gemseo.mda.mda_chain import MDAChain
 from tqdm.auto import tqdm
 
 # Local application imports
-from aeromaps.core.process import AeroMAPSProcess
+from aeromaps.core.process import YEAR_BOUND_NAMES, AeroMAPSProcess
 from aeromaps.core.gemseo import (
     AeroMAPSAutoModelWrapper,
     AeroMAPSCustomModelWrapper,
+    apply_coupling_bounds,
     apply_namespace_to_disciplines,
     build_namespaced_inputs,
+    check_mda_convergence,
+    freeze_nan_masks_after_first_sweep,
 )
 from aeromaps.core import models as aeromaps_models
 from aeromaps.models.multi_regional.regional_aggregator import RegionalAggregator
@@ -47,6 +51,34 @@ from aeromaps.plots.single_scenario import (
 
 # Type alias for execution modes
 ExecutionMode = Literal["unified_mda", "separate_processes"]
+
+
+def _concat_series(frame: pd.DataFrame, series: Dict[str, pd.Series]) -> pd.DataFrame:
+    """Add ``series`` as columns of ``frame``, replacing any column of the same name.
+
+    Columns are concatenated in one pass to avoid DataFrame fragmentation. Names
+    already present in ``frame`` are dropped first: ``compute()`` may be called more
+    than once on the same process, and without this the second call appended a second
+    copy of every column instead of refreshing it.
+
+    Parameters
+    ----------
+    frame
+        The existing DataFrame (returned unchanged when ``series`` is empty).
+    series
+        Mapping of column name to Series.
+
+    Returns
+    -------
+    pd.DataFrame
+        The frame with the new columns.
+    """
+    if not series:
+        return frame
+    stale = [col for col in frame.columns if col in series]
+    if stale:
+        frame = frame.drop(columns=stale)
+    return pd.concat([frame] + [pd.DataFrame({k: v}) for k, v in series.items()], axis=1)
 
 
 class _GlobalOutputsView:
@@ -159,6 +191,10 @@ class MultiRegionalProcess(AeroMAPSProcess):
         self._initialize_configuration_only()
 
         # Read regionalisation config to determine execution mode
+        # How a non-converged MDA is reported: "raise" (default), "warn" or "ignore".
+        # Propagated to the regional processes in separate_processes mode.
+        self.on_mda_failure = "raise"
+
         self._read_regionalisation_config()
 
         # Set execution mode from config (default: separate_processes for scalability)
@@ -190,6 +226,10 @@ class MultiRegionalProcess(AeroMAPSProcess):
 
         # Load optional top-level models that run on aggregated (global-namespace) data
         self._load_top_level_models()
+
+        # Load optional global models: disciplines that are NOT namespaced and whose
+        # grammar spans several regions at once (see _load_global_models).
+        self._load_global_models()
 
         # Reference parameters (year indexing, etc.) from the first region. Needed
         # before building top-level disciplines so models can initialize their dataframes.
@@ -369,17 +409,33 @@ class MultiRegionalProcess(AeroMAPSProcess):
         models
             Dict whose values are either AeroMAPSModel instances or nested dicts of them.
         """
+        self._register_models_into(models, self._top_level_model_names)
+
+    def _register_models_into(self, models, name_list):
+        """Recursively register AeroMAPSModel instances into ``self.models``.
+
+        Parameters
+        ----------
+        models
+            Dict whose values are either AeroMAPSModel instances or nested dicts of them.
+        name_list
+            List that collects the registered model names (mutated in place).
+        """
         from aeromaps.models.base import AeroMAPSModel
 
         for key, value in models.items():
             if isinstance(value, dict):
-                self._register_top_level_models(value)
+                self._register_models_into(value, name_list)
             elif isinstance(value, AeroMAPSModel):
+                # The standard registries hold module-level singletons: copy them, as
+                # AeroMAPSProcess does, so two processes never share a model's state.
+                if getattr(value, "deepcopy_at_init", True):
+                    value = deepcopy(value)
                 self.models[value.name] = value
-                self._top_level_model_names.append(value.name)
+                name_list.append(value.name)
             else:
                 raise TypeError(
-                    f"Top-level model entry '{key}' is not an AeroMAPSModel instance "
+                    f"Model entry '{key}' is not an AeroMAPSModel instance "
                     f"(got {type(value).__name__})."
                 )
 
@@ -455,6 +511,128 @@ class MultiRegionalProcess(AeroMAPSProcess):
             AeroMAPSCustomModelWrapper(model=self.models["aggregator"])
         ] + self._build_namespaced_top_level_disciplines()
 
+    # =========================================================================
+    # Global (non-namespaced) models
+    # =========================================================================
+
+    def _load_global_models(self):
+        """Load optional *global* models: disciplines deliberately kept OUT of namespacing.
+
+        A global model differs from a top-level model on one axis only, but it is a
+        decisive one:
+
+        - a **top-level** model is namespaced to ``self._global_namespace``, so it can
+          only see the aggregated ``{global_namespace}:*`` series. It is a consumer of
+          aggregates, downstream of the aggregator.
+        - a **global** model is *not* namespaced at all. Its grammar is written directly
+          in namespaced terms (``{region}:var``), exactly like ``RegionalAggregator``'s,
+          so it can read one region's variable and write another's. That is what makes
+          it able to close an inter-regional coupling loop — e.g. a fuel market whose
+          clearing price in every region depends on total demand across all regions.
+
+        Declared under ``regionalisation.global_models`` with the same
+        ``standards``/``customs`` structure as a regional ``models`` block::
+
+            regionalisation:
+              execution_mode: unified_mda
+              global_models:
+                customs:
+                  fuel_market: "models/fuel_market.py::FuelMarket"
+
+        Because the region list is not knowable by the model itself, it is injected
+        before ``custom_setup()`` runs (see :meth:`_wrap_global_model`), mirroring how
+        ``AeroMAPSProcess`` injects ``markets`` / ``pathways_manager`` into regional
+        models before calling their ``custom_setup()``.
+
+        Global models only make sense in ``unified_mda`` mode: ``separate_processes``
+        solves each region in isolation and cannot close a loop across regions.
+        """
+        self._global_model_names = []
+
+        global_config = self._regionalisation_config.get("global_models", {})
+        if not global_config:
+            return
+
+        loaded = {}
+        for model_name in global_config.get("standards", []):
+            if hasattr(aeromaps_models, model_name):
+                loaded[model_name] = getattr(aeromaps_models, model_name)
+            else:
+                raise ValueError(
+                    f"Global model '{model_name}' specified in 'regionalisation."
+                    f"global_models.standards' is not found in aeromaps.core.models."
+                )
+
+        customs = global_config.get("customs", None)
+        if customs is not None:
+            loaded.update(self._load_custom_models_from_config(customs))
+
+        self._register_models_into(loaded, self._global_model_names)
+
+        logging.info(
+            f"Loaded {len(self._global_model_names)} global model(s): {self._global_model_names}"
+        )
+
+    def _wrap_global_model(self, model):
+        """Initialize and wrap a single global model as a NON-namespaced discipline.
+
+        Unlike :meth:`_wrap_top_level_model` this method:
+
+        - injects the region list (``model.regions``) and the global namespace
+          (``model.global_namespace``) when the model declares those attributes, and
+        - calls ``custom_setup()`` afterwards, so a model that builds its I/O names
+          dynamically from the region list gets a real grammar instead of the
+          placeholder set in its ``__init__``.
+
+        ``_initialize_df()`` is called twice on purpose: once before ``custom_setup()``
+        so the model has its year index while building its grammar, and once after so
+        that ``_coupling_defaults`` — which typically needs the region list — is rebuilt
+        against the final configuration.
+
+        Parameters
+        ----------
+        model
+            The AeroMAPSModel instance to wrap.
+
+        Returns
+        -------
+        Discipline
+            The wrapped, NOT namespaced, GEMSEO discipline.
+        """
+        model.parameters = self.parameters
+        model._initialize_df()
+
+        if hasattr(model, "climate_historical_data"):
+            raise NotImplementedError(
+                f"Global model '{model.name}' requires climate_historical_data, which is "
+                "not available at the global level."
+            )
+
+        if hasattr(model, "regions"):
+            model.regions = list(self._region_ids)
+        if hasattr(model, "global_namespace"):
+            model.global_namespace = self._global_namespace
+
+        if hasattr(model, "custom_setup"):
+            model.custom_setup()
+
+        # Rebuild the year frames / coupling seeds now that the model is configured.
+        model._initialize_df()
+
+        if getattr(model, "model_type") == "custom":
+            return AeroMAPSCustomModelWrapper(model=model)
+        return AeroMAPSAutoModelWrapper(model=model)
+
+    def _build_global_disciplines(self):
+        """Build the global model disciplines, deliberately WITHOUT namespacing.
+
+        Returns
+        -------
+        list
+            List of GEMSEO disciplines (empty if no global models).
+        """
+        return [self._wrap_global_model(self.models[name]) for name in self._global_model_names]
+
     def _setup_separate_processes(self):
         """Set up separate_processes mode.
 
@@ -464,15 +642,25 @@ class MultiRegionalProcess(AeroMAPSProcess):
         processes, fed with their namespaced outputs. This replaces the previous bespoke
         aggregator call with a normal MDA execution.
         """
+        if self._global_model_names:
+            raise NotImplementedError(
+                f"Global model(s) {self._global_model_names} are declared under "
+                "'regionalisation.global_models', but execution_mode is "
+                "'separate_processes'. A global model exists to close a coupling loop "
+                "across regions, which only 'unified_mda' can solve."
+            )
+
         self.mda_chain = None
         self.disciplines = self._build_top_level_disciplines()
         self._top_level_mda_chain = MDAChain(
             disciplines=self.disciplines,
-            tolerance=1e-5,
+            tolerance=1e-10,
+            max_mda_iter=200,
             initialize_defaults=True,
             inner_mda_name="MDAGaussSeidel",
             log_convergence=False,
         )
+        self._configure_top_level_mda_chain()
         logging.info(
             f"Top-level MDAChain created with {len(self.disciplines)} discipline(s) "
             f"(aggregator + {len(self._top_level_model_names)} top-level model(s))"
@@ -502,19 +690,99 @@ class MultiRegionalProcess(AeroMAPSProcess):
         # couple to the aggregator's outputs within the single MDAChain.
         all_disciplines.extend(self._build_namespaced_top_level_disciplines())
 
+        # Add optional global models. These are NOT namespaced: their grammar already
+        # spans regions, which is what lets them close an inter-regional coupling loop.
+        all_disciplines.extend(self._build_global_disciplines())
+
         self.disciplines = all_disciplines
 
         # Build MDAChain
+        # The solver settings match AeroMAPSProcess: 1e-5 is too loose for the
+        # ``doc_net_energy_per_rpk_mean`` <-> ``rpk`` loop, and the GEMSEO default of 20
+        # iterations stops well short of what a coupled scenario needs.
+        #
         # TODO: Make these kwargs available at a higher level (e.g. config file).
+        # Until then they are tuned from the notebook on the GEMSEO objects themselves,
+        # which is a minefield -- assign on the chain, not on its inner MDAs, and see
+        # "Tuning an MDAChain" in aeromaps/core/gemseo.py.
+        #
+        # inner_mda_settings carries the MDAGaussSeidel defaults (no damping, no
+        # acceleration) explicitly, because it is the only route to those two knobs.
         self.mda_chain = MDAChain(
             disciplines=all_disciplines,
-            tolerance=1e-5,
+            tolerance=1e-10,
+            max_mda_iter=200,
             initialize_defaults=True,
             inner_mda_name="MDAGaussSeidel",
             log_convergence=True,
+            inner_mda_settings={
+                "over_relaxation_factor": 1.0,
+                "acceleration_method": AccelerationMethod.NONE,
+            },
         )
+        self._configure_unified_mda_chain()
 
         logging.info(f"Unified MDAChain created with {len(all_disciplines)} disciplines")
+
+    def _configure_top_level_mda_chain(self):
+        """Install on the top-level chain what its settings do not carry."""
+        # Missing values travel beside the coupling vector rather than inside it.
+        freeze_nan_masks_after_first_sweep(self._top_level_mda_chain)
+
+    def _configure_unified_mda_chain(self):
+        """Install on the unified chain what its settings do not carry."""
+        # Missing values travel beside the coupling vector rather than inside it.
+        freeze_nan_masks_after_first_sweep(self.mda_chain)
+        # Models declare the physical domain of their couplings; the solver enforces it.
+        # Once per region, because each region's copy of a model bounds its own namespaced
+        # coupling: EU_DOM:airfare_per_rpk is not EU_INT:airfare_per_rpk.
+        for region_id, regional_disciplines in self._regional_disciplines.items():
+            apply_coupling_bounds(self.mda_chain, regional_disciplines, f"{region_id}:")
+
+    def _resize_to_year_bounds(self):
+        """Resize everything sized on the year bounds when they have changed since the last run.
+
+        The multi-regional counterpart of ``AeroMAPSProcess._resize_to_year_bounds``. In
+        ``separate_processes`` mode each regional process resizes itself when computed,
+        so only the top level is left. In ``unified_mda`` mode no regional process is
+        computed, and its namespaced disciplines are deep copies holding their own copy
+        of the parameters, so the new bounds are copied onto every model here.
+        """
+        bounds = {
+            region_id: process._year_bounds()
+            for region_id, process in self._regional_processes.items()
+        }
+        if len(set(bounds.values())) > 1:
+            raise ValueError(
+                "All regions must share the same year bounds "
+                f"({', '.join(YEAR_BOUND_NAMES)}), got {bounds}."
+            )
+        if self._year_bounds() == self._sized_year_bounds:
+            return
+
+        if self._execution_mode == "unified_mda":
+            for process in self._regional_processes.values():
+                process._initialize_years()
+        for disc in self.disciplines:
+            for name in YEAR_BOUND_NAMES:
+                setattr(disc.model.parameters, name, getattr(self.parameters, name))
+            disc.model._initialize_df()
+            disc.refresh_coupling_seeds()
+            if disc.cache is not None:
+                disc.cache.clear()
+        self._initialize_data_containers()
+
+        # Same settings, but the coupling defaults are initialised again.
+        if self._execution_mode == "unified_mda":
+            self.mda_chain = self._rebuilt(self.mda_chain)
+            self._configure_unified_mda_chain()
+        else:
+            self._top_level_mda_chain = self._rebuilt(self._top_level_mda_chain)
+            self._configure_top_level_mda_chain()
+
+    def _rebuilt(self, mda_chain):
+        settings = mda_chain.settings.model_copy(update={"initialize_defaults": True}, deep=True)
+        return MDAChain(disciplines=self.disciplines, settings_model=settings)
 
     def _initialize_data_containers(self):
         """Initialize data containers following AeroMAPSProcess structure.
@@ -525,27 +793,24 @@ class MultiRegionalProcess(AeroMAPSProcess):
 
         Same pattern applies to float_outputs and climate_outputs.
         """
-        # Get year index from first regional process
-        first_process = self._regional_processes[self._region_ids[0]]
-
-        # Follow AeroMAPSProcess data structure exactly
-        self.data = {
-            "years": first_process.data.get("years", {}),
-            "float_inputs": {},
-            "str_inputs": {},
-            "vector_inputs": {},
-            "float_outputs": {},  # Keys will be namespaced: "FR:metric", "overall:metric"
-            "vector_outputs": pd.DataFrame(
-                index=first_process.data.get("years", {}).get("full_years", [])
-            ),
-            "climate_outputs": pd.DataFrame(
-                index=first_process.data.get("years", {}).get("climate_full_years", [])
-            ),
-            "lca_outputs": None,  # xarray - handled separately per region
-        }
-
         # Reference to parameters from first region (for year indexing, etc.)
-        self.parameters = first_process.parameters
+        self.parameters = self._regional_processes[self._region_ids[0]].parameters
+
+        # Follow AeroMAPSProcess data structure exactly. The years are built from the
+        # parameters rather than read from a region, which may not be resized yet.
+        self.data = {}
+        self._initialize_years()
+        self.data.update(
+            {
+                "float_inputs": {},
+                "str_inputs": {},
+                "vector_inputs": {},
+                "float_outputs": {},  # Keys will be namespaced: "FR:metric", "overall:metric"
+                "vector_outputs": pd.DataFrame(index=self.data["years"]["full_years"]),
+                "climate_outputs": pd.DataFrame(index=self.data["years"]["climate_full_years"]),
+                "lca_outputs": None,  # xarray - handled separately per region
+            }
+        )
 
     # =========================================================================
     # Public API
@@ -605,10 +870,14 @@ class MultiRegionalProcess(AeroMAPSProcess):
             Only applies when parallel=True.
         """
         logging.info(f"Starting multi-regional computation ({self._execution_mode} mode)...")
+        self._resize_to_year_bounds()
 
         if self._execution_mode == "unified_mda":
             self._compute_unified_mda()
         else:
+            for region_id, regional_process in self._regional_processes.items():
+                regional_process.on_mda_failure = self.on_mda_failure
+                regional_process._mda_context = f"region '{region_id}': "
             self._compute_separate_processes(parallel=parallel, max_workers=max_workers)
 
         logging.info("Multi-regional computation completed.")
@@ -626,6 +895,10 @@ class MultiRegionalProcess(AeroMAPSProcess):
 
         # Update data from MDA results
         self._update_data_from_unified_mda()
+
+        # Checked after the outputs have been harvested, so that a failed run is still
+        # inspectable by whoever catches the error.
+        check_mda_convergence(self.mda_chain, on_failure=self.on_mda_failure)
 
     def _compute_separate_processes(
         self,
@@ -802,18 +1075,14 @@ class MultiRegionalProcess(AeroMAPSProcess):
                 self.data["float_outputs"][key] = float(value)
 
         # Build DataFrames efficiently using concat to avoid fragmentation
-        if vector_series:
-            self.data["vector_outputs"] = pd.concat(
-                [self.data["vector_outputs"]]
-                + [pd.DataFrame({k: v}) for k, v in vector_series.items()],
-                axis=1,
-            )
-        if climate_series:
-            self.data["climate_outputs"] = pd.concat(
-                [self.data["climate_outputs"]]
-                + [pd.DataFrame({k: v}) for k, v in climate_series.items()],
-                axis=1,
-            )
+        self.data["vector_outputs"] = _concat_series(self.data["vector_outputs"], vector_series)
+        self.data["climate_outputs"] = _concat_series(self.data["climate_outputs"], climate_series)
+
+        # Checked after the outputs have been harvested, so that a failed run is still
+        # inspectable by whoever catches the error.
+        check_mda_convergence(
+            self._top_level_mda_chain, context="top-level chain: ", on_failure=self.on_mda_failure
+        )
 
     def _update_data_from_unified_mda(self):
         """Update all data structures from unified MDA results.
@@ -847,6 +1116,16 @@ class MultiRegionalProcess(AeroMAPSProcess):
                 for key, value in model.float_outputs.items():
                     self.data["float_outputs"][f"{region_id}:{key}"] = value
 
+        # Global (non-namespaced) models already own fully-qualified column names
+        # ("EU:price", "world_total_demand"), so their frames are harvested as-is.
+        for model_name in self._global_model_names:
+            model = self.models[model_name]
+            if hasattr(model, "df") and model.df.columns.size:
+                for col in model.df.columns:
+                    vector_series[col] = model.df[col]
+            for key, value in model.float_outputs.items():
+                self.data["float_outputs"][key] = value
+
         # Get global (aggregated) outputs from MDA local_data
         local_data = self.mda_chain.local_data
         global_prefix = f"{self._global_namespace}:"
@@ -862,18 +1141,8 @@ class MultiRegionalProcess(AeroMAPSProcess):
                     self.data["float_outputs"][key] = float(value)
 
         # Build DataFrames efficiently using concat to avoid fragmentation
-        if vector_series:
-            self.data["vector_outputs"] = pd.concat(
-                [self.data["vector_outputs"]]
-                + [pd.DataFrame({k: v}) for k, v in vector_series.items()],
-                axis=1,
-            )
-        if climate_series:
-            self.data["climate_outputs"] = pd.concat(
-                [self.data["climate_outputs"]]
-                + [pd.DataFrame({k: v}) for k, v in climate_series.items()],
-                axis=1,
-            )
+        self.data["vector_outputs"] = _concat_series(self.data["vector_outputs"], vector_series)
+        self.data["climate_outputs"] = _concat_series(self.data["climate_outputs"], climate_series)
 
     # =========================================================================
     # Data Access Methods

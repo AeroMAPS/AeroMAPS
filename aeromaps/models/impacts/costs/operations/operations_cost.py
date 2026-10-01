@@ -34,6 +34,8 @@ class OperationalEfficiencyCost(AeroMAPSModel):
         """
         Execute the computation of operational efficiency costs.
 
+        A zero final gain means no measure is targeted, hence no cost, rather than 0/0.
+
         Parameters
         ----------
         operational_efficiency_cost_non_energy_per_ask_final_value
@@ -48,11 +50,14 @@ class OperationalEfficiencyCost(AeroMAPSModel):
         operational_efficiency_cost_non_energy_per_ask
             Operational efficiency cost non-energy per ASK [€/ASK].
         """
-        operational_efficiency_cost_non_energy_per_ask = (
-            operational_efficiency_cost_non_energy_per_ask_final_value
-            * operations_gain
-            / operations_final_gain
-        )
+        if operations_final_gain == 0:
+            operational_efficiency_cost_non_energy_per_ask = operations_gain * 0.0
+        else:
+            operational_efficiency_cost_non_energy_per_ask = (
+                operational_efficiency_cost_non_energy_per_ask_final_value
+                * operations_gain
+                / operations_final_gain
+            )
         self.df.loc[:, "operational_efficiency_cost_non_energy_per_ask"] = (
             operational_efficiency_cost_non_energy_per_ask
         )

@@ -14,6 +14,7 @@ import numpy as np
 import pandas as pd
 import pytest
 import yaml
+from gemseo.mda.mda_chain import MDAChain
 
 from aeromaps import create_process
 from aeromaps.core.gemseo import AeroMAPSAutoModelWrapper, AeroMAPSCustomModelWrapper
@@ -198,6 +199,33 @@ def test_end_year_changed_between_computes_matches_fresh_processes(tmp_path):
     process.parameters.end_year = 2050
     process.compute()
     _assert_same_outputs(process, reference_2050)
+
+
+def test_a_resized_mda_chain_keeps_its_nan_masks_and_coupling_bounds(tmp_path, monkeypatch):
+    """The chain rebuilt for new year bounds is configured like the one built at creation.
+
+    Neither shows in the results at a solution: the airfare bound is inactive there, and
+    the mask only matters once the solver projects the iterate or a coupling goes NaN.
+    """
+    bounded = {}
+    set_bounds = MDAChain.set_bounds
+
+    def recording_set_bounds(self, bounds):
+        bounded[id(self)] = set(bounds)
+        return set_bounds(self, bounds)
+
+    monkeypatch.setattr(MDAChain, "set_bounds", recording_set_bounds)
+
+    process = _elastic_process(tmp_path)
+    process.compute()
+    process.parameters.end_year = 2070
+    process.compute()
+
+    assert "airfare_per_rpk" in bounded.get(id(process.mda_chain), set())
+    assert process.mda_chain.inner_mdas
+    assert all(
+        getattr(mda, "_aeromaps_masks_installed", False) for mda in process.mda_chain.inner_mdas
+    )
 
 
 def _fleet_process(directory, end_year_at_creation=None):

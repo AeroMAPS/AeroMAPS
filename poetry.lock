@@ -8409,4 +8409,4 @@ lca = ["lca-modeller", "premise"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10, <3.12"
-content-hash = "0bac55ea5c91138889977d2ca05dd97282973c8c43234871ba60293af2f0e578"
+content-hash = "625d71d722c386cc097495af715fec3f05239435264a7066fe8de3a80ab1aa5a"
