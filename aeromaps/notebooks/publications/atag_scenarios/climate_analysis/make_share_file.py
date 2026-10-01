@@ -22,7 +22,7 @@ Run from this directory::
 import json
 from pathlib import Path
 
-from aeromaps.utils.mandates import quantity_to_share
+from aeromaps.utils.mandates import quantity_to_share, realised_dropin_shares
 from aeromaps.utils.scenarios import find_scenario
 
 HERE = Path(__file__).resolve().parent
@@ -75,24 +75,11 @@ models:
 """
 
 
-def realised_shares():
-    """Share of drop-in energy carried by each carrier in the uncoupled S1 run."""
-    outputs = json.loads(SOURCE_OUTPUTS.read_text(encoding="utf-8"))["vector_outputs"]
-    years = list(range(FIRST_YEAR, FIRST_YEAR + len(outputs["energy_consumption_dropin_fuel"])))
-    total = dict(zip(years, outputs["energy_consumption_dropin_fuel"]))
-    shares = {}
-    for column, series in outputs.items():
-        if not column.endswith("_energy_consumption"):
-            continue
-        per_year = dict(zip(years, series))
-        shares[column[: -len("_energy_consumption")]] = {
-            year: (100.0 * per_year[year] / total[year] if total[year] else 0.0) for year in years
-        }
-    return shares
-
-
 def main():
-    quantity_to_share(SOURCE_ENERGY, realised_shares(), output_file=SHARE_ENERGY)
+    realised = realised_dropin_shares(
+        json.loads(SOURCE_OUTPUTS.read_text(encoding="utf-8")), FIRST_YEAR
+    )
+    quantity_to_share(SOURCE_ENERGY, realised, output_file=SHARE_ENERGY)
     body = SHARE_ENERGY.read_text(encoding="utf-8")
     SHARE_ENERGY.write_text(HEADER.format(source=SOURCE_ENERGY.name) + body, encoding="utf-8")
     SHARE_CONFIG.write_text(CONFIG, encoding="utf-8")

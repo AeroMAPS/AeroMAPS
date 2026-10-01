@@ -1,3 +1,4 @@
+import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -18,6 +19,7 @@ from aeromaps.models.impacts.emissions.co2_emissions import (
 from aeromaps.plots import colors
 from aeromaps.plots.labels import readable_label
 from aeromaps.plots.single_scenario_plot import SingleScenarioPlot
+from aeromaps.utils.decomposition import DEFAULT_COLORS as ATAG_COLORS
 from aeromaps.plots.single_scenario_plot import plot_1_x
 from aeromaps.plots.single_scenario_plot import plot_1_y
 
@@ -313,7 +315,7 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
         lever_order : {"aeromaps", "atag"}
             Order in which the levers are stacked. ``"aeromaps"`` (default) follows the
             cascade: efficiency, operations, load factor, energy, offsets. ``"atag"``
-            follows the ATAG roadmap: aircraft technology (efficiency, then the
+            follows the ATAG roadmap, with its colours: aircraft technology (efficiency, then the
             alternative aircraft taken out of the energy lever), operations and load
             factor, drop-in fuels, offsets. Only the stacking changes: each sub-lever
             keeps its value, so the bands still sum to the same total, and
@@ -628,6 +630,20 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
             )
         return upper - values
 
+    @staticmethod
+    def _atag_shades(bands, base, lightest=0.5):
+        """Recolour ``bands`` in shades of the ATAG colour ``base``.
+
+        The sub-levers of one ATAG pillar share its colour, so they are told apart by
+        lightness, from ``base`` towards white. Residual bands stay neutral grey.
+        """
+        neutral = mcolors.to_hex(colors.NEUTRAL)
+        identity = [i for i, (_, _, c) in enumerate(bands) if mcolors.to_hex(c) != neutral]
+        steps = np.linspace(0.0, lightest, max(len(identity), 1))
+        rgb = np.array(mcolors.to_rgb(base))
+        shades = {i: tuple(rgb + (1.0 - rgb) * t) for i, t in zip(identity, steps)}
+        return [(label, values, shades.get(i, c)) for i, (label, values, c) in enumerate(bands)]
+
     def _draw_fills_atag(self):
         """Stack the levers in the ATAG order, from the same sub-lever values.
 
@@ -690,16 +706,27 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
                 colors.LEVER_COLORS["demand"],
             )
         ]
-        upper = col("co2_emissions_last_historical_year_technology_baseline3")
-        upper = self._plot_sub_lever_bands(
-            upper, demand + efficiency + alternative + operations + dropin
+        # ATAG's palette: renewal and the new aircraft are two steps of technology, the
+        # alternative aircraft belong to the technology pillar, and operations and the
+        # load factor share one colour.
+        shade = self._atag_shades
+        renewal = [b for b in efficiency[:2]] if len(efficiency) > 2 else efficiency[:1]
+        technology = efficiency[len(renewal) :] + alternative
+        bands = (
+            demand
+            + shade(renewal, ATAG_COLORS["fleet_renewal"], 0.3)
+            + shade(technology, ATAG_COLORS["next_generation"], 0.5)
+            + shade(operations, ATAG_COLORS["operations"], 0.45)
+            + shade(dropin, ATAG_COLORS["fuel"], 0.55)
         )
+        upper = col("co2_emissions_last_historical_year_technology_baseline3")
+        upper = self._plot_sub_lever_bands(upper, bands)
 
         plt.rc("hatch", linewidth=4)
         offset_bands = self._offset_bands()
         if offset_bands is None:
             offset_bands = [("Carbon offset", col("carbon_offset"), colors.LEVER_COLORS["offset"])]
-        for label, values, color in offset_bands:
+        for label, values, color in self._atag_shades(offset_bands, ATAG_COLORS["market_based"], 0.4):
             upper = self._offset_fill(upper, values, label, color)
 
     def _draw_fills(self):

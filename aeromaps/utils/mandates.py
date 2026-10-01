@@ -75,6 +75,29 @@ def _interpolate(years, values, target):
     raise AssertionError("unreachable: target lies inside the curve")
 
 
+def realised_dropin_shares(outputs, first_year=2000):
+    """Share of drop-in energy [%] carried by each carrier in a computed run.
+
+    ``outputs`` is the parsed outputs JSON of the run. Returns
+    ``{carrier: {year: share}}``, the form ``quantity_to_share`` takes, read from the
+    run's ``<carrier>_energy_consumption`` columns against its total drop-in energy.
+    """
+    vectors = outputs["vector_outputs"]
+    total_series = vectors["energy_consumption_dropin_fuel"]
+    years = list(range(first_year, first_year + len(total_series)))
+    total = dict(zip(years, total_series))
+    suffix = "_energy_consumption"
+    shares = {}
+    for column, series in vectors.items():
+        if not column.endswith(suffix):
+            continue
+        per_year = dict(zip(years, series))
+        shares[column[: -len(suffix)]] = {
+            year: (100.0 * per_year[year] / total[year] if total[year] else 0.0) for year in years
+        }
+    return shares
+
+
 def quantity_to_share(energy_carriers, shares, output_file=None, decimals=10):
     """Rewrite every quantity mandate as the equivalent share mandate.
 
