@@ -60,8 +60,7 @@ jobs:
         id: branch
         shell: bash
         run: |
-          raw_branch_name=$(git rev-parse --abbrev-ref HEAD)
-          echo "BRANCH_NAME=$raw_branch_name" >> $GITHUB_ENV
+          echo "BRANCH_NAME=${{ github.event.pull_request.head.ref }}" >> $GITHUB_ENV
 
       - name: Checkout main branch
         run: |
@@ -106,13 +105,14 @@ jobs:
           git checkout $BRANCH_NAME
           git stash pop || true
       
-      # TODO: Removed once migrated to uv
-      - uses: astral-sh/setup-uv@v7
-        with:
-          python-version: ${{ matrix.python-version }}
+      # # TODO: Removed once migrated to uv
+      # - uses: astral-sh/setup-uv@v7
+      #   with:
+      #     python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
-        run: | 
+        run: |
+          rm -rf .venv uv.lock
           uv lock
           uv sync 
         # --locked 
