@@ -56,7 +56,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-          uv pip install -r docs/requirements.txt
           uv sync  # Install the package for autodoc
 
       - name: Build docs (verification)
@@ -119,8 +118,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          uv pip install -r docs/requirements.txt
-          uv sync# Install the package for autodoc
+          uv sync # Install the package for autodoc
 
       - name: Configure Git for Mike
         run: |
