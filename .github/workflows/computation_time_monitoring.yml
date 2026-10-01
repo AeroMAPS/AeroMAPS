@@ -116,9 +116,6 @@ jobs:
         # --locked 
 
       - name: Debug environment
-        shell```yaml
-
-      - name: Debug environment
         shell: bash
         run: |
           echo "--- pwd ---"
