@@ -365,3 +365,28 @@ def test_standard_models_are_copied_when_registered():
     for model in singletons.values():
         assert process.models[model.name] is not model
         assert type(process.models[model.name]) is type(model)
+
+
+# --------------------------------------------------------------------------------
+# A failed top-level chain stays inspectable
+# --------------------------------------------------------------------------------
+
+
+def test_a_failed_top_level_chain_still_harvests_its_outputs(tutorial_dir, monkeypatch):
+    """The convergence check runs after harvesting, as in the unified and single paths."""
+    from aeromaps.core import multi_regional_process
+    from aeromaps.core.gemseo import MDAConvergenceError
+
+    def failing_top_level_check(mda_chain, context="", on_failure="raise"):
+        if context.startswith("top-level"):
+            raise MDAConvergenceError("top-level chain did not converge")
+
+    monkeypatch.setattr(multi_regional_process, "check_mda_convergence", failing_top_level_check)
+
+    process = _process(tutorial_dir, "separate_processes")
+    with pytest.raises(MDAConvergenceError):
+        process.compute(parallel=False)
+
+    outputs = process.data["vector_outputs"]
+    assert "EU_DOM:rpk" in outputs
+    assert "overall:rpk" in outputs

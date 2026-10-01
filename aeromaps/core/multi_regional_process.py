@@ -1059,9 +1059,6 @@ class MultiRegionalProcess(AeroMAPSProcess):
         # Execute the top-level disciplines (aggregator + optional top-level models)
         # as a standard MDA, fed with the regional outputs.
         self._top_level_mda_chain.execute(top_level_input)
-        check_mda_convergence(
-            self._top_level_mda_chain, context="top-level chain: ", on_failure=self.on_mda_failure
-        )
 
         # Harvest global (namespaced) outputs produced by the top-level chain.
         global_prefix = f"{self._global_namespace}:"
@@ -1080,6 +1077,12 @@ class MultiRegionalProcess(AeroMAPSProcess):
         # Build DataFrames efficiently using concat to avoid fragmentation
         self.data["vector_outputs"] = _concat_series(self.data["vector_outputs"], vector_series)
         self.data["climate_outputs"] = _concat_series(self.data["climate_outputs"], climate_series)
+
+        # Checked after the outputs have been harvested, so that a failed run is still
+        # inspectable by whoever catches the error.
+        check_mda_convergence(
+            self._top_level_mda_chain, context="top-level chain: ", on_failure=self.on_mda_failure
+        )
 
     def _update_data_from_unified_mda(self):
         """Update all data structures from unified MDA results.
