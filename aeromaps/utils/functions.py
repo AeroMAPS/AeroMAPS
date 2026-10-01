@@ -808,3 +808,17 @@ def clean_notebooks_on_tests(namespace=None, force_cleanup=False):
         logger.info(f"✅ Cleaned up {len(to_delete)} variables")
     else:
         logger.info("⏭ Skipping cleanup during notebook run")
+
+
+def check_unique_names(model_name, names):
+    """Raise if two outputs share a name, which would make one silently overwrite the other."""
+    seen, duplicates = set(), []
+    for name in names:
+        if name in seen:
+            duplicates.append(name)
+        seen.add(name)
+    if duplicates:
+        raise ValueError(
+            f"Model '{model_name}': output names {sorted(set(duplicates))} are declared twice. "
+            "Rename the concepts, schemes or categories involved."
+        )

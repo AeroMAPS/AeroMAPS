@@ -314,6 +314,44 @@ while the parameter $x_0$ allows to set the timing of the implementation. To mod
 more finely, it is possible to superimpose different sigmoid functions, for example when the implementation times or 
 the commissioning dates differ.
 
+#### Operational concepts
+
+The generic operations module describes the operational improvements as a set of concepts, each with its own gain 
+trajectory, instead of a single aggregate gain. It is activated by the `models.operations` block of the 
+configuration file, and then replaces the simple operations and contrails models. Each concept is declared in a YAML 
+file with a category and one or two channels:
+
+- `fuel_efficiency`, the reduction $g_i$ of the energy consumed per ASK [%];
+- `contrails`, the reduction of the contrail climate impact [%] and the fuel overconsumption that contrail avoidance 
+causes [%].
+
+The concepts act on the consumption left by the others, so their gains compose multiplicatively rather than add up. 
+The aggregate operational gain $G$ used by the efficiency models is:
+
+$$
+G(t) = 1 - \prod_i \big( 1 - g_i(t) \big)
+$$
+
+The contrail gains compose in the same way, and the overconsumptions compose as increases. The gains only apply from 
+the first prospective year, and to passenger and freight traffic alike. Each aggregate is also attributed to the 
+concepts and to their categories, which gives the per-concept decomposition of the operations lever described in the 
+[impacts documentation](documentation_impacts.md#fleet-operations-per-operational-concept).
+
+The default concepts are the three blocks of the "Improvements in ATM and aircraft operations" pillar of the 
+DESTINATION 2050 roadmap, 2025 edition: airline operations, airspace and air traffic management, and airports and 
+ground operations. Their fuel burn reductions are given for 2030 and 2050 by the roadmap, and interpolated for 2040:
+
+| Concept | 2030 | 2040 | 2050 |
+|---|:---:|:---:|:---:|
+| Airline operations | 3.5 % | 4.3 % | 4.7 % |
+| Airspace and ATM | 3.5 % | 4.2 % | 5.7 % |
+| Airports and ground operations | 0.8 % | 1.0 % | 1.2 % |
+
+The roadmap values are for flights departing the EU+ region and are applied here to all traffic. The split between 
+airspace and ground operations is an estimate, whose derivation is documented in the default data file. Since the 
+roadmap adds the measures while AeroMAPS composes them, the aggregate gain in 2050 is 11.1 % instead of 11.6 %. 
+Contrail avoidance is not part of this pillar; the default data file shows how to declare it.
+
 
 ### Improvements in aircraft load factor
 

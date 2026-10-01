@@ -1,0 +1,33 @@
+# Two schemes in one category, one of them named like the category: the category
+# expense must not overwrite that scheme's own expense.
+removals:
+  name: "removals"
+  category: "removals"
+  inputs:
+    quantity:
+      mode: "quantity"
+      amount: !AeroMapsCustomDataType
+        years: [2020, 2050]
+        values: [10.0, 10.0]
+        method: linear
+    economics:
+      price: !AeroMapsCustomDataType
+        years: [2020, 2050]
+        values: [100.0, 100.0]
+        method: linear
+
+direct_air_capture:
+  name: "direct_air_capture"
+  category: "removals"
+  inputs:
+    quantity:
+      mode: "quantity"
+      amount: !AeroMapsCustomDataType
+        years: [2020, 2050]
+        values: [5.0, 5.0]
+        method: linear
+    economics:
+      price: !AeroMapsCustomDataType
+        years: [2020, 2050]
+        values: [400.0, 400.0]
+        method: linear
