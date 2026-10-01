@@ -19,6 +19,23 @@ Two pieces, both deliberately unopinionated about what is being tabulated:
 import numpy as np
 
 
+def output_series(view, name):
+    """One vector output of a view, or of committed outputs, as a float array.
+
+    Accepts anything holding ``data["vector_outputs"]``: a ``ResultsView``, a process,
+    or the parsed JSON of a results file. A year-keyed dict is read in year order.
+    """
+    raw = view["vector_outputs"][name] if isinstance(view, dict) else view.data["vector_outputs"][name]
+    if isinstance(raw, dict):
+        raw = list(raw.values())
+    return np.asarray(raw, dtype=float)
+
+
+def value_at(values, year, first_year=2000):
+    """The value of a year-indexed array at ``year``."""
+    return values[year - first_year]
+
+
 def relative_errors(
     reproduced, reference_years, reference_values, at_years, cumulative_span, first_year=2000
 ):

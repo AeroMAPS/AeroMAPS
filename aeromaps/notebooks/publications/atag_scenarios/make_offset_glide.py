@@ -42,9 +42,9 @@ then re-run the five notebooks so the outputs match the inputs.
 import json
 from pathlib import Path
 
-import numpy as np
 
 from aeromaps.utils.offsets import residual_share_for_net_target
+from aeromaps.utils.scenario_tables import output_series
 from aeromaps.utils.scenarios import find_scenario
 
 FIRST_YEAR = 2000
@@ -86,12 +86,6 @@ KEY_YEARS = "residual_carbon_offset_share_reference_years"
 KEY_VALUES = "residual_carbon_offset_share_reference_years_values"
 
 
-def _series(outputs, name):
-    """One vector output as a year-indexed float array."""
-    raw = outputs["vector_outputs"][name]
-    return np.asarray(list(raw.values()) if isinstance(raw, dict) else raw, dtype=float)
-
-
 def _find(node, key):
     """The value of ``key`` wherever it sits in a nested inputs file."""
     if isinstance(node, dict):
@@ -107,8 +101,8 @@ def _find(node, key):
 def glide(outputs):
     """The annual share schedule, plus the net trajectory it produces."""
     years, shares, net_handover = residual_share_for_net_target(
-        _series(outputs, "co2_emissions_including_energy"),
-        _series(outputs, "carbon_offset"),
+        output_series(outputs, "co2_emissions_including_energy"),
+        output_series(outputs, "carbon_offset"),
         handover_year=HANDOVER,
         net_zero_year=NET_ZERO,
         first_year=FIRST_YEAR,

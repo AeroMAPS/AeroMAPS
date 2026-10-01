@@ -41,7 +41,12 @@ import yaml
 
 from aeromaps.utils.decomposition import pillar_totals
 from aeromaps.utils.results_view import load_results
-from aeromaps.utils.scenario_tables import latex_table, relative_errors
+from aeromaps.utils.scenario_tables import (
+    latex_table,
+    output_series as series,
+    relative_errors,
+    value_at,
+)
 
 HERE = Path(__file__).parent
 
@@ -55,13 +60,8 @@ ERROR_YEARS = (2030, 2040, 2050)
 CUMULATIVE_SPAN = (2024, 2050)
 
 
-def series(view, name):
-    """One vector output as a float array."""
-    return np.asarray(view.data["vector_outputs"][name], dtype=float)
-
-
 def at(values, year, first_year=FIRST_YEAR):
-    return values[year - first_year]
+    return value_at(values, year, first_year)
 
 
 # --------------------------------------------------------------------------- 1

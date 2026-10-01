@@ -1,0 +1,7 @@
+name: "ATAG Waypoint 2050, third edition (bottom-up)"
+category: institutional
+tags: ["atag reference", "exogenous demand", "bottom-up"]
+description: >-
+  S0, S1 and S2 of the third edition rebuilt with the bottom-up fleet and the generic
+  operations and offsets modules, fitted to the top-down runs, so that the detailed
+  CO2 decomposition applies to them.
