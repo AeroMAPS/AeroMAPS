@@ -60,7 +60,7 @@ jobs:
 
       - name: Build docs (verification)
         run: |
-          mkdocs build
+          uv run mkdocs build
           echo "Build successful! Site generated in ./site/"
 
   # Check if we should deploy (for push events)
@@ -127,7 +127,7 @@ jobs:
 
       - name: Build docs (verification)
         run: |
-          mkdocs build
+          uv run mkdocs build
           echo "Build successful! Site generated in ./site/"
           ls -la site/
 
