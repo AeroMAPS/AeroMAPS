@@ -1100,9 +1100,12 @@ class AeroMAPSProcess(object):
             # This is needed since fleet model is particular discipline
             input_data["dummy_fleet_model_output"] = np.array([1.0])
 
-        # Initialize the dataframes witjh latest parameter values
+        # Initialize the dataframes witjh latest parameter values, then re-register the
+        # coupling seeds the models rebuilt on them (e.g. for a changed end_year)
         for disc in self.disciplines:
             disc.model._initialize_df()
+            if isinstance(disc, (AeroMAPSAutoModelWrapper, AeroMAPSCustomModelWrapper)):
+                disc.refresh_coupling_seeds()
 
         return input_data
 
