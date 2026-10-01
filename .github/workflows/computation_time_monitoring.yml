@@ -114,6 +114,9 @@ jobs:
           uv lock
           uv sync --locked --dev
 
+      - name: Verify pytest is installed
+        run: uv run pytest --version
+
       - name: Run notebooks on current branch
         shell: bash
         env:
