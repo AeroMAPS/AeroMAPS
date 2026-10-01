@@ -54,12 +54,12 @@ jobs:
           echo "aeromaps/notebooks/publications/joas_2023/examples_joas_application.ipynb" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
-      - name: Save current head ref
+      - name: Save current branch name
+        id: branch
         shell: bash
         run: |
-          # For pull_request events HEAD is detached; use the PR head SHA instead.
-          echo "PR_HEAD_SHA=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
-          echo "BRANCH_NAME=${{ github.event.pull_request.head.ref }}" >> $GITHUB_ENV
+          raw_branch_name=$(git rev-parse --abbrev-ref HEAD)
+          echo "BRANCH_NAME=$raw_branch_name" >> $GITHUB_ENV
 
       - name: Checkout main branch
         run: |
@@ -101,7 +101,7 @@ jobs:
 
       - name: Restore branch
         run: |
-          git checkout "$PR_HEAD_SHA"
+          git checkout $BRANCH_NAME
           git stash pop || true
       
       # TODO: Removed once migrated to uv
@@ -109,14 +109,12 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install dependencies (current branch)
+      - name: Install dependencies
         run: | 
-          rm -rf .venv uv.lock
           uv lock
           uv sync 
         # --locked 
 
-      #TODO: Removed once ci is fixed
       - name: Debug environment
         shell: bash
         run: |
