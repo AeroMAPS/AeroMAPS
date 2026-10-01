@@ -43,7 +43,9 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
-        run: uv sync --locked --dev
+        run: |
+          uv lock
+          uv sync --locked --dev
 
       - name: Set notebook list
         shell: bash
