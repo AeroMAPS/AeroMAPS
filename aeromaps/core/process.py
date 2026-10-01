@@ -32,7 +32,13 @@ from gemseo import generate_n2_plot
 
 # Local application imports
 from aeromaps.models.base import AeroMAPSModel, AeroMapsCustomDataType
-from aeromaps.core.gemseo import AeroMAPSAutoModelWrapper, AeroMAPSCustomModelWrapper
+from aeromaps.core.gemseo import (
+    AeroMAPSAutoModelWrapper,
+    AeroMAPSCustomModelWrapper,
+    apply_coupling_bounds,
+    check_mda_convergence,
+    freeze_nan_masks_after_first_sweep,
+)
 from aeromaps.core import models as aeromaps_models
 
 from aeromaps.models.parameters import Parameters
@@ -132,6 +138,14 @@ DEFAULT_CONFIG_PATH = os.path.join(CURRENT_DIR, "..", "resources", "data", "conf
 
 # Base directory for resources/data (used to resolve relative paths in config.yaml)
 DEFAULT_RESOURCES_DATA_DIR = os.path.join(CURRENT_DIR, "..", "resources", "data")
+
+# The parameters every year index, output frame and coupling seed is sized on.
+YEAR_BOUND_NAMES = (
+    "climate_historic_start_year",
+    "historic_start_year",
+    "prospection_start_year",
+    "end_year",
+)
 
 # TODO(flex-start-year): delete this guard once downstream configs are migrated
 # and a release cycle has passed (target: remove after 2026-12, or once no
@@ -281,6 +295,14 @@ class AeroMAPSProcess(object):
 
         # Initialize offsets_manager to None - will be populated if generic offsets models are used
         self.offsets_manager = None
+
+        # How a non-converged MDA is reported at the end of compute(): "raise"
+        # (default), "warn" or "ignore". An unconverged run is not a solution of the
+        # coupled system and is indistinguishable from a converged one in the output
+        # DataFrames, hence the default. Set to "warn" from a notebook to inspect a
+        # scenario that does not converge yet.
+        self.on_mda_failure = "raise"
+        self._mda_context = ""
 
         custom_logger_config(logging.getLogger("gemseo.utils.source_parsing"))
 
@@ -521,6 +543,8 @@ class AeroMAPSProcess(object):
         # (doc_net_energy_per_rpk_mean <-> rpk). At 1e-5 the Gauss-Seidel solver
         # reports convergence while that coupling is still ~25% off in SAF-type
         # scenarios; max_mda_iter gives it room to reach the tighter tolerance.
+        # Tuning these from a notebook is a minefield -- assign on the chain, not on
+        # its inner MDAs, and see "Tuning an MDAChain" in aeromaps/core/gemseo.py.
         self.mda_chain = MDAChain(
             disciplines=self.disciplines,
             tolerance=1e-10,
@@ -529,6 +553,14 @@ class AeroMAPSProcess(object):
             inner_mda_name="MDAGaussSeidel",
             log_convergence=True,
         )
+        self._configure_mda_chain()
+
+    def _configure_mda_chain(self):
+        """Install on ``mda_chain`` what its settings do not carry, so a rebuilt chain gets it too."""
+        # Missing values travel beside the coupling vector rather than inside it.
+        freeze_nan_masks_after_first_sweep(self.mda_chain)
+        # Models declare the physical domain of their couplings; the solver enforces it.
+        apply_coupling_bounds(self.mda_chain, self.disciplines)
 
     def setup_optimisation(self):
         """Configure the process for GEMSEO-based optimization.
@@ -613,6 +645,7 @@ class AeroMAPSProcess(object):
         updates the internal data structures with model outputs.
         """
         input_data = self._pre_compute()
+        ran_mda = False
         if hasattr(self, "scenario") and self.scenario:
             if hasattr(self, "scenario_adapted") and self.scenario_adapted:
                 if self.gemseo_settings.get("algorithm_outer") is None:
@@ -633,8 +666,16 @@ class AeroMAPSProcess(object):
             else:
                 logging.info("Running MDA")
                 self.mda_chain.execute(input_data=input_data)
+                ran_mda = True
 
         self._update_data_from_model()
+
+        # Checked after the outputs have been harvested, so that a failed run is still
+        # inspectable by whoever catches the error.
+        if ran_mda:
+            check_mda_convergence(
+                self.mda_chain, context=self._mda_context, on_failure=self.on_mda_failure
+            )
 
     def get_dataframes(self):
         """Return all main DataFrames as a dictionary, generated on demand.
@@ -1113,12 +1154,7 @@ class AeroMAPSProcess(object):
         return input_data
 
     def _year_bounds(self):
-        return (
-            self.parameters.climate_historic_start_year,
-            self.parameters.historic_start_year,
-            self.parameters.prospection_start_year,
-            self.parameters.end_year,
-        )
+        return tuple(getattr(self.parameters, name) for name in YEAR_BOUND_NAMES)
 
     def _resize_to_year_bounds(self):
         """Discard the state sized on previous year bounds when they have changed.
@@ -1141,6 +1177,7 @@ class AeroMAPSProcess(object):
                 update={"initialize_defaults": True}, deep=True
             )
             self.mda_chain = MDAChain(disciplines=self.disciplines, settings_model=settings)
+            self._configure_mda_chain()
 
     def _initialize_configuration(self):
         """Load and merge configuration settings.
