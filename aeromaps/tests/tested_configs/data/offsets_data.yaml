@@ -1,0 +1,52 @@
+corsia:
+  name: "corsia"
+  category: "offsets"
+  inputs:
+    quantity:
+      mode: "level"
+      reference_year: 2019
+      baseline_level_vs_reference_year: !AeroMapsCustomDataType
+        years: [2020, 2035]
+        values: [85.0, 85.0]
+        method: linear
+      coverage: !AeroMapsCustomDataType
+        years: [2020, 2027, 2035]
+        values: [50.0, 60.0, 60.0]
+        method: linear
+    economics:
+      price: !AeroMapsCustomDataType
+        years: [2020, 2035]
+        values: [20.0, 60.0]
+        method: linear
+
+ets:
+  name: "ets"
+  category: "allowances"
+  inputs:
+    quantity:
+      mode: "quantity"
+      amount: !AeroMapsCustomDataType
+        years: [2020, 2050]
+        values: [5.0, 5.0]
+        method: linear
+    economics:
+      price: !AeroMapsCustomDataType
+        years: [2020, 2050]
+        values: [80.0, 120.0]
+        method: linear
+
+removals:
+  name: "removals"
+  category: "removals"
+  inputs:
+    quantity:
+      mode: "share_of_residual"
+      share: !AeroMapsCustomDataType
+        years: [2035, 2050]
+        values: [0.0, 100.0]
+        method: linear
+    economics:
+      price: !AeroMapsCustomDataType
+        years: [2035, 2050]
+        values: [200.0, 100.0]
+        method: linear

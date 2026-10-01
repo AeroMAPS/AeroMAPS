@@ -1,0 +1,21 @@
+# Two concepts in one category, one of them named like the category: the category
+# aggregate must not overwrite that concept's own contribution.
+airline_operations:
+  name: "airline_operations"
+  category: "airline_operations"
+  inputs:
+    fuel_efficiency:
+      gain: !AeroMapsCustomDataType
+        years: [2020, 2050]
+        values: [0.0, 4.0]
+        method: linear
+
+single_engine_taxi:
+  name: "single_engine_taxi"
+  category: "airline_operations"
+  inputs:
+    fuel_efficiency:
+      gain: !AeroMapsCustomDataType
+        years: [2020, 2050]
+        values: [0.0, 2.0]
+        method: linear

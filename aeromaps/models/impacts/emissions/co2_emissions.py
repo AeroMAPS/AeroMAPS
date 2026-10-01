@@ -4,11 +4,220 @@ co2_emissions
 This module contains models for calculating CO2 emissions and related factors.
 """
 
+import logging
+import re
 from typing import Tuple
 
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
+from aeromaps.utils.defaults import get_default_series
+
+
+def slugify(name: str) -> str:
+    """Convert an arbitrary name (aircraft, category...) into a valid variable name chunk."""
+    return re.sub(r"[^0-9a-zA-Z]+", "_", name).strip("_").lower()
+
+
+# Named sub-levers of the per-aircraft decomposition of the aircraft efficiency lever.
+EFFICIENCY_SUB_LEVERS = ("fleet_renewal", "continuous_improvement", "freight", "other")
+
+# Residual of the per-pathway decomposition of the aircraft energy lever.
+ENERGY_SUB_LEVER_OTHER = "co2_emissions_lever_energy_other"
+
+
+def efficiency_sub_lever_column(name: str) -> str:
+    """Output column of a named efficiency sub-lever (fleet renewal, freight...)."""
+    return f"co2_emissions_lever_efficiency_{name}"
+
+
+def aircraft_efficiency_column(aircraft_slug: str) -> str:
+    """Output column holding the contribution of one aircraft to the efficiency lever.
+
+    The ``aircraft`` segment keeps these columns apart from the per-market ones
+    (``..._efficiency_market_<id>``), so consumers never have to filter by prefix.
+    """
+    return f"co2_emissions_lever_efficiency_aircraft_{aircraft_slug}"
+
+
+def pathway_energy_column(pathway: str) -> str:
+    """Output column holding the contribution of one energy pathway to the energy lever."""
+    return f"co2_emissions_lever_energy_pathway_{pathway}"
+
+
+def aircraft_efficiency_lever_names(fleet) -> dict:
+    """
+    Map each aircraft of a fleet to the name of the output variable containing its
+    contribution to the aircraft efficiency lever of action.
+
+    Used both by DetailedCo2EmissionsPerAircraft and by the plots so that variable
+    names are built consistently.
+
+    Parameters
+    ----------
+    fleet
+        Fleet instance containing the fleet structure and aircraft definitions.
+
+    Returns
+    -------
+    lever_names
+        Dictionary mapping (category name, subcategory name, aircraft name) tuples
+        to output variable names.
+    """
+    lever_names = {}
+    for category in fleet.categories.values():
+        for subcategory in category.subcategories.values():
+            for aircraft in subcategory.aircraft.values():
+                lever_name = aircraft_efficiency_column(
+                    f"{slugify(category.name)}_{slugify(aircraft.name)}"
+                )
+                if lever_name in lever_names.values():
+                    lever_name = aircraft_efficiency_column(
+                        f"{slugify(category.name)}_{slugify(subcategory.name)}_"
+                        f"{slugify(aircraft.name)}"
+                    )
+                lever_names[(category.name, subcategory.name, aircraft.name)] = lever_name
+    return lever_names
+
+
+def aircraft_efficiency_sub_lever_columns(fleet) -> list:
+    """All columns of the per-aircraft decomposition of the efficiency lever.
+
+    Named sub-levers first (fleet renewal, continuous improvement, freight, residual),
+    then one column per aircraft of ``fleet``. Their sum is the global efficiency lever.
+    """
+    return [efficiency_sub_lever_column(name) for name in EFFICIENCY_SUB_LEVERS] + list(
+        aircraft_efficiency_lever_names(fleet).values()
+    )
+
+
+def pathway_energy_sub_lever_columns(pathways_manager) -> list:
+    """All columns of the per-pathway decomposition of the energy lever, residual last."""
+    return [pathway_energy_column(pathway.name) for pathway in pathways_manager.get_all()] + [
+        ENERGY_SUB_LEVER_OTHER
+    ]
+
+
+# Levers of the CO2 emissions cascade that DetailedCo2EmissionsPerMarket decomposes
+# by market. Freight is not affected by the (passenger) load factor lever.
+MARKET_LEVERS_PASSENGER = ("demand", "efficiency", "operations", "loadfactor", "energy")
+MARKET_LEVERS_FREIGHT = ("demand", "efficiency", "operations", "energy")
+
+# Pseudo-market key holding the per-lever cross-market-mix residual.
+MARKET_CROSS_MIX = "cross_mix"
+
+
+def market_lever_column(lever: str, market: str) -> str:
+    """Output column holding the contribution of `market` to the CO2 `lever`.
+
+    Single source of truth for the per-market decomposition variable names, shared
+    by DetailedCo2EmissionsPerMarket, its plot and the tests so that the naming
+    never drifts and consumers never have to guess it via prefix matching.
+    """
+    return f"co2_emissions_lever_{lever}_market_{market}"
+
+
+def market_lever_names(markets) -> dict:
+    """
+    Map each (lever, market) pair to its per-market decomposition output column.
+
+    Parameters
+    ----------
+    markets
+        MarketManager enumerating the passenger and freight markets.
+
+    Returns
+    -------
+    names
+        Dictionary mapping ``(lever, market_id)`` tuples — plus
+        ``(lever, "cross_mix")`` for the cross-market-mix residual of each lever —
+        to output variable names.
+    """
+    names = {}
+    for market in markets.get(traffic_type="passenger"):
+        for lever in MARKET_LEVERS_PASSENGER:
+            names[(lever, market.id)] = market_lever_column(lever, market.id)
+    for market in markets.get(traffic_type="freight"):
+        for lever in MARKET_LEVERS_FREIGHT:
+            names[(lever, market.id)] = market_lever_column(lever, market.id)
+    for lever in MARKET_LEVERS_PASSENGER:
+        names[(lever, MARKET_CROSS_MIX)] = market_lever_column(lever, MARKET_CROSS_MIX)
+    return names
+
+
+def market_lever_dataframe(df: pd.DataFrame, markets) -> pd.DataFrame:
+    """
+    Reshape the flat per-market lever columns of `df` into a tidy view.
+
+    The returned DataFrame keeps the years index of `df` and carries a
+    ``(lever, market)`` MultiIndex on its columns, so the multidimensional
+    decomposition can be filtered efficiently, e.g.::
+
+        per_market = market_lever_dataframe(df, markets)
+        per_market.xs("energy", level="lever", axis=1)      # all markets, energy lever
+        per_market.xs("short_range", level="market", axis=1)  # all levers, one market
+
+    Columns absent from `df` (e.g. freight has no load factor lever) are simply
+    omitted.
+
+    Parameters
+    ----------
+    df
+        Vector-outputs DataFrame produced by a computed process.
+    markets
+        MarketManager enumerating the passenger and freight markets.
+
+    Returns
+    -------
+    tidy
+        DataFrame with a ``(lever, market)`` column MultiIndex.
+    """
+    names = market_lever_names(markets)
+    data = {key: df[column] for key, column in names.items() if column in df.columns}
+    tidy = pd.DataFrame(data, index=df.index)
+    if not tidy.empty:
+        tidy.columns = pd.MultiIndex.from_tuples(tidy.columns, names=["lever", "market"])
+    return tidy
+
+
+# Pseudo-key holding the residual of the per-concept operations decomposition.
+OPERATIONS_OTHER = "other"
+
+
+def operations_concept_column(concept: str) -> str:
+    """Output column holding the contribution of an operational concept to the operations lever."""
+    return f"co2_emissions_lever_operations_concept_{concept}"
+
+
+def operations_category_column(category: str) -> str:
+    """Output column holding the contribution of an operational category to the operations lever."""
+    return f"co2_emissions_lever_operations_category_{category}"
+
+
+def offset_scheme_column(scheme: str) -> str:
+    """Output column holding the offset quantity of one offsetting scheme [MtCO2].
+
+    The carbon offset is the plain sum of its schemes, so these columns are the
+    sub-levers of the offsetting lever of the CO2 cascade with no residual term.
+    """
+    return f"co2_emissions_lever_offset_scheme_{scheme}"
+
+
+def offset_category_column(category: str) -> str:
+    """Output column holding the offset quantity of one category of schemes [MtCO2]."""
+    return f"co2_emissions_lever_offset_category_{category}"
+
+
+def _denoise(series: pd.Series, atol: float = 1e-9) -> pd.Series:
+    """Snap negligible decomposition values (``|x| < atol`` MtCO2) to exactly zero.
+
+    The decomposition residuals and unused sub-lever columns are zero by
+    construction but carry floating-point cancellation noise (~1e-13 MtCO2) that
+    varies run to run. Snapping this sub-nanotonne noise to 0 keeps the outputs
+    deterministic (so strict golden-file notebook checks pass) without affecting
+    any physically meaningful contribution. NaNs (historic years) are preserved.
+    """
+    return series.mask(series.abs() < atol, 0.0)
 
 
 class KayaFactors(AeroMAPSModel):
@@ -748,6 +957,812 @@ class DetailedCumulativeCO2Emissions(AeroMAPSModel):
             cumulative_co2_emissions_including_load_factor,
             cumulative_co2_emissions_including_energy,
         )
+
+
+class DetailedCo2EmissionsPerPathway(AeroMAPSModel):
+    """
+    Class to decompose the "aircraft energy" lever of action into sub-levers,
+    one per energy pathway (e.g. each biofuel or electrofuel pathway).
+
+    For each pathway, the annual CO2 emissions reduction is computed as the energy
+    consumption of the pathway multiplied by the difference between the reference
+    (start year) mean CO2 emission factor and the pathway emission factor. By
+    construction, the sum of the pathway contributions and of the residual term
+    equals the difference between co2_emissions_including_load_factor and
+    co2_emissions_including_energy computed by DetailedCo2Emissions.
+
+    Parameters
+    --------------
+    name : str
+        Name of the model instance ('detailed_co2_emissions_per_pathway' by default).
+
+    Attributes
+    ----------
+    pathways_manager : EnergyCarrierManager
+        Instance of the EnergyCarrierManager containing all defined energy pathways.
+    input_names : dict
+        Dictionary of input variable names populated at model initialisation before MDA chain creation.
+    output_names : dict
+        Dictionary of output variable names populated at model initialisation before MDA chain creation.
+    """
+
+    def __init__(self, name="detailed_co2_emissions_per_pathway", *args, **kwargs):
+        super().__init__(name=name, model_type="custom", *args, **kwargs)
+        self.pathways_manager = None
+
+    def custom_setup(self):
+        """
+        Sets up input and output names for the model based on the pathways in the pathways_manager.
+
+        Returns
+        -------
+        None
+        """
+        self.input_names = {
+            "co2_emissions_including_load_factor": pd.Series([0.0]),
+            "co2_emissions_including_energy": pd.Series([0.0]),
+            "co2_per_energy_mean": pd.Series([0.0]),
+        }
+        self.output_names = {
+            ENERGY_SUB_LEVER_OTHER: pd.Series([0.0]),
+        }
+
+        for pathway in self.pathways_manager.get_all():
+            self.input_names.update(
+                {
+                    f"{pathway.name}_energy_consumption": pd.Series([0.0]),
+                    f"{pathway.name}_mean_co2_emission_factor": pd.Series([0.0]),
+                }
+            )
+            self.output_names.update(
+                {
+                    pathway_energy_column(pathway.name): pd.Series([0.0]),
+                }
+            )
+
+    def compute(self, input_data) -> dict:
+        """
+        Execute the decomposition of the energy lever of action per energy pathway.
+
+        Parameters
+        ----------
+        input_data
+            Dictionary containing all input data required for the computation, completed at model instantiation with information from yaml files and outputs of other models.
+
+        Returns
+        -------
+        output_data
+            Dictionary containing, for each pathway, the annual CO2 emissions avoided
+            thanks to the pathway [MtCO2], plus a residual term so that the sum of all
+            contributions equals the total energy lever of action.
+        """
+        output_data = {}
+
+        reference_year = self.prospection_start_year - 1
+        years = range(reference_year, self.end_year + 1)
+
+        co2_emission_factor_reference = input_data["co2_per_energy_mean"].loc[reference_year]
+
+        total_lever = (
+            input_data["co2_emissions_including_load_factor"]
+            - input_data["co2_emissions_including_energy"]
+        ).loc[years]
+
+        cumulated_contributions = pd.Series(0.0, index=total_lever.index)
+
+        for pathway in self.pathways_manager.get_all():
+            pathway_energy_consumption = input_data[f"{pathway.name}_energy_consumption"]
+            pathway_co2_emission_factor = input_data[f"{pathway.name}_mean_co2_emission_factor"]
+
+            pathway_contribution = (
+                pathway_energy_consumption
+                * (co2_emission_factor_reference - pathway_co2_emission_factor)
+            ).fillna(0) * 10 ** (-12)
+            pathway_contribution = pathway_contribution.reindex(total_lever.index).fillna(0.0)
+
+            cumulated_contributions += pathway_contribution
+
+            contribution = get_default_series(
+                self.historic_start_year, self.end_year, fill_value=float("nan")
+            )
+            contribution.loc[years] = pathway_contribution
+            output_data[pathway_energy_column(pathway.name)] = contribution
+
+        other = get_default_series(self.historic_start_year, self.end_year, fill_value=float("nan"))
+        other.loc[years] = total_lever.fillna(0) - cumulated_contributions
+        output_data[ENERGY_SUB_LEVER_OTHER] = other
+
+        output_data = {name: _denoise(series) for name, series in output_data.items()}
+        self._store_outputs(output_data)
+
+        return output_data
+
+
+class DetailedCo2EmissionsPerAircraft(AeroMAPSModel):
+    """
+    Class to decompose the "aircraft efficiency" lever of action into sub-levers:
+    fleet renewal with reference (already existing) aircraft, continuous
+    improvement of the recent reference aircraft, introduction of each new
+    aircraft of the fleet, freight fleet efficiency, and a residual term (traffic
+    mix effects between markets).
+
+    The decomposition builds on the per-aircraft energy efficiency contributions
+    computed by the fleet model (see FleetPerformanceMixin), which quantify how much
+    each aircraft shifts the market mean energy consumption per ASK with respect to
+    the recent reference aircraft. The evolution of these contributions with respect
+    to the reference (start) year is converted into avoided CO2 emissions using the
+    same factors as DetailedCo2Emissions. By construction, the sum of all sub-lever
+    contributions equals the difference between co2_emissions_last_historical_year_technology and
+    co2_emissions_including_aircraft_efficiency.
+
+    With this convention, the "fleet renewal" sub-lever measures the gain from
+    replacing old reference aircraft by recent reference aircraft, and each new
+    aircraft is only credited for its additional gain beyond fleet renewal.
+
+    The fleet model measures every contribution against the recent reference
+    aircraft *including its own* ``continuous_improvement_factor_energy``, so the
+    drift of that baseline over time belongs to none of the aircraft bands. It is
+    reported as the "continuous improvement" sub-lever rather than left in the
+    residual, which then only carries the traffic mix between markets.
+
+    This model requires the bottom-up fleet model.
+
+    Parameters
+    --------------
+    name : str
+        Name of the model instance ('detailed_co2_emissions_per_aircraft' by default).
+
+    Attributes
+    ----------
+    fleet_model : FleetModel
+        FleetModel instance containing the fleet structure and computed aircraft
+        shares and efficiency contributions.
+    markets : MarketManager
+        MarketManager instance used to map fleet categories to the markets they serve.
+    input_names : dict
+        Dictionary of input variable names populated at model initialisation before MDA chain creation.
+    output_names : dict
+        Dictionary of output variable names populated at model initialisation before MDA chain creation.
+    """
+
+    def __init__(self, name="detailed_co2_emissions_per_aircraft", *args, **kwargs):
+        super().__init__(name=name, model_type="custom", *args, **kwargs)
+        self.fleet_model = None
+        self.markets = None
+        self.aircraft_lever_names = {}
+
+    def custom_setup(self):
+        """
+        Sets up input and output names for the model based on the fleet structure.
+
+        Returns
+        -------
+        None
+        """
+        if self.fleet_model is None:
+            raise RuntimeError(
+                f"Model '{self.name}' requires the bottom-up fleet model. "
+                "Add 'models.fleet' to your configuration."
+            )
+
+        self.input_names = {
+            "ask": pd.Series([0.0]),
+            "rpk": pd.Series([0.0]),
+            "rtk": pd.Series([0.0]),
+            "load_factor": pd.Series([0.0]),
+            "energy_per_ask_mean": pd.Series([0.0]),
+            "energy_per_ask_mean_without_operations": pd.Series([0.0]),
+            "energy_per_rtk_mean": pd.Series([0.0]),
+            "energy_per_rtk_mean_without_operations": pd.Series([0.0]),
+            "co2_per_energy_mean": pd.Series([0.0]),
+            "co2_emissions_last_historical_year_technology": pd.Series([0.0]),
+            "co2_emissions_including_aircraft_efficiency": pd.Series([0.0]),
+        }
+        self.output_names = {
+            "co2_emissions_lever_efficiency_fleet_renewal": pd.Series([0.0]),
+            "co2_emissions_lever_efficiency_continuous_improvement": pd.Series([0.0]),
+            "co2_emissions_lever_efficiency_freight": pd.Series([0.0]),
+            "co2_emissions_lever_efficiency_other": pd.Series([0.0]),
+        }
+
+        # ASK of the market served by each category, for weighting the contributions
+        for category in self.fleet_model.fleet.categories.values():
+            self.input_names[f"ask_{category.market_id}"] = pd.Series([0.0])
+
+        # Map each aircraft of the fleet to a unique output variable name
+        self.aircraft_lever_names = aircraft_efficiency_lever_names(self.fleet_model.fleet)
+        for lever_name in self.aircraft_lever_names.values():
+            self.output_names[lever_name] = pd.Series([0.0])
+
+    def compute(self, input_data) -> dict:
+        """
+        Execute the decomposition of the aircraft efficiency lever of action per aircraft.
+
+        Parameters
+        ----------
+        input_data
+            Dictionary containing all input data required for the computation, completed at model instantiation with information from yaml files and outputs of other models.
+
+        Returns
+        -------
+        output_data
+            Dictionary containing, for each sub-lever (fleet renewal, continuous
+            improvement, each new aircraft, freight, residual), the annual CO2
+            emissions avoided [MtCO2].
+        """
+        output_data = {}
+
+        reference_year = self.prospection_start_year - 1
+        years = range(reference_year, self.end_year + 1)
+
+        fleet_df = self.fleet_model.df
+
+        load_factor_reference = input_data["load_factor"].loc[reference_year]
+        energy_per_ask_mean_reference = input_data["energy_per_ask_mean"].loc[reference_year]
+        energy_per_ask_mean_without_operations_reference = input_data[
+            "energy_per_ask_mean_without_operations"
+        ].loc[reference_year]
+        energy_per_rtk_mean_reference = input_data["energy_per_rtk_mean"].loc[reference_year]
+        energy_per_rtk_mean_without_operations_reference = input_data[
+            "energy_per_rtk_mean_without_operations"
+        ].loc[reference_year]
+        co2_emission_factor_reference = input_data["co2_per_energy_mean"].loc[reference_year]
+
+        ask = input_data["ask"].loc[years]
+        rpk = input_data["rpk"].loc[years]
+        rtk = input_data["rtk"].loc[years]
+
+        # Common factor of the passenger part of the aircraft efficiency lever
+        # (see DetailedCo2Emissions for the corresponding formulas)
+        passenger_factor = (
+            rpk
+            * (energy_per_ask_mean_reference / energy_per_ask_mean_without_operations_reference)
+            / (load_factor_reference / 100)
+            * co2_emission_factor_reference
+            * 10 ** (-12)
+        )
+
+        fleet_renewal = pd.Series(0.0, index=pd.Index(years))
+        continuous_improvement = pd.Series(0.0, index=pd.Index(years))
+        cumulated_contributions = pd.Series(0.0, index=pd.Index(years))
+        current_names = aircraft_efficiency_lever_names(self.fleet_model.fleet)
+        unknown_aircraft = []
+
+        def co2_contribution(category_ask_share, contribution_column):
+            """Convert a fleet energy efficiency contribution [MJ/ASK] into avoided CO2 [MtCO2]."""
+            contribution = fleet_df.loc[years, contribution_column]
+            contribution_reference = fleet_df.loc[reference_year, contribution_column]
+            return passenger_factor * category_ask_share * (contribution - contribution_reference)
+
+        for category in self.fleet_model.fleet.categories.values():
+            category_ask_share = input_data[f"ask_{category.market_id}"].loc[years] / ask
+
+            # Fleet renewal: replacement of the old reference aircraft by the recent
+            # one. The recent reference is the baseline of the fleet model, so its
+            # own contribution is zero and only the old reference term remains.
+            first_subcategory = category.subcategories[0]
+            contribution = co2_contribution(
+                category_ask_share,
+                f"{category.name}:{first_subcategory.name}:old_reference:"
+                "energy_efficiency_contribution",
+            )
+            fleet_renewal += contribution
+            cumulated_contributions += contribution
+
+            # Continuous improvement: the contributions above are measured against
+            # the recent reference baseline, which itself improves over time when a
+            # continuous improvement factor is set. The identity
+            # mean(t) = baseline(t) - sum(contributions(t)) makes the baseline drift
+            # a gain of its own (sign flipped: a lower baseline is avoided CO2).
+            contribution = -co2_contribution(
+                category_ask_share,
+                f"{category.name}:{first_subcategory.name}:recent_reference:"
+                "energy_efficiency_contribution_baseline",
+            )
+            continuous_improvement += contribution
+            cumulated_contributions += contribution
+
+            # New aircraft: additional gain beyond fleet renewal. The fleet may have
+            # been rebuilt since setup (the GUI does so), while the output grammar is
+            # fixed: an aircraft unknown at setup cannot get a column, so its gain is
+            # left in the residual, and a declared aircraft that disappeared is zero.
+            for subcategory in category.subcategories.values():
+                for aircraft in subcategory.aircraft.values():
+                    key = (category.name, subcategory.name, aircraft.name)
+                    contribution = co2_contribution(
+                        category_ask_share,
+                        f"{category.name}:{subcategory.name}:{aircraft.name}:energy_efficiency_contribution",
+                    )
+                    lever_name = self.aircraft_lever_names.get(key, current_names.get(key))
+                    if lever_name not in self.output_names:
+                        unknown_aircraft.append(aircraft.name)
+                        continue
+                    cumulated_contributions += contribution
+                    series = get_default_series(
+                        self.historic_start_year, self.end_year, fill_value=float("nan")
+                    )
+                    series.loc[years] = contribution
+                    output_data[lever_name] = series
+
+        if unknown_aircraft:
+            logging.warning(
+                "Aircraft %s were added to the fleet after the process was set up: their "
+                "efficiency gain is reported in the residual sub-lever. Set the process up "
+                "again to get one sub-lever per aircraft.",
+                unknown_aircraft,
+            )
+        for lever_name in self.aircraft_lever_names.values():
+            if lever_name not in output_data:
+                output_data[lever_name] = get_default_series(
+                    self.historic_start_year, self.end_year, fill_value=0.0
+                )
+
+        # Freight part of the aircraft efficiency lever
+        freight = (
+            rtk
+            * (
+                energy_per_rtk_mean_without_operations_reference
+                - input_data["energy_per_rtk_mean_without_operations"].loc[years]
+            )
+            * (energy_per_rtk_mean_reference / energy_per_rtk_mean_without_operations_reference)
+            * co2_emission_factor_reference
+            * 10 ** (-12)
+        )
+        cumulated_contributions += freight
+
+        # Residual term (traffic mix effects between markets) so that the sum of
+        # all sub-levers equals the total aircraft efficiency lever
+        total_lever = (
+            input_data["co2_emissions_last_historical_year_technology"]
+            - input_data["co2_emissions_including_aircraft_efficiency"]
+        ).loc[years]
+        other = total_lever.fillna(0) - cumulated_contributions
+
+        for name, values in [
+            ("co2_emissions_lever_efficiency_fleet_renewal", fleet_renewal),
+            ("co2_emissions_lever_efficiency_continuous_improvement", continuous_improvement),
+            ("co2_emissions_lever_efficiency_freight", freight),
+            ("co2_emissions_lever_efficiency_other", other),
+        ]:
+            series = get_default_series(
+                self.historic_start_year, self.end_year, fill_value=float("nan")
+            )
+            series.loc[years] = values
+            output_data[name] = series
+
+        output_data = {name: _denoise(series) for name, series in output_data.items()}
+        self._store_outputs(output_data)
+
+        return output_data
+
+
+class DetailedCo2EmissionsPerMarket(AeroMAPSModel):
+    """
+    Class to decompose every lever of action of the CO2 emissions cascade by
+    market (each passenger market and each freight market).
+
+    The global CO2 emissions cascade computed by DetailedCo2Emissions goes, for
+    a given year, through six successive emission levels::
+
+        last-historical-year technology with baseline traffic growth
+          -> last-historical-year technology (demand lever)
+          -> including aircraft efficiency
+          -> including operations
+          -> including load factor
+          -> including energy (actual emissions)
+
+    and defines five levers of action as the differences between consecutive
+    levels. This model recomputes the same cascade *per market*, using the
+    per-market traffic (``rpk_<market>`` / ``rtk_<market>``, and their baseline
+    growth counterparts ``rpk_reference_<market>`` / ``rtk_reference_<market>``
+    for the demand lever) and the per-market,
+    per-energy-type physical intensities (``energy_per_ask_<market>_<energy>``
+    and their ``without_operations`` counterparts). Each lever therefore gets a
+    per-market contribution answering "how much of this lever is attributable to
+    the short/medium/long-range (or freight) market?".
+
+    Because the global cascade uses fleet-wide mean intensities and a fleet-wide
+    load factor while the per-market cascade uses market-resolved quantities, the
+    sum of the per-market contributions does not exactly reproduce the global
+    lever: the difference is a genuine cross-market traffic-mix term. It is
+    emitted as a ``..._market_cross_mix`` residual for each lever, so that by
+    construction::
+
+        sum_over_markets(lever_market) + lever_market_cross_mix == global lever
+
+    The energy lever additionally uses the per-market, per-energy-type CO2
+    emission factors (exactly as :class:`CO2Emissions`), so the per-market energy
+    lever captures market-specific fuel-mix decarbonisation.
+
+    This model only needs the per-market intensities, which every efficiency
+    model group produces (top-down, push and bottom-up), so it is registered in
+    each of them.
+
+    Parameters
+    --------------
+    name : str
+        Name of the model instance ('detailed_co2_emissions_per_market' by default).
+
+    Attributes
+    ----------
+    markets : MarketManager
+        MarketManager instance enumerating the passenger and freight markets.
+    input_names : dict
+        Dictionary of input variable names populated at model initialisation before MDA chain creation.
+    output_names : dict
+        Dictionary of output variable names populated at model initialisation before MDA chain creation.
+    """
+
+    ENERGY_TYPES = ("dropin_fuel", "hydrogen", "electric")
+
+    def __init__(self, name="detailed_co2_emissions_per_market", *args, **kwargs):
+        super().__init__(name=name, model_type="custom", *args, **kwargs)
+        self.markets = None
+
+    def custom_setup(self):
+        """
+        Sets up input and output names for the model based on the markets manager.
+
+        Returns
+        -------
+        None
+        """
+        self.input_names = {
+            "load_factor": pd.Series([0.0]),
+            "co2_per_energy_mean": pd.Series([0.0]),
+            "co2_emissions_last_historical_year_technology_baseline3": pd.Series([0.0]),
+            "co2_emissions_last_historical_year_technology": pd.Series([0.0]),
+            "co2_emissions_including_aircraft_efficiency": pd.Series([0.0]),
+            "co2_emissions_including_operations": pd.Series([0.0]),
+            "co2_emissions_including_load_factor": pd.Series([0.0]),
+            "co2_emissions_including_energy": pd.Series([0.0]),
+        }
+        for energy_type in self.ENERGY_TYPES:
+            self.input_names[f"{energy_type}_mean_co2_emission_factor"] = pd.Series([0.0])
+
+        for market in self.markets.get(traffic_type="passenger"):
+            mid = market.id
+            self.input_names[f"rpk_{mid}"] = pd.Series([0.0])
+            self.input_names[f"rpk_reference_{mid}"] = pd.Series([0.0])
+            for energy_type in self.ENERGY_TYPES:
+                self.input_names[f"ask_{mid}_{energy_type}_share"] = pd.Series([0.0])
+                self.input_names[f"energy_per_ask_{mid}_{energy_type}"] = pd.Series([0.0])
+                self.input_names[f"energy_per_ask_without_operations_{mid}_{energy_type}"] = (
+                    pd.Series([0.0])
+                )
+
+        for market in self.markets.get(traffic_type="freight"):
+            mid = market.id
+            self.input_names[f"rtk_{mid}"] = pd.Series([0.0])
+            self.input_names[f"rtk_reference_{mid}"] = pd.Series([0.0])
+            for energy_type in self.ENERGY_TYPES:
+                self.input_names[f"rtk_{mid}_{energy_type}_share"] = pd.Series([0.0])
+                self.input_names[f"energy_per_rtk_{mid}_{energy_type}"] = pd.Series([0.0])
+                self.input_names[f"energy_per_rtk_without_operations_{mid}_{energy_type}"] = (
+                    pd.Series([0.0])
+                )
+
+        # Output columns come from the shared naming helper (single source of truth).
+        self.output_names = {
+            column: pd.Series([0.0]) for column in market_lever_names(self.markets).values()
+        }
+
+    def compute(self, input_data) -> dict:
+        """
+        Execute the per-market decomposition of the CO2 emissions levers.
+
+        Parameters
+        ----------
+        input_data
+            Dictionary containing all input data required for the computation, completed at model instantiation with information from yaml files and outputs of other models.
+
+        Returns
+        -------
+        output_data
+            Dictionary containing, for each market and each lever (efficiency,
+            operations, load factor, energy), the annual CO2 emissions avoided
+            [MtCO2], plus a cross-market-mix residual per lever.
+        """
+        output_data = {}
+
+        reference_year = self.prospection_start_year - 1
+        years = pd.Index(range(reference_year, self.end_year + 1))
+
+        load_factor = input_data["load_factor"].loc[years]
+        load_factor_reference = input_data["load_factor"].loc[reference_year]
+        co2_emission_factor_reference = input_data["co2_per_energy_mean"].loc[reference_year]
+
+        co2_factor = {
+            energy_type: input_data[f"{energy_type}_mean_co2_emission_factor"].fillna(0).loc[years]
+            for energy_type in self.ENERGY_TYPES
+        }
+
+        def emit(name, series):
+            out = get_default_series(
+                self.historic_start_year, self.end_year, fill_value=float("nan")
+            )
+            out.loc[years] = series
+            output_data[name] = out
+
+        # Per-lever accumulators of the market contributions (to derive the
+        # cross-market-mix residual against the global levers).
+        lever_sum = {lever: pd.Series(0.0, index=years) for lever in MARKET_LEVERS_PASSENGER}
+
+        def weighted_intensity(prefix, share_prefix, mid):
+            """Traffic-weighted market mean of a per-energy-type intensity [MJ/ASK or MJ/RTK]."""
+            total = pd.Series(0.0, index=years)
+            for energy_type in self.ENERGY_TYPES:
+                share = input_data[f"{share_prefix}_{mid}_{energy_type}_share"].loc[years] / 100
+                intensity = input_data[f"{prefix}_{mid}_{energy_type}"].fillna(0).loc[years]
+                total = total + share * intensity
+            return total
+
+        def co2_weighted_intensity(prefix, share_prefix, mid):
+            """Traffic-weighted market mean of intensity x CO2 factor [gCO2/ASK or /RTK]."""
+            total = pd.Series(0.0, index=years)
+            for energy_type in self.ENERGY_TYPES:
+                share = input_data[f"{share_prefix}_{mid}_{energy_type}_share"].loc[years] / 100
+                intensity = input_data[f"{prefix}_{mid}_{energy_type}"].fillna(0).loc[years]
+                total = total + share * intensity * co2_factor[energy_type]
+            return total
+
+        # --- Passenger markets ---
+        for market in self.markets.get(traffic_type="passenger"):
+            mid = market.id
+            rpk = input_data[f"rpk_{mid}"].loc[years]
+            rpk_reference = input_data[f"rpk_reference_{mid}"].loc[years]
+
+            energy_per_ask = weighted_intensity("energy_per_ask", "ask", mid)
+            energy_per_ask_without_operations = weighted_intensity(
+                "energy_per_ask_without_operations", "ask", mid
+            )
+            co2_per_ask = co2_weighted_intensity("energy_per_ask", "ask", mid)
+
+            energy_per_ask_reference = energy_per_ask.loc[reference_year]
+            energy_per_ask_without_operations_reference = energy_per_ask_without_operations.loc[
+                reference_year
+            ]
+
+            # Emission levels of the cascade for this market [MtCO2].
+            level_baseline_traffic = (
+                rpk_reference
+                * energy_per_ask_reference
+                / (load_factor_reference / 100)
+                * co2_emission_factor_reference
+                * 10 ** (-12)
+            )
+            level_last_historical_year = (
+                rpk
+                * energy_per_ask_reference
+                / (load_factor_reference / 100)
+                * co2_emission_factor_reference
+                * 10 ** (-12)
+            )
+            level_efficiency = (
+                rpk
+                * energy_per_ask_without_operations
+                * (energy_per_ask_reference / energy_per_ask_without_operations_reference)
+                / (load_factor_reference / 100)
+                * co2_emission_factor_reference
+                * 10 ** (-12)
+            )
+            level_operations = (
+                rpk
+                * energy_per_ask
+                / (load_factor_reference / 100)
+                * co2_emission_factor_reference
+                * 10 ** (-12)
+            )
+            level_load_factor = (
+                rpk
+                * energy_per_ask
+                / (load_factor / 100)
+                * co2_emission_factor_reference
+                * 10 ** (-12)
+            )
+            level_energy = rpk / (load_factor / 100) * co2_per_ask * 10 ** (-12)
+
+            levers = {
+                "demand": level_baseline_traffic - level_last_historical_year,
+                "efficiency": level_last_historical_year - level_efficiency,
+                "operations": level_efficiency - level_operations,
+                "loadfactor": level_operations - level_load_factor,
+                "energy": level_load_factor - level_energy,
+            }
+            for lever, values in levers.items():
+                emit(market_lever_column(lever, mid), values)
+                lever_sum[lever] = lever_sum[lever] + values
+
+        # --- Freight markets (no passenger load factor lever) ---
+        for market in self.markets.get(traffic_type="freight"):
+            mid = market.id
+            rtk = input_data[f"rtk_{mid}"].loc[years]
+            rtk_reference = input_data[f"rtk_reference_{mid}"].loc[years]
+
+            energy_per_rtk = weighted_intensity("energy_per_rtk", "rtk", mid)
+            energy_per_rtk_without_operations = weighted_intensity(
+                "energy_per_rtk_without_operations", "rtk", mid
+            )
+            co2_per_rtk = co2_weighted_intensity("energy_per_rtk", "rtk", mid)
+
+            energy_per_rtk_reference = energy_per_rtk.loc[reference_year]
+            energy_per_rtk_without_operations_reference = energy_per_rtk_without_operations.loc[
+                reference_year
+            ]
+
+            level_baseline_traffic = (
+                rtk_reference
+                * energy_per_rtk_reference
+                * co2_emission_factor_reference
+                * 10 ** (-12)
+            )
+            level_last_historical_year = (
+                rtk * energy_per_rtk_reference * co2_emission_factor_reference * 10 ** (-12)
+            )
+            level_efficiency = (
+                rtk
+                * energy_per_rtk_without_operations
+                * (energy_per_rtk_reference / energy_per_rtk_without_operations_reference)
+                * co2_emission_factor_reference
+                * 10 ** (-12)
+            )
+            level_operations = rtk * energy_per_rtk * co2_emission_factor_reference * 10 ** (-12)
+            level_energy = rtk * co2_per_rtk * 10 ** (-12)
+
+            levers = {
+                "demand": level_baseline_traffic - level_last_historical_year,
+                "efficiency": level_last_historical_year - level_efficiency,
+                "operations": level_efficiency - level_operations,
+                "energy": level_operations - level_energy,
+            }
+            for lever, values in levers.items():
+                emit(market_lever_column(lever, mid), values)
+                lever_sum[lever] = lever_sum[lever] + values
+
+        # --- Cross-market-mix residual per lever ---
+        # Global levers from the DetailedCo2Emissions cascade.
+        global_levers = {
+            "demand": input_data["co2_emissions_last_historical_year_technology_baseline3"]
+            - input_data["co2_emissions_last_historical_year_technology"],
+            "efficiency": input_data["co2_emissions_last_historical_year_technology"]
+            - input_data["co2_emissions_including_aircraft_efficiency"],
+            "operations": input_data["co2_emissions_including_aircraft_efficiency"]
+            - input_data["co2_emissions_including_operations"],
+            "loadfactor": input_data["co2_emissions_including_operations"]
+            - input_data["co2_emissions_including_load_factor"],
+            "energy": input_data["co2_emissions_including_load_factor"]
+            - input_data["co2_emissions_including_energy"],
+        }
+        for lever, global_lever in global_levers.items():
+            residual = global_lever.loc[years].fillna(0) - lever_sum[lever]
+            emit(market_lever_column(lever, MARKET_CROSS_MIX), residual)
+
+        output_data = {name: _denoise(series) for name, series in output_data.items()}
+        self._store_outputs(output_data)
+
+        return output_data
+
+
+class DetailedCo2EmissionsPerOperationalConcept(AeroMAPSModel):
+    """
+    Class to decompose the "fleet operations" lever of action into sub-levers, one
+    per operational concept (and one per category of concepts) declared in the
+    generic operations module.
+
+    The operations lever of DetailedCo2Emissions is proportional to the aggregate
+    ``operations_gain``: emissions including operations equal emissions including
+    aircraft efficiency scaled by ``1 - operations_gain / 100``, for passenger and
+    freight alike. The lever is therefore shared between concepts in proportion to
+    their contribution to ``operations_gain`` as attributed by OperationsUseChoice
+    (logarithmic share, order independent). A residual term keeps the sum of the
+    sub-levers equal to the global lever by construction; it is zero unless the
+    operational gain is applied differently to some traffic.
+
+    Parameters
+    --------------
+    name : str
+        Name of the model instance ('detailed_co2_emissions_per_operational_concept' by default).
+    operations_manager : OperationalConceptManager
+        Manager enumerating the operational concepts and their categories.
+
+    Attributes
+    ----------
+    input_names : dict
+        Dictionary of input variable names populated at model initialisation before MDA chain creation.
+    output_names : dict
+        Dictionary of output variable names populated at model initialisation before MDA chain creation.
+    """
+
+    def __init__(
+        self,
+        name="detailed_co2_emissions_per_operational_concept",
+        operations_manager=None,
+        *args,
+        **kwargs,
+    ):
+        super().__init__(name=name, model_type="custom", *args, **kwargs)
+        # Metadata only (not a coupling variable).
+        self.operations_manager = operations_manager
+
+        self.input_names = {
+            "co2_emissions_including_aircraft_efficiency": pd.Series([0.0]),
+            "co2_emissions_including_operations": pd.Series([0.0]),
+            "operations_gain": pd.Series([0.0]),
+        }
+        self.output_names = {
+            operations_concept_column(OPERATIONS_OTHER): pd.Series([0.0]),
+        }
+        for concept in self._fuel_concepts():
+            self.input_names[f"{concept.name}_operations_gain_contribution"] = pd.Series([0.0])
+            self.output_names[operations_concept_column(concept.name)] = pd.Series([0.0])
+        for category in self._categories():
+            self.output_names[operations_category_column(category)] = pd.Series([0.0])
+
+    def _fuel_concepts(self):
+        return [c for c in self.operations_manager.get_all() if c.has_fuel_efficiency]
+
+    def _categories(self):
+        """Categories of the fuel-efficiency concepts, in declaration order."""
+        return list(dict.fromkeys(c.category for c in self._fuel_concepts() if c.category))
+
+    def compute(self, input_data) -> dict:
+        """
+        Execute the decomposition of the operations lever of action per operational concept.
+
+        Parameters
+        ----------
+        input_data
+            Dictionary containing all input data required for the computation, completed at model instantiation with information from yaml files and outputs of other models.
+
+        Returns
+        -------
+        output_data
+            Dictionary containing, for each concept and each category, the annual CO2
+            emissions avoided [MtCO2], plus a residual term.
+        """
+        output_data = {}
+
+        reference_year = self.prospection_start_year - 1
+        years = pd.Index(range(reference_year, self.end_year + 1))
+
+        total_lever = (
+            (
+                input_data["co2_emissions_including_aircraft_efficiency"]
+                - input_data["co2_emissions_including_operations"]
+            )
+            .loc[years]
+            .fillna(0)
+        )
+        operations_gain = input_data["operations_gain"].reindex(years).fillna(0)
+
+        def emit(name, series):
+            out = get_default_series(
+                self.historic_start_year, self.end_year, fill_value=float("nan")
+            )
+            out.loc[years] = series
+            output_data[name] = out
+
+        cumulated = pd.Series(0.0, index=years)
+        per_category = {category: pd.Series(0.0, index=years) for category in self._categories()}
+        for concept in self._fuel_concepts():
+            contribution = (
+                input_data[f"{concept.name}_operations_gain_contribution"].reindex(years).fillna(0)
+            )
+            share = (contribution / operations_gain).where(operations_gain != 0, 0.0)
+            sub_lever = total_lever * share
+            emit(operations_concept_column(concept.name), sub_lever)
+            cumulated = cumulated + sub_lever
+            if concept.category in per_category:
+                per_category[concept.category] = per_category[concept.category] + sub_lever
+
+        for category, values in per_category.items():
+            emit(operations_category_column(category), values)
+        emit(operations_concept_column(OPERATIONS_OTHER), total_lever - cumulated)
+
+        output_data = {name: _denoise(series) for name, series in output_data.items()}
+        self._store_outputs(output_data)
+
+        return output_data
 
 
 class SimpleCO2Emissions(AeroMAPSModel):
