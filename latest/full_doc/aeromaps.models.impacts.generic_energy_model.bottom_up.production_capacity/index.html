@@ -6300,7 +6300,13 @@ Computes annual capacity additions required to follow an energy consumption traj
 <span class="normal">264</span>
 <span class="normal">265</span>
 <span class="normal">266</span>
-<span class="normal">267</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the annual capacity additions required to follow the energy consumption trajectory.</span>
 
@@ -6316,8 +6322,14 @@ Computes annual capacity additions required to follow an energy consumption traj
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">output_data</span> <span class="o">=</span> <span class="p">{}</span>
 
-    <span class="c1"># Get the energy consumption trajectory and capacity factor</span>
+    <span class="c1"># Get the energy consumption trajectory and capacity factor.</span>
+    <span class="c1"># Copied because the virtual-years block below extends and re-sorts this Series</span>
+    <span class="c1"># in place: input_data holds the very Series objects the MDA snapshotted as its</span>
+    <span class="c1"># previous iterate, and this one is a coupling variable, so mutating it would</span>
+    <span class="c1"># rewrite that snapshot -- here even changing its length.</span>
     <span class="n">energy_required</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_energy_consumption&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">energy_required</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">energy_required</span> <span class="o">=</span> <span class="n">energy_required</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
     <span class="n">technology_introduction</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_technology_introduction_year&quot;</span>

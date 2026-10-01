@@ -7375,18 +7375,22 @@ Specific function for custom AeroMAPSModel instances.</p>
 <span class="normal">541</span>
 <span class="normal">542</span>
 <span class="normal">543</span>
-<span class="normal">544</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="normal">544</span>
+<span class="normal">545</span>
+<span class="normal">546</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    CO2 emissions per market and aggregates.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">energy_types</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;dropin_fuel&quot;</span><span class="p">,</span> <span class="s2">&quot;hydrogen&quot;</span><span class="p">,</span> <span class="s2">&quot;electric&quot;</span><span class="p">]</span>
 
     <span class="c1"># Locally fill incomplete emission factors with zeros so that sums are not nan.</span>
-    <span class="n">co2_emission_factor_by_energy_type</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">energy_type</span> <span class="ow">in</span> <span class="n">energy_types</span><span class="p">:</span>
-        <span class="n">co2_emission_factor</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">energy_type</span><span class="si">}</span><span class="s2">_mean_co2_emission_factor&quot;</span><span class="p">]</span>
-        <span class="n">co2_emission_factor</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">co2_emission_factor_by_energy_type</span><span class="p">[</span><span class="n">energy_type</span><span class="p">]</span> <span class="o">=</span> <span class="n">co2_emission_factor</span>
+    <span class="c1"># ``fillna`` must NOT be in place: input_data holds the very Series objects the</span>
+    <span class="c1"># MDA snapshotted as its previous iterate, so mutating one silently rewrites</span>
+    <span class="c1"># that snapshot and corrupts the residual of this coupling variable.</span>
+    <span class="n">co2_emission_factor_by_energy_type</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">energy_type</span><span class="p">:</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">energy_type</span><span class="si">}</span><span class="s2">_mean_co2_emission_factor&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">energy_type</span> <span class="ow">in</span> <span class="n">energy_types</span>
+    <span class="p">}</span>
 
     <span class="n">load_factor</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;load_factor&quot;</span><span class="p">]</span>
     <span class="n">output_data</span> <span class="o">=</span> <span class="p">{}</span>
@@ -7546,8 +7550,8 @@ Specific function for custom AeroMAPSModel instances.</p>
 
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/impacts/emissions/co2_emissions.py</code></summary>
-                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">557</span>
-<span class="normal">558</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;cumulative_co2_emissions&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">559</span>
+<span class="normal">560</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;cumulative_co2_emissions&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -7668,9 +7672,7 @@ carbon budget regardless of prospection_start_year.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/models/impacts/emissions/co2_emissions.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">560</span>
-<span class="normal">561</span>
-<span class="normal">562</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">562</span>
 <span class="normal">563</span>
 <span class="normal">564</span>
 <span class="normal">565</span>
@@ -7712,7 +7714,9 @@ carbon budget regardless of prospection_start_year.</p>
 <span class="normal">601</span>
 <span class="normal">602</span>
 <span class="normal">603</span>
-<span class="normal">604</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span>
+<span class="normal">604</span>
+<span class="normal">605</span>
+<span class="normal">606</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">co2_emissions</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
     <span class="n">carbon_budget_reference_year</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -7831,8 +7835,8 @@ carbon budget regardless of prospection_start_year.</p>
 
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/impacts/emissions/co2_emissions.py</code></summary>
-                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">617</span>
-<span class="normal">618</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;detailed_co2_emissions&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">619</span>
+<span class="normal">620</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;detailed_co2_emissions&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -8116,9 +8120,7 @@ carbon budget regardless of prospection_start_year.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/models/impacts/emissions/co2_emissions.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">620</span>
-<span class="normal">621</span>
-<span class="normal">622</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">622</span>
 <span class="normal">623</span>
 <span class="normal">624</span>
 <span class="normal">625</span>
@@ -8334,7 +8336,9 @@ carbon budget regardless of prospection_start_year.</p>
 <span class="normal">835</span>
 <span class="normal">836</span>
 <span class="normal">837</span>
-<span class="normal">838</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span>
+<span class="normal">838</span>
+<span class="normal">839</span>
+<span class="normal">840</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">rpk_reference</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
     <span class="n">rtk_reference</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
@@ -8627,8 +8631,8 @@ carbon budget regardless of prospection_start_year.</p>
 
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/impacts/emissions/co2_emissions.py</code></summary>
-                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">851</span>
-<span class="normal">852</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;detailed_cumulative_co2_emissions&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">853</span>
+<span class="normal">854</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;detailed_cumulative_co2_emissions&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -8850,9 +8854,7 @@ improvements and energy decarbonization [GtCO2].</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/models/impacts/emissions/co2_emissions.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">854</span>
-<span class="normal">855</span>
-<span class="normal">856</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">856</span>
 <span class="normal">857</span>
 <span class="normal">858</span>
 <span class="normal">859</span>
@@ -8955,7 +8957,9 @@ improvements and energy decarbonization [GtCO2].</p>
 <span class="normal">956</span>
 <span class="normal">957</span>
 <span class="normal">958</span>
-<span class="normal">959</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span>
+<span class="normal">959</span>
+<span class="normal">960</span>
+<span class="normal">961</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">co2_emissions_last_historical_year_technology_baseline3</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
     <span class="n">co2_emissions_last_historical_year_technology</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
@@ -9189,9 +9193,9 @@ co2_emissions_including_energy computed by DetailedCo2Emissions.</p>
 
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/impacts/emissions/co2_emissions.py</code></summary>
-                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">989</span>
-<span class="normal">990</span>
-<span class="normal">991</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;detailed_co2_emissions_per_pathway&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">991</span>
+<span class="normal">992</span>
+<span class="normal">993</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;detailed_co2_emissions_per_pathway&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span> <span class="o">=</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
@@ -9251,9 +9255,7 @@ co2_emissions_including_energy computed by DetailedCo2Emissions.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/models/impacts/emissions/co2_emissions.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 993</span>
-<span class="normal"> 994</span>
-<span class="normal"> 995</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 995</span>
 <span class="normal"> 996</span>
 <span class="normal"> 997</span>
 <span class="normal"> 998</span>
@@ -9279,7 +9281,9 @@ co2_emissions_including_energy computed by DetailedCo2Emissions.</p>
 <span class="normal">1018</span>
 <span class="normal">1019</span>
 <span class="normal">1020</span>
-<span class="normal">1021</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">custom_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">1021</span>
+<span class="normal">1022</span>
+<span class="normal">1023</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">custom_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Sets up input and output names for the model based on the pathways in the pathways_manager.</span>
 
@@ -9387,9 +9391,7 @@ contributions equals the total energy lever of action.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/models/impacts/emissions/co2_emissions.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1023</span>
-<span class="normal">1024</span>
-<span class="normal">1025</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1025</span>
 <span class="normal">1026</span>
 <span class="normal">1027</span>
 <span class="normal">1028</span>
@@ -9442,7 +9444,9 @@ contributions equals the total energy lever of action.</p>
 <span class="normal">1075</span>
 <span class="normal">1076</span>
 <span class="normal">1077</span>
-<span class="normal">1078</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="normal">1078</span>
+<span class="normal">1079</span>
+<span class="normal">1080</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Execute the decomposition of the energy lever of action per energy pathway.</span>
 
@@ -9652,11 +9656,11 @@ shares and efficiency contributions.</p>
 
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/impacts/emissions/co2_emissions.py</code></summary>
-                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1128</span>
-<span class="normal">1129</span>
-<span class="normal">1130</span>
+                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1130</span>
 <span class="normal">1131</span>
-<span class="normal">1132</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;detailed_co2_emissions_per_aircraft&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="normal">1132</span>
+<span class="normal">1133</span>
+<span class="normal">1134</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;detailed_co2_emissions_per_aircraft&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">fleet_model</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">markets</span> <span class="o">=</span> <span class="kc">None</span>
@@ -9718,9 +9722,7 @@ shares and efficiency contributions.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/models/impacts/emissions/co2_emissions.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1134</span>
-<span class="normal">1135</span>
-<span class="normal">1136</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1136</span>
 <span class="normal">1137</span>
 <span class="normal">1138</span>
 <span class="normal">1139</span>
@@ -9759,7 +9761,9 @@ shares and efficiency contributions.</p>
 <span class="normal">1172</span>
 <span class="normal">1173</span>
 <span class="normal">1174</span>
-<span class="normal">1175</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">custom_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">1175</span>
+<span class="normal">1176</span>
+<span class="normal">1177</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">custom_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Sets up input and output names for the model based on the fleet structure.</span>
 
@@ -9880,9 +9884,7 @@ emissions avoided [MtCO2].</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/models/impacts/emissions/co2_emissions.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1177</span>
-<span class="normal">1178</span>
-<span class="normal">1179</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1179</span>
 <span class="normal">1180</span>
 <span class="normal">1181</span>
 <span class="normal">1182</span>
@@ -10039,7 +10041,9 @@ emissions avoided [MtCO2].</p>
 <span class="normal">1333</span>
 <span class="normal">1334</span>
 <span class="normal">1335</span>
-<span class="normal">1336</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="normal">1336</span>
+<span class="normal">1337</span>
+<span class="normal">1338</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Execute the decomposition of the aircraft efficiency lever of action per aircraft.</span>
 
@@ -10353,9 +10357,9 @@ each of them.</p>
 
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/impacts/emissions/co2_emissions.py</code></summary>
-                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1398</span>
-<span class="normal">1399</span>
-<span class="normal">1400</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;detailed_co2_emissions_per_market&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1400</span>
+<span class="normal">1401</span>
+<span class="normal">1402</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;detailed_co2_emissions_per_market&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">markets</span> <span class="o">=</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
@@ -10415,9 +10419,7 @@ each of them.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/models/impacts/emissions/co2_emissions.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1402</span>
-<span class="normal">1403</span>
-<span class="normal">1404</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1404</span>
 <span class="normal">1405</span>
 <span class="normal">1406</span>
 <span class="normal">1407</span>
@@ -10461,7 +10463,9 @@ each of them.</p>
 <span class="normal">1445</span>
 <span class="normal">1446</span>
 <span class="normal">1447</span>
-<span class="normal">1448</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">custom_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">1448</span>
+<span class="normal">1449</span>
+<span class="normal">1450</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">custom_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Sets up input and output names for the model based on the markets manager.</span>
 
@@ -10587,9 +10591,7 @@ operations, load factor, energy), the annual CO2 emissions avoided
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/models/impacts/emissions/co2_emissions.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1450</span>
-<span class="normal">1451</span>
-<span class="normal">1452</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1452</span>
 <span class="normal">1453</span>
 <span class="normal">1454</span>
 <span class="normal">1455</span>
@@ -10780,7 +10782,9 @@ operations, load factor, energy), the annual CO2 emissions avoided
 <span class="normal">1640</span>
 <span class="normal">1641</span>
 <span class="normal">1642</span>
-<span class="normal">1643</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="normal">1643</span>
+<span class="normal">1644</span>
+<span class="normal">1645</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Execute the per-market decomposition of the CO2 emissions levers.</span>
 
@@ -11110,9 +11114,7 @@ operational gain is applied differently to some traffic.</p>
 
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/impacts/emissions/co2_emissions.py</code></summary>
-                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1676</span>
-<span class="normal">1677</span>
-<span class="normal">1678</span>
+                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1678</span>
 <span class="normal">1679</span>
 <span class="normal">1680</span>
 <span class="normal">1681</span>
@@ -11133,7 +11135,9 @@ operational gain is applied differently to some traffic.</p>
 <span class="normal">1696</span>
 <span class="normal">1697</span>
 <span class="normal">1698</span>
-<span class="normal">1699</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">1699</span>
+<span class="normal">1700</span>
+<span class="normal">1701</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">name</span><span class="o">=</span><span class="s2">&quot;detailed_co2_emissions_per_operational_concept&quot;</span><span class="p">,</span>
     <span class="n">operations_manager</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -11245,9 +11249,7 @@ emissions avoided [MtCO2], plus a residual term.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/models/impacts/emissions/co2_emissions.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1708</span>
-<span class="normal">1709</span>
-<span class="normal">1710</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1710</span>
 <span class="normal">1711</span>
 <span class="normal">1712</span>
 <span class="normal">1713</span>
@@ -11302,7 +11304,9 @@ emissions avoided [MtCO2], plus a residual term.</p>
 <span class="normal">1762</span>
 <span class="normal">1763</span>
 <span class="normal">1764</span>
-<span class="normal">1765</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="normal">1765</span>
+<span class="normal">1766</span>
+<span class="normal">1767</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Execute the decomposition of the operations lever of action per operational concept.</span>
 
@@ -11434,9 +11438,9 @@ emissions avoided [MtCO2], plus a residual term.</p>
 
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/impacts/emissions/co2_emissions.py</code></summary>
-                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1778</span>
-<span class="normal">1779</span>
-<span class="normal">1780</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;simple_co2_emissions&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1780</span>
+<span class="normal">1781</span>
+<span class="normal">1782</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;simple_co2_emissions&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">climate_historical_data</span> <span class="o">=</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
@@ -11623,9 +11627,7 @@ emissions avoided [MtCO2], plus a residual term.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/models/impacts/emissions/co2_emissions.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1782</span>
-<span class="normal">1783</span>
-<span class="normal">1784</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1784</span>
 <span class="normal">1785</span>
 <span class="normal">1786</span>
 <span class="normal">1787</span>
@@ -11690,7 +11692,9 @@ emissions avoided [MtCO2], plus a residual term.</p>
 <span class="normal">1846</span>
 <span class="normal">1847</span>
 <span class="normal">1848</span>
-<span class="normal">1849</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span>
+<span class="normal">1849</span>
+<span class="normal">1850</span>
+<span class="normal">1851</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">energy_consumption_init</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
     <span class="n">dropin_fuel_mean_co2_emission_factor</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>

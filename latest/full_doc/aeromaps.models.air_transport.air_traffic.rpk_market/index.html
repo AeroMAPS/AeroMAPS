@@ -2611,6 +2611,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#aeromaps.models.air_transport.air_traffic.rpk_market.RPKElasticity.REFERENCE_AIRFARE_PER_RPK" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REFERENCE_AIRFARE_PER_RPK
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#aeromaps.models.air_transport.air_traffic.rpk_market.RPKElasticity.compute" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -7459,31 +7470,31 @@ discipline reads <code>airfare_per_rpk</code> (output of the cost chain) and wri
 
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/air_transport/air_traffic/rpk_market.py</code></summary>
-                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">482</span>
-<span class="normal">483</span>
-<span class="normal">484</span>
-<span class="normal">485</span>
-<span class="normal">486</span>
-<span class="normal">487</span>
-<span class="normal">488</span>
-<span class="normal">489</span>
-<span class="normal">490</span>
-<span class="normal">491</span>
-<span class="normal">492</span>
-<span class="normal">493</span>
-<span class="normal">494</span>
-<span class="normal">495</span>
-<span class="normal">496</span>
-<span class="normal">497</span>
-<span class="normal">498</span>
-<span class="normal">499</span>
-<span class="normal">500</span>
-<span class="normal">501</span>
-<span class="normal">502</span>
-<span class="normal">503</span>
-<span class="normal">504</span>
-<span class="normal">505</span>
-<span class="normal">506</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">passenger_market_ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">522</span>
+<span class="normal">523</span>
+<span class="normal">524</span>
+<span class="normal">525</span>
+<span class="normal">526</span>
+<span class="normal">527</span>
+<span class="normal">528</span>
+<span class="normal">529</span>
+<span class="normal">530</span>
+<span class="normal">531</span>
+<span class="normal">532</span>
+<span class="normal">533</span>
+<span class="normal">534</span>
+<span class="normal">535</span>
+<span class="normal">536</span>
+<span class="normal">537</span>
+<span class="normal">538</span>
+<span class="normal">539</span>
+<span class="normal">540</span>
+<span class="normal">541</span>
+<span class="normal">542</span>
+<span class="normal">543</span>
+<span class="normal">544</span>
+<span class="normal">545</span>
+<span class="normal">546</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">passenger_market_ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">passenger_market_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">passenger_market_ids</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span> <span class="o">=</span> <span class="p">{</span>
@@ -7521,6 +7532,31 @@ discipline reads <code>airfare_per_rpk</code> (output of the cost chain) and wri
 
 
 
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="aeromaps.models.air_transport.air_traffic.rpk_market.RPKElasticity.REFERENCE_AIRFARE_PER_RPK" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">REFERENCE_AIRFARE_PER_RPK</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#aeromaps.models.air_transport.air_traffic.rpk_market.RPKElasticity.REFERENCE_AIRFARE_PER_RPK" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">REFERENCE_AIRFARE_PER_RPK</span> <span class="o">=</span> <span class="mf">0.09236379319842411</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>The 2019 airfare [EUR/RPK], used when the parameters carry no <code>initial_airfare_per_rpk</code>.</p>
+
+    </div>
+
+</div>
+
 
 
 
@@ -7548,56 +7584,7 @@ the total is the sum.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/models/air_transport/air_traffic/rpk_market.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">521</span>
-<span class="normal">522</span>
-<span class="normal">523</span>
-<span class="normal">524</span>
-<span class="normal">525</span>
-<span class="normal">526</span>
-<span class="normal">527</span>
-<span class="normal">528</span>
-<span class="normal">529</span>
-<span class="normal">530</span>
-<span class="normal">531</span>
-<span class="normal">532</span>
-<span class="normal">533</span>
-<span class="normal">534</span>
-<span class="normal">535</span>
-<span class="normal">536</span>
-<span class="normal">537</span>
-<span class="normal">538</span>
-<span class="normal">539</span>
-<span class="normal">540</span>
-<span class="normal">541</span>
-<span class="normal">542</span>
-<span class="normal">543</span>
-<span class="normal">544</span>
-<span class="normal">545</span>
-<span class="normal">546</span>
-<span class="normal">547</span>
-<span class="normal">548</span>
-<span class="normal">549</span>
-<span class="normal">550</span>
-<span class="normal">551</span>
-<span class="normal">552</span>
-<span class="normal">553</span>
-<span class="normal">554</span>
-<span class="normal">555</span>
-<span class="normal">556</span>
-<span class="normal">557</span>
-<span class="normal">558</span>
-<span class="normal">559</span>
-<span class="normal">560</span>
-<span class="normal">561</span>
-<span class="normal">562</span>
-<span class="normal">563</span>
-<span class="normal">564</span>
-<span class="normal">565</span>
-<span class="normal">566</span>
-<span class="normal">567</span>
-<span class="normal">568</span>
-<span class="normal">569</span>
-<span class="normal">570</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">570</span>
 <span class="normal">571</span>
 <span class="normal">572</span>
 <span class="normal">573</span>
@@ -7634,7 +7621,61 @@ the total is the sum.</p>
 <span class="normal">604</span>
 <span class="normal">605</span>
 <span class="normal">606</span>
-<span class="normal">607</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="normal">607</span>
+<span class="normal">608</span>
+<span class="normal">609</span>
+<span class="normal">610</span>
+<span class="normal">611</span>
+<span class="normal">612</span>
+<span class="normal">613</span>
+<span class="normal">614</span>
+<span class="normal">615</span>
+<span class="normal">616</span>
+<span class="normal">617</span>
+<span class="normal">618</span>
+<span class="normal">619</span>
+<span class="normal">620</span>
+<span class="normal">621</span>
+<span class="normal">622</span>
+<span class="normal">623</span>
+<span class="normal">624</span>
+<span class="normal">625</span>
+<span class="normal">626</span>
+<span class="normal">627</span>
+<span class="normal">628</span>
+<span class="normal">629</span>
+<span class="normal">630</span>
+<span class="normal">631</span>
+<span class="normal">632</span>
+<span class="normal">633</span>
+<span class="normal">634</span>
+<span class="normal">635</span>
+<span class="normal">636</span>
+<span class="normal">637</span>
+<span class="normal">638</span>
+<span class="normal">639</span>
+<span class="normal">640</span>
+<span class="normal">641</span>
+<span class="normal">642</span>
+<span class="normal">643</span>
+<span class="normal">644</span>
+<span class="normal">645</span>
+<span class="normal">646</span>
+<span class="normal">647</span>
+<span class="normal">648</span>
+<span class="normal">649</span>
+<span class="normal">650</span>
+<span class="normal">651</span>
+<span class="normal">652</span>
+<span class="normal">653</span>
+<span class="normal">654</span>
+<span class="normal">655</span>
+<span class="normal">656</span>
+<span class="normal">657</span>
+<span class="normal">658</span>
+<span class="normal">659</span>
+<span class="normal">660</span>
+<span class="normal">661</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Apply the global elasticity multiplier to baseline RPK trajectories.</span>
 
 <span class="sd">    The multiplier is ``(airfare / initial_airfare)**price_elasticity``</span>
@@ -7658,8 +7699,13 @@ the total is the sum.</p>
     <span class="p">)</span>
 
     <span class="c1"># Multiplier: 1 before elasticity_start, (airfare/airfare_init)**elasticity after.</span>
-    <span class="n">multiplier</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+    <span class="c1">#</span>
+    <span class="c1"># The airfare is used exactly as handed in: ``price_elasticity`` is fractional and</span>
+    <span class="c1"># numpy returns NaN on a negative base, but keeping the iterate inside its physical</span>
+    <span class="c1"># domain is the solver&#39;s job, through ``AIRFARE_BOUNDS_RELATIVE``.</span>
     <span class="n">proj</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="n">elasticity_start</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">)</span>
+
+    <span class="n">multiplier</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
     <span class="n">multiplier</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">proj</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">airfare_per_rpk</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">proj</span><span class="p">]</span> <span class="o">/</span> <span class="n">airfare_init</span><span class="p">)</span> <span class="o">**</span> <span class="n">price_elasticity</span>
 
     <span class="n">total_rpk</span> <span class="o">=</span> <span class="n">rpk_no_elasticity</span> <span class="o">*</span> <span class="n">multiplier</span>
