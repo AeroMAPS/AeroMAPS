@@ -6638,8 +6638,7 @@ for multidisciplinary analysis execution of AeroMAPS.</p>
 
 <details class="warning" open>
   <summary>Warning</summary>
-  <p>This method is called in <strong>init</strong>. A change of the year bounds needs no new call:
-compute() rebuilds the MDA chain itself.</p>
+  <p>This method should be called only if end year was modified, otherwise it is called in <strong>init</strong>.</p>
 </details>
 
             <details class="mkdocstrings-source">
@@ -6673,8 +6672,7 @@ compute() rebuilds the MDA chain itself.</p>
 <span class="normal">527</span>
 <span class="normal">528</span>
 <span class="normal">529</span>
-<span class="normal">530</span>
-<span class="normal">531</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">setup_mda</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">530</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">setup_mda</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Configure the process for a standalone MDA chain.</span>
 
 <span class="sd">    This method initializes generic energy inputs and disciplines,</span>
@@ -6683,8 +6681,7 @@ compute() rebuilds the MDA chain itself.</p>
 
 <span class="sd">    Warning</span>
 <span class="sd">    ---------</span>
-<span class="sd">    This method is called in __init__. A change of the year bounds needs no new call:</span>
-<span class="sd">    compute() rebuilds the MDA chain itself.</span>
+<span class="sd">    This method should be called only if end year was modified, otherwise it is called in __init__.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1">#  Initialize conventional disciplines.</span>
     <span class="c1"># Here and not in common_setup because one need to create scenario</span>
@@ -6731,13 +6728,13 @@ so that optimization scenarios can be defined and executed later.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/core/process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">533</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">532</span>
+<span class="normal">533</span>
 <span class="normal">534</span>
 <span class="normal">535</span>
 <span class="normal">536</span>
 <span class="normal">537</span>
-<span class="normal">538</span>
-<span class="normal">539</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">setup_optimisation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">538</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">setup_optimisation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Configure the process for GEMSEO-based optimization.</span>
 
 <span class="sd">    This method initializes the internal GEMSEO settings dictionary</span>
@@ -6772,7 +6769,8 @@ and formulation.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/core/process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">541</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">540</span>
+<span class="normal">541</span>
 <span class="normal">542</span>
 <span class="normal">543</span>
 <span class="normal">544</span>
@@ -6795,8 +6793,7 @@ and formulation.</p>
 <span class="normal">561</span>
 <span class="normal">562</span>
 <span class="normal">563</span>
-<span class="normal">564</span>
-<span class="normal">565</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_gemseo_scenario</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">564</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_gemseo_scenario</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Build a single-level GEMSEO MDO scenario.</span>
 
 <span class="sd">    This method initializes generic energy inputs and disciplines,</span>
@@ -6849,7 +6846,8 @@ defined, it is created using the current <code>gemseo_settings</code>.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/core/process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">567</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">566</span>
+<span class="normal">567</span>
 <span class="normal">568</span>
 <span class="normal">569</span>
 <span class="normal">570</span>
@@ -6886,8 +6884,7 @@ defined, it is created using the current <code>gemseo_settings</code>.</p>
 <span class="normal">601</span>
 <span class="normal">602</span>
 <span class="normal">603</span>
-<span class="normal">604</span>
-<span class="normal">605</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_gemseo_bilevel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">604</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_gemseo_bilevel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Build a GEMSEO bilevel optimization formulation.</span>
 
 <span class="sd">    This method wraps an inner GEMSEO scenario in an</span>
@@ -6954,7 +6951,8 @@ updates the internal data structures with model outputs.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/core/process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">607</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">606</span>
+<span class="normal">607</span>
 <span class="normal">608</span>
 <span class="normal">609</span>
 <span class="normal">610</span>
@@ -6983,8 +6981,7 @@ updates the internal data structures with model outputs.</p>
 <span class="normal">633</span>
 <span class="normal">634</span>
 <span class="normal">635</span>
-<span class="normal">636</span>
-<span class="normal">637</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">636</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Run the configured analysis or optimization.</span>
 
 <span class="sd">    This method prepares input data, then executes either a bilevel</span>
@@ -7066,7 +7063,8 @@ instances for data information, inputs, and outputs.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/core/process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">639</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">638</span>
+<span class="normal">639</span>
 <span class="normal">640</span>
 <span class="normal">641</span>
 <span class="normal">642</span>
@@ -7087,8 +7085,7 @@ instances for data information, inputs, and outputs.</p>
 <span class="normal">657</span>
 <span class="normal">658</span>
 <span class="normal">659</span>
-<span class="normal">660</span>
-<span class="normal">661</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_dataframes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">660</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_dataframes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return all main DataFrames as a dictionary, generated on demand.</span>
 
 <span class="sd">    This method generates and returns a dictionary of key DataFrames</span>
@@ -7158,7 +7155,8 @@ instances for data information, inputs, and outputs.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/core/process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">663</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">662</span>
+<span class="normal">663</span>
 <span class="normal">664</span>
 <span class="normal">665</span>
 <span class="normal">666</span>
@@ -7166,8 +7164,7 @@ instances for data information, inputs, and outputs.</p>
 <span class="normal">668</span>
 <span class="normal">669</span>
 <span class="normal">670</span>
-<span class="normal">671</span>
-<span class="normal">672</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_json</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">671</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_json</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the model outputs as a JSON-serializable dictionary.</span>
 
@@ -7235,7 +7232,8 @@ configuration is used.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/core/process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">674</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">673</span>
+<span class="normal">674</span>
 <span class="normal">675</span>
 <span class="normal">676</span>
 <span class="normal">677</span>
@@ -7267,8 +7265,7 @@ configuration is used.</p>
 <span class="normal">703</span>
 <span class="normal">704</span>
 <span class="normal">705</span>
-<span class="normal">706</span>
-<span class="normal">707</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">write_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="normal">706</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">write_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Write model inputs and outputs to a JSON file.</span>
 
 <span class="sd">    This method builds the JSON-compatible data and writes it to</span>
@@ -7359,7 +7356,8 @@ configuration is used.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/core/process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">709</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">708</span>
+<span class="normal">709</span>
 <span class="normal">710</span>
 <span class="normal">711</span>
 <span class="normal">712</span>
@@ -7387,8 +7385,7 @@ configuration is used.</p>
 <span class="normal">734</span>
 <span class="normal">735</span>
 <span class="normal">736</span>
-<span class="normal">737</span>
-<span class="normal">738</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">write_excel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="normal">737</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">write_excel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Write main result tables to an Excel workbook.</span>
 
 <span class="sd">    This method exports data information, inputs, and outputs into</span>
@@ -7444,13 +7441,13 @@ coupling structure between the configured disciplines.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/core/process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">740</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">739</span>
+<span class="normal">740</span>
 <span class="normal">741</span>
 <span class="normal">742</span>
 <span class="normal">743</span>
 <span class="normal">744</span>
-<span class="normal">745</span>
-<span class="normal">746</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generate_n2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">745</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generate_n2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate an N2 diagram for the current disciplines.</span>
 
 <span class="sd">    This method calls GEMSEO to create an N2 plot describing the</span>
@@ -7601,7 +7598,8 @@ Combines with <code>scope</code>.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/core/process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">764</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">763</span>
+<span class="normal">764</span>
 <span class="normal">765</span>
 <span class="normal">766</span>
 <span class="normal">767</span>
@@ -7809,8 +7807,7 @@ Combines with <code>scope</code>.</p>
 <span class="normal">969</span>
 <span class="normal">970</span>
 <span class="normal">971</span>
-<span class="normal">972</span>
-<span class="normal">973</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">describe_models</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_agnostic</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">display</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="normal">972</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">describe_models</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_agnostic</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">display</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Summarise every discipline wired into this process.</span>
 
 <span class="sd">    Surfaces, for each discipline, its **domain** (air traffic, fleet, energy,</span>
@@ -8067,15 +8064,15 @@ Combines with <code>scope</code>.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/core/process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">975</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">974</span>
+<span class="normal">975</span>
 <span class="normal">976</span>
 <span class="normal">977</span>
 <span class="normal">978</span>
 <span class="normal">979</span>
 <span class="normal">980</span>
 <span class="normal">981</span>
-<span class="normal">982</span>
-<span class="normal">983</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">list_available_plots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">982</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">list_available_plots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;List the names of supported plots.</span>
 
 <span class="sd">    Returns</span>
@@ -8131,15 +8128,15 @@ Combines with <code>scope</code>.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/core/process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">985</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">984</span>
+<span class="normal">985</span>
 <span class="normal">986</span>
 <span class="normal">987</span>
 <span class="normal">988</span>
 <span class="normal">989</span>
 <span class="normal">990</span>
 <span class="normal">991</span>
-<span class="normal">992</span>
-<span class="normal">993</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">list_float_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">992</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">list_float_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the current scalar input values.</span>
 
 <span class="sd">    Returns</span>
@@ -8195,15 +8192,15 @@ Combines with <code>scope</code>.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/core/process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 995</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 994</span>
+<span class="normal"> 995</span>
 <span class="normal"> 996</span>
 <span class="normal"> 997</span>
 <span class="normal"> 998</span>
 <span class="normal"> 999</span>
 <span class="normal">1000</span>
 <span class="normal">1001</span>
-<span class="normal">1002</span>
-<span class="normal">1003</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">list_str_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">1002</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">list_str_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the current string input values.</span>
 
 <span class="sd">    Returns</span>
@@ -8389,7 +8386,8 @@ function.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/core/process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1005</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1004</span>
+<span class="normal">1005</span>
 <span class="normal">1006</span>
 <span class="normal">1007</span>
 <span class="normal">1008</span>
@@ -8460,8 +8458,7 @@ function.</p>
 <span class="normal">1073</span>
 <span class="normal">1074</span>
 <span class="normal">1075</span>
-<span class="normal">1076</span>
-<span class="normal">1077</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span>
+<span class="normal">1076</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">name</span><span class="p">,</span>
     <span class="n">save</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
