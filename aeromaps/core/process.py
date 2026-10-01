@@ -545,6 +545,10 @@ class AeroMAPSProcess(object):
             inner_mda_name="MDAGaussSeidel",
             log_convergence=True,
         )
+        self._configure_mda_chain()
+
+    def _configure_mda_chain(self):
+        """Install on ``mda_chain`` what its settings do not carry, so a rebuilt chain gets it too."""
         # Missing values travel beside the coupling vector rather than inside it.
         freeze_nan_masks_after_first_sweep(self.mda_chain)
         # Models declare the physical domain of their couplings; the solver enforces it.
@@ -1170,6 +1174,7 @@ class AeroMAPSProcess(object):
                 update={"initialize_defaults": True}, deep=True
             )
             self.mda_chain = MDAChain(disciplines=self.disciplines, settings_model=settings)
+            self._configure_mda_chain()
 
     def _initialize_configuration(self):
         """Load and merge configuration settings.
