@@ -1,10 +1,13 @@
 """
-Coupling seeds (``_coupling_defaults``) must follow an ``end_year`` changed after
-``create_process``, and must never override a value the user set as a parameter.
+An ``end_year`` changed after ``create_process`` must give the results of a process created
+with it, whether or not the process has already been computed. Coupling seeds
+(``_coupling_defaults``) must follow it without overriding a value set as a parameter.
 """
 
 import importlib.resources
 import json
+import shutil
+from pathlib import Path
 from types import SimpleNamespace
 
 import numpy as np
@@ -163,3 +166,57 @@ def test_end_year_set_after_create_process_matches_end_year_at_creation(tmp_path
             rtol=1e-9,
             err_msg=name,
         )
+
+
+def _assert_same_outputs(process, reference):
+    assert process.data["years"] == reference.data["years"]
+    for frame, name in (
+        ("vector_outputs", "rpk"),
+        ("vector_outputs", "airfare_per_rpk"),
+        ("vector_outputs", "cumulative_co2_emissions"),
+        ("climate_outputs", "temperature_increase_from_aviation"),
+    ):
+        np.testing.assert_allclose(
+            process.data[frame][name], reference.data[frame][name], rtol=1e-9, err_msg=name
+        )
+
+
+def test_end_year_changed_between_computes_matches_fresh_processes(tmp_path):
+    for name in ("2050", "2070", "changed"):
+        (tmp_path / name).mkdir()
+    reference_2050 = _elastic_process(tmp_path / "2050")
+    reference_2050.compute()
+    reference_2070 = _elastic_process(tmp_path / "2070", end_year_at_creation=2070)
+    reference_2070.compute()
+
+    process = _elastic_process(tmp_path / "changed")
+    process.compute()
+    process.parameters.end_year = 2070
+    process.compute()
+    _assert_same_outputs(process, reference_2070)
+
+    process.parameters.end_year = 2050
+    process.compute()
+    _assert_same_outputs(process, reference_2050)
+
+
+def _fleet_process(directory, end_year_at_creation=None):
+    # The bottom-up fleet model keeps its own dataframe, outside the disciplines.
+    shutil.copytree(Path(__file__).parent.parent / "tested_configs", directory)
+    if end_year_at_creation is not None:
+        inputs_file = directory / "data" / "inputs_advanced.json"
+        inputs = json.loads(inputs_file.read_text())
+        inputs["end_year"] = end_year_at_creation
+        inputs_file.write_text(json.dumps(inputs))
+    return create_process(configuration_file=str(directory / "config_advanced.yaml"))
+
+
+def test_end_year_changed_between_computes_with_fleet_matches_fresh_process(tmp_path):
+    reference = _fleet_process(tmp_path / "2070", end_year_at_creation=2070)
+    reference.compute()
+
+    process = _fleet_process(tmp_path / "changed")
+    process.compute()
+    process.parameters.end_year = 2070
+    process.compute()
+    _assert_same_outputs(process, reference)

@@ -507,7 +507,8 @@ class AeroMAPSProcess(object):
 
         Warning
         ---------
-        This method should be called only if end year was modified, otherwise it is called in __init__.
+        This method is called in __init__. A change of the year bounds needs no new call:
+        compute() rebuilds the MDA chain itself.
         """
         #  Initialize conventional disciplines.
         # Here and not in common_setup because one need to create scenario
@@ -1089,12 +1090,14 @@ class AeroMAPSProcess(object):
             Dictionary of input variable names and values for
             execution.
         """
+        self._resize_to_year_bounds()
         input_data = self.parameters.to_dict()
         if self.fleet is not None:
             # Necessary when user hard coded the fleet
             self.fleet_model.fleet.all_aircraft_elements = (
                 self.fleet_model.fleet.get_all_aircraft_elements()
             )
+            self.fleet_model._initialize_df()
             self.fleet_model.compute()
 
             # This is needed since fleet model is particular discipline
@@ -1108,6 +1111,36 @@ class AeroMAPSProcess(object):
                 disc.refresh_coupling_seeds()
 
         return input_data
+
+    def _year_bounds(self):
+        return (
+            self.parameters.climate_historic_start_year,
+            self.parameters.historic_start_year,
+            self.parameters.prospection_start_year,
+            self.parameters.end_year,
+        )
+
+    def _resize_to_year_bounds(self):
+        """Discard the state sized on previous year bounds when they have changed.
+
+        The year index and output frames are built at creation, the disciplines cache
+        their outputs, and the MDA chain sizes its coupling defaults and solver bounds
+        at its first execution: all of them hold arrays over the previous years.
+        """
+        if self._year_bounds() == self._sized_year_bounds:
+            return
+        self._initialize_years()
+        self.data["vector_outputs"] = pd.DataFrame(index=self.data["years"]["full_years"])
+        self.data["climate_outputs"] = pd.DataFrame(index=self.data["years"]["climate_full_years"])
+        for disc in self.disciplines:
+            if disc.cache is not None:
+                disc.cache.clear()
+        if getattr(self, "mda_chain", None) is not None:
+            # Same settings, but the coupling defaults are initialised again.
+            settings = self.mda_chain.settings.model_copy(
+                update={"initialize_defaults": True}, deep=True
+            )
+            self.mda_chain = MDAChain(disciplines=self.disciplines, settings_model=settings)
 
     def _initialize_configuration(self):
         """Load and merge configuration settings.
@@ -2243,6 +2276,7 @@ class AeroMAPSProcess(object):
         dictionary.
         """
         # Years
+        self._sized_year_bounds = self._year_bounds()
         self.data["years"] = {}
         self.data["years"]["full_years"] = list(
             range(self.parameters.historic_start_year, self.parameters.end_year + 1)

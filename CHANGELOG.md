@@ -114,6 +114,7 @@ Fixed:
 - Process emission factors are now read: the environmental models registered no process `environmental` block and looked the factor up under a name no configuration writes, so hydrogen liquefaction and electrolysis emissions read exactly zero. Every process emission factor in the repository is 0.0, so no committed result moves. (#158)
 - Corrected `resources_names` in the `mea_2024` energy carriers file, which silently dropped `hydrogen_electrolysis`'s `transport` resource from cost and emissions. (#158)
 - Coupling seeds now follow an `end_year` set after `create_process`: the price-elastic demand seeded `airfare_per_rpk` only up to the end year the process was created with, so RPK went NaN beyond it and the climate model raised. A value set in `process.parameters` still wins over the seed.
+- Changing the year bounds between two `compute()` calls now gives the results of a process created with them, instead of a `KeyError` or NaN emissions. The year index, the output frames, the disciplines' caches, the fleet model's dataframe and the MDA chain, whose coupling defaults and solver bounds are sized at its first run, were all kept at the previous years; `setup_mda()` no longer needs calling after such a change. (#107)
 
 
 ## Version 1.1.0
