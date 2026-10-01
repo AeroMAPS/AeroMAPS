@@ -427,6 +427,10 @@ class MultiRegionalProcess(AeroMAPSProcess):
             if isinstance(value, dict):
                 self._register_models_into(value, name_list)
             elif isinstance(value, AeroMAPSModel):
+                # The standard registries hold module-level singletons: copy them, as
+                # AeroMAPSProcess does, so two processes never share a model's state.
+                if getattr(value, "deepcopy_at_init", True):
+                    value = deepcopy(value)
                 self.models[value.name] = value
                 name_list.append(value.name)
             else:

@@ -339,3 +339,29 @@ def test_the_rebuilt_unified_chain_keeps_its_nan_masks_and_coupling_bounds(
     assert rebuilt in masked
     namespaces = {namespace for chain, namespace in bounded if chain == rebuilt}
     assert namespaces == {f"{region_id}:" for region_id in process.list_regions()}
+
+
+# --------------------------------------------------------------------------------
+# Top-level and global models are the process' own copies
+# --------------------------------------------------------------------------------
+
+
+def test_standard_models_are_copied_when_registered():
+    """The standard registries hold module-level singletons, as for AeroMAPSProcess.
+
+    Registered as they are, a second multi-regional process would rewrite the first one's
+    model parameters and frames.
+    """
+    from aeromaps.core import models as aeromaps_models
+    from aeromaps.core.multi_regional_process import MultiRegionalProcess
+
+    singletons = {name: model for name, model in aeromaps_models.models_traffic.items()}
+    process = MultiRegionalProcess.__new__(MultiRegionalProcess)
+    process.models = {}
+    names = []
+    process._register_models_into({"models_traffic": aeromaps_models.models_traffic}, names)
+
+    assert names
+    for model in singletons.values():
+        assert process.models[model.name] is not model
+        assert type(process.models[model.name]) is type(model)
