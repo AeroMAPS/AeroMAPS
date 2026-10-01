@@ -522,13 +522,16 @@ class _CouplingSeedMixin:
         discipline was built leaves seeds that stop at the old end year.
         """
         seeds = getattr(self.model, "_coupling_defaults", {})
+        # A multi-regional copy keys its defaults as "{region}:name".
+        to_namespaced = self.input_grammar.to_namespaced
         for key in list(self._seeded_coupling_names):
+            default_key = to_namespaced.get(key, key)
             if hasattr(self.model.parameters, key):
                 # Set as a parameter since the discipline was built: it wins from now on.
-                self.default_input_data[key] = getattr(self.model.parameters, key)
+                self.default_input_data[default_key] = getattr(self.model.parameters, key)
                 self._seeded_coupling_names.discard(key)
             elif key in seeds:
-                self.default_input_data[key] = seeds[key]
+                self.default_input_data[default_key] = seeds[key]
 
 
 class AeroMAPSAutoModelWrapper(_CouplingSeedMixin, AutoPyDiscipline):

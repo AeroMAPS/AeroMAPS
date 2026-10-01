@@ -139,6 +139,14 @@ DEFAULT_CONFIG_PATH = os.path.join(CURRENT_DIR, "..", "resources", "data", "conf
 # Base directory for resources/data (used to resolve relative paths in config.yaml)
 DEFAULT_RESOURCES_DATA_DIR = os.path.join(CURRENT_DIR, "..", "resources", "data")
 
+# The parameters every year index, output frame and coupling seed is sized on.
+YEAR_BOUND_NAMES = (
+    "climate_historic_start_year",
+    "historic_start_year",
+    "prospection_start_year",
+    "end_year",
+)
+
 # TODO(flex-start-year): delete this guard once downstream configs are migrated
 # and a release cycle has passed (target: remove after 2026-12, or once no
 # in-repo config and no known external scenario still carries a `_2019` key).
@@ -1146,12 +1154,7 @@ class AeroMAPSProcess(object):
         return input_data
 
     def _year_bounds(self):
-        return (
-            self.parameters.climate_historic_start_year,
-            self.parameters.historic_start_year,
-            self.parameters.prospection_start_year,
-            self.parameters.end_year,
-        )
+        return tuple(getattr(self.parameters, name) for name in YEAR_BOUND_NAMES)
 
     def _resize_to_year_bounds(self):
         """Discard the state sized on previous year bounds when they have changed.

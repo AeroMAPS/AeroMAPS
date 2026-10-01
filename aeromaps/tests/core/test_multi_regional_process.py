@@ -19,6 +19,7 @@ so the tests cannot write to the repository -- ``create_partitioning`` rewrites 
 JSON in place.
 """
 
+import json
 import shutil
 from pathlib import Path
 
@@ -221,3 +222,120 @@ def test_the_regional_and_aggregated_outputs_are_both_present(computed):
     overall = [c for c in outputs.columns if str(c).startswith("overall:")]
     assert regional, "no regional columns were harvested"
     assert overall, "no aggregated columns were harvested"
+
+
+# --------------------------------------------------------------------------------
+# An end year changed after creation
+# --------------------------------------------------------------------------------
+#
+# Before, neither mode followed it. ``separate_processes`` resized each region but not the
+# top-level chain, and raised on the aggregated climate outputs. ``unified_mda`` raised
+# nothing and returned results that stopped at the old end year: its namespaced
+# disciplines are deep copies holding their own copy of the parameters, and nothing
+# re-initialised them.
+
+END_YEAR = 2070
+
+
+@pytest.fixture(scope="module")
+def tutorial_dir_at_end_year(tmp_path_factory):
+    """The tutorial with ``END_YEAR`` set in every region's inputs at creation."""
+    target = tmp_path_factory.mktemp("two_regions_end_year")
+    shutil.copytree(TUTORIAL / "data", target / "data")
+    for config in CONFIGS.values():
+        shutil.copy(TUTORIAL / config, target / config)
+    for inputs_file in (target / "data").glob("region_*/inputs.json"):
+        inputs = json.loads(inputs_file.read_text())
+        inputs["end_year"] = END_YEAR
+        inputs_file.write_text(json.dumps(inputs, indent=2))
+    return target
+
+
+def _set_end_year(process, end_year, regions=None):
+    for region_id in regions or process.list_regions():
+        process.get_regional_process(region_id).parameters.end_year = end_year
+
+
+@pytest.mark.parametrize("mode", list(CONFIGS))
+def test_an_end_year_changed_after_creation_matches_one_set_at_creation(
+    tutorial_dir, tutorial_dir_at_end_year, mode
+):
+    reference = _process(tutorial_dir_at_end_year, mode)
+    reference.compute(parallel=False)
+
+    process = _process(tutorial_dir, mode)
+    process.compute(parallel=False)
+    _set_end_year(process, END_YEAR)
+    process.compute(parallel=False)
+
+    assert process.data["years"] == reference.data["years"]
+    for frame in ("vector_outputs", "climate_outputs"):
+        left, right = process.data[frame], reference.data[frame]
+        assert list(left.index) == list(right.index), frame
+        assert set(left.columns) == set(right.columns), frame
+        mismatches = [
+            name
+            for name in right.columns
+            if not np.allclose(
+                left[name].to_numpy(dtype=float),
+                right[name].to_numpy(dtype=float),
+                rtol=1e-9,
+                atol=0.0,
+                equal_nan=True,
+            )
+        ]
+        assert not mismatches, f"{frame}: {len(mismatches)} differ, e.g. {mismatches[:5]}"
+    assert process.data["float_outputs"] == pytest.approx(
+        reference.data["float_outputs"], rel=1e-9, nan_ok=True
+    )
+
+
+def test_regions_with_different_year_bounds_are_refused(tutorial_dir):
+    """The aggregate is indexed on one set of years, so the regions must share it."""
+    process = _process(tutorial_dir, "unified_mda")
+    _set_end_year(process, END_YEAR, regions=["EU_DOM"])
+
+    with pytest.raises(ValueError, match="same year bounds"):
+        process.compute(parallel=False)
+
+
+def test_the_rebuilt_unified_chain_keeps_its_nan_masks_and_coupling_bounds(
+    tutorial_dir, monkeypatch
+):
+    """As for a single region: what the chain's settings do not carry is installed again.
+
+    Recorded at the call rather than read off the solvers, because the tutorial's chain has
+    no strongly coupled block and so no inner MDA to carry them.
+    """
+    from aeromaps.core import multi_regional_process
+
+    masked, bounded = [], []
+    freeze = multi_regional_process.freeze_nan_masks_after_first_sweep
+    apply_coupling_bounds = multi_regional_process.apply_coupling_bounds
+
+    def recording_freeze(mda_chain):
+        masked.append(id(mda_chain))
+        return freeze(mda_chain)
+
+    def recording_apply_coupling_bounds(mda_chain, disciplines, namespace=""):
+        bounded.append((id(mda_chain), namespace))
+        return apply_coupling_bounds(mda_chain, disciplines, namespace)
+
+    monkeypatch.setattr(
+        multi_regional_process, "freeze_nan_masks_after_first_sweep", recording_freeze
+    )
+    monkeypatch.setattr(
+        multi_regional_process, "apply_coupling_bounds", recording_apply_coupling_bounds
+    )
+
+    process = _process(tutorial_dir, "unified_mda")
+    created = id(process.mda_chain)
+    process.compute(parallel=False)
+    _set_end_year(process, END_YEAR)
+    process.compute(parallel=False)
+
+    rebuilt = id(process.mda_chain)
+    assert rebuilt != created
+    assert rebuilt in masked
+    namespaces = {namespace for chain, namespace in bounded if chain == rebuilt}
+    assert namespaces == {f"{region_id}:" for region_id in process.list_regions()}

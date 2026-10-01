@@ -30,7 +30,7 @@ from gemseo.mda.mda_chain import MDAChain
 from tqdm.auto import tqdm
 
 # Local application imports
-from aeromaps.core.process import AeroMAPSProcess
+from aeromaps.core.process import YEAR_BOUND_NAMES, AeroMAPSProcess
 from aeromaps.core.gemseo import (
     AeroMAPSAutoModelWrapper,
     AeroMAPSCustomModelWrapper,
@@ -656,8 +656,7 @@ class MultiRegionalProcess(AeroMAPSProcess):
             inner_mda_name="MDAGaussSeidel",
             log_convergence=False,
         )
-        # Missing values travel beside the coupling vector rather than inside it.
-        freeze_nan_masks_after_first_sweep(self._top_level_mda_chain)
+        self._configure_top_level_mda_chain()
         logging.info(
             f"Top-level MDAChain created with {len(self.disciplines)} discipline(s) "
             f"(aggregator + {len(self._top_level_model_names)} top-level model(s))"
@@ -717,6 +716,17 @@ class MultiRegionalProcess(AeroMAPSProcess):
                 "acceleration_method": AccelerationMethod.NONE,
             },
         )
+        self._configure_unified_mda_chain()
+
+        logging.info(f"Unified MDAChain created with {len(all_disciplines)} disciplines")
+
+    def _configure_top_level_mda_chain(self):
+        """Install on the top-level chain what its settings do not carry."""
+        # Missing values travel beside the coupling vector rather than inside it.
+        freeze_nan_masks_after_first_sweep(self._top_level_mda_chain)
+
+    def _configure_unified_mda_chain(self):
+        """Install on the unified chain what its settings do not carry."""
         # Missing values travel beside the coupling vector rather than inside it.
         freeze_nan_masks_after_first_sweep(self.mda_chain)
         # Models declare the physical domain of their couplings; the solver enforces it.
@@ -725,7 +735,50 @@ class MultiRegionalProcess(AeroMAPSProcess):
         for region_id, regional_disciplines in self._regional_disciplines.items():
             apply_coupling_bounds(self.mda_chain, regional_disciplines, f"{region_id}:")
 
-        logging.info(f"Unified MDAChain created with {len(all_disciplines)} disciplines")
+    def _resize_to_year_bounds(self):
+        """Resize everything sized on the year bounds when they have changed since the last run.
+
+        The multi-regional counterpart of ``AeroMAPSProcess._resize_to_year_bounds``. In
+        ``separate_processes`` mode each regional process resizes itself when computed,
+        so only the top level is left. In ``unified_mda`` mode no regional process is
+        computed, and its namespaced disciplines are deep copies holding their own copy
+        of the parameters, so the new bounds are copied onto every model here.
+        """
+        bounds = {
+            region_id: process._year_bounds()
+            for region_id, process in self._regional_processes.items()
+        }
+        if len(set(bounds.values())) > 1:
+            raise ValueError(
+                "All regions must share the same year bounds "
+                f"({', '.join(YEAR_BOUND_NAMES)}), got {bounds}."
+            )
+        if self._year_bounds() == self._sized_year_bounds:
+            return
+
+        if self._execution_mode == "unified_mda":
+            for process in self._regional_processes.values():
+                process._initialize_years()
+        for disc in self.disciplines:
+            for name in YEAR_BOUND_NAMES:
+                setattr(disc.model.parameters, name, getattr(self.parameters, name))
+            disc.model._initialize_df()
+            disc.refresh_coupling_seeds()
+            if disc.cache is not None:
+                disc.cache.clear()
+        self._initialize_data_containers()
+
+        # Same settings, but the coupling defaults are initialised again.
+        if self._execution_mode == "unified_mda":
+            self.mda_chain = self._rebuilt(self.mda_chain)
+            self._configure_unified_mda_chain()
+        else:
+            self._top_level_mda_chain = self._rebuilt(self._top_level_mda_chain)
+            self._configure_top_level_mda_chain()
+
+    def _rebuilt(self, mda_chain):
+        settings = mda_chain.settings.model_copy(update={"initialize_defaults": True}, deep=True)
+        return MDAChain(disciplines=self.disciplines, settings_model=settings)
 
     def _initialize_data_containers(self):
         """Initialize data containers following AeroMAPSProcess structure.
@@ -736,27 +789,24 @@ class MultiRegionalProcess(AeroMAPSProcess):
 
         Same pattern applies to float_outputs and climate_outputs.
         """
-        # Get year index from first regional process
-        first_process = self._regional_processes[self._region_ids[0]]
-
-        # Follow AeroMAPSProcess data structure exactly
-        self.data = {
-            "years": first_process.data.get("years", {}),
-            "float_inputs": {},
-            "str_inputs": {},
-            "vector_inputs": {},
-            "float_outputs": {},  # Keys will be namespaced: "FR:metric", "overall:metric"
-            "vector_outputs": pd.DataFrame(
-                index=first_process.data.get("years", {}).get("full_years", [])
-            ),
-            "climate_outputs": pd.DataFrame(
-                index=first_process.data.get("years", {}).get("climate_full_years", [])
-            ),
-            "lca_outputs": None,  # xarray - handled separately per region
-        }
-
         # Reference to parameters from first region (for year indexing, etc.)
-        self.parameters = first_process.parameters
+        self.parameters = self._regional_processes[self._region_ids[0]].parameters
+
+        # Follow AeroMAPSProcess data structure exactly. The years are built from the
+        # parameters rather than read from a region, which may not be resized yet.
+        self.data = {}
+        self._initialize_years()
+        self.data.update(
+            {
+                "float_inputs": {},
+                "str_inputs": {},
+                "vector_inputs": {},
+                "float_outputs": {},  # Keys will be namespaced: "FR:metric", "overall:metric"
+                "vector_outputs": pd.DataFrame(index=self.data["years"]["full_years"]),
+                "climate_outputs": pd.DataFrame(index=self.data["years"]["climate_full_years"]),
+                "lca_outputs": None,  # xarray - handled separately per region
+            }
+        )
 
     # =========================================================================
     # Public API
@@ -816,6 +866,7 @@ class MultiRegionalProcess(AeroMAPSProcess):
             Only applies when parallel=True.
         """
         logging.info(f"Starting multi-regional computation ({self._execution_mode} mode)...")
+        self._resize_to_year_bounds()
 
         if self._execution_mode == "unified_mda":
             self._compute_unified_mda()
