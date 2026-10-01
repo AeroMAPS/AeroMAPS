@@ -461,7 +461,9 @@ class CustomDataConverter(SimpleGrammarDataConverter):
             intruding = is_nan & mask
             if intruding.any():
                 record_nan_intrusion(name, int(intruding.sum()))
-            return np.where(is_nan, self.DEAD_FILL, values)
+            # Masked-out positions stay out even if they now hold a number: the disciplines
+            # get NaN back there, so the residual must not see it either.
+            return np.where(mask & ~is_nan, values, self.DEAD_FILL)
         return super().convert_value_to_array(name, value)
 
     def convert_array_to_value(self, name: str, array_: Any) -> Any:
