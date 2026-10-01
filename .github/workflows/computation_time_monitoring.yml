@@ -115,6 +115,29 @@ jobs:
           uv sync 
         # --locked 
 
+      - name: Debug environment
+        shell```yaml
+
+      - name: Debug environment
+        shell: bash
+        run: |
+          echo "--- pwd ---"
+          pwd
+          echo "--- ls repo root ---"
+          ls -la
+          echo "--- pyproject.toml (deps section) ---"
+          grep -A 20 'dependency-groups\|\[tool.poetry' pyproject.toml || true
+          echo "--- uv.lock exists? ---"
+          ls -la uv.lock || echo "NO uv.lock"
+          echo "--- uv sync output ---"
+          uv sync --dev
+          echo "--- venv contents ---"
+          ls -la .venv/bin/ | head -50
+          echo "--- pytest in venv? ---"
+          ls -la .venv/bin/pytest || echo "NO pytest binary"
+          echo "--- uv pip list ---"
+          uv pip list | grep -i pytest || echo "pytest not in uv pip list"
+
       - name: Verify pytest is installed
         run: uv run pytest --version
 
