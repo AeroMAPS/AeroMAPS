@@ -74,8 +74,6 @@ jobs:
 
       - name: Register venv as python3 kernel
         run: uv run python -m ipykernel install --user --name python3   
-          # Verify
-          cat ~/.local/share/jupyter/kernels/python3/kernel.json
 
       - name: Notebook tests
         run: |
