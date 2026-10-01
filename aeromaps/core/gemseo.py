@@ -183,7 +183,35 @@ class CustomDataConverter(SimpleGrammarDataConverter):
 SimpleGrammar.DATA_CONVERTER_CLASS = CustomDataConverter
 
 
-class AeroMAPSAutoModelWrapper(AutoPyDiscipline):
+class _CouplingSeedMixin:
+    """Registers a model's coupling seeds (``_coupling_defaults``) as discipline defaults."""
+
+    def _register_coupling_seeds(self):
+        # A parameter value already in the defaults wins over the seed. The seeded keys
+        # are remembered so that a refresh only ever touches them.
+        self._seeded_coupling_names = set()
+        for key, value in getattr(self.model, "_coupling_defaults", {}).items():
+            if key in self.input_grammar.names and key not in self.default_input_data:
+                self.default_input_data[key] = value
+                self._seeded_coupling_names.add(key)
+
+    def refresh_coupling_seeds(self):
+        """Re-register the seeds the model rebuilt in its last ``_initialize_df``.
+
+        Seeds span the model's years, so without this an ``end_year`` changed after the
+        discipline was built leaves seeds that stop at the old end year.
+        """
+        seeds = getattr(self.model, "_coupling_defaults", {})
+        for key in list(self._seeded_coupling_names):
+            if hasattr(self.model.parameters, key):
+                # Set as a parameter since the discipline was built: it wins from now on.
+                self.default_input_data[key] = getattr(self.model.parameters, key)
+                self._seeded_coupling_names.discard(key)
+            elif key in seeds:
+                self.default_input_data[key] = seeds[key]
+
+
+class AeroMAPSAutoModelWrapper(_CouplingSeedMixin, AutoPyDiscipline):
     """
     Wraps the AeroMAPSModel class into a discipline.
     Inputs and outputs are automatically declared from the model's compute() function signature.
@@ -210,10 +238,7 @@ class AeroMAPSAutoModelWrapper(AutoPyDiscipline):
             if hasattr(self.model.parameters, input):
                 self.default_input_data[input] = getattr(self.model.parameters, input)
         # Also register coupling defaults from the model (seed values for MDA initialization)
-        if hasattr(self.model, "_coupling_defaults"):
-            for key, value in self.model._coupling_defaults.items():
-                if key in self.input_grammar.names and key not in self.default_input_data:
-                    self.default_input_data[key] = value
+        self._register_coupling_seeds()
 
     def _run(self, input_data):
         try:
@@ -230,7 +255,7 @@ class AeroMAPSAutoModelWrapper(AutoPyDiscipline):
             raise
 
 
-class AeroMAPSCustomModelWrapper(Discipline):
+class AeroMAPSCustomModelWrapper(_CouplingSeedMixin, Discipline):
     """
     Wraps the AeroMAPSModel class into a discipline.
     Inputs and outputs are declared through the attributes 'input_names' and 'output_names' of the model.
@@ -294,10 +319,7 @@ class AeroMAPSCustomModelWrapper(Discipline):
         # Also register coupling defaults from the model (seed values for MDA
         # initialization), mirroring AeroMAPSAutoModelWrapper. A parameter value
         # (set just above) still wins over the coupling seed.
-        if hasattr(self.model, "_coupling_defaults"):
-            for key, value in self.model._coupling_defaults.items():
-                if key in self.input_grammar.names and key not in self.default_input_data:
-                    self.default_input_data[key] = value
+        self._register_coupling_seeds()
 
 
 # =============================================================================
