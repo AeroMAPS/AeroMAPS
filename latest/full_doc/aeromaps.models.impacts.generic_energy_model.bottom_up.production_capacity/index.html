@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -5832,7 +5832,13 @@ Computes annual capacity additions required to follow an energy consumption traj
 
 
 <a href="#aeromaps.models.impacts.generic_energy_model.bottom_up.production_capacity.BottomUpCapacity" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">BottomUpCapacity</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">configuration_data</span><span class="p">,</span> <span class="n">processes_data</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">BottomUpCapacity</span><span class="p">(</span>
+    <span class="n">name</span><span class="p">,</span>
+    <span class="n">configuration_data</span><span class="p">,</span>
+    <span class="n">processes_data</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6011,21 +6017,21 @@ Computes annual capacity additions required to follow an energy consumption traj
 <span class="normal">118</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">configuration_data</span><span class="p">,</span> <span class="n">processes_data</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
-        <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span>
+        <span class="n">model_type</span><span class="o">=</span><span class="s2">"custom"</span><span class="p">,</span>
         <span class="o">*</span><span class="n">args</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span> <span class="o">=</span> <span class="n">configuration_data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span> <span class="o">=</span> <span class="n">configuration_data</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]</span>
     <span class="c1"># Inputs</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_energy_consumption&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_energy_consumption"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
     <span class="p">}</span>
 
-    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">configuration_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;inputs&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;technical&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">configuration_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"inputs"</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"technical"</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="c1"># TODO initialize with zeros instead of actual val? How to better get rid of unnecessary variables</span>
         <span class="k">if</span> <span class="p">(</span>
-            <span class="n">key</span> <span class="o">==</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_resource_names&quot;</span>
-            <span class="ow">or</span> <span class="n">key</span> <span class="o">==</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_processes_names&quot;</span>
+            <span class="n">key</span> <span class="o">==</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_resource_names"</span>
+            <span class="ow">or</span> <span class="n">key</span> <span class="o">==</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_processes_names"</span>
         <span class="p">):</span>
             <span class="k">pass</span>  <span class="c1"># avoid having strings as variable in gemseo, not needed as variables</span>
         <span class="k">else</span><span class="p">:</span>
@@ -6033,37 +6039,37 @@ Computes annual capacity additions required to follow an energy consumption traj
 
     <span class="c1"># Outputs</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_plant_building_scenario&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_energy_production_commissioned&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_plant_operating_capacity&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_energy_unused&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_plant_building_scenario"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_energy_production_commissioned"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_plant_operating_capacity"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_energy_unused"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
     <span class="p">}</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">resource_keys</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">configuration_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;inputs&quot;</span><span class="p">)</span>
-        <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;technical&quot;</span><span class="p">,</span> <span class="p">{})</span>
-        <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_resource_names&quot;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="n">configuration_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"inputs"</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"technical"</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_resource_names"</span><span class="p">,</span> <span class="p">[])</span>
     <span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">process_keys</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">configuration_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;inputs&quot;</span><span class="p">)</span>
-        <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;technical&quot;</span><span class="p">,</span> <span class="p">{})</span>
-        <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_processes_names&quot;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="n">configuration_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"inputs"</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"technical"</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_processes_names"</span><span class="p">,</span> <span class="p">[])</span>
     <span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">process_resource_keys</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">process_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_keys</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">processes_data</span><span class="p">[</span><span class="n">process_key</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;inputs&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;technical&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">process_key</span><span class="si">}</span><span class="s2">_resource_names&quot;</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">processes_data</span><span class="p">[</span><span class="n">process_key</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"inputs"</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"technical"</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">process_key</span><span class="si">}</span><span class="s2">_resource_names"</span><span class="p">:</span>
                 <span class="n">resources</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="n">processes_data</span><span class="p">[</span><span class="n">process_key</span><span class="p">]</span>
-                    <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;inputs&quot;</span><span class="p">)</span>
-                    <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;technical&quot;</span><span class="p">,</span> <span class="p">{})</span>
-                    <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">process_key</span><span class="si">}</span><span class="s2">_resource_names&quot;</span><span class="p">,</span> <span class="p">[])</span>
+                    <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"inputs"</span><span class="p">)</span>
+                    <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"technical"</span><span class="p">,</span> <span class="p">{})</span>
+                    <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">process_key</span><span class="si">}</span><span class="s2">_resource_names"</span><span class="p">,</span> <span class="p">[])</span>
                 <span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">process_resource_keys</span><span class="p">[</span><span class="n">process_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">resources</span>
-            <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">process_key</span><span class="si">}</span><span class="s2">_load_factor&quot;</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">process_key</span><span class="si">}</span><span class="s2">_load_factor"</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">process_key</span><span class="si">}</span><span class="s2">_plant_building_scenario&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">process_key</span><span class="si">}</span><span class="s2">_plant_building_scenario"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
         <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -6307,7 +6313,7 @@ Computes annual capacity additions required to follow an energy consumption traj
 <span class="normal">271</span>
 <span class="normal">272</span>
 <span class="normal">273</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Compute the annual capacity additions required to follow the energy consumption trajectory.</span>
 
 <span class="sd">    Parameters</span>
@@ -6319,7 +6325,7 @@ Computes annual capacity additions required to follow an energy consumption traj
 <span class="sd">    -------</span>
 <span class="sd">    output_data</span>
 <span class="sd">        Dictionary containing all output data resulting from the computation. Contains outputs defined during model instantiation.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">output_data</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="c1"># Get the energy consumption trajectory and capacity factor.</span>
@@ -6327,15 +6333,15 @@ Computes annual capacity additions required to follow an energy consumption traj
     <span class="c1"># in place: input_data holds the very Series objects the MDA snapshotted as its</span>
     <span class="c1"># previous iterate, and this one is a coupling variable, so mutating it would</span>
     <span class="c1"># rewrite that snapshot -- here even changing its length.</span>
-    <span class="n">energy_required</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_energy_consumption&quot;</span><span class="p">)</span>
+    <span class="n">energy_required</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_energy_consumption"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">energy_required</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">energy_required</span> <span class="o">=</span> <span class="n">energy_required</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
     <span class="n">technology_introduction</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_technology_introduction_year&quot;</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_technology_introduction_year"</span>
     <span class="p">)</span>
     <span class="n">technology_introduction_volume</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_technology_introduction_volume&quot;</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_technology_introduction_volume"</span>
     <span class="p">)</span>
 
     <span class="c1"># The hard part in this model is to be able to reconstruct the commissioning history of plants</span>
@@ -6347,7 +6353,7 @@ Computes annual capacity additions required to follow an energy consumption traj
     <span class="k">if</span> <span class="n">energy_required</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">historic_start_year</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">1e-9</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">technology_introduction</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">technology_introduction_volume</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Technology introduction year and volume for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2"> must be specified if there is energy consumption before the historic start year.&quot;</span>
+                <span class="sa">f</span><span class="s2">"Technology introduction year and volume for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2"> must be specified if there is energy consumption before the historic start year."</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">first_plant_year</span> <span class="o">=</span> <span class="n">technology_introduction</span>
@@ -6374,10 +6380,10 @@ Computes annual capacity additions required to follow an energy consumption traj
     <span class="k">for</span> <span class="n">year</span> <span class="ow">in</span> <span class="n">years</span><span class="p">:</span>
         <span class="c1"># getting entry into service (eis) plant charcteristics</span>
         <span class="n">plant_load_factor</span> <span class="o">=</span> <span class="n">_get_value_for_year</span><span class="p">(</span>
-            <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_eis_plant_load_factor&quot;</span><span class="p">),</span> <span class="n">year</span><span class="p">,</span> <span class="mi">1</span>
+            <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_eis_plant_load_factor"</span><span class="p">),</span> <span class="n">year</span><span class="p">,</span> <span class="mi">1</span>
         <span class="p">)</span>
         <span class="n">plant_lifespan</span> <span class="o">=</span> <span class="n">_get_value_for_year</span><span class="p">(</span>
-            <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_eis_plant_lifespan&quot;</span><span class="p">),</span> <span class="n">year</span><span class="p">,</span> <span class="mi">25</span>
+            <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_eis_plant_lifespan"</span><span class="p">),</span> <span class="n">year</span><span class="p">,</span> <span class="mi">25</span>
         <span class="p">)</span>
 
         <span class="n">missing_production</span> <span class="o">=</span> <span class="n">energy_required</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="n">year</span><span class="p">]</span> <span class="o">-</span> <span class="n">energy_produced</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="n">year</span><span class="p">]</span>
@@ -6386,9 +6392,9 @@ Computes annual capacity additions required to follow an energy consumption traj
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Calculate the required capacity to meet the energy demand</span>
             <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">resource_keys</span><span class="p">:</span>
-                <span class="k">if</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_load_factor&quot;</span> <span class="ow">in</span> <span class="n">input_data</span><span class="p">:</span>
+                <span class="k">if</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_load_factor"</span> <span class="ow">in</span> <span class="n">input_data</span><span class="p">:</span>
                     <span class="n">resource_load_factor</span> <span class="o">=</span> <span class="n">_get_value_for_year</span><span class="p">(</span>
-                        <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_load_factor&quot;</span><span class="p">),</span> <span class="n">year</span>
+                        <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_load_factor"</span><span class="p">),</span> <span class="n">year</span>
                     <span class="p">)</span>
                     <span class="k">if</span> <span class="n">resource_load_factor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                         <span class="n">plant_load_factor</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">plant_load_factor</span><span class="p">,</span> <span class="n">resource_load_factor</span><span class="p">)</span>
@@ -6407,7 +6413,7 @@ Computes annual capacity additions required to follow an energy consumption traj
     <span class="k">if</span> <span class="p">(</span><span class="n">energy_unused</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
         <span class="n">years_excess</span> <span class="o">=</span> <span class="n">energy_unused</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">energy_unused</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">⚠️ Excess </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2"> production in years: </span><span class="si">{</span><span class="n">years_excess</span><span class="si">}</span><span class="s2">. Scaling down.&quot;</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">⚠️ Excess </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2"> production in years: </span><span class="si">{</span><span class="n">years_excess</span><span class="si">}</span><span class="s2">. Scaling down."</span>
         <span class="p">)</span>
 
     <span class="c1"># computing additions for processes</span>
@@ -6415,12 +6421,12 @@ Computes annual capacity additions required to follow an energy consumption traj
         <span class="n">process_building_scenario</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">years</span><span class="p">)),</span> <span class="n">years</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">year</span> <span class="ow">in</span> <span class="n">years</span><span class="p">:</span>
             <span class="n">process_load_factor</span> <span class="o">=</span> <span class="n">_get_value_for_year</span><span class="p">(</span>
-                <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">process_key</span><span class="si">}</span><span class="s2">_load_factor&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">year</span>
+                <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">process_key</span><span class="si">}</span><span class="s2">_load_factor"</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">year</span>
             <span class="p">)</span>
             <span class="k">for</span> <span class="n">resource</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_resource_keys</span><span class="p">[</span><span class="n">process_key</span><span class="p">]:</span>
-                <span class="k">if</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">resource</span><span class="si">}</span><span class="s2">_load_factor&quot;</span> <span class="ow">in</span> <span class="n">input_data</span><span class="p">:</span>
+                <span class="k">if</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">resource</span><span class="si">}</span><span class="s2">_load_factor"</span> <span class="ow">in</span> <span class="n">input_data</span><span class="p">:</span>
                     <span class="n">resource_load_factor</span> <span class="o">=</span> <span class="n">_get_value_for_year</span><span class="p">(</span>
-                        <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">resource</span><span class="si">}</span><span class="s2">_load_factor&quot;</span><span class="p">),</span> <span class="n">year</span>
+                        <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">resource</span><span class="si">}</span><span class="s2">_load_factor"</span><span class="p">),</span> <span class="n">year</span>
                     <span class="p">)</span>
                     <span class="k">if</span> <span class="n">resource_load_factor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                         <span class="n">process_load_factor</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">process_load_factor</span><span class="p">,</span> <span class="n">resource_load_factor</span><span class="p">)</span>
@@ -6432,7 +6438,7 @@ Computes annual capacity additions required to follow an energy consumption traj
         <span class="p">]</span>
         <span class="n">output_data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
             <span class="p">{</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">process_key</span><span class="si">}</span><span class="s2">_plant_building_scenario&quot;</span><span class="p">:</span> <span class="n">process_building_scenario</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">process_key</span><span class="si">}</span><span class="s2">_plant_building_scenario"</span><span class="p">:</span> <span class="n">process_building_scenario</span>
             <span class="p">}</span>
         <span class="p">)</span>
 
@@ -6450,10 +6456,10 @@ Computes annual capacity additions required to follow an energy consumption traj
 
     <span class="n">output_data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
         <span class="p">{</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_plant_building_scenario&quot;</span><span class="p">:</span> <span class="n">plant_building_scenario</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_energy_production_commissioned&quot;</span><span class="p">:</span> <span class="n">energy_production_commissioned</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_plant_operating_capacity&quot;</span><span class="p">:</span> <span class="n">plant_available_scenario</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_energy_unused&quot;</span><span class="p">:</span> <span class="o">-</span><span class="n">energy_unused</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_plant_building_scenario"</span><span class="p">:</span> <span class="n">plant_building_scenario</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_energy_production_commissioned"</span><span class="p">:</span> <span class="n">energy_production_commissioned</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_plant_operating_capacity"</span><span class="p">:</span> <span class="n">plant_available_scenario</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_energy_unused"</span><span class="p">:</span> <span class="o">-</span><span class="n">energy_unused</span><span class="p">,</span>
         <span class="p">}</span>
     <span class="p">)</span>
 
@@ -6540,7 +6546,7 @@ Computes annual capacity additions required to follow an energy consumption traj
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       

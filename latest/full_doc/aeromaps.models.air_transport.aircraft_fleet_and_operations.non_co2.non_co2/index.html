@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -5911,7 +5911,9 @@ calculations.</p>
 
 
 <a href="#aeromaps.models.air_transport.aircraft_fleet_and_operations.non_co2.non_co2.OperationsContrailsSimple" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">OperationsContrailsSimple</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;operations_contrails_simple&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">OperationsContrailsSimple</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"operations_contrails_simple"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -5962,7 +5964,7 @@ calculations.</p>
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/air_transport/aircraft_fleet_and_operations/non_co2/non_co2.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">30</span>
-<span class="normal">31</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;operations_contrails_simple&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="normal">31</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"operations_contrails_simple"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -5988,7 +5990,12 @@ calculations.</p>
 
 
 <a href="#aeromaps.models.air_transport.aircraft_fleet_and_operations.non_co2.non_co2.OperationsContrailsSimple.compute" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span><span class="n">operations_contrails_final_gain</span><span class="p">,</span> <span class="n">operations_contrails_final_overconsumption</span><span class="p">,</span> <span class="n">operations_contrails_start_year</span><span class="p">,</span> <span class="n">operations_contrails_duration</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span>
+    <span class="n">operations_contrails_final_gain</span><span class="p">,</span>
+    <span class="n">operations_contrails_final_overconsumption</span><span class="p">,</span>
+    <span class="n">operations_contrails_start_year</span><span class="p">,</span>
+    <span class="n">operations_contrails_duration</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6171,7 +6178,7 @@ calculations.</p>
     <span class="n">operations_contrails_start_year</span><span class="p">:</span> <span class="n">Number</span><span class="p">,</span>
     <span class="n">operations_contrails_duration</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Execute computation for contrails gains for ERF calculation and overconsumption associated with contrail avoidance.</span>
+<span class="w">    </span><span class="sd">"""Execute computation for contrails gains for ERF calculation and overconsumption associated with contrail avoidance.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -6190,33 +6197,33 @@ calculations.</p>
 <span class="sd">        Impact of contrail operational improvements in terms of percentage reduction in contrails climate impacts [%].</span>
 <span class="sd">    operations_contrails_overconsumption</span>
 <span class="sd">        Impact of contrail operational improvements in terms of percentage increase in fuel consumption [%].</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">transition_year</span> <span class="o">=</span> <span class="n">operations_contrails_start_year</span> <span class="o">+</span> <span class="n">operations_contrails_duration</span> <span class="o">/</span> <span class="mi">2</span>
     <span class="n">operations_contrails_limit</span> <span class="o">=</span> <span class="mf">0.02</span> <span class="o">*</span> <span class="n">operations_contrails_final_gain</span>
     <span class="n">operations_parameter</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">100</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">operations_contrails_duration</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">historic_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot;operations_contrails_gain&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot;operations_contrails_overconsumption&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">"operations_contrails_gain"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">"operations_contrails_overconsumption"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="n">operations_contrails_final_gain</span>
             <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">operations_parameter</span> <span class="o">*</span> <span class="p">(</span><span class="n">k</span> <span class="o">-</span> <span class="n">transition_year</span><span class="p">)))</span>
             <span class="o">&lt;</span> <span class="n">operations_contrails_limit</span>
         <span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot;operations_contrails_gain&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot;operations_contrails_overconsumption&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">"operations_contrails_gain"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">"operations_contrails_overconsumption"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot;operations_contrails_gain&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">operations_contrails_final_gain</span> <span class="o">/</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">"operations_contrails_gain"</span><span class="p">]</span> <span class="o">=</span> <span class="n">operations_contrails_final_gain</span> <span class="o">/</span> <span class="p">(</span>
                 <span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">operations_parameter</span> <span class="o">*</span> <span class="p">(</span><span class="n">k</span> <span class="o">-</span> <span class="n">transition_year</span><span class="p">))</span>
             <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot;operations_contrails_overconsumption&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">"operations_contrails_overconsumption"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">operations_contrails_final_overconsumption</span>
                 <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">operations_parameter</span> <span class="o">*</span> <span class="p">(</span><span class="n">k</span> <span class="o">-</span> <span class="n">transition_year</span><span class="p">)))</span>
             <span class="p">)</span>
 
-    <span class="n">operations_contrails_gain</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;operations_contrails_gain&quot;</span><span class="p">]</span>
-    <span class="n">operations_contrails_overconsumption</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;operations_contrails_overconsumption&quot;</span><span class="p">]</span>
+    <span class="n">operations_contrails_gain</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">"operations_contrails_gain"</span><span class="p">]</span>
+    <span class="n">operations_contrails_overconsumption</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">"operations_contrails_overconsumption"</span><span class="p">]</span>
 
     <span class="k">return</span> <span class="n">operations_contrails_gain</span><span class="p">,</span> <span class="n">operations_contrails_overconsumption</span>
 </code></pre></div></td></tr></table></div>
@@ -6242,7 +6249,9 @@ calculations.</p>
 
 
 <a href="#aeromaps.models.air_transport.aircraft_fleet_and_operations.non_co2.non_co2.FuelEffectCorrectionContrails" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">FuelEffectCorrectionContrails</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;fuel_effect_correction_contrails&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">FuelEffectCorrectionContrails</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"fuel_effect_correction_contrails"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6341,8 +6350,8 @@ forcing to reflect fuel/pathway effects.</p>
                     <summary>Source code in <code>aeromaps/models/air_transport/aircraft_fleet_and_operations/non_co2/non_co2.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">112</span>
 <span class="normal">113</span>
-<span class="normal">114</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;fuel_effect_correction_contrails&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="normal">114</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"fuel_effect_correction_contrails"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">"custom"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span> <span class="o">=</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -6426,51 +6435,51 @@ forcing to reflect fuel/pathway effects.</p>
 <span class="normal">161</span>
 <span class="normal">162</span>
 <span class="normal">163</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">custom_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Setup input and output names for the model grammar, based on .yaml configuration of energy carriers.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Setup input and output names for the model grammar, based on .yaml configuration of energy carriers."""</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span> <span class="o">=</span> <span class="p">{}</span>
 
-    <span class="k">for</span> <span class="n">aircraft_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">&quot;aircraft_type&quot;</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">aircraft_type</span> <span class="o">==</span> <span class="s2">&quot;dropin_fuel&quot;</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">aircraft_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">"aircraft_type"</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">aircraft_type</span> <span class="o">==</span> <span class="s2">"dropin_fuel"</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">pathway</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
                 <span class="n">aircraft_type</span><span class="o">=</span><span class="n">aircraft_type</span><span class="p">,</span>
             <span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
                     <span class="p">{</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_massic_share_</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_emission_index_particles_number&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_massic_share_</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_emission_index_particles_number"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
                     <span class="p">}</span>
                 <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
                 <span class="p">{</span>
-                    <span class="s2">&quot;total_aircraft_distance_dropin_fuel&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+                    <span class="s2">"total_aircraft_distance_dropin_fuel"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
                 <span class="p">}</span>
             <span class="p">)</span>
-        <span class="k">elif</span> <span class="n">aircraft_type</span> <span class="o">==</span> <span class="s2">&quot;hydrogen&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">aircraft_type</span> <span class="o">==</span> <span class="s2">"hydrogen"</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
                 <span class="p">{</span>
-                    <span class="s2">&quot;contrails_relative_effect_hydrogen_wrt_kerosene&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-                    <span class="s2">&quot;total_aircraft_distance_hydrogen&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+                    <span class="s2">"contrails_relative_effect_hydrogen_wrt_kerosene"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+                    <span class="s2">"total_aircraft_distance_hydrogen"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
                 <span class="p">}</span>
             <span class="p">)</span>
-        <span class="k">elif</span> <span class="n">aircraft_type</span> <span class="o">==</span> <span class="s2">&quot;electric&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">aircraft_type</span> <span class="o">==</span> <span class="s2">"electric"</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
                 <span class="p">{</span>
-                    <span class="s2">&quot;total_aircraft_distance_electric&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+                    <span class="s2">"total_aircraft_distance_electric"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
                 <span class="p">}</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Aircraft type &#39;</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">&#39; not supported.&quot;</span><span class="p">,</span> <span class="ne">UserWarning</span><span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Aircraft type '</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">' not supported."</span><span class="p">,</span> <span class="ne">UserWarning</span><span class="p">)</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
         <span class="p">{</span>
-            <span class="s2">&quot;total_aircraft_distance&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+            <span class="s2">"total_aircraft_distance"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
         <span class="p">}</span>
     <span class="p">)</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
         <span class="p">{</span>
-            <span class="s2">&quot;fuel_effect_correction_contrails&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+            <span class="s2">"fuel_effect_correction_contrails"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
         <span class="p">}</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -6629,7 +6638,7 @@ forcing over the scenario.</p>
 <span class="normal">235</span>
 <span class="normal">236</span>
 <span class="normal">237</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Execute the computation of fuel-effect correction for contrails ERF computation.</span>
+<span class="w">    </span><span class="sd">"""Execute the computation of fuel-effect correction for contrails ERF computation.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -6643,40 +6652,40 @@ forcing over the scenario.</p>
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    output_data</span>
-<span class="sd">        Dictionary with key &#39;fuel_effect_correction_contrails&#39; containing a</span>
+<span class="sd">        Dictionary with key 'fuel_effect_correction_contrails' containing a</span>
 <span class="sd">        pd.Series multiplicative correction (dimensionless) for contrail</span>
 <span class="sd">        forcing over the scenario.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">fuel_effect_correction_contrails</span> <span class="o">=</span> <span class="n">get_default_series</span><span class="p">(</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">historic_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span>
     <span class="p">)</span>
 
-    <span class="k">for</span> <span class="n">aircraft_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">&quot;aircraft_type&quot;</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">aircraft_type</span> <span class="o">==</span> <span class="s2">&quot;dropin_fuel&quot;</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">aircraft_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">"aircraft_type"</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">aircraft_type</span> <span class="o">==</span> <span class="s2">"dropin_fuel"</span><span class="p">:</span>
             <span class="n">relative_particles_number</span> <span class="o">=</span> <span class="n">get_default_series</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">historic_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span>
             <span class="p">)</span>
             <span class="n">distance_share_dropin_fuel</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;total_aircraft_distance_dropin_fuel&quot;</span><span class="p">]</span>
-                <span class="o">/</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;total_aircraft_distance&quot;</span><span class="p">]</span>
+                <span class="n">input_data</span><span class="p">[</span><span class="s2">"total_aircraft_distance_dropin_fuel"</span><span class="p">]</span>
+                <span class="o">/</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"total_aircraft_distance"</span><span class="p">]</span>
             <span class="p">)</span>
 
             <span class="n">default_pathway</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
                 <span class="n">aircraft_type</span><span class="o">=</span><span class="n">aircraft_type</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span>
             <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">default_emission_index_number_particles</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">default_pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_emission_index_particles_number&quot;</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">default_pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_emission_index_particles_number"</span>
             <span class="p">]</span>
 
             <span class="k">for</span> <span class="n">pathway</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
                 <span class="n">aircraft_type</span><span class="o">=</span><span class="n">aircraft_type</span><span class="p">,</span>
             <span class="p">):</span>
                 <span class="n">relative_particles_number</span> <span class="o">+=</span> <span class="p">(</span>
-                    <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_massic_share_</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+                    <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_massic_share_</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span>
                     <span class="o">/</span> <span class="mi">100</span>
                     <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
-                        <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_emission_index_particles_number&quot;</span><span class="p">]</span>
+                        <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_emission_index_particles_number"</span><span class="p">]</span>
                         <span class="o">/</span> <span class="n">default_emission_index_number_particles</span>
                     <span class="p">)</span>
                 <span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
@@ -6684,19 +6693,19 @@ forcing over the scenario.</p>
             <span class="n">fuel_effect_correction_contrails</span> <span class="o">+=</span> <span class="p">(</span>
                 <span class="n">distance_share_dropin_fuel</span> <span class="o">*</span> <span class="n">relative_particles_number</span>
             <span class="p">)</span>
-        <span class="k">elif</span> <span class="n">aircraft_type</span> <span class="o">==</span> <span class="s2">&quot;hydrogen&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">aircraft_type</span> <span class="o">==</span> <span class="s2">"hydrogen"</span><span class="p">:</span>
             <span class="n">fuel_effect_correction_contrails</span> <span class="o">+=</span> <span class="p">(</span>
-                <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;total_aircraft_distance_hydrogen&quot;</span><span class="p">]</span>
-                <span class="o">/</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;total_aircraft_distance&quot;</span><span class="p">]</span>
-                <span class="o">*</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;contrails_relative_effect_hydrogen_wrt_kerosene&quot;</span><span class="p">]</span>
+                <span class="n">input_data</span><span class="p">[</span><span class="s2">"total_aircraft_distance_hydrogen"</span><span class="p">]</span>
+                <span class="o">/</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"total_aircraft_distance"</span><span class="p">]</span>
+                <span class="o">*</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"contrails_relative_effect_hydrogen_wrt_kerosene"</span><span class="p">]</span>
             <span class="p">)</span>
-        <span class="k">elif</span> <span class="n">aircraft_type</span> <span class="o">==</span> <span class="s2">&quot;electric&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">aircraft_type</span> <span class="o">==</span> <span class="s2">"electric"</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Aircraft type &#39;</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">&#39; not supported.&quot;</span><span class="p">,</span> <span class="ne">UserWarning</span><span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Aircraft type '</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">' not supported."</span><span class="p">,</span> <span class="ne">UserWarning</span><span class="p">)</span>
 
     <span class="n">output_data</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;fuel_effect_correction_contrails&quot;</span><span class="p">:</span> <span class="n">fuel_effect_correction_contrails</span><span class="p">,</span>
+        <span class="s2">"fuel_effect_correction_contrails"</span><span class="p">:</span> <span class="n">fuel_effect_correction_contrails</span><span class="p">,</span>
     <span class="p">}</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">_store_outputs</span><span class="p">(</span><span class="n">output_data</span><span class="p">)</span>
@@ -6724,7 +6733,11 @@ forcing over the scenario.</p>
 
 
 <a href="#aeromaps.models.air_transport.aircraft_fleet_and_operations.non_co2.non_co2.WithoutFuelEffectCorrectionContrails" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">WithoutFuelEffectCorrectionContrails</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;without_fuel_effect_correction_contrails&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">WithoutFuelEffectCorrectionContrails</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"without_fuel_effect_correction_contrails"</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6775,7 +6788,7 @@ forcing over the scenario.</p>
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/air_transport/aircraft_fleet_and_operations/non_co2/non_co2.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">249</span>
-<span class="normal">250</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;without_fuel_effect_correction_contrails&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="normal">250</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"without_fuel_effect_correction_contrails"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -6894,7 +6907,7 @@ forcing over the scenario, equal to 1 for all years.</p>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">total_aircraft_distance</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a multiplicative correction equal to 1 for all years.</span>
+<span class="w">    </span><span class="sd">"""Return a multiplicative correction equal to 1 for all years.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -6907,12 +6920,12 @@ forcing over the scenario, equal to 1 for all years.</p>
 <span class="sd">    fuel_effect_correction_contrails</span>
 <span class="sd">        Multiplicative multiplicative correction (dimensionless) for contrail</span>
 <span class="sd">        forcing over the scenario, equal to 1 for all years.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">historic_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot;fuel_effect_correction_contrails&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">"fuel_effect_correction_contrails"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
 
-    <span class="n">fuel_effect_correction_contrails</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;fuel_effect_correction_contrails&quot;</span><span class="p">]</span>
+    <span class="n">fuel_effect_correction_contrails</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">"fuel_effect_correction_contrails"</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">fuel_effect_correction_contrails</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -6994,7 +7007,7 @@ forcing over the scenario, equal to 1 for all years.</p>
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       

@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -5860,7 +5860,9 @@ Module to compute energy abatement costs for different pathways.</p>
 
 
 <a href="#aeromaps.models.impacts.generic_energy_model.bottom_up.abatement_cost.EnergyAbatementCost" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">EnergyAbatementCost</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">pathway_name</span><span class="p">,</span> <span class="n">pathways_data</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">EnergyAbatementCost</span><span class="p">(</span>
+    <span class="n">name</span><span class="p">,</span> <span class="n">pathway_name</span><span class="p">,</span> <span class="n">pathways_data</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6017,7 +6019,7 @@ based on discounted costs and avoided emissions over the lifespan of each vintag
 <span class="normal">74</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">pathway_name</span><span class="p">,</span> <span class="n">pathways_data</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
-        <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span>
+        <span class="n">model_type</span><span class="o">=</span><span class="s2">"custom"</span><span class="p">,</span>
         <span class="o">*</span><span class="n">args</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span>
@@ -6025,29 +6027,29 @@ based on discounted costs and avoided emissions over the lifespan of each vintag
 
     <span class="c1"># Inputs needed: discounted costs, unitary emissions, discounted emissions</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_lifespan_unitary_discounted_costs&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_lifespan_unitary_emissions&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_lifespan_discounted_unitary_emissions&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_mean_mfsp&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_mean_co2_emission_factor&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="s2">&quot;cac_reference_unitary_discounted_costs&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="s2">&quot;cac_reference_unitary_discounted_emissions&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="s2">&quot;cac_reference_unitary_emissions&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="s2">&quot;cac_reference_co2_emission_factor&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="s2">&quot;cac_reference_mfsp&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="s2">&quot;social_discount_rate&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-        <span class="s2">&quot;exogenous_carbon_price_trajectory&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_lifespan_unitary_discounted_costs"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_lifespan_unitary_emissions"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_lifespan_discounted_unitary_emissions"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_mean_mfsp"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_mean_co2_emission_factor"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="s2">"cac_reference_unitary_discounted_costs"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="s2">"cac_reference_unitary_discounted_emissions"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="s2">"cac_reference_unitary_emissions"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="s2">"cac_reference_co2_emission_factor"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="s2">"cac_reference_mfsp"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="s2">"social_discount_rate"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s2">"exogenous_carbon_price_trajectory"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
     <span class="p">}</span>
 
-    <span class="k">if</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_eis_plant_lifespan&quot;</span> <span class="ow">in</span> <span class="n">pathways_data</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_eis_plant_lifespan&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">if</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_eis_plant_lifespan"</span> <span class="ow">in</span> <span class="n">pathways_data</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_eis_plant_lifespan"</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
 
     <span class="c1"># Outputs: specific abatement cost and generic specific abatement cost</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_carbon_abatement_cost&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_specific_carbon_abatement_cost&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_generic_specific_carbon_abatement_cost&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_carbon_abatement_cost"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_specific_carbon_abatement_cost"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_generic_specific_carbon_abatement_cost"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
     <span class="p">}</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -6198,7 +6200,7 @@ based on discounted costs and avoided emissions over the lifespan of each vintag
 <span class="normal">135</span>
 <span class="normal">136</span>
 <span class="normal">137</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Compute the specific abatement cost and generic specific abatement cost for each vintage.</span>
 
 <span class="sd">    Parameters</span>
@@ -6210,31 +6212,31 @@ based on discounted costs and avoided emissions over the lifespan of each vintag
 <span class="sd">    -------</span>
 <span class="sd">    output_data</span>
 <span class="sd">        Dictionary containing all output data resulting from the computation. Contains outputs defined during model instantiation.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">unitary_discounted_costs</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_lifespan_unitary_discounted_costs&quot;</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_lifespan_unitary_discounted_costs"</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
     <span class="p">)</span>
     <span class="n">unitary_discounted_emissions</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_lifespan_discounted_unitary_emissions&quot;</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_lifespan_discounted_unitary_emissions"</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
     <span class="p">)</span>
     <span class="n">unitary_emissions</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_lifespan_unitary_emissions&quot;</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_lifespan_unitary_emissions"</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
     <span class="p">)</span>
-    <span class="n">mfsp</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_mean_mfsp&quot;</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]))</span>
+    <span class="n">mfsp</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_mean_mfsp"</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]))</span>
     <span class="n">co2_emission_factor</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_mean_co2_emission_factor&quot;</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_mean_co2_emission_factor"</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
     <span class="p">)</span>
-    <span class="n">fossil_mfsp</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cac_reference_mfsp&quot;</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]))</span>
-    <span class="n">fossil_ef</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cac_reference_co2_emission_factor&quot;</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]))</span>
+    <span class="n">fossil_mfsp</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"cac_reference_mfsp"</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]))</span>
+    <span class="n">fossil_ef</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"cac_reference_co2_emission_factor"</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]))</span>
 
     <span class="n">reference_unitary_discounted_costs</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-        <span class="s2">&quot;cac_reference_unitary_discounted_costs&quot;</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="s2">"cac_reference_unitary_discounted_costs"</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
     <span class="p">)</span>
     <span class="n">reference_unitary_discounted_emissions</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-        <span class="s2">&quot;cac_reference_unitary_discounted_emissions&quot;</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="s2">"cac_reference_unitary_discounted_emissions"</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
     <span class="p">)</span>
     <span class="n">reference_unitary_emissions</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-        <span class="s2">&quot;cac_reference_unitary_emissions&quot;</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="s2">"cac_reference_unitary_emissions"</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
     <span class="p">)</span>
 
     <span class="n">generic_specific_carbon_abatement_cost</span> <span class="o">=</span> <span class="p">(</span>
@@ -6252,9 +6254,9 @@ based on discounted costs and avoided emissions over the lifespan of each vintag
     <span class="n">carbon_abatement_cost</span> <span class="o">*=</span> <span class="mi">1000000</span>
 
     <span class="n">output_data</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_specific_carbon_abatement_cost&quot;</span><span class="p">:</span> <span class="n">specific_carbon_abatement_cost</span><span class="p">,</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_generic_specific_carbon_abatement_cost&quot;</span><span class="p">:</span> <span class="n">generic_specific_carbon_abatement_cost</span><span class="p">,</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_carbon_abatement_cost&quot;</span><span class="p">:</span> <span class="n">carbon_abatement_cost</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_specific_carbon_abatement_cost"</span><span class="p">:</span> <span class="n">specific_carbon_abatement_cost</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_generic_specific_carbon_abatement_cost"</span><span class="p">:</span> <span class="n">generic_specific_carbon_abatement_cost</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_carbon_abatement_cost"</span><span class="p">:</span> <span class="n">carbon_abatement_cost</span><span class="p">,</span>
     <span class="p">}</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">_store_outputs</span><span class="p">(</span><span class="n">output_data</span><span class="p">)</span>
@@ -6282,7 +6284,9 @@ based on discounted costs and avoided emissions over the lifespan of each vintag
 
 
 <a href="#aeromaps.models.impacts.generic_energy_model.bottom_up.abatement_cost.ReferenceAbatementCost" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">ReferenceAbatementCost</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">pathway_name</span><span class="p">,</span> <span class="n">configuration_data</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">ReferenceAbatementCost</span><span class="p">(</span>
+    <span class="n">name</span><span class="p">,</span> <span class="n">pathway_name</span><span class="p">,</span> <span class="n">configuration_data</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6457,7 +6461,7 @@ based on discounted costs and avoided emissions over the lifespan of each vintag
 <span class="normal">218</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">pathway_name</span><span class="p">,</span> <span class="n">configuration_data</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
-        <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span>
+        <span class="n">model_type</span><span class="o">=</span><span class="s2">"custom"</span><span class="p">,</span>
         <span class="o">*</span><span class="n">args</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span>
@@ -6465,35 +6469,35 @@ based on discounted costs and avoided emissions over the lifespan of each vintag
 
     <span class="c1"># Inputs needed: discounted costs, unitary emissions, discounted emissions</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;social_discount_rate&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-        <span class="s2">&quot;exogenous_carbon_price_trajectory&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="s2">"social_discount_rate"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s2">"exogenous_carbon_price_trajectory"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
     <span class="p">}</span>
 
     <span class="c1"># 2 cases: either ref pathway is defined to-down, as before. Weak CAC definition, considering its average price and EF</span>
     <span class="c1"># 1:</span>
     <span class="k">if</span> <span class="p">(</span>
-        <span class="n">configuration_data</span><span class="p">[</span><span class="s2">&quot;cost_model&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;bottom-up&quot;</span>
-        <span class="ow">and</span> <span class="n">configuration_data</span><span class="p">[</span><span class="s2">&quot;cost_model&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;bottom-up&quot;</span>
+        <span class="n">configuration_data</span><span class="p">[</span><span class="s2">"cost_model"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"bottom-up"</span>
+        <span class="ow">and</span> <span class="n">configuration_data</span><span class="p">[</span><span class="s2">"cost_model"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"bottom-up"</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
             <span class="p">{</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_lifespan_unitary_discounted_costs&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_lifespan_unitary_emissions&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_lifespan_discounted_unitary_emissions&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_mean_mfsp&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_mean_co2_emission_factor&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_lifespan_unitary_discounted_costs"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_lifespan_unitary_emissions"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_lifespan_discounted_unitary_emissions"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_mean_mfsp"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_mean_co2_emission_factor"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
             <span class="p">}</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bottom_up_cac</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">⚠️ Reference pathway for CAC (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">) is not defined as bottom-up, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;using top-down values for CAC computation.&quot;</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">⚠️ Reference pathway for CAC (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">) is not defined as bottom-up, "</span>
+            <span class="sa">f</span><span class="s2">"using top-down values for CAC computation."</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
             <span class="p">{</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_mean_mfsp&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_mean_co2_emission_factor&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_mean_mfsp"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_mean_co2_emission_factor"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
             <span class="p">}</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bottom_up_cac</span> <span class="o">=</span> <span class="kc">False</span>
@@ -6501,11 +6505,11 @@ based on discounted costs and avoided emissions over the lifespan of each vintag
     <span class="c1"># Outputs: specific abatement cost and generic specific abatement cost</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;cac_reference_unitary_discounted_costs&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="s2">&quot;cac_reference_unitary_discounted_emissions&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="s2">&quot;cac_reference_unitary_emissions&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="s2">&quot;cac_reference_co2_emission_factor&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="s2">&quot;cac_reference_mfsp&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="s2">"cac_reference_unitary_discounted_costs"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="s2">"cac_reference_unitary_discounted_emissions"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="s2">"cac_reference_unitary_emissions"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="s2">"cac_reference_co2_emission_factor"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="s2">"cac_reference_mfsp"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
     <span class="p">}</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -6652,7 +6656,7 @@ based on discounted costs and avoided emissions over the lifespan of each vintag
 <span class="normal">275</span>
 <span class="normal">276</span>
 <span class="normal">277</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Compute the specific abatement cost and generic specific abatement cost for each vintage.</span>
 
 <span class="sd">    Parameters</span>
@@ -6664,27 +6668,27 @@ based on discounted costs and avoided emissions over the lifespan of each vintag
 <span class="sd">    -------</span>
 <span class="sd">    output_data</span>
 <span class="sd">        Dictionary containing all output data resulting from the computation. Contains outputs defined during model instantiation.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">ref_mfsp</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_mean_mfsp&quot;</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]))</span>
-    <span class="n">ref_ef</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_mean_co2_emission_factor&quot;</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]))</span>
+    <span class="n">ref_mfsp</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_mean_mfsp"</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]))</span>
+    <span class="n">ref_ef</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_mean_co2_emission_factor"</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]))</span>
 
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bottom_up_cac</span><span class="p">:</span>
         <span class="n">reference_unitary_discounted_costs</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_lifespan_unitary_discounted_costs&quot;</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_lifespan_unitary_discounted_costs"</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
         <span class="p">)</span>
         <span class="n">reference_unitary_discounted_emissions</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_lifespan_discounted_unitary_emissions&quot;</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_lifespan_discounted_unitary_emissions"</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
         <span class="p">)</span>
         <span class="n">reference_unitary_emissions</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_lifespan_unitary_emissions&quot;</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_lifespan_unitary_emissions"</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
         <span class="p">)</span>
 
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">reference_lifespan</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_eis_plant_lifespan&quot;</span><span class="p">,</span> <span class="mf">25.0</span><span class="p">)</span>
-        <span class="n">social_discount_rate</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;social_discount_rate&quot;</span><span class="p">)</span>
+        <span class="n">reference_lifespan</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_eis_plant_lifespan"</span><span class="p">,</span> <span class="mf">25.0</span><span class="p">)</span>
+        <span class="n">social_discount_rate</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"social_discount_rate"</span><span class="p">)</span>
         <span class="n">exogenous_carbon_price_trajectory</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="s2">&quot;exogenous_carbon_price_trajectory&quot;</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+            <span class="s2">"exogenous_carbon_price_trajectory"</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
         <span class="p">)</span>
 
         <span class="n">reference_unitary_discounted_costs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unit_discounted_cumul_costs</span><span class="p">(</span>
@@ -6700,11 +6704,11 @@ based on discounted costs and avoided emissions over the lifespan of each vintag
         <span class="p">)</span>
 
     <span class="n">output_data</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;cac_reference_unitary_discounted_costs&quot;</span><span class="p">:</span> <span class="n">reference_unitary_discounted_costs</span><span class="p">,</span>
-        <span class="s2">&quot;cac_reference_unitary_discounted_emissions&quot;</span><span class="p">:</span> <span class="n">reference_unitary_discounted_emissions</span><span class="p">,</span>
-        <span class="s2">&quot;cac_reference_unitary_emissions&quot;</span><span class="p">:</span> <span class="n">reference_unitary_emissions</span><span class="p">,</span>
-        <span class="s2">&quot;cac_reference_co2_emission_factor&quot;</span><span class="p">:</span> <span class="n">ref_ef</span><span class="p">,</span>
-        <span class="s2">&quot;cac_reference_mfsp&quot;</span><span class="p">:</span> <span class="n">ref_mfsp</span><span class="p">,</span>
+        <span class="s2">"cac_reference_unitary_discounted_costs"</span><span class="p">:</span> <span class="n">reference_unitary_discounted_costs</span><span class="p">,</span>
+        <span class="s2">"cac_reference_unitary_discounted_emissions"</span><span class="p">:</span> <span class="n">reference_unitary_discounted_emissions</span><span class="p">,</span>
+        <span class="s2">"cac_reference_unitary_emissions"</span><span class="p">:</span> <span class="n">reference_unitary_emissions</span><span class="p">,</span>
+        <span class="s2">"cac_reference_co2_emission_factor"</span><span class="p">:</span> <span class="n">ref_ef</span><span class="p">,</span>
+        <span class="s2">"cac_reference_mfsp"</span><span class="p">:</span> <span class="n">ref_mfsp</span><span class="p">,</span>
     <span class="p">}</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">_store_outputs</span><span class="p">(</span><span class="n">output_data</span><span class="p">)</span>
@@ -6789,7 +6793,7 @@ based on discounted costs and avoided emissions over the lifespan of each vintag
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       

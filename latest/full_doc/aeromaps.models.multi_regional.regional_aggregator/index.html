@@ -17,7 +17,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -25,7 +25,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -5616,7 +5616,13 @@ are configurable via a YAML file.</p>
 
 
 <a href="#aeromaps.models.multi_regional.regional_aggregator.RegionalAggregator" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">RegionalAggregator</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">regions</span><span class="p">,</span> <span class="n">aggregation_config</span><span class="p">,</span> <span class="n">global_namespace</span><span class="o">=</span><span class="s1">&#39;overall&#39;</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">RegionalAggregator</span><span class="p">(</span>
+    <span class="n">name</span><span class="p">,</span>
+    <span class="n">regions</span><span class="p">,</span>
+    <span class="n">aggregation_config</span><span class="p">,</span>
+    <span class="n">global_namespace</span><span class="o">=</span><span class="s2">"overall"</span><span class="p">,</span>
+    <span class="n">parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -5809,12 +5815,12 @@ vector-length weight the result is NaN outside the vector years.</p>
 
 <p><span class="doc-section-title">Examples:</span></p>
     <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">aggregator</span> <span class="o">=</span> <span class="n">RegionalAggregator</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Aggregator&quot;</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">regions</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;FR&quot;</span><span class="p">,</span> <span class="s2">&quot;DE&quot;</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="n">name</span><span class="o">=</span><span class="s2">"Aggregator"</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">regions</span><span class="o">=</span><span class="p">[</span><span class="s2">"FR"</span><span class="p">,</span> <span class="s2">"DE"</span><span class="p">],</span>
 <span class="gp">... </span>    <span class="n">aggregation_config</span><span class="o">=</span><span class="p">{</span>
-<span class="gp">... </span>        <span class="s2">&quot;sum&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;co2_emissions&quot;</span><span class="p">,</span> <span class="s2">&quot;rpk&quot;</span><span class="p">],</span>
-<span class="gp">... </span>        <span class="s2">&quot;weighted_average&quot;</span><span class="p">:</span> <span class="p">[</span>
-<span class="gp">... </span>            <span class="p">{</span><span class="s2">&quot;variable&quot;</span><span class="p">:</span> <span class="s2">&quot;load_factor&quot;</span><span class="p">,</span> <span class="s2">&quot;weight_by&quot;</span><span class="p">:</span> <span class="s2">&quot;ask&quot;</span><span class="p">}</span>
+<span class="gp">... </span>        <span class="s2">"sum"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"co2_emissions"</span><span class="p">,</span> <span class="s2">"rpk"</span><span class="p">],</span>
+<span class="gp">... </span>        <span class="s2">"weighted_average"</span><span class="p">:</span> <span class="p">[</span>
+<span class="gp">... </span>            <span class="p">{</span><span class="s2">"variable"</span><span class="p">:</span> <span class="s2">"load_factor"</span><span class="p">,</span> <span class="s2">"weight_by"</span><span class="p">:</span> <span class="s2">"ask"</span><span class="p">}</span>
 <span class="gp">... </span>        <span class="p">]</span>
 <span class="gp">... </span>    <span class="p">}</span>
 <span class="gp">... </span><span class="p">)</span>
@@ -5860,20 +5866,20 @@ vector-length weight the result is NaN outside the vector years.</p>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">regions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">aggregation_config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
-    <span class="n">global_namespace</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;overall&quot;</span><span class="p">,</span>
+    <span class="n">global_namespace</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"overall"</span><span class="p">,</span>
     <span class="n">parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">)</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">"custom"</span><span class="p">)</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">regions</span> <span class="o">=</span> <span class="n">regions</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">aggregation_config</span> <span class="o">=</span> <span class="n">aggregation_config</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">global_namespace</span> <span class="o">=</span> <span class="n">global_namespace</span>
 
     <span class="c1"># Parse aggregation config</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">sum_variables</span> <span class="o">=</span> <span class="n">aggregation_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sum&quot;</span><span class="p">,</span> <span class="p">[])</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">weighted_avg_configs</span> <span class="o">=</span> <span class="n">aggregation_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;weighted_average&quot;</span><span class="p">,</span> <span class="p">[])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">sum_variables</span> <span class="o">=</span> <span class="n">aggregation_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"sum"</span><span class="p">,</span> <span class="p">[])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">weighted_avg_configs</span> <span class="o">=</span> <span class="n">aggregation_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"weighted_average"</span><span class="p">,</span> <span class="p">[])</span>
 
-    <span class="c1"># The variables&#39; types cannot be known when the grammars are built: regional</span>
+    <span class="c1"># The variables' types cannot be known when the grammars are built: regional</span>
     <span class="c1"># outputs may be vector series, climate series or floats, and some (e.g.</span>
     <span class="c1"># market-scoped fleet columns, directly-set float_outputs) are not declared</span>
     <span class="c1"># in any discipline grammar. The grammars below therefore only fix the</span>
@@ -6027,21 +6033,21 @@ E.g., {"overall:co2_emissions": <series>, ...}</p>
 <span class="normal">200</span>
 <span class="normal">201</span>
 <span class="normal">202</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Aggregate regional outputs into global metrics.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    input_data</span>
 <span class="sd">        Dictionary containing namespaced regional outputs.</span>
-<span class="sd">        E.g., {&quot;FR:co2_emissions&quot;: &lt;series&gt;, &quot;DE:co2_emissions&quot;: &lt;series&gt;, ...}</span>
+<span class="sd">        E.g., {"FR:co2_emissions": &lt;series&gt;, "DE:co2_emissions": &lt;series&gt;, ...}</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    dict</span>
 <span class="sd">        Dictionary containing aggregated global outputs.</span>
-<span class="sd">        E.g., {&quot;overall:co2_emissions&quot;: &lt;series&gt;, ...}</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">        E.g., {"overall:co2_emissions": &lt;series&gt;, ...}</span>
+<span class="sd">    """</span>
     <span class="n">output_data</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="c1"># Sum aggregation</span>
@@ -6049,26 +6055,26 @@ E.g., {"overall:co2_emissions": <series>, ...}</p>
         <span class="n">total</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregate_sum</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">var</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">total</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Aggregation variable &#39;</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2">&#39; (sum) was not produced by any region. &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;Check the &#39;aggregation&#39; block of the regionalisation file: the &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;variable must be an output (vector, climate or float) of at least &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;one region (and a declared model output in &#39;unified_mda&#39; mode).&quot;</span>
+                <span class="sa">f</span><span class="s2">"Aggregation variable '</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2">' (sum) was not produced by any region. "</span>
+                <span class="sa">f</span><span class="s2">"Check the 'aggregation' block of the regionalisation file: the "</span>
+                <span class="sa">f</span><span class="s2">"variable must be an output (vector, climate or float) of at least "</span>
+                <span class="sa">f</span><span class="s2">"one region (and a declared model output in 'unified_mda' mode)."</span>
             <span class="p">)</span>
-        <span class="n">output_key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">global_namespace</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">output_key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">global_namespace</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2">"</span>
         <span class="n">output_data</span><span class="p">[</span><span class="n">output_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">total</span>
 
     <span class="c1"># Weighted average aggregation</span>
     <span class="k">for</span> <span class="n">config</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">weighted_avg_configs</span><span class="p">:</span>
-        <span class="n">var</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;variable&quot;</span><span class="p">]</span>
-        <span class="n">weight</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;weight_by&quot;</span><span class="p">]</span>
+        <span class="n">var</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">"variable"</span><span class="p">]</span>
+        <span class="n">weight</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">"weight_by"</span><span class="p">]</span>
         <span class="n">weighted_avg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregate_weighted_average</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">weight</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">weighted_avg</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Weighted-average aggregation of &#39;</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2">&#39; failed: no region produces &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;both &#39;</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2">&#39; and its weight &#39;</span><span class="si">{</span><span class="n">weight</span><span class="si">}</span><span class="s2">&#39;. Check the &#39;aggregation&#39; &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;block of the regionalisation file.&quot;</span>
+                <span class="sa">f</span><span class="s2">"Weighted-average aggregation of '</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2">' failed: no region produces "</span>
+                <span class="sa">f</span><span class="s2">"both '</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2">' and its weight '</span><span class="si">{</span><span class="n">weight</span><span class="si">}</span><span class="s2">'. Check the 'aggregation' "</span>
+                <span class="sa">f</span><span class="s2">"block of the regionalisation file."</span>
             <span class="p">)</span>
-        <span class="n">output_key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">global_namespace</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">output_key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">global_namespace</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2">"</span>
         <span class="n">output_data</span><span class="p">[</span><span class="n">output_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">weighted_avg</span>
 
     <span class="c1"># Store outputs for AeroMAPS compatibility. Series that do not fit the model</span>
@@ -6161,7 +6167,7 @@ E.g., {"overall:co2_emissions": <series>, ...}</p>
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       

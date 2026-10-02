@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -5937,7 +5937,11 @@
 
 
 <a href="#aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.aircraft_efficiency.PassengerAircraftEfficiencySimpleShares" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">PassengerAircraftEfficiencySimpleShares</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;passenger_aircraft_efficiency_simple_shares&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">PassengerAircraftEfficiencySimpleShares</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"passenger_aircraft_efficiency_simple_shares"</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6019,8 +6023,8 @@ Notes
                     <summary>Source code in <code>aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/aircraft_efficiency.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">55</span>
 <span class="normal">56</span>
-<span class="normal">57</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;passenger_aircraft_efficiency_simple_shares&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="normal">57</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"passenger_aircraft_efficiency_simple_shares"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">"custom"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">markets</span> <span class="o">=</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -6242,7 +6246,7 @@ Notes
 <span class="normal">236</span>
 <span class="normal">237</span>
 <span class="normal">238</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute per-market energy per ASK and propulsion shares.</span>
+<span class="w">    </span><span class="sd">"""Compute per-market energy per ASK and propulsion shares.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -6253,13 +6257,13 @@ Notes
 <span class="sd">    -------</span>
 <span class="sd">    dict</span>
 <span class="sd">        Output series for energy per ASK and ASK shares by energy type.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">passenger_markets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">&quot;passenger&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="n">passenger_markets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">"passenger"</span><span class="p">)</span>
 
-    <span class="n">energy_consumption_init</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;energy_consumption_init&quot;</span><span class="p">]</span>
-    <span class="n">ask_init</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;ask_init&quot;</span><span class="p">]</span>
-    <span class="n">fleet_renewal_duration</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;fleet_renewal_duration&quot;</span><span class="p">])</span>
-    <span class="n">covid_increase</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;covid_energy_intensity_per_ask_increase_2020&quot;</span><span class="p">])</span>
+    <span class="n">energy_consumption_init</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"energy_consumption_init"</span><span class="p">]</span>
+    <span class="n">ask_init</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"ask_init"</span><span class="p">]</span>
+    <span class="n">fleet_renewal_duration</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="s2">"fleet_renewal_duration"</span><span class="p">])</span>
+    <span class="n">covid_increase</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="s2">"covid_energy_intensity_per_ask_increase_2020"</span><span class="p">])</span>
 
     <span class="n">energy_consumption_per_ask_init</span> <span class="o">=</span> <span class="n">energy_consumption_init</span> <span class="o">/</span> <span class="n">ask_init</span>
 
@@ -6273,10 +6277,10 @@ Notes
 
     <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">passenger_markets</span><span class="p">:</span>
         <span class="n">mid</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">id</span>
-        <span class="n">energy_share</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_energy_share_last_historical_year&quot;</span><span class="p">])</span>
-        <span class="n">rpk_share</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_rpk_share_last_historical_year&quot;</span><span class="p">])</span>
+        <span class="n">energy_share</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_energy_share_last_historical_year"</span><span class="p">])</span>
+        <span class="n">rpk_share</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_rpk_share_last_historical_year"</span><span class="p">])</span>
 
-        <span class="n">dropin_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;energy_per_ask_without_operations_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel&quot;</span>
+        <span class="n">dropin_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"energy_per_ask_without_operations_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel"</span>
 
         <span class="c1"># TODO: improve division by zero handling</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx_hist</span><span class="p">,</span> <span class="n">dropin_col</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
@@ -6287,13 +6291,13 @@ Notes
 
         <span class="n">gain</span> <span class="o">=</span> <span class="n">aeromaps_interpolation_function</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
-            <span class="nb">list</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_energy_per_ask_dropin_fuel_gain_reference_years&quot;</span><span class="p">]),</span>
-            <span class="nb">list</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_energy_per_ask_dropin_fuel_gain_reference_years_values&quot;</span><span class="p">]),</span>
+            <span class="nb">list</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_energy_per_ask_dropin_fuel_gain_reference_years"</span><span class="p">]),</span>
+            <span class="nb">list</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_energy_per_ask_dropin_fuel_gain_reference_years_values"</span><span class="p">]),</span>
             <span class="n">model_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="c1"># FIXME not as gemseo variable ? do we want it ?</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;energy_per_ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel_gain&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gain</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">"energy_per_ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel_gain"</span><span class="p">]</span> <span class="o">=</span> <span class="n">gain</span>
 
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">dropin_col</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dropin_col</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span>
@@ -6307,61 +6311,61 @@ Notes
 
         <span class="n">dropin_series</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">dropin_col</span><span class="p">]</span>
 
-        <span class="n">h2_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;energy_per_ask_without_operations_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen&quot;</span>
+        <span class="n">h2_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"energy_per_ask_without_operations_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen"</span>
         <span class="n">rel_h2</span> <span class="o">=</span> <span class="n">aeromaps_interpolation_function</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="nb">list</span><span class="p">(</span>
-                <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_relative_energy_per_ask_hydrogen_wrt_dropin_reference_years&quot;</span><span class="p">]</span>
+                <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_relative_energy_per_ask_hydrogen_wrt_dropin_reference_years"</span><span class="p">]</span>
             <span class="p">),</span>
             <span class="nb">list</span><span class="p">(</span>
                 <span class="n">input_data</span><span class="p">[</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_relative_energy_per_ask_hydrogen_wrt_dropin_reference_years_values&quot;</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_relative_energy_per_ask_hydrogen_wrt_dropin_reference_years_values"</span>
                 <span class="p">]</span>
             <span class="p">),</span>
             <span class="n">model_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;relative_energy_per_ask_hydrogen_wrt_dropin_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rel_h2</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"relative_energy_per_ask_hydrogen_wrt_dropin_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="n">rel_h2</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx_hist</span><span class="p">,</span> <span class="n">h2_col</span><span class="p">]</span> <span class="o">=</span> <span class="n">dropin_series</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx_hist</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx_proj</span><span class="p">,</span> <span class="n">h2_col</span><span class="p">]</span> <span class="o">=</span> <span class="n">dropin_series</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx_proj</span><span class="p">]</span> <span class="o">*</span> <span class="n">rel_h2</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx_proj</span><span class="p">]</span>
 
-        <span class="n">el_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;energy_per_ask_without_operations_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric&quot;</span>
+        <span class="n">el_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"energy_per_ask_without_operations_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric"</span>
         <span class="n">rel_el</span> <span class="o">=</span> <span class="n">aeromaps_interpolation_function</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="nb">list</span><span class="p">(</span>
-                <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_relative_energy_per_ask_electric_wrt_dropin_reference_years&quot;</span><span class="p">]</span>
+                <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_relative_energy_per_ask_electric_wrt_dropin_reference_years"</span><span class="p">]</span>
             <span class="p">),</span>
             <span class="nb">list</span><span class="p">(</span>
                 <span class="n">input_data</span><span class="p">[</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_relative_energy_per_ask_electric_wrt_dropin_reference_years_values&quot;</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_relative_energy_per_ask_electric_wrt_dropin_reference_years_values"</span>
                 <span class="p">]</span>
             <span class="p">),</span>
             <span class="n">model_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;relative_energy_per_ask_electric_wrt_dropin_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rel_el</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"relative_energy_per_ask_electric_wrt_dropin_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="n">rel_el</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx_hist</span><span class="p">,</span> <span class="n">el_col</span><span class="p">]</span> <span class="o">=</span> <span class="n">dropin_series</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx_hist</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx_proj</span><span class="p">,</span> <span class="n">el_col</span><span class="p">]</span> <span class="o">=</span> <span class="n">dropin_series</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx_proj</span><span class="p">]</span> <span class="o">*</span> <span class="n">rel_el</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx_proj</span><span class="p">]</span>
 
-        <span class="n">h2_share_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen_share&quot;</span>
+        <span class="n">h2_share_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen_share"</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">h2_share_col</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simple_sigmoid_share</span><span class="p">(</span>
             <span class="n">years_all</span><span class="p">,</span>
-            <span class="nb">float</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen_final_market_share&quot;</span><span class="p">]),</span>
-            <span class="nb">float</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen_introduction_year&quot;</span><span class="p">]),</span>
+            <span class="nb">float</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen_final_market_share"</span><span class="p">]),</span>
+            <span class="nb">float</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen_introduction_year"</span><span class="p">]),</span>
             <span class="n">fleet_renewal_duration</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="n">el_share_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric_share&quot;</span>
+        <span class="n">el_share_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric_share"</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">el_share_col</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simple_sigmoid_share</span><span class="p">(</span>
             <span class="n">years_all</span><span class="p">,</span>
-            <span class="nb">float</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric_final_market_share&quot;</span><span class="p">]),</span>
-            <span class="nb">float</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric_introduction_year&quot;</span><span class="p">]),</span>
+            <span class="nb">float</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric_final_market_share"</span><span class="p">]),</span>
+            <span class="nb">float</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric_introduction_year"</span><span class="p">]),</span>
             <span class="n">fleet_renewal_duration</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="n">dropin_share_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel_share&quot;</span>
+        <span class="n">dropin_share_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel_share"</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">dropin_share_col</span><span class="p">]</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">h2_share_col</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">el_share_col</span><span class="p">]</span>
 
         <span class="n">output_data</span><span class="p">[</span><span class="n">dropin_col</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">dropin_col</span><span class="p">]</span>
@@ -6396,7 +6400,11 @@ Notes
 
 
 <a href="#aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.aircraft_efficiency.PassengerAircraftEfficiencySimpleASK" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">PassengerAircraftEfficiencySimpleASK</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;passenger_aircraft_efficiency_simple_ask&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">PassengerAircraftEfficiencySimpleASK</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"passenger_aircraft_efficiency_simple_ask"</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6471,8 +6479,8 @@ Notes
                     <summary>Source code in <code>aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/aircraft_efficiency.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">283</span>
 <span class="normal">284</span>
-<span class="normal">285</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;passenger_aircraft_efficiency_simple_ask&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="normal">285</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"passenger_aircraft_efficiency_simple_ask"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">"custom"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">markets</span> <span class="o">=</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -6615,7 +6623,7 @@ Notes
 <span class="normal">361</span>
 <span class="normal">362</span>
 <span class="normal">363</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Split per-market ASK into energy types and aggregate totals.</span>
+<span class="w">    </span><span class="sd">"""Split per-market ASK into energy types and aggregate totals.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -6626,8 +6634,8 @@ Notes
 <span class="sd">    -------</span>
 <span class="sd">    dict</span>
 <span class="sd">        ASK series and shares by energy type for each market and total.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">passenger_markets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">&quot;passenger&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="n">passenger_markets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">"passenger"</span><span class="p">)</span>
 
     <span class="n">output_data</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">total_dropin</span> <span class="o">=</span> <span class="kc">None</span>
@@ -6636,34 +6644,34 @@ Notes
 
     <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">passenger_markets</span><span class="p">:</span>
         <span class="n">mid</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">id</span>
-        <span class="n">ask</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
-        <span class="n">h2_share</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen_share&quot;</span><span class="p">]</span>
-        <span class="n">el_share</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric_share&quot;</span><span class="p">]</span>
+        <span class="n">ask</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span>
+        <span class="n">h2_share</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen_share"</span><span class="p">]</span>
+        <span class="n">el_share</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric_share"</span><span class="p">]</span>
 
         <span class="n">ask_h2</span> <span class="o">=</span> <span class="n">ask</span> <span class="o">*</span> <span class="n">h2_share</span> <span class="o">/</span> <span class="mi">100</span>
         <span class="n">ask_el</span> <span class="o">=</span> <span class="n">ask</span> <span class="o">*</span> <span class="n">el_share</span> <span class="o">/</span> <span class="mi">100</span>
         <span class="n">ask_dropin</span> <span class="o">=</span> <span class="n">ask</span> <span class="o">-</span> <span class="n">ask_h2</span> <span class="o">-</span> <span class="n">ask_el</span>
 
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ask_h2</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ask_el</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ask_dropin</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen"</span><span class="p">]</span> <span class="o">=</span> <span class="n">ask_h2</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric"</span><span class="p">]</span> <span class="o">=</span> <span class="n">ask_el</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel"</span><span class="p">]</span> <span class="o">=</span> <span class="n">ask_dropin</span>
 
         <span class="n">total_dropin</span> <span class="o">=</span> <span class="n">ask_dropin</span> <span class="k">if</span> <span class="n">total_dropin</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">total_dropin</span> <span class="o">+</span> <span class="n">ask_dropin</span>
         <span class="n">total_h2</span> <span class="o">=</span> <span class="n">ask_h2</span> <span class="k">if</span> <span class="n">total_h2</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">total_h2</span> <span class="o">+</span> <span class="n">ask_h2</span>
         <span class="n">total_el</span> <span class="o">=</span> <span class="n">ask_el</span> <span class="k">if</span> <span class="n">total_el</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">total_el</span> <span class="o">+</span> <span class="n">ask_el</span>
 
-    <span class="n">ask_total</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;ask&quot;</span><span class="p">]</span>
+    <span class="n">ask_total</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"ask"</span><span class="p">]</span>
     <span class="n">ask_dropin_fuel_share</span> <span class="o">=</span> <span class="p">(</span><span class="n">total_dropin</span> <span class="o">/</span> <span class="n">ask_total</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
     <span class="n">ask_hydrogen_share</span> <span class="o">=</span> <span class="p">(</span><span class="n">total_h2</span> <span class="o">/</span> <span class="n">ask_total</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
     <span class="n">ask_electric_share</span> <span class="o">=</span> <span class="p">(</span><span class="n">total_el</span> <span class="o">/</span> <span class="n">ask_total</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
 
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;ask_dropin_fuel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_dropin</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;ask_hydrogen&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_h2</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;ask_electric&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_el</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"ask_dropin_fuel"</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_dropin</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"ask_hydrogen"</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_h2</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"ask_electric"</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_el</span>
 
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;ask_dropin_fuel_share&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ask_dropin_fuel_share</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;ask_hydrogen_share&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ask_hydrogen_share</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;ask_electric_share&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ask_electric_share</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"ask_dropin_fuel_share"</span><span class="p">]</span> <span class="o">=</span> <span class="n">ask_dropin_fuel_share</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"ask_hydrogen_share"</span><span class="p">]</span> <span class="o">=</span> <span class="n">ask_hydrogen_share</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"ask_electric_share"</span><span class="p">]</span> <span class="o">=</span> <span class="n">ask_electric_share</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">_store_outputs</span><span class="p">(</span><span class="n">output_data</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">output_data</span>
@@ -6690,7 +6698,11 @@ Notes
 
 
 <a href="#aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.aircraft_efficiency.PassengerAircraftEfficiencyComplex" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">PassengerAircraftEfficiencyComplex</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;passenger_aircraft_efficiency_complex&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">PassengerAircraftEfficiencyComplex</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"passenger_aircraft_efficiency_complex"</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6796,8 +6808,8 @@ Notes
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">410</span>
 <span class="normal">411</span>
 <span class="normal">412</span>
-<span class="normal">413</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;passenger_aircraft_efficiency_complex&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="normal">413</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"passenger_aircraft_efficiency_complex"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">"custom"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">fleet_model</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">markets</span> <span class="o">=</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
@@ -7019,7 +7031,7 @@ Notes
 <span class="normal">571</span>
 <span class="normal">572</span>
 <span class="normal">573</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute energy per ASK and propulsion shares using fleet outputs.</span>
+<span class="w">    </span><span class="sd">"""Compute energy per ASK and propulsion shares using fleet outputs.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -7030,12 +7042,12 @@ Notes
 <span class="sd">    -------</span>
 <span class="sd">    dict</span>
 <span class="sd">        Output series for energy per ASK and ASK shares by energy type.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">passenger_markets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">&quot;passenger&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="n">passenger_markets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">"passenger"</span><span class="p">)</span>
 
-    <span class="n">energy_consumption_init</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;energy_consumption_init&quot;</span><span class="p">]</span>
-    <span class="n">ask_global</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;ask&quot;</span><span class="p">]</span>
-    <span class="n">covid_increase</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;covid_energy_intensity_per_ask_increase_2020&quot;</span><span class="p">])</span>
+    <span class="n">energy_consumption_init</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"energy_consumption_init"</span><span class="p">]</span>
+    <span class="n">ask_global</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"ask"</span><span class="p">]</span>
+    <span class="n">covid_increase</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="s2">"covid_energy_intensity_per_ask_increase_2020"</span><span class="p">])</span>
 
     <span class="n">energy_consumption_per_ask_init</span> <span class="o">=</span> <span class="n">energy_consumption_init</span> <span class="o">/</span> <span class="n">ask_global</span>
 
@@ -7047,18 +7059,18 @@ Notes
     <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">passenger_markets</span><span class="p">:</span>
         <span class="n">mid</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">id</span>
         <span class="n">market_name</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">name</span>  <span class="c1"># human-readable, matches fleet_model.df key</span>
-        <span class="n">energy_share</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_energy_share_last_historical_year&quot;</span><span class="p">])</span>
-        <span class="n">rpk_share</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_rpk_share_last_historical_year&quot;</span><span class="p">])</span>
-        <span class="n">ask_market</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+        <span class="n">energy_share</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_energy_share_last_historical_year"</span><span class="p">])</span>
+        <span class="n">rpk_share</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_rpk_share_last_historical_year"</span><span class="p">])</span>
+        <span class="n">ask_market</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span>
 
         <span class="n">energy_per_ask_without_operations_dropin_fuel_col</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;energy_per_ask_without_operations_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel&quot;</span>
+            <span class="sa">f</span><span class="s2">"energy_per_ask_without_operations_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel"</span>
         <span class="p">)</span>
         <span class="n">energy_per_ask_without_operations_hydrogen_col</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;energy_per_ask_without_operations_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen&quot;</span>
+            <span class="sa">f</span><span class="s2">"energy_per_ask_without_operations_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen"</span>
         <span class="p">)</span>
         <span class="n">energy_per_ask_without_operations_electric_col</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;energy_per_ask_without_operations_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric&quot;</span>
+            <span class="sa">f</span><span class="s2">"energy_per_ask_without_operations_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric"</span>
         <span class="p">)</span>
         <span class="c1"># idx_hist = pd.Index(range(self.historic_start_year, self.prospection_start_year))</span>
         <span class="n">idx_proj</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
@@ -7072,22 +7084,22 @@ Notes
         <span class="p">)</span>
 
         <span class="n">fleet_energy_per_ask_without_operations_dropin_fuel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fleet_model</span><span class="o">.</span><span class="n">df</span><span class="p">[</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">market_name</span><span class="si">}</span><span class="s2">:energy_consumption:dropin_fuel&quot;</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">market_name</span><span class="si">}</span><span class="s2">:energy_consumption:dropin_fuel"</span>
         <span class="p">]</span>
         <span class="n">fleet_energy_per_ask_without_operations_hydrogen</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fleet_model</span><span class="o">.</span><span class="n">df</span><span class="p">[</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">market_name</span><span class="si">}</span><span class="s2">:energy_consumption:hydrogen&quot;</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">market_name</span><span class="si">}</span><span class="s2">:energy_consumption:hydrogen"</span>
         <span class="p">]</span>
         <span class="n">fleet_energy_per_ask_without_operations_electric</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fleet_model</span><span class="o">.</span><span class="n">df</span><span class="p">[</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">market_name</span><span class="si">}</span><span class="s2">:energy_consumption:electric&quot;</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">market_name</span><span class="si">}</span><span class="s2">:energy_consumption:electric"</span>
         <span class="p">]</span>
 
-        <span class="n">fleet_ask_dropin_fuel_share</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fleet_model</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">market_name</span><span class="si">}</span><span class="s2">:share:dropin_fuel&quot;</span><span class="p">]</span>
-        <span class="n">fleet_ask_hydrogen_share</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fleet_model</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">market_name</span><span class="si">}</span><span class="s2">:share:hydrogen&quot;</span><span class="p">]</span>
-        <span class="n">fleet_ask_electric_share</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fleet_model</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">market_name</span><span class="si">}</span><span class="s2">:share:electric&quot;</span><span class="p">]</span>
+        <span class="n">fleet_ask_dropin_fuel_share</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fleet_model</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">market_name</span><span class="si">}</span><span class="s2">:share:dropin_fuel"</span><span class="p">]</span>
+        <span class="n">fleet_ask_hydrogen_share</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fleet_model</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">market_name</span><span class="si">}</span><span class="s2">:share:hydrogen"</span><span class="p">]</span>
+        <span class="n">fleet_ask_electric_share</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fleet_model</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">market_name</span><span class="si">}</span><span class="s2">:share:electric"</span><span class="p">]</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel_share&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">100.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen_share&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric_share&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel_share"</span><span class="p">]</span> <span class="o">=</span> <span class="mf">100.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen_share"</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric_share"</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">energy_per_ask_without_operations_hydrogen_col</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">energy_per_ask_without_operations_electric_col</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
 
@@ -7106,13 +7118,13 @@ Notes
                 <span class="bp">self</span><span class="o">.</span><span class="n">last_historical_year</span><span class="p">,</span> <span class="n">energy_per_ask_without_operations_dropin_fuel_col</span>
             <span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">covid_increase</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx_proj</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel_share&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fleet_ask_dropin_fuel_share</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx_proj</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen_share&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fleet_ask_hydrogen_share</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx_proj</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric_share&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fleet_ask_electric_share</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx_proj</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel_share"</span><span class="p">]</span> <span class="o">=</span> <span class="n">fleet_ask_dropin_fuel_share</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx_proj</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen_share"</span><span class="p">]</span> <span class="o">=</span> <span class="n">fleet_ask_hydrogen_share</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx_proj</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric_share"</span><span class="p">]</span> <span class="o">=</span> <span class="n">fleet_ask_electric_share</span>
 
-        <span class="n">ask_dropin_fuel</span> <span class="o">=</span> <span class="n">ask_market</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel_share&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">100</span>
-        <span class="n">ask_hydrogen</span> <span class="o">=</span> <span class="n">ask_market</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen_share&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">100</span>
-        <span class="n">ask_electric</span> <span class="o">=</span> <span class="n">ask_market</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric_share&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">100</span>
+        <span class="n">ask_dropin_fuel</span> <span class="o">=</span> <span class="n">ask_market</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel_share"</span><span class="p">]</span> <span class="o">/</span> <span class="mi">100</span>
+        <span class="n">ask_hydrogen</span> <span class="o">=</span> <span class="n">ask_market</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen_share"</span><span class="p">]</span> <span class="o">/</span> <span class="mi">100</span>
+        <span class="n">ask_electric</span> <span class="o">=</span> <span class="n">ask_market</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric_share"</span><span class="p">]</span> <span class="o">/</span> <span class="mi">100</span>
 
         <span class="n">output_data</span><span class="p">[</span><span class="n">energy_per_ask_without_operations_dropin_fuel_col</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span>
             <span class="n">energy_per_ask_without_operations_dropin_fuel_col</span>
@@ -7123,12 +7135,12 @@ Notes
         <span class="n">output_data</span><span class="p">[</span><span class="n">energy_per_ask_without_operations_electric_col</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span>
             <span class="n">energy_per_ask_without_operations_electric_col</span>
         <span class="p">]</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel_share&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel_share&quot;</span><span class="p">]</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen_share&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen_share&quot;</span><span class="p">]</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric_share&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric_share&quot;</span><span class="p">]</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ask_dropin_fuel</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ask_hydrogen</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ask_electric</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel_share"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel_share"</span><span class="p">]</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen_share"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen_share"</span><span class="p">]</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric_share"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric_share"</span><span class="p">]</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel"</span><span class="p">]</span> <span class="o">=</span> <span class="n">ask_dropin_fuel</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen"</span><span class="p">]</span> <span class="o">=</span> <span class="n">ask_hydrogen</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric"</span><span class="p">]</span> <span class="o">=</span> <span class="n">ask_electric</span>
 
         <span class="n">total_dropin</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">ask_dropin_fuel</span> <span class="k">if</span> <span class="n">total_dropin</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">total_dropin</span> <span class="o">+</span> <span class="n">ask_dropin_fuel</span>
@@ -7140,12 +7152,12 @@ Notes
     <span class="n">ask_hydrogen_share</span> <span class="o">=</span> <span class="p">(</span><span class="n">total_h2</span> <span class="o">/</span> <span class="n">ask_global</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
     <span class="n">ask_electric_share</span> <span class="o">=</span> <span class="p">(</span><span class="n">total_el</span> <span class="o">/</span> <span class="n">ask_global</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
 
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;ask_dropin_fuel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_dropin</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;ask_hydrogen&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_h2</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;ask_electric&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_el</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;ask_dropin_fuel_share&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ask_dropin_fuel_share</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;ask_hydrogen_share&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ask_hydrogen_share</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;ask_electric_share&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ask_electric_share</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"ask_dropin_fuel"</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_dropin</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"ask_hydrogen"</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_h2</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"ask_electric"</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_el</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"ask_dropin_fuel_share"</span><span class="p">]</span> <span class="o">=</span> <span class="n">ask_dropin_fuel_share</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"ask_hydrogen_share"</span><span class="p">]</span> <span class="o">=</span> <span class="n">ask_hydrogen_share</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"ask_electric_share"</span><span class="p">]</span> <span class="o">=</span> <span class="n">ask_electric_share</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">_store_outputs</span><span class="p">(</span><span class="n">output_data</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">output_data</span>
@@ -7172,7 +7184,9 @@ Notes
 
 
 <a href="#aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.aircraft_efficiency.FreightAircraftEfficiency" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">FreightAircraftEfficiency</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;freight_aircraft_efficiency&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">FreightAircraftEfficiency</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"freight_aircraft_efficiency"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -7319,8 +7333,8 @@ Notes
                     <summary>Source code in <code>aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/aircraft_efficiency.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">694</span>
 <span class="normal">695</span>
-<span class="normal">696</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;freight_aircraft_efficiency&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="normal">696</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"freight_aircraft_efficiency"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">"custom"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">markets</span> <span class="o">=</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -7693,7 +7707,7 @@ Notes
 <span class="normal">1025</span>
 <span class="normal">1026</span>
 <span class="normal">1027</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Derive freight energy per RTK and propulsion mix from passenger proxies.</span>
+<span class="w">    </span><span class="sd">"""Derive freight energy per RTK and propulsion mix from passenger proxies.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -7704,38 +7718,38 @@ Notes
 <span class="sd">    -------</span>
 <span class="sd">    dict</span>
 <span class="sd">        Output series for freight energy per RTK and RTK splits by energy type.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">passenger_markets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">&quot;passenger&quot;</span><span class="p">)</span>
-    <span class="n">freight_markets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">&quot;freight&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="n">passenger_markets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">"passenger"</span><span class="p">)</span>
+    <span class="n">freight_markets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">"freight"</span><span class="p">)</span>
 
     <span class="c1"># Extract global inputs</span>
-    <span class="n">energy_consumption_init</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;energy_consumption_init&quot;</span><span class="p">]</span>
-    <span class="n">ask</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;ask&quot;</span><span class="p">]</span>
+    <span class="n">energy_consumption_init</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"energy_consumption_init"</span><span class="p">]</span>
+    <span class="n">ask</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"ask"</span><span class="p">]</span>
     <span class="n">covid_energy_intensity_per_ask_increase_2020</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span>
-        <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;covid_energy_intensity_per_ask_increase_2020&quot;</span><span class="p">]</span>
+        <span class="n">input_data</span><span class="p">[</span><span class="s2">"covid_energy_intensity_per_ask_increase_2020"</span><span class="p">]</span>
     <span class="p">)</span>
 
     <span class="c1"># Extract per-passenger-market inputs</span>
-    <span class="n">ask_per_market</span> <span class="o">=</span> <span class="p">{</span><span class="n">m</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">m</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">passenger_markets</span><span class="p">}</span>
+    <span class="n">ask_per_market</span> <span class="o">=</span> <span class="p">{</span><span class="n">m</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">m</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">passenger_markets</span><span class="p">}</span>
     <span class="n">ask_dropin_fuel_per_market</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="n">m</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">m</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">_dropin_fuel&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">passenger_markets</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">m</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">_dropin_fuel"</span><span class="p">]</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">passenger_markets</span>
     <span class="p">}</span>
     <span class="n">ask_hydrogen_share_per_market</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="n">m</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">m</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">_hydrogen_share&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">passenger_markets</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">m</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">_hydrogen_share"</span><span class="p">]</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">passenger_markets</span>
     <span class="p">}</span>
     <span class="n">ask_electric_share_per_market</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="n">m</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">m</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">_electric_share&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">passenger_markets</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">m</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">_electric_share"</span><span class="p">]</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">passenger_markets</span>
     <span class="p">}</span>
     <span class="n">energy_per_ask_without_operations_dropin_fuel_per_market</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="n">m</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_per_ask_without_operations_</span><span class="si">{</span><span class="n">m</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">_dropin_fuel&quot;</span><span class="p">]</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_per_ask_without_operations_</span><span class="si">{</span><span class="n">m</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">_dropin_fuel"</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">passenger_markets</span>
     <span class="p">}</span>
     <span class="n">energy_per_ask_without_operations_hydrogen_per_market</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="n">m</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_per_ask_without_operations_</span><span class="si">{</span><span class="n">m</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">_hydrogen&quot;</span><span class="p">]</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_per_ask_without_operations_</span><span class="si">{</span><span class="n">m</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">_hydrogen"</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">passenger_markets</span>
     <span class="p">}</span>
     <span class="n">energy_per_ask_without_operations_electric_per_market</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="n">m</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_per_ask_without_operations_</span><span class="si">{</span><span class="n">m</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">_electric&quot;</span><span class="p">]</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_per_ask_without_operations_</span><span class="si">{</span><span class="n">m</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">_electric"</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">passenger_markets</span>
     <span class="p">}</span>
 
@@ -7746,7 +7760,7 @@ Notes
     <span class="c1"># rpk_share is 0. It carries zero ASK weight, so it must contribute nothing to the freight</span>
     <span class="c1"># averages below; an unmasked ``NaN * 0`` would otherwise poison every freight market.</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_passenger_ask_weighted_sum</span><span class="p">(</span><span class="n">per_market_value</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;ASK-weighted sum over passenger markets; empty markets (zero ASK) contribute zero.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""ASK-weighted sum over passenger markets; empty markets (zero ASK) contribute zero."""</span>
         <span class="n">total</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="n">passenger_markets</span><span class="p">:</span>
             <span class="n">mid</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">id</span>
@@ -7769,7 +7783,7 @@ Notes
     <span class="c1"># Relative efficiency of hydrogen and electric wrt dropin, per passenger market.</span>
     <span class="c1"># Empty markets yield NaN here (0/0 — both intensities are NaN); they are masked out of</span>
     <span class="c1"># the weighted sums above/below, so silence the intended divide-by-undefined.</span>
-    <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">invalid</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">divide</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">invalid</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">,</span> <span class="n">divide</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">):</span>
         <span class="n">relative_energy_per_ask_hydrogen_wrt_dropin_per_market</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">m</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">energy_per_ask_without_operations_hydrogen_per_market</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
             <span class="o">/</span> <span class="n">energy_per_ask_without_operations_dropin_fuel_per_market</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
@@ -7806,14 +7820,14 @@ Notes
 
     <span class="k">for</span> <span class="n">freight_market</span> <span class="ow">in</span> <span class="n">freight_markets</span><span class="p">:</span>
         <span class="n">freight_mid</span> <span class="o">=</span> <span class="n">freight_market</span><span class="o">.</span><span class="n">id</span>
-        <span class="n">rtk</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;rtk_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+        <span class="n">rtk</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"rtk_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span>
         <span class="n">freight_energy_share_last_historical_year</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span>
-            <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_energy_share_last_historical_year&quot;</span><span class="p">]</span>
+            <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_energy_share_last_historical_year"</span><span class="p">]</span>
         <span class="p">)</span>
 
         <span class="c1"># Initialization based on 2019 share</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
-            <span class="n">hist_years</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;energy_per_rtk_without_operations_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_dropin_fuel&quot;</span>
+            <span class="n">hist_years</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"energy_per_rtk_without_operations_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_dropin_fuel"</span>
         <span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">energy_consumption_init</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">hist_years</span><span class="p">]</span>
             <span class="o">/</span> <span class="n">rtk</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">hist_years</span><span class="p">]</span>
@@ -7825,7 +7839,7 @@ Notes
         <span class="c1"># market efficiencies, each evolving at the same year-on-year rate as its passenger proxy</span>
         <span class="n">init_energy_per_rtk_without_operations_dropin_fuel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">last_historical_year</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;energy_per_rtk_without_operations_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_dropin_fuel&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"energy_per_rtk_without_operations_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_dropin_fuel"</span><span class="p">,</span>
         <span class="p">]</span>
         <span class="n">energy_per_rtk_without_operations_dropin_fuel_per_market_k</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">mid</span><span class="p">:</span> <span class="n">init_energy_per_rtk_without_operations_dropin_fuel</span>
@@ -7833,7 +7847,7 @@ Notes
         <span class="p">}</span>
 
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
-            <span class="c1"># Apply the passenger year-on-year efficiency ratio to each market&#39;s freight proxy</span>
+            <span class="c1"># Apply the passenger year-on-year efficiency ratio to each market's freight proxy</span>
             <span class="k">for</span> <span class="n">mid</span> <span class="ow">in</span> <span class="n">ask_per_market</span><span class="p">:</span>
                 <span class="n">energy_per_ask_dropin_fuel_prev</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="n">energy_per_ask_without_operations_dropin_fuel_per_market</span><span class="p">[</span><span class="n">mid</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
@@ -7865,7 +7879,7 @@ Notes
                 <span class="c1"># Skip empty markets (zero dropin ASK): their proxy may be undefined and</span>
                 <span class="c1"># ``NaN * 0`` would leak into the freight efficiency.</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
-                    <span class="n">k</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;energy_per_rtk_without_operations_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_dropin_fuel&quot;</span>
+                    <span class="n">k</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"energy_per_rtk_without_operations_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_dropin_fuel"</span>
                 <span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
                     <span class="n">energy_per_rtk_without_operations_dropin_fuel_per_market_k</span><span class="p">[</span><span class="n">mid</span><span class="p">]</span>
                     <span class="o">*</span> <span class="n">ask_dropin_fuel_per_market</span><span class="p">[</span><span class="n">mid</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
@@ -7875,20 +7889,20 @@ Notes
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
-                    <span class="n">k</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;energy_per_rtk_without_operations_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_dropin_fuel&quot;</span>
+                    <span class="n">k</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"energy_per_rtk_without_operations_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_dropin_fuel"</span>
                 <span class="p">]</span> <span class="o">=</span> <span class="n">init_energy_per_rtk_without_operations_dropin_fuel</span>
 
         <span class="c1"># Covid: reset 2020 value</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span> <span class="o">&lt;=</span> <span class="mi">2020</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
-                <span class="mi">2020</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;energy_per_rtk_without_operations_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_dropin_fuel&quot;</span>
+                <span class="mi">2020</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"energy_per_rtk_without_operations_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_dropin_fuel"</span>
             <span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">last_historical_year</span><span class="p">,</span>
-                <span class="sa">f</span><span class="s2">&quot;energy_per_rtk_without_operations_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_dropin_fuel&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"energy_per_rtk_without_operations_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_dropin_fuel"</span><span class="p">,</span>
             <span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">covid_energy_intensity_per_ask_increase_2020</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span>
 
         <span class="n">energy_per_rtk_without_operations_dropin_fuel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span>
-            <span class="sa">f</span><span class="s2">&quot;energy_per_rtk_without_operations_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_dropin_fuel&quot;</span>
+            <span class="sa">f</span><span class="s2">"energy_per_rtk_without_operations_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_dropin_fuel"</span>
         <span class="p">]</span>
 
         <span class="c1"># RTK volumes per energy type for this freight market</span>
@@ -7900,14 +7914,14 @@ Notes
         <span class="c1"># otherwise ASK-weighted passenger ratio applied to dropin efficiency</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
             <span class="n">hydrogen_zero_mask</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;energy_per_rtk_without_operations_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_hydrogen&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"energy_per_rtk_without_operations_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_hydrogen"</span><span class="p">,</span>
         <span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
             <span class="n">hydrogen_zero_mask</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;energy_per_rtk_without_operations_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_dropin_fuel&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"energy_per_rtk_without_operations_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_dropin_fuel"</span><span class="p">,</span>
         <span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
             <span class="n">hydrogen_nonzero_mask</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;energy_per_rtk_without_operations_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_hydrogen&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"energy_per_rtk_without_operations_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_hydrogen"</span><span class="p">,</span>
         <span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">energy_per_rtk_without_operations_dropin_fuel</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">hydrogen_nonzero_mask</span><span class="p">]</span>
             <span class="o">*</span> <span class="n">hydrogen_weighted_sum</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">hydrogen_nonzero_mask</span><span class="p">]</span>
@@ -7918,35 +7932,35 @@ Notes
         <span class="c1"># otherwise ASK-weighted passenger ratio applied to dropin efficiency</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
             <span class="n">electric_zero_mask</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;energy_per_rtk_without_operations_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_electric&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"energy_per_rtk_without_operations_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_electric"</span><span class="p">,</span>
         <span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
             <span class="n">electric_zero_mask</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;energy_per_rtk_without_operations_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_dropin_fuel&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"energy_per_rtk_without_operations_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_dropin_fuel"</span><span class="p">,</span>
         <span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
             <span class="n">electric_nonzero_mask</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;energy_per_rtk_without_operations_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_electric&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"energy_per_rtk_without_operations_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_electric"</span><span class="p">,</span>
         <span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">energy_per_rtk_without_operations_dropin_fuel</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">electric_nonzero_mask</span><span class="p">]</span>
             <span class="o">*</span> <span class="n">electric_weighted_sum</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">electric_nonzero_mask</span><span class="p">]</span>
             <span class="o">/</span> <span class="n">rtk_electric_share</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">electric_nonzero_mask</span><span class="p">]</span>
         <span class="p">)</span>
 
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_per_rtk_without_operations_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_dropin_fuel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_per_rtk_without_operations_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_dropin_fuel"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">energy_per_rtk_without_operations_dropin_fuel</span>
         <span class="p">)</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_per_rtk_without_operations_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_hydrogen&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span>
-            <span class="sa">f</span><span class="s2">&quot;energy_per_rtk_without_operations_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_hydrogen&quot;</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_per_rtk_without_operations_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_hydrogen"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span>
+            <span class="sa">f</span><span class="s2">"energy_per_rtk_without_operations_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_hydrogen"</span>
         <span class="p">]</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_per_rtk_without_operations_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_electric&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span>
-            <span class="sa">f</span><span class="s2">&quot;energy_per_rtk_without_operations_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_electric&quot;</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_per_rtk_without_operations_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_electric"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span>
+            <span class="sa">f</span><span class="s2">"energy_per_rtk_without_operations_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_electric"</span>
         <span class="p">]</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;rtk_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_dropin_fuel_share&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rtk_dropin_fuel_share</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;rtk_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_hydrogen_share&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rtk_hydrogen_share</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;rtk_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_electric_share&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rtk_electric_share</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;rtk_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_dropin_fuel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rtk_dropin_fuel</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;rtk_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_hydrogen&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rtk_hydrogen</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;rtk_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_electric&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rtk_electric</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"rtk_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_dropin_fuel_share"</span><span class="p">]</span> <span class="o">=</span> <span class="n">rtk_dropin_fuel_share</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"rtk_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_hydrogen_share"</span><span class="p">]</span> <span class="o">=</span> <span class="n">rtk_hydrogen_share</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"rtk_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_electric_share"</span><span class="p">]</span> <span class="o">=</span> <span class="n">rtk_electric_share</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"rtk_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_dropin_fuel"</span><span class="p">]</span> <span class="o">=</span> <span class="n">rtk_dropin_fuel</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"rtk_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_hydrogen"</span><span class="p">]</span> <span class="o">=</span> <span class="n">rtk_hydrogen</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"rtk_</span><span class="si">{</span><span class="n">freight_mid</span><span class="si">}</span><span class="s2">_electric"</span><span class="p">]</span> <span class="o">=</span> <span class="n">rtk_electric</span>
 
         <span class="n">total_rtk_dropin_fuel</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">rtk_dropin_fuel</span>
@@ -7960,18 +7974,18 @@ Notes
             <span class="n">rtk_electric</span> <span class="k">if</span> <span class="n">total_rtk_electric</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">total_rtk_electric</span> <span class="o">+</span> <span class="n">rtk_electric</span>
         <span class="p">)</span>
 
-    <span class="n">rtk_total</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;rtk&quot;</span><span class="p">]</span>
+    <span class="n">rtk_total</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"rtk"</span><span class="p">]</span>
     <span class="n">rtk_dropin_fuel_share</span> <span class="o">=</span> <span class="p">(</span><span class="n">total_rtk_dropin_fuel</span> <span class="o">/</span> <span class="n">rtk_total</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
     <span class="n">rtk_hydrogen_share</span> <span class="o">=</span> <span class="p">(</span><span class="n">total_rtk_hydrogen</span> <span class="o">/</span> <span class="n">rtk_total</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
     <span class="n">rtk_electric_share</span> <span class="o">=</span> <span class="p">(</span><span class="n">total_rtk_electric</span> <span class="o">/</span> <span class="n">rtk_total</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
 
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;rtk_dropin_fuel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_rtk_dropin_fuel</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;rtk_hydrogen&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_rtk_hydrogen</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;rtk_electric&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_rtk_electric</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"rtk_dropin_fuel"</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_rtk_dropin_fuel</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"rtk_hydrogen"</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_rtk_hydrogen</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"rtk_electric"</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_rtk_electric</span>
 
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;rtk_dropin_fuel_share&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rtk_dropin_fuel_share</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;rtk_hydrogen_share&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rtk_hydrogen_share</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;rtk_electric_share&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rtk_electric_share</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"rtk_dropin_fuel_share"</span><span class="p">]</span> <span class="o">=</span> <span class="n">rtk_dropin_fuel_share</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"rtk_hydrogen_share"</span><span class="p">]</span> <span class="o">=</span> <span class="n">rtk_hydrogen_share</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"rtk_electric_share"</span><span class="p">]</span> <span class="o">=</span> <span class="n">rtk_electric_share</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">_store_outputs</span><span class="p">(</span><span class="n">output_data</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">output_data</span>
@@ -7998,7 +8012,9 @@ Notes
 
 
 <a href="#aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.aircraft_efficiency.FreightAircraftEfficiencySimple" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">FreightAircraftEfficiencySimple</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;freight_aircraft_efficiency&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">FreightAircraftEfficiencySimple</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"freight_aircraft_efficiency"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -8072,8 +8088,8 @@ Notes
                     <summary>Source code in <code>aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/aircraft_efficiency.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1094</span>
 <span class="normal">1095</span>
-<span class="normal">1096</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;freight_aircraft_efficiency&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="normal">1096</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"freight_aircraft_efficiency"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">"custom"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">markets</span> <span class="o">=</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -8165,7 +8181,7 @@ Notes
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       

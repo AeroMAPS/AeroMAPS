@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -5822,7 +5822,9 @@
 
 
 <a href="#aeromaps.models.air_transport.air_traffic.total_aircraft_distance.TotalAircraftDistance" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">TotalAircraftDistance</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;total_aircraft_distance&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">TotalAircraftDistance</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"total_aircraft_distance"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -5875,7 +5877,7 @@
                     <summary>Source code in <code>aeromaps/models/air_transport/air_traffic/total_aircraft_distance.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">22</span>
 <span class="normal">23</span>
-<span class="normal">24</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;total_aircraft_distance&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="normal">24</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"total_aircraft_distance"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">climate_historical_data</span> <span class="o">=</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
@@ -5902,7 +5904,14 @@
 
 
 <a href="#aeromaps.models.air_transport.air_traffic.total_aircraft_distance.TotalAircraftDistance.compute" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span><span class="n">rtk</span><span class="p">,</span> <span class="n">ask</span><span class="p">,</span> <span class="n">ask_dropin_fuel</span><span class="p">,</span> <span class="n">ask_hydrogen</span><span class="p">,</span> <span class="n">ask_electric</span><span class="p">,</span> <span class="n">total_aircraft_distance_init</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span>
+    <span class="n">rtk</span><span class="p">,</span>
+    <span class="n">ask</span><span class="p">,</span>
+    <span class="n">ask_dropin_fuel</span><span class="p">,</span>
+    <span class="n">ask_hydrogen</span><span class="p">,</span>
+    <span class="n">ask_electric</span><span class="p">,</span>
+    <span class="n">total_aircraft_distance_init</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6160,7 +6169,7 @@
     <span class="n">ask_electric</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
     <span class="n">total_aircraft_distance_init</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Total aircraft distance calculation.</span>
 
 <span class="sd">    Parameters</span>
@@ -6188,38 +6197,38 @@
 <span class="sd">        Total aircraft distance flown by hydrogen aircraft [km].</span>
 <span class="sd">    total_aircraft_distance_electric</span>
 <span class="sd">        Total aircraft distance flown by electric aircraft [km].</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">historical_distance_for_temperature</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">climate_historical_data</span><span class="p">[:,</span> <span class="mi">6</span><span class="p">]</span>
 
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">climate_historic_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">historic_start_year</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot;total_aircraft_distance&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">historical_distance_for_temperature</span><span class="p">[</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">"total_aircraft_distance"</span><span class="p">]</span> <span class="o">=</span> <span class="n">historical_distance_for_temperature</span><span class="p">[</span>
             <span class="n">k</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">climate_historic_start_year</span>
         <span class="p">]</span>
 
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">historic_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot;total_aircraft_distance&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_aircraft_distance_init</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">"total_aircraft_distance"</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_aircraft_distance_init</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
 
     <span class="c1"># Assumption: 1 RTK = 10 ASK</span>
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot;total_aircraft_distance&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">"total_aircraft_distance"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="p">(</span><span class="n">ask</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">+</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">rtk</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
             <span class="o">/</span> <span class="p">(</span>
                 <span class="n">ask</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
                 <span class="o">+</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">rtk</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
             <span class="p">)</span>
-            <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;total_aircraft_distance&quot;</span><span class="p">]</span>
+            <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"total_aircraft_distance"</span><span class="p">]</span>
         <span class="p">)</span>
 
-    <span class="n">total_aircraft_distance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">&quot;total_aircraft_distance&quot;</span><span class="p">]</span>
+    <span class="n">total_aircraft_distance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">"total_aircraft_distance"</span><span class="p">]</span>
 
     <span class="c1"># Assumption: distribution proportional to ASK</span>
     <span class="n">total_aircraft_distance_dropin_fuel</span> <span class="o">=</span> <span class="n">total_aircraft_distance</span> <span class="o">*</span> <span class="n">ask_dropin_fuel</span> <span class="o">/</span> <span class="n">ask</span>
     <span class="n">total_aircraft_distance_hydrogen</span> <span class="o">=</span> <span class="n">total_aircraft_distance</span> <span class="o">*</span> <span class="n">ask_hydrogen</span> <span class="o">/</span> <span class="n">ask</span>
     <span class="n">total_aircraft_distance_electric</span> <span class="o">=</span> <span class="n">total_aircraft_distance</span> <span class="o">*</span> <span class="n">ask_electric</span> <span class="o">/</span> <span class="n">ask</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;total_aircraft_distance_dropin_fuel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_aircraft_distance_dropin_fuel</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;total_aircraft_distance_hydrogen&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_aircraft_distance_hydrogen</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;total_aircraft_distance_electric&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_aircraft_distance_electric</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"total_aircraft_distance_dropin_fuel"</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_aircraft_distance_dropin_fuel</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"total_aircraft_distance_hydrogen"</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_aircraft_distance_hydrogen</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"total_aircraft_distance_electric"</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_aircraft_distance_electric</span>
 
     <span class="k">return</span> <span class="p">(</span>
         <span class="n">total_aircraft_distance</span><span class="p">,</span>
@@ -6307,7 +6316,7 @@
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       

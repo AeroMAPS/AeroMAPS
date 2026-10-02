@@ -17,7 +17,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -25,7 +25,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -5623,7 +5623,11 @@ Finally, a YAML file allows to configurate growth rates per year per market, and
 
 
 <a href="#aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet_push.fleet_model_push.calculate_stats_by_market" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">calculate_stats_by_market</span><span class="p">(</span><span class="n">classification_yaml_path</span><span class="p">,</span> <span class="n">aircraft_parameters_excel_path</span><span class="p">,</span> <span class="n">excel_sheet_name</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">calculate_stats_by_market</span><span class="p">(</span>
+    <span class="n">classification_yaml_path</span><span class="p">,</span>
+    <span class="n">aircraft_parameters_excel_path</span><span class="p">,</span>
+    <span class="n">excel_sheet_name</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -5725,7 +5729,7 @@ Finally, a YAML file allows to configurate growth rates per year per market, and
     <span class="n">aircraft_parameters_excel_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">excel_sheet_name</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Compute aggregated statistics by market from:</span>
 <span class="sd">    - a YAML file mapping aircraft types to markets</span>
 <span class="sd">    - an Excel file containing aircraft parameters by type</span>
@@ -5734,7 +5738,7 @@ Finally, a YAML file allows to configurate growth rates per year per market, and
 <span class="sd">    -------</span>
 <span class="sd">    pd.DataFrame</span>
 <span class="sd">        DataFrame containing aggregated totals by market.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">classification_data</span> <span class="o">=</span> <span class="n">_load_yaml</span><span class="p">(</span><span class="n">classification_yaml_path</span><span class="p">)</span>
     <span class="n">mapping</span> <span class="o">=</span> <span class="n">_build_aircraft_to_market_mapping</span><span class="p">(</span><span class="n">classification_data</span><span class="p">)</span>
 
@@ -5742,45 +5746,45 @@ Finally, a YAML file allows to configurate growth rates per year per market, and
         <span class="n">_resolve_project_path</span><span class="p">(</span><span class="n">aircraft_parameters_excel_path</span><span class="p">),</span> <span class="n">sheet_name</span><span class="o">=</span><span class="n">excel_sheet_name</span>
     <span class="p">)</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-    <span class="n">df</span><span class="p">[</span><span class="s2">&quot;market&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;Aircraft Type&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">mapping</span><span class="p">)</span>
-    <span class="n">df</span><span class="p">[</span><span class="s2">&quot;total_ask_produced_2024&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;total_ask_produced_2024&quot;</span><span class="p">],</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;coerce&quot;</span><span class="p">)</span>
-    <span class="n">df</span><span class="p">[</span><span class="s2">&quot;adj_distance_aircraft_year(km)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">(</span>
-        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;adj_distance_aircraft_year(km)&quot;</span><span class="p">],</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;coerce&quot;</span>
+    <span class="n">df</span><span class="p">[</span><span class="s2">"market"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">"Aircraft Type"</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">mapping</span><span class="p">)</span>
+    <span class="n">df</span><span class="p">[</span><span class="s2">"total_ask_produced_2024"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">"total_ask_produced_2024"</span><span class="p">],</span> <span class="n">errors</span><span class="o">=</span><span class="s2">"coerce"</span><span class="p">)</span>
+    <span class="n">df</span><span class="p">[</span><span class="s2">"adj_distance_aircraft_year(km)"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">(</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">"adj_distance_aircraft_year(km)"</span><span class="p">],</span> <span class="n">errors</span><span class="o">=</span><span class="s2">"coerce"</span>
     <span class="p">)</span>
-    <span class="n">df</span><span class="p">[</span><span class="s2">&quot;MJ_fuel_ask&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;MJ_fuel_ask&quot;</span><span class="p">],</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;coerce&quot;</span><span class="p">)</span>
+    <span class="n">df</span><span class="p">[</span><span class="s2">"MJ_fuel_ask"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">"MJ_fuel_ask"</span><span class="p">],</span> <span class="n">errors</span><span class="o">=</span><span class="s2">"coerce"</span><span class="p">)</span>
 
     <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span>
-        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;market&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">notna</span><span class="p">()</span>
-        <span class="o">&amp;</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;total_ask_produced_2024&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">notna</span><span class="p">()</span>
-        <span class="o">&amp;</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;adj_distance_aircraft_year(km)&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">notna</span><span class="p">()</span>
-        <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;adj_distance_aircraft_year(km)&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="o">&amp;</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;MJ_fuel_ask&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">notna</span><span class="p">()</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">"market"</span><span class="p">]</span><span class="o">.</span><span class="n">notna</span><span class="p">()</span>
+        <span class="o">&amp;</span> <span class="n">df</span><span class="p">[</span><span class="s2">"total_ask_produced_2024"</span><span class="p">]</span><span class="o">.</span><span class="n">notna</span><span class="p">()</span>
+        <span class="o">&amp;</span> <span class="n">df</span><span class="p">[</span><span class="s2">"adj_distance_aircraft_year(km)"</span><span class="p">]</span><span class="o">.</span><span class="n">notna</span><span class="p">()</span>
+        <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">"adj_distance_aircraft_year(km)"</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="o">&amp;</span> <span class="n">df</span><span class="p">[</span><span class="s2">"MJ_fuel_ask"</span><span class="p">]</span><span class="o">.</span><span class="n">notna</span><span class="p">()</span>
     <span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
     <span class="k">if</span> <span class="n">df</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No valid rows remain after filtering missing or invalid values.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"No valid rows remain after filtering missing or invalid values."</span><span class="p">)</span>
 
-    <span class="n">df</span><span class="p">[</span><span class="s2">&quot;ask_over_distance&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;total_ask_produced_2024&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;adj_distance_aircraft_year(km)&quot;</span><span class="p">]</span>
-    <span class="n">df</span><span class="p">[</span><span class="s2">&quot;MJ_fuel_ask_weighted&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;MJ_fuel_ask&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;total_ask_produced_2024&quot;</span><span class="p">]</span>
+    <span class="n">df</span><span class="p">[</span><span class="s2">"ask_over_distance"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">"total_ask_produced_2024"</span><span class="p">]</span> <span class="o">/</span> <span class="n">df</span><span class="p">[</span><span class="s2">"adj_distance_aircraft_year(km)"</span><span class="p">]</span>
+    <span class="n">df</span><span class="p">[</span><span class="s2">"MJ_fuel_ask_weighted"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">"MJ_fuel_ask"</span><span class="p">]</span> <span class="o">*</span> <span class="n">df</span><span class="p">[</span><span class="s2">"total_ask_produced_2024"</span><span class="p">]</span>
 
-    <span class="n">grouped</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;market&quot;</span><span class="p">,</span> <span class="n">as_index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span>
-        <span class="n">total_adjusted_asks</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;total_ask_produced_2024&quot;</span><span class="p">,</span> <span class="s2">&quot;sum&quot;</span><span class="p">),</span>
-        <span class="n">ask_over_distance_sum</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;ask_over_distance&quot;</span><span class="p">,</span> <span class="s2">&quot;sum&quot;</span><span class="p">),</span>
-        <span class="n">MJ_fuel_ask_weighted_sum</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;MJ_fuel_ask_weighted&quot;</span><span class="p">,</span> <span class="s2">&quot;sum&quot;</span><span class="p">),</span>
+    <span class="n">grouped</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"market"</span><span class="p">,</span> <span class="n">as_index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span>
+        <span class="n">total_adjusted_asks</span><span class="o">=</span><span class="p">(</span><span class="s2">"total_ask_produced_2024"</span><span class="p">,</span> <span class="s2">"sum"</span><span class="p">),</span>
+        <span class="n">ask_over_distance_sum</span><span class="o">=</span><span class="p">(</span><span class="s2">"ask_over_distance"</span><span class="p">,</span> <span class="s2">"sum"</span><span class="p">),</span>
+        <span class="n">MJ_fuel_ask_weighted_sum</span><span class="o">=</span><span class="p">(</span><span class="s2">"MJ_fuel_ask_weighted"</span><span class="p">,</span> <span class="s2">"sum"</span><span class="p">),</span>
     <span class="p">)</span>
 
-    <span class="n">grouped</span><span class="p">[</span><span class="s2">&quot;distance_aircraft_year_segment&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">grouped</span><span class="p">[</span><span class="s2">&quot;total_adjusted_asks&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="n">grouped</span><span class="p">[</span><span class="s2">&quot;ask_over_distance_sum&quot;</span><span class="p">]</span>
+    <span class="n">grouped</span><span class="p">[</span><span class="s2">"distance_aircraft_year_segment"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">grouped</span><span class="p">[</span><span class="s2">"total_adjusted_asks"</span><span class="p">]</span> <span class="o">/</span> <span class="n">grouped</span><span class="p">[</span><span class="s2">"ask_over_distance_sum"</span><span class="p">]</span>
     <span class="p">)</span>
-    <span class="n">grouped</span><span class="p">[</span><span class="s2">&quot;MJ_fuel_ask_segment&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">grouped</span><span class="p">[</span><span class="s2">&quot;MJ_fuel_ask_weighted_sum&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="n">grouped</span><span class="p">[</span><span class="s2">&quot;total_adjusted_asks&quot;</span><span class="p">]</span>
+    <span class="n">grouped</span><span class="p">[</span><span class="s2">"MJ_fuel_ask_segment"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">grouped</span><span class="p">[</span><span class="s2">"MJ_fuel_ask_weighted_sum"</span><span class="p">]</span> <span class="o">/</span> <span class="n">grouped</span><span class="p">[</span><span class="s2">"total_adjusted_asks"</span><span class="p">]</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">grouped</span><span class="p">[</span>
         <span class="p">[</span>
-            <span class="s2">&quot;market&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;total_adjusted_asks&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;distance_aircraft_year_segment&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;MJ_fuel_ask_segment&quot;</span><span class="p">,</span>
+            <span class="s2">"market"</span><span class="p">,</span>
+            <span class="s2">"total_adjusted_asks"</span><span class="p">,</span>
+            <span class="s2">"distance_aircraft_year_segment"</span><span class="p">,</span>
+            <span class="s2">"MJ_fuel_ask_segment"</span><span class="p">,</span>
         <span class="p">]</span>
     <span class="p">]</span>
 </code></pre></div></td></tr></table></div>
@@ -5797,7 +5801,16 @@ Finally, a YAML file allows to configurate growth rates per year per market, and
 
 
 <a href="#aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet_push.fleet_model_push.market_process" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">market_process</span><span class="p">(</span><span class="n">market_data</span><span class="p">,</span> <span class="n">distance_per_aircraft</span><span class="p">,</span> <span class="n">fleet_market</span><span class="p">,</span> <span class="n">old_ac_carac</span><span class="p">,</span> <span class="n">in_prod_ac_carac</span><span class="p">,</span> <span class="n">future_ac_carac</span><span class="p">,</span> <span class="n">ask_series</span><span class="p">,</span> <span class="n">last_historical_year</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">market_process</span><span class="p">(</span>
+    <span class="n">market_data</span><span class="p">,</span>
+    <span class="n">distance_per_aircraft</span><span class="p">,</span>
+    <span class="n">fleet_market</span><span class="p">,</span>
+    <span class="n">old_ac_carac</span><span class="p">,</span>
+    <span class="n">in_prod_ac_carac</span><span class="p">,</span>
+    <span class="n">future_ac_carac</span><span class="p">,</span>
+    <span class="n">ask_series</span><span class="p">,</span>
+    <span class="n">last_historical_year</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6113,7 +6126,7 @@ year. A failed simulation in that case is acceptable (legacy behaviour).</p>
     <span class="n">ask_series</span><span class="p">,</span>
     <span class="n">last_historical_year</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pure, side-effect-free fleet-renewal engine for a single market segment.</span>
+<span class="w">    </span><span class="sd">"""Pure, side-effect-free fleet-renewal engine for a single market segment.</span>
 
 <span class="sd">    The AeroMAPS ASK series is always injected; the engine has no internal</span>
 <span class="sd">    traffic-growth profile.</span>
@@ -6122,7 +6135,7 @@ year. A failed simulation in that case is acceptable (legacy behaviour).</p>
 <span class="sd">    ----------</span>
 <span class="sd">    ask_series : array-like</span>
 <span class="sd">        Per-year ASK volumes used DIRECTLY as the traffic target</span>
-<span class="sd">        (``yearly_traffic``), aligned to the engine&#39;s projection horizon: the</span>
+<span class="sd">        (``yearly_traffic``), aligned to the engine's projection horizon: the</span>
 <span class="sd">        ``last_historical_year`` (pivot/base year) followed by every projection year</span>
 <span class="sd">        up to ``market_growth[0][-1]`` (length ``modeled_periods + 1``).</span>
 <span class="sd">    last_historical_year : int</span>
@@ -6140,11 +6153,11 @@ year. A failed simulation in that case is acceptable (legacy behaviour).</p>
 <span class="sd">    ValueError</span>
 <span class="sd">        When the delivered fleet activity cannot meet the demand for at least one</span>
 <span class="sd">        year. A failed simulation in that case is acceptable (legacy behaviour).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">first_projection_year</span> <span class="o">=</span> <span class="n">last_historical_year</span> <span class="o">+</span> <span class="mi">1</span>
-    <span class="n">market_growth</span> <span class="o">=</span> <span class="n">market_data</span><span class="p">[</span><span class="s2">&quot;production_profile&quot;</span><span class="p">]</span>
-    <span class="n">age_utilisation_sensibility</span> <span class="o">=</span> <span class="n">market_data</span><span class="p">[</span><span class="s2">&quot;age_utilisation_sensib&quot;</span><span class="p">]</span>
-    <span class="n">age_retirement_sensibility</span> <span class="o">=</span> <span class="n">market_data</span><span class="p">[</span><span class="s2">&quot;age_retirement_sensib&quot;</span><span class="p">]</span>
+    <span class="n">market_growth</span> <span class="o">=</span> <span class="n">market_data</span><span class="p">[</span><span class="s2">"production_profile"</span><span class="p">]</span>
+    <span class="n">age_utilisation_sensibility</span> <span class="o">=</span> <span class="n">market_data</span><span class="p">[</span><span class="s2">"age_utilisation_sensib"</span><span class="p">]</span>
+    <span class="n">age_retirement_sensibility</span> <span class="o">=</span> <span class="n">market_data</span><span class="p">[</span><span class="s2">"age_retirement_sensib"</span><span class="p">]</span>
     <span class="n">years</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">first_projection_year</span><span class="p">,</span> <span class="n">market_growth</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
     <span class="n">modeled_periods</span> <span class="o">=</span> <span class="n">years</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="c1"># ASK injection: use the supplied per-year traffic directly. It is aligned to</span>
@@ -6160,23 +6173,23 @@ year. A failed simulation in that case is acceptable (legacy behaviour).</p>
     <span class="c1"># fuel intensity array</span>
     <span class="n">energy_intensity</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
         <span class="p">[</span>
-            <span class="n">old_ac_carac</span><span class="p">[</span><span class="s2">&quot;MJ_fuel_ask&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
-            <span class="n">in_prod_ac_carac</span><span class="p">[</span><span class="s2">&quot;energy_efficiency&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
-            <span class="n">future_ac_carac</span><span class="p">[</span><span class="s2">&quot;energy_efficiency&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+            <span class="n">old_ac_carac</span><span class="p">[</span><span class="s2">"MJ_fuel_ask"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+            <span class="n">in_prod_ac_carac</span><span class="p">[</span><span class="s2">"energy_efficiency"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+            <span class="n">future_ac_carac</span><span class="p">[</span><span class="s2">"energy_efficiency"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
         <span class="p">]</span>
     <span class="p">)</span>
     <span class="c1"># seats array</span>
     <span class="n">seats_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
         <span class="p">[</span>
-            <span class="n">old_ac_carac</span><span class="p">[</span><span class="s2">&quot;average_seats&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
-            <span class="n">in_prod_ac_carac</span><span class="p">[</span><span class="s2">&quot;seats&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
-            <span class="n">future_ac_carac</span><span class="p">[</span><span class="s2">&quot;seats&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+            <span class="n">old_ac_carac</span><span class="p">[</span><span class="s2">"average_seats"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+            <span class="n">in_prod_ac_carac</span><span class="p">[</span><span class="s2">"seats"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+            <span class="n">future_ac_carac</span><span class="p">[</span><span class="s2">"seats"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
         <span class="p">]</span>
     <span class="p">)</span>
     <span class="c1"># productivity array</span>
     <span class="n">kms_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
         <span class="p">[</span>
-            <span class="n">old_ac_carac</span><span class="p">[</span><span class="s2">&quot;adj_distance_aircraft_year(km)&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+            <span class="n">old_ac_carac</span><span class="p">[</span><span class="s2">"adj_distance_aircraft_year(km)"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
             <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
                 <span class="p">(</span><span class="n">in_prod_ac_carac</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">future_ac_carac</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="p">[</span><span class="n">distance_per_aircraft</span><span class="p">]</span>
             <span class="p">),</span>
@@ -6191,7 +6204,7 @@ year. A failed simulation in that case is acceptable (legacy behaviour).</p>
     <span class="c1"># deliveries array</span>
     <span class="n">deliveries_ini</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">fleet_ini</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
     <span class="n">deliveries</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">deliveries_ini</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">modeled_periods</span><span class="p">))</span>
-    <span class="n">production_profiles</span> <span class="o">=</span> <span class="n">in_prod_ac_carac</span><span class="p">[</span><span class="s2">&quot;production_profile&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">production_profiles</span> <span class="o">=</span> <span class="n">in_prod_ac_carac</span><span class="p">[</span><span class="s2">"production_profile"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
     <span class="c1"># in production aircraft volumes</span>
     <span class="k">for</span> <span class="n">ac</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_prod_ac</span><span class="p">):</span>
         <span class="n">production_profile</span> <span class="o">=</span> <span class="n">production_profiles</span><span class="p">[</span><span class="n">ac</span><span class="p">]</span>
@@ -6209,7 +6222,7 @@ year. A failed simulation in that case is acceptable (legacy behaviour).</p>
         <span class="p">)</span>
     <span class="c1"># future aircraft volumes</span>
     <span class="n">delivery_params</span> <span class="o">=</span> <span class="n">future_ac_carac</span><span class="p">[</span>
-        <span class="p">[</span><span class="s2">&quot;intro_year&quot;</span><span class="p">,</span> <span class="s2">&quot;production_duration&quot;</span><span class="p">,</span> <span class="s2">&quot;renewal_rate&quot;</span><span class="p">,</span> <span class="s2">&quot;time_to_market&quot;</span><span class="p">,</span> <span class="s2">&quot;seats&quot;</span><span class="p">]</span>
+        <span class="p">[</span><span class="s2">"intro_year"</span><span class="p">,</span> <span class="s2">"production_duration"</span><span class="p">,</span> <span class="s2">"renewal_rate"</span><span class="p">,</span> <span class="s2">"time_to_market"</span><span class="p">,</span> <span class="s2">"seats"</span><span class="p">]</span>
     <span class="p">]</span><span class="o">.</span><span class="n">values</span>
     <span class="n">n_mod</span> <span class="o">=</span> <span class="n">yearly_traffic</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span>
         <span class="mi">0</span>
@@ -6246,14 +6259,14 @@ year. A failed simulation in that case is acceptable (legacy behaviour).</p>
     <span class="c1"># Capacity check (legacy behaviour): raise when the delivered fleet activity</span>
     <span class="c1"># cannot meet the demand. A failed simulation in that case is acceptable.</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">fleet_delivered_activity</span> <span class="o">&lt;</span> <span class="mf">0.999999</span> <span class="o">*</span> <span class="n">yearly_traffic</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;not enough aircraft in the fleet to meet the demand in market segment&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"not enough aircraft in the fleet to meet the demand in market segment"</span><span class="p">)</span>
 
     <span class="c1"># retirement propensity array</span>
     <span class="n">ret_year_delay_type</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
         <span class="p">[</span>
-            <span class="n">old_ac_carac</span><span class="p">[</span><span class="s2">&quot;retirement_propensions&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
-            <span class="n">in_prod_ac_carac</span><span class="p">[</span><span class="s2">&quot;ret_year_delay&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">*</span> <span class="n">age_retirement_sensibility</span><span class="p">,</span>
-            <span class="n">future_ac_carac</span><span class="p">[</span><span class="s2">&quot;ret_year_delay&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">*</span> <span class="n">age_retirement_sensibility</span><span class="p">,</span>
+            <span class="n">old_ac_carac</span><span class="p">[</span><span class="s2">"retirement_propensions"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+            <span class="n">in_prod_ac_carac</span><span class="p">[</span><span class="s2">"ret_year_delay"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">*</span> <span class="n">age_retirement_sensibility</span><span class="p">,</span>
+            <span class="n">future_ac_carac</span><span class="p">[</span><span class="s2">"ret_year_delay"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">*</span> <span class="n">age_retirement_sensibility</span><span class="p">,</span>
         <span class="p">]</span>
     <span class="p">)</span>
     <span class="n">ret_year_delay_type_y</span> <span class="o">=</span> <span class="p">(</span>
@@ -6267,7 +6280,7 @@ year. A failed simulation in that case is acceptable (legacy behaviour).</p>
     <span class="n">aircraft_seats_volumes</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">ask_volumes</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">x_eq</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Computing fleet composition...&quot;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Computing fleet composition..."</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">modeled_periods</span><span class="p">):</span>
         <span class="n">fleet_delivered_activity_type_y_t</span> <span class="o">=</span> <span class="n">fleet_delivered_activity_type_y</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="n">fleet_delivered_activity_type_y_t</span><span class="p">[</span><span class="o">-</span><span class="n">modeled_periods</span> <span class="o">+</span> <span class="n">t</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="mi">0</span>
@@ -6370,7 +6383,7 @@ year. A failed simulation in that case is acceptable (legacy behaviour).</p>
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       

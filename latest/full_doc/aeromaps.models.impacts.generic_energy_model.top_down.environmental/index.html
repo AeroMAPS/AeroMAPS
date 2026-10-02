@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -5832,7 +5832,14 @@ Module to compute pathway environmental parameters using the top-down techno-eco
 
 
 <a href="#aeromaps.models.impacts.generic_energy_model.top_down.environmental.TopDownEnvironmental" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">TopDownEnvironmental</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">configuration_data</span><span class="p">,</span> <span class="n">resources_data</span><span class="p">,</span> <span class="n">processes_data</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">TopDownEnvironmental</span><span class="p">(</span>
+    <span class="n">name</span><span class="p">,</span>
+    <span class="n">configuration_data</span><span class="p">,</span>
+    <span class="n">resources_data</span><span class="p">,</span>
+    <span class="n">processes_data</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6086,24 +6093,24 @@ Module to compute pathway environmental parameters using the top-down techno-eco
 <span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
-        <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span>
+        <span class="n">model_type</span><span class="o">=</span><span class="s2">"custom"</span><span class="p">,</span>
         <span class="c1"># inputs/outputs are defined in __init__ rather than auto generated from compute() signature</span>
         <span class="o">*</span><span class="n">args</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="c1"># Get the name of the pathway</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span> <span class="o">=</span> <span class="n">configuration_data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span> <span class="o">=</span> <span class="n">configuration_data</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]</span>
 
     <span class="c1"># Get the inputs from the configuration file: two options</span>
     <span class="c1"># 1. All inputs of a certain category in the yaml file</span>
-    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">configuration_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;inputs&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;environmental&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">configuration_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"inputs"</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"environmental"</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="c1"># TODO initialize with zeros instead of actual val?</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
-    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">configuration_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;inputs&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;technical&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">configuration_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"inputs"</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"technical"</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="c1"># TODO initialize with zeros instead of actual val? How to better get rid of unnecessary variables</span>
         <span class="k">if</span> <span class="p">(</span>
-            <span class="n">key</span> <span class="o">==</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_resource_names&quot;</span>
-            <span class="ow">or</span> <span class="n">key</span> <span class="o">==</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_processes_names&quot;</span>
+            <span class="n">key</span> <span class="o">==</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_resource_names"</span>
+            <span class="ow">or</span> <span class="n">key</span> <span class="o">==</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_processes_names"</span>
         <span class="p">):</span>
             <span class="k">pass</span>  <span class="c1"># avoid having strings as variable in gemseo, not needed as variables</span>
         <span class="k">else</span><span class="p">:</span>
@@ -6113,101 +6120,101 @@ Module to compute pathway environmental parameters using the top-down techno-eco
     <span class="c1"># Individual inputs defined in the yaml file</span>
     <span class="c1"># -- None</span>
     <span class="c1"># Individual inputs defined by EnergyUseChoice</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_energy_consumption&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_energy_consumption"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
 
     <span class="c1"># TODO find a better way to get the resource inputs ? Now better with the list(str) argument of each pathway .yaml</span>
     <span class="c1"># 3. Getting resources is a bit more complex as we need to get necessary resources for the pathway</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">resource_keys</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">configuration_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;inputs&quot;</span><span class="p">)</span>
-        <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;technical&quot;</span><span class="p">,</span> <span class="p">{})</span>
-        <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_resource_names&quot;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="n">configuration_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"inputs"</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"technical"</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_resource_names"</span><span class="p">,</span> <span class="p">[])</span>
     <span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">process_keys</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">configuration_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;inputs&quot;</span><span class="p">)</span>
-        <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;technical&quot;</span><span class="p">,</span> <span class="p">{})</span>
-        <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_processes_names&quot;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="n">configuration_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"inputs"</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"technical"</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_processes_names"</span><span class="p">,</span> <span class="p">[])</span>
     <span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
     <span class="c1"># Adding resources-linked inputs and outputs</span>
     <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">resource_keys</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_excluding_processes_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_mean_co2_emission_factor&quot;</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_excluding_processes_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_mean_co2_emission_factor"</span>
         <span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_excluding_processes_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_total_consumption&quot;</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_excluding_processes_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_total_consumption"</span>
         <span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_excluding_processes_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_total_mobilised_with_selectivity&quot;</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_excluding_processes_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_total_mobilised_with_selectivity"</span>
         <span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_total_consumption&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_total_mobilised_with_selectivity&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_total_consumption"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_total_mobilised_with_selectivity"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
         <span class="p">)</span>
 
     <span class="k">for</span> <span class="n">process_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_keys</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">processes_data</span><span class="p">[</span><span class="n">process_key</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;inputs&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;technical&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">process_key</span><span class="si">}</span><span class="s2">_resource_names&quot;</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">processes_data</span><span class="p">[</span><span class="n">process_key</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"inputs"</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"technical"</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">process_key</span><span class="si">}</span><span class="s2">_resource_names"</span><span class="p">:</span>
                 <span class="n">resources</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="n">processes_data</span><span class="p">[</span><span class="n">process_key</span><span class="p">]</span>
-                    <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;inputs&quot;</span><span class="p">)</span>
-                    <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;technical&quot;</span><span class="p">,</span> <span class="p">{})</span>
-                    <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">process_key</span><span class="si">}</span><span class="s2">_resource_names&quot;</span><span class="p">,</span> <span class="p">[])</span>
+                    <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"inputs"</span><span class="p">)</span>
+                    <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"technical"</span><span class="p">,</span> <span class="p">{})</span>
+                    <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">process_key</span><span class="si">}</span><span class="s2">_resource_names"</span><span class="p">,</span> <span class="p">[])</span>
                 <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">resource_keys</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">resources</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">resource</span> <span class="ow">in</span> <span class="n">resources</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">process_key</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">resource</span><span class="si">}</span><span class="s2">_mean_co2_emission_factor&quot;</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">process_key</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">resource</span><span class="si">}</span><span class="s2">_mean_co2_emission_factor"</span>
                     <span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">process_key</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">resource</span><span class="si">}</span><span class="s2">_total_consumption&quot;</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">process_key</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">resource</span><span class="si">}</span><span class="s2">_total_consumption"</span>
                     <span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">process_key</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">resource</span><span class="si">}</span><span class="s2">_total_mobilised_with_selectivity&quot;</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">process_key</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">resource</span><span class="si">}</span><span class="s2">_total_mobilised_with_selectivity"</span>
                     <span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># TODO initialize with zeros instead of actual val?</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
 
         <span class="c1"># The environmental block has to be registered here: this model reads</span>
-        <span class="c1"># the process&#39;s own emission factor below, and registering only the</span>
+        <span class="c1"># the process's own emission factor below, and registering only the</span>
         <span class="c1"># cost block left that read missing from input_data, so .get()</span>
-        <span class="c1"># returned the null series and a process&#39;s own emissions were</span>
+        <span class="c1"># returned the null series and a process's own emissions were</span>
         <span class="c1"># silently dropped. Economics stays registered alongside it, since a</span>
         <span class="c1"># process may declare either block and the cost model reads that one.</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="p">(</span>
-            <span class="n">processes_data</span><span class="p">[</span><span class="n">process_key</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;inputs&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;environmental&quot;</span><span class="p">,</span> <span class="p">{})</span> <span class="ow">or</span> <span class="p">{}</span>
+            <span class="n">processes_data</span><span class="p">[</span><span class="n">process_key</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"inputs"</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"environmental"</span><span class="p">,</span> <span class="p">{})</span> <span class="ow">or</span> <span class="p">{}</span>
         <span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="c1"># TODO initialize with zeros instead of actual val?</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
 
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">processes_data</span><span class="p">[</span><span class="n">process_key</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;inputs&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;economics&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">processes_data</span><span class="p">[</span><span class="n">process_key</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"inputs"</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"economics"</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="c1"># TODO initialize with zeros instead of actual val?</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">process_key</span><span class="si">}</span><span class="s2">_without_resources_mean_co2_emission_factor&quot;</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">process_key</span><span class="si">}</span><span class="s2">_without_resources_mean_co2_emission_factor"</span>
         <span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
 
     <span class="c1"># Getting unique resources</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">resource_keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_keys</span><span class="p">))</span>
 
     <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">resource_keys</span><span class="p">:</span>
-        <span class="k">if</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_co2_emission_factor&quot;</span> <span class="ow">in</span> <span class="n">resources_data</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;specifications&quot;</span><span class="p">]:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_co2_emission_factor&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="k">if</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_co2_emission_factor"</span> <span class="ow">in</span> <span class="n">resources_data</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">"specifications"</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_co2_emission_factor"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_total_consumption&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_total_mobilised_with_selectivity&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_total_consumption"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_total_mobilised_with_selectivity"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
         <span class="p">)</span>
 
     <span class="c1"># COMPUTE ABATEMENT COST NOT RECOMMENDED WITH TOP-DOWN MODELS</span>
-    <span class="k">if</span> <span class="n">configuration_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;abatement_cost&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">configuration_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"abatement_cost"</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">compute_abatement_cost</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="s2">&quot;exogenous_carbon_price_trajectory&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="s2">&quot;social_discount_rate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_lifespan_unitary_emissions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_lifespan_discounted_unitary_emissions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="s2">"exogenous_carbon_price_trajectory"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="s2">"social_discount_rate"</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_lifespan_unitary_emissions"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_lifespan_discounted_unitary_emissions"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -6216,8 +6223,8 @@ Module to compute pathway environmental parameters using the top-down techno-eco
     <span class="c1"># Fill in the other expected outputs with names from the compute method</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
         <span class="p">{</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_mean_co2_emission_factor&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_total_co2_emissions&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_mean_co2_emission_factor"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_total_co2_emissions"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
         <span class="p">}</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -6490,7 +6497,7 @@ Module to compute pathway environmental parameters using the top-down techno-eco
 <span class="normal">386</span>
 <span class="normal">387</span>
 <span class="normal">388</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Execute the top-down environmental computations for the energy pathway.</span>
 
 <span class="sd">    Parameters</span>
@@ -6502,28 +6509,28 @@ Module to compute pathway environmental parameters using the top-down techno-eco
 <span class="sd">    -------</span>
 <span class="sd">    output_data</span>
 <span class="sd">        Dictionary containing all output data resulting from the computation. Contains outputs defined during model instantiation.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">output_data</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">optional_null_series</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
         <span class="mf">0.0</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">historic_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
     <span class="p">)</span>
 
     <span class="n">co2_emission_factor</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_mean_co2_emission_factor_without_resource&quot;</span><span class="p">,</span> <span class="n">optional_null_series</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_mean_co2_emission_factor_without_resource"</span><span class="p">,</span> <span class="n">optional_null_series</span>
     <span class="p">)</span>
 
     <span class="c1"># Get the total energy consumption of the pathway</span>
-    <span class="n">energy_consumption</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_energy_consumption&quot;</span><span class="p">]</span>
+    <span class="n">energy_consumption</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_energy_consumption"</span><span class="p">]</span>
 
     <span class="c1"># Pathway selectivity</span>
     <span class="n">pathway_kerosene_selectivity</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_kerosene_selectivity&quot;</span><span class="p">,</span> <span class="mf">1.0</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_kerosene_selectivity"</span><span class="p">,</span> <span class="mf">1.0</span>
     <span class="p">)</span>
 
     <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">resource_keys</span><span class="p">:</span>
         <span class="c1"># 1 ) --&gt; pathway gets directly a resource</span>
         <span class="n">specific_consumption</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_resource_specific_consumption_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="kc">None</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_resource_specific_consumption_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="kc">None</span>
         <span class="p">)</span>
         <span class="n">total_ressource_consumption</span> <span class="o">=</span> <span class="n">optional_null_series</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="n">total_ressource_mobilised_with_selectivity</span> <span class="o">=</span> <span class="n">optional_null_series</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -6542,19 +6549,19 @@ Module to compute pathway environmental parameters using the top-down techno-eco
                 <span class="p">)</span>
             <span class="p">)</span>
 
-            <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_excluding_processes_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_total_consumption&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_excluding_processes_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_total_consumption"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">ressource_consumption</span>
             <span class="p">)</span>
             <span class="n">output_data</span><span class="p">[</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_excluding_processes_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_total_mobilised_with_selectivity&quot;</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_excluding_processes_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_total_mobilised_with_selectivity"</span>
             <span class="p">]</span> <span class="o">=</span> <span class="n">ressource_required_with_selectivity</span>
 
-            <span class="n">unit_emissions</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_co2_emission_factor&quot;</span><span class="p">,</span> <span class="n">optional_null_series</span><span class="p">)</span>
+            <span class="n">unit_emissions</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_co2_emission_factor"</span><span class="p">,</span> <span class="n">optional_null_series</span><span class="p">)</span>
             <span class="c1"># get resource emission per unit of energy</span>
             <span class="n">co2_emission_factor_ressource</span> <span class="o">=</span> <span class="n">specific_consumption</span> <span class="o">*</span> <span class="n">unit_emissions</span>
 
             <span class="n">output_data</span><span class="p">[</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_excluding_processes_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_mean_co2_emission_factor&quot;</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_excluding_processes_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_mean_co2_emission_factor"</span>
             <span class="p">]</span> <span class="o">=</span> <span class="n">co2_emission_factor_ressource</span>
             <span class="n">co2_emission_factor</span> <span class="o">=</span> <span class="n">co2_emission_factor</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
                 <span class="n">co2_emission_factor_ressource</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="mi">0</span>
@@ -6562,7 +6569,7 @@ Module to compute pathway environmental parameters using the top-down techno-eco
         <span class="c1"># 2 ) --&gt; pathway gets a process that uses a resource</span>
         <span class="k">for</span> <span class="n">process_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_keys</span><span class="p">:</span>
             <span class="n">specific_consumption</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">process_key</span><span class="si">}</span><span class="s2">_resource_specific_consumption_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">process_key</span><span class="si">}</span><span class="s2">_resource_specific_consumption_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="n">specific_consumption</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">ressource_consumption</span> <span class="o">=</span> <span class="n">energy_consumption</span> <span class="o">*</span> <span class="n">specific_consumption</span>
@@ -6579,46 +6586,46 @@ Module to compute pathway environmental parameters using the top-down techno-eco
                     <span class="p">)</span>
                 <span class="p">)</span>
 
-                <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">process_key</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_total_consumption&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">process_key</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_total_consumption"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="n">ressource_consumption</span>
                 <span class="p">)</span>
                 <span class="n">output_data</span><span class="p">[</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">process_key</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_total_mobilised_with_selectivity&quot;</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">process_key</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_total_mobilised_with_selectivity"</span>
                 <span class="p">]</span> <span class="o">=</span> <span class="n">ressource_required_with_selectivity</span>
 
                 <span class="n">unit_emissions</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_co2_emission_factor&quot;</span><span class="p">,</span> <span class="n">optional_null_series</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_co2_emission_factor"</span><span class="p">,</span> <span class="n">optional_null_series</span>
                 <span class="p">)</span>
                 <span class="c1"># get resource emission per unit of energy</span>
                 <span class="n">co2_emission_factor_ressource</span> <span class="o">=</span> <span class="n">specific_consumption</span> <span class="o">*</span> <span class="n">unit_emissions</span>
 
                 <span class="n">output_data</span><span class="p">[</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">process_key</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_mean_co2_emission_factor&quot;</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">process_key</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_mean_co2_emission_factor"</span>
                 <span class="p">]</span> <span class="o">=</span> <span class="n">co2_emission_factor_ressource</span>
                 <span class="n">co2_emission_factor</span> <span class="o">=</span> <span class="n">co2_emission_factor</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
                     <span class="n">co2_emission_factor_ressource</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="mi">0</span>
                 <span class="p">)</span>
         <span class="c1"># Store the total resource consumption</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_total_consumption&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_total_consumption"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">total_ressource_consumption</span>
         <span class="p">)</span>
 
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_total_mobilised_with_selectivity&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_total_mobilised_with_selectivity"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">total_ressource_mobilised_with_selectivity</span>
         <span class="p">)</span>
 
     <span class="c1"># 3 ) --&gt; pathway gets a process that makes own emissions (besides resources)</span>
     <span class="k">for</span> <span class="n">process_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_keys</span><span class="p">:</span>
         <span class="c1"># The key carries the mean_ prefix, matching the pathway lookup above, the</span>
-        <span class="c1"># cost model&#39;s process lookup and every processes file in the repository,</span>
+        <span class="c1"># cost model's process lookup and every processes file in the repository,</span>
         <span class="c1"># the packaged default included. Without the prefix the lookup missed and</span>
-        <span class="c1"># .get() returned the null series, so a process&#39;s own emissions were</span>
-        <span class="c1"># silently dropped from the pathway&#39;s emission factor.</span>
+        <span class="c1"># .get() returned the null series, so a process's own emissions were</span>
+        <span class="c1"># silently dropped from the pathway's emission factor.</span>
         <span class="n">co2_emission_factor_process</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">process_key</span><span class="si">}</span><span class="s2">_mean_co2_emission_factor_without_resource&quot;</span><span class="p">,</span> <span class="n">optional_null_series</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">process_key</span><span class="si">}</span><span class="s2">_mean_co2_emission_factor_without_resource"</span><span class="p">,</span> <span class="n">optional_null_series</span>
         <span class="p">)</span>
         <span class="n">output_data</span><span class="p">[</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">process_key</span><span class="si">}</span><span class="s2">_without_resources_mean_co2_emission_factor&quot;</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">process_key</span><span class="si">}</span><span class="s2">_without_resources_mean_co2_emission_factor"</span>
         <span class="p">]</span> <span class="o">=</span> <span class="n">co2_emission_factor_process</span>
 
         <span class="c1"># fill_value=0 for the same reason as every other addition in this method: a</span>
@@ -6628,21 +6635,21 @@ Module to compute pathway environmental parameters using the top-down techno-eco
         <span class="n">co2_emission_factor</span> <span class="o">=</span> <span class="n">co2_emission_factor</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">co2_emission_factor_process</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
     <span class="c1"># Store the total CO2 emission factor in the dataframe</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_mean_co2_emission_factor&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">co2_emission_factor</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_mean_co2_emission_factor"</span><span class="p">]</span> <span class="o">=</span> <span class="n">co2_emission_factor</span>
 
     <span class="c1"># compute the cumulative and discounted emissions for the vintage NOT RECOMMENDED WITH TOP-DOWN MODELS</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_abatement_cost</span><span class="p">:</span>
         <span class="c1"># Get the exogenous carbon price trajectory and social discount rate</span>
         <span class="n">exogenous_carbon_price_trajectory</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="s2">&quot;exogenous_carbon_price_trajectory&quot;</span><span class="p">,</span> <span class="n">optional_null_series</span>
+            <span class="s2">"exogenous_carbon_price_trajectory"</span><span class="p">,</span> <span class="n">optional_null_series</span>
         <span class="p">)</span>
-        <span class="n">social_discount_rate</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;social_discount_rate&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">social_discount_rate</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"social_discount_rate"</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
 
         <span class="c1"># Initialize the output series for cumulative emissions</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_lifespan_unitary_emissions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_lifespan_unitary_emissions"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
             <span class="n">np</span><span class="o">.</span><span class="n">NaN</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">historic_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
         <span class="p">)</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_lifespan_discounted_unitary_emissions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_lifespan_discounted_unitary_emissions"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
             <span class="n">np</span><span class="o">.</span><span class="n">NaN</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">historic_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
         <span class="p">)</span>
 
@@ -6660,14 +6667,14 @@ Module to compute pathway environmental parameters using the top-down techno-eco
                 <span class="n">generic_discounted_cumul_em</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">NaN</span>
 
             <span class="c1"># Store the cumulative emissions for the vintage</span>
-            <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_lifespan_unitary_emissions&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">year</span><span class="p">]</span> <span class="o">=</span> <span class="n">cumul_em</span>
-            <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_lifespan_discounted_unitary_emissions&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+            <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_lifespan_unitary_emissions"</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">year</span><span class="p">]</span> <span class="o">=</span> <span class="n">cumul_em</span>
+            <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_lifespan_discounted_unitary_emissions"</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
                 <span class="n">year</span>
             <span class="p">]</span> <span class="o">=</span> <span class="n">generic_discounted_cumul_em</span>
 
     <span class="c1"># Calculate the total CO2 emissions</span>
     <span class="n">total_co2_emissions</span> <span class="o">=</span> <span class="n">energy_consumption</span> <span class="o">*</span> <span class="n">co2_emission_factor</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_total_co2_emissions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_co2_emissions</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_total_co2_emissions"</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_co2_emissions</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">_store_outputs</span><span class="p">(</span><span class="n">output_data</span><span class="p">)</span>
 
@@ -6752,7 +6759,7 @@ Module to compute pathway environmental parameters using the top-down techno-eco
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       

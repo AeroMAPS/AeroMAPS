@@ -17,7 +17,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -25,7 +25,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -5614,7 +5614,12 @@
 
 
 <a href="#aeromaps.models.impacts.costs.manufacturers.recurring_costs.RecurringCosts" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">RecurringCosts</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;recurring_costs&#39;</span><span class="p">,</span> <span class="n">fleet_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">RecurringCosts</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"recurring_costs"</span><span class="p">,</span>
+    <span class="n">fleet_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -5692,7 +5697,7 @@
                     <summary>Source code in <code>aeromaps/models/impacts/costs/manufacturers/recurring_costs.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">32</span>
 <span class="normal">33</span>
-<span class="normal">34</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;recurring_costs&quot;</span><span class="p">,</span> <span class="n">fleet_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="normal">34</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"recurring_costs"</span><span class="p">,</span> <span class="n">fleet_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">fleet_model</span> <span class="o">=</span> <span class="n">fleet_model</span>
 </code></pre></div></td></tr></table></div>
@@ -5838,7 +5843,7 @@ Real outputs are stored in the fleet model dataframe.</p>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">aircraft_in_out_value_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Compute recurring costs (RC) for each aircraft defined in the fleet model.</span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -5851,26 +5856,26 @@ Real outputs are stored in the fleet model dataframe.</p>
 <span class="sd">    rc_aircraft_value_dict</span>
 <span class="sd">        Dummy dictionary containing RC values for each aircraft.</span>
 <span class="sd">        Real outputs are stored in the fleet model dataframe.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">rc_aircraft_value_dict</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">category</span><span class="p">,</span> <span class="n">sets</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fleet_model</span><span class="o">.</span><span class="n">fleet</span><span class="o">.</span><span class="n">all_aircraft_elements</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="c1"># Calculating values of interest for each aircraft</span>
         <span class="k">for</span> <span class="n">aircraft_var</span> <span class="ow">in</span> <span class="n">sets</span><span class="p">:</span>
-            <span class="c1"># Check if it&#39;s a reference aircraft or a normal aircraft...</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">aircraft_var</span><span class="p">,</span> <span class="s2">&quot;parameters&quot;</span><span class="p">):</span>
+            <span class="c1"># Check if it's a reference aircraft or a normal aircraft...</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">aircraft_var</span><span class="p">,</span> <span class="s2">"parameters"</span><span class="p">):</span>
                 <span class="n">aircraft_var_name</span> <span class="o">=</span> <span class="n">aircraft_var</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">full_name</span>
                 <span class="n">rc_cost</span> <span class="o">=</span> <span class="n">aircraft_var</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">rc_cost</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">aircraft_var_name</span> <span class="o">=</span> <span class="n">aircraft_var</span><span class="o">.</span><span class="n">full_name</span>
                 <span class="n">rc_cost</span> <span class="o">=</span> <span class="n">aircraft_var</span><span class="o">.</span><span class="n">rc_cost</span>
 
-            <span class="n">rc_aircraft_var_name</span> <span class="o">=</span> <span class="n">aircraft_var_name</span> <span class="o">+</span> <span class="s2">&quot;:aircraft_recurring_costs&quot;</span>
+            <span class="n">rc_aircraft_var_name</span> <span class="o">=</span> <span class="n">aircraft_var_name</span> <span class="o">+</span> <span class="s2">":aircraft_recurring_costs"</span>
 
             <span class="c1"># TODO use dictionary if possible once implemented</span>
             <span class="c1"># rc_aircraft_value = max(0.0, aircraft_in_out_value_dict[aircraft_var_name] * rc_cost)</span>
             <span class="c1"># For now: direct use of fleet model df</span>
             <span class="n">rc_aircraft_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fleet_model</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
-                <span class="p">:,</span> <span class="p">(</span><span class="n">aircraft_var_name</span> <span class="o">+</span> <span class="s2">&quot;:aircraft_in_out&quot;</span><span class="p">)</span>
+                <span class="p">:,</span> <span class="p">(</span><span class="n">aircraft_var_name</span> <span class="o">+</span> <span class="s2">":aircraft_in_out"</span><span class="p">)</span>
             <span class="p">]</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">rc_cost</span><span class="p">)</span>
             <span class="n">rc_aircraft_value</span><span class="p">[</span><span class="n">rc_aircraft_value</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
 
@@ -5964,7 +5969,7 @@ Real outputs are stored in the fleet model dataframe.</p>
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       

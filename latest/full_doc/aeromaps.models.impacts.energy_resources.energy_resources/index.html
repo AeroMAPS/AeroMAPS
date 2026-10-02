@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -5850,7 +5850,13 @@
 
 
 <a href="#aeromaps.models.impacts.energy_resources.energy_resources.EnergyResourceConsumption" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">EnergyResourceConsumption</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">configuration_data</span><span class="p">,</span> <span class="n">pathways_manager</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">EnergyResourceConsumption</span><span class="p">(</span>
+    <span class="n">name</span><span class="p">,</span>
+    <span class="n">configuration_data</span><span class="p">,</span>
+    <span class="n">pathways_manager</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6053,42 +6059,42 @@ A class is instantiated for each resource defined in the resources .yaml file.</
 <span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
-        <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span>
+        <span class="n">model_type</span><span class="o">=</span><span class="s2">"custom"</span><span class="p">,</span>
         <span class="c1"># inputs/outputs are defined in __init__ rather than auto generated from compute() signature</span>
         <span class="o">*</span><span class="n">args</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span> <span class="o">=</span> <span class="n">pathways_manager</span>
     <span class="c1"># Get the name of the resource</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span> <span class="o">=</span> <span class="n">configuration_data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span> <span class="o">=</span> <span class="n">configuration_data</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span> <span class="o">=</span> <span class="p">{}</span>
 
-    <span class="k">if</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_availability_global&quot;</span> <span class="ow">in</span> <span class="n">configuration_data</span><span class="p">[</span><span class="s2">&quot;specifications&quot;</span><span class="p">]:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_availability_global&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">configuration_data</span><span class="p">[</span>
-            <span class="s2">&quot;specifications&quot;</span>
-        <span class="p">][</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_availability_global&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_availability_global"</span> <span class="ow">in</span> <span class="n">configuration_data</span><span class="p">[</span><span class="s2">"specifications"</span><span class="p">]:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_availability_global"</span><span class="p">]</span> <span class="o">=</span> <span class="n">configuration_data</span><span class="p">[</span>
+            <span class="s2">"specifications"</span>
+        <span class="p">][</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_availability_global"</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
             <span class="p">{</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_consumed_global_share&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_necessary_global_share_with_selectivity&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_consumed_global_share"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_necessary_global_share_with_selectivity"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
                     <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span>
                 <span class="p">),</span>
             <span class="p">}</span>
         <span class="p">)</span>
     <span class="k">if</span> <span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_availability_aviation_allocated_share&quot;</span>
-        <span class="ow">in</span> <span class="n">configuration_data</span><span class="p">[</span><span class="s2">&quot;specifications&quot;</span><span class="p">]</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_availability_aviation_allocated_share"</span>
+        <span class="ow">in</span> <span class="n">configuration_data</span><span class="p">[</span><span class="s2">"specifications"</span><span class="p">]</span>
     <span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_availability_aviation_allocated_share&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_availability_aviation_allocated_share"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">configuration_data</span><span class="p">[</span>
-                <span class="s2">&quot;specifications&quot;</span>
-            <span class="p">][</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_availability_aviation_allocated_share&quot;</span><span class="p">]</span>
+                <span class="s2">"specifications"</span>
+            <span class="p">][</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_availability_aviation_allocated_share"</span><span class="p">]</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
             <span class="p">{</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_consumed_aviation_allocated_share&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_consumed_aviation_allocated_share"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
             <span class="p">}</span>
         <span class="p">)</span>
 
@@ -6097,8 +6103,8 @@ A class is instantiated for each resource defined in the resources .yaml file.</
     <span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">resources_used_processes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
             <span class="p">{</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_total_consumption&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_total_mobilised_with_selectivity&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_total_consumption"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_total_mobilised_with_selectivity"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
                     <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span>
                 <span class="p">),</span>
             <span class="p">}</span>
@@ -6106,8 +6112,8 @@ A class is instantiated for each resource defined in the resources .yaml file.</
 
     <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
         <span class="p">{</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_total_consumption&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_total_necessary_with_selectivity&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_total_consumption"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_total_necessary_with_selectivity"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
         <span class="p">}</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -6264,7 +6270,7 @@ A class is instantiated for each resource defined in the resources .yaml file.</
 <span class="normal">178</span>
 <span class="normal">179</span>
 <span class="normal">180</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Executes the computation of total resource consumption and comparison to availability and allocations.</span>
 
 <span class="sd">    Parameters</span>
@@ -6277,7 +6283,7 @@ A class is instantiated for each resource defined in the resources .yaml file.</
 <span class="sd">    output_data</span>
 <span class="sd">        Dictionary containing all output data resulting from the computation. Contains outputs defined during model instantiation.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">output_data</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="n">total_resource_consumption</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
@@ -6292,36 +6298,36 @@ A class is instantiated for each resource defined in the resources .yaml file.</
     <span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">resources_used_processes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="p">):</span>
         <span class="n">total_resource_consumption</span> <span class="o">=</span> <span class="n">_custom_series_addition</span><span class="p">(</span>
             <span class="n">total_resource_consumption</span><span class="p">,</span>
-            <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_total_consumption&quot;</span><span class="p">],</span>
+            <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_total_consumption"</span><span class="p">],</span>
         <span class="p">)</span>
         <span class="n">total_resource_mobilised_with_selectivity</span> <span class="o">=</span> <span class="n">_custom_series_addition</span><span class="p">(</span>
             <span class="n">total_resource_mobilised_with_selectivity</span><span class="p">,</span>
-            <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_total_mobilised_with_selectivity&quot;</span><span class="p">],</span>
+            <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_total_mobilised_with_selectivity"</span><span class="p">],</span>
         <span class="p">)</span>
 
-    <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_total_consumption&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_resource_consumption</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_total_necessary_with_selectivity&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_total_consumption"</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_resource_consumption</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_total_necessary_with_selectivity"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">total_resource_mobilised_with_selectivity</span>
     <span class="p">)</span>
 
-    <span class="k">if</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_availability_global&quot;</span> <span class="ow">in</span> <span class="n">input_data</span><span class="p">:</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_consumed_global_share&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="k">if</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_availability_global"</span> <span class="ow">in</span> <span class="n">input_data</span><span class="p">:</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_consumed_global_share"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">total_resource_consumption</span>
-            <span class="o">/</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_availability_global&quot;</span><span class="p">]</span>
+            <span class="o">/</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_availability_global"</span><span class="p">]</span>
             <span class="o">*</span> <span class="mi">100</span>
         <span class="p">)</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_necessary_global_share_with_selectivity&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_necessary_global_share_with_selectivity"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">total_resource_mobilised_with_selectivity</span>
-            <span class="o">/</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_availability_global&quot;</span><span class="p">]</span>
+            <span class="o">/</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_availability_global"</span><span class="p">]</span>
             <span class="o">*</span> <span class="mi">100</span>
         <span class="p">)</span>
 
-    <span class="k">if</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_availability_aviation_allocated_share&quot;</span> <span class="ow">in</span> <span class="n">input_data</span><span class="p">:</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_consumed_aviation_allocated_share&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="k">if</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_availability_aviation_allocated_share"</span> <span class="ow">in</span> <span class="n">input_data</span><span class="p">:</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_consumed_aviation_allocated_share"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">total_resource_consumption</span>
             <span class="o">/</span> <span class="p">(</span>
-                <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_availability_global&quot;</span><span class="p">]</span>
-                <span class="o">*</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_availability_aviation_allocated_share&quot;</span><span class="p">]</span>
+                <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_availability_global"</span><span class="p">]</span>
+                <span class="o">*</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_availability_aviation_allocated_share"</span><span class="p">]</span>
                 <span class="o">/</span> <span class="mi">100</span>
             <span class="p">)</span>
             <span class="o">*</span> <span class="mi">100</span>
@@ -6353,7 +6359,9 @@ A class is instantiated for each resource defined in the resources .yaml file.</
 
 
 <a href="#aeromaps.models.impacts.energy_resources.energy_resources.OverallResourcesConsumption" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">OverallResourcesConsumption</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">resources_data</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">OverallResourcesConsumption</span><span class="p">(</span>
+    <span class="n">name</span><span class="p">,</span> <span class="n">resources_data</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6523,16 +6531,16 @@ Only one instance of this class is created for all resources.</p>
 <span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
-        <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span>
+        <span class="n">model_type</span><span class="o">=</span><span class="s2">"custom"</span><span class="p">,</span>
         <span class="o">*</span><span class="n">args</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="c1"># keep only resources whose availability is defined</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">resources_names_origins</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="n">resource</span><span class="p">:</span> <span class="n">resources_data</span><span class="p">[</span><span class="n">resource</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;origin&quot;</span><span class="p">,</span> <span class="s2">&quot;unknown&quot;</span><span class="p">)</span>
+        <span class="n">resource</span><span class="p">:</span> <span class="n">resources_data</span><span class="p">[</span><span class="n">resource</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"origin"</span><span class="p">,</span> <span class="s2">"unknown"</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">resource</span> <span class="ow">in</span> <span class="n">resources_data</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-        <span class="k">if</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">resource</span><span class="si">}</span><span class="s2">_availability_global&quot;</span> <span class="ow">in</span> <span class="n">resources_data</span><span class="p">[</span><span class="n">resource</span><span class="p">][</span><span class="s2">&quot;specifications&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">resource</span><span class="si">}</span><span class="s2">_availability_global"</span> <span class="ow">in</span> <span class="n">resources_data</span><span class="p">[</span><span class="n">resource</span><span class="p">][</span><span class="s2">"specifications"</span><span class="p">]</span>
     <span class="p">}</span>
 
     <span class="c1"># getting the unique origins of the resources</span>
@@ -6544,27 +6552,27 @@ Only one instance of this class is created for all resources.</p>
     <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">resource</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">resources_names</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">resource</span><span class="si">}</span><span class="s2">_total_consumption&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">resource</span><span class="si">}</span><span class="s2">_total_necessary_with_selectivity&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">resource</span><span class="si">}</span><span class="s2">_availability_global&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">resources_data</span><span class="p">[</span><span class="n">resource</span><span class="p">][</span>
-            <span class="s2">&quot;specifications&quot;</span>
-        <span class="p">][</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">resource</span><span class="si">}</span><span class="s2">_availability_global&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">resource</span><span class="si">}</span><span class="s2">_total_consumption"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">resource</span><span class="si">}</span><span class="s2">_total_necessary_with_selectivity"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">resource</span><span class="si">}</span><span class="s2">_availability_global"</span><span class="p">]</span> <span class="o">=</span> <span class="n">resources_data</span><span class="p">[</span><span class="n">resource</span><span class="p">][</span>
+            <span class="s2">"specifications"</span>
+        <span class="p">][</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">resource</span><span class="si">}</span><span class="s2">_availability_global"</span><span class="p">]</span>
         <span class="c1"># Todo make this conditional</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">resource</span><span class="si">}</span><span class="s2">_availability_aviation_allocated_share&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">resources_data</span><span class="p">[</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">resource</span><span class="si">}</span><span class="s2">_availability_aviation_allocated_share"</span><span class="p">]</span> <span class="o">=</span> <span class="n">resources_data</span><span class="p">[</span>
             <span class="n">resource</span>
-        <span class="p">][</span><span class="s2">&quot;specifications&quot;</span><span class="p">][</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">resource</span><span class="si">}</span><span class="s2">_availability_aviation_allocated_share&quot;</span><span class="p">]</span>
+        <span class="p">][</span><span class="s2">"specifications"</span><span class="p">][</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">resource</span><span class="si">}</span><span class="s2">_availability_aviation_allocated_share"</span><span class="p">]</span>
 
     <span class="k">for</span> <span class="n">origin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">resources_origins</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">origin</span><span class="si">}</span><span class="s2">_total_consumption&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">origin</span><span class="si">}</span><span class="s2">_total_necessary_with_selectivity&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">origin</span><span class="si">}</span><span class="s2">_availability_global&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">origin</span><span class="si">}</span><span class="s2">_availability_aviation_allocated&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">origin</span><span class="si">}</span><span class="s2">_consumed_global_share&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">origin</span><span class="si">}</span><span class="s2">_consumed_aviation_allocated_share&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">origin</span><span class="si">}</span><span class="s2">_necessary_global_share_with_selectivity&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">origin</span><span class="si">}</span><span class="s2">_total_consumption"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">origin</span><span class="si">}</span><span class="s2">_total_necessary_with_selectivity"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">origin</span><span class="si">}</span><span class="s2">_availability_global"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">origin</span><span class="si">}</span><span class="s2">_availability_aviation_allocated"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">origin</span><span class="si">}</span><span class="s2">_consumed_global_share"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">origin</span><span class="si">}</span><span class="s2">_consumed_aviation_allocated_share"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">origin</span><span class="si">}</span><span class="s2">_necessary_global_share_with_selectivity"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
             <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">origin</span><span class="si">}</span><span class="s2">_overall_aviation_allocated_share&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">origin</span><span class="si">}</span><span class="s2">_overall_aviation_allocated_share"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
 </code></pre></div></td></tr></table></div>
                   </details>
 
@@ -6748,7 +6756,7 @@ Only one instance of this class is created for all resources.</p>
 <span class="normal">356</span>
 <span class="normal">357</span>
 <span class="normal">358</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Executes the computation of overall resource consumption for all origins and comparison to availability and allocations.</span>
 
 <span class="sd">    Parameters</span>
@@ -6761,7 +6769,7 @@ Only one instance of this class is created for all resources.</p>
 <span class="sd">    output_data</span>
 <span class="sd">        Dictionary containing all output data resulting from the computation. Contains outputs defined during model instantiation.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">output_data</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="n">index</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
@@ -6785,17 +6793,17 @@ Only one instance of this class is created for all resources.</p>
         <span class="n">origin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resources_names_origins</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">resource</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">origin</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Warning: No origin found for resource:</span><span class="si">{</span><span class="n">resource</span><span class="si">}</span><span class="s2">, aggregate shares not computed.&quot;</span>
+                <span class="sa">f</span><span class="s2">"Warning: No origin found for resource:</span><span class="si">{</span><span class="n">resource</span><span class="si">}</span><span class="s2">, aggregate shares not computed."</span>
             <span class="p">)</span>
             <span class="k">continue</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">origin</span> <span class="o">=</span> <span class="n">origin</span>
 
-        <span class="n">total_consumption</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">resource</span><span class="si">}</span><span class="s2">_total_consumption&quot;</span><span class="p">]</span>
-        <span class="n">total_necessary</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">resource</span><span class="si">}</span><span class="s2">_total_necessary_with_selectivity&quot;</span><span class="p">]</span>
-        <span class="n">availability</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">resource</span><span class="si">}</span><span class="s2">_availability_global&quot;</span><span class="p">]</span>
+        <span class="n">total_consumption</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">resource</span><span class="si">}</span><span class="s2">_total_consumption"</span><span class="p">]</span>
+        <span class="n">total_necessary</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">resource</span><span class="si">}</span><span class="s2">_total_necessary_with_selectivity"</span><span class="p">]</span>
+        <span class="n">availability</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">resource</span><span class="si">}</span><span class="s2">_availability_global"</span><span class="p">]</span>
         <span class="n">availability_aviation_allocated</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">resource</span><span class="si">}</span><span class="s2">_availability_aviation_allocated_share&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">100</span> <span class="o">*</span> <span class="n">availability</span>
+            <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">resource</span><span class="si">}</span><span class="s2">_availability_aviation_allocated_share"</span><span class="p">]</span> <span class="o">/</span> <span class="mi">100</span> <span class="o">*</span> <span class="n">availability</span>
         <span class="p">)</span>
 
         <span class="n">origin_consumption</span><span class="p">[</span><span class="n">origin</span><span class="p">]</span> <span class="o">=</span> <span class="n">_custom_series_addition</span><span class="p">(</span>
@@ -6824,20 +6832,20 @@ Only one instance of this class is created for all resources.</p>
             <span class="n">total_availability_aviation_allocated</span> <span class="o">/</span> <span class="n">total_availability</span> <span class="o">*</span> <span class="mi">100</span>
         <span class="p">)</span>
 
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">origin</span><span class="si">}</span><span class="s2">_total_consumption&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_consumption</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">origin</span><span class="si">}</span><span class="s2">_total_necessary_with_selectivity&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_necessary</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">origin</span><span class="si">}</span><span class="s2">_consumed_global_share&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">consumed_global_share</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">origin</span><span class="si">}</span><span class="s2">_necessary_global_share_with_selectivity&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">origin</span><span class="si">}</span><span class="s2">_total_consumption"</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_consumption</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">origin</span><span class="si">}</span><span class="s2">_total_necessary_with_selectivity"</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_necessary</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">origin</span><span class="si">}</span><span class="s2">_consumed_global_share"</span><span class="p">]</span> <span class="o">=</span> <span class="n">consumed_global_share</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">origin</span><span class="si">}</span><span class="s2">_necessary_global_share_with_selectivity"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">necessary_global_share_with_selectivity</span>
         <span class="p">)</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">origin</span><span class="si">}</span><span class="s2">_overall_aviation_allocated_share&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">origin</span><span class="si">}</span><span class="s2">_overall_aviation_allocated_share"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">overall_aviation_allocated_share</span>
         <span class="p">)</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">origin</span><span class="si">}</span><span class="s2">_consumed_aviation_allocated_share&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">origin</span><span class="si">}</span><span class="s2">_consumed_aviation_allocated_share"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">consumed_aviation_allocated_share</span>
         <span class="p">)</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">origin</span><span class="si">}</span><span class="s2">_availability_global&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_availability</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">origin</span><span class="si">}</span><span class="s2">_availability_aviation_allocated&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">origin</span><span class="si">}</span><span class="s2">_availability_global"</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_availability</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">origin</span><span class="si">}</span><span class="s2">_availability_aviation_allocated"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">total_availability_aviation_allocated</span>
         <span class="p">)</span>
 
@@ -6923,7 +6931,7 @@ Only one instance of this class is created for all resources.</p>
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       

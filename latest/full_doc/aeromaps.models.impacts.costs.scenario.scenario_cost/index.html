@@ -17,7 +17,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -25,7 +25,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -5614,7 +5614,9 @@
 
 
 <a href="#aeromaps.models.impacts.costs.scenario.scenario_cost.NonDiscountedScenarioCost" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">NonDiscountedScenarioCost</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;non_discounted_scenario_cost&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">NonDiscountedScenarioCost</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"non_discounted_scenario_cost"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -5721,8 +5723,8 @@
                     <summary>Source code in <code>aeromaps/models/impacts/costs/scenario/scenario_cost.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">42</span>
 <span class="normal">43</span>
-<span class="normal">44</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;non_discounted_scenario_cost&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="normal">44</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"non_discounted_scenario_cost"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">"custom"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span> <span class="o">=</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -5811,33 +5813,33 @@ Specific function for custom AeroMAPSModel instances.</p>
 <span class="normal">74</span>
 <span class="normal">75</span>
 <span class="normal">76</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">custom_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Dynamically add all pathway MFSPs and associated energy consumption variables to input_names and function outputs to output_names.</span>
 <span class="sd">    Specific function for custom AeroMAPSModel instances.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    None</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_net_mfsp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_mean_mfsp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_energy_consumption&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
-            <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;fossil_kerosene&quot;</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="s2">&quot;fossil_kerosene_mean_co2_emission_factor&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_net_mfsp"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_mean_mfsp"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_energy_consumption"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">"fossil_kerosene"</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="s2">"fossil_kerosene_mean_co2_emission_factor"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
 
     <span class="c1"># Add BAU computation</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="s2">&quot;co2_emissions_last_historical_year_technology&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="s2">&quot;co2_emissions_including_load_factor&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="s2">&quot;carbon_tax&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="s2">"co2_emissions_last_historical_year_technology"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="s2">"co2_emissions_including_load_factor"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="s2">"carbon_tax"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;non_discounted_energy_expenses&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="s2">&quot;non_discounted_net_energy_expenses&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="s2">&quot;non_discounted_bau_energy_expenses&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="s2">&quot;non_discounted_full_kero_energy_expenses&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="s2">"non_discounted_energy_expenses"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="s2">"non_discounted_net_energy_expenses"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="s2">"non_discounted_bau_energy_expenses"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="s2">"non_discounted_full_kero_energy_expenses"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
     <span class="p">}</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -6016,7 +6018,7 @@ Specific function for custom AeroMAPSModel instances.</p>
 <span class="normal">175</span>
 <span class="normal">176</span>
 <span class="normal">177</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Compute the total energy expenses of the scenario</span>
 
 <span class="sd">    Parameters</span>
@@ -6029,15 +6031,15 @@ Specific function for custom AeroMAPSModel instances.</p>
 <span class="sd">    output_data</span>
 <span class="sd">        Dictionary containing all output data resulting from the computation. Contains outputs defined during model instantiation.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Compute the total energy expenses of the scenario</span>
     <span class="n">non_discounted_energy_expenses</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">non_discounted_net_energy_expenses</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all</span><span class="p">():</span>
-        <span class="n">net_mfsp</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_net_mfsp&quot;</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]))</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-        <span class="n">mfsp</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_mean_mfsp&quot;</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]))</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">net_mfsp</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_net_mfsp"</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]))</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">mfsp</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_mean_mfsp"</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]))</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">energy_consumption</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_energy_consumption&quot;</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_energy_consumption"</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
         <span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">cost</span> <span class="o">=</span> <span class="n">mfsp</span> <span class="o">*</span> <span class="n">energy_consumption</span>
         <span class="n">net_cost</span> <span class="o">=</span> <span class="n">net_mfsp</span> <span class="o">*</span> <span class="n">energy_consumption</span>
@@ -6061,20 +6063,20 @@ Specific function for custom AeroMAPSModel instances.</p>
 
     <span class="c1"># Compute the business as usual energy expenses</span>
 
-    <span class="k">if</span> <span class="s2">&quot;fossil_kerosene_mean_co2_emission_factor&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">input_data</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s2">"fossil_kerosene_mean_co2_emission_factor"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">input_data</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span>
-            <span class="s2">&quot;Warning: fossil_kerosene pathway not found in input data. Illustrative kerosene costs computed using default values.&quot;</span>
+            <span class="s2">"Warning: fossil_kerosene pathway not found in input data. Illustrative kerosene costs computed using default values."</span>
         <span class="p">)</span>
         <span class="n">kerosene_emission_factor</span> <span class="o">=</span> <span class="mf">88.7</span>
         <span class="n">kerosene_market_price</span> <span class="o">=</span> <span class="mf">0.013921201</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">kerosene_emission_factor</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;fossil_kerosene_mean_co2_emission_factor&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+        <span class="n">kerosene_emission_factor</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"fossil_kerosene_mean_co2_emission_factor"</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span> <span class="o">-</span> <span class="mi">1</span>
         <span class="p">]</span>
-        <span class="n">kerosene_market_price</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;fossil_kerosene_mean_mfsp&quot;</span><span class="p">]</span>
+        <span class="n">kerosene_market_price</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"fossil_kerosene_mean_mfsp"</span><span class="p">]</span>
 
-    <span class="n">co2_emissions_including_load_factor</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;co2_emissions_including_load_factor&quot;</span><span class="p">]</span>
-    <span class="n">carbon_tax</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;carbon_tax&quot;</span><span class="p">]</span>
+    <span class="n">co2_emissions_including_load_factor</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"co2_emissions_including_load_factor"</span><span class="p">]</span>
+    <span class="n">carbon_tax</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"carbon_tax"</span><span class="p">]</span>
     <span class="n">energy_consumption_full_kero</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">co2_emissions_including_load_factor</span> <span class="o">*</span> <span class="mf">1e12</span> <span class="o">/</span> <span class="n">kerosene_emission_factor</span>
     <span class="p">)</span>
@@ -6088,7 +6090,7 @@ Specific function for custom AeroMAPSModel instances.</p>
     <span class="p">)</span>  <span class="c1"># * 1e6 / 1e6 : to t co2 and to million euros</span>
 
     <span class="n">co2_emissions_last_historical_year_technology</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span>
-        <span class="s2">&quot;co2_emissions_last_historical_year_technology&quot;</span>
+        <span class="s2">"co2_emissions_last_historical_year_technology"</span>
     <span class="p">]</span>
 
     <span class="n">energy_consumption_bau</span> <span class="o">=</span> <span class="p">(</span>
@@ -6104,12 +6106,12 @@ Specific function for custom AeroMAPSModel instances.</p>
     <span class="p">)</span>  <span class="c1"># * 1e6 / 1e6 : to t co2 and to million euros</span>
 
     <span class="n">output_data</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;non_discounted_energy_expenses&quot;</span><span class="p">:</span> <span class="n">non_discounted_energy_expenses</span><span class="p">,</span>
-        <span class="s2">&quot;non_discounted_net_energy_expenses&quot;</span><span class="p">:</span> <span class="n">non_discounted_net_energy_expenses</span><span class="p">,</span>
-        <span class="s2">&quot;non_discounted_bau_energy_expenses&quot;</span><span class="p">:</span> <span class="n">non_discounted_bau_energy_expenses</span><span class="p">,</span>
-        <span class="s2">&quot;non_discounted_full_kero_energy_expenses&quot;</span><span class="p">:</span> <span class="n">non_discounted_full_kero_energy_expenses</span><span class="p">,</span>
-        <span class="s2">&quot;carbon_tax_full_kero&quot;</span><span class="p">:</span> <span class="n">carbon_tax_full_kero</span><span class="p">,</span>
-        <span class="s2">&quot;carbon_tax_bau&quot;</span><span class="p">:</span> <span class="n">carbon_tax_bau</span><span class="p">,</span>
+        <span class="s2">"non_discounted_energy_expenses"</span><span class="p">:</span> <span class="n">non_discounted_energy_expenses</span><span class="p">,</span>
+        <span class="s2">"non_discounted_net_energy_expenses"</span><span class="p">:</span> <span class="n">non_discounted_net_energy_expenses</span><span class="p">,</span>
+        <span class="s2">"non_discounted_bau_energy_expenses"</span><span class="p">:</span> <span class="n">non_discounted_bau_energy_expenses</span><span class="p">,</span>
+        <span class="s2">"non_discounted_full_kero_energy_expenses"</span><span class="p">:</span> <span class="n">non_discounted_full_kero_energy_expenses</span><span class="p">,</span>
+        <span class="s2">"carbon_tax_full_kero"</span><span class="p">:</span> <span class="n">carbon_tax_full_kero</span><span class="p">,</span>
+        <span class="s2">"carbon_tax_bau"</span><span class="p">:</span> <span class="n">carbon_tax_bau</span><span class="p">,</span>
     <span class="p">}</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">_store_outputs</span><span class="p">(</span><span class="n">output_data</span><span class="p">)</span>
@@ -6138,7 +6140,9 @@ Specific function for custom AeroMAPSModel instances.</p>
 
 
 <a href="#aeromaps.models.impacts.costs.scenario.scenario_cost.DicountedScenarioCost" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">DicountedScenarioCost</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;discounted_scenario_cost&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">DicountedScenarioCost</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"discounted_scenario_cost"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6190,7 +6194,7 @@ Specific function for custom AeroMAPSModel instances.</p>
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/impacts/costs/scenario/scenario_cost.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">190</span>
-<span class="normal">191</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;discounted_scenario_cost&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="normal">191</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"discounted_scenario_cost"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -6216,7 +6220,9 @@ Specific function for custom AeroMAPSModel instances.</p>
 
 
 <a href="#aeromaps.models.impacts.costs.scenario.scenario_cost.DicountedScenarioCost.compute" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span><span class="n">non_discounted_energy_expenses</span><span class="p">,</span> <span class="n">social_discount_rate</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span>
+    <span class="n">non_discounted_energy_expenses</span><span class="p">,</span> <span class="n">social_discount_rate</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6345,7 +6351,7 @@ Specific function for custom AeroMAPSModel instances.</p>
     <span class="n">non_discounted_energy_expenses</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
     <span class="n">social_discount_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Execute the computation of discounted energy expenses of the scenario.</span>
 
 <span class="sd">    Parameters</span>
@@ -6362,7 +6368,7 @@ Specific function for custom AeroMAPSModel instances.</p>
 <span class="sd">    discounted_energy_expenses_obj</span>
 <span class="sd">        Cumulative discounted energy expenses at the end of the prospection period [M€].</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">discounted_energy_expenses</span> <span class="o">=</span> <span class="n">non_discounted_energy_expenses</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
         <span class="c1"># Compute the discounter at year k</span>
@@ -6370,7 +6376,7 @@ Specific function for custom AeroMAPSModel instances.</p>
         <span class="c1"># Apply the discount to the non-discounted energy expenses</span>
         <span class="n">discounted_energy_expenses</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">discounted_energy_expenses</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">/</span> <span class="n">discount_k</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;discounted_energy_expenses&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">discounted_energy_expenses</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"discounted_energy_expenses"</span><span class="p">]</span> <span class="o">=</span> <span class="n">discounted_energy_expenses</span>
 
     <span class="n">discounted_energy_expenses_obj</span> <span class="o">=</span> <span class="n">discounted_energy_expenses</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()[</span><span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">]</span>
 
@@ -6398,7 +6404,9 @@ Specific function for custom AeroMAPSModel instances.</p>
 
 
 <a href="#aeromaps.models.impacts.costs.scenario.scenario_cost.TotalAirlineCostNoElast" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">TotalAirlineCostNoElast</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;total_airline_cost_no_elast&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">TotalAirlineCostNoElast</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"total_airline_cost_no_elast"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6451,7 +6459,7 @@ To be used with a fixed demand configuration only.</p>
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/impacts/costs/scenario/scenario_cost.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">241</span>
-<span class="normal">242</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;total_airline_cost_no_elast&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="normal">242</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"total_airline_cost_no_elast"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -6722,7 +6730,7 @@ To be used with a fixed demand configuration only.</p>
     <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
     <span class="nb">float</span><span class="p">,</span>
 <span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Execute the computation of total airline costs (to be used with a fixed demand configuration only).</span>
 
 <span class="sd">    Parameters</span>
@@ -6749,7 +6757,7 @@ To be used with a fixed demand configuration only.</p>
 <span class="sd">    cumulative_total_airline_cost_discounted_obj</span>
 <span class="sd">        Cumulative total airline cost increase discounted at the end of the prospection period [M€].</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">initial_airline_cost</span> <span class="o">=</span> <span class="n">total_cost_per_rpk</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">rpk</span>
     <span class="n">total_airline_cost</span> <span class="o">=</span> <span class="n">total_cost_per_rpk</span> <span class="o">*</span> <span class="n">rpk</span>
     <span class="n">total_airline_cost_increase</span> <span class="o">=</span> <span class="n">total_airline_cost</span> <span class="o">-</span> <span class="n">initial_airline_cost</span>
@@ -6770,16 +6778,16 @@ To be used with a fixed demand configuration only.</p>
         <span class="n">total_airline_cost_increase_discounted</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span>
     <span class="p">)</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;total_airline_cost&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_airline_cost</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;cumulative_total_airline_cost&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cumulative_total_airline_cost</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;cumulative_total_airline_cost_discounted&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"total_airline_cost"</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_airline_cost</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"cumulative_total_airline_cost"</span><span class="p">]</span> <span class="o">=</span> <span class="n">cumulative_total_airline_cost</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"cumulative_total_airline_cost_discounted"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">cumulative_total_airline_cost_discounted</span>
     <span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;total_airline_cost_increase&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_airline_cost_increase</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;cumulative_total_airline_cost_increase&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"total_airline_cost_increase"</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_airline_cost_increase</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"cumulative_total_airline_cost_increase"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">cumulative_total_airline_cost_increase</span>
     <span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;cumulative_total_airline_cost_increase_discounted&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"cumulative_total_airline_cost_increase_discounted"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">cumulative_total_airline_cost_increase_discounted</span>
     <span class="p">)</span>
 
@@ -6819,7 +6827,9 @@ To be used with a fixed demand configuration only.</p>
 
 
 <a href="#aeromaps.models.impacts.costs.scenario.scenario_cost.TotalAirlineCost" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">TotalAirlineCost</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;total_airline_cost&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">TotalAirlineCost</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"total_airline_cost"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6871,7 +6881,7 @@ To be used with a fixed demand configuration only.</p>
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/impacts/costs/scenario/scenario_cost.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">343</span>
-<span class="normal">344</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;total_airline_cost&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="normal">344</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"total_airline_cost"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -6897,7 +6907,12 @@ To be used with a fixed demand configuration only.</p>
 
 
 <a href="#aeromaps.models.impacts.costs.scenario.scenario_cost.TotalAirlineCost.compute" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span><span class="n">total_cost_per_rpk</span><span class="p">,</span> <span class="n">rpk</span><span class="p">,</span> <span class="n">rpk_no_elasticity</span><span class="p">,</span> <span class="n">social_discount_rate</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span>
+    <span class="n">total_cost_per_rpk</span><span class="p">,</span>
+    <span class="n">rpk</span><span class="p">,</span>
+    <span class="n">rpk_no_elasticity</span><span class="p">,</span>
+    <span class="n">social_discount_rate</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -7164,7 +7179,7 @@ To be used with a fixed demand configuration only.</p>
     <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
     <span class="nb">float</span><span class="p">,</span>
 <span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Execute the computation of total airline costs.</span>
 
 <span class="sd">    Parameters</span>
@@ -7193,7 +7208,7 @@ To be used with a fixed demand configuration only.</p>
 <span class="sd">    cumulative_total_airline_cost_discounted_obj</span>
 <span class="sd">        Cumulative total airline cost increase discounted at the end of the prospection period [M€].</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">initial_airline_cost</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">total_cost_per_rpk</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">rpk_no_elasticity</span>
     <span class="p">)</span>
@@ -7216,16 +7231,16 @@ To be used with a fixed demand configuration only.</p>
         <span class="n">total_airline_cost_increase_discounted</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span>
     <span class="p">)</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;total_airline_cost&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_airline_cost</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;cumulative_total_airline_cost&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cumulative_total_airline_cost</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;cumulative_total_airline_cost_discounted&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"total_airline_cost"</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_airline_cost</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"cumulative_total_airline_cost"</span><span class="p">]</span> <span class="o">=</span> <span class="n">cumulative_total_airline_cost</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"cumulative_total_airline_cost_discounted"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">cumulative_total_airline_cost_discounted</span>
     <span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;total_airline_cost_increase&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_airline_cost_increase</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;cumulative_total_airline_cost_increase&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"total_airline_cost_increase"</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_airline_cost_increase</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"cumulative_total_airline_cost_increase"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">cumulative_total_airline_cost_increase</span>
     <span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;cumulative_total_airline_cost_increase_discounted&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"cumulative_total_airline_cost_increase_discounted"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">cumulative_total_airline_cost_increase_discounted</span>
     <span class="p">)</span>
 
@@ -7265,7 +7280,9 @@ To be used with a fixed demand configuration only.</p>
 
 
 <a href="#aeromaps.models.impacts.costs.scenario.scenario_cost.TotalSurplusLoss" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">TotalSurplusLoss</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;total_surplus_loss&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">TotalSurplusLoss</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"total_surplus_loss"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -7318,7 +7335,7 @@ No distinction between consumer surplus and producer surplus / tax revenues</p>
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/impacts/costs/scenario/scenario_cost.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">451</span>
-<span class="normal">452</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;total_surplus_loss&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="normal">452</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"total_surplus_loss"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -7344,7 +7361,15 @@ No distinction between consumer surplus and producer surplus / tax revenues</p>
 
 
 <a href="#aeromaps.models.impacts.costs.scenario.scenario_cost.TotalSurplusLoss.compute" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span><span class="n">rpk</span><span class="p">,</span> <span class="n">rpk_no_elasticity</span><span class="p">,</span> <span class="n">cumulative_total_airline_cost_increase</span><span class="p">,</span> <span class="n">cumulative_total_airline_cost_increase_discounted</span><span class="p">,</span> <span class="n">airfare_per_rpk</span><span class="p">,</span> <span class="n">price_elasticity</span><span class="p">,</span> <span class="n">social_discount_rate</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span>
+    <span class="n">rpk</span><span class="p">,</span>
+    <span class="n">rpk_no_elasticity</span><span class="p">,</span>
+    <span class="n">cumulative_total_airline_cost_increase</span><span class="p">,</span>
+    <span class="n">cumulative_total_airline_cost_increase_discounted</span><span class="p">,</span>
+    <span class="n">airfare_per_rpk</span><span class="p">,</span>
+    <span class="n">price_elasticity</span><span class="p">,</span>
+    <span class="n">social_discount_rate</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -7634,7 +7659,7 @@ No distinction between consumer surplus and producer surplus / tax revenues</p>
     <span class="n">price_elasticity</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
     <span class="n">social_discount_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Execute the computation of total surplus loss.</span>
 
 <span class="sd">    Parameters</span>
@@ -7664,7 +7689,7 @@ No distinction between consumer surplus and producer surplus / tax revenues</p>
 <span class="sd">        Cumulative relative total surplus loss discounted [M€].</span>
 <span class="sd">    cumulative_total_surplus_loss_discounted_obj</span>
 <span class="sd">        Cumulative relative total surplus loss discounted at the end of the prospection period [M€].</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="c1"># computation of demand function parameters: asummption =&gt; constant elasticity =&gt; P= beta * Q**(1/elasticity)</span>
     <span class="n">beta</span> <span class="o">=</span> <span class="n">airfare_per_rpk</span><span class="p">[</span><span class="mi">2025</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="n">rpk_no_elasticity</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">price_elasticity</span><span class="p">))</span>
@@ -7685,13 +7710,13 @@ No distinction between consumer surplus and producer surplus / tax revenues</p>
             <span class="p">)</span>
         <span class="p">)</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;area_loss&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">area_loss</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"area_loss"</span><span class="p">]</span> <span class="o">=</span> <span class="n">area_loss</span>
 
     <span class="n">area_loss_discounted</span> <span class="o">=</span> <span class="n">area_loss</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">social_discount_rate</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span>
     <span class="p">)</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;area_loss_discounted&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">area_loss_discounted</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"area_loss_discounted"</span><span class="p">]</span> <span class="o">=</span> <span class="n">area_loss_discounted</span>
 
     <span class="n">cumulative_total_surplus_loss</span> <span class="o">=</span> <span class="n">area_loss</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span> <span class="o">+</span> <span class="n">cumulative_total_airline_cost_increase</span>
     <span class="n">cumulative_total_surplus_loss_discounted</span> <span class="o">=</span> <span class="p">(</span>
@@ -7700,8 +7725,8 @@ No distinction between consumer surplus and producer surplus / tax revenues</p>
         <span class="o">-</span> <span class="n">cumulative_total_airline_cost_increase_discounted</span><span class="p">[</span><span class="mi">2025</span><span class="p">]</span>
     <span class="p">)</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;cumulative_total_surplus_loss&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cumulative_total_surplus_loss</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;cumulative_total_surplus_loss_discounted&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"cumulative_total_surplus_loss"</span><span class="p">]</span> <span class="o">=</span> <span class="n">cumulative_total_surplus_loss</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"cumulative_total_surplus_loss_discounted"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">cumulative_total_surplus_loss_discounted</span>
     <span class="p">)</span>
 
@@ -7738,7 +7763,9 @@ No distinction between consumer surplus and producer surplus / tax revenues</p>
 
 
 <a href="#aeromaps.models.impacts.costs.scenario.scenario_cost.ConsumerSurplusLoss" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">ConsumerSurplusLoss</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;consumer_surplus_loss&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">ConsumerSurplusLoss</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"consumer_surplus_loss"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -7791,7 +7818,7 @@ Should not be used alongside TotalSurplusLoss.</p>
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/impacts/costs/scenario/scenario_cost.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">559</span>
-<span class="normal">560</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;consumer_surplus_loss&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="normal">560</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"consumer_surplus_loss"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -7817,7 +7844,13 @@ Should not be used alongside TotalSurplusLoss.</p>
 
 
 <a href="#aeromaps.models.impacts.costs.scenario.scenario_cost.ConsumerSurplusLoss.compute" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span><span class="n">rpk</span><span class="p">,</span> <span class="n">rpk_no_elasticity</span><span class="p">,</span> <span class="n">airfare_per_rpk</span><span class="p">,</span> <span class="n">price_elasticity</span><span class="p">,</span> <span class="n">social_discount_rate</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span>
+    <span class="n">rpk</span><span class="p">,</span>
+    <span class="n">rpk_no_elasticity</span><span class="p">,</span>
+    <span class="n">airfare_per_rpk</span><span class="p">,</span>
+    <span class="n">price_elasticity</span><span class="p">,</span>
+    <span class="n">social_discount_rate</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -8031,7 +8064,7 @@ Should not be used alongside TotalSurplusLoss.</p>
     <span class="n">price_elasticity</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
     <span class="n">social_discount_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -8053,7 +8086,7 @@ Should not be used alongside TotalSurplusLoss.</p>
 <span class="sd">    delta_consumer_surplus_discounted</span>
 <span class="sd">        Consumer relative surplus loss discounted [M€].</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># computation of demand function parameters: assumption =&gt; constant elasticity =&gt; P= beta * Q**(1/elasticity)</span>
     <span class="n">beta</span> <span class="o">=</span> <span class="n">airfare_per_rpk</span><span class="p">[</span><span class="mi">2025</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="n">rpk_no_elasticity</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">price_elasticity</span><span class="p">))</span>
 
@@ -8075,13 +8108,13 @@ Should not be used alongside TotalSurplusLoss.</p>
             <span class="p">)</span>
         <span class="p">)</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;delta_consumer_surplus&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">delta_consumer_surplus</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"delta_consumer_surplus"</span><span class="p">]</span> <span class="o">=</span> <span class="n">delta_consumer_surplus</span>
 
     <span class="n">delta_consumer_surplus_discounted</span> <span class="o">=</span> <span class="n">delta_consumer_surplus</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">social_discount_rate</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span>
     <span class="p">)</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;delta_consumer_surplus_discounted&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">delta_consumer_surplus_discounted</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"delta_consumer_surplus_discounted"</span><span class="p">]</span> <span class="o">=</span> <span class="n">delta_consumer_surplus_discounted</span>
 
     <span class="n">cumulative_delta_consumer_surplus_obj</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">delta_consumer_surplus_discounted</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()[</span><span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">]</span>
@@ -8116,7 +8149,9 @@ Should not be used alongside TotalSurplusLoss.</p>
 
 
 <a href="#aeromaps.models.impacts.costs.scenario.scenario_cost.AirlineSurplusLoss" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">AirlineSurplusLoss</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;airline_surplus_loss&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">AirlineSurplusLoss</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"airline_surplus_loss"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -8169,7 +8204,7 @@ Should not be used alongside TotalSurplusLoss.</p>
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/impacts/costs/scenario/scenario_cost.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">645</span>
-<span class="normal">646</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;airline_surplus_loss&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="normal">646</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"airline_surplus_loss"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -8195,7 +8230,13 @@ Should not be used alongside TotalSurplusLoss.</p>
 
 
 <a href="#aeromaps.models.impacts.costs.scenario.scenario_cost.AirlineSurplusLoss.compute" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span><span class="n">total_cost_per_rpk</span><span class="p">,</span> <span class="n">rpk</span><span class="p">,</span> <span class="n">rpk_no_elasticity</span><span class="p">,</span> <span class="n">social_discount_rate</span><span class="p">,</span> <span class="n">airfare_per_rpk</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span>
+    <span class="n">total_cost_per_rpk</span><span class="p">,</span>
+    <span class="n">rpk</span><span class="p">,</span>
+    <span class="n">rpk_no_elasticity</span><span class="p">,</span>
+    <span class="n">social_discount_rate</span><span class="p">,</span>
+    <span class="n">airfare_per_rpk</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -8428,7 +8469,7 @@ Should not be used alongside TotalSurplusLoss.</p>
     <span class="n">social_discount_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
     <span class="n">airfare_per_rpk</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Execute the computation of airline surplus loss.</span>
 
 <span class="sd">    Parameters</span>
@@ -8455,7 +8496,7 @@ Should not be used alongside TotalSurplusLoss.</p>
 <span class="sd">    cumulative_delta_airline_surplus_obj</span>
 <span class="sd">        Cumulative airline relative surplus loss discounted at the end of the prospection period [M€</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">total_airline_cost</span> <span class="o">=</span> <span class="n">total_cost_per_rpk</span> <span class="o">*</span> <span class="n">rpk</span>
     <span class="n">total_airline_revenue</span> <span class="o">=</span> <span class="n">airfare_per_rpk</span> <span class="o">*</span> <span class="n">rpk</span>
     <span class="n">total_airline_surplus</span> <span class="o">=</span> <span class="n">total_airline_revenue</span> <span class="o">-</span> <span class="n">total_airline_cost</span>
@@ -8478,9 +8519,9 @@ Should not be used alongside TotalSurplusLoss.</p>
         <span class="o">-</span> <span class="n">delta_airline_surplus_discounted</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()[</span><span class="mi">2025</span><span class="p">]</span>
     <span class="p">)</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;delta_airline_surplus&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">delta_airline_surplus</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;delta_airline_surplus_discounted&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">delta_airline_surplus_discounted</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;total_airline_surplus&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_airline_surplus</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"delta_airline_surplus"</span><span class="p">]</span> <span class="o">=</span> <span class="n">delta_airline_surplus</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"delta_airline_surplus_discounted"</span><span class="p">]</span> <span class="o">=</span> <span class="n">delta_airline_surplus_discounted</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"total_airline_surplus"</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_airline_surplus</span>
 
     <span class="k">return</span> <span class="p">(</span>
         <span class="n">delta_airline_surplus</span><span class="p">,</span>
@@ -8511,7 +8552,7 @@ Should not be used alongside TotalSurplusLoss.</p>
 
 
 <a href="#aeromaps.models.impacts.costs.scenario.scenario_cost.TaxRevenueLoss" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">TaxRevenueLoss</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;tax_revenue_loss&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">TaxRevenueLoss</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'tax_revenue_loss'</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -8563,7 +8604,7 @@ Should not be used alongside TotalSurplusLoss.</p>
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/impacts/costs/scenario/scenario_cost.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">729</span>
-<span class="normal">730</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;tax_revenue_loss&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="normal">730</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"tax_revenue_loss"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -8589,7 +8630,12 @@ Should not be used alongside TotalSurplusLoss.</p>
 
 
 <a href="#aeromaps.models.impacts.costs.scenario.scenario_cost.TaxRevenueLoss.compute" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span><span class="n">total_extra_tax_per_rpk</span><span class="p">,</span> <span class="n">rpk</span><span class="p">,</span> <span class="n">rpk_no_elasticity</span><span class="p">,</span> <span class="n">social_discount_rate</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span>
+    <span class="n">total_extra_tax_per_rpk</span><span class="p">,</span>
+    <span class="n">rpk</span><span class="p">,</span>
+    <span class="n">rpk_no_elasticity</span><span class="p">,</span>
+    <span class="n">social_discount_rate</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -8805,7 +8851,7 @@ Should not be used alongside TotalSurplusLoss.</p>
     <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
     <span class="nb">float</span><span class="p">,</span>
 <span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Execute the computation of tax revenue loss.</span>
 
 <span class="sd">    Parameters</span>
@@ -8830,7 +8876,7 @@ Should not be used alongside TotalSurplusLoss.</p>
 <span class="sd">    cumulative_delta_tax_revenue_obj</span>
 <span class="sd">        Cumulative tax revenue loss discounted at the end of the prospection period [M€].</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">total_tax_revenue</span> <span class="o">=</span> <span class="n">total_extra_tax_per_rpk</span> <span class="o">*</span> <span class="n">rpk</span>
     <span class="n">initial_tax_revenue</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">total_extra_tax_per_rpk</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">rpk_no_elasticity</span>
@@ -8846,9 +8892,9 @@ Should not be used alongside TotalSurplusLoss.</p>
         <span class="o">-</span> <span class="n">delta_tax_revenue_discounted</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()[</span><span class="mi">2025</span><span class="p">]</span>
     <span class="p">)</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;total_tax_revenue&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_tax_revenue</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;delta_tax_revenue&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">delta_tax_revenue</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;delta_tax_revenue_discounted&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">delta_tax_revenue_discounted</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"total_tax_revenue"</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_tax_revenue</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"delta_tax_revenue"</span><span class="p">]</span> <span class="o">=</span> <span class="n">delta_tax_revenue</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"delta_tax_revenue_discounted"</span><span class="p">]</span> <span class="o">=</span> <span class="n">delta_tax_revenue_discounted</span>
 
     <span class="k">return</span> <span class="p">(</span>
         <span class="n">total_tax_revenue</span><span class="p">,</span>
@@ -8879,7 +8925,9 @@ Should not be used alongside TotalSurplusLoss.</p>
 
 
 <a href="#aeromaps.models.impacts.costs.scenario.scenario_cost.TotalWelfareLoss" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">TotalWelfareLoss</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;total_welfare_loss&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">TotalWelfareLoss</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"total_welfare_loss"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -8931,7 +8979,7 @@ Should not be used alongside TotalSurplusLoss.</p>
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/impacts/costs/scenario/scenario_cost.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">807</span>
-<span class="normal">808</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;total_welfare_loss&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="normal">808</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"total_welfare_loss"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -8957,7 +9005,12 @@ Should not be used alongside TotalSurplusLoss.</p>
 
 
 <a href="#aeromaps.models.impacts.costs.scenario.scenario_cost.TotalWelfareLoss.compute" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span><span class="n">delta_tax_revenue</span><span class="p">,</span> <span class="n">delta_consumer_surplus</span><span class="p">,</span> <span class="n">delta_airline_surplus</span><span class="p">,</span> <span class="n">social_discount_rate</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span>
+    <span class="n">delta_tax_revenue</span><span class="p">,</span>
+    <span class="n">delta_consumer_surplus</span><span class="p">,</span>
+    <span class="n">delta_airline_surplus</span><span class="p">,</span>
+    <span class="n">social_discount_rate</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -9162,7 +9215,7 @@ Should not be used alongside TotalSurplusLoss.</p>
     <span class="n">delta_airline_surplus</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
     <span class="n">social_discount_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Execute the computation of total welfare loss.</span>
 
 <span class="sd">    Parameters</span>
@@ -9186,7 +9239,7 @@ Should not be used alongside TotalSurplusLoss.</p>
 <span class="sd">        Cumulative total welfare loss discounted [M€].</span>
 <span class="sd">    cumulative_total_welfare_loss_obj</span>
 <span class="sd">        Cumulative total welfare loss discounted at the end of the prospection period [M€].</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">total_welfare_loss</span> <span class="o">=</span> <span class="n">delta_consumer_surplus</span> <span class="o">+</span> <span class="n">delta_airline_surplus</span> <span class="o">+</span> <span class="n">delta_tax_revenue</span>
     <span class="n">total_welfare_loss_discounted</span> <span class="o">=</span> <span class="n">total_welfare_loss</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">social_discount_rate</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span>
@@ -9200,9 +9253,9 @@ Should not be used alongside TotalSurplusLoss.</p>
         <span class="o">-</span> <span class="n">cumulative_total_welfare_loss_discounted</span><span class="p">[</span><span class="mi">2025</span><span class="p">]</span>
     <span class="p">)</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;total_welfare_loss&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_welfare_loss</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;total_welfare_loss_discounted&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_welfare_loss_discounted</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;cumulative_total_welfare_loss_discounted&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"total_welfare_loss"</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_welfare_loss</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"total_welfare_loss_discounted"</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_welfare_loss_discounted</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"cumulative_total_welfare_loss_discounted"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">cumulative_total_welfare_loss_discounted</span>
     <span class="p">)</span>
 
@@ -9292,7 +9345,7 @@ Should not be used alongside TotalSurplusLoss.</p>
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       

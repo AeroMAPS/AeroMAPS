@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -5903,14 +5903,14 @@ instantiates an interpolation model from yaml_interpolator.py</p>
 <span class="normal">44</span>
 <span class="normal">45</span>
 <span class="normal">46</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reference_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">years</span> <span class="o">=</span> <span class="n">reference_data</span><span class="p">[</span><span class="s2">&quot;years&quot;</span><span class="p">]</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">reference_data</span><span class="p">[</span><span class="s2">&quot;values&quot;</span><span class="p">]</span>
-    <span class="k">if</span> <span class="s2">&quot;method&quot;</span> <span class="ow">in</span> <span class="n">reference_data</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="n">reference_data</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">years</span> <span class="o">=</span> <span class="n">reference_data</span><span class="p">[</span><span class="s2">"years"</span><span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">reference_data</span><span class="p">[</span><span class="s2">"values"</span><span class="p">]</span>
+    <span class="k">if</span> <span class="s2">"method"</span> <span class="ow">in</span> <span class="n">reference_data</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="n">reference_data</span><span class="p">[</span><span class="s2">"method"</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="s2">&quot;linear&quot;</span>
-    <span class="k">if</span> <span class="s2">&quot;positive_constraint&quot;</span> <span class="ow">in</span> <span class="n">reference_data</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">positive_constraint</span> <span class="o">=</span> <span class="n">reference_data</span><span class="p">[</span><span class="s2">&quot;positive_constraint&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="s2">"linear"</span>
+    <span class="k">if</span> <span class="s2">"positive_constraint"</span> <span class="ow">in</span> <span class="n">reference_data</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">positive_constraint</span> <span class="o">=</span> <span class="n">reference_data</span><span class="p">[</span><span class="s2">"positive_constraint"</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">positive_constraint</span> <span class="o">=</span> <span class="kc">False</span>
 </code></pre></div></td></tr></table></div>
@@ -5946,7 +5946,7 @@ instantiates an interpolation model from yaml_interpolator.py</p>
 
 
 <a href="#aeromaps.models.base.AeroMAPSModel" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">AeroMAPSModel</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">AeroMAPSModel</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">'auto'</span><span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6244,7 +6244,7 @@ disciplines exclusive to one side of a top-down/bottom-up family, or
 <span class="normal">163</span>
 <span class="normal">164</span>
 <span class="normal">165</span>
-<span class="normal">166</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">):</span>
+<span class="normal">166</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">"auto"</span><span class="p">):</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">float_outputs</span> <span class="o">=</span> <span class="p">{}</span>
@@ -6253,13 +6253,13 @@ disciplines exclusive to one side of a top-down/bottom-up family, or
 
     <span class="c1"># Verify model type</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">model_type</span> <span class="o">=</span> <span class="n">model_type</span>
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_type</span> <span class="o">==</span> <span class="s2">&quot;custom&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_type</span> <span class="o">==</span> <span class="s2">"custom"</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Dictionary to store input names and their types (or values)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Dictionary to store output names and their types (or values)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">default_input_data</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Dictionary to store default input data (i.e. provided internally by the model rather than parameters.json)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_skip_data_type_validation</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># Whether to skip input/output data type validation. If True, input_names and output_names can be lists of names only.</span>
-    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_type</span> <span class="o">!=</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;model_type must be either &#39;auto&#39; or &#39;custom&#39;&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_type</span> <span class="o">!=</span> <span class="s2">"auto"</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"model_type must be either 'auto' or 'custom'"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
                   </details>
 
@@ -6293,7 +6293,14 @@ disciplines exclusive to one side of a top-down/bottom-up family, or
 
 
 <a href="#aeromaps.models.base.aeromaps_interpolation_function" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">aeromaps_interpolation_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reference_years</span><span class="p">,</span> <span class="n">reference_years_values</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="n">positive_constraint</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">model_name</span><span class="o">=</span><span class="s1">&#39;Not provided&#39;</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">aeromaps_interpolation_function</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">reference_years</span><span class="p">,</span>
+    <span class="n">reference_years_values</span><span class="p">,</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">"linear"</span><span class="p">,</span>
+    <span class="n">positive_constraint</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">model_name</span><span class="o">=</span><span class="s2">"Not provided"</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6520,11 +6527,11 @@ disciplines exclusive to one side of a top-down/bottom-up family, or
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">reference_years</span><span class="p">,</span>
     <span class="n">reference_years_values</span><span class="p">,</span>
-    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">,</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">"linear"</span><span class="p">,</span>
     <span class="n">positive_constraint</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">model_name</span><span class="o">=</span><span class="s2">&quot;Not provided&quot;</span><span class="p">,</span>
+    <span class="n">model_name</span><span class="o">=</span><span class="s2">"Not provided"</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Interpolate values across the scenario horizon from reference years and values.</span>
 
 <span class="sd">    Parameters</span>
@@ -6534,7 +6541,7 @@ disciplines exclusive to one side of a top-down/bottom-up family, or
 <span class="sd">    reference_years_values</span>
 <span class="sd">        Sequence of values corresponding to the reference years.</span>
 <span class="sd">    method</span>
-<span class="sd">        Interpolation method to use (e.g. &#39;linear&#39;).</span>
+<span class="sd">        Interpolation method to use (e.g. 'linear').</span>
 <span class="sd">    positive_constraint</span>
 <span class="sd">        If True, negative interpolated values are clipped to zero.</span>
 <span class="sd">    model_name</span>
@@ -6543,19 +6550,19 @@ disciplines exclusive to one side of a top-down/bottom-up family, or
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    interpolation_function_values</span>
-<span class="sd">        Series of interpolated values indexed by year taken from the model&#39;s DataFrame.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">        Series of interpolated values indexed by year taken from the model's DataFrame.</span>
+<span class="sd">    """</span>
     <span class="c1"># Main</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">reference_years_values</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">] reference_years_values must not be empty.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"[</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">] reference_years_values must not be empty."</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">reference_years</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">reference_years</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">reference_years_values</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">] reference_years and reference_years_values must have the same length &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;(got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">reference_years</span><span class="p">)</span><span class="si">}</span><span class="s2"> years and </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">reference_years_values</span><span class="p">)</span><span class="si">}</span><span class="s2"> values).&quot;</span>
+            <span class="sa">f</span><span class="s2">"[</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">] reference_years and reference_years_values must have the same length "</span>
+            <span class="sa">f</span><span class="s2">"(got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">reference_years</span><span class="p">)</span><span class="si">}</span><span class="s2"> years and </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">reference_years_values</span><span class="p">)</span><span class="si">}</span><span class="s2"> values)."</span>
         <span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">reference_years</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot;interpolation_function_values&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">reference_years_values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">"interpolation_function_values"</span><span class="p">]</span> <span class="o">=</span> <span class="n">reference_years_values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">interpolation_function</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span>
             <span class="n">reference_years</span><span class="p">,</span>
@@ -6566,9 +6573,9 @@ disciplines exclusive to one side of a top-down/bottom-up family, or
         <span class="c1"># If first reference year is lower than prospection start year, we start interpolating before</span>
         <span class="k">if</span> <span class="n">reference_years</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">[Interpolation Model: </span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2"> Warning]</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;The first reference year (</span><span class="si">{</span><span class="n">reference_years</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">) differs from the prospection start year (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span><span class="si">}</span><span class="s2">).</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;Interpolation will begin at the first reference year.&quot;</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">[Interpolation Model: </span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2"> Warning]</span><span class="se">\n</span><span class="s2">"</span>
+                <span class="sa">f</span><span class="s2">"The first reference year (</span><span class="si">{</span><span class="n">reference_years</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">) differs from the prospection start year (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span><span class="si">}</span><span class="s2">).</span><span class="se">\n</span><span class="s2">"</span>
+                <span class="sa">f</span><span class="s2">"Interpolation will begin at the first reference year."</span>
             <span class="p">)</span>
             <span class="n">prospection_start_year</span> <span class="o">=</span> <span class="n">reference_years</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
@@ -6577,44 +6584,44 @@ disciplines exclusive to one side of a top-down/bottom-up family, or
         <span class="k">if</span> <span class="n">reference_years</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">prospection_start_year</span><span class="p">,</span> <span class="n">reference_years</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">positive_constraint</span> <span class="ow">and</span> <span class="n">interpolation_function</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot;interpolation_function_values&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">"interpolation_function_values"</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot;interpolation_function_values&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">interpolation_function</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">"interpolation_function_values"</span><span class="p">]</span> <span class="o">=</span> <span class="n">interpolation_function</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">reference_years</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="s2">&quot;Warning Message - &quot;</span>
-                <span class="o">+</span> <span class="s2">&quot;Model name: &quot;</span>
+                <span class="s2">"Warning Message - "</span>
+                <span class="o">+</span> <span class="s2">"Model name: "</span>
                 <span class="o">+</span> <span class="n">model_name</span>
-                <span class="o">+</span> <span class="s2">&quot; - Warning on aeromaps_interpolation_function:&quot;</span>
-                <span class="o">+</span> <span class="s2">&quot; The last reference year for the interpolation is higher than end_year, the interpolation function is therefore not used in its entirety.&quot;</span><span class="p">,</span>
+                <span class="o">+</span> <span class="s2">" - Warning on aeromaps_interpolation_function:"</span>
+                <span class="o">+</span> <span class="s2">" The last reference year for the interpolation is higher than end_year, the interpolation function is therefore not used in its entirety."</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">prospection_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">positive_constraint</span> <span class="ow">and</span> <span class="n">interpolation_function</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot;interpolation_function_values&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">"interpolation_function_values"</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot;interpolation_function_values&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">interpolation_function</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">"interpolation_function_values"</span><span class="p">]</span> <span class="o">=</span> <span class="n">interpolation_function</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="s2">&quot;Warning Message - &quot;</span>
-                <span class="o">+</span> <span class="s2">&quot;Model name: &quot;</span>
+                <span class="s2">"Warning Message - "</span>
+                <span class="o">+</span> <span class="s2">"Model name: "</span>
                 <span class="o">+</span> <span class="n">model_name</span>
-                <span class="o">+</span> <span class="s2">&quot; - Warning on aeromaps_interpolation_function:&quot;</span>
-                <span class="o">+</span> <span class="s2">&quot; The last reference year for the interpolation is lower than end_year, the value associated to the last reference year is therefore used as a constant for the upper years.&quot;</span><span class="p">,</span>
+                <span class="o">+</span> <span class="s2">" - Warning on aeromaps_interpolation_function:"</span>
+                <span class="o">+</span> <span class="s2">" The last reference year for the interpolation is lower than end_year, the value associated to the last reference year is therefore used as a constant for the upper years."</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">prospection_start_year</span><span class="p">,</span> <span class="n">reference_years</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">positive_constraint</span> <span class="ow">and</span> <span class="n">interpolation_function</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot;interpolation_function_values&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">"interpolation_function_values"</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot;interpolation_function_values&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">interpolation_function</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">"interpolation_function_values"</span><span class="p">]</span> <span class="o">=</span> <span class="n">interpolation_function</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">reference_years</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot;interpolation_function_values&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
-                    <span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;interpolation_function_values&quot;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">"interpolation_function_values"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+                    <span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"interpolation_function_values"</span>
                 <span class="p">]</span>
 
-    <span class="n">interpolation_function_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;interpolation_function_values&quot;</span><span class="p">]</span>
+    <span class="n">interpolation_function_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"interpolation_function_values"</span><span class="p">]</span>
 
     <span class="c1"># Delete intermediate df column</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;interpolation_function_values&quot;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"interpolation_function_values"</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">interpolation_function_values</span>
 </code></pre></div></td></tr></table></div>
@@ -6631,7 +6638,12 @@ disciplines exclusive to one side of a top-down/bottom-up family, or
 
 
 <a href="#aeromaps.models.base.aeromaps_leveling_function" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">aeromaps_leveling_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reference_periods</span><span class="p">,</span> <span class="n">reference_periods_values</span><span class="p">,</span> <span class="n">model_name</span><span class="o">=</span><span class="s1">&#39;Not provided&#39;</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">aeromaps_leveling_function</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">reference_periods</span><span class="p">,</span>
+    <span class="n">reference_periods_values</span><span class="p">,</span>
+    <span class="n">model_name</span><span class="o">=</span><span class="s2">"Not provided"</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6789,9 +6801,9 @@ disciplines exclusive to one side of a top-down/bottom-up family, or
 <span class="normal">410</span>
 <span class="normal">411</span>
 <span class="normal">412</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">aeromaps_leveling_function</span><span class="p">(</span>
-    <span class="bp">self</span><span class="p">,</span> <span class="n">reference_periods</span><span class="p">,</span> <span class="n">reference_periods_values</span><span class="p">,</span> <span class="n">model_name</span><span class="o">=</span><span class="s2">&quot;Not provided&quot;</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">reference_periods</span><span class="p">,</span> <span class="n">reference_periods_values</span><span class="p">,</span> <span class="n">model_name</span><span class="o">=</span><span class="s2">"Not provided"</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Build a stepwise series that holds values constant across defined reference periods.</span>
 
 <span class="sd">    Parameters</span>
@@ -6806,51 +6818,51 @@ disciplines exclusive to one side of a top-down/bottom-up family, or
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    leveling_function_values</span>
-<span class="sd">        Series of leveled values indexed by year taken from the model&#39;s DataFrame.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">        Series of leveled values indexed by year taken from the model's DataFrame.</span>
+<span class="sd">    """</span>
     <span class="c1"># Main</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">reference_periods</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot;leveling_function_values&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">reference_periods_values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">"leveling_function_values"</span><span class="p">]</span> <span class="o">=</span> <span class="n">reference_periods_values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">reference_periods</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">reference_periods</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
                 <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">reference_periods</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">reference_periods</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot;leveling_function_values&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">reference_periods_values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">"leveling_function_values"</span><span class="p">]</span> <span class="o">=</span> <span class="n">reference_periods_values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
         <span class="k">elif</span> <span class="n">reference_periods</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="s2">&quot;Warning Message - &quot;</span>
-                <span class="o">+</span> <span class="s2">&quot;Model name: &quot;</span>
+                <span class="s2">"Warning Message - "</span>
+                <span class="o">+</span> <span class="s2">"Model name: "</span>
                 <span class="o">+</span> <span class="n">model_name</span>
-                <span class="o">+</span> <span class="s2">&quot; - Warning on aeromaps_leveling_function:&quot;</span>
-                <span class="o">+</span> <span class="s2">&quot; The last reference year for the leveling is higher than end_year, the leveling function is therefore not used in its entirety.&quot;</span><span class="p">,</span>
+                <span class="o">+</span> <span class="s2">" - Warning on aeromaps_leveling_function:"</span>
+                <span class="o">+</span> <span class="s2">" The last reference year for the leveling is higher than end_year, the leveling function is therefore not used in its entirety."</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">reference_periods</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
                 <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">reference_periods</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">reference_periods</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
                     <span class="k">if</span> <span class="n">k</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot;leveling_function_values&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">reference_periods_values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">"leveling_function_values"</span><span class="p">]</span> <span class="o">=</span> <span class="n">reference_periods_values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="s2">&quot;Warning Message - &quot;</span>
-                <span class="o">+</span> <span class="s2">&quot;Model name: &quot;</span>
+                <span class="s2">"Warning Message - "</span>
+                <span class="o">+</span> <span class="s2">"Model name: "</span>
                 <span class="o">+</span> <span class="n">model_name</span>
-                <span class="o">+</span> <span class="s2">&quot; - Warning on aeromaps_leveling_function:&quot;</span>
-                <span class="o">+</span> <span class="s2">&quot; The last reference year for the leveling is lower than end_year, the value associated to the last reference period is therefore used as a constant for the upper period.&quot;</span><span class="p">,</span>
+                <span class="o">+</span> <span class="s2">" - Warning on aeromaps_leveling_function:"</span>
+                <span class="o">+</span> <span class="s2">" The last reference year for the leveling is lower than end_year, the value associated to the last reference period is therefore used as a constant for the upper period."</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">reference_periods</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
                 <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">reference_periods</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">reference_periods</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot;leveling_function_values&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">reference_periods_values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">"leveling_function_values"</span><span class="p">]</span> <span class="o">=</span> <span class="n">reference_periods_values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">reference_periods</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot;leveling_function_values&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
-                    <span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;leveling_function_values&quot;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">"leveling_function_values"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+                    <span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"leveling_function_values"</span>
                 <span class="p">]</span>
 
-    <span class="n">leveling_function_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;leveling_function_values&quot;</span><span class="p">]</span>
+    <span class="n">leveling_function_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"leveling_function_values"</span><span class="p">]</span>
 
     <span class="c1"># Delete intermediate df column</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;leveling_function_values&quot;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"leveling_function_values"</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">leveling_function_values</span>
 </code></pre></div></td></tr></table></div>
@@ -6924,7 +6936,7 @@ disciplines exclusive to one side of a top-down/bottom-up family, or
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       

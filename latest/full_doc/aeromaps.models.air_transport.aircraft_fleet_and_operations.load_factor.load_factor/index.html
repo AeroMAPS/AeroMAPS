@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -5991,17 +5991,17 @@ exists — same convention as <code>RPKMarket</code>).</p>
 <span class="normal">89</span>
 <span class="normal">90</span>
 <span class="normal">91</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">market_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">"custom"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="n">mid</span> <span class="o">=</span> <span class="n">market_id</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">market_id</span> <span class="o">=</span> <span class="n">mid</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_load_factor_end_year&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_covid_load_factor_2020&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-        <span class="s2">&quot;rpk_init&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="s2">&quot;ask_init&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_load_factor_end_year"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_covid_load_factor_2020"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s2">"rpk_init"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="s2">"ask_init"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
     <span class="p">}</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="sa">f</span><span class="s2">&quot;load_factor_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="sa">f</span><span class="s2">"load_factor_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
     <span class="p">}</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -6096,32 +6096,32 @@ The 2020 value is overwritten with a Covid-19-specific value.</p>
 <span class="normal">145</span>
 <span class="normal">146</span>
 <span class="normal">147</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Execute the computation of per-market aircraft load factor.</span>
+<span class="w">    </span><span class="sd">"""Execute the computation of per-market aircraft load factor.</span>
 
 <span class="sd">    Historical load factor values are computed from provided RPK and</span>
 <span class="sd">    historical ASK, initializes the 2019 load factor as a baseline, then</span>
 <span class="sd">    projects load factor forward to `end_year` using a quadratic model.</span>
 <span class="sd">    The 2020 value is overwritten with a Covid-19-specific value.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">mid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">market_id</span>
-    <span class="n">end_year_value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_load_factor_end_year&quot;</span><span class="p">])</span>
-    <span class="n">covid_2020</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_covid_load_factor_2020&quot;</span><span class="p">])</span>
-    <span class="n">rpk_init</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;rpk_init&quot;</span><span class="p">]</span>
-    <span class="n">ask_init</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;ask_init&quot;</span><span class="p">]</span>
+    <span class="n">end_year_value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_load_factor_end_year"</span><span class="p">])</span>
+    <span class="n">covid_2020</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_covid_load_factor_2020"</span><span class="p">])</span>
+    <span class="n">rpk_init</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"rpk_init"</span><span class="p">]</span>
+    <span class="n">ask_init</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"ask_init"</span><span class="p">]</span>
 
-    <span class="n">col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;load_factor_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"load_factor_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span>
 
     <span class="n">horizon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_historical_year</span>
     <span class="k">if</span> <span class="n">horizon</span> <span class="o">!=</span> <span class="n">_LF_DERIV_CALIB_HORIZON</span><span class="p">:</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;[LoadFactorMarket - </span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">] The quadratic load-factor model was calibrated &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;for a horizon of </span><span class="si">{</span><span class="n">_LF_DERIV_CALIB_HORIZON</span><span class="si">}</span><span class="s2"> years (end_year=2050, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;last_historical_year=2019). The current scenario has a horizon of &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">horizon</span><span class="si">}</span><span class="s2"> years (end_year=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="si">}</span><span class="s2">, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;last_historical_year=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">last_historical_year</span><span class="si">}</span><span class="s2">). The arrival-slope &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;constraint (≈ 0 %/yr at end_year) is applied unchanged. &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;For a model without this limitation, use LoadFactorMarketSimpleInterpolation &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;(set global.load_factor.model: simple_interpolation in markets.yaml).&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"[LoadFactorMarket - </span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">] The quadratic load-factor model was calibrated "</span>
+            <span class="sa">f</span><span class="s2">"for a horizon of </span><span class="si">{</span><span class="n">_LF_DERIV_CALIB_HORIZON</span><span class="si">}</span><span class="s2"> years (end_year=2050, "</span>
+            <span class="sa">f</span><span class="s2">"last_historical_year=2019). The current scenario has a horizon of "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">horizon</span><span class="si">}</span><span class="s2"> years (end_year=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="si">}</span><span class="s2">, "</span>
+            <span class="sa">f</span><span class="s2">"last_historical_year=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">last_historical_year</span><span class="si">}</span><span class="s2">). The arrival-slope "</span>
+            <span class="sa">f</span><span class="s2">"constraint (≈ 0 %/yr at end_year) is applied unchanged. "</span>
+            <span class="sa">f</span><span class="s2">"For a model without this limitation, use LoadFactorMarketSimpleInterpolation "</span>
+            <span class="sa">f</span><span class="s2">"(set global.load_factor.model: simple_interpolation in markets.yaml)."</span><span class="p">,</span>
             <span class="ne">UserWarning</span><span class="p">,</span>
             <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
         <span class="p">)</span>
@@ -6173,7 +6173,9 @@ The 2020 value is overwritten with a Covid-19-specific value.</p>
 
 
 <a href="#aeromaps.models.air_transport.aircraft_fleet_and_operations.load_factor.load_factor.LoadFactorMarketSimpleInterpolation" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">LoadFactorMarketSimpleInterpolation</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">market_id</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">LoadFactorMarketSimpleInterpolation</span><span class="p">(</span>
+    <span class="n">name</span><span class="p">,</span> <span class="n">market_id</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6271,18 +6273,18 @@ in <code>markets.yaml</code>; the default is <code>quadratic</code> (<code>LoadF
 <span class="normal">194</span>
 <span class="normal">195</span>
 <span class="normal">196</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">market_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">"custom"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="n">mid</span> <span class="o">=</span> <span class="n">market_id</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">market_id</span> <span class="o">=</span> <span class="n">mid</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_load_factor_reference_years&quot;</span><span class="p">:</span> <span class="p">[],</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_load_factor_reference_years_values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">],</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_covid_load_factor_2020&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-        <span class="s2">&quot;rpk_init&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="s2">&quot;ask_init&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_load_factor_reference_years"</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_load_factor_reference_years_values"</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">],</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_covid_load_factor_2020"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s2">"rpk_init"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="s2">"ask_init"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
     <span class="p">}</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="sa">f</span><span class="s2">&quot;load_factor_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="sa">f</span><span class="s2">"load_factor_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
     <span class="p">}</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -6360,7 +6362,7 @@ window.</p>
 <span class="normal">231</span>
 <span class="normal">232</span>
 <span class="normal">233</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Execute the computation of per-market aircraft load factor via linear interpolation.</span>
+<span class="w">    </span><span class="sd">"""Execute the computation of per-market aircraft load factor via linear interpolation.</span>
 
 <span class="sd">    Historical load factor values are computed from provided RPK and ASK.</span>
 <span class="sd">    Prospective years are filled by linearly interpolating the reference</span>
@@ -6368,15 +6370,15 @@ window.</p>
 <span class="sd">    ``aeromaps_interpolation_function``.  The 2020 value is overwritten</span>
 <span class="sd">    with the Covid-19-specific value when 2020 falls in the prospective</span>
 <span class="sd">    window.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">mid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">market_id</span>
-    <span class="n">reference_years</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_load_factor_reference_years&quot;</span><span class="p">])</span>
-    <span class="n">reference_years_values</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_load_factor_reference_years_values&quot;</span><span class="p">])</span>
-    <span class="n">covid_2020</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_covid_load_factor_2020&quot;</span><span class="p">])</span>
-    <span class="n">rpk_init</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;rpk_init&quot;</span><span class="p">]</span>
-    <span class="n">ask_init</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;ask_init&quot;</span><span class="p">]</span>
+    <span class="n">reference_years</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_load_factor_reference_years"</span><span class="p">])</span>
+    <span class="n">reference_years_values</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_load_factor_reference_years_values"</span><span class="p">])</span>
+    <span class="n">covid_2020</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_covid_load_factor_2020"</span><span class="p">])</span>
+    <span class="n">rpk_init</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"rpk_init"</span><span class="p">]</span>
+    <span class="n">ask_init</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"ask_init"</span><span class="p">]</span>
 
-    <span class="n">col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;load_factor_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"load_factor_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span>
 
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">historic_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">rpk_init</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">/</span> <span class="n">ask_init</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="mi">100</span>
@@ -6418,7 +6420,9 @@ window.</p>
 
 
 <a href="#aeromaps.models.air_transport.aircraft_fleet_and_operations.load_factor.load_factor.LoadFactorAggregator" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">LoadFactorAggregator</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;load_factor_aggregator&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">LoadFactorAggregator</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"load_factor_aggregator"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6480,14 +6484,14 @@ seeing the same global <code>load_factor</code> series.</p>
 <span class="normal">256</span>
 <span class="normal">257</span>
 <span class="normal">258</span>
-<span class="normal">259</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;load_factor_aggregator&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="normal">259</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"load_factor_aggregator"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">"custom"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;rpk&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="s2">&quot;ask&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="s2">"rpk"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="s2">"ask"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
     <span class="p">}</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;load_factor&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="s2">"load_factor"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
     <span class="p">}</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -6599,7 +6603,7 @@ seeing the same global <code>load_factor</code> series.</p>
 <span class="normal">280</span>
 <span class="normal">281</span>
 <span class="normal">282</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Aggregate load factor from total RPK and ASK.</span>
+<span class="w">    </span><span class="sd">"""Aggregate load factor from total RPK and ASK.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -6610,14 +6614,14 @@ seeing the same global <code>load_factor</code> series.</p>
 <span class="sd">    -------</span>
 <span class="sd">    dict</span>
 <span class="sd">        Output dictionary with the global load factor series.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">rpk</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;rpk&quot;</span><span class="p">]</span>
-    <span class="n">ask</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;ask&quot;</span><span class="p">]</span>
+<span class="sd">    """</span>
+    <span class="n">rpk</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"rpk"</span><span class="p">]</span>
+    <span class="n">ask</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"ask"</span><span class="p">]</span>
 
     <span class="n">load_factor</span> <span class="o">=</span> <span class="n">rpk</span> <span class="o">/</span> <span class="n">ask</span> <span class="o">*</span> <span class="mi">100</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;load_factor&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">load_factor</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"load_factor"</span><span class="p">]</span> <span class="o">=</span> <span class="n">load_factor</span>
 
-    <span class="n">output_data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;load_factor&quot;</span><span class="p">:</span> <span class="n">load_factor</span><span class="p">}</span>
+    <span class="n">output_data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"load_factor"</span><span class="p">:</span> <span class="n">load_factor</span><span class="p">}</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_store_outputs</span><span class="p">(</span><span class="n">output_data</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">output_data</span>
 </code></pre></div></td></tr></table></div>
@@ -6700,7 +6704,7 @@ seeing the same global <code>load_factor</code> series.</p>
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       

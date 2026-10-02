@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -5873,7 +5873,9 @@ reductions in fuel consumption per ASK.</p>
 
 
 <a href="#aeromaps.models.air_transport.aircraft_fleet_and_operations.operations.operations.OperationsLogistic" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">OperationsLogistic</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;operations_logistic&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">OperationsLogistic</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"operations_logistic"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -5924,7 +5926,7 @@ reductions in fuel consumption per ASK.</p>
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/air_transport/aircraft_fleet_and_operations/operations/operations.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">28</span>
-<span class="normal">29</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;operations_logistic&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="normal">29</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"operations_logistic"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -5950,7 +5952,11 @@ reductions in fuel consumption per ASK.</p>
 
 
 <a href="#aeromaps.models.air_transport.aircraft_fleet_and_operations.operations.operations.OperationsLogistic.compute" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span><span class="n">operations_final_gain</span><span class="p">,</span> <span class="n">operations_start_year</span><span class="p">,</span> <span class="n">operations_duration</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span>
+    <span class="n">operations_final_gain</span><span class="p">,</span>
+    <span class="n">operations_start_year</span><span class="p">,</span>
+    <span class="n">operations_duration</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6093,7 +6099,7 @@ reductions in fuel consumption per ASK.</p>
     <span class="n">operations_start_year</span><span class="p">:</span> <span class="n">Number</span><span class="p">,</span>
     <span class="n">operations_duration</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the annual operational efficiency gains.</span>
+<span class="w">    </span><span class="sd">"""Compute the annual operational efficiency gains.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -6108,25 +6114,25 @@ reductions in fuel consumption per ASK.</p>
 <span class="sd">    -------</span>
 <span class="sd">    operations_gain</span>
 <span class="sd">        Impact of operational improvements in terms of percentage reduction in fuel consumption per ASK [%].</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">transition_year</span> <span class="o">=</span> <span class="n">operations_start_year</span> <span class="o">+</span> <span class="n">operations_duration</span> <span class="o">/</span> <span class="mi">2</span>
     <span class="n">operations_limit</span> <span class="o">=</span> <span class="mf">0.02</span> <span class="o">*</span> <span class="n">operations_final_gain</span>
     <span class="n">operations_parameter</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">100</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">operations_duration</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">historic_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot;operations_gain&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">"operations_gain"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="n">operations_final_gain</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">operations_parameter</span> <span class="o">*</span> <span class="p">(</span><span class="n">k</span> <span class="o">-</span> <span class="n">transition_year</span><span class="p">)))</span>
             <span class="o">&lt;</span> <span class="n">operations_limit</span>
         <span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot;operations_gain&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">"operations_gain"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot;operations_gain&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">operations_final_gain</span> <span class="o">/</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">"operations_gain"</span><span class="p">]</span> <span class="o">=</span> <span class="n">operations_final_gain</span> <span class="o">/</span> <span class="p">(</span>
                 <span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">operations_parameter</span> <span class="o">*</span> <span class="p">(</span><span class="n">k</span> <span class="o">-</span> <span class="n">transition_year</span><span class="p">))</span>
             <span class="p">)</span>
 
-    <span class="n">operations_gain</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;operations_gain&quot;</span><span class="p">]</span>
+    <span class="n">operations_gain</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">"operations_gain"</span><span class="p">]</span>
 
     <span class="k">return</span> <span class="n">operations_gain</span>
 </code></pre></div></td></tr></table></div>
@@ -6152,7 +6158,9 @@ reductions in fuel consumption per ASK.</p>
 
 
 <a href="#aeromaps.models.air_transport.aircraft_fleet_and_operations.operations.operations.OperationsInterpolation" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">OperationsInterpolation</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;operations_interpolation&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">OperationsInterpolation</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"operations_interpolation"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6203,7 +6211,7 @@ reductions in fuel consumption per ASK.</p>
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/air_transport/aircraft_fleet_and_operations/operations/operations.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">84</span>
-<span class="normal">85</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;operations_interpolation&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="normal">85</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"operations_interpolation"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -6229,7 +6237,10 @@ reductions in fuel consumption per ASK.</p>
 
 
 <a href="#aeromaps.models.air_transport.aircraft_fleet_and_operations.operations.operations.OperationsInterpolation.compute" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span><span class="n">operations_gain_reference_years</span><span class="p">,</span> <span class="n">operations_gain_reference_years_values</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span>
+    <span class="n">operations_gain_reference_years</span><span class="p">,</span>
+    <span class="n">operations_gain_reference_years_values</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6345,7 +6356,7 @@ reductions in fuel consumption per ASK.</p>
     <span class="n">operations_gain_reference_years</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
     <span class="n">operations_gain_reference_years_values</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the annual operations efficiency gain by interpolating provided reference points.</span>
+<span class="w">    </span><span class="sd">"""Compute the annual operations efficiency gain by interpolating provided reference points.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -6358,7 +6369,7 @@ reductions in fuel consumption per ASK.</p>
 <span class="sd">    -------</span>
 <span class="sd">    operations_gain</span>
 <span class="sd">        Impact of operational improvements in terms of percentage reduction in fuel consumption per ASK [%].</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">operations_gain_prospective</span> <span class="o">=</span> <span class="n">aeromaps_interpolation_function</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -6366,10 +6377,10 @@ reductions in fuel consumption per ASK.</p>
         <span class="n">operations_gain_reference_years_values</span><span class="p">,</span>
         <span class="n">model_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;operations_gain&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">operations_gain_prospective</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"operations_gain"</span><span class="p">]</span> <span class="o">=</span> <span class="n">operations_gain_prospective</span>
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">historic_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot;operations_gain&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">operations_gain</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;operations_gain&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">"operations_gain"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">operations_gain</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">"operations_gain"</span><span class="p">]</span>
 
     <span class="k">return</span> <span class="n">operations_gain</span>
 </code></pre></div></td></tr></table></div>
@@ -6452,7 +6463,7 @@ reductions in fuel consumption per ASK.</p>
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       

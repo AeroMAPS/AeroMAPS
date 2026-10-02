@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -5887,7 +5887,17 @@
   </span>
 
 <a href="#aeromaps.models.impacts.generic_energy_model.common.energy_carriers_manager.EnergyCarrierMetadata" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">EnergyCarrierMetadata</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">aircraft_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mandate_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">energy_origin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resources_used</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resources_used_processes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cost_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">environmental_model</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">EnergyCarrierMetadata</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">aircraft_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">mandate_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">energy_origin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">resources_used</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">resources_used_processes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">cost_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">environmental_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6143,14 +6153,14 @@
 <span class="normal">60</span>
 <span class="normal">61</span>
 <span class="normal">62</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">carriers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">EnergyCarrierMetadata</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Initialize the EnergyCarrierManager with an optional list of energy carriers.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    carriers : List[EnergyCarrierMetadata], optional</span>
 <span class="sd">        Initial list of energy carrier metadata instances.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">carriers</span> <span class="o">=</span> <span class="n">carriers</span> <span class="k">if</span> <span class="n">carriers</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -6232,14 +6242,14 @@
 <span class="normal">71</span>
 <span class="normal">72</span>
 <span class="normal">73</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">carrier</span><span class="p">:</span> <span class="n">EnergyCarrierMetadata</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Add a new energy carrier to the manager.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    carrier</span>
 <span class="sd">        Energy carrier metadata instance to add.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">carriers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">carrier</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -6344,7 +6354,7 @@
 <span class="normal"> 98</span>
 <span class="normal"> 99</span>
 <span class="normal">100</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">criteria</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">EnergyCarrierMetadata</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Retrieve energy carriers that match all specified criteria.</span>
 
 <span class="sd">    Parameters</span>
@@ -6356,7 +6366,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    matches</span>
 <span class="sd">        Energy carrier metadata instances that match the given criteria.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="p">[</span>
         <span class="n">c</span>
         <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">carriers</span>
@@ -6426,14 +6436,14 @@
 <span class="normal">109</span>
 <span class="normal">110</span>
 <span class="normal">111</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return all energy carriers managed by this object.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    carriers</span>
 <span class="sd">        All energy carrier metadata instances stored in the manager.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">carriers</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -6534,7 +6544,7 @@
 <span class="normal">131</span>
 <span class="normal">132</span>
 <span class="normal">133</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_all_types</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameter</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Retrieve unique values of a specified attribute across all energy carriers.</span>
 
 <span class="sd">    Parameters</span>
@@ -6546,7 +6556,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    values</span>
 <span class="sd">        Unique values of the specified parameter across all energy carriers.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="nb">list</span><span class="p">(</span>
         <span class="p">{</span>
             <span class="nb">getattr</span><span class="p">(</span><span class="n">carrier</span><span class="p">,</span> <span class="n">parameter</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -6577,7 +6587,9 @@
 
 
 <a href="#aeromaps.models.impacts.generic_energy_model.common.energy_carriers_manager.build_pathways_manager" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">build_pathways_manager</span><span class="p">(</span><span class="n">energy_carriers_data</span><span class="p">,</span> <span class="n">energy_processes_data</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">build_pathways_manager</span><span class="p">(</span>
+    <span class="n">energy_carriers_data</span><span class="p">,</span> <span class="n">energy_processes_data</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6714,7 +6726,7 @@ resource each of them consumes.</p>
 <span class="normal">185</span>
 <span class="normal">186</span>
 <span class="normal">187</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">build_pathways_manager</span><span class="p">(</span><span class="n">energy_carriers_data</span><span class="p">,</span> <span class="n">energy_processes_data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build a manager from the raw contents of the energy-carrier YAML.</span>
+<span class="w">    </span><span class="sd">"""Build a manager from the raw contents of the energy-carrier YAML.</span>
 
 <span class="sd">    Split out of ``AeroMAPSProcess`` so that results loaded from committed JSON</span>
 <span class="sd">    can carry a manager too. The pathway metadata the plots need is entirely</span>
@@ -6726,42 +6738,42 @@ resource each of them consumes.</p>
 <span class="sd">    energy_carriers_data : dict</span>
 <span class="sd">        Parsed energy-carrier YAML, one entry per pathway.</span>
 <span class="sd">    energy_processes_data : dict, optional</span>
-<span class="sd">        Parsed processes YAML, used to map each pathway&#39;s processes onto the</span>
+<span class="sd">        Parsed processes YAML, used to map each pathway's processes onto the</span>
 <span class="sd">        resource each of them consumes.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    EnergyCarrierManager</span>
 <span class="sd">        Manager holding one metadata entry per declared pathway.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">processes</span> <span class="o">=</span> <span class="n">energy_processes_data</span> <span class="ow">or</span> <span class="p">{}</span>
     <span class="n">manager</span> <span class="o">=</span> <span class="n">EnergyCarrierManager</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">pathway</span><span class="p">,</span> <span class="n">pathway_data</span> <span class="ow">in</span> <span class="n">energy_carriers_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="k">if</span> <span class="s2">&quot;name&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pathway_data</span> <span class="ow">or</span> <span class="s2">&quot;inputs&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pathway_data</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;pathway </span><span class="si">{</span><span class="n">pathway</span><span class="si">!r}</span><span class="s2"> must declare both a name and inputs&quot;</span><span class="p">)</span>
-        <span class="n">technical</span> <span class="o">=</span> <span class="n">pathway_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;inputs&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;technical&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="k">if</span> <span class="s2">"name"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pathway_data</span> <span class="ow">or</span> <span class="s2">"inputs"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pathway_data</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"pathway </span><span class="si">{</span><span class="n">pathway</span><span class="si">!r}</span><span class="s2"> must declare both a name and inputs"</span><span class="p">)</span>
+        <span class="n">technical</span> <span class="o">=</span> <span class="n">pathway_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"inputs"</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"technical"</span><span class="p">,</span> <span class="p">{})</span>
         <span class="n">manager</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
             <span class="n">EnergyCarrierMetadata</span><span class="p">(</span>
                 <span class="n">name</span><span class="o">=</span><span class="n">pathway</span><span class="p">,</span>
-                <span class="n">aircraft_type</span><span class="o">=</span><span class="n">pathway_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;aircraft_type&quot;</span><span class="p">),</span>
-                <span class="n">default</span><span class="o">=</span><span class="n">pathway_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;default&quot;</span><span class="p">),</span>
-                <span class="n">mandate_type</span><span class="o">=</span><span class="n">pathway_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;inputs&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mandate&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mandate_type&quot;</span><span class="p">),</span>
-                <span class="n">energy_origin</span><span class="o">=</span><span class="n">pathway_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;energy_origin&quot;</span><span class="p">),</span>
-                <span class="n">resources_used</span><span class="o">=</span><span class="n">technical</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;resource_names&quot;</span><span class="p">,</span> <span class="p">[]),</span>
+                <span class="n">aircraft_type</span><span class="o">=</span><span class="n">pathway_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"aircraft_type"</span><span class="p">),</span>
+                <span class="n">default</span><span class="o">=</span><span class="n">pathway_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"default"</span><span class="p">),</span>
+                <span class="n">mandate_type</span><span class="o">=</span><span class="n">pathway_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"inputs"</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"mandate"</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"mandate_type"</span><span class="p">),</span>
+                <span class="n">energy_origin</span><span class="o">=</span><span class="n">pathway_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"energy_origin"</span><span class="p">),</span>
+                <span class="n">resources_used</span><span class="o">=</span><span class="n">technical</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"resource_names"</span><span class="p">,</span> <span class="p">[]),</span>
                 <span class="n">resources_used_processes</span><span class="o">=</span><span class="p">{</span>
                     <span class="n">name</span><span class="p">:</span> <span class="p">(</span>
                         <span class="nb">list</span><span class="p">(</span>
                             <span class="n">processes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="p">{})</span>
-                            <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;inputs&quot;</span><span class="p">,</span> <span class="p">{})</span>
-                            <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;technical&quot;</span><span class="p">,</span> <span class="p">{})</span>
-                            <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">_resource_names&quot;</span><span class="p">,</span> <span class="p">[])</span>
+                            <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"inputs"</span><span class="p">,</span> <span class="p">{})</span>
+                            <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"technical"</span><span class="p">,</span> <span class="p">{})</span>
+                            <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">_resource_names"</span><span class="p">,</span> <span class="p">[])</span>
                         <span class="p">)</span>
                         <span class="ow">or</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span>
                     <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-                    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">technical</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;processes_names&quot;</span><span class="p">,</span> <span class="p">[])</span>
+                    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">technical</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"processes_names"</span><span class="p">,</span> <span class="p">[])</span>
                 <span class="p">},</span>
-                <span class="n">cost_model</span><span class="o">=</span><span class="n">pathway_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cost_model&quot;</span><span class="p">),</span>
-                <span class="n">environmental_model</span><span class="o">=</span><span class="n">pathway_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;environmental_model&quot;</span><span class="p">),</span>
+                <span class="n">cost_model</span><span class="o">=</span><span class="n">pathway_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"cost_model"</span><span class="p">),</span>
+                <span class="n">environmental_model</span><span class="o">=</span><span class="n">pathway_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"environmental_model"</span><span class="p">),</span>
             <span class="p">)</span>
         <span class="p">)</span>
     <span class="k">return</span> <span class="n">manager</span>
@@ -6836,7 +6848,7 @@ resource each of them consumes.</p>
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       

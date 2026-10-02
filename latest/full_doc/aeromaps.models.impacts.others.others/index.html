@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -5868,7 +5868,7 @@ This module contains models for various KPI computations.</p>
 
 
 <a href="#aeromaps.models.impacts.others.others.EmissionsPerRPK" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">EmissionsPerRPK</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;emissions_per_rpk&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">EmissionsPerRPK</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'emissions_per_rpk'</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -5920,7 +5920,7 @@ This module contains models for various KPI computations.</p>
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/impacts/others/others.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">23</span>
-<span class="normal">24</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;emissions_per_rpk&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="normal">24</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"emissions_per_rpk"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -6055,7 +6055,7 @@ This module contains models for various KPI computations.</p>
     <span class="n">co2_emissions_passenger</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
     <span class="n">rpk</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    CO2 emissions per Revenue Passenger Kilometer calculation.</span>
 
 <span class="sd">    Parameters</span>
@@ -6069,10 +6069,10 @@ This module contains models for various KPI computations.</p>
 <span class="sd">    -------</span>
 <span class="sd">    co2_emissions_per_rpk</span>
 <span class="sd">        CO2 emissions per Revenue Passenger Kilometer [gCO2/RPK].</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;co2_emissions_per_rpk&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">co2_emissions_passenger</span> <span class="o">*</span> <span class="mf">1e6</span> <span class="o">*</span> <span class="mf">1e6</span> <span class="o">/</span> <span class="n">rpk</span>
-    <span class="n">co2_emissions_per_rpk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;co2_emissions_per_rpk&quot;</span><span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">"co2_emissions_per_rpk"</span><span class="p">]</span> <span class="o">=</span> <span class="n">co2_emissions_passenger</span> <span class="o">*</span> <span class="mf">1e6</span> <span class="o">*</span> <span class="mf">1e6</span> <span class="o">/</span> <span class="n">rpk</span>
+    <span class="n">co2_emissions_per_rpk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">"co2_emissions_per_rpk"</span><span class="p">]</span>
 
     <span class="k">return</span> <span class="n">co2_emissions_per_rpk</span>
 </code></pre></div></td></tr></table></div>
@@ -6098,7 +6098,7 @@ This module contains models for various KPI computations.</p>
 
 
 <a href="#aeromaps.models.impacts.others.others.EmissionsPerRTK" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">EmissionsPerRTK</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;emissions_per_rpk&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">EmissionsPerRTK</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'emissions_per_rpk'</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6119,7 +6119,7 @@ This module contains models for various KPI computations.</p>
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/impacts/others/others.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">58</span>
-<span class="normal">59</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;emissions_per_rpk&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="normal">59</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"emissions_per_rpk"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -6253,7 +6253,7 @@ This module contains models for various KPI computations.</p>
     <span class="n">co2_emissions_freight</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
     <span class="n">rtk</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;CO2 emissions per Revenue Tonne Kilometer calculation.</span>
+<span class="w">    </span><span class="sd">"""CO2 emissions per Revenue Tonne Kilometer calculation.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -6266,10 +6266,10 @@ This module contains models for various KPI computations.</p>
 <span class="sd">    -------</span>
 <span class="sd">    co2_emissions_per_rtk</span>
 <span class="sd">        CO2 emissions per Revenue Tonne Kilometer [gCO2/RTK].</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;co2_emissions_per_rtk&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">co2_emissions_freight</span> <span class="o">*</span> <span class="mf">1e6</span> <span class="o">*</span> <span class="mf">1e6</span> <span class="o">/</span> <span class="n">rtk</span>
-    <span class="n">co2_emissions_per_rtk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;co2_emissions_per_rtk&quot;</span><span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">"co2_emissions_per_rtk"</span><span class="p">]</span> <span class="o">=</span> <span class="n">co2_emissions_freight</span> <span class="o">*</span> <span class="mf">1e6</span> <span class="o">*</span> <span class="mf">1e6</span> <span class="o">/</span> <span class="n">rtk</span>
+    <span class="n">co2_emissions_per_rtk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">"co2_emissions_per_rtk"</span><span class="p">]</span>
 
     <span class="k">return</span> <span class="n">co2_emissions_per_rtk</span>
 </code></pre></div></td></tr></table></div>
@@ -6295,7 +6295,11 @@ This module contains models for various KPI computations.</p>
 
 
 <a href="#aeromaps.models.impacts.others.others.DropinFuelConsumptionLiterPerPax100km" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">DropinFuelConsumptionLiterPerPax100km</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;dropin_fuel_consumption_liter_per_pax_100km&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">DropinFuelConsumptionLiterPerPax100km</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"dropin_fuel_consumption_liter_per_pax_100km"</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6347,7 +6351,7 @@ This module contains models for various KPI computations.</p>
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/impacts/others/others.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">97</span>
-<span class="normal">98</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;dropin_fuel_consumption_liter_per_pax_100km&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="normal">98</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"dropin_fuel_consumption_liter_per_pax_100km"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -6373,7 +6377,11 @@ This module contains models for various KPI computations.</p>
 
 
 <a href="#aeromaps.models.impacts.others.others.DropinFuelConsumptionLiterPerPax100km.compute" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span><span class="n">energy_consumption_passenger_dropin_fuel</span><span class="p">,</span> <span class="n">dropin_fuel_mean_lhv</span><span class="p">,</span> <span class="n">rpk</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span>
+    <span class="n">energy_consumption_passenger_dropin_fuel</span><span class="p">,</span>
+    <span class="n">dropin_fuel_mean_lhv</span><span class="p">,</span>
+    <span class="n">rpk</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6507,7 +6515,7 @@ This module contains models for various KPI computations.</p>
     <span class="n">dropin_fuel_mean_lhv</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
     <span class="n">rpk</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Drop-in fuel consumption in liter per passenger per 100 km calculation.</span>
 
 <span class="sd">    Parameters</span>
@@ -6523,14 +6531,14 @@ This module contains models for various KPI computations.</p>
 <span class="sd">    -------</span>
 <span class="sd">    dropin_fuel_consumption_liter_per_pax_100km</span>
 <span class="sd">        Drop-in fuel consumption in liter per passenger per 100 km [L/PAX/100km].</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">density</span> <span class="o">=</span> <span class="mf">0.8</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;dropin_fuel_consumption_liter_per_pax_100km&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">"dropin_fuel_consumption_liter_per_pax_100km"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">energy_consumption_passenger_dropin_fuel</span> <span class="o">/</span> <span class="n">dropin_fuel_mean_lhv</span> <span class="o">/</span> <span class="n">density</span> <span class="o">*</span> <span class="mi">100</span> <span class="o">/</span> <span class="n">rpk</span>
     <span class="p">)</span>
     <span class="n">dropin_fuel_consumption_liter_per_pax_100km</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span>
-        <span class="s2">&quot;dropin_fuel_consumption_liter_per_pax_100km&quot;</span>
+        <span class="s2">"dropin_fuel_consumption_liter_per_pax_100km"</span>
     <span class="p">]</span>
 
     <span class="k">return</span> <span class="n">dropin_fuel_consumption_liter_per_pax_100km</span>
@@ -6614,7 +6622,7 @@ This module contains models for various KPI computations.</p>
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       

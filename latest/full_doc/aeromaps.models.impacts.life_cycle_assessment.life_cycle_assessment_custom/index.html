@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -5810,7 +5810,13 @@
 
 
 <a href="#aeromaps.models.impacts.life_cycle_assessment.life_cycle_assessment_custom.LifeCycleAssessmentCustom" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">LifeCycleAssessmentCustom</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;life_cycle_assessment&#39;</span><span class="p">,</span> <span class="n">configuration_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">split_by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">LifeCycleAssessmentCustom</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"life_cycle_assessment"</span><span class="p">,</span>
+    <span class="n">configuration_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">split_by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6045,7 +6051,7 @@ Should match an axis defined in the configuration file through the "attribute" f
 <span class="normal">142</span>
 <span class="normal">143</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;life_cycle_assessment&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"life_cycle_assessment"</span><span class="p">,</span>
     <span class="n">configuration_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">split_by</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="n">args</span><span class="p">,</span>
@@ -6053,16 +6059,16 @@ Should match an axis defined in the configuration file through the "attribute" f
 <span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
-        <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span>
+        <span class="n">model_type</span><span class="o">=</span><span class="s2">"custom"</span><span class="p">,</span>
         <span class="o">*</span><span class="n">args</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="c1"># Get LCA model and LCIA methods</span>
     <span class="k">if</span> <span class="n">configuration_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Configuration file is missing.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Configuration file is missing."</span><span class="p">)</span>
 
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;===== LCA Custom Model Initialization =====&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"===== LCA Custom Model Initialization ====="</span><span class="p">)</span>
     <span class="n">_</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">methods</span> <span class="o">=</span> <span class="n">LCAProblemConfigurator</span><span class="p">(</span><span class="n">configuration_file</span><span class="p">)</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">methods</span> <span class="o">=</span> <span class="n">methods</span>
@@ -6081,21 +6087,21 @@ Should match an axis defined in the configuration file through the "attribute" f
             <span class="k">continue</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="s2">&quot;_reference_years&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="s2">&quot;_reference_years_values&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="s2">"_reference_years"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="s2">"_reference_years_values"</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">default_input_data</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">default_input_data</span><span class="p">[</span><span class="n">x</span> <span class="o">+</span> <span class="s2">&quot;_reference_years&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">default_input_data</span><span class="p">[</span><span class="n">x</span> <span class="o">+</span> <span class="s2">&quot;_reference_years_values&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_input_data</span><span class="p">[</span><span class="n">x</span> <span class="o">+</span> <span class="s2">"_reference_years"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_input_data</span><span class="p">[</span><span class="n">x</span> <span class="o">+</span> <span class="s2">"_reference_years_values"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
 
     <span class="c1"># Dry run with lca_algebraic to build symbolic expressions of LCIA impacts</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Parametrizing LCIA impacts...&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Parametrizing LCIA impacts..."</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">" "</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">lambdas</span> <span class="o">=</span> <span class="n">agb</span><span class="o">.</span><span class="n">lca</span><span class="o">.</span><span class="n">_preMultiLCAAlgebric</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">methods</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Done.&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;===========================================&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Done."</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"==========================================="</span><span class="p">)</span>
 
     <span class="c1"># --- Add LCA impact categories the outputs to the AeroMAPSModel ---</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">axis_keys</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lambdas</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;axis_keys&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">axis_keys</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lambdas</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">"axis_keys"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis_keys</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">axis_keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">axis_keys</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">methods</span><span class="p">:</span>
@@ -6224,7 +6230,7 @@ Should match an axis defined in the configuration file through the "attribute" f
 <span class="normal">172</span>
 <span class="normal">173</span>
 <span class="normal">174</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Compute LCA impacts for the given input parameters.</span>
 
 <span class="sd">    Parameters</span>
@@ -6236,7 +6242,7 @@ Should match an axis defined in the configuration file through the "attribute" f
 <span class="sd">    -------</span>
 <span class="sd">    dict</span>
 <span class="sd">        Dictionary containing computed LCA impacts as pd.Series (one per impact category).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># --- Assign values to parameters ---</span>
     <span class="n">params_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_param_values</span><span class="p">(</span><span class="n">input_data</span><span class="p">)</span>
 
@@ -6244,8 +6250,8 @@ Should match an axis defined in the configuration file through the "attribute" f
     <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_multi_lca_algebraic_raw</span><span class="p">(</span><span class="o">**</span><span class="n">params_dict</span><span class="p">)</span>
 
     <span class="c1"># --- Store xarray to enable user to access data after process calculation ---</span>
-    <span class="n">res</span><span class="p">[</span><span class="s2">&quot;params&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">params_dict</span><span class="p">[</span><span class="n">KEY_YEAR</span><span class="p">]</span>  <span class="c1"># replace param index by actual years</span>
-    <span class="n">res</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">rename</span><span class="p">({</span><span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="n">KEY_YEAR</span><span class="p">})</span>  <span class="c1"># rename &#39;params&#39; dimension to &#39;year&#39;</span>
+    <span class="n">res</span><span class="p">[</span><span class="s2">"params"</span><span class="p">]</span> <span class="o">=</span> <span class="n">params_dict</span><span class="p">[</span><span class="n">KEY_YEAR</span><span class="p">]</span>  <span class="c1"># replace param index by actual years</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">rename</span><span class="p">({</span><span class="s2">"params"</span><span class="p">:</span> <span class="n">KEY_YEAR</span><span class="p">})</span>  <span class="c1"># rename 'params' dimension to 'year'</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">xarray_lca</span> <span class="o">=</span> <span class="n">res</span>
 
     <span class="c1"># --- Convert xarray to pd.Series to enable connection with other models ---</span>
@@ -6333,7 +6339,7 @@ Should match an axis defined in the configuration file through the "attribute" f
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       

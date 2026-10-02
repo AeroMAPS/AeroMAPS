@@ -17,7 +17,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -25,7 +25,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -5614,7 +5614,9 @@
 
 
 <a href="#aeromaps.models.impacts.costs.operations.operations_cost.OperationalEfficiencyCost" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">OperationalEfficiencyCost</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;operational_efficiency_cost&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">OperationalEfficiencyCost</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"operational_efficiency_cost"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -5666,7 +5668,7 @@
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/impacts/costs/operations/operations_cost.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">25</span>
-<span class="normal">26</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;operational_efficiency_cost&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="normal">26</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"operational_efficiency_cost"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -5692,7 +5694,11 @@
 
 
 <a href="#aeromaps.models.impacts.costs.operations.operations_cost.OperationalEfficiencyCost.compute" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span><span class="n">operational_efficiency_cost_non_energy_per_ask_final_value</span><span class="p">,</span> <span class="n">operations_final_gain</span><span class="p">,</span> <span class="n">operations_gain</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span>
+    <span class="n">operational_efficiency_cost_non_energy_per_ask_final_value</span><span class="p">,</span>
+    <span class="n">operations_final_gain</span><span class="p">,</span>
+    <span class="n">operations_gain</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -5832,7 +5838,7 @@
     <span class="n">operations_final_gain</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
     <span class="n">operations_gain</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Execute the computation of operational efficiency costs.</span>
 
 <span class="sd">    A zero final gain means no measure is targeted, hence no cost, rather than 0/0.</span>
@@ -5850,7 +5856,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    operational_efficiency_cost_non_energy_per_ask</span>
 <span class="sd">        Operational efficiency cost non-energy per ASK [€/ASK].</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">operations_final_gain</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">operational_efficiency_cost_non_energy_per_ask</span> <span class="o">=</span> <span class="n">operations_gain</span> <span class="o">*</span> <span class="mf">0.0</span>
     <span class="k">else</span><span class="p">:</span>
@@ -5859,7 +5865,7 @@
             <span class="o">*</span> <span class="n">operations_gain</span>
             <span class="o">/</span> <span class="n">operations_final_gain</span>
         <span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;operational_efficiency_cost_non_energy_per_ask&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"operational_efficiency_cost_non_energy_per_ask"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">operational_efficiency_cost_non_energy_per_ask</span>
     <span class="p">)</span>
 
@@ -5887,7 +5893,9 @@
 
 
 <a href="#aeromaps.models.impacts.costs.operations.operations_cost.LoadFactorEfficiencyCost" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">LoadFactorEfficiencyCost</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;load_factor_efficiency_cost&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">LoadFactorEfficiencyCost</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"load_factor_efficiency_cost"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -5939,7 +5947,7 @@
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/impacts/costs/operations/operations_cost.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">78</span>
-<span class="normal">79</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;load_factor_efficiency_cost&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="normal">79</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"load_factor_efficiency_cost"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -5965,7 +5973,10 @@
 
 
 <a href="#aeromaps.models.impacts.costs.operations.operations_cost.LoadFactorEfficiencyCost.compute" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span><span class="n">load_factor_cost_non_energy_per_ask_final_value</span><span class="p">,</span> <span class="n">load_factor</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span>
+    <span class="n">load_factor_cost_non_energy_per_ask_final_value</span><span class="p">,</span>
+    <span class="n">load_factor</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6079,7 +6090,7 @@
     <span class="n">load_factor_cost_non_energy_per_ask_final_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
     <span class="n">load_factor</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Execute the computation of load factor efficiency costs.</span>
 
 <span class="sd">    Parameters</span>
@@ -6093,7 +6104,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    load_factor_cost_non_energy_per_ask</span>
 <span class="sd">        Load factor efficiency cost non-energy per ASK [€/ASK].</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">load_factor_init</span> <span class="o">=</span> <span class="n">load_factor</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
     <span class="n">load_factor_end_year_value</span> <span class="o">=</span> <span class="n">load_factor</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">]</span>
     <span class="n">load_factor_cost_non_energy_per_ask</span> <span class="o">=</span> <span class="p">(</span>
@@ -6101,7 +6112,7 @@
         <span class="o">*</span> <span class="p">(</span><span class="n">load_factor</span> <span class="o">-</span> <span class="n">load_factor_init</span><span class="p">)</span>
         <span class="o">/</span> <span class="p">(</span><span class="n">load_factor_end_year_value</span> <span class="o">-</span> <span class="n">load_factor_init</span><span class="p">)</span>
     <span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;load_factor_cost_non_energy_per_ask&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">load_factor_cost_non_energy_per_ask</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"load_factor_cost_non_energy_per_ask"</span><span class="p">]</span> <span class="o">=</span> <span class="n">load_factor_cost_non_energy_per_ask</span>
 
     <span class="k">return</span> <span class="n">load_factor_cost_non_energy_per_ask</span>
 </code></pre></div></td></tr></table></div>
@@ -6184,7 +6195,7 @@
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       

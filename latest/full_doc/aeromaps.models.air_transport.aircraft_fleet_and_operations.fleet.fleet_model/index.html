@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -6109,7 +6109,26 @@ fleet structures, allowing flexible customization of fleet scenarios.</p>
   </span>
 
 <a href="#aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_model.AircraftParameters" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">AircraftParameters</span><span class="p">(</span><span class="n">entry_into_service_year</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">consumption_evolution</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">energy_per_ask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">continuous_improvement_factor_energy</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">share</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nox_evolution</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">emission_index_nox</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">soot_evolution</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">emission_index_soot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">doc_non_energy_evolution</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">doc_non_energy_base</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cruise_altitude</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hybridization_factor</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">ask_year</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nrc_cost</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rc_cost</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">oew</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">full_name</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">AircraftParameters</span><span class="p">(</span>
+    <span class="n">entry_into_service_year</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">consumption_evolution</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">energy_per_ask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">continuous_improvement_factor_energy</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">share</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">nox_evolution</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">emission_index_nox</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">soot_evolution</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">emission_index_soot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">doc_non_energy_evolution</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">doc_non_energy_base</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">cruise_altitude</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">hybridization_factor</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">ask_year</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">nrc_cost</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">rc_cost</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">oew</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">full_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6392,7 +6411,22 @@ assignment is bypassed and this series populates the aircraft's
   </span>
 
 <a href="#aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_model.ReferenceAircraftParameters" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">ReferenceAircraftParameters</span><span class="p">(</span><span class="n">energy_per_ask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">emission_index_nox</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">emission_index_soot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">doc_non_energy_base</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">entry_into_service_year</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cruise_altitude</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hybridization_factor</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">ask_year</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nrc_cost</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rc_cost</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">oew</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">full_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">share</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">continuous_improvement_factor_energy</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">ReferenceAircraftParameters</span><span class="p">(</span>
+    <span class="n">energy_per_ask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">emission_index_nox</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">emission_index_soot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">doc_non_energy_base</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">entry_into_service_year</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">cruise_altitude</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">hybridization_factor</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">ask_year</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">nrc_cost</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">rc_cost</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">oew</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">full_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">share</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">continuous_improvement_factor_energy</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6750,7 +6784,9 @@ improvements are measured. Each subcategory has an "old" and a "recent" referenc
 
 
 <a href="#aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_model.Aircraft" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">Aircraft</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">energy_type</span><span class="o">=</span><span class="s1">&#39;DROP_IN_FUEL&#39;</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">Aircraft</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">energy_type</span><span class="o">=</span><span class="s2">"DROP_IN_FUEL"</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6905,7 +6941,7 @@ performance relative to a reference aircraft.</p>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">parameters</span><span class="p">:</span> <span class="n">AircraftParameters</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">energy_type</span><span class="o">=</span><span class="s2">&quot;DROP_IN_FUEL&quot;</span><span class="p">,</span>
+    <span class="n">energy_type</span><span class="o">=</span><span class="s2">"DROP_IN_FUEL"</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
     <span class="k">if</span> <span class="n">parameters</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -7027,7 +7063,7 @@ performance relative to a reference aircraft.</p>
 <span class="normal">322</span>
 <span class="normal">323</span>
 <span class="normal">324</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">from_dataframe_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Populate aircraft attributes from a DataFrame row.</span>
+<span class="w">    </span><span class="sd">"""Populate aircraft attributes from a DataFrame row.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -7038,7 +7074,7 @@ performance relative to a reference aircraft.</p>
 <span class="sd">    -------</span>
 <span class="sd">    Aircraft</span>
 <span class="sd">        Self, with attributes populated from the row data.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">AIRCRAFT_COLUMNS</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">entry_into_service_year</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">AIRCRAFT_COLUMNS</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">consumption_evolution</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">AIRCRAFT_COLUMNS</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span>
@@ -7133,34 +7169,34 @@ and <code>_compute_aircraft_performance_contributions</code>). Consequences:</p>
 <span class="normal">355</span>
 <span class="normal">356</span>
 <span class="normal">357</span>
-<span class="normal">358</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">resolved</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">recent_ref</span><span class="p">:</span> <span class="s2">&quot;ReferenceAircraftParameters&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the absolute value of a performance metric for this aircraft.</span>
+<span class="normal">358</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">resolved</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">recent_ref</span><span class="p">:</span> <span class="s2">"ReferenceAircraftParameters"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Return the absolute value of a performance metric for this aircraft.</span>
 
 <span class="sd">    ``metric`` is one of the absolute field names from :data:`_PERF_PAIRS`</span>
 <span class="sd">    (``energy_per_ask``, ``emission_index_nox``, ``emission_index_soot``,</span>
 <span class="sd">    ``doc_non_energy_base``). When the aircraft card sets that field</span>
 <span class="sd">    directly, its value is returned; otherwise the paired relative-evolution</span>
-<span class="sd">    field is applied to ``recent_ref``&#39;s value for the same metric.</span>
+<span class="sd">    field is applied to ``recent_ref``'s value for the same metric.</span>
 <span class="sd">    :func:`_validate_perf_mode` guarantees exactly one branch fires.</span>
 
 <span class="sd">    For an aircraft serving multiple markets, relative mode yields different</span>
 <span class="sd">    absolute values per market (each has its own recent reference); absolute</span>
 <span class="sd">    mode yields the user-provided value as-is in every market.</span>
 
-<span class="sd">    Relative mode anchors to the reference&#39;s **static** baseline</span>
+<span class="sd">    Relative mode anchors to the reference's **static** baseline</span>
 <span class="sd">    (``recent_ref.energy_per_ask`` as written on the card), *not* its</span>
-<span class="sd">    continuous-improvement-adjusted &quot;moving&quot; value. Any per-year continuous</span>
+<span class="sd">    continuous-improvement-adjusted "moving" value. Any per-year continuous</span>
 <span class="sd">    improvement factor is applied **separately and per aircraft** on top of</span>
 <span class="sd">    this resolved value (see</span>
 <span class="sd">    ``FleetPerformanceModel._compute_energy_consumption_and_share_wrt_energy_type``</span>
 <span class="sd">    and ``_compute_aircraft_performance_contributions``). Consequences:</span>
 
-<span class="sd">    * A relatively-defined aircraft does **not** track the reference&#39;s own</span>
+<span class="sd">    * A relatively-defined aircraft does **not** track the reference's own</span>
 <span class="sd">      improvement over time — only its own</span>
 <span class="sd">      ``continuous_improvement_factor_energy`` moves it after t0.</span>
 <span class="sd">    * To hold a constant *relative* gap to an improving reference, give the</span>
-<span class="sd">      aircraft the reference&#39;s improvement trajectory as its own CIF.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">      aircraft the reference's improvement trajectory as its own CIF.</span>
+<span class="sd">    """</span>
     <span class="n">abs_value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">abs_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">abs_value</span><span class="p">)</span>
@@ -7441,13 +7477,13 @@ aircraft (old and recent) that serve as baselines for performance comparisons.</
 <span class="normal">406</span>
 <span class="normal">407</span>
 <span class="normal">408</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_aircraft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">aircraft</span><span class="p">:</span> <span class="n">Aircraft</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add an aircraft to this subcategory.</span>
+<span class="w">    </span><span class="sd">"""Add an aircraft to this subcategory.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    aircraft</span>
 <span class="sd">        Aircraft instance to add to the subcategory.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">aircraft</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">aircraft</span><span class="p">)]</span> <span class="o">=</span> <span class="n">aircraft</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -7518,13 +7554,13 @@ aircraft (old and recent) that serve as baselines for performance comparisons.</
 <span class="normal">421</span>
 <span class="normal">422</span>
 <span class="normal">423</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">remove_aircraft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">aircraft_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove an aircraft from this subcategory by name.</span>
+<span class="w">    </span><span class="sd">"""Remove an aircraft from this subcategory by name.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    aircraft_name</span>
 <span class="sd">        Name of the aircraft to remove.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">aircraft</span> <span class="o">=</span> <span class="p">{</span>
         <span class="n">i</span><span class="p">:</span> <span class="n">aircraft</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">aircraft</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span>
@@ -7561,9 +7597,9 @@ aircraft (old and recent) that serve as baselines for performance comparisons.</
 <span class="normal">428</span>
 <span class="normal">429</span>
 <span class="normal">430</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Execute compute method on all aircraft in the subcategory.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Execute compute method on all aircraft in the subcategory."""</span>
     <span class="k">for</span> <span class="n">aircraft</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">aircraft</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-        <span class="n">compute_method</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">aircraft</span><span class="p">,</span> <span class="s2">&quot;compute&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">compute_method</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">aircraft</span><span class="p">,</span> <span class="s2">"compute"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">compute_method</span><span class="p">):</span>
             <span class="n">compute_method</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
@@ -7855,13 +7891,13 @@ Each category has parameters defining aircraft lifetime and market share thresho
 <span class="normal">488</span>
 <span class="normal">489</span>
 <span class="normal">490</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_subcategory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subcategory</span><span class="p">:</span> <span class="n">SubCategory</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add a subcategory to this category.</span>
+<span class="w">    </span><span class="sd">"""Add a subcategory to this category.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    subcategory</span>
 <span class="sd">        SubCategory instance to add.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">subcategories</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subcategories</span><span class="p">)]</span> <span class="o">=</span> <span class="n">subcategory</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -7933,13 +7969,13 @@ Each category has parameters defining aircraft lifetime and market share thresho
 <span class="normal">504</span>
 <span class="normal">505</span>
 <span class="normal">506</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">remove_subcategory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subcategory_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove a subcategory from this category by name.</span>
+<span class="w">    </span><span class="sd">"""Remove a subcategory from this category by name.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    subcategory_name</span>
 <span class="sd">        Name of the subcategory to remove.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">subcategories</span> <span class="o">=</span> <span class="p">{</span>
         <span class="n">i</span><span class="p">:</span> <span class="n">subcat</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">subcat</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span>
@@ -7970,7 +8006,12 @@ Each category has parameters defining aircraft lifetime and market share thresho
 
 
 <a href="#aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_model.Fleet" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">Fleet</span><span class="p">(</span><span class="n">parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">aircraft_inventory_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fleet_config_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">markets</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">Fleet</span><span class="p">(</span>
+    <span class="n">parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">aircraft_inventory_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">fleet_config_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">markets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -8276,7 +8317,7 @@ passed at construction time (or <code>None</code>).</p>
 <span class="normal">593</span>
 <span class="normal">594</span>
 <span class="normal">595</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Execute compute on all categories in the fleet.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Execute compute on all categories in the fleet."""</span>
     <span class="k">for</span> <span class="n">cat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
         <span class="n">cat</span><span class="o">.</span><span class="n">_compute</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
@@ -8367,7 +8408,7 @@ aircraft, with their full qualified names set.</p>
 <span class="normal">642</span>
 <span class="normal">643</span>
 <span class="normal">644</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_all_aircraft_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Retrieve all aircraft elements organized by category.</span>
+<span class="w">    </span><span class="sd">"""Retrieve all aircraft elements organized by category.</span>
 
 <span class="sd">    Creates a flattened view of all aircraft in the fleet, including reference</span>
 <span class="sd">    aircraft, with their full qualified names set.</span>
@@ -8377,7 +8418,7 @@ aircraft, with their full qualified names set.</p>
 <span class="sd">    dict</span>
 <span class="sd">        Dictionary mapping category names to lists of aircraft elements</span>
 <span class="sd">        (reference aircraft parameters and Aircraft instances).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">all_aircraft_elements</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="k">for</span> <span class="n">category</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
@@ -8387,17 +8428,17 @@ aircraft, with their full qualified names set.</p>
         <span class="n">aircraft_per_category</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">subcategory</span> <span class="o">=</span> <span class="n">category</span><span class="o">.</span><span class="n">subcategories</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
-        <span class="n">ref_old_aircraft_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">category</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">subcategory</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">:old_reference&quot;</span>
+        <span class="n">ref_old_aircraft_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">category</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">subcategory</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">:old_reference"</span>
         <span class="n">subcategory</span><span class="o">.</span><span class="n">old_reference_aircraft</span><span class="o">.</span><span class="n">full_name</span> <span class="o">=</span> <span class="n">ref_old_aircraft_name</span>
         <span class="n">aircraft_per_category</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">subcategory</span><span class="o">.</span><span class="n">old_reference_aircraft</span><span class="p">)</span>
 
-        <span class="n">ref_recent_aircraft_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">category</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">subcategory</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">:recent_reference&quot;</span>
+        <span class="n">ref_recent_aircraft_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">category</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">subcategory</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">:recent_reference"</span>
         <span class="n">subcategory</span><span class="o">.</span><span class="n">recent_reference_aircraft</span><span class="o">.</span><span class="n">full_name</span> <span class="o">=</span> <span class="n">ref_recent_aircraft_name</span>
         <span class="n">aircraft_per_category</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">subcategory</span><span class="o">.</span><span class="n">recent_reference_aircraft</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">subcategory</span> <span class="ow">in</span> <span class="n">category</span><span class="o">.</span><span class="n">subcategories</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">aircraft</span> <span class="ow">in</span> <span class="n">subcategory</span><span class="o">.</span><span class="n">aircraft</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-                <span class="n">aircraft_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">category</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">subcategory</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">aircraft</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">aircraft_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">category</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">subcategory</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">aircraft</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span>
                 <span class="n">aircraft</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">full_name</span> <span class="o">=</span> <span class="n">aircraft_name</span>
                 <span class="n">aircraft_per_category</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">aircraft</span><span class="p">)</span>
 
@@ -8418,7 +8459,13 @@ aircraft, with their full qualified names set.</p>
 
 
 <a href="#aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_model.Fleet.pretty_print" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">pretty_print</span><span class="p">(</span><span class="n">include_aircraft</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">display</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">absolute</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reference</span><span class="o">=</span><span class="s1">&#39;recent&#39;</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">pretty_print</span><span class="p">(</span>
+    <span class="n">include_aircraft</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">display</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">absolute</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">reference</span><span class="o">=</span><span class="s2">"recent"</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -8710,9 +8757,9 @@ the method falls back to the other available reference.</p>
     <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
     <span class="n">display</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">absolute</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">reference</span><span class="o">=</span><span class="s2">&quot;recent&quot;</span><span class="p">,</span>
+    <span class="n">reference</span><span class="o">=</span><span class="s2">"recent"</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return (and optionally print) a summary of the fleet.</span>
+<span class="w">    </span><span class="sd">"""Return (and optionally print) a summary of the fleet.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -8727,26 +8774,26 @@ the method falls back to the other available reference.</p>
 <span class="sd">        absolute values using the selected reference aircraft as the baseline.</span>
 <span class="sd">    reference : str</span>
 <span class="sd">        Which reference aircraft to use for absolute conversions; accepts</span>
-<span class="sd">        &quot;recent&quot; (default) or &quot;old&quot;. If the requested reference is missing,</span>
+<span class="sd">        "recent" (default) or "old". If the requested reference is missing,</span>
 <span class="sd">        the method falls back to the other available reference.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">reference_mode</span> <span class="o">=</span> <span class="n">reference</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">reference_mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;recent&quot;</span><span class="p">,</span> <span class="s2">&quot;old&quot;</span><span class="p">}:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;reference must be &#39;recent&#39; or &#39;old&#39;&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">reference_mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">"recent"</span><span class="p">,</span> <span class="s2">"old"</span><span class="p">}:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"reference must be 'recent' or 'old'"</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_format_value</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_format_value</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">""</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">and</span> <span class="n">value</span><span class="o">.</span><span class="n">is_integer</span><span class="p">():</span>
             <span class="n">value</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">value</span><span class="si">}{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">value</span><span class="si">}{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">"</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_format_absolute</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">base_value</span><span class="p">,</span> <span class="n">delta_percent</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_format_absolute</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">base_value</span><span class="p">,</span> <span class="n">delta_percent</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">""</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">base_value</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">delta_percent</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="n">absolute_value</span> <span class="o">=</span> <span class="n">base_value</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">delta_percent</span> <span class="o">/</span> <span class="mf">100.0</span><span class="p">)</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">absolute_value</span><span class="si">:</span><span class="s2">.4g</span><span class="si">}{</span><span class="n">unit</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">absolute_value</span><span class="si">:</span><span class="s2">.4g</span><span class="si">}{</span><span class="n">unit</span><span class="si">}</span><span class="s2">"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_format_reference_line</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">reference_obj</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">reference_obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -8755,26 +8802,26 @@ the method falls back to the other available reference.</p>
             <span class="nb">filter</span><span class="p">(</span>
                 <span class="kc">None</span><span class="p">,</span>
                 <span class="p">[</span>
-                    <span class="n">_format_value</span><span class="p">(</span><span class="s2">&quot;EIS&quot;</span><span class="p">,</span> <span class="n">reference_obj</span><span class="o">.</span><span class="n">entry_into_service_year</span><span class="p">,</span> <span class="s2">&quot; y&quot;</span><span class="p">),</span>
-                    <span class="n">_format_value</span><span class="p">(</span><span class="s2">&quot;energy/ASK&quot;</span><span class="p">,</span> <span class="n">reference_obj</span><span class="o">.</span><span class="n">energy_per_ask</span><span class="p">,</span> <span class="s2">&quot; MJ/ASK&quot;</span><span class="p">),</span>
-                    <span class="n">_format_value</span><span class="p">(</span><span class="s2">&quot;DOC&quot;</span><span class="p">,</span> <span class="n">reference_obj</span><span class="o">.</span><span class="n">doc_non_energy_base</span><span class="p">,</span> <span class="s2">&quot; €/ASK&quot;</span><span class="p">),</span>
-                    <span class="n">_format_value</span><span class="p">(</span><span class="s2">&quot;NOx&quot;</span><span class="p">,</span> <span class="n">reference_obj</span><span class="o">.</span><span class="n">emission_index_nox</span><span class="p">,</span> <span class="s2">&quot; kg/ASK&quot;</span><span class="p">),</span>
-                    <span class="n">_format_value</span><span class="p">(</span><span class="s2">&quot;soot&quot;</span><span class="p">,</span> <span class="n">reference_obj</span><span class="o">.</span><span class="n">emission_index_soot</span><span class="p">,</span> <span class="s2">&quot; kg/ASK&quot;</span><span class="p">),</span>
+                    <span class="n">_format_value</span><span class="p">(</span><span class="s2">"EIS"</span><span class="p">,</span> <span class="n">reference_obj</span><span class="o">.</span><span class="n">entry_into_service_year</span><span class="p">,</span> <span class="s2">" y"</span><span class="p">),</span>
+                    <span class="n">_format_value</span><span class="p">(</span><span class="s2">"energy/ASK"</span><span class="p">,</span> <span class="n">reference_obj</span><span class="o">.</span><span class="n">energy_per_ask</span><span class="p">,</span> <span class="s2">" MJ/ASK"</span><span class="p">),</span>
+                    <span class="n">_format_value</span><span class="p">(</span><span class="s2">"DOC"</span><span class="p">,</span> <span class="n">reference_obj</span><span class="o">.</span><span class="n">doc_non_energy_base</span><span class="p">,</span> <span class="s2">" €/ASK"</span><span class="p">),</span>
+                    <span class="n">_format_value</span><span class="p">(</span><span class="s2">"NOx"</span><span class="p">,</span> <span class="n">reference_obj</span><span class="o">.</span><span class="n">emission_index_nox</span><span class="p">,</span> <span class="s2">" kg/ASK"</span><span class="p">),</span>
+                    <span class="n">_format_value</span><span class="p">(</span><span class="s2">"soot"</span><span class="p">,</span> <span class="n">reference_obj</span><span class="o">.</span><span class="n">emission_index_soot</span><span class="p">,</span> <span class="s2">" kg/ASK"</span><span class="p">),</span>
                 <span class="p">],</span>
             <span class="p">)</span>
         <span class="p">)</span>
-        <span class="n">descriptor</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bits</span><span class="p">)</span> <span class="k">if</span> <span class="n">bits</span> <span class="k">else</span> <span class="s2">&quot;no data&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">level_two</span><span class="si">}</span><span class="s2">- </span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2"> reference (</span><span class="si">{</span><span class="n">descriptor</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="n">descriptor</span> <span class="o">=</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bits</span><span class="p">)</span> <span class="k">if</span> <span class="n">bits</span> <span class="k">else</span> <span class="s2">"no data"</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">level_two</span><span class="si">}</span><span class="s2">- </span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2"> reference (</span><span class="si">{</span><span class="n">descriptor</span><span class="si">}</span><span class="s2">)"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_select_base_reference</span><span class="p">(</span><span class="n">subcategory</span><span class="p">):</span>
         <span class="n">preferred</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">subcategory</span><span class="o">.</span><span class="n">recent_reference_aircraft</span>
-            <span class="k">if</span> <span class="n">reference_mode</span> <span class="o">==</span> <span class="s2">&quot;recent&quot;</span>
+            <span class="k">if</span> <span class="n">reference_mode</span> <span class="o">==</span> <span class="s2">"recent"</span>
             <span class="k">else</span> <span class="n">subcategory</span><span class="o">.</span><span class="n">old_reference_aircraft</span>
         <span class="p">)</span>
         <span class="n">fallback</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">subcategory</span><span class="o">.</span><span class="n">old_reference_aircraft</span>
-            <span class="k">if</span> <span class="n">reference_mode</span> <span class="o">==</span> <span class="s2">&quot;recent&quot;</span>
+            <span class="k">if</span> <span class="n">reference_mode</span> <span class="o">==</span> <span class="s2">"recent"</span>
             <span class="k">else</span> <span class="n">subcategory</span><span class="o">.</span><span class="n">recent_reference_aircraft</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">preferred</span> <span class="ow">or</span> <span class="n">fallback</span>
@@ -8786,31 +8833,31 @@ the method falls back to the other available reference.</p>
                 <span class="nb">filter</span><span class="p">(</span>
                     <span class="kc">None</span><span class="p">,</span>
                     <span class="p">[</span>
-                        <span class="n">aircraft</span><span class="o">.</span><span class="n">energy_type</span> <span class="ow">or</span> <span class="s2">&quot;UNKNOWN&quot;</span><span class="p">,</span>
-                        <span class="n">_format_value</span><span class="p">(</span><span class="s2">&quot;EIS&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">entry_into_service_year</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">),</span>
+                        <span class="n">aircraft</span><span class="o">.</span><span class="n">energy_type</span> <span class="ow">or</span> <span class="s2">"UNKNOWN"</span><span class="p">,</span>
+                        <span class="n">_format_value</span><span class="p">(</span><span class="s2">"EIS"</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">entry_into_service_year</span><span class="p">,</span> <span class="s2">"y"</span><span class="p">),</span>
                         <span class="n">_format_absolute</span><span class="p">(</span>
-                            <span class="s2">&quot;energy/ASK&quot;</span><span class="p">,</span>
+                            <span class="s2">"energy/ASK"</span><span class="p">,</span>
                             <span class="n">base_reference</span><span class="o">.</span><span class="n">energy_per_ask</span><span class="p">,</span>
                             <span class="n">params</span><span class="o">.</span><span class="n">consumption_evolution</span><span class="p">,</span>
-                            <span class="s2">&quot; MJ/ASK&quot;</span><span class="p">,</span>
+                            <span class="s2">" MJ/ASK"</span><span class="p">,</span>
                         <span class="p">),</span>
                         <span class="n">_format_absolute</span><span class="p">(</span>
-                            <span class="s2">&quot;DOC&quot;</span><span class="p">,</span>
+                            <span class="s2">"DOC"</span><span class="p">,</span>
                             <span class="n">base_reference</span><span class="o">.</span><span class="n">doc_non_energy_base</span><span class="p">,</span>
                             <span class="n">params</span><span class="o">.</span><span class="n">doc_non_energy_evolution</span><span class="p">,</span>
-                            <span class="s2">&quot; €/ASK&quot;</span><span class="p">,</span>
+                            <span class="s2">" €/ASK"</span><span class="p">,</span>
                         <span class="p">),</span>
                         <span class="n">_format_absolute</span><span class="p">(</span>
-                            <span class="s2">&quot;NOx&quot;</span><span class="p">,</span>
+                            <span class="s2">"NOx"</span><span class="p">,</span>
                             <span class="n">base_reference</span><span class="o">.</span><span class="n">emission_index_nox</span><span class="p">,</span>
                             <span class="n">params</span><span class="o">.</span><span class="n">nox_evolution</span><span class="p">,</span>
-                            <span class="s2">&quot; kg/ASK&quot;</span><span class="p">,</span>
+                            <span class="s2">" kg/ASK"</span><span class="p">,</span>
                         <span class="p">),</span>
                         <span class="n">_format_absolute</span><span class="p">(</span>
-                            <span class="s2">&quot;soot&quot;</span><span class="p">,</span>
+                            <span class="s2">"soot"</span><span class="p">,</span>
                             <span class="n">base_reference</span><span class="o">.</span><span class="n">emission_index_soot</span><span class="p">,</span>
                             <span class="n">params</span><span class="o">.</span><span class="n">soot_evolution</span><span class="p">,</span>
-                            <span class="s2">&quot; kg/ASK&quot;</span><span class="p">,</span>
+                            <span class="s2">" kg/ASK"</span><span class="p">,</span>
                         <span class="p">),</span>
                     <span class="p">],</span>
                 <span class="p">)</span>
@@ -8820,56 +8867,56 @@ the method falls back to the other available reference.</p>
                 <span class="nb">filter</span><span class="p">(</span>
                     <span class="kc">None</span><span class="p">,</span>
                     <span class="p">[</span>
-                        <span class="n">aircraft</span><span class="o">.</span><span class="n">energy_type</span> <span class="ow">or</span> <span class="s2">&quot;UNKNOWN&quot;</span><span class="p">,</span>
-                        <span class="n">_format_value</span><span class="p">(</span><span class="s2">&quot;EIS&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">entry_into_service_year</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">),</span>
-                        <span class="n">_format_value</span><span class="p">(</span><span class="s2">&quot;cons&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">consumption_evolution</span><span class="p">,</span> <span class="s2">&quot;%&quot;</span><span class="p">),</span>
-                        <span class="n">_format_value</span><span class="p">(</span><span class="s2">&quot;NOx&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">nox_evolution</span><span class="p">,</span> <span class="s2">&quot;%&quot;</span><span class="p">),</span>
-                        <span class="n">_format_value</span><span class="p">(</span><span class="s2">&quot;soot&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">soot_evolution</span><span class="p">,</span> <span class="s2">&quot;%&quot;</span><span class="p">),</span>
-                        <span class="n">_format_value</span><span class="p">(</span><span class="s2">&quot;DOC&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">doc_non_energy_evolution</span><span class="p">,</span> <span class="s2">&quot;%&quot;</span><span class="p">),</span>
+                        <span class="n">aircraft</span><span class="o">.</span><span class="n">energy_type</span> <span class="ow">or</span> <span class="s2">"UNKNOWN"</span><span class="p">,</span>
+                        <span class="n">_format_value</span><span class="p">(</span><span class="s2">"EIS"</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">entry_into_service_year</span><span class="p">,</span> <span class="s2">"y"</span><span class="p">),</span>
+                        <span class="n">_format_value</span><span class="p">(</span><span class="s2">"cons"</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">consumption_evolution</span><span class="p">,</span> <span class="s2">"%"</span><span class="p">),</span>
+                        <span class="n">_format_value</span><span class="p">(</span><span class="s2">"NOx"</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">nox_evolution</span><span class="p">,</span> <span class="s2">"%"</span><span class="p">),</span>
+                        <span class="n">_format_value</span><span class="p">(</span><span class="s2">"soot"</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">soot_evolution</span><span class="p">,</span> <span class="s2">"%"</span><span class="p">),</span>
+                        <span class="n">_format_value</span><span class="p">(</span><span class="s2">"DOC"</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">doc_non_energy_evolution</span><span class="p">,</span> <span class="s2">"%"</span><span class="p">),</span>
                     <span class="p">],</span>
                 <span class="p">)</span>
             <span class="p">)</span>
-        <span class="n">descriptor</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bits</span><span class="p">)</span> <span class="k">if</span> <span class="n">bits</span> <span class="k">else</span> <span class="s2">&quot;no data&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">level_two</span><span class="si">}</span><span class="s2">- </span><span class="si">{</span><span class="n">aircraft</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">descriptor</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="n">descriptor</span> <span class="o">=</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bits</span><span class="p">)</span> <span class="k">if</span> <span class="n">bits</span> <span class="k">else</span> <span class="s2">"no data"</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">level_two</span><span class="si">}</span><span class="s2">- </span><span class="si">{</span><span class="n">aircraft</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">descriptor</span><span class="si">}</span><span class="s2">)"</span>
 
     <span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">indent</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">indent</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="n">level_one</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="n">indent</span>
-    <span class="n">level_two</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="p">(</span><span class="n">indent</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">level_one</span> <span class="o">=</span> <span class="s2">" "</span> <span class="o">*</span> <span class="n">indent</span>
+    <span class="n">level_two</span> <span class="o">=</span> <span class="s2">" "</span> <span class="o">*</span> <span class="p">(</span><span class="n">indent</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="p">:</span>
-        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;Fleet has no categories configured.&quot;</span><span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"Fleet has no categories configured."</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">category</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
         <span class="n">subcategories</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">category</span><span class="o">.</span><span class="n">subcategories</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
         <span class="n">share_sum</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">sub</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">share</span> <span class="ow">or</span> <span class="mf">0.0</span><span class="p">)</span> <span class="k">for</span> <span class="n">sub</span> <span class="ow">in</span> <span class="n">subcategories</span><span class="p">)</span>
         <span class="n">meta_bits</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="n">category</span><span class="o">.</span><span class="n">parameters</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">category</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">life</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">meta_bits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;life=</span><span class="si">{</span><span class="n">category</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">life</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">y&quot;</span><span class="p">)</span>
+                <span class="n">meta_bits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"life=</span><span class="si">{</span><span class="n">category</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">life</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">y"</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">category</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">limit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">meta_bits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;limit=</span><span class="si">{</span><span class="n">category</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">limit</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">meta_bits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;subcategories=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">subcategories</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">meta_bits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"limit=</span><span class="si">{</span><span class="n">category</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">limit</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">meta_bits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"subcategories=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">subcategories</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">subcategories</span><span class="p">:</span>
-            <span class="n">meta_bits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;share_sum=</span><span class="si">{</span><span class="n">share_sum</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
-        <span class="n">category_header</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">category</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">meta_bits</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+            <span class="n">meta_bits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"share_sum=</span><span class="si">{</span><span class="n">share_sum</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%"</span><span class="p">)</span>
+        <span class="n">category_header</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">category</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">meta_bits</span><span class="p">)</span><span class="si">}</span><span class="s2">)"</span>
         <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">category_header</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">subcategory</span> <span class="ow">in</span> <span class="n">subcategories</span><span class="p">:</span>
             <span class="n">share_value</span> <span class="o">=</span> <span class="n">subcategory</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">share</span> <span class="k">if</span> <span class="n">subcategory</span><span class="o">.</span><span class="n">parameters</span> <span class="k">else</span> <span class="kc">None</span>
-            <span class="n">share_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">share_value</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%&quot;</span> <span class="k">if</span> <span class="n">share_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;n/a&quot;</span>
+            <span class="n">share_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">share_value</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%"</span> <span class="k">if</span> <span class="n">share_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">"n/a"</span>
             <span class="n">aircraft_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">subcategory</span><span class="o">.</span><span class="n">aircraft</span><span class="p">)</span>
             <span class="n">sub_line</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">level_one</span><span class="si">}</span><span class="s2">- </span><span class="si">{</span><span class="n">subcategory</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;(share=</span><span class="si">{</span><span class="n">share_str</span><span class="si">}</span><span class="s2">, aircraft=</span><span class="si">{</span><span class="n">aircraft_count</span><span class="si">}</span><span class="s2">)&quot;</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">level_one</span><span class="si">}</span><span class="s2">- </span><span class="si">{</span><span class="n">subcategory</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> "</span>
+                <span class="sa">f</span><span class="s2">"(share=</span><span class="si">{</span><span class="n">share_str</span><span class="si">}</span><span class="s2">, aircraft=</span><span class="si">{</span><span class="n">aircraft_count</span><span class="si">}</span><span class="s2">)"</span>
             <span class="p">)</span>
             <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sub_line</span><span class="p">)</span>
 
             <span class="c1"># Reference aircraft details</span>
-            <span class="n">ref_old_line</span> <span class="o">=</span> <span class="n">_format_reference_line</span><span class="p">(</span><span class="s2">&quot;old&quot;</span><span class="p">,</span> <span class="n">subcategory</span><span class="o">.</span><span class="n">old_reference_aircraft</span><span class="p">)</span>
+            <span class="n">ref_old_line</span> <span class="o">=</span> <span class="n">_format_reference_line</span><span class="p">(</span><span class="s2">"old"</span><span class="p">,</span> <span class="n">subcategory</span><span class="o">.</span><span class="n">old_reference_aircraft</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">ref_old_line</span><span class="p">:</span>
                 <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ref_old_line</span><span class="p">)</span>
             <span class="n">ref_recent_line</span> <span class="o">=</span> <span class="n">_format_reference_line</span><span class="p">(</span>
-                <span class="s2">&quot;recent&quot;</span><span class="p">,</span> <span class="n">subcategory</span><span class="o">.</span><span class="n">recent_reference_aircraft</span>
+                <span class="s2">"recent"</span><span class="p">,</span> <span class="n">subcategory</span><span class="o">.</span><span class="n">recent_reference_aircraft</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="n">ref_recent_line</span><span class="p">:</span>
                 <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ref_recent_line</span><span class="p">)</span>
@@ -8879,7 +8926,7 @@ the method falls back to the other available reference.</p>
                 <span class="k">for</span> <span class="n">aircraft</span> <span class="ow">in</span> <span class="n">subcategory</span><span class="o">.</span><span class="n">aircraft</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
                     <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_format_aircraft_line</span><span class="p">(</span><span class="n">aircraft</span><span class="p">,</span> <span class="n">base_reference</span><span class="o">=</span><span class="n">base_reference</span><span class="p">))</span>
 
-    <span class="n">output</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">display</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">output</span>
@@ -8906,7 +8953,13 @@ the method falls back to the other available reference.</p>
 
 
 <a href="#aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_model.FleetModel" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">FleetModel</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;fleet_model&#39;</span><span class="p">,</span> <span class="n">fleet</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">markets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">FleetModel</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"fleet_model"</span><span class="p">,</span>
+    <span class="n">fleet</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">markets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -9046,7 +9099,7 @@ functions to model the gradual introduction and retirement of aircraft types.</p
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1254</span>
 <span class="normal">1255</span>
 <span class="normal">1256</span>
-<span class="normal">1257</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;fleet_model&quot;</span><span class="p">,</span> <span class="n">fleet</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">markets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="normal">1257</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"fleet_model"</span><span class="p">,</span> <span class="n">fleet</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">markets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">fleet</span> <span class="o">=</span> <span class="n">fleet</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">markets</span> <span class="o">=</span> <span class="n">markets</span>
@@ -9176,7 +9229,7 @@ functions to model the gradual introduction and retirement of aircraft types.</p
 <span class="normal">1314</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute fleet evolution and all derived metrics.</span>
+<span class="w">    </span><span class="sd">"""Compute fleet evolution and all derived metrics.</span>
 
 <span class="sd">    Executes the complete fleet model computation pipeline:</span>
 
@@ -9193,12 +9246,12 @@ functions to model the gradual introduction and retirement of aircraft types.</p
 <span class="sd">    -------</span>
 <span class="sd">    np.ndarray</span>
 <span class="sd">        Dummy output array (actual results stored in self.df).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Start from empty dataframe (necessary for multiple runs of the model)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
 
     <span class="c1"># Aircraft shares: either user-driven (share-decoupling) or S-curve derived.</span>
-    <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fleet</span><span class="p">,</span> <span class="s2">&quot;share_decoupled&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fleet</span><span class="p">,</span> <span class="s2">"share_decoupled"</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
         <span class="c1"># Populate aircraft_share columns directly from the per-aircraft share series.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_compute_decoupled_aircraft_share</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
@@ -9359,7 +9412,7 @@ path (<code>_compute_decoupled_aircraft_share</code>), so this works in either m
 <span class="normal">1408</span>
 <span class="normal">1409</span>
 <span class="normal">1410</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate fleet renewal visualization plots.</span>
+<span class="w">    </span><span class="sd">"""Generate fleet renewal visualization plots.</span>
 
 <span class="sd">    Creates a 2-row matplotlib figure with one column per category. The top</span>
 <span class="sd">    row shows stacked area plots of aircraft shares over time (old reference,</span>
@@ -9373,7 +9426,7 @@ path (<code>_compute_decoupled_aircraft_share</code>), so this works in either m
 <span class="sd">    path (``_compute_decoupled_aircraft_share``), so this works in either mode</span>
 <span class="sd">    — including the custom workflow, where the cumulative</span>
 <span class="sd">    ``*:single_aircraft_share`` columns do not exist.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span><span class="p">,</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">,</span>
@@ -9394,12 +9447,12 @@ path (<code>_compute_decoupled_aircraft_share</code>), so this works in either m
         <span class="c1"># _compute_* consumers).</span>
         <span class="n">subcategory</span> <span class="o">=</span> <span class="n">category</span><span class="o">.</span><span class="n">subcategories</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">ref_key</span><span class="p">,</span> <span class="n">ref_label</span> <span class="ow">in</span> <span class="p">(</span>
-            <span class="p">(</span><span class="s2">&quot;old_reference&quot;</span><span class="p">,</span> <span class="s2">&quot;Old reference aircraft&quot;</span><span class="p">),</span>
-            <span class="p">(</span><span class="s2">&quot;recent_reference&quot;</span><span class="p">,</span> <span class="s2">&quot;Recent reference aircraft&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">"old_reference"</span><span class="p">,</span> <span class="s2">"Old reference aircraft"</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">"recent_reference"</span><span class="p">,</span> <span class="s2">"Recent reference aircraft"</span><span class="p">),</span>
         <span class="p">):</span>
-            <span class="n">var_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">category</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">subcategory</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">ref_key</span><span class="si">}</span><span class="s2">:aircraft_share&quot;</span>
+            <span class="n">var_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">category</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">subcategory</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">ref_key</span><span class="si">}</span><span class="s2">:aircraft_share"</span>
             <span class="k">if</span> <span class="n">var_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">:</span>
-                <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">subcategory</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">ref_label</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">subcategory</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">ref_label</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
                 <span class="n">series</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">,</span> <span class="n">var_name</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
                 <span class="p">)</span>
@@ -9407,9 +9460,9 @@ path (<code>_compute_decoupled_aircraft_share</code>), so this works in either m
         <span class="c1"># New aircraft, in subcategory then insertion order.</span>
         <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">subcategory</span> <span class="ow">in</span> <span class="n">category</span><span class="o">.</span><span class="n">subcategories</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">aircraft</span> <span class="ow">in</span> <span class="n">subcategory</span><span class="o">.</span><span class="n">aircraft</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-                <span class="n">var_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">category</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">subcategory</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">aircraft</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">:aircraft_share&quot;</span>
+                <span class="n">var_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">category</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">subcategory</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">aircraft</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">:aircraft_share"</span>
                 <span class="k">if</span> <span class="n">var_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">:</span>
-                    <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">subcategory</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">aircraft</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">subcategory</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">aircraft</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
                     <span class="n">series</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">,</span> <span class="n">var_name</span>
@@ -9423,7 +9476,7 @@ path (<code>_compute_decoupled_aircraft_share</code>), so this works in either m
         <span class="c1"># natural order first (old_reference -&gt; C0) and reversed alongside the</span>
         <span class="c1"># series, so every band keeps a stable color regardless of stacking</span>
         <span class="c1"># order.</span>
-        <span class="n">prop_colors</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;axes.prop_cycle&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">by_key</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;color&quot;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="n">prop_colors</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">"axes.prop_cycle"</span><span class="p">]</span><span class="o">.</span><span class="n">by_key</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"color"</span><span class="p">,</span> <span class="p">[])</span>
         <span class="k">if</span> <span class="n">prop_colors</span><span class="p">:</span>
             <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="n">prop_colors</span><span class="p">[</span><span class="n">k</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">prop_colors</span><span class="p">)]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">series</span><span class="p">))]</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">stackplot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">series</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">colors</span><span class="o">=</span><span class="n">colors</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
@@ -9433,9 +9486,9 @@ path (<code>_compute_decoupled_aircraft_share</code>), so this works in either m
         <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">)</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
         <span class="n">handles</span><span class="p">,</span> <span class="n">leg_labels</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_legend_handles_labels</span><span class="p">()</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">handles</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">leg_labels</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper left&quot;</span><span class="p">,</span> <span class="n">prop</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">})</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Year&quot;</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Share in fleet [%]&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">handles</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">leg_labels</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">loc</span><span class="o">=</span><span class="s2">"upper left"</span><span class="p">,</span> <span class="n">prop</span><span class="o">=</span><span class="p">{</span><span class="s2">"size"</span><span class="p">:</span> <span class="mi">8</span><span class="p">})</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"Year"</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"Share in fleet [%]"</span><span class="p">)</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">category</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 
         <span class="c1"># Bottom plot: mean fleet energy consumption.</span>
@@ -9444,13 +9497,13 @@ path (<code>_compute_decoupled_aircraft_share</code>), so this works in either m
             <span class="n">x</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">,</span>
-                <span class="n">category</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;:energy_consumption&quot;</span><span class="p">,</span>
+                <span class="n">category</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">":energy_consumption"</span><span class="p">,</span>
             <span class="p">],</span>
         <span class="p">)</span>
 
         <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Year&quot;</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Fleet mean energy consumption [MJ/ASK]&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"Year"</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"Fleet mean energy consumption [MJ/ASK]"</span><span class="p">)</span>
 
     <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
@@ -9467,7 +9520,7 @@ path (<code>_compute_decoupled_aircraft_share</code>), so this works in either m
 
 
 <a href="#aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_model.FleetModel.plot_performance_contributions" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">plot_performance_contributions</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="s1">&#39;energy&#39;</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">plot_performance_contributions</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="s1">'energy'</span><span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -9689,8 +9742,8 @@ path (<code>_compute_decoupled_aircraft_share</code>), so this works in either m
 <span class="normal">1557</span>
 <span class="normal">1558</span>
 <span class="normal">1559</span>
-<span class="normal">1560</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_performance_contributions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;energy&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot individual aircraft contributions to a fleet performance metric.</span>
+<span class="normal">1560</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_performance_contributions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s2">"energy"</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Plot individual aircraft contributions to a fleet performance metric.</span>
 
 <span class="sd">    For each category shows:</span>
 
@@ -9705,61 +9758,61 @@ path (<code>_compute_decoupled_aircraft_share</code>), so this works in either m
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    metric : str</span>
-<span class="sd">        One of ``&quot;energy&quot;``, ``&quot;doc&quot;``, ``&quot;nox&quot;``, ``&quot;soot&quot;``.</span>
+<span class="sd">        One of ``"energy"``, ``"doc"``, ``"nox"``, ``"soot"``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    matplotlib.figure.Figure</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">_cfg</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;energy&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;fleet_col&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">cat</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cat</span><span class="si">}</span><span class="s2">:energy_consumption&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;renewal_col&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">cat</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cat</span><span class="si">}</span><span class="s2">:energy_renewal_only&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;contrib_col&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">cat</span><span class="p">,</span>
+        <span class="s2">"energy"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">"fleet_col"</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">cat</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">cat</span><span class="si">}</span><span class="s2">:energy_consumption"</span><span class="p">,</span>
+            <span class="s2">"renewal_col"</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">cat</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">cat</span><span class="si">}</span><span class="s2">:energy_renewal_only"</span><span class="p">,</span>
+            <span class="s2">"contrib_col"</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">cat</span><span class="p">,</span>
             <span class="n">sub</span><span class="p">,</span>
-            <span class="n">ac</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cat</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">ac</span><span class="si">}</span><span class="s2">:energy_efficiency_contribution&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;old_col&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">cat</span><span class="p">,</span>
-            <span class="n">sub</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cat</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s2">:old_reference:energy_efficiency_contribution&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;baseline_col&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">cat</span><span class="p">,</span>
-            <span class="n">sub</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cat</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s2">:recent_reference:energy_efficiency_contribution_baseline&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;ylabel&quot;</span><span class="p">:</span> <span class="s2">&quot;Energy per ASK [MJ/ASK]&quot;</span><span class="p">,</span>
+            <span class="n">ac</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">cat</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">ac</span><span class="si">}</span><span class="s2">:energy_efficiency_contribution"</span><span class="p">,</span>
+            <span class="s2">"old_col"</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">cat</span><span class="p">,</span>
+            <span class="n">sub</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">cat</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s2">:old_reference:energy_efficiency_contribution"</span><span class="p">,</span>
+            <span class="s2">"baseline_col"</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">cat</span><span class="p">,</span>
+            <span class="n">sub</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">cat</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s2">:recent_reference:energy_efficiency_contribution_baseline"</span><span class="p">,</span>
+            <span class="s2">"ylabel"</span><span class="p">:</span> <span class="s2">"Energy per ASK [MJ/ASK]"</span><span class="p">,</span>
         <span class="p">},</span>
-        <span class="s2">&quot;doc&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;fleet_col&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">cat</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cat</span><span class="si">}</span><span class="s2">:doc_non_energy&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;renewal_col&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">cat</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cat</span><span class="si">}</span><span class="s2">:doc_renewal_only&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;contrib_col&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">cat</span><span class="p">,</span> <span class="n">sub</span><span class="p">,</span> <span class="n">ac</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cat</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">ac</span><span class="si">}</span><span class="s2">:doc_contribution&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;old_col&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">cat</span><span class="p">,</span> <span class="n">sub</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cat</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s2">:old_reference:doc_contribution&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;baseline_col&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">cat</span><span class="p">,</span>
-            <span class="n">sub</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cat</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s2">:recent_reference:doc_contribution_baseline&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;ylabel&quot;</span><span class="p">:</span> <span class="s2">&quot;Non-energy DOC [€/ASK]&quot;</span><span class="p">,</span>
+        <span class="s2">"doc"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">"fleet_col"</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">cat</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">cat</span><span class="si">}</span><span class="s2">:doc_non_energy"</span><span class="p">,</span>
+            <span class="s2">"renewal_col"</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">cat</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">cat</span><span class="si">}</span><span class="s2">:doc_renewal_only"</span><span class="p">,</span>
+            <span class="s2">"contrib_col"</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">cat</span><span class="p">,</span> <span class="n">sub</span><span class="p">,</span> <span class="n">ac</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">cat</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">ac</span><span class="si">}</span><span class="s2">:doc_contribution"</span><span class="p">,</span>
+            <span class="s2">"old_col"</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">cat</span><span class="p">,</span> <span class="n">sub</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">cat</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s2">:old_reference:doc_contribution"</span><span class="p">,</span>
+            <span class="s2">"baseline_col"</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">cat</span><span class="p">,</span>
+            <span class="n">sub</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">cat</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s2">:recent_reference:doc_contribution_baseline"</span><span class="p">,</span>
+            <span class="s2">"ylabel"</span><span class="p">:</span> <span class="s2">"Non-energy DOC [€/ASK]"</span><span class="p">,</span>
         <span class="p">},</span>
-        <span class="s2">&quot;nox&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;fleet_col&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">cat</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cat</span><span class="si">}</span><span class="s2">:emission_index_nox&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;renewal_col&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">cat</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cat</span><span class="si">}</span><span class="s2">:nox_renewal_only&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;contrib_col&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">cat</span><span class="p">,</span> <span class="n">sub</span><span class="p">,</span> <span class="n">ac</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cat</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">ac</span><span class="si">}</span><span class="s2">:nox_contribution&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;old_col&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">cat</span><span class="p">,</span> <span class="n">sub</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cat</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s2">:old_reference:nox_contribution&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;baseline_col&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">cat</span><span class="p">,</span>
-            <span class="n">sub</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cat</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s2">:recent_reference:nox_contribution_baseline&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;ylabel&quot;</span><span class="p">:</span> <span class="s2">&quot;NOx emission index [kg/ASK]&quot;</span><span class="p">,</span>
+        <span class="s2">"nox"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">"fleet_col"</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">cat</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">cat</span><span class="si">}</span><span class="s2">:emission_index_nox"</span><span class="p">,</span>
+            <span class="s2">"renewal_col"</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">cat</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">cat</span><span class="si">}</span><span class="s2">:nox_renewal_only"</span><span class="p">,</span>
+            <span class="s2">"contrib_col"</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">cat</span><span class="p">,</span> <span class="n">sub</span><span class="p">,</span> <span class="n">ac</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">cat</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">ac</span><span class="si">}</span><span class="s2">:nox_contribution"</span><span class="p">,</span>
+            <span class="s2">"old_col"</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">cat</span><span class="p">,</span> <span class="n">sub</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">cat</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s2">:old_reference:nox_contribution"</span><span class="p">,</span>
+            <span class="s2">"baseline_col"</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">cat</span><span class="p">,</span>
+            <span class="n">sub</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">cat</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s2">:recent_reference:nox_contribution_baseline"</span><span class="p">,</span>
+            <span class="s2">"ylabel"</span><span class="p">:</span> <span class="s2">"NOx emission index [kg/ASK]"</span><span class="p">,</span>
         <span class="p">},</span>
-        <span class="s2">&quot;soot&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;fleet_col&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">cat</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cat</span><span class="si">}</span><span class="s2">:emission_index_soot&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;renewal_col&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">cat</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cat</span><span class="si">}</span><span class="s2">:soot_renewal_only&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;contrib_col&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">cat</span><span class="p">,</span> <span class="n">sub</span><span class="p">,</span> <span class="n">ac</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cat</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">ac</span><span class="si">}</span><span class="s2">:soot_contribution&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;old_col&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">cat</span><span class="p">,</span> <span class="n">sub</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cat</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s2">:old_reference:soot_contribution&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;baseline_col&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">cat</span><span class="p">,</span>
-            <span class="n">sub</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cat</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s2">:recent_reference:soot_contribution_baseline&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;ylabel&quot;</span><span class="p">:</span> <span class="s2">&quot;Soot emission index [kg/ASK]&quot;</span><span class="p">,</span>
+        <span class="s2">"soot"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">"fleet_col"</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">cat</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">cat</span><span class="si">}</span><span class="s2">:emission_index_soot"</span><span class="p">,</span>
+            <span class="s2">"renewal_col"</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">cat</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">cat</span><span class="si">}</span><span class="s2">:soot_renewal_only"</span><span class="p">,</span>
+            <span class="s2">"contrib_col"</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">cat</span><span class="p">,</span> <span class="n">sub</span><span class="p">,</span> <span class="n">ac</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">cat</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">ac</span><span class="si">}</span><span class="s2">:soot_contribution"</span><span class="p">,</span>
+            <span class="s2">"old_col"</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">cat</span><span class="p">,</span> <span class="n">sub</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">cat</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s2">:old_reference:soot_contribution"</span><span class="p">,</span>
+            <span class="s2">"baseline_col"</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">cat</span><span class="p">,</span>
+            <span class="n">sub</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">cat</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s2">:recent_reference:soot_contribution_baseline"</span><span class="p">,</span>
+            <span class="s2">"ylabel"</span><span class="p">:</span> <span class="s2">"Soot emission index [kg/ASK]"</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">}</span>
     <span class="k">if</span> <span class="n">metric</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_cfg</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;metric must be one of </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">_cfg</span><span class="p">)</span><span class="si">}</span><span class="s2">; got </span><span class="si">{</span><span class="n">metric</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"metric must be one of </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">_cfg</span><span class="p">)</span><span class="si">}</span><span class="s2">; got </span><span class="si">{</span><span class="n">metric</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>
     <span class="n">cfg</span> <span class="o">=</span> <span class="n">_cfg</span><span class="p">[</span><span class="n">metric</span><span class="p">]</span>
 
     <span class="n">years</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">]</span><span class="o">.</span><span class="n">index</span>
     <span class="n">categories</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fleet</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
     <span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">categories</span><span class="p">),</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">categories</span><span class="p">),</span> <span class="mi">5</span><span class="p">),</span> <span class="n">squeeze</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">cmap</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="s2">&quot;tab10&quot;</span><span class="p">)</span>
+    <span class="n">cmap</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="s2">"tab10"</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">col_idx</span><span class="p">,</span> <span class="n">category</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">categories</span><span class="p">):</span>
         <span class="n">ax</span> <span class="o">=</span> <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">col_idx</span><span class="p">]</span>
@@ -9769,20 +9822,20 @@ path (<code>_compute_decoupled_aircraft_share</code>), so this works in either m
         <span class="c1"># other metrics it is constant. Reading the stored series keeps the plot</span>
         <span class="c1"># consistent with _compute_aircraft_performance_contributions.</span>
         <span class="n">ref_recent_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
-            <span class="n">years</span><span class="p">,</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;baseline_col&quot;</span><span class="p">](</span><span class="n">category</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">first_subcategory</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">years</span><span class="p">,</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">"baseline_col"</span><span class="p">](</span><span class="n">category</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">first_subcategory</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="p">]</span><span class="o">.</span><span class="n">values</span>
 
         <span class="c1"># Old-reference penalty (above baseline)</span>
         <span class="n">old_penalty</span> <span class="o">=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
-            <span class="n">years</span><span class="p">,</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;old_col&quot;</span><span class="p">](</span><span class="n">category</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">first_subcategory</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">years</span><span class="p">,</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">"old_col"</span><span class="p">](</span><span class="n">category</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">first_subcategory</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="p">]</span><span class="o">.</span><span class="n">values</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span>
             <span class="n">years</span><span class="p">,</span>
             <span class="n">ref_recent_val</span><span class="p">,</span>
             <span class="n">ref_recent_val</span> <span class="o">+</span> <span class="n">old_penalty</span><span class="p">,</span>
-            <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tomato&quot;</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="s2">"tomato"</span><span class="p">,</span>
             <span class="n">alpha</span><span class="o">=</span><span class="mf">0.75</span><span class="p">,</span>
-            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Old reference aircraft (penalty)&quot;</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="s2">"Old reference aircraft (penalty)"</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="c1"># New aircraft gains (below baseline, stacked oldest → newest EIS)</span>
@@ -9792,7 +9845,7 @@ path (<code>_compute_decoupled_aircraft_share</code>), so this works in either m
             <span class="k">for</span> <span class="n">aircraft</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sorted_aircraft</span><span class="p">(</span><span class="n">subcategory</span><span class="p">):</span>
                 <span class="n">gain</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
                     <span class="n">years</span><span class="p">,</span>
-                    <span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;contrib_col&quot;</span><span class="p">](</span><span class="n">category</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">subcategory</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">aircraft</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
+                    <span class="n">cfg</span><span class="p">[</span><span class="s2">"contrib_col"</span><span class="p">](</span><span class="n">category</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">subcategory</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">aircraft</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
                 <span class="p">]</span><span class="o">.</span><span class="n">values</span>
                 <span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span>
                     <span class="n">years</span><span class="p">,</span>
@@ -9800,7 +9853,7 @@ path (<code>_compute_decoupled_aircraft_share</code>), so this works in either m
                     <span class="n">y_top</span><span class="p">,</span>
                     <span class="n">color</span><span class="o">=</span><span class="n">cmap</span><span class="p">(</span><span class="n">color_idx</span><span class="p">),</span>
                     <span class="n">alpha</span><span class="o">=</span><span class="mf">0.75</span><span class="p">,</span>
-                    <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">aircraft</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (gain)&quot;</span><span class="p">,</span>
+                    <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">aircraft</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (gain)"</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="n">y_top</span> <span class="o">=</span> <span class="n">y_top</span> <span class="o">-</span> <span class="n">gain</span>
                 <span class="n">color_idx</span> <span class="o">+=</span> <span class="mi">1</span>
@@ -9809,32 +9862,32 @@ path (<code>_compute_decoupled_aircraft_share</code>), so this works in either m
         <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
             <span class="n">years</span><span class="p">,</span>
             <span class="n">ref_recent_val</span><span class="p">,</span>
-            <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span>
-            <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="s2">"grey"</span><span class="p">,</span>
+            <span class="n">linestyle</span><span class="o">=</span><span class="s2">"--"</span><span class="p">,</span>
             <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Recent reference baseline&quot;</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="s2">"Recent reference baseline"</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="c1"># Fleet-renewal-only counterfactual</span>
-        <span class="n">renewal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">years</span><span class="p">,</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;renewal_col&quot;</span><span class="p">](</span><span class="n">category</span><span class="o">.</span><span class="n">name</span><span class="p">)]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">renewal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">years</span><span class="p">,</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">"renewal_col"</span><span class="p">](</span><span class="n">category</span><span class="o">.</span><span class="n">name</span><span class="p">)]</span><span class="o">.</span><span class="n">values</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
             <span class="n">years</span><span class="p">,</span>
             <span class="n">renewal</span><span class="p">,</span>
-            <span class="n">color</span><span class="o">=</span><span class="s2">&quot;orange&quot;</span><span class="p">,</span>
-            <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="s2">"orange"</span><span class="p">,</span>
+            <span class="n">linestyle</span><span class="o">=</span><span class="s2">"--"</span><span class="p">,</span>
             <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span>
-            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Fleet renewal only (no new aircraft)&quot;</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="s2">"Fleet renewal only (no new aircraft)"</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="c1"># Actual fleet mean</span>
-        <span class="n">fleet_mean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">years</span><span class="p">,</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;fleet_col&quot;</span><span class="p">](</span><span class="n">category</span><span class="o">.</span><span class="n">name</span><span class="p">)]</span><span class="o">.</span><span class="n">values</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">years</span><span class="p">,</span> <span class="n">fleet_mean</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Fleet mean&quot;</span><span class="p">)</span>
+        <span class="n">fleet_mean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">years</span><span class="p">,</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">"fleet_col"</span><span class="p">](</span><span class="n">category</span><span class="o">.</span><span class="n">name</span><span class="p">)]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">years</span><span class="p">,</span> <span class="n">fleet_mean</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"black"</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"Fleet mean"</span><span class="p">)</span>
 
         <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Year&quot;</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;ylabel&quot;</span><span class="p">])</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"Year"</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s2">"ylabel"</span><span class="p">])</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">category</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper right&quot;</span><span class="p">,</span> <span class="n">prop</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">})</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">"upper right"</span><span class="p">,</span> <span class="n">prop</span><span class="o">=</span><span class="p">{</span><span class="s2">"size"</span><span class="p">:</span> <span class="mi">8</span><span class="p">})</span>
 
     <span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">fig</span>
@@ -9918,7 +9971,7 @@ path (<code>_compute_decoupled_aircraft_share</code>), so this works in either m
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       

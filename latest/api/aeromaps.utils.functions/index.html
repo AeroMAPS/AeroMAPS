@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -5828,7 +5828,13 @@
 
 
 <a href="#aeromaps.utils.functions.compute_partitioning" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute_partitioning</span><span class="p">(</span><span class="n">world_data</span><span class="p">,</span> <span class="n">per_market_passenger_data</span><span class="p">,</span> <span class="n">total_seats_last_historical_year</span><span class="p">,</span> <span class="n">freight_energy_share_last_historical_year</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute_partitioning</span><span class="p">(</span>
+    <span class="n">world_data</span><span class="p">,</span>
+    <span class="n">per_market_passenger_data</span><span class="p">,</span>
+    <span class="n">total_seats_last_historical_year</span><span class="p">,</span>
+    <span class="n">freight_energy_share_last_historical_year</span><span class="p">,</span>
+    <span class="n">path</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6065,9 +6071,9 @@ and this share: total = passenger_energy / (1 - freight_share / 100).</p>
     <span class="n">per_market_passenger_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
     <span class="n">total_seats_last_historical_year</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
     <span class="n">freight_energy_share_last_historical_year</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-    <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Generate a partitioned AeroMAPS inputs JSON for a geographic scope.</span>
 
 <span class="sd">    Parameters</span>
@@ -6075,7 +6081,7 @@ and this share: total = passenger_energy / (1 - freight_share / 100).</p>
 <span class="sd">    world_data</span>
 <span class="sd">        World parameters dict loaded from parameters.json.</span>
 <span class="sd">    per_market_passenger_data</span>
-<span class="sd">        Mapping of market_id to {&quot;ask_last_historical_year&quot;: float, &quot;energy_last_historical_year&quot;: float}</span>
+<span class="sd">        Mapping of market_id to {"ask_last_historical_year": float, "energy_last_historical_year": float}</span>
 <span class="sd">        for every passenger market in the scope. Energy values must already</span>
 <span class="sd">        be expressed in the AeroMAPS scope (i.e. passeger only, belly freight excluded).</span>
 <span class="sd">    total_seats_last_historical_year</span>
@@ -6086,22 +6092,22 @@ and this share: total = passenger_energy / (1 - freight_share / 100).</p>
 <span class="sd">        and this share: total = passenger_energy / (1 - freight_share / 100).</span>
 <span class="sd">    path</span>
 <span class="sd">        Directory where partitioning_updated_inputs.json will be written.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">n_historic_years</span> <span class="o">=</span> <span class="n">world_data</span><span class="p">[</span><span class="s2">&quot;prospection_start_year&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">world_data</span><span class="p">[</span><span class="s2">&quot;historic_start_year&quot;</span><span class="p">]</span>
-    <span class="n">world_ask_last_historical_year</span> <span class="o">=</span> <span class="n">world_data</span><span class="p">[</span><span class="s2">&quot;ask_init&quot;</span><span class="p">][</span><span class="n">n_historic_years</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">n_historic_years</span> <span class="o">=</span> <span class="n">world_data</span><span class="p">[</span><span class="s2">"prospection_start_year"</span><span class="p">]</span> <span class="o">-</span> <span class="n">world_data</span><span class="p">[</span><span class="s2">"historic_start_year"</span><span class="p">]</span>
+    <span class="n">world_ask_last_historical_year</span> <span class="o">=</span> <span class="n">world_data</span><span class="p">[</span><span class="s2">"ask_init"</span><span class="p">][</span><span class="n">n_historic_years</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
     <span class="n">world_seats_last_historical_year</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">world_data</span><span class="p">[</span><span class="s2">&quot;pax_init&quot;</span><span class="p">][</span><span class="n">n_historic_years</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
-        <span class="o">*</span> <span class="n">world_data</span><span class="p">[</span><span class="s2">&quot;ask_init&quot;</span><span class="p">][</span><span class="n">n_historic_years</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
-        <span class="o">/</span> <span class="n">world_data</span><span class="p">[</span><span class="s2">&quot;rpk_init&quot;</span><span class="p">][</span><span class="n">n_historic_years</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">world_data</span><span class="p">[</span><span class="s2">"pax_init"</span><span class="p">][</span><span class="n">n_historic_years</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="o">*</span> <span class="n">world_data</span><span class="p">[</span><span class="s2">"ask_init"</span><span class="p">][</span><span class="n">n_historic_years</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="o">/</span> <span class="n">world_data</span><span class="p">[</span><span class="s2">"rpk_init"</span><span class="p">][</span><span class="n">n_historic_years</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
         <span class="o">*</span> <span class="mi">100</span>
     <span class="p">)</span>
 
     <span class="n">total_ask_last_historical_year</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
-        <span class="n">d</span><span class="p">[</span><span class="s2">&quot;ask_last_historical_year&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">per_market_passenger_data</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+        <span class="n">d</span><span class="p">[</span><span class="s2">"ask_last_historical_year"</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">per_market_passenger_data</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
     <span class="p">)</span>
     <span class="n">passenger_energy_last_historical_year</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
-        <span class="n">d</span><span class="p">[</span><span class="s2">&quot;energy_ask_last_historical_year&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;ask_last_historical_year&quot;</span><span class="p">]</span>
+        <span class="n">d</span><span class="p">[</span><span class="s2">"energy_ask_last_historical_year"</span><span class="p">]</span> <span class="o">*</span> <span class="n">d</span><span class="p">[</span><span class="s2">"ask_last_historical_year"</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">per_market_passenger_data</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
     <span class="p">)</span>
     <span class="n">total_energy_last_historical_year</span> <span class="o">=</span> <span class="n">passenger_energy_last_historical_year</span> <span class="o">/</span> <span class="p">(</span>
@@ -6110,14 +6116,14 @@ and this share: total = passenger_energy / (1 - freight_share / 100).</p>
 
     <span class="c1"># Per-market shares</span>
     <span class="n">market_energy_shares</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="n">mid</span><span class="p">:</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;energy_ask_last_historical_year&quot;</span><span class="p">]</span>
-        <span class="o">*</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;ask_last_historical_year&quot;</span><span class="p">]</span>
+        <span class="n">mid</span><span class="p">:</span> <span class="n">d</span><span class="p">[</span><span class="s2">"energy_ask_last_historical_year"</span><span class="p">]</span>
+        <span class="o">*</span> <span class="n">d</span><span class="p">[</span><span class="s2">"ask_last_historical_year"</span><span class="p">]</span>
         <span class="o">/</span> <span class="n">total_energy_last_historical_year</span>
         <span class="o">*</span> <span class="mi">100</span>
         <span class="k">for</span> <span class="n">mid</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">per_market_passenger_data</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
     <span class="p">}</span>
     <span class="n">market_rpk_shares</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="n">mid</span><span class="p">:</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;ask_last_historical_year&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="n">total_ask_last_historical_year</span> <span class="o">*</span> <span class="mi">100</span>
+        <span class="n">mid</span><span class="p">:</span> <span class="n">d</span><span class="p">[</span><span class="s2">"ask_last_historical_year"</span><span class="p">]</span> <span class="o">/</span> <span class="n">total_ask_last_historical_year</span> <span class="o">*</span> <span class="mi">100</span>
         <span class="k">for</span> <span class="n">mid</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">per_market_passenger_data</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
     <span class="p">}</span>
 
@@ -6126,63 +6132,63 @@ and this share: total = passenger_energy / (1 - freight_share / 100).</p>
     <span class="n">share_seats</span> <span class="o">=</span> <span class="n">total_seats_last_historical_year</span> <span class="o">/</span> <span class="n">world_seats_last_historical_year</span>
     <span class="n">share_energy</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">total_energy_last_historical_year</span>
-        <span class="o">/</span> <span class="n">world_data</span><span class="p">[</span><span class="s2">&quot;energy_consumption_init&quot;</span><span class="p">][</span><span class="n">n_historic_years</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="o">/</span> <span class="n">world_data</span><span class="p">[</span><span class="s2">"energy_consumption_init"</span><span class="p">][</span><span class="n">n_historic_years</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
         <span class="o">*</span> <span class="mi">100</span>
     <span class="p">)</span>
 
     <span class="n">historical_years</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_historic_years</span><span class="p">)</span>
     <span class="n">scaled_vectors</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;rpk_init&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">world_data</span><span class="p">[</span><span class="s2">&quot;rpk_init&quot;</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">share_ask</span> <span class="o">/</span> <span class="mi">100</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">historical_years</span><span class="p">],</span>
-        <span class="s2">&quot;ask_init&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">world_data</span><span class="p">[</span><span class="s2">&quot;ask_init&quot;</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">share_ask</span> <span class="o">/</span> <span class="mi">100</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">historical_years</span><span class="p">],</span>
-        <span class="s2">&quot;rtk_init&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">world_data</span><span class="p">[</span><span class="s2">&quot;rtk_init&quot;</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">share_ask</span> <span class="o">/</span> <span class="mi">100</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">historical_years</span><span class="p">],</span>
-        <span class="s2">&quot;freight_init&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">world_data</span><span class="p">[</span><span class="s2">&quot;freight_init&quot;</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">share_ask</span> <span class="o">/</span> <span class="mi">100</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">historical_years</span><span class="p">],</span>
-        <span class="s2">&quot;total_aircraft_distance_init&quot;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="n">world_data</span><span class="p">[</span><span class="s2">&quot;total_aircraft_distance_init&quot;</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">share_ask</span> <span class="o">/</span> <span class="mi">100</span>
+        <span class="s2">"rpk_init"</span><span class="p">:</span> <span class="p">[</span><span class="n">world_data</span><span class="p">[</span><span class="s2">"rpk_init"</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">share_ask</span> <span class="o">/</span> <span class="mi">100</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">historical_years</span><span class="p">],</span>
+        <span class="s2">"ask_init"</span><span class="p">:</span> <span class="p">[</span><span class="n">world_data</span><span class="p">[</span><span class="s2">"ask_init"</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">share_ask</span> <span class="o">/</span> <span class="mi">100</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">historical_years</span><span class="p">],</span>
+        <span class="s2">"rtk_init"</span><span class="p">:</span> <span class="p">[</span><span class="n">world_data</span><span class="p">[</span><span class="s2">"rtk_init"</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">share_ask</span> <span class="o">/</span> <span class="mi">100</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">historical_years</span><span class="p">],</span>
+        <span class="s2">"freight_init"</span><span class="p">:</span> <span class="p">[</span><span class="n">world_data</span><span class="p">[</span><span class="s2">"freight_init"</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">share_ask</span> <span class="o">/</span> <span class="mi">100</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">historical_years</span><span class="p">],</span>
+        <span class="s2">"total_aircraft_distance_init"</span><span class="p">:</span> <span class="p">[</span>
+            <span class="n">world_data</span><span class="p">[</span><span class="s2">"total_aircraft_distance_init"</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">share_ask</span> <span class="o">/</span> <span class="mi">100</span>
             <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">historical_years</span>
         <span class="p">],</span>
-        <span class="s2">&quot;pax_init&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">world_data</span><span class="p">[</span><span class="s2">&quot;pax_init&quot;</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">share_seats</span> <span class="o">/</span> <span class="mi">100</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">historical_years</span><span class="p">],</span>
-        <span class="s2">&quot;energy_consumption_init&quot;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="n">world_data</span><span class="p">[</span><span class="s2">&quot;energy_consumption_init&quot;</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">share_energy</span> <span class="o">/</span> <span class="mi">100</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">historical_years</span>
+        <span class="s2">"pax_init"</span><span class="p">:</span> <span class="p">[</span><span class="n">world_data</span><span class="p">[</span><span class="s2">"pax_init"</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">share_seats</span> <span class="o">/</span> <span class="mi">100</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">historical_years</span><span class="p">],</span>
+        <span class="s2">"energy_consumption_init"</span><span class="p">:</span> <span class="p">[</span>
+            <span class="n">world_data</span><span class="p">[</span><span class="s2">"energy_consumption_init"</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">share_energy</span> <span class="o">/</span> <span class="mi">100</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">historical_years</span>
         <span class="p">],</span>
     <span class="p">}</span>
 
     <span class="c1"># Climate data</span>
     <span class="n">climate_world_data_path</span> <span class="o">=</span> <span class="n">pth</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-        <span class="n">climate_data</span><span class="o">.</span><span class="n">__path__</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;temperature_historical_dataset.csv&quot;</span>
+        <span class="n">climate_data</span><span class="o">.</span><span class="n">__path__</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">"temperature_historical_dataset.csv"</span>
     <span class="p">)</span>
-    <span class="n">climate_world_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">climate_world_data_path</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">climate_world_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">climate_world_data_path</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">";"</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
     <span class="n">climate_data_dict</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;years&quot;</span><span class="p">:</span> <span class="n">climate_world_data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
-        <span class="s2">&quot;co2_emissions&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">climate_world_data</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">share_energy</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
-        <span class="s2">&quot;nox_emissions&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">climate_world_data</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">share_energy</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
-        <span class="s2">&quot;h2o_emissions&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">climate_world_data</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">*</span> <span class="n">share_energy</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
-        <span class="s2">&quot;soot_emissions&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">climate_world_data</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">]</span> <span class="o">*</span> <span class="n">share_energy</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
-        <span class="s2">&quot;sulfur_emissions&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">climate_world_data</span><span class="p">[:,</span> <span class="mi">5</span><span class="p">]</span> <span class="o">*</span> <span class="n">share_energy</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
-        <span class="s2">&quot;distance&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">climate_world_data</span><span class="p">[:,</span> <span class="mi">6</span><span class="p">]</span> <span class="o">*</span> <span class="n">share_ask</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+        <span class="s2">"years"</span><span class="p">:</span> <span class="n">climate_world_data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+        <span class="s2">"co2_emissions"</span><span class="p">:</span> <span class="p">(</span><span class="n">climate_world_data</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">share_energy</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+        <span class="s2">"nox_emissions"</span><span class="p">:</span> <span class="p">(</span><span class="n">climate_world_data</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">share_energy</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+        <span class="s2">"h2o_emissions"</span><span class="p">:</span> <span class="p">(</span><span class="n">climate_world_data</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">*</span> <span class="n">share_energy</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+        <span class="s2">"soot_emissions"</span><span class="p">:</span> <span class="p">(</span><span class="n">climate_world_data</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">]</span> <span class="o">*</span> <span class="n">share_energy</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+        <span class="s2">"sulfur_emissions"</span><span class="p">:</span> <span class="p">(</span><span class="n">climate_world_data</span><span class="p">[:,</span> <span class="mi">5</span><span class="p">]</span> <span class="o">*</span> <span class="n">share_energy</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+        <span class="s2">"distance"</span><span class="p">:</span> <span class="p">(</span><span class="n">climate_world_data</span><span class="p">[:,</span> <span class="mi">6</span><span class="p">]</span> <span class="o">*</span> <span class="n">share_ask</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
     <span class="p">}</span>
 
     <span class="c1"># Build output — market float data uses &lt;market_id&gt;_&lt;leaf&gt; naming</span>
     <span class="n">other_float_data</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">mid</span><span class="p">,</span> <span class="n">share</span> <span class="ow">in</span> <span class="n">market_energy_shares</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="n">other_float_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_energy_share_last_historical_year&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">share</span>
+        <span class="n">other_float_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_energy_share_last_historical_year"</span><span class="p">]</span> <span class="o">=</span> <span class="n">share</span>
     <span class="k">for</span> <span class="n">mid</span><span class="p">,</span> <span class="n">share</span> <span class="ow">in</span> <span class="n">market_rpk_shares</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="n">other_float_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_rpk_share_last_historical_year&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">share</span>
-    <span class="n">other_float_data</span><span class="p">[</span><span class="s2">&quot;freight_energy_share_last_historical_year&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">other_float_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_rpk_share_last_historical_year"</span><span class="p">]</span> <span class="o">=</span> <span class="n">share</span>
+    <span class="n">other_float_data</span><span class="p">[</span><span class="s2">"freight_energy_share_last_historical_year"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">freight_energy_share_last_historical_year</span>
     <span class="p">)</span>
-    <span class="n">other_float_data</span><span class="p">[</span><span class="s2">&quot;commercial_aviation_coefficient&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">other_float_data</span><span class="p">[</span><span class="s2">"commercial_aviation_coefficient"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
 
     <span class="n">other_years</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
-        <span class="nb">range</span><span class="p">(</span><span class="n">world_data</span><span class="p">[</span><span class="s2">&quot;historic_start_year&quot;</span><span class="p">],</span> <span class="n">world_data</span><span class="p">[</span><span class="s2">&quot;prospection_start_year&quot;</span><span class="p">])</span>
+        <span class="nb">range</span><span class="p">(</span><span class="n">world_data</span><span class="p">[</span><span class="s2">"historic_start_year"</span><span class="p">],</span> <span class="n">world_data</span><span class="p">[</span><span class="s2">"prospection_start_year"</span><span class="p">])</span>
     <span class="p">)</span>
     <span class="n">output</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;other_float_data&quot;</span><span class="p">:</span> <span class="n">other_float_data</span><span class="p">,</span>
-        <span class="s2">&quot;other_vector_data&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;years&quot;</span><span class="p">:</span> <span class="n">other_years</span><span class="p">,</span> <span class="o">**</span><span class="n">scaled_vectors</span><span class="p">},</span>
-        <span class="s2">&quot;climate_data&quot;</span><span class="p">:</span> <span class="n">climate_data_dict</span><span class="p">,</span>
+        <span class="s2">"other_float_data"</span><span class="p">:</span> <span class="n">other_float_data</span><span class="p">,</span>
+        <span class="s2">"other_vector_data"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"years"</span><span class="p">:</span> <span class="n">other_years</span><span class="p">,</span> <span class="o">**</span><span class="n">scaled_vectors</span><span class="p">},</span>
+        <span class="s2">"climate_data"</span><span class="p">:</span> <span class="n">climate_data_dict</span><span class="p">,</span>
     <span class="p">}</span>
 
-    <span class="n">partitioning_updated_inputs_path</span> <span class="o">=</span> <span class="n">pth</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;partitioning_updated_inputs.json&quot;</span><span class="p">)</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">partitioning_updated_inputs_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">outfile</span><span class="p">:</span>
+    <span class="n">partitioning_updated_inputs_path</span> <span class="o">=</span> <span class="n">pth</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">"partitioning_updated_inputs.json"</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">partitioning_updated_inputs_path</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">outfile</span><span class="p">:</span>
         <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -6198,7 +6204,11 @@ and this share: total = passenger_energy / (1 - freight_share / 100).</p>
 
 
 <a href="#aeromaps.utils.functions.create_partitioning" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">create_partitioning</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">freight_energy_share_last_historical_year</span><span class="o">=</span><span class="mf">15.0</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">create_partitioning</span><span class="p">(</span>
+    <span class="n">file</span><span class="p">,</span>
+    <span class="n">path</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span>
+    <span class="n">freight_energy_share_last_historical_year</span><span class="o">=</span><span class="mf">15.0</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6368,8 +6378,8 @@ Override when partitioning to a region whose freight share differs.</p>
 <span class="normal">348</span>
 <span class="normal">349</span>
 <span class="normal">350</span>
-<span class="normal">351</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_partitioning</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">freight_energy_share_last_historical_year</span><span class="o">=</span><span class="mf">15.0</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="normal">351</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_partitioning</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span> <span class="n">freight_energy_share_last_historical_year</span><span class="o">=</span><span class="mf">15.0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Generate a partitioned AeroMAPS inputs JSON from an AeroSCOPE CSV file.</span>
 
 <span class="sd">    Parameters</span>
@@ -6387,11 +6397,11 @@ Override when partitioning to a region whose freight share differs.</p>
 <span class="sd">    -------</span>
 <span class="sd">    None</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="c1"># World input data recovery</span>
-    <span class="n">world_data_path</span> <span class="o">=</span> <span class="n">pth</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">__path__</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;parameters.json&quot;</span><span class="p">)</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">world_data_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">parameters_file</span><span class="p">:</span>
+    <span class="n">world_data_path</span> <span class="o">=</span> <span class="n">pth</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">__path__</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">"parameters.json"</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">world_data_path</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">)</span> <span class="k">as</span> <span class="n">parameters_file</span><span class="p">:</span>
         <span class="n">world_data_dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">parameters_file</span><span class="p">)</span>
 
     <span class="n">freight_energy_share_last_historical_year_partitioned</span> <span class="o">=</span> <span class="p">(</span>
@@ -6402,7 +6412,7 @@ Override when partitioning to a region whose freight share differs.</p>
     <span class="c1">#   row 0: ASK        — col 1=total, col 2=SR, col 3=MR, col 4=LR</span>
     <span class="c1">#   row 2: seats      — col 1=total</span>
     <span class="c1">#   row 4: energy/ASK — col 1=total, col 2=SR, col 3=MR, col 4=LR</span>
-    <span class="n">partitioned_data</span> <span class="o">=</span> <span class="n">read_csv</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">partitioned_data</span> <span class="o">=</span> <span class="n">read_csv</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">","</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
     <span class="n">total_seats_last_historical_year</span> <span class="o">=</span> <span class="n">partitioned_data</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
 
     <span class="c1"># AeroSCOPE scope → AeroMAPS scope corrections:</span>
@@ -6416,25 +6426,25 @@ Override when partitioning to a region whose freight share differs.</p>
     <span class="n">belly_correction</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">_belly_frac</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">_ded_frac</span><span class="p">)</span>
 
     <span class="n">_raw_markets</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;short_range&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">partitioned_data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">partitioned_data</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span>
-        <span class="s2">&quot;medium_range&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">partitioned_data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">partitioned_data</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">]),</span>
-        <span class="s2">&quot;long_range&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">partitioned_data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="n">partitioned_data</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">]),</span>
+        <span class="s2">"short_range"</span><span class="p">:</span> <span class="p">(</span><span class="n">partitioned_data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">partitioned_data</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span>
+        <span class="s2">"medium_range"</span><span class="p">:</span> <span class="p">(</span><span class="n">partitioned_data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">partitioned_data</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">]),</span>
+        <span class="s2">"long_range"</span><span class="p">:</span> <span class="p">(</span><span class="n">partitioned_data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="n">partitioned_data</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">]),</span>
     <span class="p">}</span>
     <span class="n">per_market_passenger_data</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">mid</span><span class="p">,</span> <span class="p">(</span><span class="n">ask</span><span class="p">,</span> <span class="n">epask</span><span class="p">)</span> <span class="ow">in</span> <span class="n">_raw_markets</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">pd</span><span class="o">.</span><span class="n">isna</span><span class="p">(</span><span class="n">ask</span><span class="p">)</span> <span class="ow">or</span> <span class="n">ask</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
             <span class="c1"># Void market: keep it in the scope but with zero traffic and energy.</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No traffic is assumed for </span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No traffic is assumed for </span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
             <span class="n">per_market_passenger_data</span><span class="p">[</span><span class="n">mid</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s2">&quot;ask_last_historical_year&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-                <span class="s2">&quot;energy_ask_last_historical_year&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+                <span class="s2">"ask_last_historical_year"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+                <span class="s2">"energy_ask_last_historical_year"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
             <span class="p">}</span>
             <span class="k">continue</span>
         <span class="k">if</span> <span class="n">pd</span><span class="o">.</span><span class="n">isna</span><span class="p">(</span><span class="n">epask</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2"> ASK is non-zero but energy per ASK is null.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2"> ASK is non-zero but energy per ASK is null."</span><span class="p">)</span>
         <span class="n">per_market_passenger_data</span><span class="p">[</span><span class="n">mid</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;ask_last_historical_year&quot;</span><span class="p">:</span> <span class="n">ask</span><span class="p">,</span>
-            <span class="s2">&quot;energy_ask_last_historical_year&quot;</span><span class="p">:</span> <span class="n">epask</span> <span class="o">*</span> <span class="n">belly_correction</span><span class="p">,</span>
+            <span class="s2">"ask_last_historical_year"</span><span class="p">:</span> <span class="n">ask</span><span class="p">,</span>
+            <span class="s2">"energy_ask_last_historical_year"</span><span class="p">:</span> <span class="n">epask</span> <span class="o">*</span> <span class="n">belly_correction</span><span class="p">,</span>
         <span class="p">}</span>
 
     <span class="n">compute_partitioning</span><span class="p">(</span>
@@ -6577,7 +6587,7 @@ Override when partitioning to a region whose freight share differs.</p>
 <span class="normal">377</span>
 <span class="normal">378</span>
 <span class="normal">379</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">merge_json_files</span><span class="p">(</span><span class="n">file1</span><span class="p">,</span> <span class="n">file2</span><span class="p">,</span> <span class="n">output_file</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Merge two JSON files into a single JSON file.</span>
 
 <span class="sd">    Parameters</span>
@@ -6593,14 +6603,14 @@ Override when partitioning to a region whose freight share differs.</p>
 <span class="sd">    -------</span>
 <span class="sd">    None</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file1</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f1</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="n">file2</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f2</span><span class="p">:</span>
+<span class="sd">    """</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file1</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f1</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="n">file2</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f2</span><span class="p">:</span>
         <span class="n">data1</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f1</span><span class="p">)</span>
         <span class="n">data2</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f2</span><span class="p">)</span>
 
     <span class="n">merged_data</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">data1</span><span class="p">,</span> <span class="o">**</span><span class="n">data2</span><span class="p">}</span>
 
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">outfile</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_file</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">outfile</span><span class="p">:</span>
         <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">merged_data</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -6616,7 +6626,14 @@ Override when partitioning to a region whose freight share differs.</p>
 
 
 <a href="#aeromaps.utils.functions.compare_json_files" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compare_json_files</span><span class="p">(</span><span class="n">file1_path</span><span class="p">,</span> <span class="n">file2_path</span><span class="p">,</span> <span class="n">ignore_order</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compare_json_files</span><span class="p">(</span>
+    <span class="n">file1_path</span><span class="p">,</span>
+    <span class="n">file2_path</span><span class="p">,</span>
+    <span class="n">ignore_order</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">rtol</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">,</span>
+    <span class="n">atol</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6887,7 +6904,7 @@ Override when partitioning to a region whose freight share differs.</p>
     <span class="n">rtol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0001</span><span class="p">,</span>
     <span class="n">atol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Compare two JSON files using deepdiff and return whether differences exist.</span>
 
 <span class="sd">    Parameters</span>
@@ -6909,8 +6926,8 @@ Override when partitioning to a region whose freight share differs.</p>
 <span class="sd">    -------</span>
 <span class="sd">    differences_exist</span>
 <span class="sd">        True if differences exist between the two JSON files, False otherwise.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file1_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f1</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="n">file2_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f2</span><span class="p">:</span>
+<span class="sd">    """</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file1_path</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f1</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="n">file2_path</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f2</span><span class="p">:</span>
         <span class="n">json1</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f1</span><span class="p">)</span>
         <span class="n">json2</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f2</span><span class="p">)</span>
 
@@ -6922,12 +6939,12 @@ Override when partitioning to a region whose freight share differs.</p>
     <span class="p">)</span>
 
     <span class="c1"># Remove value changes that are within tolerance</span>
-    <span class="k">if</span> <span class="s2">&quot;values_changed&quot;</span> <span class="ow">in</span> <span class="n">diff</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s2">"values_changed"</span> <span class="ow">in</span> <span class="n">diff</span><span class="p">:</span>
         <span class="n">keys_to_remove</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">diff</span><span class="p">[</span><span class="s2">&quot;values_changed&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;new_value&quot;</span> <span class="ow">in</span> <span class="n">value</span> <span class="ow">and</span> <span class="s2">&quot;old_value&quot;</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
-                <span class="n">new_value</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s2">&quot;new_value&quot;</span><span class="p">]</span>
-                <span class="n">old_value</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s2">&quot;old_value&quot;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">diff</span><span class="p">[</span><span class="s2">"values_changed"</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">"new_value"</span> <span class="ow">in</span> <span class="n">value</span> <span class="ow">and</span> <span class="s2">"old_value"</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+                <span class="n">new_value</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s2">"new_value"</span><span class="p">]</span>
+                <span class="n">old_value</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s2">"old_value"</span><span class="p">]</span>
                 <span class="k">if</span> <span class="p">(</span>
                     <span class="nb">isinstance</span><span class="p">(</span><span class="n">new_value</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">))</span>
                     <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">old_value</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">))</span>
@@ -6945,9 +6962,9 @@ Override when partitioning to a region whose freight share differs.</p>
                     <span class="p">):</span>
                         <span class="n">keys_to_remove</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys_to_remove</span><span class="p">:</span>
-            <span class="k">del</span> <span class="n">diff</span><span class="p">[</span><span class="s2">&quot;values_changed&quot;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">diff</span><span class="p">[</span><span class="s2">&quot;values_changed&quot;</span><span class="p">]:</span>
-            <span class="k">del</span> <span class="n">diff</span><span class="p">[</span><span class="s2">&quot;values_changed&quot;</span><span class="p">]</span>
+            <span class="k">del</span> <span class="n">diff</span><span class="p">[</span><span class="s2">"values_changed"</span><span class="p">][</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">diff</span><span class="p">[</span><span class="s2">"values_changed"</span><span class="p">]:</span>
+            <span class="k">del</span> <span class="n">diff</span><span class="p">[</span><span class="s2">"values_changed"</span><span class="p">]</span>
 
     <span class="c1"># Clean up iterable diffs by removing items that are close enough to something in the other JSON</span>
     <span class="n">iterable_messages</span> <span class="o">=</span> <span class="p">[]</span>
@@ -6956,10 +6973,10 @@ Override when partitioning to a region whose freight share differs.</p>
         <span class="k">if</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">diff</span><span class="p">:</span>
             <span class="n">keys_to_remove</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">diff</span><span class="p">[</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="c1"># The path looks like &quot;root[&#39;some_list&#39;][2]&quot;</span>
-                <span class="n">prefix</span><span class="p">,</span> <span class="n">idx_str</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;[&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-                <span class="n">idx</span> <span class="o">=</span> <span class="n">idx_str</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># Remove the trailing &#39;]&#39;</span>
-                <span class="n">other_parent</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">prefix</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;root&quot;</span><span class="p">,</span> <span class="s2">&quot;other_json&quot;</span><span class="p">))</span>
+                <span class="c1"># The path looks like "root['some_list'][2]"</span>
+                <span class="n">prefix</span><span class="p">,</span> <span class="n">idx_str</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">"["</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">idx</span> <span class="o">=</span> <span class="n">idx_str</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># Remove the trailing ']'</span>
+                <span class="n">other_parent</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">prefix</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"root"</span><span class="p">,</span> <span class="s2">"other_json"</span><span class="p">))</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other_parent</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
                     <span class="c1"># An index reported as added or removed need not exist in the</span>
                     <span class="c1"># other document: that is exactly what a list of a different</span>
@@ -6968,9 +6985,9 @@ Override when partitioning to a region whose freight share differs.</p>
                     <span class="c1"># a difference rather than raising IndexError here.</span>
                     <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">other_parent</span><span class="p">):</span>
                         <span class="n">iterable_messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s2">&quot;For: </span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">, index </span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2"> is present in one file only &quot;</span>
-                            <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">); the two lists have different lengths &quot;</span>
-                            <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">other_parent</span><span class="p">)</span><span class="si">}</span><span class="s2"> against at least </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">)&quot;</span>
+                            <span class="sa">f</span><span class="s2">"For: </span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">, index </span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2"> is present in one file only "</span>
+                            <span class="sa">f</span><span class="s2">"(</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">); the two lists have different lengths "</span>
+                            <span class="sa">f</span><span class="s2">"(</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">other_parent</span><span class="p">)</span><span class="si">}</span><span class="s2"> against at least </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">)"</span>
                         <span class="p">)</span>
                     <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span>
                         <span class="n">value</span><span class="p">,</span> <span class="n">other_parent</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">idx</span><span class="p">)],</span> <span class="n">rtol</span><span class="o">=</span><span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">atol</span><span class="p">,</span> <span class="n">equal_nan</span><span class="o">=</span><span class="kc">True</span>
@@ -6978,26 +6995,26 @@ Override when partitioning to a region whose freight share differs.</p>
                         <span class="n">keys_to_remove</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">iterable_messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s2">&quot;For: </span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">, index </span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2"> beyond tolerance: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> against </span><span class="si">{</span><span class="n">other_parent</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">idx</span><span class="p">)]</span><span class="si">}</span><span class="s2">&quot;</span>
+                            <span class="sa">f</span><span class="s2">"For: </span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">, index </span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2"> beyond tolerance: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> against </span><span class="si">{</span><span class="n">other_parent</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">idx</span><span class="p">)]</span><span class="si">}</span><span class="s2">"</span>
                         <span class="p">)</span>
             <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys_to_remove</span><span class="p">:</span>
                 <span class="k">del</span> <span class="n">diff</span><span class="p">[</span><span class="n">tag</span><span class="p">][</span><span class="n">k</span><span class="p">]</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">diff</span><span class="p">[</span><span class="n">tag</span><span class="p">]:</span>
                 <span class="k">del</span> <span class="n">diff</span><span class="p">[</span><span class="n">tag</span><span class="p">]</span>
 
-    <span class="n">cleanup_iterable_diff</span><span class="p">(</span><span class="s2">&quot;iterable_item_added&quot;</span><span class="p">,</span> <span class="n">json1</span><span class="p">)</span>
-    <span class="n">cleanup_iterable_diff</span><span class="p">(</span><span class="s2">&quot;iterable_item_removed&quot;</span><span class="p">,</span> <span class="n">json2</span><span class="p">)</span>
+    <span class="n">cleanup_iterable_diff</span><span class="p">(</span><span class="s2">"iterable_item_added"</span><span class="p">,</span> <span class="n">json1</span><span class="p">)</span>
+    <span class="n">cleanup_iterable_diff</span><span class="p">(</span><span class="s2">"iterable_item_removed"</span><span class="p">,</span> <span class="n">json2</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">diff</span> <span class="ow">or</span> <span class="n">iterable_messages</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Differences found:&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"Differences found:"</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">diff</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">diff</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">convert_non_serializable</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">iterable_messages</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">message</span> <span class="ow">in</span> <span class="n">iterable_messages</span><span class="p">:</span>
                     <span class="nb">print</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No differences found.&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"No differences found."</span><span class="p">)</span>
     <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -7114,7 +7131,7 @@ Override when partitioning to a region whose freight share differs.</p>
 <span class="normal">539</span>
 <span class="normal">540</span>
 <span class="normal">541</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">convert_non_serializable</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Convert non-serializable objects to a serializable format for JSON output.</span>
 
 <span class="sd">    Parameters</span>
@@ -7127,15 +7144,15 @@ Override when partitioning to a region whose freight share differs.</p>
 <span class="sd">    serializable</span>
 <span class="sd">        A JSON-serializable representation of the object.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Native containers -&gt; convert to list</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="nb">set</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
 
-    <span class="c1"># If it&#39;s an iterable (but not a string/bytes/mapping), try to convert to list.</span>
-    <span class="c1"># This handles deepdiff.SetOrdered and similar container-like types that don&#39;t</span>
+    <span class="c1"># If it's an iterable (but not a string/bytes/mapping), try to convert to list.</span>
+    <span class="c1"># This handles deepdiff.SetOrdered and similar container-like types that don't</span>
     <span class="c1"># expose useful __dict__ contents.</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="nb">dict</span><span class="p">))</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;__iter__&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="nb">dict</span><span class="p">))</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">"__iter__"</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">lst</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">lst</span>
@@ -7144,9 +7161,9 @@ Override when partitioning to a region whose freight share differs.</p>
             <span class="k">pass</span>
 
     <span class="c1"># If object has a non-empty __dict__, prefer that (useful for plain objects)</span>
-    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;__dict__&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">"__dict__"</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">:</span>
         <span class="c1"># Optional debug left intentionally minimal</span>
-        <span class="c1"># print(&#39;Converting using __dict__&#39;, obj)</span>
+        <span class="c1"># print('Converting using __dict__', obj)</span>
         <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__dict__</span>
 
     <span class="c1"># Last resort: convert to string</span>
@@ -7380,12 +7397,12 @@ offending callable, and patches GEMSEO's docstring parser to support NumPy
 <span class="normal">766</span>
 <span class="normal">767</span>
 <span class="normal">768</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">custom_logger_config</span><span class="p">(</span><span class="n">logger</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Configure logging and docstring parsing for GEMSEO disciplines.</span>
 
-<span class="sd">    Applies a filter to enrich GEMSEO&#39;s missing Args-section warning with the</span>
-<span class="sd">    offending callable, and patches GEMSEO&#39;s docstring parser to support NumPy</span>
-<span class="sd">    &quot;Parameters&quot; sections in addition to Google-style &quot;Args&quot;.</span>
+<span class="sd">    Applies a filter to enrich GEMSEO's missing Args-section warning with the</span>
+<span class="sd">    offending callable, and patches GEMSEO's docstring parser to support NumPy</span>
+<span class="sd">    "Parameters" sections in addition to Google-style "Args".</span>
 
 
 <span class="sd">    Parameters</span>
@@ -7398,7 +7415,7 @@ offending callable, and patches GEMSEO's docstring parser to support NumPy
 <span class="sd">    logger</span>
 <span class="sd">        The configured logger with the custom filter applied.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="c1"># Patch GEMSEO docstring parsing to support NumPy-style Parameters sections.</span>
     <span class="k">try</span><span class="p">:</span>
@@ -7406,17 +7423,17 @@ offending callable, and patches GEMSEO's docstring parser to support NumPy
         <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">gemseo.utils.source_parsing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">source_parsing</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">source_parsing</span><span class="p">,</span> <span class="s2">&quot;_aeromaps_numpy_docstring_patch&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">source_parsing</span><span class="p">,</span> <span class="s2">"_aeromaps_numpy_docstring_patch"</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
 
             <span class="k">def</span><span class="w"> </span><span class="nf">_parse_numpy_parameters</span><span class="p">(</span><span class="n">docstring</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
                 <span class="n">lines</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">cleandoc</span><span class="p">(</span><span class="n">docstring</span><span class="p">)</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
                 <span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
 
-                <span class="c1"># Locate &quot;Parameters&quot; section header</span>
+                <span class="c1"># Locate "Parameters" section header</span>
                 <span class="n">start_idx</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
-                    <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;Parameters&quot;</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">set</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;-&quot;</span><span class="p">}:</span>
+                    <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"Parameters"</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">set</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="o">==</span> <span class="p">{</span><span class="s2">"-"</span><span class="p">}:</span>
                             <span class="n">start_idx</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">2</span>
                             <span class="k">break</span>
                 <span class="k">if</span> <span class="n">start_idx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -7427,25 +7444,25 @@ offending callable, and patches GEMSEO's docstring parser to support NumPy
 
                 <span class="k">def</span><span class="w"> </span><span class="nf">flush_param</span><span class="p">():</span>
                     <span class="k">if</span> <span class="n">current_name</span><span class="p">:</span>
-                        <span class="n">params</span><span class="p">[</span><span class="n">current_name</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">current_desc</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                        <span class="n">params</span><span class="p">[</span><span class="n">current_name</span><span class="p">]</span> <span class="o">=</span> <span class="s2">" "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">current_desc</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 
                 <span class="n">i</span> <span class="o">=</span> <span class="n">start_idx</span>
                 <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
                     <span class="n">line</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
                     <span class="c1"># Stop at next section header</span>
-                    <span class="k">if</span> <span class="n">line</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">):</span>
-                        <span class="k">if</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">set</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;-&quot;</span><span class="p">}:</span>
+                    <span class="k">if</span> <span class="n">line</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">" "</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">set</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="o">==</span> <span class="p">{</span><span class="s2">"-"</span><span class="p">}:</span>
                             <span class="k">break</span>
 
-                    <span class="k">if</span> <span class="n">line</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">line</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">" "</span><span class="p">):</span>
                         <span class="n">flush_param</span><span class="p">()</span>
                         <span class="n">header</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
                         <span class="k">if</span> <span class="ow">not</span> <span class="n">header</span><span class="p">:</span>
                             <span class="n">current_name</span> <span class="o">=</span> <span class="kc">None</span>
                             <span class="n">current_desc</span> <span class="o">=</span> <span class="p">[]</span>
                         <span class="k">else</span><span class="p">:</span>
-                            <span class="c1"># Accept both &quot;name : type&quot; and bare &quot;name&quot; entries.</span>
-                            <span class="n">name</span> <span class="o">=</span> <span class="n">header</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; :&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                            <span class="c1"># Accept both "name : type" and bare "name" entries.</span>
+                            <span class="n">name</span> <span class="o">=</span> <span class="n">header</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">" :"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
                             <span class="n">current_name</span> <span class="o">=</span> <span class="n">name</span> <span class="k">if</span> <span class="n">name</span> <span class="k">else</span> <span class="kc">None</span>
                             <span class="n">current_desc</span> <span class="o">=</span> <span class="p">[]</span>
                     <span class="k">else</span><span class="p">:</span>
@@ -7463,7 +7480,7 @@ offending callable, and patches GEMSEO's docstring parser to support NumPy
                     <span class="n">parsed_doc</span> <span class="o">=</span> <span class="p">{}</span>
                     <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">desc</span> <span class="ow">in</span> <span class="n">source_parsing</span><span class="o">.</span><span class="n">RE_PATTERN_ARGS</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">args_section</span><span class="p">):</span>
                         <span class="n">parsed_doc</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span>
-                            <span class="sa">r</span><span class="s2">&quot;\n &quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[\r\t\f\v ]+&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">desc</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                            <span class="sa">r</span><span class="s2">"\n "</span><span class="p">,</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">"[\r\t\f\v ]+"</span><span class="p">,</span> <span class="s2">" "</span><span class="p">,</span> <span class="n">desc</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
                         <span class="p">)</span>
                     <span class="k">return</span> <span class="n">parsed_doc</span>
 
@@ -7472,7 +7489,7 @@ offending callable, and patches GEMSEO's docstring parser to support NumPy
                     <span class="k">return</span> <span class="n">numpy_doc</span>
 
                 <span class="k">if</span> <span class="n">n_arguments</span><span class="p">:</span>
-                    <span class="n">source_parsing</span><span class="o">.</span><span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;The Args section is missing.&quot;</span><span class="p">)</span>
+                    <span class="n">source_parsing</span><span class="o">.</span><span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"The Args section is missing."</span><span class="p">)</span>
                 <span class="k">return</span> <span class="p">{}</span>
 
             <span class="n">source_parsing</span><span class="o">.</span><span class="n">parse_google</span> <span class="o">=</span> <span class="n">_parse_google_or_numpy</span>
@@ -7485,7 +7502,7 @@ offending callable, and patches GEMSEO's docstring parser to support NumPy
     <span class="k">class</span><span class="w"> </span><span class="nc">SuppressArgsSectionWarning</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">Filter</span><span class="p">):</span>
         <span class="k">def</span><span class="w"> </span><span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">LogRecord</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
             <span class="n">message</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">getMessage</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">message</span> <span class="o">!=</span> <span class="s2">&quot;The Args section is missing.&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">message</span> <span class="o">!=</span> <span class="s2">"The Args section is missing."</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">True</span>
 
             <span class="n">model_name</span> <span class="o">=</span> <span class="kc">None</span>
@@ -7496,14 +7513,14 @@ offending callable, and patches GEMSEO's docstring parser to support NumPy
                 <span class="n">frame</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span>
                 <span class="k">while</span> <span class="n">frame</span><span class="p">:</span>
                     <span class="k">if</span> <span class="p">(</span>
-                        <span class="n">frame</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span> <span class="o">==</span> <span class="s2">&quot;get_options_doc&quot;</span>
-                        <span class="ow">and</span> <span class="n">frame</span><span class="o">.</span><span class="n">f_globals</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;__name__&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;gemseo.utils.source_parsing&quot;</span>
+                        <span class="n">frame</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span> <span class="o">==</span> <span class="s2">"get_options_doc"</span>
+                        <span class="ow">and</span> <span class="n">frame</span><span class="o">.</span><span class="n">f_globals</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"__name__"</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"gemseo.utils.source_parsing"</span>
                     <span class="p">):</span>
-                        <span class="n">func</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">f_locals</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;function&quot;</span><span class="p">)</span>
-                        <span class="n">qualname</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="s2">&quot;__qualname__&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">if</span> <span class="n">func</span> <span class="k">else</span> <span class="kc">None</span>
-                        <span class="n">module</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="s2">&quot;__module__&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">if</span> <span class="n">func</span> <span class="k">else</span> <span class="kc">None</span>
+                        <span class="n">func</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">f_locals</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"function"</span><span class="p">)</span>
+                        <span class="n">qualname</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="s2">"__qualname__"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">if</span> <span class="n">func</span> <span class="k">else</span> <span class="kc">None</span>
+                        <span class="n">module</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="s2">"__module__"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">if</span> <span class="n">func</span> <span class="k">else</span> <span class="kc">None</span>
                         <span class="k">if</span> <span class="n">qualname</span> <span class="ow">and</span> <span class="n">module</span><span class="p">:</span>
-                            <span class="n">model_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">module</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">qualname</span><span class="si">}</span><span class="s2">&quot;</span>
+                            <span class="n">model_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">module</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">qualname</span><span class="si">}</span><span class="s2">"</span>
                         <span class="k">elif</span> <span class="n">qualname</span><span class="p">:</span>
                             <span class="n">model_name</span> <span class="o">=</span> <span class="n">qualname</span>
                         <span class="k">break</span>
@@ -7512,11 +7529,11 @@ offending callable, and patches GEMSEO's docstring parser to support NumPy
                 <span class="k">del</span> <span class="n">frame</span>
 
             <span class="k">if</span> <span class="n">model_name</span><span class="p">:</span>
-                <span class="n">record</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2"> (function: </span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">)&quot;</span>
+                <span class="n">record</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2"> (function: </span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">)"</span>
                 <span class="n">record</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="p">()</span>
             <span class="k">return</span> <span class="kc">True</span>
 
-    <span class="n">args_warning_filter</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">logger</span><span class="p">,</span> <span class="s2">&quot;_aeromaps_args_warning_filter&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">args_warning_filter</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">logger</span><span class="p">,</span> <span class="s2">"_aeromaps_args_warning_filter"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">args_warning_filter</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">args_warning_filter</span> <span class="o">=</span> <span class="n">SuppressArgsSectionWarning</span><span class="p">()</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">_aeromaps_args_warning_filter</span> <span class="o">=</span> <span class="n">args_warning_filter</span>
@@ -7542,7 +7559,9 @@ offending callable, and patches GEMSEO's docstring parser to support NumPy
 
 
 <a href="#aeromaps.utils.functions.clean_notebooks_on_tests" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">clean_notebooks_on_tests</span><span class="p">(</span><span class="n">namespace</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">force_cleanup</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">clean_notebooks_on_tests</span><span class="p">(</span>
+    <span class="n">namespace</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">force_cleanup</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -7660,7 +7679,7 @@ offending callable, and patches GEMSEO's docstring parser to support NumPy
 <span class="normal">808</span>
 <span class="normal">809</span>
 <span class="normal">810</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">clean_notebooks_on_tests</span><span class="p">(</span><span class="n">namespace</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">force_cleanup</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Clean up the notebook namespace by deleting variables when running tests or when forced to save semaphore memory.</span>
 
 <span class="sd">    Parameters</span>
@@ -7674,31 +7693,31 @@ offending callable, and patches GEMSEO's docstring parser to support NumPy
 <span class="sd">    -------</span>
 <span class="sd">    None</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">gc</span>
 
-    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;aeromaps.utils.functions&quot;</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;🧹 clean_notebooks_on_tests called&quot;</span><span class="p">)</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">"aeromaps.utils.functions"</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"🧹 clean_notebooks_on_tests called"</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">namespace</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">namespace</span> <span class="o">=</span> <span class="nb">globals</span><span class="p">()</span>
-    <span class="n">RUNNING_TEST</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;PYTEST_CURRENT_TEST&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="n">RUNNING_TEST</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"PYTEST_CURRENT_TEST"</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
 
     <span class="k">if</span> <span class="n">RUNNING_TEST</span> <span class="ow">or</span> <span class="n">force_cleanup</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;🧪 Detected test run or force cleanup&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"🧪 Detected test run or force cleanup"</span><span class="p">)</span>
         <span class="n">to_delete</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">var</span>
             <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">namespace</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">var</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
-            <span class="ow">and</span> <span class="n">var</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;os&quot;</span><span class="p">,</span> <span class="s2">&quot;gc&quot;</span><span class="p">,</span> <span class="s2">&quot;RUNNING_TEST&quot;</span><span class="p">,</span> <span class="s2">&quot;clean_notebooks_on_tests&quot;</span><span class="p">,</span> <span class="s2">&quot;namespace&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">var</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"_"</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="n">var</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"os"</span><span class="p">,</span> <span class="s2">"gc"</span><span class="p">,</span> <span class="s2">"RUNNING_TEST"</span><span class="p">,</span> <span class="s2">"clean_notebooks_on_tests"</span><span class="p">,</span> <span class="s2">"namespace"</span><span class="p">)</span>
         <span class="p">]</span>
         <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">to_delete</span><span class="p">:</span>
             <span class="k">del</span> <span class="n">namespace</span><span class="p">[</span><span class="n">var</span><span class="p">]</span>
         <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✅ Cleaned up </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">to_delete</span><span class="p">)</span><span class="si">}</span><span class="s2"> variables&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"✅ Cleaned up </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">to_delete</span><span class="p">)</span><span class="si">}</span><span class="s2"> variables"</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;⏭ Skipping cleanup during notebook run&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"⏭ Skipping cleanup during notebook run"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -7735,7 +7754,7 @@ offending callable, and patches GEMSEO's docstring parser to support NumPy
 <span class="normal">822</span>
 <span class="normal">823</span>
 <span class="normal">824</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">check_unique_names</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">names</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raise if two outputs share a name, which would make one silently overwrite the other.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Raise if two outputs share a name, which would make one silently overwrite the other."""</span>
     <span class="n">seen</span><span class="p">,</span> <span class="n">duplicates</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(),</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">:</span>
@@ -7743,8 +7762,8 @@ offending callable, and patches GEMSEO's docstring parser to support NumPy
         <span class="n">seen</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">duplicates</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Model &#39;</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">&#39;: output names </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">duplicates</span><span class="p">))</span><span class="si">}</span><span class="s2"> are declared twice. &quot;</span>
-            <span class="s2">&quot;Rename the concepts, schemes or categories involved.&quot;</span>
+            <span class="sa">f</span><span class="s2">"Model '</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">': output names </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">duplicates</span><span class="p">))</span><span class="si">}</span><span class="s2"> are declared twice. "</span>
+            <span class="s2">"Rename the concepts, schemes or categories involved."</span>
         <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -7817,7 +7836,7 @@ offending callable, and patches GEMSEO's docstring parser to support NumPy
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       

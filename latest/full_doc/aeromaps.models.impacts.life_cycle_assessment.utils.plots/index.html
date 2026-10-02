@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -5793,7 +5793,12 @@
 
 
 <a href="#aeromaps.models.impacts.life_cycle_assessment.utils.plots.process_tree" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">process_tree</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">foreground_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="n">default_process_tree_filename</span><span class="p">,</span> <span class="n">colormap</span><span class="o">=</span><span class="s1">&#39;Pastel2&#39;</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">process_tree</span><span class="p">(</span>
+    <span class="n">model</span><span class="p">,</span>
+    <span class="n">foreground_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">outfile</span><span class="o">=</span><span class="n">default_process_tree_filename</span><span class="p">,</span>
+    <span class="n">colormap</span><span class="o">=</span><span class="s2">"Pastel2"</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -5902,54 +5907,54 @@
     <span class="n">model</span><span class="p">:</span> <span class="n">Activity</span><span class="p">,</span>
     <span class="n">foreground_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">outfile</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">default_process_tree_filename</span><span class="p">,</span>
-    <span class="n">colormap</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Pastel2&quot;</span><span class="p">,</span>
+    <span class="n">colormap</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"Pastel2"</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Plots an interactive tree to visualize the activities and exchanges declared in the LCA module.</span>
 <span class="sd">    :param model: The model containing activities and exchanges.</span>
 <span class="sd">    :param foreground_only: Boolean flag to include only foreground activities.</span>
 <span class="sd">    :param outfile: Output filename for the generated tree.</span>
 <span class="sd">    :param colormap: Colormap to use for node coloring.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Init network</span>
     <span class="n">net</span> <span class="o">=</span> <span class="n">Network</span><span class="p">(</span>
-        <span class="n">notebook</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cdn_resources</span><span class="o">=</span><span class="s2">&quot;remote&quot;</span><span class="p">,</span> <span class="n">filter_menu</span><span class="o">=</span><span class="kc">False</span>
+        <span class="n">notebook</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cdn_resources</span><span class="o">=</span><span class="s2">"remote"</span><span class="p">,</span> <span class="n">filter_menu</span><span class="o">=</span><span class="kc">False</span>
     <span class="p">)</span>
 
     <span class="c1"># Get processes hierarchy</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">list_processes</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">foreground_only</span><span class="p">)</span>
-    <span class="n">df</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;activity&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;unit&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">df</span><span class="p">[</span><span class="s2">"description"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">"activity"</span><span class="p">]</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> <span class="o">+</span> <span class="n">df</span><span class="p">[</span><span class="s2">"unit"</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span>
 
     <span class="c1"># Colors</span>
-    <span class="n">unique_values</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;database&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+    <span class="n">unique_values</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">"database"</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
     <span class="n">value_indices</span> <span class="o">=</span> <span class="p">{</span><span class="n">value</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">unique_values</span><span class="p">)}</span>
     <span class="n">norm</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">Normalize</span><span class="p">(</span><span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">unique_values</span><span class="p">),</span> <span class="n">clip</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">mapper</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">ScalarMappable</span><span class="p">(</span><span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="n">colormap</span><span class="p">))</span>
-    <span class="n">colors</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;database&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+    <span class="n">colors</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">"database"</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
         <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">to_hex</span><span class="p">(</span><span class="n">mapper</span><span class="o">.</span><span class="n">to_rgba</span><span class="p">(</span><span class="n">value_indices</span><span class="p">[</span><span class="n">x</span><span class="p">]))</span>
     <span class="p">)</span>
 
     <span class="c1"># Populate network</span>
     <span class="n">edge_data</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span>
-        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;activity&quot;</span><span class="p">],</span>
-        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">],</span>
-        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;parents&quot;</span><span class="p">],</span>
-        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;amounts&quot;</span><span class="p">],</span>
-        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;level&quot;</span><span class="p">],</span>
-        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;database&quot;</span><span class="p">],</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">"activity"</span><span class="p">],</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">"description"</span><span class="p">],</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">"parents"</span><span class="p">],</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">"amounts"</span><span class="p">],</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">"level"</span><span class="p">],</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">"database"</span><span class="p">],</span>
         <span class="n">colors</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">edges</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">activity</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">parents</span><span class="p">,</span> <span class="n">amounts</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">database</span><span class="p">,</span> <span class="n">color</span> <span class="ow">in</span> <span class="n">edge_data</span><span class="p">:</span>
-        <span class="n">src</span> <span class="o">=</span> <span class="n">activity</span> <span class="k">if</span> <span class="n">database</span> <span class="o">==</span> <span class="n">USER_DB</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">activity</span><span class="si">}</span><span class="se">\n</span><span class="s2">[</span><span class="si">{</span><span class="n">database</span><span class="si">}</span><span class="s2">]&quot;</span>
-        <span class="c1"># desc_array = description.split(&#39;,&#39;)</span>
-        <span class="c1"># desc_db = description.split(&#39;(&#39;)</span>
-        <span class="c1"># desc = &#39;,\n&#39;.join(desc_array[:2]) if len(desc_array) &gt; 1 else desc_array[0]</span>
-        <span class="c1"># desc += f&quot;\n({desc_db[-1]}&quot; if len(desc_db) &gt; 1 else &#39;&#39;</span>
+        <span class="n">src</span> <span class="o">=</span> <span class="n">activity</span> <span class="k">if</span> <span class="n">database</span> <span class="o">==</span> <span class="n">USER_DB</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">activity</span><span class="si">}</span><span class="se">\n</span><span class="s2">[</span><span class="si">{</span><span class="n">database</span><span class="si">}</span><span class="s2">]"</span>
+        <span class="c1"># desc_array = description.split(',')</span>
+        <span class="c1"># desc_db = description.split('(')</span>
+        <span class="c1"># desc = ',\n'.join(desc_array[:2]) if len(desc_array) &gt; 1 else desc_array[0]</span>
+        <span class="c1"># desc += f"\n({desc_db[-1]}" if len(desc_db) &gt; 1 else ''</span>
         <span class="n">desc</span> <span class="o">=</span> <span class="n">description</span>
 
-        <span class="n">net</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">desc</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">src</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">level</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="s2">&quot;box&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+        <span class="n">net</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">desc</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">src</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">level</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="s2">"box"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">parent</span><span class="p">,</span> <span class="n">amount</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">parents</span><span class="p">,</span> <span class="n">amounts</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">parent</span><span class="p">:</span>
@@ -5962,12 +5967,12 @@
     <span class="c1"># Add edges to the network with unique labels</span>
     <span class="k">for</span> <span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">),</span> <span class="n">labels</span> <span class="ow">in</span> <span class="n">edges</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">net</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">labels</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Exch. 1: </span><span class="si">{</span><span class="n">labels</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">net</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">labels</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Exch. 1: </span><span class="si">{</span><span class="n">labels</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">num_edges</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
             <span class="n">roundness_step</span> <span class="o">=</span> <span class="mf">0.1</span> <span class="o">/</span> <span class="n">num_edges</span>  <span class="c1"># Adjust the denominator to control spacing</span>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">labels</span><span class="p">):</span>
-                <span class="n">curve_type</span> <span class="o">=</span> <span class="s2">&quot;curvedCW&quot;</span> <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="s2">&quot;curvedCCW&quot;</span>
+                <span class="n">curve_type</span> <span class="o">=</span> <span class="s2">"curvedCW"</span> <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="s2">"curvedCCW"</span>
                 <span class="n">roundness</span> <span class="o">=</span> <span class="n">roundness_step</span> <span class="o">*</span> <span class="p">(</span>
                     <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
                 <span class="p">)</span>  <span class="c1"># Adjust roundness to avoid excessive curvature</span>
@@ -5975,12 +5980,12 @@
                     <span class="n">src</span><span class="p">,</span>
                     <span class="n">dst</span><span class="p">,</span>
                     <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
-                    <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Exch. </span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                    <span class="n">smooth</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;enabled&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">curve_type</span><span class="p">,</span> <span class="s2">&quot;roundness&quot;</span><span class="p">:</span> <span class="n">roundness</span><span class="p">},</span>
+                    <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Exch. </span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                    <span class="n">smooth</span><span class="o">=</span><span class="p">{</span><span class="s2">"enabled"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">"type"</span><span class="p">:</span> <span class="n">curve_type</span><span class="p">,</span> <span class="s2">"roundness"</span><span class="p">:</span> <span class="n">roundness</span><span class="p">},</span>
                 <span class="p">)</span>
 
     <span class="c1"># Set options</span>
-    <span class="n">net</span><span class="o">.</span><span class="n">set_edge_smooth</span><span class="p">(</span><span class="s2">&quot;vertical&quot;</span><span class="p">)</span>
+    <span class="n">net</span><span class="o">.</span><span class="n">set_edge_smooth</span><span class="p">(</span><span class="s2">"vertical"</span><span class="p">)</span>
     <span class="n">net</span><span class="o">.</span><span class="n">toggle_physics</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">net</span><span class="o">.</span><span class="n">show_buttons</span><span class="p">(</span><span class="n">filter_</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">net</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">hierarchical</span><span class="o">.</span><span class="n">nodeSpacing</span> <span class="o">=</span> <span class="mi">200</span>
@@ -5989,7 +5994,7 @@
     <span class="n">net</span><span class="o">.</span><span class="n">save_graph</span><span class="p">(</span><span class="n">outfile</span><span class="p">)</span>
 
     <span class="c1"># Display in Jupyter Notebook</span>
-    <span class="n">display</span><span class="p">(</span><span class="n">IFrame</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">outfile</span><span class="p">),</span> <span class="n">width</span><span class="o">=</span><span class="s2">&quot;100%&quot;</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">700</span><span class="p">))</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">IFrame</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">outfile</span><span class="p">),</span> <span class="n">width</span><span class="o">=</span><span class="s2">"100%"</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">700</span><span class="p">))</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -6061,7 +6066,7 @@
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       

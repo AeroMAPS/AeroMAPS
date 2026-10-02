@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -5970,24 +5970,24 @@
 <span class="normal">51</span>
 <span class="normal">52</span>
 <span class="normal">53</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">market_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">"custom"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="n">mid</span> <span class="o">=</span> <span class="n">market_id</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">market_id</span> <span class="o">=</span> <span class="n">mid</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;rtk_init&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_rtk_share_last_historical_year&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-        <span class="s2">&quot;covid_start_year&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_covid_drop_start_year&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_covid_end_year&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_covid_end_year_reference_ratio&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_cagr_reference_periods&quot;</span><span class="p">:</span> <span class="p">[],</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_cagr_reference_periods_values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">],</span>
+        <span class="s2">"rtk_init"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_rtk_share_last_historical_year"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s2">"covid_start_year"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_covid_drop_start_year"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_covid_end_year"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_covid_end_year_reference_ratio"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_cagr_reference_periods"</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_cagr_reference_periods_values"</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">],</span>
     <span class="p">}</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="sa">f</span><span class="s2">&quot;rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="sa">f</span><span class="s2">&quot;annual_growth_rate_rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="sa">f</span><span class="s2">&quot;cagr_rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-        <span class="sa">f</span><span class="s2">&quot;prospective_evolution_rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">"rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="sa">f</span><span class="s2">"annual_growth_rate_rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="sa">f</span><span class="s2">"cagr_rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">"prospective_evolution_rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
     <span class="p">}</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -6167,7 +6167,7 @@
 <span class="normal">142</span>
 <span class="normal">143</span>
 <span class="normal">144</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute per-market RTK with CAGR and COVID recovery.</span>
+<span class="w">    </span><span class="sd">"""Compute per-market RTK with CAGR and COVID recovery.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -6178,24 +6178,24 @@
 <span class="sd">    -------</span>
 <span class="sd">    dict</span>
 <span class="sd">        Output series for market RTK and growth metrics.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">mid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">market_id</span>
-    <span class="n">rtk_init</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;rtk_init&quot;</span><span class="p">]</span>
-    <span class="n">rtk_share_last_historical_year</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_rtk_share_last_historical_year&quot;</span><span class="p">])</span>
+    <span class="n">rtk_init</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"rtk_init"</span><span class="p">]</span>
+    <span class="n">rtk_share_last_historical_year</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_rtk_share_last_historical_year"</span><span class="p">])</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rtk_init</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">):</span>
         <span class="n">rtk_init</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
             <span class="n">rtk_init</span><span class="p">,</span>
             <span class="n">index</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">historic_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">historic_start_year</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">rtk_init</span><span class="p">)),</span>
         <span class="p">)</span>
-    <span class="n">covid_start_year</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;covid_start_year&quot;</span><span class="p">])</span>
-    <span class="n">covid_drop</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_covid_drop_start_year&quot;</span><span class="p">])</span>
-    <span class="n">covid_end_year</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_covid_end_year&quot;</span><span class="p">])</span>
-    <span class="n">covid_end_ratio</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_covid_end_year_reference_ratio&quot;</span><span class="p">])</span>
-    <span class="n">cagr_ref_periods</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_cagr_reference_periods&quot;</span><span class="p">])</span>
-    <span class="n">cagr_ref_values</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_cagr_reference_periods_values&quot;</span><span class="p">])</span>
+    <span class="n">covid_start_year</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="s2">"covid_start_year"</span><span class="p">])</span>
+    <span class="n">covid_drop</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_covid_drop_start_year"</span><span class="p">])</span>
+    <span class="n">covid_end_year</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_covid_end_year"</span><span class="p">])</span>
+    <span class="n">covid_end_ratio</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_covid_end_year_reference_ratio"</span><span class="p">])</span>
+    <span class="n">cagr_ref_periods</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_cagr_reference_periods"</span><span class="p">])</span>
+    <span class="n">cagr_ref_values</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_cagr_reference_periods_values"</span><span class="p">])</span>
 
-    <span class="n">rtk_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span>
-    <span class="n">rate_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;annual_growth_rate_rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">rtk_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span>
+    <span class="n">rate_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"annual_growth_rate_rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span>
 
     <span class="c1"># Historic initialisation: split total RTK by market share</span>
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">historic_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span><span class="p">):</span>
@@ -6205,7 +6205,7 @@
     <span class="n">covid_func</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span>
         <span class="p">[</span><span class="n">covid_start_year</span><span class="p">,</span> <span class="n">covid_end_year</span><span class="p">],</span>
         <span class="p">[</span><span class="mi">1</span> <span class="o">-</span> <span class="n">covid_drop</span> <span class="o">/</span> <span class="mi">100</span><span class="p">,</span> <span class="n">covid_end_ratio</span> <span class="o">/</span> <span class="mi">100</span><span class="p">],</span>
-        <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">,</span>
+        <span class="n">kind</span><span class="o">=</span><span class="s2">"linear"</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="c1"># CAGR → annual growth rate (prospection years)</span>
@@ -6251,8 +6251,8 @@
     <span class="n">output_data</span> <span class="o">=</span> <span class="p">{</span>
         <span class="n">rtk_col</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">rtk_col</span><span class="p">],</span>
         <span class="n">rate_col</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">rate_col</span><span class="p">],</span>
-        <span class="sa">f</span><span class="s2">&quot;cagr_rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">cagr_rtk</span><span class="p">,</span>
-        <span class="sa">f</span><span class="s2">&quot;prospective_evolution_rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">prospective_evolution_rtk</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">"cagr_rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">:</span> <span class="n">cagr_rtk</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">"prospective_evolution_rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">:</span> <span class="n">prospective_evolution_rtk</span><span class="p">,</span>
     <span class="p">}</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_store_outputs</span><span class="p">(</span><span class="n">output_data</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">output_data</span>
@@ -6366,21 +6366,21 @@ independent reference CAGR + COVID recovery to produce the counterfactual
 <span class="normal">178</span>
 <span class="normal">179</span>
 <span class="normal">180</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">market_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">"custom"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="n">mid</span> <span class="o">=</span> <span class="n">market_id</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">market_id</span> <span class="o">=</span> <span class="n">mid</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="sa">f</span><span class="s2">&quot;rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_reference_cagr_reference_periods&quot;</span><span class="p">:</span> <span class="p">[],</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_reference_cagr_reference_periods_values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">],</span>
-        <span class="s2">&quot;covid_start_year&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_covid_drop_start_year&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_covid_end_year&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_covid_end_year_reference_ratio&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">"rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_reference_cagr_reference_periods"</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_reference_cagr_reference_periods_values"</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">],</span>
+        <span class="s2">"covid_start_year"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_covid_drop_start_year"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_covid_end_year"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_covid_end_year_reference_ratio"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
     <span class="p">}</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="sa">f</span><span class="s2">&quot;rtk_reference_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="sa">f</span><span class="s2">&quot;reference_annual_growth_rate_rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="sa">f</span><span class="s2">"rtk_reference_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="sa">f</span><span class="s2">"reference_annual_growth_rate_rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
     <span class="p">}</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -6524,7 +6524,7 @@ independent reference CAGR + COVID recovery to produce the counterfactual
 <span class="normal">233</span>
 <span class="normal">234</span>
 <span class="normal">235</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute reference RTK trajectory for one freight market.</span>
+<span class="w">    </span><span class="sd">"""Compute reference RTK trajectory for one freight market.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -6535,18 +6535,18 @@ independent reference CAGR + COVID recovery to produce the counterfactual
 <span class="sd">    -------</span>
 <span class="sd">    dict</span>
 <span class="sd">        Output series for reference RTK and its growth rate.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">mid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">market_id</span>
-    <span class="n">rtk</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
-    <span class="n">reference_periods</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_reference_cagr_reference_periods&quot;</span><span class="p">])</span>
-    <span class="n">reference_values</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_reference_cagr_reference_periods_values&quot;</span><span class="p">])</span>
-    <span class="n">covid_start_year</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;covid_start_year&quot;</span><span class="p">])</span>
-    <span class="n">covid_drop</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_covid_drop_start_year&quot;</span><span class="p">])</span>
-    <span class="n">covid_end_year</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_covid_end_year&quot;</span><span class="p">])</span>
-    <span class="n">covid_end_ratio</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_covid_end_year_reference_ratio&quot;</span><span class="p">])</span>
+    <span class="n">rtk</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span>
+    <span class="n">reference_periods</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_reference_cagr_reference_periods"</span><span class="p">])</span>
+    <span class="n">reference_values</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_reference_cagr_reference_periods_values"</span><span class="p">])</span>
+    <span class="n">covid_start_year</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="s2">"covid_start_year"</span><span class="p">])</span>
+    <span class="n">covid_drop</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_covid_drop_start_year"</span><span class="p">])</span>
+    <span class="n">covid_end_year</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_covid_end_year"</span><span class="p">])</span>
+    <span class="n">covid_end_ratio</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_covid_end_year_reference_ratio"</span><span class="p">])</span>
 
-    <span class="n">col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;rtk_reference_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span>
-    <span class="n">rate_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;reference_annual_growth_rate_rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"rtk_reference_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span>
+    <span class="n">rate_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"reference_annual_growth_rate_rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span>
 
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">historic_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">rtk</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
@@ -6556,7 +6556,7 @@ independent reference CAGR + COVID recovery to produce the counterfactual
     <span class="n">covid_function</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span>
         <span class="p">[</span><span class="n">covid_start_year</span><span class="p">,</span> <span class="n">covid_end_year</span><span class="p">],</span>
         <span class="p">[</span><span class="mi">1</span> <span class="o">-</span> <span class="n">covid_drop</span> <span class="o">/</span> <span class="mi">100</span><span class="p">,</span> <span class="n">covid_end_ratio</span> <span class="o">/</span> <span class="mi">100</span><span class="p">],</span>
-        <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">,</span>
+        <span class="n">kind</span><span class="o">=</span><span class="s2">"linear"</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">reference_annual_growth_rate</span> <span class="o">=</span> <span class="n">aeromaps_leveling_function</span><span class="p">(</span>
@@ -6564,7 +6564,7 @@ independent reference CAGR + COVID recovery to produce the counterfactual
     <span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">rate_col</span><span class="p">]</span> <span class="o">=</span> <span class="n">reference_annual_growth_rate</span>
 
-    <span class="c1"># Clamp to the prospective window so observed historic COVID data isn&#39;t</span>
+    <span class="c1"># Clamp to the prospective window so observed historic COVID data isn't</span>
     <span class="c1"># overwritten when prospection_start_year &gt; covid_end_year.</span>
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">covid_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span><span class="p">),</span> <span class="n">covid_end_year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">covid_start_year</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span> <span class="o">*</span> <span class="n">covid_function</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
@@ -6682,19 +6682,19 @@ independent reference CAGR + COVID recovery to produce the counterfactual
 <span class="normal">263</span>
 <span class="normal">264</span>
 <span class="normal">265</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">freight_market_ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">"custom"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">freight_market_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">freight_market_ids</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">mid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">freight_market_ids</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;rtk_reference_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"rtk_reference_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;rtk&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="s2">&quot;annual_growth_rate_freight&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="s2">&quot;cagr_rtk&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-        <span class="s2">&quot;prospective_evolution_rtk&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-        <span class="s2">&quot;rtk_reference&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="s2">&quot;reference_annual_growth_rate_freight&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="s2">"rtk"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="s2">"annual_growth_rate_freight"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="s2">"cagr_rtk"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s2">"prospective_evolution_rtk"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s2">"rtk_reference"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="s2">"reference_annual_growth_rate_freight"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
     <span class="p">}</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -6840,7 +6840,7 @@ independent reference CAGR + COVID recovery to produce the counterfactual
 <span class="normal">320</span>
 <span class="normal">321</span>
 <span class="normal">322</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Aggregate per-market RTK and reference RTK totals.</span>
+<span class="w">    </span><span class="sd">"""Aggregate per-market RTK and reference RTK totals.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -6851,47 +6851,47 @@ independent reference CAGR + COVID recovery to produce the counterfactual
 <span class="sd">    -------</span>
 <span class="sd">    dict</span>
 <span class="sd">        Output totals and growth metrics for freight RTK.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">total_rtk</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">total_rtk_reference</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">for</span> <span class="n">mid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">freight_market_ids</span><span class="p">:</span>
-        <span class="n">series</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+        <span class="n">series</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span>
         <span class="n">total_rtk</span> <span class="o">=</span> <span class="n">series</span> <span class="k">if</span> <span class="n">total_rtk</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">total_rtk</span> <span class="o">+</span> <span class="n">series</span>
-        <span class="n">series_ref</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;rtk_reference_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+        <span class="n">series_ref</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"rtk_reference_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span>
         <span class="n">total_rtk_reference</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">series_ref</span> <span class="k">if</span> <span class="n">total_rtk_reference</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">total_rtk_reference</span> <span class="o">+</span> <span class="n">series_ref</span>
         <span class="p">)</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;rtk&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_rtk</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;rtk_reference&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_rtk_reference</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"rtk"</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_rtk</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"rtk_reference"</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_rtk_reference</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">historic_start_year</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">,</span> <span class="s2">&quot;annual_growth_rate_freight&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;rtk&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pct_change</span><span class="p">()</span> <span class="o">*</span> <span class="mi">100</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">historic_start_year</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">,</span> <span class="s2">"annual_growth_rate_freight"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">"rtk"</span><span class="p">]</span><span class="o">.</span><span class="n">pct_change</span><span class="p">()</span> <span class="o">*</span> <span class="mi">100</span>
     <span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">,</span> <span class="s2">&quot;reference_annual_growth_rate_freight&quot;</span>
-    <span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;rtk_reference&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pct_change</span><span class="p">()</span> <span class="o">*</span> <span class="mi">100</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">,</span> <span class="s2">"reference_annual_growth_rate_freight"</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">"rtk_reference"</span><span class="p">]</span><span class="o">.</span><span class="n">pct_change</span><span class="p">()</span> <span class="o">*</span> <span class="mi">100</span>
 
     <span class="n">cagr_rtk</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="p">(</span>
         <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">,</span> <span class="s2">&quot;rtk&quot;</span><span class="p">]</span>
-            <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;rtk&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">,</span> <span class="s2">"rtk"</span><span class="p">]</span>
+            <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"rtk"</span><span class="p">]</span>
         <span class="p">)</span>
         <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">end_year</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span><span class="p">))</span>
         <span class="o">-</span> <span class="mi">1</span>
     <span class="p">)</span>
     <span class="n">prospective_evolution_rtk</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="p">(</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">,</span> <span class="s2">&quot;rtk&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;rtk&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">,</span> <span class="s2">"rtk"</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"rtk"</span><span class="p">]</span>
         <span class="o">-</span> <span class="mi">1</span>
     <span class="p">)</span>
 
     <span class="n">output_data</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;rtk&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;rtk&quot;</span><span class="p">],</span>
-        <span class="s2">&quot;annual_growth_rate_freight&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;annual_growth_rate_freight&quot;</span><span class="p">],</span>
-        <span class="s2">&quot;cagr_rtk&quot;</span><span class="p">:</span> <span class="n">cagr_rtk</span><span class="p">,</span>
-        <span class="s2">&quot;prospective_evolution_rtk&quot;</span><span class="p">:</span> <span class="n">prospective_evolution_rtk</span><span class="p">,</span>
-        <span class="s2">&quot;rtk_reference&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;rtk_reference&quot;</span><span class="p">],</span>
-        <span class="s2">&quot;reference_annual_growth_rate_freight&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;reference_annual_growth_rate_freight&quot;</span><span class="p">],</span>
+        <span class="s2">"rtk"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">"rtk"</span><span class="p">],</span>
+        <span class="s2">"annual_growth_rate_freight"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">"annual_growth_rate_freight"</span><span class="p">],</span>
+        <span class="s2">"cagr_rtk"</span><span class="p">:</span> <span class="n">cagr_rtk</span><span class="p">,</span>
+        <span class="s2">"prospective_evolution_rtk"</span><span class="p">:</span> <span class="n">prospective_evolution_rtk</span><span class="p">,</span>
+        <span class="s2">"rtk_reference"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">"rtk_reference"</span><span class="p">],</span>
+        <span class="s2">"reference_annual_growth_rate_freight"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">"reference_annual_growth_rate_freight"</span><span class="p">],</span>
     <span class="p">}</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_store_outputs</span><span class="p">(</span><span class="n">output_data</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">output_data</span>
@@ -6975,7 +6975,7 @@ independent reference CAGR + COVID recovery to produce the counterfactual
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       

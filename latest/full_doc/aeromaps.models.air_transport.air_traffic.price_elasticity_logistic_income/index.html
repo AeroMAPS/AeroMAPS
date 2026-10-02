@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -5827,7 +5827,9 @@ Selected via <code>global.demand.model: logistic_income</code> in <code>markets.
 
 
 <a href="#aeromaps.models.air_transport.air_traffic.price_elasticity_logistic_income.RPKLogisticIncomePriceElasticity" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">RPKLogisticIncomePriceElasticity</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">passenger_market_ids</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">RPKLogisticIncomePriceElasticity</span><span class="p">(</span>
+    <span class="n">name</span><span class="p">,</span> <span class="n">passenger_market_ids</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -5957,7 +5959,7 @@ the same global cycle N times.</p>
 <span class="normal">133</span>
 <span class="normal">134</span>
 <span class="normal">135</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">passenger_market_ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">"custom"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">passenger_market_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">passenger_market_ids</span><span class="p">)</span>
     <span class="c1"># Calibrated logistic parameters (fixed at class level)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">left_asymptote</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
@@ -5975,41 +5977,41 @@ the same global cycle N times.</p>
     <span class="bp">self</span><span class="o">.</span><span class="n">eur_usd_exchange_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.9</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;rpk_init&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="s2">&quot;population&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="s2">&quot;gdp_per_capita&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="s2">&quot;doc_net_energy_per_rpk_mean&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="s2">&quot;gdp_per_capita_last_historical_year&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-        <span class="s2">&quot;gdp_per_capita_covid_end&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-        <span class="s2">&quot;covid_end_year_passenger&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-        <span class="s2">&quot;gdp_per_capita_init&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="s2">&quot;population_init&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="s2">&quot;price_reference_year&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">PRICE_REFERENCE_YEAR</span><span class="p">),</span>
+        <span class="s2">"rpk_init"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="s2">"population"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="s2">"gdp_per_capita"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="s2">"doc_net_energy_per_rpk_mean"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="s2">"gdp_per_capita_last_historical_year"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s2">"gdp_per_capita_covid_end"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s2">"covid_end_year_passenger"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s2">"gdp_per_capita_init"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="s2">"population_init"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="s2">"price_reference_year"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">PRICE_REFERENCE_YEAR</span><span class="p">),</span>
     <span class="p">}</span>
     <span class="k">for</span> <span class="n">mid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">passenger_market_ids</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_rpk_share_last_historical_year&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;rpk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_measures_impact&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;rpk_reference_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_rpk_share_last_historical_year"</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"rpk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_measures_impact"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"rpk_reference_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;rpk&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="s2">&quot;rpk_no_elasticity&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="s2">&quot;rpk_per_capita&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="s2">&quot;rpk_per_capita_trend&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="s2">&quot;price_index&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="s2">&quot;doc_net_energy_per_rpk_delayed&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="s2">&quot;rpk_model_without_covid&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="s2">&quot;annual_growth_rate_passenger&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="s2">&quot;cagr_rpk&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-        <span class="s2">&quot;prospective_evolution_rpk&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-        <span class="s2">&quot;rpk_reference&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-        <span class="s2">&quot;reference_annual_growth_rate_passenger&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="s2">"rpk"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="s2">"rpk_no_elasticity"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="s2">"rpk_per_capita"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="s2">"rpk_per_capita_trend"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="s2">"price_index"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="s2">"doc_net_energy_per_rpk_delayed"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="s2">"rpk_model_without_covid"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="s2">"annual_growth_rate_passenger"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="s2">"cagr_rpk"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s2">"prospective_evolution_rpk"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s2">"rpk_reference"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="s2">"reference_annual_growth_rate_passenger"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
     <span class="p">}</span>
     <span class="k">for</span> <span class="n">mid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">passenger_market_ids</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;rpk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;annual_growth_rate_rpk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;cagr_rpk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;prospective_evolution_rpk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"rpk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"annual_growth_rate_rpk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"cagr_rpk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"prospective_evolution_rpk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
 </code></pre></div></td></tr></table></div>
                   </details>
 
@@ -6180,20 +6182,20 @@ are pinned to the exogenous <code>rpk_init</code> split.</p>
 <span class="normal">374</span>
 <span class="normal">375</span>
 <span class="normal">376</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute prospective RPK using a generalised logistic income trend adjusted for price.</span>
+<span class="w">    </span><span class="sd">"""Compute prospective RPK using a generalised logistic income trend adjusted for price.</span>
 
 <span class="sd">    The global per-capita income trend is multiplied by the price index; the result is</span>
 <span class="sd">    split across passenger markets by their last-historical-year RPK share, multiplied</span>
-<span class="sd">    by each market&#39;s measures impact and summed into the total ``rpk``. Historic years</span>
+<span class="sd">    by each market's measures impact and summed into the total ``rpk``. Historic years</span>
 <span class="sd">    are pinned to the exogenous ``rpk_init`` split.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">rpk_init</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;rpk_init&quot;</span><span class="p">]</span>
-    <span class="n">population</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;population&quot;</span><span class="p">]</span>
-    <span class="n">gdp_per_capita</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;gdp_per_capita&quot;</span><span class="p">]</span>
+<span class="sd">    """</span>
+    <span class="n">rpk_init</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"rpk_init"</span><span class="p">]</span>
+    <span class="n">population</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"population"</span><span class="p">]</span>
+    <span class="n">gdp_per_capita</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"gdp_per_capita"</span><span class="p">]</span>
     <span class="c1"># (COVID handling lives in _covid_shift, below.)</span>
-    <span class="n">doc_net_energy_per_rpk_mean</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;doc_net_energy_per_rpk_mean&quot;</span><span class="p">]</span>
-    <span class="n">gdp_per_capita_init</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;gdp_per_capita_init&quot;</span><span class="p">]</span>
-    <span class="n">population_init</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;population_init&quot;</span><span class="p">]</span>
+    <span class="n">doc_net_energy_per_rpk_mean</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"doc_net_energy_per_rpk_mean"</span><span class="p">]</span>
+    <span class="n">gdp_per_capita_init</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"gdp_per_capita_init"</span><span class="p">]</span>
+    <span class="n">population_init</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"population_init"</span><span class="p">]</span>
 
     <span class="n">price_ref_eur</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">price_ref</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">eur_usd_exchange_rate</span>
     <span class="n">covid_shift</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_covid_shift</span><span class="p">(</span><span class="n">rpk_init</span><span class="p">,</span> <span class="n">population_init</span><span class="p">,</span> <span class="n">gdp_per_capita</span><span class="p">)</span>
@@ -6234,7 +6236,7 @@ are pinned to the exogenous <code>rpk_init</code> split.</p>
         <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_price_reference</span><span class="p">(</span>
             <span class="n">doc_net_energy_per_rpk_delayed</span><span class="p">,</span>
             <span class="n">price_ref_eur</span><span class="p">,</span>
-            <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;price_reference_year&quot;</span><span class="p">],</span>
+            <span class="n">input_data</span><span class="p">[</span><span class="s2">"price_reference_year"</span><span class="p">],</span>
         <span class="p">)</span>
     <span class="p">)</span> <span class="o">**</span> <span class="bp">self</span><span class="o">.</span><span class="n">price_elast</span>
     <span class="n">rpk_per_capita</span> <span class="o">=</span> <span class="n">rpk_per_capita_trend</span> <span class="o">*</span> <span class="n">price_index</span>
@@ -6261,8 +6263,8 @@ are pinned to the exogenous <code>rpk_init</code> split.</p>
     <span class="n">weighted_measures</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">mid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">passenger_market_ids</span><span class="p">:</span>
-        <span class="n">share</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_rpk_share_last_historical_year&quot;</span><span class="p">])</span> <span class="o">/</span> <span class="mi">100</span>
-        <span class="n">measures_impact</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_full_series</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;rpk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_measures_impact&quot;</span><span class="p">],</span> <span class="mf">1.0</span><span class="p">)</span>
+        <span class="n">share</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_rpk_share_last_historical_year"</span><span class="p">])</span> <span class="o">/</span> <span class="mi">100</span>
+        <span class="n">measures_impact</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_full_series</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"rpk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_measures_impact"</span><span class="p">],</span> <span class="mf">1.0</span><span class="p">)</span>
         <span class="n">weighted_measures</span> <span class="o">+=</span> <span class="n">share</span> <span class="o">*</span> <span class="n">measures_impact</span>
 
         <span class="n">rpk_m</span> <span class="o">=</span> <span class="n">rpk_model_total</span> <span class="o">*</span> <span class="n">share</span>
@@ -6270,14 +6272,14 @@ are pinned to the exogenous <code>rpk_init</code> split.</p>
         <span class="n">rpk_m</span> <span class="o">=</span> <span class="n">rpk_m</span> <span class="o">*</span> <span class="n">measures_impact</span>
 
         <span class="n">rpk</span> <span class="o">+=</span> <span class="n">rpk_m</span>
-        <span class="n">rpk_reference</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_full_series</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;rpk_reference_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">rpk_reference</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_full_series</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"rpk_reference_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">],</span> <span class="mf">0.0</span><span class="p">)</span>
 
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;rpk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rpk_m</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;annual_growth_rate_rpk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rpk_m</span><span class="o">.</span><span class="n">pct_change</span><span class="p">()</span> <span class="o">*</span> <span class="mi">100</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;cagr_rpk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="p">(</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"rpk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="n">rpk_m</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"annual_growth_rate_rpk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="n">rpk_m</span><span class="o">.</span><span class="n">pct_change</span><span class="p">()</span> <span class="o">*</span> <span class="mi">100</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"cagr_rpk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="p">(</span>
             <span class="p">(</span><span class="n">rpk_m</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">]</span> <span class="o">/</span> <span class="n">rpk_m</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">base_year</span><span class="p">])</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">n</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
         <span class="p">)</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;prospective_evolution_rpk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="p">(</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"prospective_evolution_rpk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="p">(</span>
             <span class="n">rpk_m</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">]</span> <span class="o">/</span> <span class="n">rpk_m</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">base_year</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
         <span class="p">)</span>
 
@@ -6288,24 +6290,24 @@ are pinned to the exogenous <code>rpk_init</code> split.</p>
     <span class="n">rpk_model_without_covid</span> <span class="o">=</span> <span class="n">rpk_model_without_covid_raw</span> <span class="o">*</span> <span class="n">weighted_measures</span>
 
     <span class="c1"># --- Totals ---</span>
-    <span class="n">reference_growth</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="s2">&quot;nan&quot;</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+    <span class="n">reference_growth</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="s2">"nan"</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
     <span class="n">proj</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">)</span>
     <span class="n">reference_growth</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">proj</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">rpk_reference</span><span class="o">.</span><span class="n">pct_change</span><span class="p">()</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">proj</span><span class="p">]</span>
 
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;rpk&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rpk</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;rpk_no_elasticity&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rpk_no_elasticity</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;rpk_per_capita&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rpk_per_capita</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;rpk_per_capita_trend&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rpk_per_capita_trend</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;price_index&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">price_index</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;rpk_model_without_covid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rpk_model_without_covid</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;rpk_reference&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rpk_reference</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;doc_net_energy_per_rpk_delayed&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc_net_energy_per_rpk_delayed</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;annual_growth_rate_passenger&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rpk</span><span class="o">.</span><span class="n">pct_change</span><span class="p">()</span> <span class="o">*</span> <span class="mi">100</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;reference_annual_growth_rate_passenger&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">reference_growth</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;cagr_rpk&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="p">(</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"rpk"</span><span class="p">]</span> <span class="o">=</span> <span class="n">rpk</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"rpk_no_elasticity"</span><span class="p">]</span> <span class="o">=</span> <span class="n">rpk_no_elasticity</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"rpk_per_capita"</span><span class="p">]</span> <span class="o">=</span> <span class="n">rpk_per_capita</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"rpk_per_capita_trend"</span><span class="p">]</span> <span class="o">=</span> <span class="n">rpk_per_capita_trend</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"price_index"</span><span class="p">]</span> <span class="o">=</span> <span class="n">price_index</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"rpk_model_without_covid"</span><span class="p">]</span> <span class="o">=</span> <span class="n">rpk_model_without_covid</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"rpk_reference"</span><span class="p">]</span> <span class="o">=</span> <span class="n">rpk_reference</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"doc_net_energy_per_rpk_delayed"</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc_net_energy_per_rpk_delayed</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"annual_growth_rate_passenger"</span><span class="p">]</span> <span class="o">=</span> <span class="n">rpk</span><span class="o">.</span><span class="n">pct_change</span><span class="p">()</span> <span class="o">*</span> <span class="mi">100</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"reference_annual_growth_rate_passenger"</span><span class="p">]</span> <span class="o">=</span> <span class="n">reference_growth</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"cagr_rpk"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="p">(</span>
         <span class="p">(</span><span class="n">rpk</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">]</span> <span class="o">/</span> <span class="n">rpk</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">base_year</span><span class="p">])</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">n</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
     <span class="p">)</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;prospective_evolution_rpk&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="p">(</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"prospective_evolution_rpk"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="p">(</span>
         <span class="n">rpk</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">]</span> <span class="o">/</span> <span class="n">rpk</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">base_year</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
     <span class="p">)</span>
 
@@ -6391,7 +6393,7 @@ are pinned to the exogenous <code>rpk_init</code> split.</p>
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       

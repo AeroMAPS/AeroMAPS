@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -5822,7 +5822,9 @@
 
 
 <a href="#aeromaps.models.sustainability_assessment.climate.carbon_budget.GrossCarbonBudget" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">GrossCarbonBudget</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;gross_carbon_budget&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">GrossCarbonBudget</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"gross_carbon_budget"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -5874,7 +5876,7 @@
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/sustainability_assessment/climate/carbon_budget.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">22</span>
-<span class="normal">23</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;gross_carbon_budget&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="normal">23</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"gross_carbon_budget"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -5900,7 +5902,13 @@
 
 
 <a href="#aeromaps.models.sustainability_assessment.climate.carbon_budget.GrossCarbonBudget.compute" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span><span class="n">net_carbon_budget</span><span class="p">,</span> <span class="n">carbon_dioxyde_removal_2100</span><span class="p">,</span> <span class="n">world_co2_emissions_carbon_budget_reference_year</span><span class="p">,</span> <span class="n">aviation_carbon_budget_allocated_share</span><span class="p">,</span> <span class="n">carbon_budget_reference_year</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span>
+    <span class="n">net_carbon_budget</span><span class="p">,</span>
+    <span class="n">carbon_dioxyde_removal_2100</span><span class="p">,</span>
+    <span class="n">world_co2_emissions_carbon_budget_reference_year</span><span class="p">,</span>
+    <span class="n">aviation_carbon_budget_allocated_share</span><span class="p">,</span>
+    <span class="n">carbon_budget_reference_year</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6073,7 +6081,7 @@ geometric decline is summed from this year to the 2100 / 2050 horizons.</p>
     <span class="n">aviation_carbon_budget_allocated_share</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
     <span class="n">carbon_budget_reference_year</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Gross carbon budget.</span>
 
 <span class="sd">    Parameters</span>
@@ -6089,7 +6097,7 @@ geometric decline is summed from this year to the 2100 / 2050 horizons.</p>
 <span class="sd">    carbon_budget_reference_year</span>
 <span class="sd">        Fixed reference year the budget is measured from (default 2019). The</span>
 <span class="sd">        geometric decline is summed from this year to the 2100 / 2050 horizons.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">gross_carbon_budget</span> <span class="o">=</span> <span class="n">net_carbon_budget</span> <span class="o">+</span> <span class="n">carbon_dioxyde_removal_2100</span>
 
@@ -6120,9 +6128,9 @@ geometric decline is summed from this year to the 2100 / 2050 horizons.</p>
         <span class="n">aviation_carbon_budget_allocated_share</span> <span class="o">/</span> <span class="mi">100</span> <span class="o">*</span> <span class="n">gross_carbon_budget_2050</span>
     <span class="p">)</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">float_outputs</span><span class="p">[</span><span class="s2">&quot;gross_carbon_budget&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gross_carbon_budget</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">float_outputs</span><span class="p">[</span><span class="s2">&quot;gross_carbon_budget_2050&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gross_carbon_budget_2050</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">float_outputs</span><span class="p">[</span><span class="s2">&quot;aviation_carbon_budget&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">aviation_carbon_budget</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">float_outputs</span><span class="p">[</span><span class="s2">"gross_carbon_budget"</span><span class="p">]</span> <span class="o">=</span> <span class="n">gross_carbon_budget</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">float_outputs</span><span class="p">[</span><span class="s2">"gross_carbon_budget_2050"</span><span class="p">]</span> <span class="o">=</span> <span class="n">gross_carbon_budget_2050</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">float_outputs</span><span class="p">[</span><span class="s2">"aviation_carbon_budget"</span><span class="p">]</span> <span class="o">=</span> <span class="n">aviation_carbon_budget</span>
 
     <span class="k">return</span> <span class="n">gross_carbon_budget</span><span class="p">,</span> <span class="n">gross_carbon_budget_2050</span><span class="p">,</span> <span class="n">aviation_carbon_budget</span>
 </code></pre></div></td></tr></table></div>
@@ -6205,7 +6213,7 @@ geometric decline is summed from this year to the 2100 / 2050 horizons.</p>
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       

@@ -17,7 +17,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -25,7 +25,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -5613,7 +5613,12 @@
 
 
 <a href="#aeromaps.models.impacts.costs.efficiency_abatement_cost.fleet_abatement_cost.FleetCarbonAbatementCosts" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">FleetCarbonAbatementCosts</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;fleet_abatement_cost&#39;</span><span class="p">,</span> <span class="n">fleet_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">FleetCarbonAbatementCosts</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"fleet_abatement_cost"</span><span class="p">,</span>
+    <span class="n">fleet_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -5692,8 +5697,8 @@
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">30</span>
 <span class="normal">31</span>
 <span class="normal">32</span>
-<span class="normal">33</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;fleet_abatement_cost&quot;</span><span class="p">,</span> <span class="n">fleet_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="normal">33</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"fleet_abatement_cost"</span><span class="p">,</span> <span class="n">fleet_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">"custom"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">fleet_model</span> <span class="o">=</span> <span class="n">fleet_model</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">markets</span> <span class="o">=</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
@@ -5920,35 +5925,35 @@
 <span class="normal">244</span>
 <span class="normal">245</span>
 <span class="normal">246</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Executes the computation of aircraft efficiency-related carbon abatement costs.</span>
 
 <span class="sd">    Warning</span>
 <span class="sd">    -------</span>
 <span class="sd">    This model stores its outputs in fleet df. # TODO: as it is now possible to use dicts in gemseo, make non-dummy outputs?</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">output_data</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">dummy_carbon_abatement_cost_aircraft_value_dict</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">dummy_specific_carbon_abatement_cost_aircraft_value_dict</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">dummy_generic_specific_carbon_abatement_cost_aircraft_value_dict</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">dummy_carbon_abatement_volume_aircraft_value_dict</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="n">market_name_to_id</span> <span class="o">=</span> <span class="p">{</span><span class="n">m</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">&quot;passenger&quot;</span><span class="p">)}</span>
+    <span class="n">market_name_to_id</span> <span class="o">=</span> <span class="p">{</span><span class="n">m</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">"passenger"</span><span class="p">)}</span>
     <span class="k">for</span> <span class="n">category</span><span class="p">,</span> <span class="n">sets</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fleet_model</span><span class="o">.</span><span class="n">fleet</span><span class="o">.</span><span class="n">all_aircraft_elements</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">category_recent_reference</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fleet_model</span><span class="o">.</span><span class="n">fleet</span><span class="o">.</span><span class="n">all_aircraft_elements</span><span class="p">[</span><span class="n">category</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">category</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">market_name_to_id</span><span class="p">:</span>
             <span class="k">continue</span>
         <span class="n">mid</span> <span class="o">=</span> <span class="n">market_name_to_id</span><span class="p">[</span><span class="n">category</span><span class="p">]</span>
-        <span class="n">category_reference_doc_ne</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_doc_non_energy_per_ask_dropin_fuel_init&quot;</span><span class="p">]</span>
+        <span class="n">category_reference_doc_ne</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_doc_non_energy_per_ask_dropin_fuel_init"</span><span class="p">]</span>
         <span class="c1"># Assumes 100% drop in at reference year. Sum with non drop in necessary otherwise.</span>
         <span class="n">category_reference_energy</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span>
-            <span class="sa">f</span><span class="s2">&quot;energy_per_ask_without_operations_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel&quot;</span>
+            <span class="sa">f</span><span class="s2">"energy_per_ask_without_operations_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel"</span>
         <span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
 
         <span class="c1"># Calculating values of interest for each aircraft</span>
         <span class="k">for</span> <span class="n">aircraft_var</span> <span class="ow">in</span> <span class="n">sets</span><span class="p">:</span>
-            <span class="c1"># Check if it&#39;s a reference aircraft or a normal aircraft...</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">aircraft_var</span><span class="p">,</span> <span class="s2">&quot;parameters&quot;</span><span class="p">):</span>
+            <span class="c1"># Check if it's a reference aircraft or a normal aircraft...</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">aircraft_var</span><span class="p">,</span> <span class="s2">"parameters"</span><span class="p">):</span>
                 <span class="n">aircraft_var_name</span> <span class="o">=</span> <span class="n">aircraft_var</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">full_name</span>
                 <span class="n">aircraft_energy_delta_val</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="mi">1</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">aircraft_var</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">consumption_evolution</span><span class="p">)</span> <span class="o">/</span> <span class="mi">100</span>
@@ -5980,9 +5985,9 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span> <span class="o">&lt;=</span> <span class="mi">2020</span><span class="p">:</span>
                 <span class="n">aircraft_energy_delta</span><span class="p">[</span><span class="mi">2020</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="n">aircraft_energy_delta</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">last_historical_year</span><span class="p">]</span>
-                    <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;covid_energy_intensity_per_ask_increase_2020&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span>
+                    <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"covid_energy_intensity_per_ask_increase_2020"</span><span class="p">]</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span>
                     <span class="o">+</span> <span class="n">category_reference_energy</span>
-                    <span class="o">*</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;covid_energy_intensity_per_ask_increase_2020&quot;</span><span class="p">]</span>
+                    <span class="o">*</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"covid_energy_intensity_per_ask_increase_2020"</span><span class="p">]</span>
                     <span class="o">/</span> <span class="mi">100</span>
                 <span class="p">)</span>
 
@@ -5990,10 +5995,10 @@
             <span class="c1"># the calculation process. For instance a Hydrogen aircraft, that would consume more energy in this step</span>
             <span class="c1"># would result in negative abatement; even though the total lifecycle could actually reduce emissions.</span>
 
-            <span class="n">extra_cost_fuel</span> <span class="o">=</span> <span class="n">aircraft_energy_delta</span> <span class="o">*</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;cac_reference_mfsp&quot;</span><span class="p">]</span>
+            <span class="n">extra_cost_fuel</span> <span class="o">=</span> <span class="n">aircraft_energy_delta</span> <span class="o">*</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"cac_reference_mfsp"</span><span class="p">]</span>
 
             <span class="n">extra_emissions</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="o">-</span><span class="n">aircraft_energy_delta</span> <span class="o">*</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;cac_reference_co2_emission_factor&quot;</span><span class="p">]</span>
+                <span class="o">-</span><span class="n">aircraft_energy_delta</span> <span class="o">*</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"cac_reference_co2_emission_factor"</span><span class="p">]</span>
             <span class="p">)</span> <span class="o">/</span> <span class="mi">1000000</span>
 
             <span class="n">aircraft_carbon_abatement_cost</span> <span class="o">=</span> <span class="p">(</span>
@@ -6001,11 +6006,11 @@
             <span class="p">)</span> <span class="o">/</span> <span class="n">extra_emissions</span>  <span class="c1"># €/ton</span>
 
             <span class="n">specific_cac_aircraft_var_name</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">aircraft_var_name</span> <span class="o">+</span> <span class="s2">&quot;:aircraft_specific_carbon_abatement_cost&quot;</span>
+                <span class="n">aircraft_var_name</span> <span class="o">+</span> <span class="s2">":aircraft_specific_carbon_abatement_cost"</span>
             <span class="p">)</span>
 
             <span class="n">generic_specific_cac_aircraft_var_name</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">aircraft_var_name</span> <span class="o">+</span> <span class="s2">&quot;:aircraft_generic_specific_carbon_abatement_cost&quot;</span>
+                <span class="n">aircraft_var_name</span> <span class="o">+</span> <span class="s2">":aircraft_generic_specific_carbon_abatement_cost"</span>
             <span class="p">)</span>
 
             <span class="n">scac_vals</span> <span class="o">=</span> <span class="p">[]</span>
@@ -6013,14 +6018,14 @@
             <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
                 <span class="n">scac</span><span class="p">,</span> <span class="n">scac_prime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_discounted_vals</span><span class="p">(</span>
                     <span class="n">k</span><span class="p">,</span>
-                    <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;social_discount_rate&quot;</span><span class="p">],</span>
+                    <span class="n">input_data</span><span class="p">[</span><span class="s2">"social_discount_rate"</span><span class="p">],</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">fleet_model</span><span class="o">.</span><span class="n">fleet</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="n">category</span><span class="p">]</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">life</span><span class="p">,</span>
                     <span class="n">aircraft_doc_ne_delta</span><span class="p">,</span>
                     <span class="n">extra_cost_fuel</span><span class="p">,</span>
-                    <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;cac_reference_mfsp&quot;</span><span class="p">],</span>
-                    <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;cac_reference_co2_emission_factor&quot;</span><span class="p">],</span>
+                    <span class="n">input_data</span><span class="p">[</span><span class="s2">"cac_reference_mfsp"</span><span class="p">],</span>
+                    <span class="n">input_data</span><span class="p">[</span><span class="s2">"cac_reference_co2_emission_factor"</span><span class="p">],</span>
                     <span class="n">extra_emissions</span><span class="p">,</span>
-                    <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;exogenous_carbon_price_trajectory&quot;</span><span class="p">],</span>
+                    <span class="n">input_data</span><span class="p">[</span><span class="s2">"exogenous_carbon_price_trajectory"</span><span class="p">],</span>
                 <span class="p">)</span>
                 <span class="n">scac_vals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">scac</span><span class="p">)</span>
                 <span class="n">scac_vals_prime</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">scac_prime</span><span class="p">)</span>
@@ -6040,22 +6045,22 @@
 
             <span class="c1"># TODO use input dictionary if possible once implemented instead of looking in fleet model df + dummy output</span>
             <span class="n">aircraft_pseudo_ask</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">fleet_model</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">(</span><span class="n">aircraft_var_name</span> <span class="o">+</span> <span class="s2">&quot;:aircraft_rpk&quot;</span><span class="p">)]</span>
-                <span class="o">/</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;load_factor&quot;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">fleet_model</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">(</span><span class="n">aircraft_var_name</span> <span class="o">+</span> <span class="s2">":aircraft_rpk"</span><span class="p">)]</span>
+                <span class="o">/</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"load_factor"</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
                 <span class="o">*</span> <span class="mi">100</span>
             <span class="p">)</span>
 
             <span class="n">aircraft_carbon_abatement_volume</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span>
                 <span class="n">aircraft_pseudo_ask</span>
                 <span class="o">*</span> <span class="n">aircraft_energy_delta</span>
-                <span class="o">*</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;cac_reference_co2_emission_factor&quot;</span><span class="p">]</span>
+                <span class="o">*</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"cac_reference_co2_emission_factor"</span><span class="p">]</span>
                 <span class="o">/</span> <span class="mi">1000000</span>
             <span class="p">)</span>  <span class="c1"># in tons</span>
 
-            <span class="n">cac_aircraft_var_name</span> <span class="o">=</span> <span class="n">aircraft_var_name</span> <span class="o">+</span> <span class="s2">&quot;:aircraft_carbon_abatement_cost&quot;</span>
+            <span class="n">cac_aircraft_var_name</span> <span class="o">=</span> <span class="n">aircraft_var_name</span> <span class="o">+</span> <span class="s2">":aircraft_carbon_abatement_cost"</span>
 
             <span class="n">abatement_volume_aircraft_var_name</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">aircraft_var_name</span> <span class="o">+</span> <span class="s2">&quot;:aircraft_carbon_abatement_volume&quot;</span>
+                <span class="n">aircraft_var_name</span> <span class="o">+</span> <span class="s2">":aircraft_carbon_abatement_volume"</span>
             <span class="p">)</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">fleet_model</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
@@ -6089,16 +6094,16 @@
                 <span class="n">aircraft_var_name</span>
             <span class="p">]</span> <span class="o">=</span> <span class="n">scac_prime_column</span>
 
-    <span class="c1"># output_data[&quot;dummy_carbon_abatement_cost_aircraft_value_dict&quot;] = (</span>
+    <span class="c1"># output_data["dummy_carbon_abatement_cost_aircraft_value_dict"] = (</span>
     <span class="c1">#    dummy_carbon_abatement_cost_aircraft_value_dict</span>
     <span class="c1"># )</span>
-    <span class="c1"># output_data[&quot;dummy_carbon_abatement_volume_aircraft_value_dict&quot;] = (</span>
+    <span class="c1"># output_data["dummy_carbon_abatement_volume_aircraft_value_dict"] = (</span>
     <span class="c1">#    dummy_carbon_abatement_volume_aircraft_value_dict</span>
     <span class="c1"># )</span>
-    <span class="c1"># output_data[&quot;dummy_specific_carbon_abatement_cost_aircraft_value_dict&quot;] = (</span>
+    <span class="c1"># output_data["dummy_specific_carbon_abatement_cost_aircraft_value_dict"] = (</span>
     <span class="c1">#   dummy_specific_carbon_abatement_cost_aircraft_value_dict</span>
     <span class="c1"># )</span>
-    <span class="c1"># output_data[&quot;dummy_generic_specific_carbon_abatement_cost_aircraft_value_dict&quot;] = (</span>
+    <span class="c1"># output_data["dummy_generic_specific_carbon_abatement_cost_aircraft_value_dict"] = (</span>
     <span class="c1">#    dummy_generic_specific_carbon_abatement_cost_aircraft_value_dict</span>
     <span class="c1"># )</span>
 
@@ -6127,7 +6132,12 @@
 
 
 <a href="#aeromaps.models.impacts.costs.efficiency_abatement_cost.fleet_abatement_cost.CargoEfficiencyCarbonAbatementCosts" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">CargoEfficiencyCarbonAbatementCosts</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;cargo_efficiency_carbon_abatement_cost&#39;</span><span class="p">,</span> <span class="n">fleet_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">CargoEfficiencyCarbonAbatementCosts</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"cargo_efficiency_carbon_abatement_cost"</span><span class="p">,</span>
+    <span class="n">fleet_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6182,7 +6192,7 @@
 <span class="normal">334</span>
 <span class="normal">335</span>
 <span class="normal">336</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-    <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;cargo_efficiency_carbon_abatement_cost&quot;</span><span class="p">,</span> <span class="n">fleet_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"cargo_efficiency_carbon_abatement_cost"</span><span class="p">,</span> <span class="n">fleet_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -6209,7 +6219,18 @@
 
 
 <a href="#aeromaps.models.impacts.costs.efficiency_abatement_cost.fleet_abatement_cost.CargoEfficiencyCarbonAbatementCosts.compute" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span><span class="n">energy_per_rtk_without_operations_freight_dropin_fuel</span><span class="p">,</span> <span class="n">energy_per_rtk_without_operations_freight_hydrogen</span><span class="p">,</span> <span class="n">energy_per_rtk_without_operations_freight_electric</span><span class="p">,</span> <span class="n">rtk_dropin_fuel</span><span class="p">,</span> <span class="n">rtk_hydrogen</span><span class="p">,</span> <span class="n">rtk_electric</span><span class="p">,</span> <span class="n">cac_reference_mfsp</span><span class="p">,</span> <span class="n">cac_reference_co2_emission_factor</span><span class="p">,</span> <span class="n">exogenous_carbon_price_trajectory</span><span class="p">,</span> <span class="n">social_discount_rate</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span>
+    <span class="n">energy_per_rtk_without_operations_freight_dropin_fuel</span><span class="p">,</span>
+    <span class="n">energy_per_rtk_without_operations_freight_hydrogen</span><span class="p">,</span>
+    <span class="n">energy_per_rtk_without_operations_freight_electric</span><span class="p">,</span>
+    <span class="n">rtk_dropin_fuel</span><span class="p">,</span>
+    <span class="n">rtk_hydrogen</span><span class="p">,</span>
+    <span class="n">rtk_electric</span><span class="p">,</span>
+    <span class="n">cac_reference_mfsp</span><span class="p">,</span>
+    <span class="n">cac_reference_co2_emission_factor</span><span class="p">,</span>
+    <span class="n">exogenous_carbon_price_trajectory</span><span class="p">,</span>
+    <span class="n">social_discount_rate</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6841,7 +6862,7 @@
     <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
     <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
 <span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Executes the computation of freighter efficiency-related carbon abatement costs.</span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -6858,9 +6879,9 @@
 <span class="sd">    rtk_electric</span>
 <span class="sd">        RTK for freight market aircraft using electricity [RTK].</span>
 <span class="sd">    cac_reference_mfsp</span>
-<span class="sd">        CAC Reference fuel&#39;s MFSP [€/MJ].</span>
+<span class="sd">        CAC Reference fuel's MFSP [€/MJ].</span>
 <span class="sd">    cac_reference_co2_emission_factor</span>
-<span class="sd">        CAC Reference fuel&#39;s CO2 emission factor [gCO2/MJ].</span>
+<span class="sd">        CAC Reference fuel's CO2 emission factor [gCO2/MJ].</span>
 <span class="sd">    exogenous_carbon_price_trajectory</span>
 <span class="sd">        Exogenous carbon price trajectory [€/tCO2].</span>
 <span class="sd">    social_discount_rate</span>
@@ -6892,7 +6913,7 @@
 <span class="sd">        Carbon abatement volume for freight market aircraft using hydrogen [tCO2].</span>
 <span class="sd">    aircraft_carbon_abatement_volume_freight_electric</span>
 <span class="sd">        Carbon abatement volume for freight market aircraft using electricity [tCO2].</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1">### WARNING =&gt; Cargo DOC are not modelled so far in AeroMAPS (April 2024).</span>
     <span class="c1"># However, energy abatement are computed based on energy volumes used by the whole fleet.</span>
     <span class="c1"># For consistency, we compute a cargo abatement cost based on the hypothesis that</span>
@@ -6946,19 +6967,19 @@
         <span class="n">extra_cost_fuel_electric</span> <span class="o">+</span> <span class="n">aircraft_doc_ne_delta_electric</span>
     <span class="p">)</span> <span class="o">/</span> <span class="n">extra_emissions_electric</span>  <span class="c1"># €/ton</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;aircraft_carbon_abatement_cost_freight_dropin&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"aircraft_carbon_abatement_cost_freight_dropin"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">aircraft_carbon_abatement_cost_freight_dropin</span>
     <span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;aircraft_carbon_abatement_cost_freight_hydrogen&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"aircraft_carbon_abatement_cost_freight_hydrogen"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">aircraft_carbon_abatement_cost_freight_hydrogen</span>
     <span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;aircraft_carbon_abatement_cost_freight_electric&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"aircraft_carbon_abatement_cost_freight_electric"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">aircraft_carbon_abatement_cost_freight_electric</span>
     <span class="p">)</span>
 
-    <span class="c1"># aircraft_life = (self.fleet_model.fleet.categories[&#39;Short Range&#39;].parameters.life +</span>
-    <span class="c1">#                  self.fleet_model.fleet.categories[&#39;Medium Range&#39;].parameters.life +</span>
-    <span class="c1">#                  self.fleet_model.fleet.categories[&#39;Long Range&#39;].parameters.life) / 3</span>
+    <span class="c1"># aircraft_life = (self.fleet_model.fleet.categories['Short Range'].parameters.life +</span>
+    <span class="c1">#                  self.fleet_model.fleet.categories['Medium Range'].parameters.life +</span>
+    <span class="c1">#                  self.fleet_model.fleet.categories['Long Range'].parameters.life) / 3</span>
 
     <span class="n">aircraft_life</span> <span class="o">=</span> <span class="mi">25</span>
 
@@ -6981,12 +7002,12 @@
     <span class="n">aircraft_specific_carbon_abatement_cost_freight_dropin</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
         <span class="n">scac_vals_dropin</span><span class="p">,</span>
         <span class="n">index</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;aircraft_specific_carbon_abatement_cost_freight_dropin&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"aircraft_specific_carbon_abatement_cost_freight_dropin"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">aircraft_generic_specific_carbon_abatement_cost_freight_dropin</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
         <span class="n">scac_vals_prime_dropin</span><span class="p">,</span>
         <span class="n">index</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;aircraft_generic_specific_carbon_abatement_cost_freight_dropin&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"aircraft_generic_specific_carbon_abatement_cost_freight_dropin"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
         <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">,</span> <span class="n">aircraft_specific_carbon_abatement_cost_freight_dropin</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span>
@@ -7014,12 +7035,12 @@
     <span class="n">aircraft_specific_carbon_abatement_cost_freight_hydrogen</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
         <span class="n">scac_vals_hydrogen</span><span class="p">,</span>
         <span class="n">index</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;aircraft_specific_carbon_abatement_cost_freight_hydrogen&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"aircraft_specific_carbon_abatement_cost_freight_hydrogen"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">aircraft_generic_specific_carbon_abatement_cost_freight_hydrogen</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
         <span class="n">scac_vals_prime_hydrogen</span><span class="p">,</span>
         <span class="n">index</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;aircraft_generic_specific_carbon_abatement_cost_freight_hydrogen&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"aircraft_generic_specific_carbon_abatement_cost_freight_hydrogen"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
         <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">,</span> <span class="n">aircraft_specific_carbon_abatement_cost_freight_hydrogen</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span>
@@ -7047,12 +7068,12 @@
     <span class="n">aircraft_specific_carbon_abatement_cost_freight_electric</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
         <span class="n">scac_vals_electric</span><span class="p">,</span>
         <span class="n">index</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;aircraft_specific_carbon_abatement_cost_freight_electric&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"aircraft_specific_carbon_abatement_cost_freight_electric"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">aircraft_generic_specific_carbon_abatement_cost_freight_electric</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
         <span class="n">scac_vals_prime_electric</span><span class="p">,</span>
         <span class="n">index</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;aircraft_generic_specific_carbon_abatement_cost_freight_electric&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"aircraft_generic_specific_carbon_abatement_cost_freight_electric"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
         <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">,</span> <span class="n">aircraft_specific_carbon_abatement_cost_freight_electric</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span>
@@ -7080,13 +7101,13 @@
         <span class="o">/</span> <span class="mi">1000000</span>
     <span class="p">)</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;aircraft_carbon_abatement_volume_freight_dropin&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"aircraft_carbon_abatement_volume_freight_dropin"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">aircraft_carbon_abatement_volume_freight_dropin</span>
     <span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;aircraft_carbon_abatement_volume_freight_hydrogen&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"aircraft_carbon_abatement_volume_freight_hydrogen"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">aircraft_carbon_abatement_volume_freight_hydrogen</span>
     <span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;aircraft_carbon_abatement_volume_freight_electric&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"aircraft_carbon_abatement_volume_freight_electric"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">aircraft_carbon_abatement_volume_freight_electric</span>
     <span class="p">)</span>
 
@@ -7127,7 +7148,12 @@
 
 
 <a href="#aeromaps.models.impacts.costs.efficiency_abatement_cost.fleet_abatement_cost.FleetTopDownCarbonAbatementCost" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">FleetTopDownCarbonAbatementCost</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;fleet_top_down_carbon_abatement_cost&#39;</span><span class="p">,</span> <span class="n">fleet_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">FleetTopDownCarbonAbatementCost</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"fleet_top_down_carbon_abatement_cost"</span><span class="p">,</span>
+    <span class="n">fleet_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -7182,7 +7208,7 @@
 <span class="normal">714</span>
 <span class="normal">715</span>
 <span class="normal">716</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-    <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;fleet_top_down_carbon_abatement_cost&quot;</span><span class="p">,</span> <span class="n">fleet_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"fleet_top_down_carbon_abatement_cost"</span><span class="p">,</span> <span class="n">fleet_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -7209,7 +7235,15 @@
 
 
 <a href="#aeromaps.models.impacts.costs.efficiency_abatement_cost.fleet_abatement_cost.FleetTopDownCarbonAbatementCost.compute" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span><span class="n">energy_per_ask_mean_without_operations</span><span class="p">,</span> <span class="n">ask</span><span class="p">,</span> <span class="n">doc_non_energy_per_ask_mean</span><span class="p">,</span> <span class="n">cac_reference_mfsp</span><span class="p">,</span> <span class="n">cac_reference_co2_emission_factor</span><span class="p">,</span> <span class="n">exogenous_carbon_price_trajectory</span><span class="p">,</span> <span class="n">social_discount_rate</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span>
+    <span class="n">energy_per_ask_mean_without_operations</span><span class="p">,</span>
+    <span class="n">ask</span><span class="p">,</span>
+    <span class="n">doc_non_energy_per_ask_mean</span><span class="p">,</span>
+    <span class="n">cac_reference_mfsp</span><span class="p">,</span>
+    <span class="n">cac_reference_co2_emission_factor</span><span class="p">,</span>
+    <span class="n">exogenous_carbon_price_trajectory</span><span class="p">,</span>
+    <span class="n">social_discount_rate</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -7535,7 +7569,7 @@
     <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
     <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
 <span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Executes the computation of aircraft efficiency-related carbon abatement costs with top-down fleet modelling.</span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -7546,9 +7580,9 @@
 <span class="sd">    doc_non_energy_per_ask_mean</span>
 <span class="sd">        Non-energy DOC per ASK for the mean aircraft using drop-in fuel [€/ASK].</span>
 <span class="sd">    cac_reference_mfsp</span>
-<span class="sd">        CAC Reference fuel&#39;s MFSP [€/MJ].</span>
+<span class="sd">        CAC Reference fuel's MFSP [€/MJ].</span>
 <span class="sd">    cac_reference_co2_emission_factor</span>
-<span class="sd">        CAC Reference fuel&#39;s CO2 emission factor [gCO2/MJ].</span>
+<span class="sd">        CAC Reference fuel's CO2 emission factor [gCO2/MJ].</span>
 <span class="sd">    exogenous_carbon_price_trajectory</span>
 <span class="sd">        Exogenous carbon price trajectory [€/tCO2].</span>
 <span class="sd">    social_discount_rate</span>
@@ -7565,7 +7599,7 @@
 <span class="sd">    aircraft_carbon_abatement_volume_passenger_mean</span>
 <span class="sd">        Mean carbon abatement volume for passenger aircraft [tCO2].</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1">### WARNING =&gt; VERY SIMPLIFIED CARBON ABATEMENT COST MODEL; IT IS NOT CONSISTENT WITH FULL IMPLEMENTATION PRESENTED WITH THE TOP-DOWN MODEL</span>
     <span class="c1"># IT IS A TEMPORARY SOLUTION TO ENABLE PLOTTING MACC EVEN WHEN THE TOP DOWN MDOEL IS USED.</span>
     <span class="c1"># In particular, only mean costs are used and not representative of aircraft entering in service in a given year.</span>
@@ -7597,7 +7631,7 @@
         <span class="n">extra_cost_fuel_mean</span> <span class="o">+</span> <span class="n">aircraft_doc_ne_delta_mean</span>
     <span class="p">)</span> <span class="o">/</span> <span class="n">extra_emissions_dropin</span>  <span class="c1"># €/ton</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;aircraft_carbon_abatement_cost_passenger_mean&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"aircraft_carbon_abatement_cost_passenger_mean"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">aircraft_carbon_abatement_cost_passenger_mean</span>
     <span class="p">)</span>
 
@@ -7616,23 +7650,23 @@
             <span class="n">exogenous_carbon_price_trajectory</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot;aircraft_specific_carbon_abatement_cost_passenger_mean&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scac</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot;aircraft_generic_specific_carbon_abatement_cost_passenger_mean&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">"aircraft_specific_carbon_abatement_cost_passenger_mean"</span><span class="p">]</span> <span class="o">=</span> <span class="n">scac</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">"aircraft_generic_specific_carbon_abatement_cost_passenger_mean"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">scac_prime</span>
         <span class="p">)</span>
 
     <span class="n">aircraft_specific_carbon_abatement_cost_passenger_mean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
-        <span class="p">:,</span> <span class="s2">&quot;aircraft_specific_carbon_abatement_cost_passenger_mean&quot;</span>
+        <span class="p">:,</span> <span class="s2">"aircraft_specific_carbon_abatement_cost_passenger_mean"</span>
     <span class="p">]</span>
     <span class="n">aircraft_generic_specific_carbon_abatement_cost_passenger_mean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
-        <span class="p">:,</span> <span class="s2">&quot;aircraft_generic_specific_carbon_abatement_cost_passenger_mean&quot;</span>
+        <span class="p">:,</span> <span class="s2">"aircraft_generic_specific_carbon_abatement_cost_passenger_mean"</span>
     <span class="p">]</span>
 
     <span class="n">aircraft_carbon_abatement_volume_passenger_mean</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span>
         <span class="n">ask</span> <span class="o">*</span> <span class="n">aircraft_energy_delta_mean</span> <span class="o">*</span> <span class="n">cac_reference_co2_emission_factor</span> <span class="o">/</span> <span class="mi">1000000</span>
     <span class="p">)</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;aircraft_carbon_abatement_volume_passenger_mean&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"aircraft_carbon_abatement_volume_passenger_mean"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">aircraft_carbon_abatement_volume_passenger_mean</span>
     <span class="p">)</span>
 
@@ -7722,7 +7756,7 @@
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       

@@ -17,7 +17,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -25,7 +25,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -5615,7 +5615,13 @@
   </span>
 
 <a href="#aeromaps.models.air_transport.markets.Market" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">Market</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">traffic_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">traffic_unit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="nb">dict</span><span class="p">())</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">Market</span><span class="p">(</span>
+    <span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">traffic_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">traffic_unit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">inputs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(),</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -5827,7 +5833,7 @@ Built once in <code>AeroMAPSProcess._initialize_markets()</code> and stored as
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">22</span>
 <span class="normal">23</span>
 <span class="normal">24</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">market</span><span class="p">:</span> <span class="n">Market</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Append a market to the manager.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Append a market to the manager."""</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">market</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -5856,7 +5862,7 @@ Built once in <code>AeroMAPSProcess._initialize_markets()</code> and stored as
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">26</span>
 <span class="normal">27</span>
 <span class="normal">28</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Market</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return all markets.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Return all markets."""</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">markets</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -5885,7 +5891,7 @@ Built once in <code>AeroMAPSProcess._initialize_markets()</code> and stored as
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">30</span>
 <span class="normal">31</span>
 <span class="normal">32</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the id of every market, in declaration order.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Return the id of every market, in declaration order."""</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="p">]</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -5983,18 +5989,18 @@ markets are returned.</p>
 <span class="normal">48</span>
 <span class="normal">49</span>
 <span class="normal">50</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traffic_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Market</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return markets matching the given criteria.</span>
+<span class="w">    </span><span class="sd">"""Return markets matching the given criteria.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    traffic_type : str, optional</span>
-<span class="sd">        Filter by ``&quot;passenger&quot;`` or ``&quot;freight&quot;``.  When ``None`` all</span>
+<span class="sd">        Filter by ``"passenger"`` or ``"freight"``.  When ``None`` all</span>
 <span class="sd">        markets are returned.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    list of Market</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">markets</span>
     <span class="k">if</span> <span class="n">traffic_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">result</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">result</span> <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">traffic_type</span> <span class="o">==</span> <span class="n">traffic_type</span><span class="p">]</span>
@@ -6051,21 +6057,21 @@ markets are returned.</p>
 <span class="normal">194</span>
 <span class="normal">195</span>
 <span class="normal">196</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_market_ask_models</span><span class="p">(</span><span class="n">markets</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create per-market ASKMarket models and one ASKAggregator.</span>
+<span class="w">    </span><span class="sd">"""Create per-market ASKMarket models and one ASKAggregator.</span>
 
 <span class="sd">    Returns an empty mapping when no markets registry is available.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">markets</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">{}</span>
-    <span class="n">passenger_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">&quot;passenger&quot;</span><span class="p">)]</span>
+    <span class="n">passenger_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">"passenger"</span><span class="p">)]</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">passenger_ids</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">{}</span>
     <span class="n">models</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">mid</span> <span class="ow">in</span> <span class="n">passenger_ids</span><span class="p">:</span>
-        <span class="n">ask_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">ask_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span>
         <span class="n">models</span><span class="p">[</span><span class="n">ask_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">ASKMarket</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">ask_name</span><span class="p">,</span> <span class="n">market_id</span><span class="o">=</span><span class="n">mid</span><span class="p">)</span>
-    <span class="n">models</span><span class="p">[</span><span class="s2">&quot;ask_aggregator&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ASKAggregator</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;ask_aggregator&quot;</span><span class="p">,</span> <span class="n">passenger_market_ids</span><span class="o">=</span><span class="n">passenger_ids</span>
+    <span class="n">models</span><span class="p">[</span><span class="s2">"ask_aggregator"</span><span class="p">]</span> <span class="o">=</span> <span class="n">ASKAggregator</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"ask_aggregator"</span><span class="p">,</span> <span class="n">passenger_market_ids</span><span class="o">=</span><span class="n">passenger_ids</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">models</span>
 </code></pre></div></td></tr></table></div>
@@ -6082,7 +6088,9 @@ markets are returned.</p>
 
 
 <a href="#aeromaps.models.air_transport.markets.create_market_rpk_aggregator" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">create_market_rpk_aggregator</span><span class="p">(</span><span class="n">markets</span><span class="p">,</span> <span class="n">with_elasticity</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">create_market_rpk_aggregator</span><span class="p">(</span>
+    <span class="n">markets</span><span class="p">,</span> <span class="n">with_elasticity</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6117,26 +6125,26 @@ own the unsuffixed names.</p>
 <span class="normal"> 98</span>
 <span class="normal"> 99</span>
 <span class="normal">100</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_market_rpk_aggregator</span><span class="p">(</span><span class="n">markets</span><span class="p">,</span> <span class="n">with_elasticity</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create an RPKAggregator that sums per-market rpk into the total ``rpk``.</span>
+<span class="w">    </span><span class="sd">"""Create an RPKAggregator that sums per-market rpk into the total ``rpk``.</span>
 
 <span class="sd">    When ``with_elasticity`` is True, the aggregator consumes / emits names with</span>
 <span class="sd">    a ``_no_elasticity`` suffix so a downstream ``RPKElasticity`` discipline can</span>
 <span class="sd">    own the unsuffixed names.</span>
 
 <span class="sd">    Returns an empty mapping when no markets registry is available.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">markets</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">{}</span>
-    <span class="n">passenger_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">&quot;passenger&quot;</span><span class="p">)]</span>
+    <span class="n">passenger_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">"passenger"</span><span class="p">)]</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">passenger_ids</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">{}</span>
-    <span class="n">suffix</span> <span class="o">=</span> <span class="s2">&quot;_no_elasticity&quot;</span> <span class="k">if</span> <span class="n">with_elasticity</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">suffix</span> <span class="o">=</span> <span class="s2">"_no_elasticity"</span> <span class="k">if</span> <span class="n">with_elasticity</span> <span class="k">else</span> <span class="s2">""</span>
     <span class="n">model</span> <span class="o">=</span> <span class="n">RPKAggregator</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;rpk_aggregator&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"rpk_aggregator"</span><span class="p">,</span>
         <span class="n">passenger_market_ids</span><span class="o">=</span><span class="n">passenger_ids</span><span class="p">,</span>
         <span class="n">output_suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;rpk_aggregator&quot;</span><span class="p">:</span> <span class="n">model</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"rpk_aggregator"</span><span class="p">:</span> <span class="n">model</span><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -6151,7 +6159,9 @@ own the unsuffixed names.</p>
 
 
 <a href="#aeromaps.models.air_transport.markets.create_market_rpk_models" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">create_market_rpk_models</span><span class="p">(</span><span class="n">markets</span><span class="p">,</span> <span class="n">markets_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">with_elasticity</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">create_market_rpk_models</span><span class="p">(</span>
+    <span class="n">markets</span><span class="p">,</span> <span class="n">markets_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">with_elasticity</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6205,7 +6215,7 @@ Creates <code>RPKReferenceMarket</code> only when reference inputs are present.<
 <span class="normal">77</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_market_rpk_models</span><span class="p">(</span>
     <span class="n">markets</span><span class="p">,</span> <span class="n">markets_data</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">with_elasticity</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create per-market RPK models from the market registry and raw YAML data.</span>
+<span class="w">    </span><span class="sd">"""Create per-market RPK models from the market registry and raw YAML data.</span>
 
 <span class="sd">    Always creates one ``RPKMarket`` per passenger market.</span>
 <span class="sd">    Creates ``RPKMeasuresMarket`` only when measures inputs are present.</span>
@@ -6214,27 +6224,27 @@ Creates <code>RPKReferenceMarket</code> only when reference inputs are present.<
 <span class="sd">    When ``with_elasticity`` is True, ``RPKMarket`` outputs are suffixed with</span>
 <span class="sd">    ``_no_elasticity`` so a downstream ``RPKElasticity`` can own the unsuffixed</span>
 <span class="sd">    ``rpk_&lt;mid&gt;`` name.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">models</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">if</span> <span class="n">markets</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">models</span>
 
     <span class="n">markets_data</span> <span class="o">=</span> <span class="n">markets_data</span> <span class="ow">or</span> <span class="p">{}</span>
-    <span class="n">suffix</span> <span class="o">=</span> <span class="s2">&quot;_no_elasticity&quot;</span> <span class="k">if</span> <span class="n">with_elasticity</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">suffix</span> <span class="o">=</span> <span class="s2">"_no_elasticity"</span> <span class="k">if</span> <span class="n">with_elasticity</span> <span class="k">else</span> <span class="s2">""</span>
 
-    <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">&quot;passenger&quot;</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">"passenger"</span><span class="p">):</span>
         <span class="n">mid</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">id</span>
-        <span class="n">market_inputs</span> <span class="o">=</span> <span class="n">markets_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">mid</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;inputs&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">market_inputs</span> <span class="o">=</span> <span class="n">markets_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">mid</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"inputs"</span><span class="p">,</span> <span class="p">{})</span>
 
-        <span class="n">rpk_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;rpk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">rpk_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"rpk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span>
         <span class="n">models</span><span class="p">[</span><span class="n">rpk_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">RPKMarket</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">rpk_name</span><span class="p">,</span> <span class="n">market_id</span><span class="o">=</span><span class="n">mid</span><span class="p">,</span> <span class="n">output_suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">_has_measures_inputs</span><span class="p">(</span><span class="n">market_inputs</span><span class="p">):</span>
-            <span class="n">measures_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;rpk_measures_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">measures_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"rpk_measures_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span>
             <span class="n">models</span><span class="p">[</span><span class="n">measures_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">RPKMeasuresMarket</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">measures_name</span><span class="p">,</span> <span class="n">market_id</span><span class="o">=</span><span class="n">mid</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">_has_reference_inputs</span><span class="p">(</span><span class="n">market_inputs</span><span class="p">):</span>
-            <span class="n">reference_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;rpk_reference_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">reference_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"rpk_reference_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span>
             <span class="n">models</span><span class="p">[</span><span class="n">reference_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">RPKReferenceMarket</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">reference_name</span><span class="p">,</span> <span class="n">market_id</span><span class="o">=</span><span class="n">mid</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">models</span>
@@ -6296,19 +6306,19 @@ present in the freight market's inputs.</p>
 <span class="normal">285</span>
 <span class="normal">286</span>
 <span class="normal">287</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_market_rtk_models</span><span class="p">(</span><span class="n">markets</span><span class="p">,</span> <span class="n">markets_data</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create per-market RTK models for all freight markets.</span>
+<span class="w">    </span><span class="sd">"""Create per-market RTK models for all freight markets.</span>
 
 <span class="sd">    Always creates one ``RTKMarket`` per freight market.</span>
 <span class="sd">    Creates ``RTKReferenceMarket`` only when a ``reference`` sub-group is</span>
-<span class="sd">    present in the freight market&#39;s inputs.</span>
+<span class="sd">    present in the freight market's inputs.</span>
 
 <span class="sd">    Returns an empty mapping when no freight market is configured.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">models</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">if</span> <span class="n">markets</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">models</span>
 
-    <span class="n">freight_markets</span> <span class="o">=</span> <span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">&quot;freight&quot;</span><span class="p">)</span>
+    <span class="n">freight_markets</span> <span class="o">=</span> <span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">"freight"</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">freight_markets</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">models</span>
 
@@ -6316,12 +6326,12 @@ present in the freight market's inputs.</p>
 
     <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="n">freight_markets</span><span class="p">:</span>
         <span class="n">mid</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">id</span>
-        <span class="n">model_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">model_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span>
         <span class="n">models</span><span class="p">[</span><span class="n">model_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">RTKMarket</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">model_name</span><span class="p">,</span> <span class="n">market_id</span><span class="o">=</span><span class="n">mid</span><span class="p">)</span>
 
-        <span class="n">market_inputs</span> <span class="o">=</span> <span class="n">markets_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">mid</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;inputs&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">market_inputs</span> <span class="o">=</span> <span class="n">markets_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">mid</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"inputs"</span><span class="p">,</span> <span class="p">{})</span>
         <span class="k">if</span> <span class="n">_has_reference_inputs</span><span class="p">(</span><span class="n">market_inputs</span><span class="p">):</span>
-            <span class="n">ref_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;rtk_reference_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">ref_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"rtk_reference_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span>
             <span class="n">models</span><span class="p">[</span><span class="n">ref_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">RTKReferenceMarket</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">ref_name</span><span class="p">,</span> <span class="n">market_id</span><span class="o">=</span><span class="n">mid</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">models</span>
@@ -6396,7 +6406,7 @@ present in the freight market's inputs.</p>
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       

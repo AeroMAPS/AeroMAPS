@@ -17,7 +17,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -25,7 +25,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -5651,7 +5651,11 @@ emitted as plain <code>pd.Series</code> columns mirroring :class:<code>SimpleFle
 
 
 <a href="#aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet_push.aircraft_efficiency_fleet_push.PassengerAircraftEfficiencyFleetPush" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">PassengerAircraftEfficiencyFleetPush</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;passenger_aircraft_efficiency_fleet_push&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">PassengerAircraftEfficiencyFleetPush</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"passenger_aircraft_efficiency_fleet_push"</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -5690,8 +5694,8 @@ shares are 0 and their <code>energy_per_ask</code> columns mirror the drop-in se
 <span class="normal">268</span>
 <span class="normal">269</span>
 <span class="normal">270</span>
-<span class="normal">271</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;passenger_aircraft_efficiency_fleet_push&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="normal">271</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"passenger_aircraft_efficiency_fleet_push"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">"custom"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">markets</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="c1"># Engine input files: a dict keyed by PUSH_FLEET_INPUT_FILE_KEYS, injected by</span>
     <span class="c1"># process.py (resolved from the models.fleet_push config block) before</span>
@@ -6028,7 +6032,7 @@ shares are 0 and their <code>energy_per_ask</code> columns mirror the drop-in se
 <span class="normal">567</span>
 <span class="normal">568</span>
 <span class="normal">569</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run the push engine per passenger market and emit the drop-in bridge.</span>
+<span class="w">    </span><span class="sd">"""Run the push engine per passenger market and emit the drop-in bridge.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -6039,13 +6043,13 @@ shares are 0 and their <code>energy_per_ask</code> columns mirror the drop-in se
 <span class="sd">    -------</span>
 <span class="sd">    dict</span>
 <span class="sd">        Energy-per-ASK series and ASK shares by energy type per market.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">passenger_markets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">&quot;passenger&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="n">passenger_markets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">"passenger"</span><span class="p">)</span>
     <span class="c1"># Reset the per-segment engine cache (rebuilt below for plot()).</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_engine_results</span> <span class="o">=</span> <span class="p">{}</span>
 
-    <span class="n">energy_consumption_init</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;energy_consumption_init&quot;</span><span class="p">]</span>
-    <span class="n">ask_init</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;ask_init&quot;</span><span class="p">]</span>
+    <span class="n">energy_consumption_init</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"energy_consumption_init"</span><span class="p">]</span>
+    <span class="n">ask_init</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"ask_init"</span><span class="p">]</span>
     <span class="n">energy_consumption_per_ask_init</span> <span class="o">=</span> <span class="n">energy_consumption_init</span> <span class="o">/</span> <span class="n">ask_init</span>
 
     <span class="n">idx_hist</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">historic_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_historical_year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
@@ -6059,7 +6063,7 @@ shares are 0 and their <code>energy_per_ask</code> columns mirror the drop-in se
     <span class="c1"># values, i.e. one extra entry for the horizon year (end_year + 1) which only</span>
     <span class="c1"># fixes the axis and is never read for a year we output. The AeroMAPS ASK</span>
     <span class="c1"># series stops at end_year, so that trailing entry is held flat at the</span>
-    <span class="c1"># end_year value (a NaN there would poison the engine&#39;s capacity guard).</span>
+    <span class="c1"># end_year value (a NaN there would poison the engine's capacity guard).</span>
     <span class="n">ask_sample_years</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">last_historical_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
 
     <span class="c1"># Reuse the engine inputs loaded once in custom_setup().</span>
@@ -6072,13 +6076,13 @@ shares are 0 and their <code>energy_per_ask</code> columns mirror the drop-in se
 
     <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">passenger_markets</span><span class="p">:</span>
         <span class="n">mid</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">id</span>
-        <span class="n">energy_share</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_energy_share_last_historical_year&quot;</span><span class="p">])</span>
-        <span class="n">rpk_share</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_rpk_share_last_historical_year&quot;</span><span class="p">])</span>
+        <span class="n">energy_share</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_energy_share_last_historical_year"</span><span class="p">])</span>
+        <span class="n">rpk_share</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_rpk_share_last_historical_year"</span><span class="p">])</span>
 
-        <span class="n">fleet_total_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">m</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: Aircraft In Fleet&quot;</span>
-        <span class="n">dropin_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;energy_per_ask_without_operations_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel&quot;</span>
-        <span class="n">h2_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;energy_per_ask_without_operations_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen&quot;</span>
-        <span class="n">el_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;energy_per_ask_without_operations_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric&quot;</span>
+        <span class="n">fleet_total_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">m</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: Aircraft In Fleet"</span>
+        <span class="n">dropin_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"energy_per_ask_without_operations_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel"</span>
+        <span class="n">h2_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"energy_per_ask_without_operations_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen"</span>
+        <span class="n">el_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"energy_per_ask_without_operations_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric"</span>
 
         <span class="c1"># --- History splice (identical construction to SimpleShares) --------</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx_hist</span><span class="p">,</span> <span class="n">dropin_col</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
@@ -6092,9 +6096,9 @@ shares are 0 and their <code>energy_per_ask</code> columns mirror the drop-in se
             <span class="c1"># engine. Carry the last-historical value flat over the projection</span>
             <span class="c1"># so downstream reads stay finite.</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                <span class="s2">&quot;Market &#39;</span><span class="si">%s</span><span class="s2">&#39; has no matching push engine segment (no segment with &quot;</span>
-                <span class="s2">&quot;this id in the classification YAML); holding last-historical &quot;</span>
-                <span class="s2">&quot;energy/ASK flat over the projection.&quot;</span><span class="p">,</span>
+                <span class="s2">"Market '</span><span class="si">%s</span><span class="s2">' has no matching push engine segment (no segment with "</span>
+                <span class="s2">"this id in the classification YAML); holding last-historical "</span>
+                <span class="s2">"energy/ASK flat over the projection."</span><span class="p">,</span>
                 <span class="n">mid</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span> <span class="p">:,</span> <span class="n">dropin_col</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
@@ -6105,26 +6109,26 @@ shares are 0 and their <code>energy_per_ask</code> columns mirror the drop-in se
             <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">full_years</span><span class="p">,</span> <span class="n">fleet_total_col</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">cfg</span> <span class="o">=</span> <span class="n">engine_inputs</span><span class="p">[</span><span class="n">mid</span><span class="p">]</span>
-            <span class="n">ask_proj</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">ask_sample_years</span><span class="p">)</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+            <span class="n">ask_proj</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">ask_sample_years</span><span class="p">)</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
             <span class="c1"># Append the horizon-year (end_year + 1) entry, held flat at end_year,</span>
             <span class="c1"># so the engine has modeled_periods + 1 finite traffic targets.</span>
             <span class="n">ask_series</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">ask_proj</span><span class="p">,</span> <span class="n">ask_proj</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:]])</span>
 
             <span class="c1"># Start-year consistency check. The injected AeroMAPS pivot-year ASK</span>
-            <span class="c1"># (ask_proj[0], top-down) and the engine&#39;s calibrated pivot-year ASK</span>
-            <span class="c1"># (cfg[&quot;calibrated_ask_anchor&quot;], bottom-up Σ total_ask_produced_2024) are</span>
+            <span class="c1"># (ask_proj[0], top-down) and the engine's calibrated pivot-year ASK</span>
+            <span class="c1"># (cfg["calibrated_ask_anchor"], bottom-up Σ total_ask_produced_2024) are</span>
             <span class="c1"># never reconciled numerically. Surface their relative gap so a silent</span>
-            <span class="c1"># mismatch at the 2024 seam doesn&#39;t go unnoticed.</span>
+            <span class="c1"># mismatch at the 2024 seam doesn't go unnoticed.</span>
             <span class="n">top_down_ask</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">ask_proj</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-            <span class="n">bottom_up_ask</span> <span class="o">=</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;calibrated_ask_anchor&quot;</span><span class="p">]</span>
+            <span class="n">bottom_up_ask</span> <span class="o">=</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">"calibrated_ask_anchor"</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">bottom_up_ask</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">rel_gap</span> <span class="o">=</span> <span class="p">(</span><span class="n">top_down_ask</span> <span class="o">-</span> <span class="n">bottom_up_ask</span><span class="p">)</span> <span class="o">/</span> <span class="n">bottom_up_ask</span>
                 <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">rel_gap</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">_ASK_ANCHOR_REL_TOL</span><span class="p">:</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                        <span class="s2">&quot;Market &#39;</span><span class="si">%s</span><span class="s2">&#39;: injected AeroMAPS </span><span class="si">%d</span><span class="s2"> ASK (</span><span class="si">%.3e</span><span class="s2">) differs from the &quot;</span>
-                        <span class="s2">&quot;engine&#39;s calibrated fleet ASK (</span><span class="si">%.3e</span><span class="s2">) by </span><span class="si">%+.1f%%</span><span class="s2"> (tol </span><span class="si">%.0f%%</span><span class="s2">). The &quot;</span>
-                        <span class="s2">&quot;two are not reconciled; re-check rpk_share_last_historical_year &quot;</span>
-                        <span class="s2">&quot;and the historic ASK vectors for this segment.&quot;</span><span class="p">,</span>
+                        <span class="s2">"Market '</span><span class="si">%s</span><span class="s2">': injected AeroMAPS </span><span class="si">%d</span><span class="s2"> ASK (</span><span class="si">%.3e</span><span class="s2">) differs from the "</span>
+                        <span class="s2">"engine's calibrated fleet ASK (</span><span class="si">%.3e</span><span class="s2">) by </span><span class="si">%+.1f%%</span><span class="s2"> (tol </span><span class="si">%.0f%%</span><span class="s2">). The "</span>
+                        <span class="s2">"two are not reconciled; re-check rpk_share_last_historical_year "</span>
+                        <span class="s2">"and the historic ASK vectors for this segment."</span><span class="p">,</span>
                         <span class="n">mid</span><span class="p">,</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">last_historical_year</span><span class="p">,</span>
                         <span class="n">top_down_ask</span><span class="p">,</span>
@@ -6133,11 +6137,11 @@ shares are 0 and their <code>energy_per_ask</code> columns mirror the drop-in se
                         <span class="n">_ASK_ANCHOR_REL_TOL</span> <span class="o">*</span> <span class="mf">100.0</span><span class="p">,</span>
                     <span class="p">)</span>
 
-            <span class="c1"># The engine&#39;s production_profile is only used to size the year axis</span>
+            <span class="c1"># The engine's production_profile is only used to size the year axis</span>
             <span class="c1"># (its last year). Growth is injected as ASK, so build the axis straight</span>
             <span class="c1"># from the calendar [first_projection_year .. horizon]; the rates are inert.</span>
-            <span class="n">market_data</span> <span class="o">=</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;market_data&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-            <span class="n">market_data</span><span class="p">[</span><span class="s2">&quot;production_profile&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">market_data</span> <span class="o">=</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">"market_data"</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">market_data</span><span class="p">[</span><span class="s2">"production_profile"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">last_historical_year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">horizon</span><span class="p">],</span>
                 <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
             <span class="p">]</span>
@@ -6150,11 +6154,11 @@ shares are 0 and their <code>energy_per_ask</code> columns mirror the drop-in se
                 <span class="n">energy_consumption</span><span class="p">,</span>
             <span class="p">)</span> <span class="o">=</span> <span class="n">market_process</span><span class="p">(</span>
                 <span class="n">market_data</span><span class="p">,</span>
-                <span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;distance_per_aircraft&quot;</span><span class="p">],</span>
-                <span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;fleet_market&quot;</span><span class="p">],</span>
-                <span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;old_ac_carac&quot;</span><span class="p">],</span>
-                <span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;in_prod_ac_carac&quot;</span><span class="p">],</span>
-                <span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;future_ac_carac&quot;</span><span class="p">],</span>
+                <span class="n">cfg</span><span class="p">[</span><span class="s2">"distance_per_aircraft"</span><span class="p">],</span>
+                <span class="n">cfg</span><span class="p">[</span><span class="s2">"fleet_market"</span><span class="p">],</span>
+                <span class="n">cfg</span><span class="p">[</span><span class="s2">"old_ac_carac"</span><span class="p">],</span>
+                <span class="n">cfg</span><span class="p">[</span><span class="s2">"in_prod_ac_carac"</span><span class="p">],</span>
+                <span class="n">cfg</span><span class="p">[</span><span class="s2">"future_ac_carac"</span><span class="p">],</span>
                 <span class="n">ask_series</span><span class="o">=</span><span class="n">ask_series</span><span class="p">,</span>
                 <span class="n">last_historical_year</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">last_historical_year</span><span class="p">,</span>
             <span class="p">)</span>
@@ -6163,13 +6167,13 @@ shares are 0 and their <code>energy_per_ask</code> columns mirror the drop-in se
             <span class="c1"># output columns below sum these over the age axis; the retirement /</span>
             <span class="c1"># retirement-age charts need the full 3D arrays.</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_engine_results</span><span class="p">[</span><span class="n">mid</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s2">&quot;market_name&quot;</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                <span class="s2">&quot;years&quot;</span><span class="p">:</span> <span class="n">_years</span><span class="p">,</span>
-                <span class="s2">&quot;deliveries&quot;</span><span class="p">:</span> <span class="n">deliveries</span><span class="p">,</span>
-                <span class="s2">&quot;ask_volumes&quot;</span><span class="p">:</span> <span class="n">ask_volumes</span><span class="p">,</span>
-                <span class="s2">&quot;aircraft_seats_volumes&quot;</span><span class="p">:</span> <span class="n">aircraft_seats_volumes</span><span class="p">,</span>
-                <span class="s2">&quot;energy_consumption&quot;</span><span class="p">:</span> <span class="n">energy_consumption</span><span class="p">,</span>
-                <span class="s2">&quot;ac_names&quot;</span><span class="p">:</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;ac_names&quot;</span><span class="p">],</span>
+                <span class="s2">"market_name"</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="s2">"years"</span><span class="p">:</span> <span class="n">_years</span><span class="p">,</span>
+                <span class="s2">"deliveries"</span><span class="p">:</span> <span class="n">deliveries</span><span class="p">,</span>
+                <span class="s2">"ask_volumes"</span><span class="p">:</span> <span class="n">ask_volumes</span><span class="p">,</span>
+                <span class="s2">"aircraft_seats_volumes"</span><span class="p">:</span> <span class="n">aircraft_seats_volumes</span><span class="p">,</span>
+                <span class="s2">"energy_consumption"</span><span class="p">:</span> <span class="n">energy_consumption</span><span class="p">,</span>
+                <span class="s2">"ac_names"</span><span class="p">:</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">"ac_names"</span><span class="p">],</span>
             <span class="p">}</span>
 
             <span class="c1"># YEAR ALIGNMENT: ask_volumes[t] &lt;-&gt; year (last_historical_year + t).</span>
@@ -6194,13 +6198,13 @@ shares are 0 and their <code>energy_per_ask</code> columns mirror the drop-in se
             <span class="c1"># (t = 0 is the pivot), so we write [last_historical_year .. end_year].</span>
             <span class="c1"># Deliveries[k] &lt;-&gt; year (first_projection_year + k); written over the</span>
             <span class="c1"># projection only. Pre-pivot history stays NaN (no engine fleet state).</span>
-            <span class="n">seats_array</span> <span class="o">=</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;seats_array&quot;</span><span class="p">]</span>
-            <span class="n">ac_names</span> <span class="o">=</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;ac_names&quot;</span><span class="p">]</span>
+            <span class="n">seats_array</span> <span class="o">=</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">"seats_array"</span><span class="p">]</span>
+            <span class="n">ac_names</span> <span class="o">=</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">"ac_names"</span><span class="p">]</span>
             <span class="n">n_deliv</span> <span class="o">=</span> <span class="n">deliveries</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
             <span class="c1"># Per-type counts: (periods, T) seats -&gt; counts, then a per-year column.</span>
             <span class="n">per_type_seats</span> <span class="o">=</span> <span class="n">aircraft_seats_volumes</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># (periods, T)</span>
-            <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">invalid</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">):</span>
+            <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">,</span> <span class="n">invalid</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">):</span>
                 <span class="n">per_type_counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
                     <span class="n">seats_array</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">,</span>
                     <span class="n">per_type_seats</span> <span class="o">/</span> <span class="n">seats_array</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:],</span>
@@ -6222,10 +6226,10 @@ shares are 0 and their <code>energy_per_ask</code> columns mirror the drop-in se
             <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">raw_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ac_names</span><span class="p">):</span>
                 <span class="n">ac</span> <span class="o">=</span> <span class="n">_sanitize_type_name</span><span class="p">(</span><span class="n">raw_name</span><span class="p">)</span>
                 <span class="n">counts_j</span> <span class="o">=</span> <span class="n">per_type_counts</span><span class="p">[:</span> <span class="nb">len</span><span class="p">(</span><span class="n">count_years</span><span class="p">),</span> <span class="n">j</span><span class="p">]</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">count_years</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">ac</span><span class="si">}</span><span class="s2">:aircraft_in_fleet&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">counts_j</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">count_years</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">ac</span><span class="si">}</span><span class="s2">:aircraft_in_fleet"</span><span class="p">]</span> <span class="o">=</span> <span class="n">counts_j</span>
                 <span class="n">segment_total</span> <span class="o">=</span> <span class="n">segment_total</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">counts_j</span><span class="p">)</span>
 
-                <span class="n">deliv_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">ac</span><span class="si">}</span><span class="s2">:aircraft_deliveries&quot;</span>
+                <span class="n">deliv_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">ac</span><span class="si">}</span><span class="s2">:aircraft_deliveries"</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">deliv_years</span><span class="p">,</span> <span class="n">deliv_col</span><span class="p">]</span> <span class="o">=</span> <span class="n">deliveries</span><span class="p">[:</span> <span class="nb">len</span><span class="p">(</span><span class="n">deliv_years</span><span class="p">),</span> <span class="n">j</span><span class="p">]</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">count_years</span><span class="p">,</span> <span class="n">fleet_total_col</span><span class="p">]</span> <span class="o">=</span> <span class="n">segment_total</span>
@@ -6236,9 +6240,9 @@ shares are 0 and their <code>energy_per_ask</code> columns mirror the drop-in se
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">h2_col</span><span class="p">]</span> <span class="o">=</span> <span class="n">dropin_series</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">el_col</span><span class="p">]</span> <span class="o">=</span> <span class="n">dropin_series</span>
 
-        <span class="n">dropin_share_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel_share&quot;</span>
-        <span class="n">h2_share_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen_share&quot;</span>
-        <span class="n">el_share_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric_share&quot;</span>
+        <span class="n">dropin_share_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel_share"</span>
+        <span class="n">h2_share_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen_share"</span>
+        <span class="n">el_share_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric_share"</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">dropin_share_col</span><span class="p">]</span> <span class="o">=</span> <span class="mf">100.0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">h2_share_col</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">el_share_col</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
@@ -6254,10 +6258,10 @@ shares are 0 and their <code>energy_per_ask</code> columns mirror the drop-in se
         <span class="c1"># total always exists; per-type columns only for mapped segments.</span>
         <span class="n">output_data</span><span class="p">[</span><span class="n">fleet_total_col</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">fleet_total_col</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">mid</span> <span class="ow">in</span> <span class="n">engine_inputs</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">raw_name</span> <span class="ow">in</span> <span class="n">engine_inputs</span><span class="p">[</span><span class="n">mid</span><span class="p">][</span><span class="s2">&quot;ac_names&quot;</span><span class="p">]:</span>
+            <span class="k">for</span> <span class="n">raw_name</span> <span class="ow">in</span> <span class="n">engine_inputs</span><span class="p">[</span><span class="n">mid</span><span class="p">][</span><span class="s2">"ac_names"</span><span class="p">]:</span>
                 <span class="n">ac</span> <span class="o">=</span> <span class="n">_sanitize_type_name</span><span class="p">(</span><span class="n">raw_name</span><span class="p">)</span>
-                <span class="n">fleet_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">ac</span><span class="si">}</span><span class="s2">:aircraft_in_fleet&quot;</span>
-                <span class="n">deliv_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">ac</span><span class="si">}</span><span class="s2">:aircraft_deliveries&quot;</span>
+                <span class="n">fleet_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">ac</span><span class="si">}</span><span class="s2">:aircraft_in_fleet"</span>
+                <span class="n">deliv_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">ac</span><span class="si">}</span><span class="s2">:aircraft_deliveries"</span>
                 <span class="n">output_data</span><span class="p">[</span><span class="n">fleet_col</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">fleet_col</span><span class="p">]</span>
                 <span class="n">output_data</span><span class="p">[</span><span class="n">deliv_col</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">deliv_col</span><span class="p">]</span>
 
@@ -6317,20 +6321,20 @@ energy-intensity curve.</p>
 <span class="normal">597</span>
 <span class="normal">598</span>
 <span class="normal">599</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">:</span><span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">segment_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Render the push fleet model&#39;s per-segment diagnostic charts.</span>
+<span class="w">    </span><span class="sd">"""Render the push fleet model's per-segment diagnostic charts.</span>
 
 <span class="sd">    Standalone matplotlib (outside the ``SingleScenarioPlot`` registry),</span>
 <span class="sd">    mirroring :meth:`FleetModel.plot`: it reads the engine arrays cached by the</span>
 <span class="sd">    last :meth:`compute` and draws, per mapped passenger segment, the fleet /</span>
 <span class="sd">    ASK / deliveries / energy stacks, the retirement and retirement-age</span>
-<span class="sd">    diagnostics (which need the engine&#39;s internal age-resolved arrays), and the</span>
+<span class="sd">    diagnostics (which need the engine's internal age-resolved arrays), and the</span>
 <span class="sd">    energy-intensity curve.</span>
 
 <span class="sd">    Must be called after the process has run (``compute`` populates the cache).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_engine_results</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-            <span class="s2">&quot;No cached engine results to plot. Run the process (compute) before plot().&quot;</span>
+            <span class="s2">"No cached engine results to plot. Run the process (compute) before plot()."</span>
         <span class="p">)</span>
     <span class="k">if</span> <span class="n">segment_id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="p">:</span>
         <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_engine_results</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
@@ -6419,7 +6423,7 @@ energy-intensity curve.</p>
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       

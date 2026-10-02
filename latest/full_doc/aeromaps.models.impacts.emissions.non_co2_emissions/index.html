@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -6057,7 +6057,9 @@ Module to compute non-CO2 emissions from various aircraft types and energy origi
 
 
 <a href="#aeromaps.models.impacts.emissions.non_co2_emissions.NOxEmissionIndex" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">NOxEmissionIndex</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;nox_emission_index&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">NOxEmissionIndex</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"nox_emission_index"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6164,8 +6166,8 @@ Module to compute non-CO2 emissions from various aircraft types and energy origi
                     <summary>Source code in <code>aeromaps/models/impacts/emissions/non_co2_emissions.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">38</span>
 <span class="normal">39</span>
-<span class="normal">40</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;nox_emission_index&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="normal">40</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"nox_emission_index"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">"custom"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span> <span class="o">=</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -6264,30 +6266,30 @@ Specific function for custom AeroMAPSModel instances.</p>
 <span class="normal">79</span>
 <span class="normal">80</span>
 <span class="normal">81</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">custom_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Dynamically add all pathways variables to input_names and function outputs to output_names.</span>
 <span class="sd">    Specific function for custom AeroMAPSModel instances.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    None</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="c1"># TODO caution aircraft types not generic there</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;emission_index_nox_dropin_fuel_evolution&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-        <span class="s2">&quot;emission_index_nox_hydrogen_evolution&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s2">"emission_index_nox_dropin_fuel_evolution"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s2">"emission_index_nox_hydrogen_evolution"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
     <span class="p">}</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span> <span class="o">=</span> <span class="p">{}</span>
 
-    <span class="k">for</span> <span class="n">aircraft_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">&quot;aircraft_type&quot;</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">energy_origin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">&quot;energy_origin&quot;</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">aircraft_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">"aircraft_type"</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">energy_origin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">"energy_origin"</span><span class="p">):</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
                 <span class="n">aircraft_type</span><span class="o">=</span><span class="n">aircraft_type</span><span class="p">,</span> <span class="n">energy_origin</span><span class="o">=</span><span class="n">energy_origin</span>
             <span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
                     <span class="p">{</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_mean_emission_index_nox&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_mean_emission_index_nox"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
                             <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span>
                         <span class="p">),</span>
                     <span class="p">}</span>
@@ -6296,8 +6298,8 @@ Specific function for custom AeroMAPSModel instances.</p>
         <span class="k">for</span> <span class="n">pathway</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">aircraft_type</span><span class="o">=</span><span class="n">aircraft_type</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
                 <span class="p">{</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_emission_index_nox&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_massic_share_</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_emission_index_nox"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_massic_share_</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
                         <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span>
                     <span class="p">),</span>
                 <span class="p">}</span>
@@ -6447,7 +6449,7 @@ Specific function for custom AeroMAPSModel instances.</p>
 <span class="normal">148</span>
 <span class="normal">149</span>
 <span class="normal">150</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    NOx emission index calculation using simple method.</span>
 
 <span class="sd">    Parameters</span>
@@ -6460,12 +6462,12 @@ Specific function for custom AeroMAPSModel instances.</p>
 <span class="sd">    output_data</span>
 <span class="sd">        Dictionary containing all output data resulting from the computation. Contains outputs defined during model instantiation.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">output_data</span> <span class="o">=</span> <span class="p">{}</span>
 
-    <span class="k">for</span> <span class="n">aircraft_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">&quot;aircraft_type&quot;</span><span class="p">):</span>
-        <span class="n">cagr_aircraft</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;emission_index_nox_</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_evolution&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">aircraft_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">"aircraft_type"</span><span class="p">):</span>
+        <span class="n">cagr_aircraft</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">"emission_index_nox_</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_evolution"</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
         <span class="n">growth_series</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
             <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
                 <span class="p">(</span>
@@ -6478,7 +6480,7 @@ Specific function for custom AeroMAPSModel instances.</p>
         <span class="p">)</span>
 
         <span class="c1"># intialize the mean values for the aircraft type</span>
-        <span class="k">for</span> <span class="n">energy_origin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">&quot;energy_origin&quot;</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">energy_origin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">"energy_origin"</span><span class="p">):</span>
             <span class="c1"># Get the pathways for this aircraft type and energy origin</span>
             <span class="n">pathways</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
                 <span class="n">aircraft_type</span><span class="o">=</span><span class="n">aircraft_type</span><span class="p">,</span> <span class="n">energy_origin</span><span class="o">=</span><span class="n">energy_origin</span>
@@ -6492,13 +6494,13 @@ Specific function for custom AeroMAPSModel instances.</p>
                 <span class="p">)</span>
                 <span class="k">for</span> <span class="n">pathway</span> <span class="ow">in</span> <span class="n">pathways</span><span class="p">:</span>
                     <span class="n">origin_share</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_massic_share_</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_massic_share_</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">"</span>
                     <span class="p">]</span>
                     <span class="n">origin_cumulative_share</span> <span class="o">=</span> <span class="p">(</span>
                         <span class="n">origin_cumulative_share</span> <span class="o">+</span> <span class="n">origin_share</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="mi">100</span>
                     <span class="p">)</span>
                     <span class="n">pathway_emission_index_nox</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_emission_index_nox&quot;</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_emission_index_nox"</span>
                     <span class="p">]</span>
 
                     <span class="n">origin_mean_emission_index_nox</span> <span class="o">+=</span> <span class="p">(</span>
@@ -6507,7 +6509,7 @@ Specific function for custom AeroMAPSModel instances.</p>
 
                 <span class="n">origin_valid_years</span> <span class="o">=</span> <span class="n">origin_cumulative_share</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
 
-                <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_mean_emission_index_nox&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_mean_emission_index_nox"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="n">origin_mean_emission_index_nox</span> <span class="o">*</span> <span class="n">origin_valid_years</span> <span class="o">*</span> <span class="n">growth_series</span>
                 <span class="p">)</span>
 
@@ -6537,7 +6539,9 @@ Specific function for custom AeroMAPSModel instances.</p>
 
 
 <a href="#aeromaps.models.impacts.emissions.non_co2_emissions.NOxEmissionIndexComplex" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">NOxEmissionIndexComplex</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;nox_emission_index_complex&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">NOxEmissionIndexComplex</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"nox_emission_index_complex"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6657,8 +6661,8 @@ Specific function for custom AeroMAPSModel instances.</p>
 <span class="normal">181</span>
 <span class="normal">182</span>
 <span class="normal">183</span>
-<span class="normal">184</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;nox_emission_index_complex&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="normal">184</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"nox_emission_index_complex"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">"custom"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">fleet_model</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">markets</span> <span class="o">=</span> <span class="kc">None</span>
@@ -6760,31 +6764,31 @@ Specific function for custom AeroMAPSModel instances.</p>
 <span class="normal">223</span>
 <span class="normal">224</span>
 <span class="normal">225</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">custom_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Dynamically add all pathways variables to input_names and function outputs to output_names.</span>
 <span class="sd">    Specific function for custom AeroMAPSModel instances.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    None</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># TODO caution aircraft types not generic there</span>
-    <span class="n">aircraft_types</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;dropin_fuel&quot;</span><span class="p">,</span> <span class="s2">&quot;hydrogen&quot;</span><span class="p">,</span> <span class="s2">&quot;electric&quot;</span><span class="p">]</span>
+    <span class="n">aircraft_types</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"dropin_fuel"</span><span class="p">,</span> <span class="s2">"hydrogen"</span><span class="p">,</span> <span class="s2">"electric"</span><span class="p">]</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">&quot;passenger&quot;</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">"passenger"</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">aircraft_type</span> <span class="ow">in</span> <span class="n">aircraft_types</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">market</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">market</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="k">for</span> <span class="n">aircraft_type</span> <span class="ow">in</span> <span class="n">aircraft_types</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">energy_origin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">&quot;energy_origin&quot;</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">energy_origin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">"energy_origin"</span><span class="p">):</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
                 <span class="n">aircraft_type</span><span class="o">=</span><span class="n">aircraft_type</span><span class="p">,</span> <span class="n">energy_origin</span><span class="o">=</span><span class="n">energy_origin</span>
             <span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
                     <span class="p">{</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_mean_emission_index_nox&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_mean_emission_index_nox"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
                             <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span>
                         <span class="p">),</span>
                     <span class="p">}</span>
@@ -6793,8 +6797,8 @@ Specific function for custom AeroMAPSModel instances.</p>
         <span class="k">for</span> <span class="n">pathway</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">aircraft_type</span><span class="o">=</span><span class="n">aircraft_type</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
                 <span class="p">{</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_emission_index_nox&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_massic_share_</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_emission_index_nox"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_massic_share_</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
                         <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span>
                     <span class="p">),</span>
                 <span class="p">}</span>
@@ -6970,7 +6974,7 @@ Specific function for custom AeroMAPSModel instances.</p>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">input_data</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    NOx emission index calculation using fleet renewal models.</span>
 
 <span class="sd">    Parameters</span>
@@ -6982,23 +6986,23 @@ Specific function for custom AeroMAPSModel instances.</p>
 <span class="sd">    -------</span>
 <span class="sd">    output_data</span>
 <span class="sd">        Dictionary containing all output data resulting from the computation. Contains outputs defined during model instantiation.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">output_data</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="c1"># Getting fleet model data</span>
 
-    <span class="n">aircraft_types</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;dropin_fuel&quot;</span><span class="p">,</span> <span class="s2">&quot;hydrogen&quot;</span><span class="p">,</span> <span class="s2">&quot;electric&quot;</span><span class="p">]</span>
+    <span class="n">aircraft_types</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"dropin_fuel"</span><span class="p">,</span> <span class="s2">"hydrogen"</span><span class="p">,</span> <span class="s2">"electric"</span><span class="p">]</span>
 
     <span class="k">for</span> <span class="n">aircraft_type</span> <span class="ow">in</span> <span class="n">aircraft_types</span><span class="p">:</span>
         <span class="n">weighted_emission_index_nox_sum</span> <span class="o">=</span> <span class="n">get_default_series</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">historic_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span>
         <span class="p">)</span>
         <span class="n">ask_sum</span> <span class="o">=</span> <span class="n">get_default_series</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">historic_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">&quot;passenger&quot;</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">"passenger"</span><span class="p">):</span>
             <span class="n">emission_index_nox_market</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fleet_model</span><span class="o">.</span><span class="n">df</span><span class="p">[</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">market</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">:emission_index_nox:</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">market</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">:emission_index_nox:</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">]</span>
             <span class="n">ask_market</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">market</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">market</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                 <span class="n">get_default_series</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">historic_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">),</span>
             <span class="p">)</span>
             <span class="n">ask_market_filled</span> <span class="o">=</span> <span class="n">ask_market</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">historic_start_year</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span>
@@ -7018,7 +7022,7 @@ Specific function for custom AeroMAPSModel instances.</p>
         <span class="p">)</span>
 
         <span class="c1"># intialize the mean values for the aircraft type</span>
-        <span class="k">for</span> <span class="n">energy_origin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">&quot;energy_origin&quot;</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">energy_origin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">"energy_origin"</span><span class="p">):</span>
             <span class="c1"># Get the pathways for this aircraft type and energy origin</span>
             <span class="n">pathways</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
                 <span class="n">aircraft_type</span><span class="o">=</span><span class="n">aircraft_type</span><span class="p">,</span> <span class="n">energy_origin</span><span class="o">=</span><span class="n">energy_origin</span>
@@ -7032,13 +7036,13 @@ Specific function for custom AeroMAPSModel instances.</p>
                 <span class="p">)</span>
                 <span class="k">for</span> <span class="n">pathway</span> <span class="ow">in</span> <span class="n">pathways</span><span class="p">:</span>
                     <span class="n">origin_share</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_massic_share_</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_massic_share_</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">"</span>
                     <span class="p">]</span>
                     <span class="n">origin_cumulative_share</span> <span class="o">=</span> <span class="p">(</span>
                         <span class="n">origin_cumulative_share</span> <span class="o">+</span> <span class="n">origin_share</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="mi">100</span>
                     <span class="p">)</span>
                     <span class="n">pathway_emission_index_nox</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_emission_index_nox&quot;</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_emission_index_nox"</span>
                     <span class="p">]</span>
 
                     <span class="n">origin_mean_emission_index_nox</span> <span class="o">+=</span> <span class="p">(</span>
@@ -7047,7 +7051,7 @@ Specific function for custom AeroMAPSModel instances.</p>
 
                 <span class="n">origin_valid_years</span> <span class="o">=</span> <span class="n">origin_cumulative_share</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
 
-                <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_mean_emission_index_nox&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_mean_emission_index_nox"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="n">origin_mean_emission_index_nox</span>
                     <span class="o">*</span> <span class="n">origin_valid_years</span>
                     <span class="o">*</span> <span class="n">relative_emission_index_aircraft_type</span>
@@ -7080,7 +7084,9 @@ Specific function for custom AeroMAPSModel instances.</p>
 
 
 <a href="#aeromaps.models.impacts.emissions.non_co2_emissions.SootEmissionIndex" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">SootEmissionIndex</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;soot_emission_index&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">SootEmissionIndex</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"soot_emission_index"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -7187,8 +7193,8 @@ Specific function for custom AeroMAPSModel instances.</p>
                     <summary>Source code in <code>aeromaps/models/impacts/emissions/non_co2_emissions.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">343</span>
 <span class="normal">344</span>
-<span class="normal">345</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;soot_emission_index&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="normal">345</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"soot_emission_index"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">"custom"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span> <span class="o">=</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -7284,27 +7290,27 @@ Specific function for custom AeroMAPSModel instances.</p>
 <span class="normal">380</span>
 <span class="normal">381</span>
 <span class="normal">382</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">custom_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Dynamically add all pathways variables to input_names and function outputs to output_names.</span>
 <span class="sd">    Specific function for custom AeroMAPSModel instances.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    None</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># TODO caution aircraft types not generic there</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;emission_index_soot_dropin_fuel_evolution&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">}</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"emission_index_soot_dropin_fuel_evolution"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">}</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span> <span class="o">=</span> <span class="p">{}</span>
 
-    <span class="k">for</span> <span class="n">aircraft_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">&quot;aircraft_type&quot;</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">energy_origin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">&quot;energy_origin&quot;</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">aircraft_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">"aircraft_type"</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">energy_origin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">"energy_origin"</span><span class="p">):</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
                 <span class="n">aircraft_type</span><span class="o">=</span><span class="n">aircraft_type</span><span class="p">,</span> <span class="n">energy_origin</span><span class="o">=</span><span class="n">energy_origin</span>
             <span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
                     <span class="p">{</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_mean_emission_index_soot&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_mean_emission_index_soot"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
                             <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span>
                         <span class="p">),</span>
                     <span class="p">}</span>
@@ -7313,8 +7319,8 @@ Specific function for custom AeroMAPSModel instances.</p>
         <span class="k">for</span> <span class="n">pathway</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">aircraft_type</span><span class="o">=</span><span class="n">aircraft_type</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
                 <span class="p">{</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_emission_index_soot&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_massic_share_</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_emission_index_soot"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_massic_share_</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
                         <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span>
                     <span class="p">),</span>
                 <span class="p">}</span>
@@ -7464,7 +7470,7 @@ Specific function for custom AeroMAPSModel instances.</p>
 <span class="normal">449</span>
 <span class="normal">450</span>
 <span class="normal">451</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Execute Soot emission index calculation using simple method.</span>
 
 <span class="sd">    Parameters</span>
@@ -7477,12 +7483,12 @@ Specific function for custom AeroMAPSModel instances.</p>
 <span class="sd">    output_data</span>
 <span class="sd">        Dictionary containing all output data resulting from the computation. Contains outputs defined during model instantiation.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">output_data</span> <span class="o">=</span> <span class="p">{}</span>
 
-    <span class="k">for</span> <span class="n">aircraft_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">&quot;aircraft_type&quot;</span><span class="p">):</span>
-        <span class="n">cagr_aircraft</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;emission_index_soot_</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_evolution&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">aircraft_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">"aircraft_type"</span><span class="p">):</span>
+        <span class="n">cagr_aircraft</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">"emission_index_soot_</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_evolution"</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
         <span class="n">growth_series</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
             <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
                 <span class="p">(</span>
@@ -7495,7 +7501,7 @@ Specific function for custom AeroMAPSModel instances.</p>
         <span class="p">)</span>
 
         <span class="c1"># initialise the mean values for the aircraft type</span>
-        <span class="k">for</span> <span class="n">energy_origin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">&quot;energy_origin&quot;</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">energy_origin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">"energy_origin"</span><span class="p">):</span>
             <span class="c1"># Get the pathways for this aircraft type and energy origin</span>
             <span class="n">pathways</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
                 <span class="n">aircraft_type</span><span class="o">=</span><span class="n">aircraft_type</span><span class="p">,</span> <span class="n">energy_origin</span><span class="o">=</span><span class="n">energy_origin</span>
@@ -7509,13 +7515,13 @@ Specific function for custom AeroMAPSModel instances.</p>
                 <span class="p">)</span>
                 <span class="k">for</span> <span class="n">pathway</span> <span class="ow">in</span> <span class="n">pathways</span><span class="p">:</span>
                     <span class="n">origin_share</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_massic_share_</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_massic_share_</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">"</span>
                     <span class="p">]</span>
                     <span class="n">origin_cumulative_share</span> <span class="o">=</span> <span class="p">(</span>
                         <span class="n">origin_cumulative_share</span> <span class="o">+</span> <span class="n">origin_share</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="mi">100</span>
                     <span class="p">)</span>
                     <span class="n">pathway_emission_index_soot</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_emission_index_soot&quot;</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_emission_index_soot"</span>
                     <span class="p">]</span>
 
                     <span class="n">origin_mean_emission_index_soot</span> <span class="o">+=</span> <span class="p">(</span>
@@ -7524,7 +7530,7 @@ Specific function for custom AeroMAPSModel instances.</p>
 
                 <span class="n">origin_valid_years</span> <span class="o">=</span> <span class="n">origin_cumulative_share</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
 
-                <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_mean_emission_index_soot&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_mean_emission_index_soot"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="n">origin_mean_emission_index_soot</span> <span class="o">*</span> <span class="n">origin_valid_years</span> <span class="o">*</span> <span class="n">growth_series</span>
                 <span class="p">)</span>
 
@@ -7554,7 +7560,9 @@ Specific function for custom AeroMAPSModel instances.</p>
 
 
 <a href="#aeromaps.models.impacts.emissions.non_co2_emissions.SootEmissionIndexComplex" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">SootEmissionIndexComplex</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;soot_emission_index_complex&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">SootEmissionIndexComplex</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"soot_emission_index_complex"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -7674,8 +7682,8 @@ Specific function for custom AeroMAPSModel instances.</p>
 <span class="normal">482</span>
 <span class="normal">483</span>
 <span class="normal">484</span>
-<span class="normal">485</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;soot_emission_index_complex&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="normal">485</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"soot_emission_index_complex"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">"custom"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">fleet_model</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">markets</span> <span class="o">=</span> <span class="kc">None</span>
@@ -7778,32 +7786,32 @@ Specific function for custom AeroMAPSModel instances.</p>
 <span class="normal">525</span>
 <span class="normal">526</span>
 <span class="normal">527</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">custom_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Dynamically add all pathways variables to input_names and function outputs to output_names.</span>
 <span class="sd">    Specific function for custom AeroMAPSModel instances.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    None</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># TODO caution aircraft types not generic there</span>
-    <span class="n">aircraft_types</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;dropin_fuel&quot;</span><span class="p">,</span> <span class="s2">&quot;hydrogen&quot;</span><span class="p">,</span> <span class="s2">&quot;electric&quot;</span><span class="p">]</span>
+    <span class="n">aircraft_types</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"dropin_fuel"</span><span class="p">,</span> <span class="s2">"hydrogen"</span><span class="p">,</span> <span class="s2">"electric"</span><span class="p">]</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">&quot;passenger&quot;</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">"passenger"</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">aircraft_type</span> <span class="ow">in</span> <span class="n">aircraft_types</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">market</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">market</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span> <span class="o">=</span> <span class="p">{}</span>
 
-    <span class="n">aircraft_types</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;dropin_fuel&quot;</span><span class="p">,</span> <span class="s2">&quot;hydrogen&quot;</span><span class="p">,</span> <span class="s2">&quot;electric&quot;</span><span class="p">]</span>
+    <span class="n">aircraft_types</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"dropin_fuel"</span><span class="p">,</span> <span class="s2">"hydrogen"</span><span class="p">,</span> <span class="s2">"electric"</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">aircraft_type</span> <span class="ow">in</span> <span class="n">aircraft_types</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">energy_origin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">&quot;energy_origin&quot;</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">energy_origin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">"energy_origin"</span><span class="p">):</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
                 <span class="n">aircraft_type</span><span class="o">=</span><span class="n">aircraft_type</span><span class="p">,</span> <span class="n">energy_origin</span><span class="o">=</span><span class="n">energy_origin</span>
             <span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
                     <span class="p">{</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_mean_emission_index_soot&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_mean_emission_index_soot"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
                             <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span>
                         <span class="p">),</span>
                     <span class="p">}</span>
@@ -7812,8 +7820,8 @@ Specific function for custom AeroMAPSModel instances.</p>
         <span class="k">for</span> <span class="n">pathway</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">aircraft_type</span><span class="o">=</span><span class="n">aircraft_type</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
                 <span class="p">{</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_emission_index_soot&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_massic_share_</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_emission_index_soot"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_massic_share_</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
                         <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span>
                     <span class="p">),</span>
                 <span class="p">}</span>
@@ -7987,7 +7995,7 @@ Specific function for custom AeroMAPSModel instances.</p>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">input_data</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Soot emission index calculation using fleet renewal models.</span>
+<span class="w">    </span><span class="sd">"""Soot emission index calculation using fleet renewal models.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -7999,23 +8007,23 @@ Specific function for custom AeroMAPSModel instances.</p>
 <span class="sd">    output_data</span>
 <span class="sd">        Dictionary containing all output data resulting from the computation. Contains outputs defined during model instantiation.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">output_data</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="c1"># Getting fleet model data</span>
 
-    <span class="n">aircraft_types</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;dropin_fuel&quot;</span><span class="p">,</span> <span class="s2">&quot;hydrogen&quot;</span><span class="p">,</span> <span class="s2">&quot;electric&quot;</span><span class="p">]</span>
+    <span class="n">aircraft_types</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"dropin_fuel"</span><span class="p">,</span> <span class="s2">"hydrogen"</span><span class="p">,</span> <span class="s2">"electric"</span><span class="p">]</span>
 
     <span class="k">for</span> <span class="n">aircraft_type</span> <span class="ow">in</span> <span class="n">aircraft_types</span><span class="p">:</span>
         <span class="n">weighted_emission_index_soot_sum</span> <span class="o">=</span> <span class="n">get_default_series</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">historic_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span>
         <span class="p">)</span>
         <span class="n">ask_sum</span> <span class="o">=</span> <span class="n">get_default_series</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">historic_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">&quot;passenger&quot;</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">"passenger"</span><span class="p">):</span>
             <span class="n">emission_index_soot_market</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fleet_model</span><span class="o">.</span><span class="n">df</span><span class="p">[</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">market</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">:emission_index_soot:</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">market</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">:emission_index_soot:</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">]</span>
             <span class="n">ask_market</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">market</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">market</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                 <span class="n">get_default_series</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">historic_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">),</span>
             <span class="p">)</span>
             <span class="n">ask_market_filled</span> <span class="o">=</span> <span class="n">ask_market</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">historic_start_year</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span>
@@ -8035,7 +8043,7 @@ Specific function for custom AeroMAPSModel instances.</p>
         <span class="p">)</span>
 
         <span class="c1"># intialize the mean values for the aircraft type</span>
-        <span class="k">for</span> <span class="n">energy_origin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">&quot;energy_origin&quot;</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">energy_origin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">"energy_origin"</span><span class="p">):</span>
             <span class="c1"># Get the pathways for this aircraft type and energy origin</span>
             <span class="n">pathways</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
                 <span class="n">aircraft_type</span><span class="o">=</span><span class="n">aircraft_type</span><span class="p">,</span> <span class="n">energy_origin</span><span class="o">=</span><span class="n">energy_origin</span>
@@ -8049,13 +8057,13 @@ Specific function for custom AeroMAPSModel instances.</p>
                 <span class="p">)</span>
                 <span class="k">for</span> <span class="n">pathway</span> <span class="ow">in</span> <span class="n">pathways</span><span class="p">:</span>
                     <span class="n">origin_share</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_massic_share_</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_massic_share_</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">"</span>
                     <span class="p">]</span>
                     <span class="n">origin_cumulative_share</span> <span class="o">=</span> <span class="p">(</span>
                         <span class="n">origin_cumulative_share</span> <span class="o">+</span> <span class="n">origin_share</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="mi">100</span>
                     <span class="p">)</span>
                     <span class="n">pathway_emission_index_soot</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_emission_index_soot&quot;</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_emission_index_soot"</span>
                     <span class="p">]</span>
 
                     <span class="n">origin_mean_emission_index_soot</span> <span class="o">+=</span> <span class="p">(</span>
@@ -8064,7 +8072,7 @@ Specific function for custom AeroMAPSModel instances.</p>
 
                 <span class="n">origin_valid_years</span> <span class="o">=</span> <span class="n">origin_cumulative_share</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
 
-                <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_mean_emission_index_soot&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_mean_emission_index_soot"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="n">origin_mean_emission_index_soot</span>
                     <span class="o">*</span> <span class="n">origin_valid_years</span>
                     <span class="o">*</span> <span class="n">relative_emission_index_aircraft_type</span>
@@ -8095,7 +8103,9 @@ Specific function for custom AeroMAPSModel instances.</p>
 
 
 <a href="#aeromaps.models.impacts.emissions.non_co2_emissions.H2OEmissionIndex" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">H2OEmissionIndex</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;h2o_emission_index&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">H2OEmissionIndex</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"h2o_emission_index"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -8202,8 +8212,8 @@ Specific function for custom AeroMAPSModel instances.</p>
                     <summary>Source code in <code>aeromaps/models/impacts/emissions/non_co2_emissions.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">643</span>
 <span class="normal">644</span>
-<span class="normal">645</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;h2o_emission_index&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="normal">645</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"h2o_emission_index"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">"custom"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span> <span class="o">=</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -8297,25 +8307,25 @@ Specific function for custom AeroMAPSModel instances.</p>
 <span class="normal">678</span>
 <span class="normal">679</span>
 <span class="normal">680</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">custom_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Dynamically add all pathways variables to input_names and function outputs to output_names.</span>
 <span class="sd">    Specific function for custom AeroMAPSModel instances.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    None</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span> <span class="o">=</span> <span class="p">{}</span>
 
-    <span class="k">for</span> <span class="n">aircraft_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">&quot;aircraft_type&quot;</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">energy_origin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">&quot;energy_origin&quot;</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">aircraft_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">"aircraft_type"</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">energy_origin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">"energy_origin"</span><span class="p">):</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
                 <span class="n">aircraft_type</span><span class="o">=</span><span class="n">aircraft_type</span><span class="p">,</span> <span class="n">energy_origin</span><span class="o">=</span><span class="n">energy_origin</span>
             <span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
                     <span class="p">{</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_mean_emission_index_h2o&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_mean_emission_index_h2o"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
                             <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span>
                         <span class="p">),</span>
                     <span class="p">}</span>
@@ -8324,8 +8334,8 @@ Specific function for custom AeroMAPSModel instances.</p>
         <span class="k">for</span> <span class="n">pathway</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">aircraft_type</span><span class="o">=</span><span class="n">aircraft_type</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
                 <span class="p">{</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_emission_index_h2o&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_massic_share_</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_emission_index_h2o"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_massic_share_</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
                         <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span>
                     <span class="p">),</span>
                 <span class="p">}</span>
@@ -8462,7 +8472,7 @@ Specific function for custom AeroMAPSModel instances.</p>
 <span class="normal">734</span>
 <span class="normal">735</span>
 <span class="normal">736</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Average H20 emission index calculation</span>
+<span class="w">    </span><span class="sd">"""Average H20 emission index calculation</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -8474,13 +8484,13 @@ Specific function for custom AeroMAPSModel instances.</p>
 <span class="sd">    output_data</span>
 <span class="sd">        Dictionary containing all output data resulting from the computation. Contains outputs defined during model instantiation.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">output_data</span> <span class="o">=</span> <span class="p">{}</span>
 
-    <span class="k">for</span> <span class="n">aircraft_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">&quot;aircraft_type&quot;</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">aircraft_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">"aircraft_type"</span><span class="p">):</span>
         <span class="c1"># initialise the mean values for the aircraft type</span>
-        <span class="k">for</span> <span class="n">energy_origin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">&quot;energy_origin&quot;</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">energy_origin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">"energy_origin"</span><span class="p">):</span>
             <span class="c1"># Get the pathways for this aircraft type and energy origin</span>
             <span class="n">pathways</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
                 <span class="n">aircraft_type</span><span class="o">=</span><span class="n">aircraft_type</span><span class="p">,</span> <span class="n">energy_origin</span><span class="o">=</span><span class="n">energy_origin</span>
@@ -8494,13 +8504,13 @@ Specific function for custom AeroMAPSModel instances.</p>
                 <span class="p">)</span>
                 <span class="k">for</span> <span class="n">pathway</span> <span class="ow">in</span> <span class="n">pathways</span><span class="p">:</span>
                     <span class="n">origin_share</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_massic_share_</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_massic_share_</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">"</span>
                     <span class="p">]</span>
                     <span class="n">origin_cumulative_share</span> <span class="o">=</span> <span class="p">(</span>
                         <span class="n">origin_cumulative_share</span> <span class="o">+</span> <span class="n">origin_share</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="mi">100</span>
                     <span class="p">)</span>
                     <span class="n">pathway_emission_index_h2o</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_emission_index_h2o&quot;</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_emission_index_h2o"</span>
                     <span class="p">]</span>
 
                     <span class="n">origin_mean_emission_index_h2o</span> <span class="o">+=</span> <span class="p">(</span>
@@ -8509,7 +8519,7 @@ Specific function for custom AeroMAPSModel instances.</p>
 
                 <span class="n">origin_valid_years</span> <span class="o">=</span> <span class="n">origin_cumulative_share</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
 
-                <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_mean_emission_index_h2o&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_mean_emission_index_h2o"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="n">origin_mean_emission_index_h2o</span> <span class="o">*</span> <span class="n">origin_valid_years</span>
                 <span class="p">)</span>
 
@@ -8539,7 +8549,9 @@ Specific function for custom AeroMAPSModel instances.</p>
 
 
 <a href="#aeromaps.models.impacts.emissions.non_co2_emissions.SulfurEmissionIndex" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">SulfurEmissionIndex</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;sulfur_emission_index&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">SulfurEmissionIndex</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"sulfur_emission_index"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -8646,8 +8658,8 @@ Specific function for custom AeroMAPSModel instances.</p>
                     <summary>Source code in <code>aeromaps/models/impacts/emissions/non_co2_emissions.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">762</span>
 <span class="normal">763</span>
-<span class="normal">764</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;sulfur_emission_index&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="normal">764</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"sulfur_emission_index"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">"custom"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span> <span class="o">=</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -8741,25 +8753,25 @@ Specific function for custom AeroMAPSModel instances.</p>
 <span class="normal">797</span>
 <span class="normal">798</span>
 <span class="normal">799</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">custom_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Dynamically add all pathways variables to input_names and function outputs to output_names.</span>
 <span class="sd">    Specific function for custom AeroMAPSModel instances.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    None</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span> <span class="o">=</span> <span class="p">{}</span>
 
-    <span class="k">for</span> <span class="n">aircraft_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">&quot;aircraft_type&quot;</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">energy_origin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">&quot;energy_origin&quot;</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">aircraft_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">"aircraft_type"</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">energy_origin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">"energy_origin"</span><span class="p">):</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
                 <span class="n">aircraft_type</span><span class="o">=</span><span class="n">aircraft_type</span><span class="p">,</span> <span class="n">energy_origin</span><span class="o">=</span><span class="n">energy_origin</span>
             <span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
                     <span class="p">{</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_mean_emission_index_sulfur&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_mean_emission_index_sulfur"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
                             <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span>
                         <span class="p">),</span>
                     <span class="p">}</span>
@@ -8768,8 +8780,8 @@ Specific function for custom AeroMAPSModel instances.</p>
         <span class="k">for</span> <span class="n">pathway</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">aircraft_type</span><span class="o">=</span><span class="n">aircraft_type</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
                 <span class="p">{</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_emission_index_sulfur&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_massic_share_</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_emission_index_sulfur"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_massic_share_</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
                         <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span>
                     <span class="p">),</span>
                 <span class="p">}</span>
@@ -8906,7 +8918,7 @@ Specific function for custom AeroMAPSModel instances.</p>
 <span class="normal">853</span>
 <span class="normal">854</span>
 <span class="normal">855</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Average H20 emission index calculation</span>
+<span class="w">    </span><span class="sd">"""Average H20 emission index calculation</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -8918,13 +8930,13 @@ Specific function for custom AeroMAPSModel instances.</p>
 <span class="sd">    output_data</span>
 <span class="sd">        Dictionary containing all output data resulting from the computation. Contains outputs defined during model instantiation.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">output_data</span> <span class="o">=</span> <span class="p">{}</span>
 
-    <span class="k">for</span> <span class="n">aircraft_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">&quot;aircraft_type&quot;</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">aircraft_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">"aircraft_type"</span><span class="p">):</span>
         <span class="c1"># initialise the mean values for the aircraft type</span>
-        <span class="k">for</span> <span class="n">energy_origin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">&quot;energy_origin&quot;</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">energy_origin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">"energy_origin"</span><span class="p">):</span>
             <span class="c1"># Get the pathways for this aircraft type and energy origin</span>
             <span class="n">pathways</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
                 <span class="n">aircraft_type</span><span class="o">=</span><span class="n">aircraft_type</span><span class="p">,</span> <span class="n">energy_origin</span><span class="o">=</span><span class="n">energy_origin</span>
@@ -8938,13 +8950,13 @@ Specific function for custom AeroMAPSModel instances.</p>
                 <span class="p">)</span>
                 <span class="k">for</span> <span class="n">pathway</span> <span class="ow">in</span> <span class="n">pathways</span><span class="p">:</span>
                     <span class="n">origin_share</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_massic_share_</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_massic_share_</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">"</span>
                     <span class="p">]</span>
                     <span class="n">origin_cumulative_share</span> <span class="o">=</span> <span class="p">(</span>
                         <span class="n">origin_cumulative_share</span> <span class="o">+</span> <span class="n">origin_share</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="mi">100</span>
                     <span class="p">)</span>
                     <span class="n">pathway_emission_index_sulfur</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_emission_index_sulfur&quot;</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_emission_index_sulfur"</span>
                     <span class="p">]</span>
 
                     <span class="n">origin_mean_emission_index_sulfur</span> <span class="o">+=</span> <span class="p">(</span>
@@ -8953,7 +8965,7 @@ Specific function for custom AeroMAPSModel instances.</p>
 
                 <span class="n">origin_valid_years</span> <span class="o">=</span> <span class="n">origin_cumulative_share</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
 
-                <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_mean_emission_index_sulfur&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_mean_emission_index_sulfur"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="n">origin_mean_emission_index_sulfur</span> <span class="o">*</span> <span class="n">origin_valid_years</span>
                 <span class="p">)</span>
 
@@ -8983,7 +8995,7 @@ Specific function for custom AeroMAPSModel instances.</p>
 
 
 <a href="#aeromaps.models.impacts.emissions.non_co2_emissions.NonCO2Emissions" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">NonCO2Emissions</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;non_co2_emissions&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">NonCO2Emissions</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'non_co2_emissions'</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -9091,8 +9103,8 @@ Specific function for custom AeroMAPSModel instances.</p>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">881</span>
 <span class="normal">882</span>
 <span class="normal">883</span>
-<span class="normal">884</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;non_co2_emissions&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="normal">884</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"non_co2_emissions"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">"custom"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">climate_historical_data</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span> <span class="o">=</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
@@ -9196,46 +9208,46 @@ Specific function for custom AeroMAPSModel instances.</p>
 <span class="normal">926</span>
 <span class="normal">927</span>
 <span class="normal">928</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">custom_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Dynamically add all pathways variables to input_names and function outputs to output_names.</span>
 <span class="sd">    Specific function for custom AeroMAPSModel instances.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    None</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">aircraft_type</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;dropin_fuel&quot;</span><span class="p">,</span> <span class="s2">&quot;hydrogen&quot;</span><span class="p">]</span>
+<span class="sd">    """</span>
+    <span class="n">aircraft_type</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"dropin_fuel"</span><span class="p">,</span> <span class="s2">"hydrogen"</span><span class="p">]</span>
 
     <span class="k">for</span> <span class="n">aircraft_type</span> <span class="ow">in</span> <span class="n">aircraft_type</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">energy_origin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">&quot;energy_origin&quot;</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">energy_origin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">"energy_origin"</span><span class="p">):</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
                 <span class="n">aircraft_type</span><span class="o">=</span><span class="n">aircraft_type</span><span class="p">,</span> <span class="n">energy_origin</span><span class="o">=</span><span class="n">energy_origin</span>
             <span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
                     <span class="p">{</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_mean_emission_index_nox&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_mean_emission_index_nox"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
                             <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span>
                         <span class="p">),</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_mean_emission_index_soot&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_mean_emission_index_soot"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
                             <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span>
                         <span class="p">),</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_mean_emission_index_h2o&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_mean_emission_index_h2o"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
                             <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span>
                         <span class="p">),</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_mean_emission_index_sulfur&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_mean_emission_index_sulfur"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
                             <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span>
                         <span class="p">),</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_mean_lhv&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_energy_consumption&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_mean_lhv"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_energy_consumption"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
                     <span class="p">}</span>
                 <span class="p">)</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
         <span class="p">{</span>
-            <span class="s2">&quot;soot_emissions&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-            <span class="s2">&quot;h2o_emissions&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-            <span class="s2">&quot;nox_emissions&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
-            <span class="s2">&quot;sulfur_emissions&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+            <span class="s2">"soot_emissions"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+            <span class="s2">"h2o_emissions"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+            <span class="s2">"nox_emissions"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+            <span class="s2">"sulfur_emissions"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
         <span class="p">}</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -9393,7 +9405,7 @@ Specific function for custom AeroMAPSModel instances.</p>
 <span class="normal">1005</span>
 <span class="normal">1006</span>
 <span class="normal">1007</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Non-CO2 emissions calculation.</span>
+<span class="w">    </span><span class="sd">"""Non-CO2 emissions calculation.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -9404,7 +9416,7 @@ Specific function for custom AeroMAPSModel instances.</p>
 <span class="sd">    -------</span>
 <span class="sd">    output_data</span>
 <span class="sd">        Dictionary containing all output data resulting from the computation. Contains outputs defined during model instantiation.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">soot_emissions</span> <span class="o">=</span> <span class="n">get_default_series</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">climate_historic_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">)</span>
     <span class="n">h2o_emissions</span> <span class="o">=</span> <span class="n">get_default_series</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">climate_historic_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">)</span>
@@ -9430,44 +9442,44 @@ Specific function for custom AeroMAPSModel instances.</p>
         <span class="n">historical_sulfur_emissions_for_temperature</span>
     <span class="p">)</span>
 
-    <span class="k">for</span> <span class="n">aircraft_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;dropin_fuel&quot;</span><span class="p">,</span> <span class="s2">&quot;hydrogen&quot;</span><span class="p">]:</span>
-        <span class="k">for</span> <span class="n">energy_origin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">&quot;energy_origin&quot;</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">aircraft_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"dropin_fuel"</span><span class="p">,</span> <span class="s2">"hydrogen"</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">energy_origin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get_all_types</span><span class="p">(</span><span class="s2">"energy_origin"</span><span class="p">):</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
                 <span class="n">aircraft_type</span><span class="o">=</span><span class="n">aircraft_type</span><span class="p">,</span> <span class="n">energy_origin</span><span class="o">=</span><span class="n">energy_origin</span>
             <span class="p">):</span>
                 <span class="n">mass_consumption</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_energy_consumption&quot;</span><span class="p">]</span>
-                    <span class="o">/</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_mean_lhv&quot;</span><span class="p">]</span>
+                    <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_energy_consumption"</span><span class="p">]</span>
+                    <span class="o">/</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_mean_lhv"</span><span class="p">]</span>
                     <span class="o">/</span> <span class="mi">10</span><span class="o">**</span><span class="mi">9</span>  <span class="c1"># convert MJ to Mt</span>
                 <span class="p">)</span>
                 <span class="n">soot_emissions</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">historic_start_year</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">]</span> <span class="o">+=</span> <span class="p">(</span>
-                    <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_mean_emission_index_soot&quot;</span><span class="p">]</span>
+                    <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_mean_emission_index_soot"</span><span class="p">]</span>
                     <span class="o">*</span> <span class="n">mass_consumption</span>
                 <span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
                 <span class="n">h2o_emissions</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">historic_start_year</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">]</span> <span class="o">+=</span> <span class="p">(</span>
-                    <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_mean_emission_index_h2o&quot;</span><span class="p">]</span>
+                    <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_mean_emission_index_h2o"</span><span class="p">]</span>
                     <span class="o">*</span> <span class="n">mass_consumption</span>
                 <span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
                 <span class="n">nox_emissions</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">historic_start_year</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">]</span> <span class="o">+=</span> <span class="p">(</span>
-                    <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_mean_emission_index_nox&quot;</span><span class="p">]</span>
+                    <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_mean_emission_index_nox"</span><span class="p">]</span>
                     <span class="o">*</span> <span class="n">mass_consumption</span>
                 <span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
                 <span class="n">sulfur_emissions</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">historic_start_year</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">]</span> <span class="o">+=</span> <span class="p">(</span>
-                    <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_mean_emission_index_sulfur&quot;</span><span class="p">]</span>
+                    <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">energy_origin</span><span class="si">}</span><span class="s2">_mean_emission_index_sulfur"</span><span class="p">]</span>
                     <span class="o">*</span> <span class="n">mass_consumption</span>
                 <span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
 
     <span class="n">output_data</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;soot_emissions&quot;</span><span class="p">:</span> <span class="n">soot_emissions</span><span class="p">,</span>
-        <span class="s2">&quot;h2o_emissions&quot;</span><span class="p">:</span> <span class="n">h2o_emissions</span><span class="p">,</span>
-        <span class="s2">&quot;nox_emissions&quot;</span><span class="p">:</span> <span class="n">nox_emissions</span><span class="p">,</span>
-        <span class="s2">&quot;sulfur_emissions&quot;</span><span class="p">:</span> <span class="n">sulfur_emissions</span><span class="p">,</span>
+        <span class="s2">"soot_emissions"</span><span class="p">:</span> <span class="n">soot_emissions</span><span class="p">,</span>
+        <span class="s2">"h2o_emissions"</span><span class="p">:</span> <span class="n">h2o_emissions</span><span class="p">,</span>
+        <span class="s2">"nox_emissions"</span><span class="p">:</span> <span class="n">nox_emissions</span><span class="p">,</span>
+        <span class="s2">"sulfur_emissions"</span><span class="p">:</span> <span class="n">sulfur_emissions</span><span class="p">,</span>
     <span class="p">}</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;soot_emissions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">soot_emissions</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;h2o_emissions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">h2o_emissions</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;nox_emissions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nox_emissions</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;sulfur_emissions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sulfur_emissions</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"soot_emissions"</span><span class="p">]</span> <span class="o">=</span> <span class="n">soot_emissions</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"h2o_emissions"</span><span class="p">]</span> <span class="o">=</span> <span class="n">h2o_emissions</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"nox_emissions"</span><span class="p">]</span> <span class="o">=</span> <span class="n">nox_emissions</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"sulfur_emissions"</span><span class="p">]</span> <span class="o">=</span> <span class="n">sulfur_emissions</span>
 
     <span class="k">return</span> <span class="n">output_data</span>
 </code></pre></div></td></tr></table></div>
@@ -9550,7 +9562,7 @@ Specific function for custom AeroMAPSModel instances.</p>
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       

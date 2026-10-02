@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -5911,7 +5911,9 @@
 
 
 <a href="#aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_numeric.FleetEvolution" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">FleetEvolution</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;fleet_numeric&#39;</span><span class="p">,</span> <span class="n">fleet_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">FleetEvolution</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"fleet_numeric"</span><span class="p">,</span> <span class="n">fleet_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -5972,24 +5974,24 @@
 <span class="normal">80</span>
 <span class="normal">81</span>
 <span class="normal">82</span>
-<span class="normal">83</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;fleet_numeric&quot;</span><span class="p">,</span> <span class="n">fleet_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="normal">83</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"fleet_numeric"</span><span class="p">,</span> <span class="n">fleet_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">"custom"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">fleet_model</span> <span class="o">=</span> <span class="n">fleet_model</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_skip_data_type_validation</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="c1"># Minimal placeholder grammar; overwritten by custom_setup() once</span>
     <span class="c1"># fleet_model is available.</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;covid_start_year&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-        <span class="s2">&quot;covid_end_year_passenger&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-        <span class="s2">&quot;dummy_fleet_model_output&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">]),</span>
+        <span class="s2">"covid_start_year"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s2">"covid_end_year_passenger"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s2">"dummy_fleet_model_output"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">]),</span>
     <span class="p">}</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;ask_aircraft_value_dict&quot;</span><span class="p">:</span> <span class="p">{},</span>
-        <span class="s2">&quot;rpk_aircraft_value_dict&quot;</span><span class="p">:</span> <span class="p">{},</span>
-        <span class="s2">&quot;aircraft_in_fleet_value_dict&quot;</span><span class="p">:</span> <span class="p">{},</span>
-        <span class="s2">&quot;aircraft_in_fleet_value_covid_levelling_dict&quot;</span><span class="p">:</span> <span class="p">{},</span>
-        <span class="s2">&quot;aircraft_in_out_value_dict&quot;</span><span class="p">:</span> <span class="p">{},</span>
+        <span class="s2">"ask_aircraft_value_dict"</span><span class="p">:</span> <span class="p">{},</span>
+        <span class="s2">"rpk_aircraft_value_dict"</span><span class="p">:</span> <span class="p">{},</span>
+        <span class="s2">"aircraft_in_fleet_value_dict"</span><span class="p">:</span> <span class="p">{},</span>
+        <span class="s2">"aircraft_in_fleet_value_covid_levelling_dict"</span><span class="p">:</span> <span class="p">{},</span>
+        <span class="s2">"aircraft_in_out_value_dict"</span><span class="p">:</span> <span class="p">{},</span>
     <span class="p">}</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -6066,44 +6068,44 @@
 <span class="normal">121</span>
 <span class="normal">122</span>
 <span class="normal">123</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">custom_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build dynamic input/output names from the fleet&#39;s passenger markets.</span>
+<span class="w">    </span><span class="sd">"""Build dynamic input/output names from the fleet's passenger markets.</span>
 
 <span class="sd">    Called by ``AeroMAPSProcess._initialize_disciplines`` immediately after</span>
 <span class="sd">    ``fleet_model`` has been set and before the discipline is wrapped.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fleet_model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span>
     <span class="n">markets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fleet_model</span><span class="o">.</span><span class="n">fleet</span><span class="o">.</span><span class="n">markets</span>
     <span class="k">if</span> <span class="n">markets</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span>
 
-    <span class="n">passenger_markets</span> <span class="o">=</span> <span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">&quot;passenger&quot;</span><span class="p">)</span>
+    <span class="n">passenger_markets</span> <span class="o">=</span> <span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">"passenger"</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">passenger_markets</span><span class="p">:</span>
         <span class="k">return</span>
 
     <span class="c1"># inputs</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;covid_start_year&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-        <span class="s2">&quot;covid_end_year_passenger&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-        <span class="s2">&quot;dummy_fleet_model_output&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">]),</span>
+        <span class="s2">"covid_start_year"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s2">"covid_end_year_passenger"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s2">"dummy_fleet_model_output"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">]),</span>
     <span class="p">}</span>
     <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="n">passenger_markets</span><span class="p">:</span>
         <span class="n">mid</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">id</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;rpk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"rpk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
 
     <span class="c1"># outputs</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;ask_aircraft_value_dict&quot;</span><span class="p">:</span> <span class="p">{},</span>
-        <span class="s2">&quot;rpk_aircraft_value_dict&quot;</span><span class="p">:</span> <span class="p">{},</span>
-        <span class="s2">&quot;aircraft_in_fleet_value_dict&quot;</span><span class="p">:</span> <span class="p">{},</span>
-        <span class="s2">&quot;aircraft_in_fleet_value_covid_levelling_dict&quot;</span><span class="p">:</span> <span class="p">{},</span>
-        <span class="s2">&quot;aircraft_in_out_value_dict&quot;</span><span class="p">:</span> <span class="p">{},</span>
+        <span class="s2">"ask_aircraft_value_dict"</span><span class="p">:</span> <span class="p">{},</span>
+        <span class="s2">"rpk_aircraft_value_dict"</span><span class="p">:</span> <span class="p">{},</span>
+        <span class="s2">"aircraft_in_fleet_value_dict"</span><span class="p">:</span> <span class="p">{},</span>
+        <span class="s2">"aircraft_in_fleet_value_covid_levelling_dict"</span><span class="p">:</span> <span class="p">{},</span>
+        <span class="s2">"aircraft_in_out_value_dict"</span><span class="p">:</span> <span class="p">{},</span>
     <span class="p">}</span>
     <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="n">passenger_markets</span><span class="p">:</span>
         <span class="n">cat_name</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">name</span>  <span class="c1"># display name used as DataFrame column prefix</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cat_name</span><span class="si">}</span><span class="s2">: Aircraft Production&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cat_name</span><span class="si">}</span><span class="s2">: Aircraft Disposal&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">cat_name</span><span class="si">}</span><span class="s2">: Aircraft Production"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">cat_name</span><span class="si">}</span><span class="s2">: Aircraft Disposal"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -6326,7 +6328,7 @@
 <span class="normal">266</span>
 <span class="normal">267</span>
 <span class="normal">268</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute fleet evolution outputs for each passenger market.</span>
+<span class="w">    </span><span class="sd">"""Compute fleet evolution outputs for each passenger market.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -6337,9 +6339,9 @@
 <span class="sd">    -------</span>
 <span class="sd">    dict</span>
 <span class="sd">        Fleet-level series and per-aircraft dictionaries.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">covid_start_year</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;covid_start_year&quot;</span><span class="p">])</span>
-    <span class="n">covid_end_year_passenger</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;covid_end_year_passenger&quot;</span><span class="p">])</span>
+<span class="sd">    """</span>
+    <span class="n">covid_start_year</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="s2">"covid_start_year"</span><span class="p">])</span>
+    <span class="n">covid_end_year_passenger</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="s2">"covid_end_year_passenger"</span><span class="p">])</span>
 
     <span class="n">ask_aircraft_value_dict</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">rpk_aircraft_value_dict</span> <span class="o">=</span> <span class="p">{}</span>
@@ -6349,8 +6351,8 @@
 
     <span class="k">for</span> <span class="n">category_name</span><span class="p">,</span> <span class="n">sets</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fleet_model</span><span class="o">.</span><span class="n">fleet</span><span class="o">.</span><span class="n">all_aircraft_elements</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">mid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fleet_model</span><span class="o">.</span><span class="n">fleet</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="n">category_name</span><span class="p">]</span><span class="o">.</span><span class="n">market_id</span>
-        <span class="n">category_ask</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
-        <span class="n">category_rpk</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;rpk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+        <span class="n">category_ask</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span>
+        <span class="n">category_rpk</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"rpk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span>
 
         <span class="c1"># Compute virtual-fleet demand assuming production catches up after COVID.</span>
         <span class="n">category_ask_covid_levelling</span> <span class="o">=</span> <span class="n">category_ask</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -6366,21 +6368,21 @@
         <span class="c1"># Compute per-aircraft values.</span>
         <span class="k">for</span> <span class="n">aircraft_var</span> <span class="ow">in</span> <span class="n">sets</span><span class="p">:</span>
             <span class="c1"># Check whether this is a reference aircraft or a normal aircraft.</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">aircraft_var</span><span class="p">,</span> <span class="s2">&quot;parameters&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">aircraft_var</span><span class="p">,</span> <span class="s2">"parameters"</span><span class="p">):</span>
                 <span class="n">aircraft_var_name</span> <span class="o">=</span> <span class="n">aircraft_var</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">full_name</span>
                 <span class="n">ask_year</span> <span class="o">=</span> <span class="n">aircraft_var</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">ask_year</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">aircraft_var_name</span> <span class="o">=</span> <span class="n">aircraft_var</span><span class="o">.</span><span class="n">full_name</span>
                 <span class="n">ask_year</span> <span class="o">=</span> <span class="n">aircraft_var</span><span class="o">.</span><span class="n">ask_year</span>
 
-            <span class="n">share_var_name</span> <span class="o">=</span> <span class="n">aircraft_var_name</span> <span class="o">+</span> <span class="s2">&quot;:aircraft_share&quot;</span>
-            <span class="n">ask_aircraft_var_name</span> <span class="o">=</span> <span class="n">aircraft_var_name</span> <span class="o">+</span> <span class="s2">&quot;:aircraft_ask&quot;</span>
-            <span class="n">rpk_aircraft_var_name</span> <span class="o">=</span> <span class="n">aircraft_var_name</span> <span class="o">+</span> <span class="s2">&quot;:aircraft_rpk&quot;</span>
-            <span class="n">aircraft_in_fleet_var_name</span> <span class="o">=</span> <span class="n">aircraft_var_name</span> <span class="o">+</span> <span class="s2">&quot;:aircraft_in_fleet&quot;</span>
+            <span class="n">share_var_name</span> <span class="o">=</span> <span class="n">aircraft_var_name</span> <span class="o">+</span> <span class="s2">":aircraft_share"</span>
+            <span class="n">ask_aircraft_var_name</span> <span class="o">=</span> <span class="n">aircraft_var_name</span> <span class="o">+</span> <span class="s2">":aircraft_ask"</span>
+            <span class="n">rpk_aircraft_var_name</span> <span class="o">=</span> <span class="n">aircraft_var_name</span> <span class="o">+</span> <span class="s2">":aircraft_rpk"</span>
+            <span class="n">aircraft_in_fleet_var_name</span> <span class="o">=</span> <span class="n">aircraft_var_name</span> <span class="o">+</span> <span class="s2">":aircraft_in_fleet"</span>
             <span class="n">aircraft_in_fleet_covid_levelling_var_name</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">aircraft_var_name</span> <span class="o">+</span> <span class="s2">&quot;:aircraft_in_fleet_covid_levelling&quot;</span>
+                <span class="n">aircraft_var_name</span> <span class="o">+</span> <span class="s2">":aircraft_in_fleet_covid_levelling"</span>
             <span class="p">)</span>
-            <span class="n">aircraft_in_out_var_name</span> <span class="o">=</span> <span class="n">aircraft_var_name</span> <span class="o">+</span> <span class="s2">&quot;:aircraft_in_out&quot;</span>
+            <span class="n">aircraft_in_out_var_name</span> <span class="o">=</span> <span class="n">aircraft_var_name</span> <span class="o">+</span> <span class="s2">":aircraft_in_out"</span>
 
             <span class="n">ask_aircraft_value</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">fleet_model</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
@@ -6438,18 +6440,18 @@
 
     <span class="c1"># Aggregate production / disposal per market category.</span>
     <span class="n">output</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;ask_aircraft_value_dict&quot;</span><span class="p">:</span> <span class="n">ask_aircraft_value_dict</span><span class="p">,</span>
-        <span class="s2">&quot;rpk_aircraft_value_dict&quot;</span><span class="p">:</span> <span class="n">rpk_aircraft_value_dict</span><span class="p">,</span>
-        <span class="s2">&quot;aircraft_in_fleet_value_dict&quot;</span><span class="p">:</span> <span class="n">aircraft_in_fleet_value_dict</span><span class="p">,</span>
-        <span class="s2">&quot;aircraft_in_fleet_value_covid_levelling_dict&quot;</span><span class="p">:</span> <span class="n">aircraft_in_fleet_value_covid_levelling_dict</span><span class="p">,</span>
-        <span class="s2">&quot;aircraft_in_out_value_dict&quot;</span><span class="p">:</span> <span class="n">aircraft_in_out_value_dict</span><span class="p">,</span>
+        <span class="s2">"ask_aircraft_value_dict"</span><span class="p">:</span> <span class="n">ask_aircraft_value_dict</span><span class="p">,</span>
+        <span class="s2">"rpk_aircraft_value_dict"</span><span class="p">:</span> <span class="n">rpk_aircraft_value_dict</span><span class="p">,</span>
+        <span class="s2">"aircraft_in_fleet_value_dict"</span><span class="p">:</span> <span class="n">aircraft_in_fleet_value_dict</span><span class="p">,</span>
+        <span class="s2">"aircraft_in_fleet_value_covid_levelling_dict"</span><span class="p">:</span> <span class="n">aircraft_in_fleet_value_covid_levelling_dict</span><span class="p">,</span>
+        <span class="s2">"aircraft_in_out_value_dict"</span><span class="p">:</span> <span class="n">aircraft_in_out_value_dict</span><span class="p">,</span>
     <span class="p">}</span>
 
     <span class="k">for</span> <span class="n">cat_name</span><span class="p">,</span> <span class="n">category</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fleet_model</span><span class="o">.</span><span class="n">fleet</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="n">prod_key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cat_name</span><span class="si">}</span><span class="s2">: Aircraft Production&quot;</span>
-        <span class="n">disp_key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cat_name</span><span class="si">}</span><span class="s2">: Aircraft Disposal&quot;</span>
+        <span class="n">prod_key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">cat_name</span><span class="si">}</span><span class="s2">: Aircraft Production"</span>
+        <span class="n">disp_key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">cat_name</span><span class="si">}</span><span class="s2">: Aircraft Disposal"</span>
         <span class="n">cat_cols</span> <span class="o">=</span> <span class="n">filter_columns</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">fleet_model</span><span class="o">.</span><span class="n">df</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cat_name</span><span class="si">}</span><span class="s2">:&quot;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;:aircraft_in_out&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fleet_model</span><span class="o">.</span><span class="n">df</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">cat_name</span><span class="si">}</span><span class="s2">:"</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">":aircraft_in_out"</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">cat_cols</span><span class="p">:</span>
             <span class="n">df_cat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fleet_model</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">cat_cols</span><span class="p">]</span>
@@ -6492,7 +6494,12 @@
 
 
 <a href="#aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_numeric.SimpleFleetCount" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">SimpleFleetCount</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;passenger_aircraft_fleet_count&#39;</span><span class="p">,</span> <span class="n">fleet_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">SimpleFleetCount</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"passenger_aircraft_fleet_count"</span><span class="p">,</span>
+    <span class="n">fleet_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6608,15 +6615,15 @@ Notes
 <span class="normal">346</span>
 <span class="normal">347</span>
 <span class="normal">348</span>
-<span class="normal">349</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;passenger_aircraft_fleet_count&quot;</span><span class="p">,</span> <span class="n">fleet_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="normal">349</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"passenger_aircraft_fleet_count"</span><span class="p">,</span> <span class="n">fleet_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">"custom"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">fleet_model</span> <span class="o">=</span> <span class="n">fleet_model</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_skip_data_type_validation</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="c1"># Minimal placeholder grammar; overwritten by custom_setup() once</span>
     <span class="c1"># fleet_model is available.</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;dummy_fleet_model_output&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">])}</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;aircraft_in_fleet_value_dict&quot;</span><span class="p">:</span> <span class="p">{}}</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"dummy_fleet_model_output"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">])}</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"aircraft_in_fleet_value_dict"</span><span class="p">:</span> <span class="p">{}}</span>
 </code></pre></div></td></tr></table></div>
                   </details>
 
@@ -6677,29 +6684,29 @@ Notes
 <span class="normal">372</span>
 <span class="normal">373</span>
 <span class="normal">374</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">custom_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build dynamic input/output names from the fleet&#39;s passenger markets.</span>
+<span class="w">    </span><span class="sd">"""Build dynamic input/output names from the fleet's passenger markets.</span>
 
 <span class="sd">    Called by ``AeroMAPSProcess._initialize_disciplines`` immediately after</span>
 <span class="sd">    ``fleet_model`` has been set and before the discipline is wrapped.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fleet_model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span>
     <span class="n">markets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fleet_model</span><span class="o">.</span><span class="n">fleet</span><span class="o">.</span><span class="n">markets</span>
     <span class="k">if</span> <span class="n">markets</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span>
 
-    <span class="n">passenger_markets</span> <span class="o">=</span> <span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">&quot;passenger&quot;</span><span class="p">)</span>
+    <span class="n">passenger_markets</span> <span class="o">=</span> <span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">"passenger"</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">passenger_markets</span><span class="p">:</span>
         <span class="k">return</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;dummy_fleet_model_output&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">])}</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"dummy_fleet_model_output"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">])}</span>
     <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="n">passenger_markets</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">market</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">market</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;aircraft_in_fleet_value_dict&quot;</span><span class="p">:</span> <span class="p">{}}</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"aircraft_in_fleet_value_dict"</span><span class="p">:</span> <span class="p">{}}</span>
     <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="n">passenger_markets</span><span class="p">:</span>
         <span class="n">cat_name</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">name</span>  <span class="c1"># display name used as DataFrame column prefix</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cat_name</span><span class="si">}</span><span class="s2">: Aircraft In Fleet&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">cat_name</span><span class="si">}</span><span class="s2">: Aircraft In Fleet"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -6839,7 +6846,7 @@ Notes
 <span class="normal">434</span>
 <span class="normal">435</span>
 <span class="normal">436</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the number of aircraft in fleet for each aircraft and market.</span>
+<span class="w">    </span><span class="sd">"""Compute the number of aircraft in fleet for each aircraft and market.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -6850,18 +6857,18 @@ Notes
 <span class="sd">    -------</span>
 <span class="sd">    dict</span>
 <span class="sd">        ``aircraft_in_fleet_value_dict`` plus one per-market total series.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">aircraft_in_fleet_value_dict</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">output_data</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="k">for</span> <span class="n">category_name</span><span class="p">,</span> <span class="n">sets</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fleet_model</span><span class="o">.</span><span class="n">fleet</span><span class="o">.</span><span class="n">all_aircraft_elements</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">category</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fleet_model</span><span class="o">.</span><span class="n">fleet</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="n">category_name</span><span class="p">]</span>
-        <span class="n">category_ask</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">category</span><span class="o">.</span><span class="n">market_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+        <span class="n">category_ask</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">category</span><span class="o">.</span><span class="n">market_id</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span>
         <span class="n">market_total</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">for</span> <span class="n">aircraft_var</span> <span class="ow">in</span> <span class="n">sets</span><span class="p">:</span>
             <span class="c1"># Reference aircraft expose their fields directly; new aircraft via .parameters.</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">aircraft_var</span><span class="p">,</span> <span class="s2">&quot;parameters&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">aircraft_var</span><span class="p">,</span> <span class="s2">"parameters"</span><span class="p">):</span>
                 <span class="n">aircraft_var_name</span> <span class="o">=</span> <span class="n">aircraft_var</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">full_name</span>
                 <span class="n">ask_year</span> <span class="o">=</span> <span class="n">aircraft_var</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">ask_year</span>
             <span class="k">else</span><span class="p">:</span>
@@ -6871,7 +6878,7 @@ Notes
             <span class="n">aircraft_ask</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">fleet_model</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">,</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">aircraft_var_name</span><span class="si">}</span><span class="s2">:aircraft_share&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">aircraft_var_name</span><span class="si">}</span><span class="s2">:aircraft_share"</span><span class="p">,</span>
                 <span class="p">]</span>
                 <span class="o">/</span> <span class="mi">100</span>
                 <span class="o">*</span> <span class="n">category_ask</span>
@@ -6884,7 +6891,7 @@ Notes
             <span class="c1"># Direct assignment (idempotent: overwrites if already present) rather than</span>
             <span class="c1"># concat, so re-running the model never produces duplicate columns. The</span>
             <span class="c1"># prospection-indexed series leaves historical years NaN on fleet_model.df.</span>
-            <span class="n">aircraft_in_fleet_var_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">aircraft_var_name</span><span class="si">}</span><span class="s2">:aircraft_in_fleet&quot;</span>
+            <span class="n">aircraft_in_fleet_var_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">aircraft_var_name</span><span class="si">}</span><span class="s2">:aircraft_in_fleet"</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">fleet_model</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">aircraft_in_fleet_var_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">aircraft_in_fleet_value</span>
             <span class="n">aircraft_in_fleet_value_dict</span><span class="p">[</span><span class="n">aircraft_var_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">aircraft_in_fleet_value</span>
             <span class="n">market_total</span> <span class="o">=</span> <span class="p">(</span>
@@ -6893,11 +6900,11 @@ Notes
                 <span class="k">else</span> <span class="n">market_total</span> <span class="o">+</span> <span class="n">aircraft_in_fleet_value</span>
             <span class="p">)</span>
 
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">category</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: Aircraft In Fleet&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">market_total</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">category</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: Aircraft In Fleet"</span><span class="p">]</span> <span class="o">=</span> <span class="n">market_total</span>
 
     <span class="c1"># Like FleetEvolution, outputs (Series + the per-aircraft dict) are returned</span>
     <span class="c1"># directly for GEMSEO to route; _store_outputs is not used as it rejects dicts.</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;aircraft_in_fleet_value_dict&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">aircraft_in_fleet_value_dict</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"aircraft_in_fleet_value_dict"</span><span class="p">]</span> <span class="o">=</span> <span class="n">aircraft_in_fleet_value_dict</span>
     <span class="k">return</span> <span class="n">output_data</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -6937,9 +6944,9 @@ Notes
 <span class="normal">273</span>
 <span class="normal">274</span>
 <span class="normal">275</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">filter_columns</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">suffix</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Filters columns of a dataframe by prefix and suffix</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">col</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span> <span class="ow">and</span> <span class="n">col</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">suffix</span><span class="p">)]</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -6970,9 +6977,9 @@ Notes
 <span class="normal">280</span>
 <span class="normal">281</span>
 <span class="normal">282</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">sum_positive</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Calculates the sum of positive values in a row of a dataframe</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="n">row</span><span class="p">[</span><span class="n">row</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -7003,9 +7010,9 @@ Notes
 <span class="normal">287</span>
 <span class="normal">288</span>
 <span class="normal">289</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">sum_negative</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Calculates the absolute sum of negative values in a row of a dataframe</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">row</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -7078,7 +7085,7 @@ Notes
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       

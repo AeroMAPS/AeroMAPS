@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -5823,7 +5823,9 @@ which defines and enforces the constraint on aviation's carbon budget consumptio
 
 
 <a href="#aeromaps.models.optimisation.constraints.carbon_budget_constraint.CarbonBudgetConstraint" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">CarbonBudgetConstraint</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;carbon_budget_constraint&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">CarbonBudgetConstraint</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"carbon_budget_constraint"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -5875,7 +5877,7 @@ which defines and enforces the constraint on aviation's carbon budget consumptio
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/optimisation/constraints/carbon_budget_constraint.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">29</span>
-<span class="normal">30</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;carbon_budget_constraint&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="normal">30</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"carbon_budget_constraint"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -5901,7 +5903,11 @@ which defines and enforces the constraint on aviation's carbon budget consumptio
 
 
 <a href="#aeromaps.models.optimisation.constraints.carbon_budget_constraint.CarbonBudgetConstraint.compute" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span><span class="n">gross_carbon_budget_2050</span><span class="p">,</span> <span class="n">aviation_carbon_budget_objective</span><span class="p">,</span> <span class="n">cumulative_co2_emissions</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span>
+    <span class="n">gross_carbon_budget_2050</span><span class="p">,</span>
+    <span class="n">aviation_carbon_budget_objective</span><span class="p">,</span>
+    <span class="n">cumulative_co2_emissions</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6052,7 +6058,7 @@ which defines and enforces the constraint on aviation's carbon budget consumptio
     <span class="n">aviation_carbon_budget_objective</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
     <span class="n">cumulative_co2_emissions</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Carbon budget consumption share calculation.</span>
 
 <span class="sd">    Parameters</span>
@@ -6069,7 +6075,7 @@ which defines and enforces the constraint on aviation's carbon budget consumptio
 <span class="sd">    aviation_carbon_budget_constraint</span>
 <span class="sd">        Constraint value indicating how close aviation is to its allocated carbon budget by 2050 [-].</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">cumulative_emissions</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">cumulative_co2_emissions</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">2050</span><span class="p">]</span> <span class="o">-</span> <span class="n">cumulative_co2_emissions</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">2025</span><span class="p">]</span>
     <span class="p">)</span>
@@ -6082,10 +6088,10 @@ which defines and enforces the constraint on aviation's carbon budget consumptio
     <span class="c1"># trigger infeasibility warning in the optimisation</span>
     <span class="k">if</span> <span class="n">adjusted_carbon_budget_2050</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-            <span class="s2">&quot;Adjusted carbon budget for aviation in 2050 is &lt;= 0. &quot;</span>
-            <span class="s2">&quot;This indicates that the cumulative emissions up to 2025 have already exceeded &quot;</span>
-            <span class="s2">&quot;the allocated carbon budget for aviation. &quot;</span>
-            <span class="s2">&quot;The optimisation problem may be infeasible.&quot;</span>
+            <span class="s2">"Adjusted carbon budget for aviation in 2050 is &lt;= 0. "</span>
+            <span class="s2">"This indicates that the cumulative emissions up to 2025 have already exceeded "</span>
+            <span class="s2">"the allocated carbon budget for aviation. "</span>
+            <span class="s2">"The optimisation problem may be infeasible."</span>
         <span class="p">)</span>
         <span class="n">adjusted_carbon_budget_2050</span> <span class="o">=</span> <span class="mf">1e6</span>  <span class="c1"># small positive number</span>
 
@@ -6093,7 +6099,7 @@ which defines and enforces the constraint on aviation's carbon budget consumptio
         <span class="o">+</span><span class="p">(</span><span class="n">cumulative_emissions</span> <span class="o">-</span> <span class="n">adjusted_carbon_budget_2050</span><span class="p">)</span> <span class="o">/</span> <span class="n">adjusted_carbon_budget_2050</span>
     <span class="p">)</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">float_outputs</span><span class="p">[</span><span class="s2">&quot;aviation_carbon_budget_constraint&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">aviation_carbon_budget_constraint</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">float_outputs</span><span class="p">[</span><span class="s2">"aviation_carbon_budget_constraint"</span><span class="p">]</span> <span class="o">=</span> <span class="n">aviation_carbon_budget_constraint</span>
 
     <span class="k">return</span> <span class="n">aviation_carbon_budget_constraint</span>
 </code></pre></div></td></tr></table></div>
@@ -6176,7 +6182,7 @@ which defines and enforces the constraint on aviation's carbon budget consumptio
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       

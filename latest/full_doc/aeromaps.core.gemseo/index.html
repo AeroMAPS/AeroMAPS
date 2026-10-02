@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -6212,7 +6212,7 @@ The size of a number is 1.</p>
 <span class="normal">501</span>
 <span class="normal">502</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_value_size</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">ValueType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the size of a data value.</span>
+<span class="w">    </span><span class="sd">"""Return the size of a data value.</span>
 
 <span class="sd">    The size is typically what is returned by ``ndarray.size`` or ``len(list)``.</span>
 <span class="sd">    The size of a number is 1.</span>
@@ -6224,12 +6224,12 @@ The size of a number is 1.</p>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        The size.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_NON_ARRAY_TYPES</span><span class="p">):</span>
         <span class="k">return</span> <span class="mi">1</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;NumberArray&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">size</span>
+    <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">"NumberArray"</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">size</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -6383,9 +6383,9 @@ Inputs and outputs are declared through the attributes 'input_names' and 'output
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
     <span class="c1"># Whether to skip data type validation (at your own risk)</span>
-    <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s2">&quot;_skip_data_type_validation&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
-        <span class="c1"># self.input_grammar = SimplerGrammar(&quot;InputGrammar&quot;)</span>
-        <span class="c1"># self.output_grammar = SimplerGrammar(&quot;OutputGrammar&quot;)</span>
+    <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s2">"_skip_data_type_validation"</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="c1"># self.input_grammar = SimplerGrammar("InputGrammar")</span>
+        <span class="c1"># self.output_grammar = SimplerGrammar("OutputGrammar")</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">input_grammar</span><span class="o">.</span><span class="n">_validate</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">data</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_grammar</span><span class="o">.</span><span class="n">_validate</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">data</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="kc">True</span>
 
@@ -6526,9 +6526,9 @@ instead of shared memory, avoiding semaphore creation.</p>
 <span class="normal">138</span>
 <span class="normal">139</span>
 <span class="normal">140</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">disable_gemseo_execution_statistics</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Disable GEMSEO&#39;s execution statistics shared memory.</span>
+<span class="w">    </span><span class="sd">"""Disable GEMSEO's execution statistics shared memory.</span>
 
-<span class="sd">    GEMSEO&#39;s ExecutionStatistics creates semaphores for each discipline via</span>
+<span class="sd">    GEMSEO's ExecutionStatistics creates semaphores for each discipline via</span>
 <span class="sd">    multiprocessing.Value(). With many disciplines (20+ regions × 50+ models),</span>
 <span class="sd">    this exhausts macOS semaphore limits (kern.sysv.shmmni=32).</span>
 
@@ -6537,7 +6537,7 @@ instead of shared memory, avoiding semaphore creation.</p>
 
 <span class="sd">    Safe to call multiple times (only patches once).</span>
 <span class="sd">    # TODO: Investigate possibilities with gemseo.configure ?</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">global</span> <span class="n">_EXECUTION_STATISTICS_PATCHED</span>
 
     <span class="k">if</span> <span class="n">_EXECUTION_STATISTICS_PATCHED</span><span class="p">:</span>
@@ -6547,7 +6547,7 @@ instead of shared memory, avoiding semaphore creation.</p>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gemseo.core.execution_statistics</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExecutionStatistics</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">_patched_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;Skip shared memory initialization to avoid semaphore exhaustion.&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">"""Skip shared memory initialization to avoid semaphore exhaustion."""</span>
             <span class="c1"># Initialize as regular attributes instead of shared memory</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_ExecutionStatistics__duration</span> <span class="o">=</span> <span class="mf">0.0</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_ExecutionStatistics__n_executions</span> <span class="o">=</span> <span class="mi">0</span>
@@ -6557,9 +6557,9 @@ instead of shared memory, avoiding semaphore creation.</p>
 
         <span class="n">ExecutionStatistics</span><span class="o">.</span><span class="n">_init_shared_memory_attrs_before</span> <span class="o">=</span> <span class="n">_patched_init</span>
         <span class="n">_EXECUTION_STATISTICS_PATCHED</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Patched GEMSEO ExecutionStatistics to use non-shared state&quot;</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Patched GEMSEO ExecutionStatistics to use non-shared state"</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">patch_err</span><span class="p">:</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not patch GEMSEO ExecutionStatistics: </span><span class="si">{</span><span class="n">patch_err</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Could not patch GEMSEO ExecutionStatistics: </span><span class="si">{</span><span class="n">patch_err</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -6601,12 +6601,12 @@ silently re-masked here.</p>
 <span class="normal">202</span>
 <span class="normal">203</span>
 <span class="normal">204</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">nan_mask</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">shape</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The mask in force for ``name``, or None to fall back to the sentinel.</span>
+<span class="w">    </span><span class="sd">"""The mask in force for ``name``, or None to fall back to the sentinel.</span>
 
 <span class="sd">    A shape mismatch also returns None: a coupling whose length changed mid-solve is a</span>
 <span class="sd">    different bug (see ``tests/core/test_mda_input_mutation.py``) and must not be</span>
 <span class="sd">    silently re-masked here.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">masks</span> <span class="o">=</span> <span class="n">_ACTIVE_MASKS</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">masks</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
@@ -6653,13 +6653,13 @@ rather than raised, so :func:<code>check_mda_convergence</code> reports it under
 <span class="normal">215</span>
 <span class="normal">216</span>
 <span class="normal">217</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">record_nan_intrusion</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Note a NaN at a position the frozen mask says carries a value.</span>
+<span class="w">    </span><span class="sd">"""Note a NaN at a position the frozen mask says carries a value.</span>
 
-<span class="sd">    That is the &quot;converged on NaN&quot; condition: a coupling that held a value after the first</span>
+<span class="sd">    That is the "converged on NaN" condition: a coupling that held a value after the first</span>
 <span class="sd">    sweep no longer does, so the state the solver measures is not a solution. Recorded</span>
-<span class="sd">    rather than raised, so :func:`check_mda_convergence` reports it under the process&#39;</span>
+<span class="sd">    rather than raised, so :func:`check_mda_convergence` reports it under the process'</span>
 <span class="sd">    ``on_mda_failure`` policy like every other convergence failure here.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">intrusions</span> <span class="o">=</span> <span class="n">_ACTIVE_INTRUSIONS</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">intrusions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">intrusions</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">intrusions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">count</span>
@@ -6690,8 +6690,8 @@ rather than raised, so :func:<code>check_mda_convergence</code> reports it under
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">220</span>
 <span class="normal">221</span>
 <span class="normal">222</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">nan_intrusions</span><span class="p">(</span><span class="n">mda</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The NaN intrusions recorded during ``mda``&#39;s last solve.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">mda</span><span class="p">,</span> <span class="s2">&quot;_aeromaps_nan_intrusions&quot;</span><span class="p">,</span> <span class="p">{})</span> <span class="ow">or</span> <span class="p">{})</span>
+<span class="w">    </span><span class="sd">"""The NaN intrusions recorded during ``mda``'s last solve."""</span>
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">mda</span><span class="p">,</span> <span class="s2">"_aeromaps_nan_intrusions"</span><span class="p">,</span> <span class="p">{})</span> <span class="ow">or</span> <span class="p">{})</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -6756,7 +6756,7 @@ scenario. A solver whose <code>_pre_solve</code> does not sweep simply keeps the
 <span class="normal">260</span>
 <span class="normal">261</span>
 <span class="normal">262</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">freeze_nan_masks_after_first_sweep</span><span class="p">(</span><span class="n">mda_chain</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Make every solver in ``mda_chain`` carry a frozen missing-value mask.</span>
+<span class="w">    </span><span class="sd">"""Make every solver in ``mda_chain`` carry a frozen missing-value mask.</span>
 
 <span class="sd">    AeroMAPS series are legitimately undefined over the historical years, and a coupling</span>
 <span class="sd">    belonging to a pathway a scenario does not use is undefined throughout. GEMSEO has no</span>
@@ -6765,7 +6765,7 @@ scenario. A solver whose <code>_pre_solve</code> does not sweep simply keeps the
 <span class="sd">    solver may blend, scale, project or normalise away. The mask holds the same</span>
 <span class="sd">    information beside the vector, so the vector carries only real numbers.</span>
 
-<span class="sd">    It is taken **after the solver&#39;s first complete sweep** and held fixed for the rest of</span>
+<span class="sd">    It is taken **after the solver's first complete sweep** and held fixed for the rest of</span>
 <span class="sd">    that solve. ``MDAGaussSeidel._pre_solve`` runs every discipline once, before ``_solve``</span>
 <span class="sd">    and therefore before any residual: the first moment at which every coupling has been</span>
 <span class="sd">    written by its real producer. Nothing earlier serves -- the first value a coupling is</span>
@@ -6776,8 +6776,8 @@ scenario. A solver whose <code>_pre_solve</code> does not sweep simply keeps the
 
 <span class="sd">    Frozen *per solve*, not per session, since a later ``compute()`` may be a different</span>
 <span class="sd">    scenario. A solver whose ``_pre_solve`` does not sweep simply keeps the sentinel.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">for</span> <span class="n">mda</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mda_chain</span><span class="p">,</span> <span class="s2">&quot;inner_mdas&quot;</span><span class="p">,</span> <span class="p">[]):</span>
+<span class="sd">    """</span>
+    <span class="k">for</span> <span class="n">mda</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mda_chain</span><span class="p">,</span> <span class="s2">"inner_mdas"</span><span class="p">,</span> <span class="p">[]):</span>
         <span class="n">_install_mask_hooks</span><span class="p">(</span><span class="n">mda</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -6793,7 +6793,7 @@ scenario. A solver whose <code>_pre_solve</code> does not sweep simply keeps the
 
 
 <a href="#aeromaps.core.gemseo.apply_coupling_bounds" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">apply_coupling_bounds</span><span class="p">(</span><span class="n">mda_chain</span><span class="p">,</span> <span class="n">disciplines</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">apply_coupling_bounds</span><span class="p">(</span><span class="n">mda_chain</span><span class="p">,</span> <span class="n">disciplines</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s1">''</span><span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6937,8 +6937,8 @@ model appears once per region as <code>{region}:{name}</code>.</p>
 <span class="normal">302</span>
 <span class="normal">303</span>
 <span class="normal">304</span>
-<span class="normal">305</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">apply_coupling_bounds</span><span class="p">(</span><span class="n">mda_chain</span><span class="p">,</span> <span class="n">disciplines</span><span class="p">,</span> <span class="n">namespace</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Hand the solver the physical domain of every coupling that declares one.</span>
+<span class="normal">305</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">apply_coupling_bounds</span><span class="p">(</span><span class="n">mda_chain</span><span class="p">,</span> <span class="n">disciplines</span><span class="p">,</span> <span class="n">namespace</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""Hand the solver the physical domain of every coupling that declares one.</span>
 
 <span class="sd">    A model declares its domain as ``self._coupling_bounds = {name: (low, high)}`` in</span>
 <span class="sd">    ``_initialize_df``, next to ``_coupling_defaults``, and nothing else in the model</span>
@@ -6965,12 +6965,12 @@ model appears once per region as <code>{region}:{name}</code>.</p>
 <span class="sd">    -------</span>
 <span class="sd">    bounds</span>
 <span class="sd">        What was handed to the chain, for logging and testing.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">bounds</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">discipline</span> <span class="ow">in</span> <span class="n">disciplines</span><span class="p">:</span>
-        <span class="n">model</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">discipline</span><span class="p">,</span> <span class="s2">&quot;model&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s2">&quot;_coupling_bounds&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">namespace</span><span class="si">}{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">namespace</span> <span class="k">else</span> <span class="n">name</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">discipline</span><span class="p">,</span> <span class="s2">"model"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s2">"_coupling_bounds"</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">namespace</span><span class="si">}{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span> <span class="k">if</span> <span class="n">namespace</span> <span class="k">else</span> <span class="n">name</span>
             <span class="n">bounds</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="kc">None</span> <span class="k">if</span> <span class="n">low</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">low</span><span class="p">)]),</span>
                 <span class="kc">None</span> <span class="k">if</span> <span class="n">high</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">high</span><span class="p">)]),</span>
@@ -7084,8 +7084,8 @@ stored in the process objects.</p>
 
 <p><span class="doc-section-title">Examples:</span></p>
     <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">aeromaps.core.gemseo</span><span class="w"> </span><span class="kn">import</span> <span class="n">apply_namespace_to_discipline</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">namespaced_disc</span> <span class="o">=</span> <span class="n">apply_namespace_to_discipline</span><span class="p">(</span><span class="n">discipline</span><span class="p">,</span> <span class="s2">&quot;FR&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Now inputs/outputs are prefixed: &quot;co2_emissions&quot; -&gt; &quot;FR:co2_emissions&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">namespaced_disc</span> <span class="o">=</span> <span class="n">apply_namespace_to_discipline</span><span class="p">(</span><span class="n">discipline</span><span class="p">,</span> <span class="s2">"FR"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Now inputs/outputs are prefixed: "co2_emissions" -&gt; "FR:co2_emissions"</span>
 </code></pre></div>
 
 
@@ -7142,7 +7142,7 @@ stored in the process objects.</p>
 <span class="normal">703</span>
 <span class="normal">704</span>
 <span class="normal">705</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">apply_namespace_to_discipline</span><span class="p">(</span><span class="n">discipline</span><span class="p">:</span> <span class="n">Discipline</span><span class="p">,</span> <span class="n">namespace</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Discipline</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Apply a namespace prefix to all inputs and outputs of a GEMSEO discipline.</span>
+<span class="w">    </span><span class="sd">"""Apply a namespace prefix to all inputs and outputs of a GEMSEO discipline.</span>
 
 <span class="sd">    This function creates a deep copy of the discipline and applies the namespace</span>
 <span class="sd">    to isolate regional I/O variables. This is essential for multi-regional scenarios</span>
@@ -7154,8 +7154,8 @@ stored in the process objects.</p>
 <span class="sd">        The GEMSEO discipline to namespace. Will be deep-copied to avoid</span>
 <span class="sd">        modifying the original.</span>
 <span class="sd">    namespace</span>
-<span class="sd">        The namespace prefix to apply (e.g., &quot;FR&quot;, &quot;DE&quot;). Variables will be</span>
-<span class="sd">        renamed from &quot;var_name&quot; to &quot;{namespace}:var_name&quot;.</span>
+<span class="sd">        The namespace prefix to apply (e.g., "FR", "DE"). Variables will be</span>
+<span class="sd">        renamed from "var_name" to "{namespace}:var_name".</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -7171,9 +7171,9 @@ stored in the process objects.</p>
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; from aeromaps.core.gemseo import apply_namespace_to_discipline</span>
-<span class="sd">    &gt;&gt;&gt; namespaced_disc = apply_namespace_to_discipline(discipline, &quot;FR&quot;)</span>
-<span class="sd">    &gt;&gt;&gt; # Now inputs/outputs are prefixed: &quot;co2_emissions&quot; -&gt; &quot;FR:co2_emissions&quot;</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    &gt;&gt;&gt; namespaced_disc = apply_namespace_to_discipline(discipline, "FR")</span>
+<span class="sd">    &gt;&gt;&gt; # Now inputs/outputs are prefixed: "co2_emissions" -&gt; "FR:co2_emissions"</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
 
     <span class="n">ns_disc</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">discipline</span><span class="p">)</span>
@@ -7189,7 +7189,7 @@ stored in the process objects.</p>
         <span class="n">ns_disc</span><span class="o">.</span><span class="n">add_namespace_to_output</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">namespace</span><span class="p">)</span>
 
     <span class="c1"># Update discipline name to include region identifier</span>
-    <span class="n">ns_disc</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">namespace</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">ns_disc</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">ns_disc</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">namespace</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">ns_disc</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span>
 
     <span class="k">return</span> <span class="n">ns_disc</span>
 </code></pre></div></td></tr></table></div>
@@ -7309,7 +7309,7 @@ stored in the process objects.</p>
 <span class="normal">727</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">apply_namespace_to_disciplines</span><span class="p">(</span>
     <span class="n">disciplines</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Discipline</span><span class="p">],</span> <span class="n">namespace</span><span class="p">:</span> <span class="nb">str</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Discipline</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Apply a namespace to a list of disciplines.</span>
+<span class="w">    </span><span class="sd">"""Apply a namespace to a list of disciplines.</span>
 
 <span class="sd">    Convenience function to namespace multiple disciplines at once.</span>
 
@@ -7324,7 +7324,7 @@ stored in the process objects.</p>
 <span class="sd">    -------</span>
 <span class="sd">    list[Discipline]</span>
 <span class="sd">        List of new discipline instances with namespaced I/O.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">apply_namespace_to_discipline</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">namespace</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">disciplines</span><span class="p">]</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -7449,7 +7449,7 @@ E.g., {"FR:rpk_init": <value>, "FR:energy_consumption_init": <value>, ...}</p>
 <span class="normal">754</span>
 <span class="normal">755</span>
 <span class="normal">756</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">build_namespaced_inputs</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">namespace</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build a namespaced input dictionary from an AeroMAPS parameters object.</span>
+<span class="w">    </span><span class="sd">"""Build a namespaced input dictionary from an AeroMAPS parameters object.</span>
 
 <span class="sd">    This function converts all parameters into a dictionary with namespaced keys,</span>
 <span class="sd">    suitable for execution of a multi-regional MDAChain.</span>
@@ -7465,13 +7465,13 @@ E.g., {"FR:rpk_init": <value>, "FR:energy_consumption_init": <value>, ...}</p>
 <span class="sd">    -------</span>
 <span class="sd">    dict</span>
 <span class="sd">        Dictionary with namespaced keys mapping to parameter values.</span>
-<span class="sd">        E.g., {&quot;FR:rpk_init&quot;: &lt;value&gt;, &quot;FR:energy_consumption_init&quot;: &lt;value&gt;, ...}</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">        E.g., {"FR:rpk_init": &lt;value&gt;, "FR:energy_consumption_init": &lt;value&gt;, ...}</span>
+<span class="sd">    """</span>
     <span class="n">input_data</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">params_dict</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
 
     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">params_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="n">namespaced_key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">namespace</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">namespaced_key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">namespace</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">"</span>
         <span class="n">input_data</span><span class="p">[</span><span class="n">namespaced_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="k">return</span> <span class="n">input_data</span>
@@ -7489,7 +7489,9 @@ E.g., {"FR:rpk_init": <value>, "FR:energy_consumption_init": <value>, ...}</p>
 
 
 <a href="#aeromaps.core.gemseo.check_mda_convergence" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">check_mda_convergence</span><span class="p">(</span><span class="n">mda_chain</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">on_failure</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">check_mda_convergence</span><span class="p">(</span>
+    <span class="n">mda_chain</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span> <span class="n">on_failure</span><span class="o">=</span><span class="s2">"raise"</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -7690,8 +7692,8 @@ to log a warning, <code>"ignore"</code> to only return the messages.</p>
 <span class="normal">913</span>
 <span class="normal">914</span>
 <span class="normal">915</span>
-<span class="normal">916</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">check_mda_convergence</span><span class="p">(</span><span class="n">mda_chain</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">on_failure</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;raise&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check that every solver inside ``mda_chain`` reached its tolerance.</span>
+<span class="normal">916</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">check_mda_convergence</span><span class="p">(</span><span class="n">mda_chain</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span><span class="p">,</span> <span class="n">on_failure</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"raise"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""Check that every solver inside ``mda_chain`` reached its tolerance.</span>
 
 <span class="sd">    A chain with no strongly coupled disciplines has no solver to check and</span>
 <span class="sd">    always passes.</span>
@@ -7703,20 +7705,20 @@ to log a warning, <code>"ignore"</code> to only return the messages.</p>
 <span class="sd">    context</span>
 <span class="sd">        Prefix identifying the run in the message, e.g. a region name.</span>
 <span class="sd">    on_failure</span>
-<span class="sd">        ``&quot;raise&quot;`` (default) to raise :class:`MDAConvergenceError`, ``&quot;warn&quot;``</span>
-<span class="sd">        to log a warning, ``&quot;ignore&quot;`` to only return the messages.</span>
+<span class="sd">        ``"raise"`` (default) to raise :class:`MDAConvergenceError`, ``"warn"``</span>
+<span class="sd">        to log a warning, ``"ignore"`` to only return the messages.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    failures</span>
 <span class="sd">        One message per solver that did not converge; empty if all did.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">on_failure</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;raise&quot;</span><span class="p">,</span> <span class="s2">&quot;warn&quot;</span><span class="p">,</span> <span class="s2">&quot;ignore&quot;</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;on_failure must be &#39;raise&#39;, &#39;warn&#39; or &#39;ignore&#39;, got </span><span class="si">{</span><span class="n">on_failure</span><span class="si">!r}</span><span class="s2">.&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">on_failure</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"raise"</span><span class="p">,</span> <span class="s2">"warn"</span><span class="p">,</span> <span class="s2">"ignore"</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"on_failure must be 'raise', 'warn' or 'ignore', got </span><span class="si">{</span><span class="n">on_failure</span><span class="si">!r}</span><span class="s2">."</span><span class="p">)</span>
 
     <span class="n">failures</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">mda</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mda_chain</span><span class="p">,</span> <span class="s2">&quot;inner_mdas&quot;</span><span class="p">,</span> <span class="p">[]):</span>
-        <span class="n">history</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">mda</span><span class="p">,</span> <span class="s2">&quot;residual_history&quot;</span><span class="p">,</span> <span class="p">[]))</span>
+    <span class="k">for</span> <span class="n">mda</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mda_chain</span><span class="p">,</span> <span class="s2">"inner_mdas"</span><span class="p">,</span> <span class="p">[]):</span>
+        <span class="n">history</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">mda</span><span class="p">,</span> <span class="s2">"residual_history"</span><span class="p">,</span> <span class="p">[]))</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">history</span><span class="p">:</span>
             <span class="c1"># The solver never ran: nothing was asked of it.</span>
             <span class="k">continue</span>
@@ -7725,7 +7727,7 @@ to log a warning, <code>"ignore"</code> to only return the messages.</p>
 
         <span class="c1"># A converged residual is not by itself proof of a solution. A coupling that has</span>
         <span class="c1"># gone NaN differences against itself to exactly zero -- as the sentinel, or as</span>
-        <span class="c1"># the mask&#39;s dead fill -- and the solver reports convergence on a state that</span>
+        <span class="c1"># the mask's dead fill -- and the solver reports convergence on a state that</span>
         <span class="c1"># carries no values at all. Checked first: it explains the residual, rather than</span>
         <span class="c1"># the other way round. Where a frozen mask recorded which positions held a value</span>
         <span class="c1"># after the first sweep, a NaN anywhere else is exactly that failure, with no</span>
@@ -7734,23 +7736,23 @@ to log a warning, <code>"ignore"</code> to only return the messages.</p>
         <span class="k">if</span> <span class="n">intrusions</span><span class="p">:</span>
             <span class="n">worst</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">intrusions</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="o">-</span><span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
             <span class="n">failures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">context</span><span class="si">}{</span><span class="n">mda</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> converged on NaN: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">intrusions</span><span class="p">)</span><span class="si">}</span><span class="s2"> coupling &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;variable(s) went NaN at a position that held a value after the first &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;sweep, so the residual (</span><span class="si">{</span><span class="n">residual</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">) is measuring a dead component &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;differencing against itself, not a solution. Worst: &quot;</span>
-                <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2">)&quot;</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">worst</span><span class="p">[:</span><span class="mi">5</span><span class="p">])</span>
-                <span class="o">+</span> <span class="s2">&quot;.&quot;</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">context</span><span class="si">}{</span><span class="n">mda</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> converged on NaN: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">intrusions</span><span class="p">)</span><span class="si">}</span><span class="s2"> coupling "</span>
+                <span class="sa">f</span><span class="s2">"variable(s) went NaN at a position that held a value after the first "</span>
+                <span class="sa">f</span><span class="s2">"sweep, so the residual (</span><span class="si">{</span><span class="n">residual</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">) is measuring a dead component "</span>
+                <span class="sa">f</span><span class="s2">"differencing against itself, not a solution. Worst: "</span>
+                <span class="o">+</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2">)"</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">worst</span><span class="p">[:</span><span class="mi">5</span><span class="p">])</span>
+                <span class="o">+</span> <span class="s2">"."</span>
             <span class="p">)</span>
             <span class="k">continue</span>
 
         <span class="n">spread</span> <span class="o">=</span> <span class="n">_couplings_with_spread_nans</span><span class="p">(</span><span class="n">mda</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">spread</span><span class="p">:</span>
             <span class="n">failures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">context</span><span class="si">}{</span><span class="n">mda</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> converged on NaN: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">spread</span><span class="p">)</span><span class="si">}</span><span class="s2"> of &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">mda</span><span class="o">.</span><span class="n">coupling_structure</span><span class="o">.</span><span class="n">strong_couplings</span><span class="p">)</span><span class="si">}</span><span class="s2"> coupling variables hold &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;a NaN after a real value, so the residual (</span><span class="si">{</span><span class="n">residual</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">) is measuring &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;the NaN sentinel differencing against itself, not a solution. First &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;few: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">spread</span><span class="p">[:</span><span class="mi">5</span><span class="p">])</span><span class="si">}</span><span class="s2">.&quot;</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">context</span><span class="si">}{</span><span class="n">mda</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> converged on NaN: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">spread</span><span class="p">)</span><span class="si">}</span><span class="s2"> of "</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">mda</span><span class="o">.</span><span class="n">coupling_structure</span><span class="o">.</span><span class="n">strong_couplings</span><span class="p">)</span><span class="si">}</span><span class="s2"> coupling variables hold "</span>
+                <span class="sa">f</span><span class="s2">"a NaN after a real value, so the residual (</span><span class="si">{</span><span class="n">residual</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">) is measuring "</span>
+                <span class="sa">f</span><span class="s2">"the NaN sentinel differencing against itself, not a solution. First "</span>
+                <span class="sa">f</span><span class="s2">"few: </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">spread</span><span class="p">[:</span><span class="mi">5</span><span class="p">])</span><span class="si">}</span><span class="s2">."</span>
             <span class="p">)</span>
             <span class="k">continue</span>
 
@@ -7765,33 +7767,33 @@ to log a warning, <code>"ignore"</code> to only return the messages.</p>
         <span class="n">still_decreasing</span> <span class="o">=</span> <span class="n">recent</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">recent</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">iterations</span> <span class="o">&gt;=</span> <span class="n">max_iterations</span> <span class="ow">and</span> <span class="n">still_decreasing</span><span class="p">:</span>
             <span class="n">cause</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;it ran out of iterations (</span><span class="si">{</span><span class="n">iterations</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">max_iterations</span><span class="si">}</span><span class="s2">) with the &quot;</span>
-                <span class="s2">&quot;residual still decreasing; raise max_mda_iter&quot;</span>
+                <span class="sa">f</span><span class="s2">"it ran out of iterations (</span><span class="si">{</span><span class="n">iterations</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">max_iterations</span><span class="si">}</span><span class="s2">) with the "</span>
+                <span class="s2">"residual still decreasing; raise max_mda_iter"</span>
             <span class="p">)</span>
         <span class="k">elif</span> <span class="n">still_decreasing</span><span class="p">:</span>
             <span class="n">cause</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;it stopped after </span><span class="si">{</span><span class="n">iterations</span><span class="si">}</span><span class="s2"> of </span><span class="si">{</span><span class="n">max_iterations</span><span class="si">}</span><span class="s2"> iterations with the &quot;</span>
-                <span class="s2">&quot;residual still decreasing, which is GEMSEO&#39;s divergence guard &quot;</span>
-                <span class="s2">&quot;(max_consecutive_unsuccessful_iterations)&quot;</span>
+                <span class="sa">f</span><span class="s2">"it stopped after </span><span class="si">{</span><span class="n">iterations</span><span class="si">}</span><span class="s2"> of </span><span class="si">{</span><span class="n">max_iterations</span><span class="si">}</span><span class="s2"> iterations with the "</span>
+                <span class="s2">"residual still decreasing, which is GEMSEO's divergence guard "</span>
+                <span class="s2">"(max_consecutive_unsuccessful_iterations)"</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">cause</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;the residual stopped decreasing after </span><span class="si">{</span><span class="n">iterations</span><span class="si">}</span><span class="s2"> of &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">max_iterations</span><span class="si">}</span><span class="s2"> iterations; damping (over_relaxation_factor) or an &quot;</span>
-                <span class="s2">&quot;acceleration_method is what this needs, not more iterations&quot;</span>
+                <span class="sa">f</span><span class="s2">"the residual stopped decreasing after </span><span class="si">{</span><span class="n">iterations</span><span class="si">}</span><span class="s2"> of "</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">max_iterations</span><span class="si">}</span><span class="s2"> iterations; damping (over_relaxation_factor) or an "</span>
+                <span class="s2">"acceleration_method is what this needs, not more iterations"</span>
             <span class="p">)</span>
         <span class="n">failures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">context</span><span class="si">}{</span><span class="n">mda</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> did not converge: residual </span><span class="si">{</span><span class="n">residual</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2"> is above &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;the requested tolerance </span><span class="si">{</span><span class="n">tolerance</span><span class="si">:</span><span class="s2">.1e</span><span class="si">}</span><span class="s2"> over </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">mda</span><span class="o">.</span><span class="n">disciplines</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;strongly coupled disciplines -- </span><span class="si">{</span><span class="n">cause</span><span class="si">}</span><span class="s2">.&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">_worst_residual_contributors</span><span class="p">(</span><span class="n">mda</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">context</span><span class="si">}{</span><span class="n">mda</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> did not converge: residual </span><span class="si">{</span><span class="n">residual</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2"> is above "</span>
+            <span class="sa">f</span><span class="s2">"the requested tolerance </span><span class="si">{</span><span class="n">tolerance</span><span class="si">:</span><span class="s2">.1e</span><span class="si">}</span><span class="s2"> over </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">mda</span><span class="o">.</span><span class="n">disciplines</span><span class="p">)</span><span class="si">}</span><span class="s2"> "</span>
+            <span class="sa">f</span><span class="s2">"strongly coupled disciplines -- </span><span class="si">{</span><span class="n">cause</span><span class="si">}</span><span class="s2">."</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">_worst_residual_contributors</span><span class="p">(</span><span class="n">mda</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">failures</span><span class="p">:</span>
-        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">failures</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">on_failure</span> <span class="o">==</span> <span class="s2">&quot;raise&quot;</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">failures</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">on_failure</span> <span class="o">==</span> <span class="s2">"raise"</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">MDAConvergenceError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">on_failure</span> <span class="o">==</span> <span class="s2">&quot;warn&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">on_failure</span> <span class="o">==</span> <span class="s2">"warn"</span><span class="p">:</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">failures</span>
 </code></pre></div></td></tr></table></div>
@@ -7865,7 +7867,7 @@ to log a warning, <code>"ignore"</code> to only return the messages.</p>
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       

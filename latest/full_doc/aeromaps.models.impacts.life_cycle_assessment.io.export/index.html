@@ -17,7 +17,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -25,7 +25,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -5616,7 +5616,15 @@ This version was slightly adapted for compatibility with versions 1.2.x of lca_a
 
 
 <a href="#aeromaps.models.impacts.life_cycle_assessment.io.export.export_lca" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">export_lca</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">functional_units</span><span class="o">=</span><span class="p">{</span><span class="n">FUNCTIONAL_UNIT_KEY</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;quantity&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;unit&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}},</span> <span class="n">methods_dict</span><span class="o">=</span><span class="p">{},</span> <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_digits</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">export_lca</span><span class="p">(</span>
+    <span class="n">system</span><span class="p">,</span>
+    <span class="n">functional_units</span><span class="o">=</span><span class="p">{</span>
+        <span class="n">FUNCTIONAL_UNIT_KEY</span><span class="p">:</span> <span class="p">{</span><span class="s2">"quantity"</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s2">"unit"</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+    <span class="p">},</span>
+    <span class="n">methods_dict</span><span class="o">=</span><span class="p">{},</span>
+    <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">num_digits</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -5696,18 +5704,18 @@ This version was slightly adapted for compatibility with versions 1.2.x of lca_a
 <span class="normal">113</span>
 <span class="normal">114</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">export_lca</span><span class="p">(</span>
         <span class="n">system</span><span class="p">,</span>
-        <span class="n">functional_units</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">FUNCTIONAL_UNIT_KEY</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;quantity&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}},</span>
+        <span class="n">functional_units</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">FUNCTIONAL_UNIT_KEY</span><span class="p">:</span> <span class="p">{</span><span class="s2">"quantity"</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s2">"unit"</span><span class="p">:</span> <span class="kc">None</span><span class="p">}},</span>
         <span class="n">methods_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">]</span> <span class="o">=</span> <span class="p">{},</span>
         <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">num_digits</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    :param system: Root inventory</span>
 <span class="sd">    :param functional_units : Dict of Dict{unit, quantity}</span>
 <span class="sd">    :param methods_dict: dict of method_name =&gt; method tuple</span>
 <span class="sd">    :param axes: List of axes</span>
 <span class="sd">    :param num_digits: Number of digits</span>
-<span class="sd">    :return: an instance of &quot;Model&quot;</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    :return: an instance of "Model"</span>
+<span class="sd">    """</span>
 
     <span class="k">if</span> <span class="n">axes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">axes</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span>
@@ -5718,7 +5726,7 @@ This version was slightly adapted for compatibility with versions 1.2.x of lca_a
     <span class="n">impacts_by_axis</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
 
     <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="n">axes</span> <span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Processing axis </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">axis</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Processing axis </span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="n">axis</span><span class="p">)</span>
 
         <span class="n">lambdas</span> <span class="o">=</span> <span class="n">_preMultiLCAAlgebric</span><span class="p">(</span>
             <span class="n">system</span><span class="p">,</span>
@@ -5743,14 +5751,14 @@ This version was slightly adapted for compatibility with versions 1.2.x of lca_a
     <span class="c1"># Dict of functional units</span>
     <span class="n">functional_units</span> <span class="o">=</span> <span class="p">{</span>
         <span class="n">name</span><span class="p">:</span> <span class="n">FunctionalUnit</span><span class="p">(</span>
-            <span class="n">quantity</span><span class="o">=</span><span class="n">Lambda</span><span class="p">(</span><span class="n">fu</span><span class="p">[</span><span class="s2">&quot;quantity&quot;</span><span class="p">],</span> <span class="n">all_params</span><span class="p">),</span>
-            <span class="n">unit</span><span class="o">=</span><span class="n">fu</span><span class="p">[</span><span class="s2">&quot;unit&quot;</span><span class="p">])</span>
+            <span class="n">quantity</span><span class="o">=</span><span class="n">Lambda</span><span class="p">(</span><span class="n">fu</span><span class="p">[</span><span class="s2">"quantity"</span><span class="p">],</span> <span class="n">all_params</span><span class="p">),</span>
+            <span class="n">unit</span><span class="o">=</span><span class="n">fu</span><span class="p">[</span><span class="s2">"unit"</span><span class="p">])</span>
         <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">fu</span> <span class="ow">in</span> <span class="n">functional_units</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
 
     <span class="c1"># Build list of impacts</span>
     <span class="n">impacts</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">Impact</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">method</span><span class="p">),</span>
-        <span class="n">unit</span><span class="o">=</span><span class="n">bw</span><span class="o">.</span><span class="n">Method</span><span class="p">(</span><span class="n">method</span><span class="p">)</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;unit&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">unit</span><span class="o">=</span><span class="n">bw</span><span class="o">.</span><span class="n">Method</span><span class="p">(</span><span class="n">method</span><span class="p">)</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"unit"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
     <span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">methods_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
 
     <span class="k">return</span> <span class="n">Model</span><span class="p">(</span>
@@ -5829,7 +5837,7 @@ This version was slightly adapted for compatibility with versions 1.2.x of lca_a
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       

@@ -17,7 +17,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -25,7 +25,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -5613,7 +5613,9 @@
 
 
 <a href="#aeromaps.models.impacts.costs.efficiency_abatement_cost.operations_abatement_cost.OperationsAbatementCost" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">OperationsAbatementCost</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;operations_abatement_cost&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">OperationsAbatementCost</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"operations_abatement_cost"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -5665,7 +5667,7 @@
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/impacts/costs/efficiency_abatement_cost/operations_abatement_cost.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">26</span>
-<span class="normal">27</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;operations_abatement_cost&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="normal">27</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"operations_abatement_cost"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -5691,7 +5693,24 @@
 
 
 <a href="#aeromaps.models.impacts.costs.efficiency_abatement_cost.operations_abatement_cost.OperationsAbatementCost.compute" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span><span class="n">operational_efficiency_cost_non_energy_per_ask</span><span class="p">,</span> <span class="n">operations_gain</span><span class="p">,</span> <span class="n">cac_reference_mfsp</span><span class="p">,</span> <span class="n">cac_reference_co2_emission_factor</span><span class="p">,</span> <span class="n">energy_per_ask_mean_without_operations</span><span class="p">,</span> <span class="n">energy_per_ask_mean</span><span class="p">,</span> <span class="n">energy_per_rtk_mean_without_operations</span><span class="p">,</span> <span class="n">energy_per_rtk_mean</span><span class="p">,</span> <span class="n">rpk</span><span class="p">,</span> <span class="n">rtk</span><span class="p">,</span> <span class="n">load_factor</span><span class="p">,</span> <span class="n">load_factor_cost_non_energy_per_ask</span><span class="p">,</span> <span class="n">exogenous_carbon_price_trajectory</span><span class="p">,</span> <span class="n">social_discount_rate</span><span class="p">,</span> <span class="n">operations_duration</span><span class="p">,</span> <span class="n">operations_start_year</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span>
+    <span class="n">operational_efficiency_cost_non_energy_per_ask</span><span class="p">,</span>
+    <span class="n">operations_gain</span><span class="p">,</span>
+    <span class="n">cac_reference_mfsp</span><span class="p">,</span>
+    <span class="n">cac_reference_co2_emission_factor</span><span class="p">,</span>
+    <span class="n">energy_per_ask_mean_without_operations</span><span class="p">,</span>
+    <span class="n">energy_per_ask_mean</span><span class="p">,</span>
+    <span class="n">energy_per_rtk_mean_without_operations</span><span class="p">,</span>
+    <span class="n">energy_per_rtk_mean</span><span class="p">,</span>
+    <span class="n">rpk</span><span class="p">,</span>
+    <span class="n">rtk</span><span class="p">,</span>
+    <span class="n">load_factor</span><span class="p">,</span>
+    <span class="n">load_factor_cost_non_energy_per_ask</span><span class="p">,</span>
+    <span class="n">exogenous_carbon_price_trajectory</span><span class="p">,</span>
+    <span class="n">social_discount_rate</span><span class="p">,</span>
+    <span class="n">operations_duration</span><span class="p">,</span>
+    <span class="n">operations_start_year</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6403,7 +6422,7 @@
     <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
     <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
 <span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Executes the computation of operations-related efficiency carbon abatement costs.</span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -6412,9 +6431,9 @@
 <span class="sd">    operations_gain</span>
 <span class="sd">        Operations efficiency gain percentage [%].</span>
 <span class="sd">    cac_reference_mfsp</span>
-<span class="sd">        CAC Reference fuel&#39;s MFSP [€/MJ].</span>
+<span class="sd">        CAC Reference fuel's MFSP [€/MJ].</span>
 <span class="sd">    cac_reference_co2_emission_factor</span>
-<span class="sd">        CAC Reference fuel&#39;s CO2 emission factor [gCO2/MJ].</span>
+<span class="sd">        CAC Reference fuel's CO2 emission factor [gCO2/MJ].</span>
 <span class="sd">    energy_per_ask_mean_without_operations</span>
 <span class="sd">        Mean energy consumption per ASK for passenger market  without operations efficiency measures [MJ/ASK].</span>
 <span class="sd">    energy_per_ask_mean</span>
@@ -6466,7 +6485,7 @@
 <span class="sd">        Specific load factor abatement cost [€/tCO2].</span>
 <span class="sd">    load_factor_generic_specific_abatement_cost</span>
 <span class="sd">        Generic specific load factor abatement cost [€/tCO2].</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1">############### PASSENGER OPERATIONS #############</span>
 
     <span class="n">emissions_reduction_operations</span> <span class="o">=</span> <span class="p">(</span>
@@ -6487,7 +6506,7 @@
         <span class="n">extra_cost_operations_non_fuel</span> <span class="o">+</span> <span class="n">extra_cost_operations_fuel</span>
     <span class="p">)</span> <span class="o">/</span> <span class="n">emissions_reduction_operations</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;operations_abatement_cost&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">operations_abatement_cost</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"operations_abatement_cost"</span><span class="p">]</span> <span class="o">=</span> <span class="n">operations_abatement_cost</span>
 
     <span class="n">operations_abatement_effective</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">emissions_reduction_operations</span>
@@ -6495,7 +6514,7 @@
         <span class="o">/</span> <span class="n">load_factor</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
         <span class="o">*</span> <span class="mi">100</span>
     <span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;operations_abatement_effective&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">operations_abatement_effective</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"operations_abatement_effective"</span><span class="p">]</span> <span class="o">=</span> <span class="n">operations_abatement_effective</span>
 
     <span class="c1"># Definition of a specific abatement cost, comparable to a hotelling growth carbon value.</span>
     <span class="c1"># Discount the costs/benefits over the horizon necessary to deploy the incremental gains of a year</span>
@@ -6512,12 +6531,12 @@
             <span class="n">exogenous_carbon_price_trajectory</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot;operations_specific_abatement_cost&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scac</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot;operations_generic_specific_abatement_cost&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scac_prime</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">"operations_specific_abatement_cost"</span><span class="p">]</span> <span class="o">=</span> <span class="n">scac</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">"operations_generic_specific_abatement_cost"</span><span class="p">]</span> <span class="o">=</span> <span class="n">scac_prime</span>
 
-    <span class="n">operations_specific_abatement_cost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;operations_specific_abatement_cost&quot;</span><span class="p">]</span>
+    <span class="n">operations_specific_abatement_cost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">"operations_specific_abatement_cost"</span><span class="p">]</span>
     <span class="n">operations_generic_specific_abatement_cost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span>
-        <span class="s2">&quot;operations_generic_specific_abatement_cost&quot;</span>
+        <span class="s2">"operations_generic_specific_abatement_cost"</span>
     <span class="p">]</span>
 
     <span class="c1">################ FREIGHT OPERATIONS ################</span>
@@ -6542,10 +6561,10 @@
         <span class="n">extra_cost_operations_non_fuel_freight</span> <span class="o">+</span> <span class="n">extra_cost_operations_fuel_freight</span>
     <span class="p">)</span> <span class="o">/</span> <span class="n">emissions_reduction_operations_freight</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;operations_abatement_cost_freight&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">operations_abatement_cost_freight</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"operations_abatement_cost_freight"</span><span class="p">]</span> <span class="o">=</span> <span class="n">operations_abatement_cost_freight</span>
 
     <span class="n">operations_abatement_effective_freight</span> <span class="o">=</span> <span class="n">emissions_reduction_operations_freight</span> <span class="o">*</span> <span class="n">rtk</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;operations_abatement_effective_freight&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"operations_abatement_effective_freight"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">operations_abatement_effective_freight</span>
     <span class="p">)</span>
 
@@ -6564,14 +6583,14 @@
             <span class="n">exogenous_carbon_price_trajectory</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot;operations_specific_abatement_cost_freight&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scac</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot;operations_generic_specific_abatement_cost_freight&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scac_prime</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">"operations_specific_abatement_cost_freight"</span><span class="p">]</span> <span class="o">=</span> <span class="n">scac</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">"operations_generic_specific_abatement_cost_freight"</span><span class="p">]</span> <span class="o">=</span> <span class="n">scac_prime</span>
 
     <span class="n">operations_specific_abatement_cost_freight</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span>
-        <span class="s2">&quot;operations_specific_abatement_cost_freight&quot;</span>
+        <span class="s2">"operations_specific_abatement_cost_freight"</span>
     <span class="p">]</span>
     <span class="n">operations_generic_specific_abatement_cost_freight</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span>
-        <span class="s2">&quot;operations_generic_specific_abatement_cost_freight&quot;</span>
+        <span class="s2">"operations_generic_specific_abatement_cost_freight"</span>
     <span class="p">]</span>
 
     <span class="c1">############### PASSENGER LOAD FACTOR ########################</span>
@@ -6595,10 +6614,10 @@
         <span class="n">extra_cost_load_factor_fuel</span> <span class="o">+</span> <span class="n">extra_cost_load_factor_non_fuel</span>
     <span class="p">)</span> <span class="o">/</span> <span class="n">emissions_reduction_load_factor</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;load_factor_abatement_cost&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">load_factor_abatement_cost</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"load_factor_abatement_cost"</span><span class="p">]</span> <span class="o">=</span> <span class="n">load_factor_abatement_cost</span>
 
     <span class="n">load_factor_abatement_effective</span> <span class="o">=</span> <span class="n">emissions_reduction_load_factor</span> <span class="o">*</span> <span class="n">rpk</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;load_factor_abatement_effective&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">load_factor_abatement_effective</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"load_factor_abatement_effective"</span><span class="p">]</span> <span class="o">=</span> <span class="n">load_factor_abatement_effective</span>
 
     <span class="c1"># Definition of a specific abatement cost, comparable to a hotelling growth carbon value.</span>
     <span class="c1"># Discount the costs/benefits over the scenario temporal span.</span>
@@ -6616,12 +6635,12 @@
             <span class="n">exogenous_carbon_price_trajectory</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot;load_factor_specific_abatement_cost&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scac</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot;load_factor_generic_specific_abatement_cost&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scac_prime</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">"load_factor_specific_abatement_cost"</span><span class="p">]</span> <span class="o">=</span> <span class="n">scac</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">"load_factor_generic_specific_abatement_cost"</span><span class="p">]</span> <span class="o">=</span> <span class="n">scac_prime</span>
 
-    <span class="n">load_factor_specific_abatement_cost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;load_factor_specific_abatement_cost&quot;</span><span class="p">]</span>
+    <span class="n">load_factor_specific_abatement_cost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">"load_factor_specific_abatement_cost"</span><span class="p">]</span>
     <span class="n">load_factor_generic_specific_abatement_cost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span>
-        <span class="s2">&quot;load_factor_generic_specific_abatement_cost&quot;</span>
+        <span class="s2">"load_factor_generic_specific_abatement_cost"</span>
     <span class="p">]</span>
 
     <span class="k">return</span> <span class="p">(</span>
@@ -6718,7 +6737,7 @@
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       

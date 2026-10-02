@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -5938,7 +5938,12 @@ AeroMAPS framework.</p>
 
 
 <a href="#aeromaps.core.process.AeroMAPSProcess" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">AeroMAPSProcess</span><span class="p">(</span><span class="n">configuration_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">custom_models</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">optimisation</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">disable_execution_statistics</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">AeroMAPSProcess</span><span class="p">(</span>
+    <span class="n">configuration_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">custom_models</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">optimisation</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">disable_execution_statistics</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6404,7 +6409,7 @@ If False, statistics are enabled. Set to True to disable
     <span class="n">optimisation</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">disable_execution_statistics</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize an AeroMAPSProcess instance.</span>
+<span class="w">    </span><span class="sd">"""Initialize an AeroMAPSProcess instance.</span>
 
 <span class="sd">    This method loads configuration settings, initializes parameters,</span>
 <span class="sd">    deep-copies the provided models dictionary when needed, and</span>
@@ -6418,17 +6423,17 @@ If False, statistics are enabled. Set to True to disable
 <span class="sd">        settings.</span>
 <span class="sd">    custom_models</span>
 <span class="sd">        Dictionary of additional model instances to be merged with</span>
-<span class="sd">        the standard models loaded from the configuration file&#39;s</span>
+<span class="sd">        the standard models loaded from the configuration file's</span>
 <span class="sd">        `models.standards` list. If None, only the standard models</span>
 <span class="sd">        are used.</span>
 <span class="sd">    optimisation</span>
 <span class="sd">        Whether to configure GEMSEO for optimization instead of a</span>
 <span class="sd">        pure MDA chain.</span>
 <span class="sd">    disable_execution_statistics</span>
-<span class="sd">        Whether to disable GEMSEO&#39;s execution statistics shared memory.</span>
+<span class="sd">        Whether to disable GEMSEO's execution statistics shared memory.</span>
 <span class="sd">        If False, statistics are enabled. Set to True to disable</span>
 <span class="sd">        (useful when running many disciplines to avoid semaphore exhaustion).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Initialize pathways_manager to None - will be populated if energy models are used</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">pathways_manager</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -6438,15 +6443,15 @@ If False, statistics are enabled. Set to True to disable
     <span class="c1"># Initialize offsets_manager to None - will be populated if generic offsets models are used</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">offsets_manager</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="c1"># How a non-converged MDA is reported at the end of compute(): &quot;raise&quot;</span>
-    <span class="c1"># (default), &quot;warn&quot; or &quot;ignore&quot;. An unconverged run is not a solution of the</span>
+    <span class="c1"># How a non-converged MDA is reported at the end of compute(): "raise"</span>
+    <span class="c1"># (default), "warn" or "ignore". An unconverged run is not a solution of the</span>
     <span class="c1"># coupled system and is indistinguishable from a converged one in the output</span>
-    <span class="c1"># DataFrames, hence the default. Set to &quot;warn&quot; from a notebook to inspect a</span>
+    <span class="c1"># DataFrames, hence the default. Set to "warn" from a notebook to inspect a</span>
     <span class="c1"># scenario that does not converge yet.</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">on_mda_failure</span> <span class="o">=</span> <span class="s2">&quot;raise&quot;</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_mda_context</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">on_mda_failure</span> <span class="o">=</span> <span class="s2">"raise"</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_mda_context</span> <span class="o">=</span> <span class="s2">""</span>
 
-    <span class="n">custom_logger_config</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;gemseo.utils.source_parsing&quot;</span><span class="p">))</span>
+    <span class="n">custom_logger_config</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">"gemseo.utils.source_parsing"</span><span class="p">))</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">configuration_file</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">fspath</span><span class="p">(</span><span class="n">configuration_file</span><span class="p">))</span>
@@ -6459,7 +6464,7 @@ If False, statistics are enabled. Set to True to disable
         <span class="kn">from</span><span class="w"> </span><span class="nn">aeromaps.core.gemseo</span><span class="w"> </span><span class="kn">import</span> <span class="n">disable_gemseo_execution_statistics</span>
 
         <span class="n">disable_gemseo_execution_statistics</span><span class="p">()</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Disabled GEMSEO execution statistics&quot;</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Disabled GEMSEO execution statistics"</span><span class="p">)</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_configuration</span><span class="p">()</span>
 
@@ -6480,7 +6485,7 @@ If False, statistics are enabled. Set to True to disable
     <span class="c1"># For specific models that would be too heavy to deepcopy, set attribute `deepcopy_at_init` to False.</span>
     <span class="c1"># E.g., models that load large datasets that are read-only (c.f. LCA model).</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">models</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="n">k</span><span class="p">:</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s2">&quot;deepcopy_at_init&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span> <span class="k">else</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">models</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="n">k</span><span class="p">:</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s2">"deepcopy_at_init"</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span> <span class="k">else</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">models</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
     <span class="p">}</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_inputs</span><span class="p">()</span>
@@ -6582,7 +6587,7 @@ example aircraft and subcategories to the fleet.</p>
 <span class="normal">519</span>
 <span class="normal">520</span>
 <span class="normal">521</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">common_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Perform common setup steps independent of analysis type.</span>
+<span class="w">    </span><span class="sd">"""Perform common setup steps independent of analysis type.</span>
 
 <span class="sd">    This method initializes the disciplines list, the main data</span>
 <span class="sd">    container, and JSON storage, and computes index structures and</span>
@@ -6593,7 +6598,7 @@ example aircraft and subcategories to the fleet.</p>
 <span class="sd">    ---------</span>
 <span class="sd">    This method should be called only if end year was modified, otherwise it is called in __init__.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Initialization order is load-bearing — do not reorder:</span>
     <span class="c1">#   1. _initialize_inputs()        — loads parameters.json + user JSON, then</span>
     <span class="c1">#                                    calls _format_input_vectors() to pad and</span>
@@ -6694,7 +6699,7 @@ compute() rebuilds the MDA chain itself.</p>
 <span class="normal">554</span>
 <span class="normal">555</span>
 <span class="normal">556</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">setup_mda</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Configure the process for a standalone MDA chain.</span>
+<span class="w">    </span><span class="sd">"""Configure the process for a standalone MDA chain.</span>
 
 <span class="sd">    This method initializes generic energy inputs and disciplines,</span>
 <span class="sd">    then builds a GEMSEO MDAChain with default convergence settings</span>
@@ -6704,7 +6709,7 @@ compute() rebuilds the MDA chain itself.</p>
 <span class="sd">    ---------</span>
 <span class="sd">    This method is called in __init__. A change of the year bounds needs no new call:</span>
 <span class="sd">    compute() rebuilds the MDA chain itself.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1">#  Initialize conventional disciplines.</span>
     <span class="c1"># Here and not in common_setup because one need to create scenario</span>
     <span class="c1"># and declare constraints as models from the same place. TODO; clarify why though.</span>
@@ -6717,13 +6722,13 @@ compute() rebuilds the MDA chain itself.</p>
     <span class="c1"># reports convergence while that coupling is still ~25% off in SAF-type</span>
     <span class="c1"># scenarios; max_mda_iter gives it room to reach the tighter tolerance.</span>
     <span class="c1"># Tuning these from a notebook is a minefield -- assign on the chain, not on</span>
-    <span class="c1"># its inner MDAs, and see &quot;Tuning an MDAChain&quot; in aeromaps/core/gemseo.py.</span>
+    <span class="c1"># its inner MDAs, and see "Tuning an MDAChain" in aeromaps/core/gemseo.py.</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">mda_chain</span> <span class="o">=</span> <span class="n">MDAChain</span><span class="p">(</span>
         <span class="n">disciplines</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">disciplines</span><span class="p">,</span>
         <span class="n">tolerance</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">,</span>
         <span class="n">max_mda_iter</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
         <span class="n">initialize_defaults</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">inner_mda_name</span><span class="o">=</span><span class="s2">&quot;MDAGaussSeidel&quot;</span><span class="p">,</span>
+        <span class="n">inner_mda_name</span><span class="o">=</span><span class="s2">"MDAGaussSeidel"</span><span class="p">,</span>
         <span class="n">log_convergence</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_configure_mda_chain</span><span class="p">()</span>
@@ -6760,11 +6765,11 @@ so that optimization scenarios can be defined and executed later.</p>
 <span class="normal">569</span>
 <span class="normal">570</span>
 <span class="normal">571</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">setup_optimisation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Configure the process for GEMSEO-based optimization.</span>
+<span class="w">    </span><span class="sd">"""Configure the process for GEMSEO-based optimization.</span>
 
 <span class="sd">    This method initializes the internal GEMSEO settings dictionary</span>
 <span class="sd">    so that optimization scenarios can be defined and executed later.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_gemseo_settings</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -6819,28 +6824,28 @@ and formulation.</p>
 <span class="normal">595</span>
 <span class="normal">596</span>
 <span class="normal">597</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_gemseo_scenario</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build a single-level GEMSEO MDO scenario.</span>
+<span class="w">    </span><span class="sd">"""Build a single-level GEMSEO MDO scenario.</span>
 
 <span class="sd">    This method initializes generic energy inputs and disciplines,</span>
 <span class="sd">    and then creates a GEMSEO scenario using the current</span>
 <span class="sd">    ``gemseo_settings`` for objective, design space, scenario type,</span>
 <span class="sd">    and formulation.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_disciplines</span><span class="p">()</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span> <span class="o">=</span> <span class="n">create_scenario</span><span class="p">(</span>
         <span class="n">disciplines</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">disciplines</span><span class="p">,</span>
-        <span class="n">objective_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gemseo_settings</span><span class="p">[</span><span class="s2">&quot;objective_name&quot;</span><span class="p">],</span>
-        <span class="n">design_space</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gemseo_settings</span><span class="p">[</span><span class="s2">&quot;design_space&quot;</span><span class="p">],</span>
-        <span class="n">scenario_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gemseo_settings</span><span class="p">[</span><span class="s2">&quot;scenario_type&quot;</span><span class="p">],</span>
-        <span class="n">formulation_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gemseo_settings</span><span class="p">[</span><span class="s2">&quot;formulation&quot;</span><span class="p">],</span>
+        <span class="n">objective_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gemseo_settings</span><span class="p">[</span><span class="s2">"objective_name"</span><span class="p">],</span>
+        <span class="n">design_space</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gemseo_settings</span><span class="p">[</span><span class="s2">"design_space"</span><span class="p">],</span>
+        <span class="n">scenario_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gemseo_settings</span><span class="p">[</span><span class="s2">"scenario_type"</span><span class="p">],</span>
+        <span class="n">formulation_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gemseo_settings</span><span class="p">[</span><span class="s2">"formulation"</span><span class="p">],</span>
         <span class="n">main_mda_settings</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;inner_mda_name&quot;</span><span class="p">:</span> <span class="s2">&quot;MDAGaussSeidel&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;max_mda_iter&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
-            <span class="s2">&quot;initialize_defaults&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-            <span class="s2">&quot;tolerance&quot;</span><span class="p">:</span> <span class="mf">1e-4</span><span class="p">,</span>
+            <span class="s2">"inner_mda_name"</span><span class="p">:</span> <span class="s2">"MDAGaussSeidel"</span><span class="p">,</span>
+            <span class="s2">"max_mda_iter"</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+            <span class="s2">"initialize_defaults"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">"tolerance"</span><span class="p">:</span> <span class="mf">1e-4</span><span class="p">,</span>
         <span class="p">},</span>
-        <span class="c1"># grammar_type=self.gemseo_settings[&quot;grammar_type&quot;],</span>
+        <span class="c1"># grammar_type=self.gemseo_settings["grammar_type"],</span>
         <span class="c1"># input_data=self.input_data,</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -6910,43 +6915,43 @@ defined, it is created using the current <code>gemseo_settings</code>.</p>
 <span class="normal">635</span>
 <span class="normal">636</span>
 <span class="normal">637</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_gemseo_bilevel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build a GEMSEO bilevel optimization formulation.</span>
+<span class="w">    </span><span class="sd">"""Build a GEMSEO bilevel optimization formulation.</span>
 
 <span class="sd">    This method wraps an inner GEMSEO scenario in an</span>
 <span class="sd">    ``MDOScenarioAdapter`` and creates an outer scenario that</span>
 <span class="sd">    optimizes over the adapter. If the inner scenario is not yet</span>
 <span class="sd">    defined, it is created using the current ``gemseo_settings``.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># if no scenario is created raise an error create_gemseo_scenario needs to be called first</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Inner scenario of the bilevel formulation was not fully defined. Creating it with the following settings:&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;Arguments used: disciplines=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">disciplines</span><span class="si">}</span><span class="s2">, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;objective_name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gemseo_settings</span><span class="p">[</span><span class="s1">&#39;objective_name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;design_space=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gemseo_settings</span><span class="p">[</span><span class="s1">&#39;design_space&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;scenario_type=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gemseo_settings</span><span class="p">[</span><span class="s1">&#39;scenario_type&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;formulation_name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gemseo_settings</span><span class="p">[</span><span class="s1">&#39;formulation&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"Inner scenario of the bilevel formulation was not fully defined. Creating it with the following settings:"</span>
+            <span class="sa">f</span><span class="s2">"Arguments used: disciplines=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">disciplines</span><span class="si">}</span><span class="s2">, "</span>
+            <span class="sa">f</span><span class="s2">"objective_name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gemseo_settings</span><span class="p">[</span><span class="s1">'objective_name'</span><span class="p">]</span><span class="si">}</span><span class="s2">, "</span>
+            <span class="sa">f</span><span class="s2">"design_space=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gemseo_settings</span><span class="p">[</span><span class="s1">'design_space'</span><span class="p">]</span><span class="si">}</span><span class="s2">, "</span>
+            <span class="sa">f</span><span class="s2">"scenario_type=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gemseo_settings</span><span class="p">[</span><span class="s1">'scenario_type'</span><span class="p">]</span><span class="si">}</span><span class="s2">, "</span>
+            <span class="sa">f</span><span class="s2">"formulation_name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gemseo_settings</span><span class="p">[</span><span class="s1">'formulation'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">create_gemseo_scenario</span><span class="p">()</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">set_algorithm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gemseo_settings</span><span class="p">[</span><span class="s2">&quot;algorithm_inner&quot;</span><span class="p">])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">set_algorithm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gemseo_settings</span><span class="p">[</span><span class="s2">"algorithm_inner"</span><span class="p">])</span>
 
     <span class="c1"># dv_names = self.scenario.formulation.design_variables.keys()</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">adapter</span> <span class="o">=</span> <span class="n">MDOScenarioAdapter</span><span class="p">(</span>
         <span class="c1"># TODO make generic --&gt; ?</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="p">,</span>
-        <span class="n">input_names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gemseo_settings</span><span class="p">[</span><span class="s2">&quot;doe_input_names&quot;</span><span class="p">],</span>
-        <span class="n">output_names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gemseo_settings</span><span class="p">[</span><span class="s2">&quot;doe_output_names&quot;</span><span class="p">],</span>
+        <span class="n">input_names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gemseo_settings</span><span class="p">[</span><span class="s2">"doe_input_names"</span><span class="p">],</span>
+        <span class="n">output_names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gemseo_settings</span><span class="p">[</span><span class="s2">"doe_output_names"</span><span class="p">],</span>
         <span class="n">reset_x0_before_opt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">set_x0_before_opt</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">scenario_adapted</span> <span class="o">=</span> <span class="n">create_scenario</span><span class="p">(</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">adapter</span><span class="p">,</span>
-        <span class="n">formulation_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gemseo_settings</span><span class="p">[</span><span class="s2">&quot;formulation&quot;</span><span class="p">],</span>
-        <span class="n">objective_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gemseo_settings</span><span class="p">[</span><span class="s2">&quot;objective_name_outer&quot;</span><span class="p">],</span>
-        <span class="n">design_space</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gemseo_settings</span><span class="p">[</span><span class="s2">&quot;design_space_outer&quot;</span><span class="p">],</span>
-        <span class="n">scenario_type</span><span class="o">=</span><span class="s2">&quot;MDO&quot;</span><span class="p">,</span>
+        <span class="n">formulation_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gemseo_settings</span><span class="p">[</span><span class="s2">"formulation"</span><span class="p">],</span>
+        <span class="n">objective_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gemseo_settings</span><span class="p">[</span><span class="s2">"objective_name_outer"</span><span class="p">],</span>
+        <span class="n">design_space</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gemseo_settings</span><span class="p">[</span><span class="s2">"design_space_outer"</span><span class="p">],</span>
+        <span class="n">scenario_type</span><span class="o">=</span><span class="s2">"MDO"</span><span class="p">,</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -7016,34 +7021,34 @@ updates the internal data structures with model outputs.</p>
 <span class="normal">676</span>
 <span class="normal">677</span>
 <span class="normal">678</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run the configured analysis or optimization.</span>
+<span class="w">    </span><span class="sd">"""Run the configured analysis or optimization.</span>
 
 <span class="sd">    This method prepares input data, then executes either a bilevel</span>
 <span class="sd">    optimization, a single-level GEMSEO scenario, or an MDA chain</span>
 <span class="sd">    depending on the current configuration. After execution, it</span>
 <span class="sd">    updates the internal data structures with model outputs.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">input_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pre_compute</span><span class="p">()</span>
     <span class="n">ran_mda</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;scenario&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;scenario_adapted&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario_adapted</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gemseo_settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;algorithm_outer&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"scenario"</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"scenario_adapted"</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario_adapted</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gemseo_settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"algorithm_outer"</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;Cannot run bi-level MDO: &#39;algorithm_outer&#39; is not set in gemseo_settings.&quot;</span>
+                    <span class="s2">"Cannot run bi-level MDO: 'algorithm_outer' is not set in gemseo_settings."</span>
                 <span class="p">)</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Running bi-level MDO&quot;</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Running bi-level MDO"</span><span class="p">)</span>
             <span class="c1"># self.scenario.default_inputs.update(self.scenario.options)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">scenario_adapted</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gemseo_settings</span><span class="p">[</span><span class="s2">&quot;algorithm_outer&quot;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scenario_adapted</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gemseo_settings</span><span class="p">[</span><span class="s2">"algorithm_outer"</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gemseo_settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;algorithm&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot run MDO: &#39;algorithm&#39; is not set in gemseo_settings.&quot;</span><span class="p">)</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Running MDO&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gemseo_settings</span><span class="p">[</span><span class="s2">&quot;algorithm&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gemseo_settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"algorithm"</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Cannot run MDO: 'algorithm' is not set in gemseo_settings."</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Running MDO"</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gemseo_settings</span><span class="p">[</span><span class="s2">"algorithm"</span><span class="p">])</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;mda_chain&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">mda_chain</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;MDA chain not created. Please call setup_mda() first.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"mda_chain"</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">mda_chain</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"MDA chain not created. Please call setup_mda() first."</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Running MDA&quot;</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Running MDA"</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mda_chain</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">input_data</span><span class="o">=</span><span class="n">input_data</span><span class="p">)</span>
             <span class="n">ran_mda</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -7129,7 +7134,7 @@ instances for data information, inputs, and outputs.</p>
 <span class="normal">700</span>
 <span class="normal">701</span>
 <span class="normal">702</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_dataframes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return all main DataFrames as a dictionary, generated on demand.</span>
+<span class="w">    </span><span class="sd">"""Return all main DataFrames as a dictionary, generated on demand.</span>
 
 <span class="sd">    This method generates and returns a dictionary of key DataFrames</span>
 <span class="sd">    representing inputs, outputs, and climate-related quantities in a</span>
@@ -7140,15 +7145,15 @@ instances for data information, inputs, and outputs.</p>
 <span class="sd">    dataframes</span>
 <span class="sd">        Dictionary mapping DataFrame names to pandas DataFrame</span>
 <span class="sd">        instances for data information, inputs, and outputs.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="p">{</span>
-        <span class="s2">&quot;data_information&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_data_information_df</span><span class="p">(),</span>
-        <span class="s2">&quot;vector_inputs&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_vector_inputs_df</span><span class="p">(),</span>
-        <span class="s2">&quot;float_inputs&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_float_inputs_df</span><span class="p">(),</span>
-        <span class="s2">&quot;str_inputs&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_str_inputs_df</span><span class="p">(),</span>
-        <span class="s2">&quot;vector_outputs&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_vector_outputs_df</span><span class="p">(),</span>
-        <span class="s2">&quot;float_outputs&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_float_outputs_df</span><span class="p">(),</span>
-        <span class="s2">&quot;climate_outputs&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_climate_outputs_df</span><span class="p">(),</span>
+        <span class="s2">"data_information"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_data_information_df</span><span class="p">(),</span>
+        <span class="s2">"vector_inputs"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_vector_inputs_df</span><span class="p">(),</span>
+        <span class="s2">"float_inputs"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_float_inputs_df</span><span class="p">(),</span>
+        <span class="s2">"str_inputs"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_str_inputs_df</span><span class="p">(),</span>
+        <span class="s2">"vector_outputs"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_vector_outputs_df</span><span class="p">(),</span>
+        <span class="s2">"float_outputs"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_float_outputs_df</span><span class="p">(),</span>
+        <span class="s2">"climate_outputs"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_climate_outputs_df</span><span class="p">(),</span>
         <span class="c1"># Add more if needed</span>
     <span class="p">}</span>
 </code></pre></div></td></tr></table></div>
@@ -7208,14 +7213,14 @@ instances for data information, inputs, and outputs.</p>
 <span class="normal">711</span>
 <span class="normal">712</span>
 <span class="normal">713</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_json</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return the model outputs as a JSON-serializable dictionary.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    json_data</span>
 <span class="sd">        Dictionary containing JSON-compatible inputs and outputs.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_to_json</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -7309,7 +7314,7 @@ configuration is used.</p>
 <span class="normal">746</span>
 <span class="normal">747</span>
 <span class="normal">748</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">write_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Write model inputs and outputs to a JSON file.</span>
+<span class="w">    </span><span class="sd">"""Write model inputs and outputs to a JSON file.</span>
 
 <span class="sd">    This method builds the JSON-compatible data and writes it to</span>
 <span class="sd">    disk, using either the provided file name or the path defined in</span>
@@ -7320,28 +7325,28 @@ configuration is used.</p>
 <span class="sd">    file_name</span>
 <span class="sd">        Path to the output JSON file. If None, the path from the</span>
 <span class="sd">        configuration is used.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">file_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">file_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_config_path</span><span class="p">(</span>
-            <span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;outputs&quot;</span><span class="p">,</span> <span class="s2">&quot;json_outputs_file&quot;</span><span class="p">,</span> <span class="n">default_filename</span><span class="o">=</span><span class="s2">&quot;outputs.json&quot;</span>
+            <span class="s2">"data"</span><span class="p">,</span> <span class="s2">"outputs"</span><span class="p">,</span> <span class="s2">"json_outputs_file"</span><span class="p">,</span> <span class="n">default_filename</span><span class="o">=</span><span class="s2">"outputs.json"</span>
         <span class="p">)</span>
     <span class="k">if</span> <span class="n">file_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot resolve output JSON file path. Check your configuration.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Cannot resolve output JSON file path. Check your configuration."</span><span class="p">)</span>
 
     <span class="c1"># Ensure the directory exists</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">file_name</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot create output directory for &#39;</span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s2">&#39;: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+        <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Cannot create output directory for '</span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s2">': </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
 
     <span class="c1"># Retrieve the data from the model</span>
     <span class="n">json_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_json</span><span class="p">()</span>
 
     <span class="k">try</span><span class="p">:</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">dump</span><span class="p">(</span><span class="n">json_data</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to write JSON output to &#39;</span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s2">&#39;: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+        <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Failed to write JSON output to '</span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s2">': </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -7429,7 +7434,7 @@ configuration is used.</p>
 <span class="normal">777</span>
 <span class="normal">778</span>
 <span class="normal">779</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">write_excel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Write main result tables to an Excel workbook.</span>
+<span class="w">    </span><span class="sd">"""Write main result tables to an Excel workbook.</span>
 
 <span class="sd">    This method exports data information, inputs, and outputs into</span>
 <span class="sd">    separate sheets of a single Excel file.</span>
@@ -7439,25 +7444,25 @@ configuration is used.</p>
 <span class="sd">    file_name</span>
 <span class="sd">        Path to the output Excel file. If None, the path from the</span>
 <span class="sd">        configuration is used.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">file_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">file_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_config_path</span><span class="p">(</span>
-            <span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;outputs&quot;</span><span class="p">,</span> <span class="s2">&quot;excel_outputs_file&quot;</span><span class="p">,</span> <span class="n">default_filename</span><span class="o">=</span><span class="s2">&quot;data.xlsx&quot;</span>
+            <span class="s2">"data"</span><span class="p">,</span> <span class="s2">"outputs"</span><span class="p">,</span> <span class="s2">"excel_outputs_file"</span><span class="p">,</span> <span class="n">default_filename</span><span class="o">=</span><span class="s2">"data.xlsx"</span>
         <span class="p">)</span>
     <span class="k">if</span> <span class="n">file_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot resolve output Excel file path. Check your configuration.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Cannot resolve output Excel file path. Check your configuration."</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">with</span> <span class="n">pd</span><span class="o">.</span><span class="n">ExcelWriter</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span> <span class="k">as</span> <span class="n">writer</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_get_data_information_df</span><span class="p">()</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="s2">&quot;Data Information&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_get_vector_inputs_df</span><span class="p">()</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="s2">&quot;Vector Inputs&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_get_float_inputs_df</span><span class="p">()</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="s2">&quot;Float Inputs&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_get_str_inputs_df</span><span class="p">()</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="s2">&quot;String Inputs&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_get_vector_outputs_df</span><span class="p">()</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="s2">&quot;Vector Outputs&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_get_float_outputs_df</span><span class="p">()</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="s2">&quot;Float Outputs&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_get_climate_outputs_df</span><span class="p">()</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="s2">&quot;Climate Outputs&quot;</span><span class="p">)</span>
-            <span class="c1"># self.lca_outputs_xarray.to_excel(writer, sheet_name=&quot;LCA Outputs&quot;)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_data_information_df</span><span class="p">()</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="s2">"Data Information"</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_vector_inputs_df</span><span class="p">()</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="s2">"Vector Inputs"</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_float_inputs_df</span><span class="p">()</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="s2">"Float Inputs"</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_str_inputs_df</span><span class="p">()</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="s2">"String Inputs"</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_vector_outputs_df</span><span class="p">()</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="s2">"Vector Outputs"</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_float_outputs_df</span><span class="p">()</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="s2">"Float Outputs"</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_climate_outputs_df</span><span class="p">()</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="s2">"Climate Outputs"</span><span class="p">)</span>
+            <span class="c1"># self.lca_outputs_xarray.to_excel(writer, sheet_name="LCA Outputs")</span>
     <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to write Excel output to &#39;</span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s2">&#39;: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+        <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Failed to write Excel output to '</span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s2">': </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -7491,11 +7496,11 @@ coupling structure between the configured disciplines.</p>
 <span class="normal">785</span>
 <span class="normal">786</span>
 <span class="normal">787</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generate_n2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate an N2 diagram for the current disciplines.</span>
+<span class="w">    </span><span class="sd">"""Generate an N2 diagram for the current disciplines.</span>
 
 <span class="sd">    This method calls GEMSEO to create an N2 plot describing the</span>
 <span class="sd">    coupling structure between the configured disciplines.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">generate_n2_plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">disciplines</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -7511,7 +7516,12 @@ coupling structure between the configured disciplines.</p>
 
 
 <a href="#aeromaps.core.process.AeroMAPSProcess.describe_models" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">describe_models</span><span class="p">(</span><span class="n">include_agnostic</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">display</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">describe_models</span><span class="p">(</span>
+    <span class="n">include_agnostic</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">scope</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">display</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -7851,10 +7861,10 @@ Combines with <code>scope</code>.</p>
 <span class="normal">1012</span>
 <span class="normal">1013</span>
 <span class="normal">1014</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">describe_models</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_agnostic</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">display</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Summarise every discipline wired into this process.</span>
+<span class="w">    </span><span class="sd">"""Summarise every discipline wired into this process.</span>
 
 <span class="sd">    Surfaces, for each discipline, its **domain** (air traffic, fleet, energy,</span>
-<span class="sd">    costs, climate, … — derived from the model class&#39;s module path under</span>
+<span class="sd">    costs, climate, … — derived from the model class's module path under</span>
 <span class="sd">    ``aeromaps.models``, so new models classify automatically), its</span>
 <span class="sd">    :attr:`~aeromaps.models.base.AeroMAPSModel.MARKET_SCOPE`</span>
 <span class="sd">    (per-market / cross-market / aggregator / market-agnostic), its</span>
@@ -7878,7 +7888,7 @@ Combines with <code>scope</code>.</p>
 <span class="sd">        the table to that scope only.</span>
 <span class="sd">    domain : str or None</span>
 <span class="sd">        If set (one of the domains listed in the domain summary, e.g.</span>
-<span class="sd">        ``&quot;impacts/costs&quot;``), restrict the table to that domain only.</span>
+<span class="sd">        ``"impacts/costs"``), restrict the table to that domain only.</span>
 <span class="sd">        Combines with ``scope``.</span>
 <span class="sd">    display : bool</span>
 <span class="sd">        If True, print the summary; the string is returned in either case.</span>
@@ -7887,24 +7897,24 @@ Combines with <code>scope</code>.</p>
 <span class="sd">    -------</span>
 <span class="sd">    str</span>
 <span class="sd">        The formatted multi-line summary.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">aeromaps.models.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">MARKET_SCOPES</span>
 
-    <span class="n">_ORDER</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;per_market&quot;</span><span class="p">,</span> <span class="s2">&quot;cross_market&quot;</span><span class="p">,</span> <span class="s2">&quot;aggregator&quot;</span><span class="p">,</span> <span class="s2">&quot;market_agnostic&quot;</span><span class="p">]</span>
-    <span class="n">disciplines</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;disciplines&quot;</span><span class="p">,</span> <span class="p">[])</span> <span class="ow">or</span> <span class="p">[])</span>
+    <span class="n">_ORDER</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"per_market"</span><span class="p">,</span> <span class="s2">"cross_market"</span><span class="p">,</span> <span class="s2">"aggregator"</span><span class="p">,</span> <span class="s2">"market_agnostic"</span><span class="p">]</span>
+    <span class="n">disciplines</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"disciplines"</span><span class="p">,</span> <span class="p">[])</span> <span class="ow">or</span> <span class="p">[])</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_domain</span><span class="p">(</span><span class="n">model</span><span class="p">):</span>
-        <span class="c1"># Domain = the model&#39;s home (sub)package under aeromaps.models, e.g.</span>
-        <span class="c1"># &quot;impacts/generic_energy_model&quot; or &quot;air_transport/air_traffic&quot;.</span>
-        <span class="c1"># Derived from the class&#39;s module path — no per-model annotation, so</span>
+        <span class="c1"># Domain = the model's home (sub)package under aeromaps.models, e.g.</span>
+        <span class="c1"># "impacts/generic_energy_model" or "air_transport/air_traffic".</span>
+        <span class="c1"># Derived from the class's module path — no per-model annotation, so</span>
         <span class="c1"># new models classify automatically. The trailing module file is</span>
         <span class="c1"># dropped to keep package-level granularity (root-level modules keep</span>
         <span class="c1"># their own name).</span>
-        <span class="n">parts</span> <span class="o">=</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="vm">__module__</span> <span class="ow">or</span> <span class="s2">&quot;?&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">parts</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="p">[</span><span class="s2">&quot;aeromaps&quot;</span><span class="p">,</span> <span class="s2">&quot;models&quot;</span><span class="p">]:</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="vm">__module__</span> <span class="ow">or</span> <span class="s2">"?"</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">parts</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="p">[</span><span class="s2">"aeromaps"</span><span class="p">,</span> <span class="s2">"models"</span><span class="p">]:</span>
             <span class="n">parts</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>
         <span class="n">pkg</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">or</span> <span class="n">parts</span>
-        <span class="k">return</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pkg</span><span class="p">[:</span><span class="mi">2</span><span class="p">])</span> <span class="k">if</span> <span class="n">pkg</span> <span class="k">else</span> <span class="s2">&quot;?&quot;</span>
+        <span class="k">return</span> <span class="s2">"/"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pkg</span><span class="p">[:</span><span class="mi">2</span><span class="p">])</span> <span class="k">if</span> <span class="n">pkg</span> <span class="k">else</span> <span class="s2">"?"</span>
 
     <span class="c1"># Which disciplines sit inside the MDA feedback loop (strongly coupled) — they</span>
     <span class="c1"># are re-executed on every Gauss-Seidel iteration and drive convergence cost;</span>
@@ -7923,140 +7933,140 @@ Combines with <code>scope</code>.</p>
     <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">counts</span> <span class="o">=</span> <span class="p">{</span><span class="n">s</span><span class="p">:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">_ORDER</span><span class="p">}</span>
     <span class="k">for</span> <span class="n">discipline</span> <span class="ow">in</span> <span class="n">disciplines</span><span class="p">:</span>
-        <span class="n">model</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">discipline</span><span class="p">,</span> <span class="s2">&quot;model&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">discipline</span><span class="p">,</span> <span class="s2">"model"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">continue</span>
-        <span class="n">model_scope</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s2">&quot;MARKET_SCOPE&quot;</span><span class="p">,</span> <span class="s2">&quot;market_agnostic&quot;</span><span class="p">)</span>
+        <span class="n">model_scope</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s2">"MARKET_SCOPE"</span><span class="p">,</span> <span class="s2">"market_agnostic"</span><span class="p">)</span>
         <span class="n">counts</span><span class="p">[</span><span class="n">model_scope</span><span class="p">]</span> <span class="o">=</span> <span class="n">counts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">model_scope</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
 
         <span class="c1"># Market binding: the market_id for per-market disciplines, the market</span>
-        <span class="c1"># count for the spanning ones, &quot;-&quot; when the discipline ignores markets.</span>
-        <span class="k">if</span> <span class="n">model_scope</span> <span class="o">==</span> <span class="s2">&quot;per_market&quot;</span><span class="p">:</span>
-            <span class="n">market</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s2">&quot;market_id&quot;</span><span class="p">,</span> <span class="s2">&quot;?&quot;</span><span class="p">))</span>
-        <span class="k">elif</span> <span class="n">model_scope</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;cross_market&quot;</span><span class="p">,</span> <span class="s2">&quot;aggregator&quot;</span><span class="p">):</span>
-            <span class="n">ids</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s2">&quot;passenger_market_ids&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span>
-                <span class="n">model</span><span class="p">,</span> <span class="s2">&quot;freight_market_ids&quot;</span><span class="p">,</span> <span class="kc">None</span>
+        <span class="c1"># count for the spanning ones, "-" when the discipline ignores markets.</span>
+        <span class="k">if</span> <span class="n">model_scope</span> <span class="o">==</span> <span class="s2">"per_market"</span><span class="p">:</span>
+            <span class="n">market</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s2">"market_id"</span><span class="p">,</span> <span class="s2">"?"</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">model_scope</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"cross_market"</span><span class="p">,</span> <span class="s2">"aggregator"</span><span class="p">):</span>
+            <span class="n">ids</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s2">"passenger_market_ids"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span>
+                <span class="n">model</span><span class="p">,</span> <span class="s2">"freight_market_ids"</span><span class="p">,</span> <span class="kc">None</span>
             <span class="p">)</span>
-            <span class="n">market</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(all: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ids</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span> <span class="k">if</span> <span class="n">ids</span> <span class="k">else</span> <span class="s2">&quot;(all)&quot;</span>
+            <span class="n">market</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"(all: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ids</span><span class="p">)</span><span class="si">}</span><span class="s2">)"</span> <span class="k">if</span> <span class="n">ids</span> <span class="k">else</span> <span class="s2">"(all)"</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">market</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span>
+            <span class="n">market</span> <span class="o">=</span> <span class="s2">"-"</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">n_in</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">discipline</span><span class="o">.</span><span class="n">input_grammar</span><span class="o">.</span><span class="n">names</span><span class="p">))</span>
             <span class="n">n_out</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">discipline</span><span class="o">.</span><span class="n">output_grammar</span><span class="o">.</span><span class="n">names</span><span class="p">))</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="n">n_in</span> <span class="o">=</span> <span class="n">n_out</span> <span class="o">=</span> <span class="s2">&quot;?&quot;</span>
+            <span class="n">n_in</span> <span class="o">=</span> <span class="n">n_out</span> <span class="o">=</span> <span class="s2">"?"</span>
 
         <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
             <span class="p">{</span>
-                <span class="s2">&quot;domain&quot;</span><span class="p">:</span> <span class="n">_domain</span><span class="p">(</span><span class="n">model</span><span class="p">),</span>
-                <span class="s2">&quot;scope&quot;</span><span class="p">:</span> <span class="n">model_scope</span><span class="p">,</span>
-                <span class="s2">&quot;approach&quot;</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s2">&quot;MODEL_APPROACH&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;—&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;coupling&quot;</span><span class="p">:</span> <span class="p">(</span>
-                    <span class="p">(</span><span class="s2">&quot;loop&quot;</span> <span class="k">if</span> <span class="nb">id</span><span class="p">(</span><span class="n">discipline</span><span class="p">)</span> <span class="ow">in</span> <span class="n">strong_ids</span> <span class="k">else</span> <span class="s2">&quot;feed-fwd&quot;</span><span class="p">)</span>
+                <span class="s2">"domain"</span><span class="p">:</span> <span class="n">_domain</span><span class="p">(</span><span class="n">model</span><span class="p">),</span>
+                <span class="s2">"scope"</span><span class="p">:</span> <span class="n">model_scope</span><span class="p">,</span>
+                <span class="s2">"approach"</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s2">"MODEL_APPROACH"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">"—"</span><span class="p">,</span>
+                <span class="s2">"coupling"</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="p">(</span><span class="s2">"loop"</span> <span class="k">if</span> <span class="nb">id</span><span class="p">(</span><span class="n">discipline</span><span class="p">)</span> <span class="ow">in</span> <span class="n">strong_ids</span> <span class="k">else</span> <span class="s2">"feed-fwd"</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">coupling_available</span>
-                    <span class="k">else</span> <span class="s2">&quot;?&quot;</span>
+                    <span class="k">else</span> <span class="s2">"?"</span>
                 <span class="p">),</span>
-                <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="nb">type</span><span class="p">(</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
-                <span class="s2">&quot;instance&quot;</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">discipline</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;?&quot;</span><span class="p">),</span>
-                <span class="s2">&quot;region&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_region_of</span><span class="p">(</span><span class="n">discipline</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;market&quot;</span><span class="p">:</span> <span class="n">market</span><span class="p">,</span>
-                <span class="s2">&quot;n_in&quot;</span><span class="p">:</span> <span class="n">n_in</span><span class="p">,</span>
-                <span class="s2">&quot;n_out&quot;</span><span class="p">:</span> <span class="n">n_out</span><span class="p">,</span>
+                <span class="s2">"model"</span><span class="p">:</span> <span class="nb">type</span><span class="p">(</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+                <span class="s2">"instance"</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">discipline</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">,</span> <span class="s2">"?"</span><span class="p">),</span>
+                <span class="s2">"region"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_region_of</span><span class="p">(</span><span class="n">discipline</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">""</span><span class="p">,</span>
+                <span class="s2">"market"</span><span class="p">:</span> <span class="n">market</span><span class="p">,</span>
+                <span class="s2">"n_in"</span><span class="p">:</span> <span class="n">n_in</span><span class="p">,</span>
+                <span class="s2">"n_out"</span><span class="p">:</span> <span class="n">n_out</span><span class="p">,</span>
             <span class="p">}</span>
         <span class="p">)</span>
 
     <span class="c1"># Row filtering for the table (summaries always count everything).</span>
     <span class="n">shown</span> <span class="o">=</span> <span class="n">rows</span>
     <span class="k">if</span> <span class="n">domain</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">available_domains</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">({</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;domain&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">})</span>
+        <span class="n">available_domains</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">({</span><span class="n">r</span><span class="p">[</span><span class="s2">"domain"</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">})</span>
         <span class="k">if</span> <span class="n">domain</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">available_domains</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;domain must be one of </span><span class="si">{</span><span class="n">available_domains</span><span class="si">}</span><span class="s2">; got </span><span class="si">{</span><span class="n">domain</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">shown</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">shown</span> <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;domain&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">domain</span><span class="p">]</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"domain must be one of </span><span class="si">{</span><span class="n">available_domains</span><span class="si">}</span><span class="s2">; got </span><span class="si">{</span><span class="n">domain</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">shown</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">shown</span> <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="s2">"domain"</span><span class="p">]</span> <span class="o">==</span> <span class="n">domain</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">scope</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">scope</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">MARKET_SCOPES</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;scope must be one of </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="n">MARKET_SCOPES</span><span class="p">)</span><span class="si">}</span><span class="s2">; got </span><span class="si">{</span><span class="n">scope</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">shown</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">shown</span> <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;scope&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">scope</span><span class="p">]</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"scope must be one of </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="n">MARKET_SCOPES</span><span class="p">)</span><span class="si">}</span><span class="s2">; got </span><span class="si">{</span><span class="n">scope</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">shown</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">shown</span> <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="s2">"scope"</span><span class="p">]</span> <span class="o">==</span> <span class="n">scope</span><span class="p">]</span>
     <span class="k">elif</span> <span class="ow">not</span> <span class="n">include_agnostic</span> <span class="ow">and</span> <span class="n">domain</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">shown</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">shown</span> <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;scope&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;market_agnostic&quot;</span><span class="p">]</span>
+        <span class="n">shown</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">shown</span> <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="s2">"scope"</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">"market_agnostic"</span><span class="p">]</span>
 
     <span class="n">rank</span> <span class="o">=</span> <span class="p">{</span><span class="n">s</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">_ORDER</span><span class="p">)}</span>
     <span class="n">shown</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span>
-        <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;domain&quot;</span><span class="p">],</span> <span class="n">rank</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;scope&quot;</span><span class="p">],</span> <span class="mi">99</span><span class="p">),</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;market&quot;</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;instance&quot;</span><span class="p">])</span>
+        <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">"domain"</span><span class="p">],</span> <span class="n">rank</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">"scope"</span><span class="p">],</span> <span class="mi">99</span><span class="p">),</span> <span class="n">r</span><span class="p">[</span><span class="s2">"market"</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="s2">"instance"</span><span class="p">])</span>
     <span class="p">)</span>
 
-    <span class="n">has_region</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;region&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">)</span>
-    <span class="n">n_coupled</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rows</span> <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;coupling&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;loop&quot;</span><span class="p">)</span>
+    <span class="n">has_region</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">"region"</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">)</span>
+    <span class="n">n_coupled</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rows</span> <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="s2">"coupling"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"loop"</span><span class="p">)</span>
 
     <span class="n">domain_counts</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
-        <span class="n">domain_counts</span><span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;domain&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">domain_counts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;domain&quot;</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">domain_counts</span><span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="s2">"domain"</span><span class="p">]]</span> <span class="o">=</span> <span class="n">domain_counts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">"domain"</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
 
-    <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span><span class="si">}</span><span class="s2"> disciplines&quot;</span><span class="p">]</span>
-    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
-    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;Domain summary:&quot;</span><span class="p">)</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span><span class="si">}</span><span class="s2"> disciplines"</span><span class="p">]</span>
+    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span>
+    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"Domain summary:"</span><span class="p">)</span>
     <span class="n">dom_width</span> <span class="o">=</span> <span class="nb">max</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">domain_counts</span><span class="p">),</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">domain_counts</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="n">domain_counts</span><span class="p">[</span><span class="n">d</span><span class="p">],</span> <span class="n">d</span><span class="p">)):</span>
-        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">d</span><span class="si">:</span><span class="s2">&lt;</span><span class="si">{</span><span class="n">dom_width</span><span class="si">}}{</span><span class="n">domain_counts</span><span class="p">[</span><span class="n">d</span><span class="p">]</span><span class="si">:</span><span class="s2">&gt;5</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
-    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;Market scope summary:&quot;</span><span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  </span><span class="si">{</span><span class="n">d</span><span class="si">:</span><span class="s2">&lt;</span><span class="si">{</span><span class="n">dom_width</span><span class="si">}}{</span><span class="n">domain_counts</span><span class="p">[</span><span class="n">d</span><span class="p">]</span><span class="si">:</span><span class="s2">&gt;5</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span>
+    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"Market scope summary:"</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">_ORDER</span><span class="p">:</span>
-        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">s</span><span class="si">:</span><span class="s2">&lt;16</span><span class="si">}{</span><span class="n">counts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="si">:</span><span class="s2">&gt;4</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="s1">&#39;-&#39;</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">20</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="s1">&#39;total&#39;</span><span class="si">:</span><span class="s2">&lt;16</span><span class="si">}{</span><span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span><span class="si">:</span><span class="s2">&gt;4</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  </span><span class="si">{</span><span class="n">s</span><span class="si">:</span><span class="s2">&lt;16</span><span class="si">}{</span><span class="n">counts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="si">:</span><span class="s2">&gt;4</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  </span><span class="si">{</span><span class="s1">'-'</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">20</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  </span><span class="si">{</span><span class="s1">'total'</span><span class="si">:</span><span class="s2">&lt;16</span><span class="si">}{</span><span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span><span class="si">:</span><span class="s2">&gt;4</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">coupling_available</span><span class="p">:</span>
-        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span>
         <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;  in MDA feedback loop: </span><span class="si">{</span><span class="n">n_coupled</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span><span class="si">}</span><span class="s2"> disciplines &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;(re-run every iteration); </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">n_coupled</span><span class="si">}</span><span class="s2"> feed-forward&quot;</span>
+            <span class="sa">f</span><span class="s2">"  in MDA feedback loop: </span><span class="si">{</span><span class="n">n_coupled</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span><span class="si">}</span><span class="s2"> disciplines "</span>
+            <span class="sa">f</span><span class="s2">"(re-run every iteration); </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">n_coupled</span><span class="si">}</span><span class="s2"> feed-forward"</span>
         <span class="p">)</span>
-    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span>
 
     <span class="n">hidden</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">shown</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">shown</span><span class="p">:</span>
         <span class="c1"># (key, header, max_width) — column widths are fitted to the data up to</span>
         <span class="c1"># max_width; longer cells are truncated with an ellipsis to keep alignment.</span>
         <span class="n">cols</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="p">(</span><span class="s2">&quot;domain&quot;</span><span class="p">,</span> <span class="s2">&quot;DOMAIN&quot;</span><span class="p">,</span> <span class="mi">30</span><span class="p">),</span>
-            <span class="p">(</span><span class="s2">&quot;scope&quot;</span><span class="p">,</span> <span class="s2">&quot;SCOPE&quot;</span><span class="p">,</span> <span class="mi">15</span><span class="p">),</span>
-            <span class="p">(</span><span class="s2">&quot;approach&quot;</span><span class="p">,</span> <span class="s2">&quot;APPROACH&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">"domain"</span><span class="p">,</span> <span class="s2">"DOMAIN"</span><span class="p">,</span> <span class="mi">30</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">"scope"</span><span class="p">,</span> <span class="s2">"SCOPE"</span><span class="p">,</span> <span class="mi">15</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">"approach"</span><span class="p">,</span> <span class="s2">"APPROACH"</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
         <span class="p">]</span>
         <span class="k">if</span> <span class="n">coupling_available</span><span class="p">:</span>
-            <span class="n">cols</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;coupling&quot;</span><span class="p">,</span> <span class="s2">&quot;COUPLING&quot;</span><span class="p">,</span> <span class="mi">9</span><span class="p">))</span>
-        <span class="n">cols</span> <span class="o">+=</span> <span class="p">[(</span><span class="s2">&quot;model&quot;</span><span class="p">,</span> <span class="s2">&quot;MODEL&quot;</span><span class="p">,</span> <span class="mi">40</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;instance&quot;</span><span class="p">,</span> <span class="s2">&quot;INSTANCE&quot;</span><span class="p">,</span> <span class="mi">30</span><span class="p">)]</span>
+            <span class="n">cols</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">"coupling"</span><span class="p">,</span> <span class="s2">"COUPLING"</span><span class="p">,</span> <span class="mi">9</span><span class="p">))</span>
+        <span class="n">cols</span> <span class="o">+=</span> <span class="p">[(</span><span class="s2">"model"</span><span class="p">,</span> <span class="s2">"MODEL"</span><span class="p">,</span> <span class="mi">40</span><span class="p">),</span> <span class="p">(</span><span class="s2">"instance"</span><span class="p">,</span> <span class="s2">"INSTANCE"</span><span class="p">,</span> <span class="mi">30</span><span class="p">)]</span>
         <span class="k">if</span> <span class="n">has_region</span><span class="p">:</span>
-            <span class="n">cols</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;region&quot;</span><span class="p">,</span> <span class="s2">&quot;REGION&quot;</span><span class="p">,</span> <span class="mi">12</span><span class="p">))</span>
-        <span class="n">cols</span> <span class="o">+=</span> <span class="p">[(</span><span class="s2">&quot;market&quot;</span><span class="p">,</span> <span class="s2">&quot;MARKET&quot;</span><span class="p">,</span> <span class="mi">14</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;n_in&quot;</span><span class="p">,</span> <span class="s2">&quot;#IN&quot;</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;n_out&quot;</span><span class="p">,</span> <span class="s2">&quot;#OUT&quot;</span><span class="p">,</span> <span class="mi">4</span><span class="p">)]</span>
+            <span class="n">cols</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">"region"</span><span class="p">,</span> <span class="s2">"REGION"</span><span class="p">,</span> <span class="mi">12</span><span class="p">))</span>
+        <span class="n">cols</span> <span class="o">+=</span> <span class="p">[(</span><span class="s2">"market"</span><span class="p">,</span> <span class="s2">"MARKET"</span><span class="p">,</span> <span class="mi">14</span><span class="p">),</span> <span class="p">(</span><span class="s2">"n_in"</span><span class="p">,</span> <span class="s2">"#IN"</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="s2">"n_out"</span><span class="p">,</span> <span class="s2">"#OUT"</span><span class="p">,</span> <span class="mi">4</span><span class="p">)]</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">_cell</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">width</span><span class="p">):</span>
             <span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">width</span><span class="p">:</span>
-                <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="p">[:</span> <span class="n">width</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;…&quot;</span>
-            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">text</span><span class="si">:</span><span class="s2">&lt;</span><span class="si">{</span><span class="n">width</span><span class="si">}}</span><span class="s2">  &quot;</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="p">[:</span> <span class="n">width</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s2">"…"</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">text</span><span class="si">:</span><span class="s2">&lt;</span><span class="si">{</span><span class="n">width</span><span class="si">}}</span><span class="s2">  "</span>
 
         <span class="n">widths</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">key</span><span class="p">:</span> <span class="nb">min</span><span class="p">(</span><span class="n">maxw</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">header</span><span class="p">),</span> <span class="o">*</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">shown</span><span class="p">)))</span>
             <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">maxw</span> <span class="ow">in</span> <span class="n">cols</span>
         <span class="p">}</span>
-        <span class="n">header</span> <span class="o">=</span> <span class="s2">&quot;  &quot;</span> <span class="o">+</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_cell</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">widths</span><span class="p">[</span><span class="n">key</span><span class="p">])</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">cols</span><span class="p">)</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="s2">"  "</span> <span class="o">+</span> <span class="s2">""</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_cell</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">widths</span><span class="p">[</span><span class="n">key</span><span class="p">])</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">cols</span><span class="p">)</span>
         <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
-        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;  &quot;</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">header</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"  "</span> <span class="o">+</span> <span class="s2">"-"</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">header</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="p">))</span>
         <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">shown</span><span class="p">:</span>
-            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;  &quot;</span> <span class="o">+</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_cell</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">widths</span><span class="p">[</span><span class="n">key</span><span class="p">])</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">cols</span><span class="p">))</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"  "</span> <span class="o">+</span> <span class="s2">""</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_cell</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">widths</span><span class="p">[</span><span class="n">key</span><span class="p">])</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">cols</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">coupling_available</span><span class="p">:</span>
-            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span>
             <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="s2">&quot;  COUPLING: &#39;loop&#39; = inside the MDA feedback cycle (cost scales with &quot;</span>
-                <span class="s2">&quot;iterations); &#39;feed-fwd&#39; = executed once.&quot;</span>
+                <span class="s2">"  COUPLING: 'loop' = inside the MDA feedback cycle (cost scales with "</span>
+                <span class="s2">"iterations); 'feed-fwd' = executed once."</span>
             <span class="p">)</span>
     <span class="k">if</span> <span class="n">hidden</span> <span class="ow">and</span> <span class="n">scope</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">domain</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">include_agnostic</span><span class="p">:</span>
-        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span>
         <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;  (</span><span class="si">{</span><span class="n">hidden</span><span class="si">}</span><span class="s2"> market_agnostic disciplines hidden; &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;pass include_agnostic=True to show)&quot;</span>
+            <span class="sa">f</span><span class="s2">"  (</span><span class="si">{</span><span class="n">hidden</span><span class="si">}</span><span class="s2"> market_agnostic disciplines hidden; "</span>
+            <span class="sa">f</span><span class="s2">"pass include_agnostic=True to show)"</span>
         <span class="p">)</span>
 
-    <span class="n">output</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">display</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">output</span>
@@ -8116,13 +8126,13 @@ Combines with <code>scope</code>.</p>
 <span class="normal">1022</span>
 <span class="normal">1023</span>
 <span class="normal">1024</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">list_available_plots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;List the names of supported plots.</span>
+<span class="w">    </span><span class="sd">"""List the names of supported plots.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    plot_names</span>
 <span class="sd">        List of strings identifying available plot functions.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="nb">list</span><span class="p">([</span><span class="o">*</span><span class="n">available_plots</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="o">*</span><span class="n">available_plots_fleet</span><span class="o">.</span><span class="n">keys</span><span class="p">()])</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -8180,14 +8190,14 @@ Combines with <code>scope</code>.</p>
 <span class="normal">1032</span>
 <span class="normal">1033</span>
 <span class="normal">1034</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">list_float_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the current scalar input values.</span>
+<span class="w">    </span><span class="sd">"""Return the current scalar input values.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    float_inputs</span>
 <span class="sd">        Dictionary of scalar input names and their values.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;float_inputs&quot;</span><span class="p">]</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"float_inputs"</span><span class="p">]</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -8244,14 +8254,14 @@ Combines with <code>scope</code>.</p>
 <span class="normal">1042</span>
 <span class="normal">1043</span>
 <span class="normal">1044</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">list_str_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the current string input values.</span>
+<span class="w">    </span><span class="sd">"""Return the current string input values.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    str_inputs</span>
 <span class="sd">        Dictionary of string input names and their values.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;str_inputs&quot;</span><span class="p">]</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"str_inputs"</span><span class="p">]</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -8266,7 +8276,16 @@ Combines with <code>scope</code>.</p>
 
 
 <a href="#aeromaps.core.process.AeroMAPSProcess.plot" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">plot</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">size_inches</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">remove_title</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fig</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">plot</span><span class="p">(</span>
+    <span class="n">name</span><span class="p">,</span>
+    <span class="n">save</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">size_inches</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">remove_title</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">fig</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">legend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -8512,7 +8531,7 @@ function.</p>
     <span class="n">legend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a predefined AeroMAPS plot.</span>
+<span class="w">    </span><span class="sd">"""Generate a predefined AeroMAPS plot.</span>
 
 <span class="sd">    Depending on the plot name, this method uses either generic or</span>
 <span class="sd">    fleet-specific plotting functions and optionally saves the figure</span>
@@ -8535,7 +8554,7 @@ function.</p>
 <span class="sd">        Existing axes to draw into. Must be provided together with ``fig``.</span>
 <span class="sd">    legend : bool or str, optional</span>
 <span class="sd">        Controls the legend. ``True`` (default) keeps the legend as created</span>
-<span class="sd">        by the plot. ``False`` hides it. A string value (e.g. ``&quot;upper right&quot;``)</span>
+<span class="sd">        by the plot. ``False`` hides it. A string value (e.g. ``"upper right"``)</span>
 <span class="sd">        moves the legend to the given location.</span>
 
 <span class="sd">    Returns</span>
@@ -8543,9 +8562,9 @@ function.</p>
 <span class="sd">    fig</span>
 <span class="sd">        Object holding the created plot, as returned by the plot</span>
 <span class="sd">        function.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Extra keywords reach the plot class, so options a plot exposes on its</span>
-    <span class="c1"># constructor (mfsp_type, or the decomposition&#39;s anchors) can be set from</span>
+    <span class="c1"># constructor (mfsp_type, or the decomposition's anchors) can be set from</span>
     <span class="c1"># a live process. Matches ResultsView.plot, which already forwards them.</span>
     <span class="n">plot_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">fig</span><span class="o">=</span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="n">legend</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">available_plots_fleet</span><span class="p">:</span>
@@ -8555,11 +8574,11 @@ function.</p>
                 <span class="k">if</span> <span class="n">size_inches</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">fig_obj</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">set_size_inches</span><span class="p">(</span><span class="n">size_inches</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">remove_title</span><span class="p">:</span>
-                    <span class="n">fig_obj</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
-                <span class="n">fig_obj</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.pdf&quot;</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+                    <span class="n">fig_obj</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span>
+                <span class="n">fig_obj</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.pdf"</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">"tight"</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Plot </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> requires using bottom up fleet model. Original error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">"Plot </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> requires using bottom up fleet model. Original error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
     <span class="k">elif</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">available_plots</span><span class="p">:</span>
         <span class="n">fig_obj</span> <span class="o">=</span> <span class="n">available_plots</span><span class="p">[</span><span class="n">name</span><span class="p">](</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">plot_kwargs</span><span class="p">)</span>
@@ -8567,11 +8586,11 @@ function.</p>
             <span class="k">if</span> <span class="n">size_inches</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">fig_obj</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">set_size_inches</span><span class="p">(</span><span class="n">size_inches</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">remove_title</span><span class="p">:</span>
-                <span class="n">fig_obj</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
-            <span class="n">fig_obj</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.pdf&quot;</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+                <span class="n">fig_obj</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span>
+            <span class="n">fig_obj</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.pdf"</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">"tight"</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Plot </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> is not available. List of available plots: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">available_plots</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span><span class="w"> </span><span class="nb">list</span><span class="p">(</span><span class="n">available_plots_fleet</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"Plot </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> is not available. List of available plots: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">available_plots</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span><span class="w"> </span><span class="nb">list</span><span class="p">(</span><span class="n">available_plots_fleet</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
     <span class="k">return</span> <span class="n">fig_obj</span>
 </code></pre></div></td></tr></table></div>
@@ -8654,7 +8673,7 @@ function.</p>
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       

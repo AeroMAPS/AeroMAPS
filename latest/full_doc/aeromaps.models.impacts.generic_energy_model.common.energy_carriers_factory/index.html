@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -5893,7 +5893,12 @@
   </span>
 
 <a href="#aeromaps.models.impacts.generic_energy_model.common.energy_carriers_factory.AviationEnergyCarriersFactory.create_carrier" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">create_carrier</span><span class="p">(</span><span class="n">pathway_name</span><span class="p">,</span> <span class="n">energy_carriers_data</span><span class="p">,</span> <span class="n">resources_data</span><span class="p">,</span> <span class="n">process_data</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">create_carrier</span><span class="p">(</span>
+    <span class="n">pathway_name</span><span class="p">,</span>
+    <span class="n">energy_carriers_data</span><span class="p">,</span>
+    <span class="n">resources_data</span><span class="p">,</span>
+    <span class="n">process_data</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6124,7 +6129,7 @@
 <span class="normal">162</span>
 <span class="normal">163</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">create_carrier</span><span class="p">(</span><span class="n">pathway_name</span><span class="p">,</span> <span class="n">energy_carriers_data</span><span class="p">,</span> <span class="n">resources_data</span><span class="p">,</span> <span class="n">process_data</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Create energy carrier models based on the configuration data.</span>
 
 <span class="sd">    Parameters</span>
@@ -6142,53 +6147,29 @@
 <span class="sd">    -------</span>
 <span class="sd">    dict</span>
 <span class="sd">        Dictionary of instantiated energy carrier models.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">pathway_data</span> <span class="o">=</span> <span class="n">energy_carriers_data</span><span class="p">[</span><span class="n">pathway_name</span><span class="p">]</span>
-    <span class="n">environmental_model_type</span> <span class="o">=</span> <span class="n">pathway_data</span><span class="p">[</span><span class="s2">&quot;environmental_model&quot;</span><span class="p">]</span>
-    <span class="n">cost_model_type</span> <span class="o">=</span> <span class="n">pathway_data</span><span class="p">[</span><span class="s2">&quot;cost_model&quot;</span><span class="p">]</span>
+    <span class="n">environmental_model_type</span> <span class="o">=</span> <span class="n">pathway_data</span><span class="p">[</span><span class="s2">"environmental_model"</span><span class="p">]</span>
+    <span class="n">cost_model_type</span> <span class="o">=</span> <span class="n">pathway_data</span><span class="p">[</span><span class="s2">"cost_model"</span><span class="p">]</span>
     <span class="c1"># case distinction between energy model types</span>
     <span class="c1"># TODO split the config file into two separate files here instead in the inits ?</span>
     <span class="n">models</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">if</span> <span class="n">environmental_model_type</span> <span class="o">==</span> <span class="s2">&quot;top-down&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">environmental_model_type</span> <span class="o">==</span> <span class="s2">"top-down"</span><span class="p">:</span>
         <span class="n">models</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
             <span class="p">{</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_top_down_unit_environmental&quot;</span><span class="p">:</span> <span class="n">TopDownEnvironmental</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_top_down_unit_environmental&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_top_down_unit_environmental"</span><span class="p">:</span> <span class="n">TopDownEnvironmental</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_top_down_unit_environmental"</span><span class="p">,</span>
                     <span class="n">pathway_data</span><span class="p">,</span>
                     <span class="n">resources_data</span><span class="p">,</span>
                     <span class="n">process_data</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="p">}</span>
         <span class="p">)</span>
-    <span class="k">elif</span> <span class="n">environmental_model_type</span> <span class="o">==</span> <span class="s2">&quot;bottom-up&quot;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">environmental_model_type</span> <span class="o">==</span> <span class="s2">"bottom-up"</span><span class="p">:</span>
         <span class="n">models</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
             <span class="p">{</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_bottom_up_unit_environmental&quot;</span><span class="p">:</span> <span class="n">BottomUpEnvironmental</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_bottom_up_unit_environmental&quot;</span><span class="p">,</span>
-                    <span class="n">pathway_data</span><span class="p">,</span>
-                    <span class="n">resources_data</span><span class="p">,</span>
-                    <span class="n">process_data</span><span class="p">,</span>
-                <span class="p">)</span>
-            <span class="p">}</span>
-        <span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported environmental model type: </span><span class="si">{</span><span class="n">environmental_model_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">cost_model_type</span> <span class="o">==</span> <span class="s2">&quot;top-down&quot;</span><span class="p">:</span>
-        <span class="n">models</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-            <span class="p">{</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_top_down_unit_cost&quot;</span><span class="p">:</span> <span class="n">TopDownCost</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_top_down_unit_cost&quot;</span><span class="p">,</span>
-                    <span class="n">pathway_data</span><span class="p">,</span>
-                    <span class="n">resources_data</span><span class="p">,</span>
-                    <span class="n">process_data</span><span class="p">,</span>
-                <span class="p">)</span>
-            <span class="p">}</span>
-        <span class="p">)</span>
-    <span class="k">elif</span> <span class="n">cost_model_type</span> <span class="o">==</span> <span class="s2">&quot;bottom-up&quot;</span><span class="p">:</span>
-        <span class="n">models</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-            <span class="p">{</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_bottom_up_unit_cost&quot;</span><span class="p">:</span> <span class="n">BottomUpCost</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_bottom_up_unit_cost&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_bottom_up_unit_environmental"</span><span class="p">:</span> <span class="n">BottomUpEnvironmental</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_bottom_up_unit_environmental"</span><span class="p">,</span>
                     <span class="n">pathway_data</span><span class="p">,</span>
                     <span class="n">resources_data</span><span class="p">,</span>
                     <span class="n">process_data</span><span class="p">,</span>
@@ -6196,44 +6177,68 @@
             <span class="p">}</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported cost model type: </span><span class="si">{</span><span class="n">cost_model_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unsupported environmental model type: </span><span class="si">{</span><span class="n">environmental_model_type</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">cost_model_type</span> <span class="o">==</span> <span class="s2">"top-down"</span><span class="p">:</span>
+        <span class="n">models</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_top_down_unit_cost"</span><span class="p">:</span> <span class="n">TopDownCost</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_top_down_unit_cost"</span><span class="p">,</span>
+                    <span class="n">pathway_data</span><span class="p">,</span>
+                    <span class="n">resources_data</span><span class="p">,</span>
+                    <span class="n">process_data</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">cost_model_type</span> <span class="o">==</span> <span class="s2">"bottom-up"</span><span class="p">:</span>
+        <span class="n">models</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_bottom_up_unit_cost"</span><span class="p">:</span> <span class="n">BottomUpCost</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_bottom_up_unit_cost"</span><span class="p">,</span>
+                    <span class="n">pathway_data</span><span class="p">,</span>
+                    <span class="n">resources_data</span><span class="p">,</span>
+                    <span class="n">process_data</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unsupported cost model type: </span><span class="si">{</span><span class="n">cost_model_type</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
     <span class="c1"># add capacity model</span>
-    <span class="k">if</span> <span class="n">environmental_model_type</span> <span class="o">==</span> <span class="s2">&quot;bottom-up&quot;</span> <span class="ow">or</span> <span class="n">cost_model_type</span> <span class="o">==</span> <span class="s2">&quot;bottom-up&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">environmental_model_type</span> <span class="o">==</span> <span class="s2">"bottom-up"</span> <span class="ow">or</span> <span class="n">cost_model_type</span> <span class="o">==</span> <span class="s2">"bottom-up"</span><span class="p">:</span>
         <span class="n">models</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
             <span class="p">{</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_bottom_up_capacity&quot;</span><span class="p">:</span> <span class="n">BottomUpCapacity</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_bottom_up_capacity&quot;</span><span class="p">,</span> <span class="n">pathway_data</span><span class="p">,</span> <span class="n">process_data</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_bottom_up_capacity"</span><span class="p">:</span> <span class="n">BottomUpCapacity</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_bottom_up_capacity"</span><span class="p">,</span> <span class="n">pathway_data</span><span class="p">,</span> <span class="n">process_data</span>
                 <span class="p">)</span>
             <span class="p">}</span>
         <span class="p">)</span>
-    <span class="k">if</span> <span class="n">pathway_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;abatement_cost&quot;</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">cost_model_type</span> <span class="o">!=</span> <span class="s2">&quot;bottom-up&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">pathway_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"abatement_cost"</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">cost_model_type</span> <span class="o">!=</span> <span class="s2">"bottom-up"</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;Abatement cost model can only be used with bottom-up cost models.&quot;</span>
+                <span class="s2">"Abatement cost model can only be used with bottom-up cost models."</span>
             <span class="p">)</span>
-        <span class="k">if</span> <span class="n">environmental_model_type</span> <span class="o">!=</span> <span class="s2">&quot;bottom-up&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">environmental_model_type</span> <span class="o">!=</span> <span class="s2">"bottom-up"</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">⚠️ Using Top-Down environmental model for abatement cost. Not recommended.&quot;</span>
+                <span class="s2">"</span><span class="se">\n</span><span class="s2">⚠️ Using Top-Down environmental model for abatement cost. Not recommended."</span>
             <span class="p">)</span>
         <span class="c1"># add abatement cost and effective models</span>
         <span class="n">models</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
             <span class="p">{</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_bottom_up_abatement_cost&quot;</span><span class="p">:</span> <span class="n">EnergyAbatementCost</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_bottom_up_abatement_cost&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_bottom_up_abatement_cost"</span><span class="p">:</span> <span class="n">EnergyAbatementCost</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_bottom_up_abatement_cost"</span><span class="p">,</span>
                     <span class="n">pathway_name</span><span class="p">,</span>
                     <span class="n">pathway_data</span><span class="p">,</span>
                 <span class="p">),</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_abatement_effective&quot;</span><span class="p">:</span> <span class="n">EnergyAbatementEffective</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_abatement_effective&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_abatement_effective"</span><span class="p">:</span> <span class="n">EnergyAbatementEffective</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_abatement_effective"</span><span class="p">,</span>
                     <span class="n">pathway_name</span><span class="p">,</span>
                 <span class="p">),</span>
             <span class="p">}</span>
         <span class="p">)</span>
-    <span class="k">if</span> <span class="n">pathway_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;abatement_cost_reference&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">pathway_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"abatement_cost_reference"</span><span class="p">):</span>
         <span class="n">models</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
             <span class="p">{</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_abatement_cost_reference&quot;</span><span class="p">:</span> <span class="n">ReferenceAbatementCost</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_abatement_cost_reference&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_abatement_cost_reference"</span><span class="p">:</span> <span class="n">ReferenceAbatementCost</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">_abatement_cost_reference"</span><span class="p">,</span>
                     <span class="n">pathway_name</span><span class="p">,</span>
                     <span class="n">pathway_data</span><span class="p">,</span>
                 <span class="p">)</span>
@@ -6258,7 +6263,9 @@
   </span>
 
 <a href="#aeromaps.models.impacts.generic_energy_model.common.energy_carriers_factory.AviationEnergyCarriersFactory.instantiate_energy_carriers_models" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">instantiate_energy_carriers_models</span><span class="p">(</span><span class="n">energy_carriers_data</span><span class="p">,</span> <span class="n">pathways_manager</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">instantiate_energy_carriers_models</span><span class="p">(</span>
+    <span class="n">energy_carriers_data</span><span class="p">,</span> <span class="n">pathways_manager</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6365,7 +6372,7 @@
 <span class="normal">189</span>
 <span class="normal">190</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">instantiate_energy_carriers_models</span><span class="p">(</span><span class="n">energy_carriers_data</span><span class="p">,</span> <span class="n">pathways_manager</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Instantiates energy carriers related models. Energy use choice, means, mean LHV, ...</span>
 
 <span class="sd">    Parameters</span>
@@ -6379,15 +6386,15 @@
 <span class="sd">    -------</span>
 <span class="sd">    dict</span>
 <span class="sd">        Dictionary of instantiated energy carriers models.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="p">{</span>
-        <span class="s2">&quot;energy_use_choice&quot;</span><span class="p">:</span> <span class="n">EnergyUseChoice</span><span class="p">(</span>
-            <span class="s2">&quot;energy_use_choice&quot;</span><span class="p">,</span> <span class="n">energy_carriers_data</span><span class="p">,</span> <span class="n">pathways_manager</span>
+        <span class="s2">"energy_use_choice"</span><span class="p">:</span> <span class="n">EnergyUseChoice</span><span class="p">(</span>
+            <span class="s2">"energy_use_choice"</span><span class="p">,</span> <span class="n">energy_carriers_data</span><span class="p">,</span> <span class="n">pathways_manager</span>
         <span class="p">),</span>
-        <span class="s2">&quot;energy_carriers_means&quot;</span><span class="p">:</span> <span class="n">EnergyCarriersMeans</span><span class="p">(</span>
-            <span class="s2">&quot;energy_carriers_means&quot;</span><span class="p">,</span> <span class="n">energy_carriers_data</span><span class="p">,</span> <span class="n">pathways_manager</span>
+        <span class="s2">"energy_carriers_means"</span><span class="p">:</span> <span class="n">EnergyCarriersMeans</span><span class="p">(</span>
+            <span class="s2">"energy_carriers_means"</span><span class="p">,</span> <span class="n">energy_carriers_data</span><span class="p">,</span> <span class="n">pathways_manager</span>
         <span class="p">),</span>
-        <span class="s2">&quot;energy_carriers_mean_lhv&quot;</span><span class="p">:</span> <span class="n">EnergyCarriersMeanLHV</span><span class="p">(</span><span class="s2">&quot;energy_carriers_mean_lhv&quot;</span><span class="p">),</span>
+        <span class="s2">"energy_carriers_mean_lhv"</span><span class="p">:</span> <span class="n">EnergyCarriersMeanLHV</span><span class="p">(</span><span class="s2">"energy_carriers_mean_lhv"</span><span class="p">),</span>
     <span class="p">}</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -6407,7 +6414,9 @@
   </span>
 
 <a href="#aeromaps.models.impacts.generic_energy_model.common.energy_carriers_factory.AviationEnergyCarriersFactory.instantiate_resource_consumption_models" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">instantiate_resource_consumption_models</span><span class="p">(</span><span class="n">resources_data</span><span class="p">,</span> <span class="n">pathways_manager</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">instantiate_resource_consumption_models</span><span class="p">(</span>
+    <span class="n">resources_data</span><span class="p">,</span> <span class="n">pathways_manager</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6523,7 +6532,7 @@
 <span class="normal">225</span>
 <span class="normal">226</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">instantiate_resource_consumption_models</span><span class="p">(</span><span class="n">resources_data</span><span class="p">,</span> <span class="n">pathways_manager</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Instantiates energy resource consumption models.</span>
 
 <span class="sd">    Parameters</span>
@@ -6537,20 +6546,20 @@
 <span class="sd">    -------</span>
 <span class="sd">    dict</span>
 <span class="sd">        Dictionary of instantiated energy resource consumption models.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">models</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">resource</span> <span class="ow">in</span> <span class="n">resources_data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
         <span class="n">models</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
             <span class="p">{</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">resource</span><span class="si">}</span><span class="s2">_consumption&quot;</span><span class="p">:</span> <span class="n">EnergyResourceConsumption</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">resource</span><span class="si">}</span><span class="s2">_consumption&quot;</span><span class="p">,</span> <span class="n">resources_data</span><span class="p">[</span><span class="n">resource</span><span class="p">],</span> <span class="n">pathways_manager</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">resource</span><span class="si">}</span><span class="s2">_consumption"</span><span class="p">:</span> <span class="n">EnergyResourceConsumption</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">resource</span><span class="si">}</span><span class="s2">_consumption"</span><span class="p">,</span> <span class="n">resources_data</span><span class="p">[</span><span class="n">resource</span><span class="p">],</span> <span class="n">pathways_manager</span>
                 <span class="p">)</span>
             <span class="p">}</span>
         <span class="p">)</span>
     <span class="n">models</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
         <span class="p">{</span>
-            <span class="s2">&quot;overall_resources_consumption&quot;</span><span class="p">:</span> <span class="n">OverallResourcesConsumption</span><span class="p">(</span>
-                <span class="s2">&quot;overall_resources_consumption&quot;</span><span class="p">,</span>
+            <span class="s2">"overall_resources_consumption"</span><span class="p">:</span> <span class="n">OverallResourcesConsumption</span><span class="p">(</span>
+                <span class="s2">"overall_resources_consumption"</span><span class="p">,</span>
                 <span class="n">resources_data</span><span class="p">,</span>
             <span class="p">),</span>
         <span class="p">}</span>
@@ -6636,7 +6645,7 @@
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       

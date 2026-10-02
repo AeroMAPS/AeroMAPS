@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -5808,7 +5808,14 @@
 
 
 <a href="#aeromaps.models.impacts.climate.climate.ClimateModel" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">ClimateModel</span><span class="p">(</span><span class="n">climate_model</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;climate&#39;</span><span class="p">,</span> <span class="n">species_settings</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">model_settings</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">ClimateModel</span><span class="p">(</span>
+    <span class="n">climate_model</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"climate"</span><span class="p">,</span>
+    <span class="n">species_settings</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">model_settings</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6039,13 +6046,13 @@ More details can be found on the AeroCM repository: https://github.com/AeroMAPS/
 <span class="normal">107</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">climate_model</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;climate&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"climate"</span><span class="p">,</span>
         <span class="n">species_settings</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">model_settings</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">*</span><span class="n">args</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">):</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">"custom"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="c1"># --- Configuration ---</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">climate_model</span> <span class="o">=</span> <span class="n">climate_model</span>
@@ -6054,49 +6061,49 @@ More details can be found on the AeroCM repository: https://github.com/AeroMAPS/
 
     <span class="c1"># --- Declare input names ---</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s2">&quot;co2_emissions&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;nox_emissions&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;h2o_emissions&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;sulfur_emissions&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;soot_emissions&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;total_aircraft_distance&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;operations_contrails_gain&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;fuel_effect_correction_contrails&quot;</span><span class="p">,</span>
+        <span class="s2">"co2_emissions"</span><span class="p">,</span>
+        <span class="s2">"nox_emissions"</span><span class="p">,</span>
+        <span class="s2">"h2o_emissions"</span><span class="p">,</span>
+        <span class="s2">"sulfur_emissions"</span><span class="p">,</span>
+        <span class="s2">"soot_emissions"</span><span class="p">,</span>
+        <span class="s2">"total_aircraft_distance"</span><span class="p">,</span>
+        <span class="s2">"operations_contrails_gain"</span><span class="p">,</span>
+        <span class="s2">"fuel_effect_correction_contrails"</span><span class="p">,</span>
     <span class="p">]</span>
 
     <span class="c1"># --- Declare output names ---</span>
     <span class="c1"># Mapping between AeroCM model keys and AeroMAPS variable names</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;Total&quot;</span><span class="p">:</span> <span class="s2">&quot;total&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;CO2&quot;</span><span class="p">:</span> <span class="s2">&quot;co2&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;Non-CO2&quot;</span><span class="p">:</span> <span class="s2">&quot;non_co2&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;Contrails&quot;</span><span class="p">:</span> <span class="s2">&quot;contrails&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;NOx - ST O3 increase&quot;</span><span class="p">:</span> <span class="s2">&quot;nox_short_term_o3_increase&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;NOX - CH4 induced O3&quot;</span><span class="p">:</span> <span class="s2">&quot;nox_long_term_o3_decrease&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;NOX - CH4 decrease&quot;</span><span class="p">:</span> <span class="s2">&quot;nox_ch4_decrease&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;NOX - CH4 induced H2O&quot;</span><span class="p">:</span> <span class="s2">&quot;nox_stratospheric_water_vapor_decrease&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;H2O&quot;</span><span class="p">:</span> <span class="s2">&quot;h2o&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;Sulfur&quot;</span><span class="p">:</span> <span class="s2">&quot;sulfur&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;Soot&quot;</span><span class="p">:</span> <span class="s2">&quot;soot&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;Aerosols&quot;</span><span class="p">:</span> <span class="s2">&quot;aerosol&quot;</span><span class="p">,</span>
+        <span class="s2">"Total"</span><span class="p">:</span> <span class="s2">"total"</span><span class="p">,</span>
+        <span class="s2">"CO2"</span><span class="p">:</span> <span class="s2">"co2"</span><span class="p">,</span>
+        <span class="s2">"Non-CO2"</span><span class="p">:</span> <span class="s2">"non_co2"</span><span class="p">,</span>
+        <span class="s2">"Contrails"</span><span class="p">:</span> <span class="s2">"contrails"</span><span class="p">,</span>
+        <span class="s2">"NOx - ST O3 increase"</span><span class="p">:</span> <span class="s2">"nox_short_term_o3_increase"</span><span class="p">,</span>
+        <span class="s2">"NOX - CH4 induced O3"</span><span class="p">:</span> <span class="s2">"nox_long_term_o3_decrease"</span><span class="p">,</span>
+        <span class="s2">"NOX - CH4 decrease"</span><span class="p">:</span> <span class="s2">"nox_ch4_decrease"</span><span class="p">,</span>
+        <span class="s2">"NOX - CH4 induced H2O"</span><span class="p">:</span> <span class="s2">"nox_stratospheric_water_vapor_decrease"</span><span class="p">,</span>
+        <span class="s2">"H2O"</span><span class="p">:</span> <span class="s2">"h2o"</span><span class="p">,</span>
+        <span class="s2">"Sulfur"</span><span class="p">:</span> <span class="s2">"sulfur"</span><span class="p">,</span>
+        <span class="s2">"Soot"</span><span class="p">:</span> <span class="s2">"soot"</span><span class="p">,</span>
+        <span class="s2">"Aerosols"</span><span class="p">:</span> <span class="s2">"aerosol"</span><span class="p">,</span>
     <span class="p">}</span>
 
     <span class="c1"># Output names list</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">aeromaps_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
         <span class="c1"># Temperature increase</span>
-        <span class="k">if</span> <span class="n">aeromaps_name</span> <span class="o">==</span> <span class="s2">&quot;total&quot;</span><span class="p">:</span>
-            <span class="n">var_temp</span> <span class="o">=</span> <span class="s2">&quot;temperature_increase_from_aviation&quot;</span>
+        <span class="k">if</span> <span class="n">aeromaps_name</span> <span class="o">==</span> <span class="s2">"total"</span><span class="p">:</span>
+            <span class="n">var_temp</span> <span class="o">=</span> <span class="s2">"temperature_increase_from_aviation"</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">var_temp</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;temperature_increase_from_</span><span class="si">{</span><span class="n">aeromaps_name</span><span class="si">}</span><span class="s2">_from_aviation&quot;</span>
+            <span class="n">var_temp</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"temperature_increase_from_</span><span class="si">{</span><span class="n">aeromaps_name</span><span class="si">}</span><span class="s2">_from_aviation"</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">var_temp</span><span class="p">)</span>
 
         <span class="c1"># Effective Radiative Forcing</span>
-        <span class="n">var_erf</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">aeromaps_name</span><span class="si">}</span><span class="s2">_erf&quot;</span>
+        <span class="n">var_erf</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">aeromaps_name</span><span class="si">}</span><span class="s2">_erf"</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">var_erf</span><span class="p">)</span>
 
         <span class="c1"># Radiative Forcing</span>
-        <span class="n">var_rf</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">aeromaps_name</span><span class="si">}</span><span class="s2">_rf&quot;</span>
+        <span class="n">var_rf</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">aeromaps_name</span><span class="si">}</span><span class="s2">_rf"</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">var_rf</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -6239,15 +6246,15 @@ This method is a wrapper for the <code>AviationClimateSimulation</code> class fr
 <span class="normal">212</span>
 <span class="normal">213</span>
 <span class="normal">214</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run the climate simulation for aviation emissions.</span>
+<span class="w">    </span><span class="sd">"""Run the climate simulation for aviation emissions.</span>
 <span class="sd">    This method is a wrapper for the `AviationClimateSimulation` class from AeroCM.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="c1"># --- Prepare species inventory (and converting to ndarray) ---</span>
     <span class="c1"># Preprocess contrails</span>
     <span class="n">idx1</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">climate_historic_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx1</span><span class="p">,</span> <span class="s2">&quot;contrails_distance_corrected&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;total_aircraft_distance&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx1</span><span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx1</span><span class="p">,</span> <span class="s2">"contrails_distance_corrected"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">input_data</span><span class="p">[</span><span class="s2">"total_aircraft_distance"</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx1</span><span class="p">]</span>
     <span class="p">)</span>
     <span class="c1"># The fuel-effect correction is built from pathway massic shares, which only</span>
     <span class="c1"># exist from the prospection start year onwards; it is zero over the historic</span>
@@ -6255,22 +6262,22 @@ This method is a wrapper for the <code>AviationClimateSimulation</code> class fr
     <span class="c1"># with it all historic contrail forcing), so the correction is restricted to</span>
     <span class="c1"># the prospective years and the historic years keep the raw distance above.</span>
     <span class="n">idx2</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx2</span><span class="p">,</span> <span class="s2">&quot;contrails_distance_corrected&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;total_aircraft_distance&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx2</span><span class="p">]</span>
-            <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;operations_contrails_gain&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx2</span><span class="p">]</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span>
-            <span class="o">*</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;fuel_effect_correction_contrails&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx2</span><span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx2</span><span class="p">,</span> <span class="s2">"contrails_distance_corrected"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">input_data</span><span class="p">[</span><span class="s2">"total_aircraft_distance"</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx2</span><span class="p">]</span>
+            <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"operations_contrails_gain"</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx2</span><span class="p">]</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span>
+            <span class="o">*</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"fuel_effect_correction_contrails"</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx2</span><span class="p">]</span>
     <span class="p">)</span>
-    <span class="n">contrails_distance_corrected</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">&quot;contrails_distance_corrected&quot;</span><span class="p">]</span>
+    <span class="n">contrails_distance_corrected</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">"contrails_distance_corrected"</span><span class="p">]</span>
 
     <span class="c1"># Create species inventory dictionary</span>
     <span class="n">species_inventory</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;CO2&quot;</span><span class="p">:</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;co2_emissions&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="o">*</span> <span class="mf">1e9</span><span class="p">,</span>  <span class="c1"># convert from Mt to kg</span>
-        <span class="s2">&quot;Contrails&quot;</span><span class="p">:</span> <span class="n">contrails_distance_corrected</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>  <span class="c1"># in km</span>
-        <span class="s2">&quot;NOx - ST O3 increase&quot;</span><span class="p">:</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;nox_emissions&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="o">*</span> <span class="mf">1e9</span><span class="p">,</span>  <span class="c1"># in kg</span>
-        <span class="s2">&quot;NOx - CH4 decrease and induced&quot;</span><span class="p">:</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;nox_emissions&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="o">*</span> <span class="mf">1e9</span><span class="p">,</span>  <span class="c1"># in kg</span>
-        <span class="s2">&quot;H2O&quot;</span><span class="p">:</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;h2o_emissions&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="o">*</span> <span class="mf">1e9</span><span class="p">,</span>  <span class="c1"># in kg</span>
-        <span class="s2">&quot;Soot&quot;</span><span class="p">:</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;soot_emissions&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="o">*</span> <span class="mf">1e9</span><span class="p">,</span>  <span class="c1"># in kg</span>
-        <span class="s2">&quot;Sulfur&quot;</span><span class="p">:</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;sulfur_emissions&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="o">*</span> <span class="mf">1e9</span><span class="p">,</span>  <span class="c1"># in kg</span>
+        <span class="s2">"CO2"</span><span class="p">:</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"co2_emissions"</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="o">*</span> <span class="mf">1e9</span><span class="p">,</span>  <span class="c1"># convert from Mt to kg</span>
+        <span class="s2">"Contrails"</span><span class="p">:</span> <span class="n">contrails_distance_corrected</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>  <span class="c1"># in km</span>
+        <span class="s2">"NOx - ST O3 increase"</span><span class="p">:</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"nox_emissions"</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="o">*</span> <span class="mf">1e9</span><span class="p">,</span>  <span class="c1"># in kg</span>
+        <span class="s2">"NOx - CH4 decrease and induced"</span><span class="p">:</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"nox_emissions"</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="o">*</span> <span class="mf">1e9</span><span class="p">,</span>  <span class="c1"># in kg</span>
+        <span class="s2">"H2O"</span><span class="p">:</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"h2o_emissions"</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="o">*</span> <span class="mf">1e9</span><span class="p">,</span>  <span class="c1"># in kg</span>
+        <span class="s2">"Soot"</span><span class="p">:</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"soot_emissions"</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="o">*</span> <span class="mf">1e9</span><span class="p">,</span>  <span class="c1"># in kg</span>
+        <span class="s2">"Sulfur"</span><span class="p">:</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"sulfur_emissions"</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="o">*</span> <span class="mf">1e9</span><span class="p">,</span>  <span class="c1"># in kg</span>
     <span class="p">}</span>
 
     <span class="c1"># --- Run climate simulation ---</span>
@@ -6295,53 +6302,53 @@ This method is a wrapper for the <code>AviationClimateSimulation</code> class fr
     <span class="n">output_data</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">key_in_results</span><span class="p">,</span> <span class="n">aeromaps_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="c1"># --- temperature ---</span>
-        <span class="n">temp</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="n">key_in_results</span><span class="p">][</span><span class="s2">&quot;temperature&quot;</span><span class="p">]</span>  <span class="c1"># get result</span>
-        <span class="k">if</span> <span class="n">aeromaps_name</span> <span class="o">==</span> <span class="s2">&quot;total&quot;</span><span class="p">:</span>
-            <span class="n">var_temp</span> <span class="o">=</span> <span class="s2">&quot;temperature_increase_from_aviation&quot;</span>  <span class="c1"># create variable name</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="n">key_in_results</span><span class="p">][</span><span class="s2">"temperature"</span><span class="p">]</span>  <span class="c1"># get result</span>
+        <span class="k">if</span> <span class="n">aeromaps_name</span> <span class="o">==</span> <span class="s2">"total"</span><span class="p">:</span>
+            <span class="n">var_temp</span> <span class="o">=</span> <span class="s2">"temperature_increase_from_aviation"</span>  <span class="c1"># create variable name</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">var_temp</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;temperature_increase_from_</span><span class="si">{</span><span class="n">aeromaps_name</span><span class="si">}</span><span class="s2">_from_aviation&quot;</span>  <span class="c1"># create variable name</span>
+            <span class="n">var_temp</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"temperature_increase_from_</span><span class="si">{</span><span class="n">aeromaps_name</span><span class="si">}</span><span class="s2">_from_aviation"</span>  <span class="c1"># create variable name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="n">var_temp</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp</span>  <span class="c1"># store in dataframe</span>
         <span class="n">output_data</span><span class="p">[</span><span class="n">var_temp</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp</span>  <span class="c1"># store in output dictionary</span>
 
         <span class="c1"># --- effective radiative forcing ---</span>
-        <span class="n">erf</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="n">key_in_results</span><span class="p">][</span><span class="s2">&quot;effective_radiative_forcing&quot;</span><span class="p">]</span>
-        <span class="n">var_erf</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">aeromaps_name</span><span class="si">}</span><span class="s2">_erf&quot;</span>
+        <span class="n">erf</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="n">key_in_results</span><span class="p">][</span><span class="s2">"effective_radiative_forcing"</span><span class="p">]</span>
+        <span class="n">var_erf</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">aeromaps_name</span><span class="si">}</span><span class="s2">_erf"</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="n">var_erf</span><span class="p">]</span> <span class="o">=</span> <span class="n">erf</span>
         <span class="n">output_data</span><span class="p">[</span><span class="n">var_erf</span><span class="p">]</span> <span class="o">=</span> <span class="n">erf</span>
 
         <span class="c1"># --- radiative forcing ---</span>
-        <span class="n">rf</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="n">key_in_results</span><span class="p">][</span><span class="s2">&quot;radiative_forcing&quot;</span><span class="p">]</span>
-        <span class="n">var_rf</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">aeromaps_name</span><span class="si">}</span><span class="s2">_rf&quot;</span>
+        <span class="n">rf</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="n">key_in_results</span><span class="p">][</span><span class="s2">"radiative_forcing"</span><span class="p">]</span>
+        <span class="n">var_rf</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">aeromaps_name</span><span class="si">}</span><span class="s2">_rf"</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="n">var_rf</span><span class="p">]</span> <span class="o">=</span> <span class="n">rf</span>
         <span class="n">output_data</span><span class="p">[</span><span class="n">var_rf</span><span class="p">]</span> <span class="o">=</span> <span class="n">rf</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">&quot;temperature_increase_from_nox_from_aviation&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span>
-                                                                         <span class="s2">&quot;temperature_increase_from_nox_short_term_o3_increase_from_aviation&quot;</span><span class="p">]</span> <span class="o">+</span> \
+    <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">"temperature_increase_from_nox_from_aviation"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span>
+                                                                         <span class="s2">"temperature_increase_from_nox_short_term_o3_increase_from_aviation"</span><span class="p">]</span> <span class="o">+</span> \
                                                                      <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span>
-                                                                         <span class="s2">&quot;temperature_increase_from_nox_long_term_o3_decrease_from_aviation&quot;</span><span class="p">]</span> <span class="o">+</span> \
+                                                                         <span class="s2">"temperature_increase_from_nox_long_term_o3_decrease_from_aviation"</span><span class="p">]</span> <span class="o">+</span> \
                                                                      <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span>
-                                                                         <span class="s2">&quot;temperature_increase_from_nox_ch4_decrease_from_aviation&quot;</span><span class="p">]</span> <span class="o">+</span> \
+                                                                         <span class="s2">"temperature_increase_from_nox_ch4_decrease_from_aviation"</span><span class="p">]</span> <span class="o">+</span> \
                                                                      <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span>
-                                                                         <span class="s2">&quot;temperature_increase_from_nox_stratospheric_water_vapor_decrease_from_aviation&quot;</span><span class="p">]</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;temperature_increase_from_nox_from_aviation&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span>
-        <span class="s2">&quot;temperature_increase_from_nox_from_aviation&quot;</span><span class="p">]</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">&quot;nox_erf&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">&quot;nox_short_term_o3_increase_erf&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span>
-        <span class="s2">&quot;nox_long_term_o3_decrease_erf&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">&quot;nox_ch4_decrease_erf&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span>
-                                     <span class="s2">&quot;nox_stratospheric_water_vapor_decrease_erf&quot;</span><span class="p">]</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;nox_erf&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">&quot;nox_erf&quot;</span><span class="p">]</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">&quot;nox_rf&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">&quot;nox_short_term_o3_increase_rf&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span>
-        <span class="s2">&quot;nox_long_term_o3_decrease_rf&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">&quot;nox_ch4_decrease_rf&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span>
-                                    <span class="s2">&quot;nox_stratospheric_water_vapor_decrease_rf&quot;</span><span class="p">]</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;nox_rf&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">&quot;nox_rf&quot;</span><span class="p">]</span>
+                                                                         <span class="s2">"temperature_increase_from_nox_stratospheric_water_vapor_decrease_from_aviation"</span><span class="p">]</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"temperature_increase_from_nox_from_aviation"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span>
+        <span class="s2">"temperature_increase_from_nox_from_aviation"</span><span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">"nox_erf"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">"nox_short_term_o3_increase_erf"</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span>
+        <span class="s2">"nox_long_term_o3_decrease_erf"</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">"nox_ch4_decrease_erf"</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span>
+                                     <span class="s2">"nox_stratospheric_water_vapor_decrease_erf"</span><span class="p">]</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"nox_erf"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">"nox_erf"</span><span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">"nox_rf"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">"nox_short_term_o3_increase_rf"</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span>
+        <span class="s2">"nox_long_term_o3_decrease_rf"</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">"nox_ch4_decrease_rf"</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span>
+                                    <span class="s2">"nox_stratospheric_water_vapor_decrease_rf"</span><span class="p">]</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"nox_rf"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">"nox_rf"</span><span class="p">]</span>
 
     <span class="c1">## ERF calculation for helping plot display</span>
     <span class="c1"># TODO: remove in the future</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">&quot;co2_h2o_erf&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">&quot;co2_erf&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">&quot;h2o_erf&quot;</span><span class="p">]</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">&quot;co2_h2o_nox_erf&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">&quot;co2_erf&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">&quot;h2o_erf&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">&quot;nox_erf&quot;</span><span class="p">]</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">&quot;co2_h2o_nox_contrails_erf&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">&quot;co2_erf&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">&quot;h2o_erf&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">&quot;nox_erf&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">&quot;contrails_erf&quot;</span><span class="p">]</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;co2_h2o_erf&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">&quot;co2_h2o_erf&quot;</span><span class="p">]</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;co2_h2o_nox_erf&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">&quot;co2_h2o_nox_erf&quot;</span><span class="p">]</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;co2_h2o_nox_contrails_erf&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">&quot;co2_h2o_nox_contrails_erf&quot;</span><span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">"co2_h2o_erf"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">"co2_erf"</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">"h2o_erf"</span><span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">"co2_h2o_nox_erf"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">"co2_erf"</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">"h2o_erf"</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">"nox_erf"</span><span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">"co2_h2o_nox_contrails_erf"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">"co2_erf"</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">"h2o_erf"</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">"nox_erf"</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">"contrails_erf"</span><span class="p">]</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"co2_h2o_erf"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">"co2_h2o_erf"</span><span class="p">]</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"co2_h2o_nox_erf"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">"co2_h2o_nox_erf"</span><span class="p">]</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"co2_h2o_nox_contrails_erf"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_climate</span><span class="p">[</span><span class="s2">"co2_h2o_nox_contrails_erf"</span><span class="p">]</span>
 
     <span class="k">return</span> <span class="n">output_data</span>
 </code></pre></div></td></tr></table></div>
@@ -6424,7 +6431,7 @@ This method is a wrapper for the <code>AviationClimateSimulation</code> class fr
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       

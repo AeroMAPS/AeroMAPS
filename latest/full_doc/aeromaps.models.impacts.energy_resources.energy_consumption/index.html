@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -5945,7 +5945,9 @@
 
 
 <a href="#aeromaps.models.impacts.energy_resources.energy_consumption.DropInFuelConsumption" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">DropInFuelConsumption</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;drop_in_fuel_consumption&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">DropInFuelConsumption</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"drop_in_fuel_consumption"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6022,8 +6024,8 @@ Notes
                     <summary>Source code in <code>aeromaps/models/impacts/energy_resources/energy_consumption.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">45</span>
 <span class="normal">46</span>
-<span class="normal">47</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;drop_in_fuel_consumption&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="normal">47</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"drop_in_fuel_consumption"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">"custom"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">markets</span> <span class="o">=</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -6107,52 +6109,52 @@ Called once by AeroMAPSProcess after self.markets is injected.</p>
 <span class="normal">93</span>
 <span class="normal">94</span>
 <span class="normal">95</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">custom_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Build input_names / output_names dynamically from the MarketManager.</span>
 <span class="sd">    Called once by AeroMAPSProcess after self.markets is injected.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span> <span class="o">=</span> <span class="p">{}</span>
 
-    <span class="n">passenger_markets</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">&quot;passenger&quot;</span><span class="p">))</span>
-    <span class="n">freight_markets</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">&quot;freight&quot;</span><span class="p">))</span>
+    <span class="n">passenger_markets</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">"passenger"</span><span class="p">))</span>
+    <span class="n">freight_markets</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">"freight"</span><span class="p">))</span>
 
     <span class="c1"># Per-market inputs and outputs (passenger: ask-based; freight: rtk-based).</span>
     <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="n">passenger_markets</span><span class="p">:</span>
         <span class="n">mid</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">id</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_per_ask_without_operations_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_per_ask_without_operations_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
             <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_per_ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel_without_operations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_per_ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel_without_operations"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
 
     <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="n">freight_markets</span><span class="p">:</span>
         <span class="n">mid</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">id</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_per_rtk_without_operations_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_per_rtk_without_operations_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
             <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_per_rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel_without_operations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_per_rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel_without_operations"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
 
     <span class="c1"># Aggregate outputs (passenger sum, freight sum, grand total) — both with and without operations.</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="s2">&quot;energy_consumption_passenger_dropin_fuel_without_operations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="s2">"energy_consumption_passenger_dropin_fuel_without_operations"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
     <span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="s2">&quot;energy_consumption_passenger_dropin_fuel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="s2">&quot;energy_consumption_freight_dropin_fuel_without_operations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="s2">"energy_consumption_passenger_dropin_fuel"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="s2">"energy_consumption_freight_dropin_fuel_without_operations"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
         <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span>
     <span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="s2">&quot;energy_consumption_freight_dropin_fuel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="s2">&quot;energy_consumption_dropin_fuel_without_operations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="s2">&quot;energy_consumption_dropin_fuel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="s2">"energy_consumption_freight_dropin_fuel"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="s2">"energy_consumption_dropin_fuel_without_operations"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">[</span><span class="s2">"energy_consumption_dropin_fuel"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -6294,29 +6296,29 @@ without-operations variants are produced.</p>
 <span class="normal">207</span>
 <span class="normal">208</span>
 <span class="normal">209</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Drop-in fuel energy consumption per market and aggregates.</span>
 
 <span class="sd">    Per-market: energy = energy_per_(ask|rtk) * (ask|rtk).</span>
 <span class="sd">    Aggregates: passenger sum over passenger markets, freight sum over freight</span>
 <span class="sd">    markets, grand total = passenger + freight. Both with-operations and</span>
 <span class="sd">    without-operations variants are produced.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">output_data</span> <span class="o">=</span> <span class="p">{}</span>
 
-    <span class="n">passenger_markets</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">&quot;passenger&quot;</span><span class="p">))</span>
-    <span class="n">freight_markets</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">&quot;freight&quot;</span><span class="p">))</span>
+    <span class="n">passenger_markets</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">"passenger"</span><span class="p">))</span>
+    <span class="n">freight_markets</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">"freight"</span><span class="p">))</span>
 
     <span class="c1"># Per-passenger-market consumption.</span>
     <span class="n">passenger_dropin_fuel</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">passenger_dropin_fuel_without_operations</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="n">passenger_markets</span><span class="p">:</span>
         <span class="n">mid</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">id</span>
-        <span class="n">ask</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel&quot;</span><span class="p">]</span>
+        <span class="n">ask</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel"</span><span class="p">]</span>
         <span class="n">energy_per_ask_without_operations</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span>
-            <span class="sa">f</span><span class="s2">&quot;energy_per_ask_without_operations_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel&quot;</span>
+            <span class="sa">f</span><span class="s2">"energy_per_ask_without_operations_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel"</span>
         <span class="p">]</span>
-        <span class="n">energy_per_ask</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_per_ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel&quot;</span><span class="p">]</span>
+        <span class="n">energy_per_ask</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_per_ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel"</span><span class="p">]</span>
 
         <span class="c1"># Energy is zero wherever there is no traffic, even when the per-ASK intensity is</span>
         <span class="c1"># NaN/inf from an upstream division-by-zero (energy_per_ask = energy / ask). The mask</span>
@@ -6327,10 +6329,10 @@ without-operations variants are produced.</p>
         <span class="p">)</span>
         <span class="n">energy_consumption</span> <span class="o">=</span> <span class="p">(</span><span class="n">energy_per_ask</span> <span class="o">*</span> <span class="n">ask</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">ask</span> <span class="o">!=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
 
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel_without_operations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel_without_operations"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">energy_consumption_without_operations</span>
         <span class="p">)</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">energy_consumption</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel"</span><span class="p">]</span> <span class="o">=</span> <span class="n">energy_consumption</span>
 
         <span class="n">passenger_dropin_fuel_without_operations</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">energy_consumption_without_operations</span>
@@ -6349,11 +6351,11 @@ without-operations variants are produced.</p>
     <span class="n">freight_dropin_fuel_without_operations</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="n">freight_markets</span><span class="p">:</span>
         <span class="n">mid</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">id</span>
-        <span class="n">rtk</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel&quot;</span><span class="p">]</span>
+        <span class="n">rtk</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel"</span><span class="p">]</span>
         <span class="n">energy_per_rtk_without_operations</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span>
-            <span class="sa">f</span><span class="s2">&quot;energy_per_rtk_without_operations_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel&quot;</span>
+            <span class="sa">f</span><span class="s2">"energy_per_rtk_without_operations_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel"</span>
         <span class="p">]</span>
-        <span class="n">energy_per_rtk</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_per_rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel&quot;</span><span class="p">]</span>
+        <span class="n">energy_per_rtk</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_per_rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel"</span><span class="p">]</span>
 
         <span class="c1"># Energy is zero wherever there is no traffic, even when the per-RTK intensity is</span>
         <span class="c1"># NaN/inf from an upstream division-by-zero (energy_per_rtk = energy / rtk). The mask</span>
@@ -6364,10 +6366,10 @@ without-operations variants are produced.</p>
         <span class="p">)</span>
         <span class="n">energy_consumption</span> <span class="o">=</span> <span class="p">(</span><span class="n">energy_per_rtk</span> <span class="o">*</span> <span class="n">rtk</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">rtk</span> <span class="o">!=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
 
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel_without_operations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel_without_operations"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">energy_consumption_without_operations</span>
         <span class="p">)</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">energy_consumption</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel"</span><span class="p">]</span> <span class="o">=</span> <span class="n">energy_consumption</span>
 
         <span class="n">freight_dropin_fuel_without_operations</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">energy_consumption_without_operations</span>
@@ -6391,18 +6393,18 @@ without-operations variants are produced.</p>
     <span class="k">if</span> <span class="n">freight_dropin_fuel</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">freight_dropin_fuel</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
 
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;energy_consumption_passenger_dropin_fuel_without_operations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"energy_consumption_passenger_dropin_fuel_without_operations"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">passenger_dropin_fuel_without_operations</span>
     <span class="p">)</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;energy_consumption_passenger_dropin_fuel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">passenger_dropin_fuel</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;energy_consumption_freight_dropin_fuel_without_operations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"energy_consumption_passenger_dropin_fuel"</span><span class="p">]</span> <span class="o">=</span> <span class="n">passenger_dropin_fuel</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"energy_consumption_freight_dropin_fuel_without_operations"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">freight_dropin_fuel_without_operations</span>
     <span class="p">)</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;energy_consumption_freight_dropin_fuel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">freight_dropin_fuel</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;energy_consumption_dropin_fuel_without_operations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"energy_consumption_freight_dropin_fuel"</span><span class="p">]</span> <span class="o">=</span> <span class="n">freight_dropin_fuel</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"energy_consumption_dropin_fuel_without_operations"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">passenger_dropin_fuel_without_operations</span> <span class="o">+</span> <span class="n">freight_dropin_fuel_without_operations</span>
     <span class="p">)</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;energy_consumption_dropin_fuel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">passenger_dropin_fuel</span> <span class="o">+</span> <span class="n">freight_dropin_fuel</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"energy_consumption_dropin_fuel"</span><span class="p">]</span> <span class="o">=</span> <span class="n">passenger_dropin_fuel</span> <span class="o">+</span> <span class="n">freight_dropin_fuel</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">_store_outputs</span><span class="p">(</span><span class="n">output_data</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">output_data</span>
@@ -6429,7 +6431,11 @@ without-operations variants are produced.</p>
 
 
 <a href="#aeromaps.models.impacts.energy_resources.energy_consumption.DropInFuelDetailledConsumption" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">DropInFuelDetailledConsumption</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;drop_in_fuel_detailled_consumption&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">DropInFuelDetailledConsumption</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"drop_in_fuel_detailled_consumption"</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6506,8 +6512,8 @@ Notes
                     <summary>Source code in <code>aeromaps/models/impacts/energy_resources/energy_consumption.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">245</span>
 <span class="normal">246</span>
-<span class="normal">247</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;drop_in_fuel_detailled_consumption&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="normal">247</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"drop_in_fuel_detailled_consumption"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">"custom"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">markets</span> <span class="o">=</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -6639,16 +6645,16 @@ Notes
 <span class="normal">377</span>
 <span class="normal">378</span>
 <span class="normal">379</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Drop-in fuel detailed consumption per market and aggregates.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Drop-in fuel detailed consumption per market and aggregates."""</span>
     <span class="n">output_data</span> <span class="o">=</span> <span class="p">{}</span>
 
-    <span class="n">passenger_markets</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">&quot;passenger&quot;</span><span class="p">))</span>
-    <span class="n">freight_markets</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">&quot;freight&quot;</span><span class="p">))</span>
+    <span class="n">passenger_markets</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">"passenger"</span><span class="p">))</span>
+    <span class="n">freight_markets</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">"freight"</span><span class="p">))</span>
 
     <span class="n">shares</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;biofuel&quot;</span><span class="p">:</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;biomass_share_dropin_fuel&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">100</span><span class="p">,</span>
-        <span class="s2">&quot;electrofuel&quot;</span><span class="p">:</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;electricity_share_dropin_fuel&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">100</span><span class="p">,</span>
-        <span class="s2">&quot;kerosene&quot;</span><span class="p">:</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;fossil_share_dropin_fuel&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="s2">"biofuel"</span><span class="p">:</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"biomass_share_dropin_fuel"</span><span class="p">]</span> <span class="o">/</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="s2">"electrofuel"</span><span class="p">:</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"electricity_share_dropin_fuel"</span><span class="p">]</span> <span class="o">/</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="s2">"kerosene"</span><span class="p">:</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"fossil_share_dropin_fuel"</span><span class="p">]</span> <span class="o">/</span> <span class="mi">100</span><span class="p">,</span>
     <span class="p">}</span>
 
     <span class="n">passenger_fuel_totals_without_operations</span> <span class="o">=</span> <span class="p">{</span><span class="n">fuel</span><span class="p">:</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">fuel</span> <span class="ow">in</span> <span class="n">shares</span><span class="p">}</span>
@@ -6659,16 +6665,16 @@ Notes
     <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="n">passenger_markets</span><span class="p">:</span>
         <span class="n">mid</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">id</span>
         <span class="n">dropin_fuel_without_operations</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span>
-            <span class="sa">f</span><span class="s2">&quot;energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel_without_operations&quot;</span>
+            <span class="sa">f</span><span class="s2">"energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel_without_operations"</span>
         <span class="p">]</span>
-        <span class="n">dropin_fuel</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel&quot;</span><span class="p">]</span>
+        <span class="n">dropin_fuel</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel"</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">fuel</span><span class="p">,</span> <span class="n">share</span> <span class="ow">in</span> <span class="n">shares</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">fuel_energy_without_operations</span> <span class="o">=</span> <span class="n">share</span> <span class="o">*</span> <span class="n">dropin_fuel_without_operations</span>
             <span class="n">fuel_energy</span> <span class="o">=</span> <span class="n">share</span> <span class="o">*</span> <span class="n">dropin_fuel</span>
-            <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">fuel</span><span class="si">}</span><span class="s2">_without_operations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">fuel</span><span class="si">}</span><span class="s2">_without_operations"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">fuel_energy_without_operations</span>
             <span class="p">)</span>
-            <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">fuel</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fuel_energy</span>
+            <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">fuel</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="n">fuel_energy</span>
             <span class="n">passenger_fuel_totals_without_operations</span><span class="p">[</span><span class="n">fuel</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">fuel_energy_without_operations</span>
                 <span class="k">if</span> <span class="n">passenger_fuel_totals_without_operations</span><span class="p">[</span><span class="n">fuel</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span>
@@ -6684,16 +6690,16 @@ Notes
     <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="n">freight_markets</span><span class="p">:</span>
         <span class="n">mid</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">id</span>
         <span class="n">dropin_fuel_without_operations</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span>
-            <span class="sa">f</span><span class="s2">&quot;energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel_without_operations&quot;</span>
+            <span class="sa">f</span><span class="s2">"energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel_without_operations"</span>
         <span class="p">]</span>
-        <span class="n">dropin_fuel</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel&quot;</span><span class="p">]</span>
+        <span class="n">dropin_fuel</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel"</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">fuel</span><span class="p">,</span> <span class="n">share</span> <span class="ow">in</span> <span class="n">shares</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">fuel_energy_without_operations</span> <span class="o">=</span> <span class="n">share</span> <span class="o">*</span> <span class="n">dropin_fuel_without_operations</span>
             <span class="n">fuel_energy</span> <span class="o">=</span> <span class="n">share</span> <span class="o">*</span> <span class="n">dropin_fuel</span>
-            <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">fuel</span><span class="si">}</span><span class="s2">_without_operations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">fuel</span><span class="si">}</span><span class="s2">_without_operations"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">fuel_energy_without_operations</span>
             <span class="p">)</span>
-            <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">fuel</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fuel_energy</span>
+            <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">fuel</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="n">fuel_energy</span>
             <span class="n">freight_fuel_totals_without_operations</span><span class="p">[</span><span class="n">fuel</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">fuel_energy_without_operations</span>
                 <span class="k">if</span> <span class="n">freight_fuel_totals_without_operations</span><span class="p">[</span><span class="n">fuel</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span>
@@ -6716,19 +6722,19 @@ Notes
         <span class="k">if</span> <span class="n">freight_fuel_totals</span><span class="p">[</span><span class="n">fuel</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">freight_fuel_totals</span><span class="p">[</span><span class="n">fuel</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
 
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_consumption_passenger_</span><span class="si">{</span><span class="n">fuel</span><span class="si">}</span><span class="s2">_without_operations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_consumption_passenger_</span><span class="si">{</span><span class="n">fuel</span><span class="si">}</span><span class="s2">_without_operations"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">passenger_fuel_totals_without_operations</span><span class="p">[</span><span class="n">fuel</span><span class="p">]</span>
         <span class="p">)</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_consumption_freight_</span><span class="si">{</span><span class="n">fuel</span><span class="si">}</span><span class="s2">_without_operations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_consumption_freight_</span><span class="si">{</span><span class="n">fuel</span><span class="si">}</span><span class="s2">_without_operations"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">freight_fuel_totals_without_operations</span><span class="p">[</span><span class="n">fuel</span><span class="p">]</span>
         <span class="p">)</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_consumption_</span><span class="si">{</span><span class="n">fuel</span><span class="si">}</span><span class="s2">_without_operations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_consumption_</span><span class="si">{</span><span class="n">fuel</span><span class="si">}</span><span class="s2">_without_operations"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">passenger_fuel_totals_without_operations</span><span class="p">[</span><span class="n">fuel</span><span class="p">]</span>
             <span class="o">+</span> <span class="n">freight_fuel_totals_without_operations</span><span class="p">[</span><span class="n">fuel</span><span class="p">]</span>
         <span class="p">)</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_consumption_passenger_</span><span class="si">{</span><span class="n">fuel</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">passenger_fuel_totals</span><span class="p">[</span><span class="n">fuel</span><span class="p">]</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_consumption_freight_</span><span class="si">{</span><span class="n">fuel</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">freight_fuel_totals</span><span class="p">[</span><span class="n">fuel</span><span class="p">]</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_consumption_</span><span class="si">{</span><span class="n">fuel</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_consumption_passenger_</span><span class="si">{</span><span class="n">fuel</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="n">passenger_fuel_totals</span><span class="p">[</span><span class="n">fuel</span><span class="p">]</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_consumption_freight_</span><span class="si">{</span><span class="n">fuel</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="n">freight_fuel_totals</span><span class="p">[</span><span class="n">fuel</span><span class="p">]</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_consumption_</span><span class="si">{</span><span class="n">fuel</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">passenger_fuel_totals</span><span class="p">[</span><span class="n">fuel</span><span class="p">]</span> <span class="o">+</span> <span class="n">freight_fuel_totals</span><span class="p">[</span><span class="n">fuel</span><span class="p">]</span>
         <span class="p">)</span>
 
@@ -6757,7 +6763,9 @@ Notes
 
 
 <a href="#aeromaps.models.impacts.energy_resources.energy_consumption.HydrogenConsumption" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">HydrogenConsumption</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;hydrogen_consumption&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">HydrogenConsumption</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"hydrogen_consumption"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6834,8 +6842,8 @@ Notes
                     <summary>Source code in <code>aeromaps/models/impacts/energy_resources/energy_consumption.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">415</span>
 <span class="normal">416</span>
-<span class="normal">417</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;hydrogen_consumption&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="normal">417</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"hydrogen_consumption"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">"custom"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">markets</span> <span class="o">=</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -6972,21 +6980,21 @@ Notes
 <span class="normal">555</span>
 <span class="normal">556</span>
 <span class="normal">557</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Hydrogen consumption per market and aggregates.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Hydrogen consumption per market and aggregates."""</span>
     <span class="n">output_data</span> <span class="o">=</span> <span class="p">{}</span>
 
-    <span class="n">passenger_markets</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">&quot;passenger&quot;</span><span class="p">))</span>
-    <span class="n">freight_markets</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">&quot;freight&quot;</span><span class="p">))</span>
+    <span class="n">passenger_markets</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">"passenger"</span><span class="p">))</span>
+    <span class="n">freight_markets</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">"freight"</span><span class="p">))</span>
 
     <span class="n">passenger_hydrogen_without_operations</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">passenger_hydrogen</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="n">passenger_markets</span><span class="p">:</span>
         <span class="n">mid</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">id</span>
-        <span class="n">ask</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen&quot;</span><span class="p">]</span>
+        <span class="n">ask</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen"</span><span class="p">]</span>
         <span class="n">energy_per_ask_without_operations</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span>
-            <span class="sa">f</span><span class="s2">&quot;energy_per_ask_without_operations_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen&quot;</span>
+            <span class="sa">f</span><span class="s2">"energy_per_ask_without_operations_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen"</span>
         <span class="p">]</span>
-        <span class="n">energy_per_ask</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_per_ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen&quot;</span><span class="p">]</span>
+        <span class="n">energy_per_ask</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_per_ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen"</span><span class="p">]</span>
 
         <span class="c1"># Energy is zero wherever there is no traffic, even when the per-ASK intensity is</span>
         <span class="c1"># NaN/inf from an upstream division-by-zero (energy_per_ask = energy / ask). The mask</span>
@@ -6997,10 +7005,10 @@ Notes
         <span class="p">)</span>
         <span class="n">energy_consumption</span> <span class="o">=</span> <span class="p">(</span><span class="n">energy_per_ask</span> <span class="o">*</span> <span class="n">ask</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">ask</span> <span class="o">!=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
 
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen_without_operations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen_without_operations"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">energy_consumption_without_operations</span>
         <span class="p">)</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">energy_consumption</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen"</span><span class="p">]</span> <span class="o">=</span> <span class="n">energy_consumption</span>
 
         <span class="n">passenger_hydrogen_without_operations</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">energy_consumption_without_operations</span>
@@ -7017,11 +7025,11 @@ Notes
     <span class="n">freight_hydrogen</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="n">freight_markets</span><span class="p">:</span>
         <span class="n">mid</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">id</span>
-        <span class="n">rtk</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen&quot;</span><span class="p">]</span>
+        <span class="n">rtk</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen"</span><span class="p">]</span>
         <span class="n">energy_per_rtk_without_operations</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span>
-            <span class="sa">f</span><span class="s2">&quot;energy_per_rtk_without_operations_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen&quot;</span>
+            <span class="sa">f</span><span class="s2">"energy_per_rtk_without_operations_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen"</span>
         <span class="p">]</span>
-        <span class="n">energy_per_rtk</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_per_rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen&quot;</span><span class="p">]</span>
+        <span class="n">energy_per_rtk</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_per_rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen"</span><span class="p">]</span>
 
         <span class="c1"># Energy is zero wherever there is no traffic, even when the per-RTK intensity is</span>
         <span class="c1"># NaN/inf from an upstream division-by-zero (energy_per_rtk = energy / rtk). The mask</span>
@@ -7032,10 +7040,10 @@ Notes
         <span class="p">)</span>
         <span class="n">energy_consumption</span> <span class="o">=</span> <span class="p">(</span><span class="n">energy_per_rtk</span> <span class="o">*</span> <span class="n">rtk</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">rtk</span> <span class="o">!=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
 
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen_without_operations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen_without_operations"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">energy_consumption_without_operations</span>
         <span class="p">)</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">energy_consumption</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen"</span><span class="p">]</span> <span class="o">=</span> <span class="n">energy_consumption</span>
 
         <span class="n">freight_hydrogen_without_operations</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">energy_consumption_without_operations</span>
@@ -7057,18 +7065,18 @@ Notes
     <span class="k">if</span> <span class="n">freight_hydrogen</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">freight_hydrogen</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
 
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;energy_consumption_passenger_hydrogen_without_operations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"energy_consumption_passenger_hydrogen_without_operations"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">passenger_hydrogen_without_operations</span>
     <span class="p">)</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;energy_consumption_freight_hydrogen_without_operations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"energy_consumption_freight_hydrogen_without_operations"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">freight_hydrogen_without_operations</span>
     <span class="p">)</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;energy_consumption_hydrogen_without_operations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"energy_consumption_hydrogen_without_operations"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">passenger_hydrogen_without_operations</span> <span class="o">+</span> <span class="n">freight_hydrogen_without_operations</span>
     <span class="p">)</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;energy_consumption_passenger_hydrogen&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">passenger_hydrogen</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;energy_consumption_freight_hydrogen&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">freight_hydrogen</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;energy_consumption_hydrogen&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">passenger_hydrogen</span> <span class="o">+</span> <span class="n">freight_hydrogen</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"energy_consumption_passenger_hydrogen"</span><span class="p">]</span> <span class="o">=</span> <span class="n">passenger_hydrogen</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"energy_consumption_freight_hydrogen"</span><span class="p">]</span> <span class="o">=</span> <span class="n">freight_hydrogen</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"energy_consumption_hydrogen"</span><span class="p">]</span> <span class="o">=</span> <span class="n">passenger_hydrogen</span> <span class="o">+</span> <span class="n">freight_hydrogen</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">_store_outputs</span><span class="p">(</span><span class="n">output_data</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">output_data</span>
@@ -7095,7 +7103,9 @@ Notes
 
 
 <a href="#aeromaps.models.impacts.energy_resources.energy_consumption.ElectricConsumption" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">ElectricConsumption</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;electric_consumption&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">ElectricConsumption</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"electric_consumption"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -7172,8 +7182,8 @@ Notes
                     <summary>Source code in <code>aeromaps/models/impacts/energy_resources/energy_consumption.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">593</span>
 <span class="normal">594</span>
-<span class="normal">595</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;electric_consumption&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="normal">595</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"electric_consumption"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">"custom"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">markets</span> <span class="o">=</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -7310,21 +7320,21 @@ Notes
 <span class="normal">733</span>
 <span class="normal">734</span>
 <span class="normal">735</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Electricity consumption per market and aggregates.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Electricity consumption per market and aggregates."""</span>
     <span class="n">output_data</span> <span class="o">=</span> <span class="p">{}</span>
 
-    <span class="n">passenger_markets</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">&quot;passenger&quot;</span><span class="p">))</span>
-    <span class="n">freight_markets</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">&quot;freight&quot;</span><span class="p">))</span>
+    <span class="n">passenger_markets</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">"passenger"</span><span class="p">))</span>
+    <span class="n">freight_markets</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">"freight"</span><span class="p">))</span>
 
     <span class="n">passenger_electric_without_operations</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">passenger_electric</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="n">passenger_markets</span><span class="p">:</span>
         <span class="n">mid</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">id</span>
-        <span class="n">ask</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric&quot;</span><span class="p">]</span>
+        <span class="n">ask</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric"</span><span class="p">]</span>
         <span class="n">energy_per_ask_without_operations</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span>
-            <span class="sa">f</span><span class="s2">&quot;energy_per_ask_without_operations_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric&quot;</span>
+            <span class="sa">f</span><span class="s2">"energy_per_ask_without_operations_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric"</span>
         <span class="p">]</span>
-        <span class="n">energy_per_ask</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_per_ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric&quot;</span><span class="p">]</span>
+        <span class="n">energy_per_ask</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_per_ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric"</span><span class="p">]</span>
 
         <span class="c1"># Energy is zero wherever there is no traffic, even when the per-ASK intensity is</span>
         <span class="c1"># NaN/inf from an upstream division-by-zero (energy_per_ask = energy / ask). The mask</span>
@@ -7335,10 +7345,10 @@ Notes
         <span class="p">)</span>
         <span class="n">energy_consumption</span> <span class="o">=</span> <span class="p">(</span><span class="n">energy_per_ask</span> <span class="o">*</span> <span class="n">ask</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">ask</span> <span class="o">!=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
 
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric_without_operations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric_without_operations"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">energy_consumption_without_operations</span>
         <span class="p">)</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">energy_consumption</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric"</span><span class="p">]</span> <span class="o">=</span> <span class="n">energy_consumption</span>
 
         <span class="n">passenger_electric_without_operations</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">energy_consumption_without_operations</span>
@@ -7355,11 +7365,11 @@ Notes
     <span class="n">freight_electric</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="n">freight_markets</span><span class="p">:</span>
         <span class="n">mid</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">id</span>
-        <span class="n">rtk</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric&quot;</span><span class="p">]</span>
+        <span class="n">rtk</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric"</span><span class="p">]</span>
         <span class="n">energy_per_rtk_without_operations</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span>
-            <span class="sa">f</span><span class="s2">&quot;energy_per_rtk_without_operations_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric&quot;</span>
+            <span class="sa">f</span><span class="s2">"energy_per_rtk_without_operations_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric"</span>
         <span class="p">]</span>
-        <span class="n">energy_per_rtk</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_per_rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric&quot;</span><span class="p">]</span>
+        <span class="n">energy_per_rtk</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_per_rtk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric"</span><span class="p">]</span>
 
         <span class="c1"># Energy is zero wherever there is no traffic, even when the per-RTK intensity is</span>
         <span class="c1"># NaN/inf from an upstream division-by-zero (energy_per_rtk = energy / rtk). The mask</span>
@@ -7370,10 +7380,10 @@ Notes
         <span class="p">)</span>
         <span class="n">energy_consumption</span> <span class="o">=</span> <span class="p">(</span><span class="n">energy_per_rtk</span> <span class="o">*</span> <span class="n">rtk</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">rtk</span> <span class="o">!=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
 
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric_without_operations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric_without_operations"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">energy_consumption_without_operations</span>
         <span class="p">)</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">energy_consumption</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric"</span><span class="p">]</span> <span class="o">=</span> <span class="n">energy_consumption</span>
 
         <span class="n">freight_electric_without_operations</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">energy_consumption_without_operations</span>
@@ -7395,18 +7405,18 @@ Notes
     <span class="k">if</span> <span class="n">freight_electric</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">freight_electric</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
 
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;energy_consumption_passenger_electric_without_operations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"energy_consumption_passenger_electric_without_operations"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">passenger_electric_without_operations</span>
     <span class="p">)</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;energy_consumption_freight_electric_without_operations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"energy_consumption_freight_electric_without_operations"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">freight_electric_without_operations</span>
     <span class="p">)</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;energy_consumption_electric_without_operations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"energy_consumption_electric_without_operations"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">passenger_electric_without_operations</span> <span class="o">+</span> <span class="n">freight_electric_without_operations</span>
     <span class="p">)</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;energy_consumption_passenger_electric&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">passenger_electric</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;energy_consumption_freight_electric&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">freight_electric</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;energy_consumption_electric&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">passenger_electric</span> <span class="o">+</span> <span class="n">freight_electric</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"energy_consumption_passenger_electric"</span><span class="p">]</span> <span class="o">=</span> <span class="n">passenger_electric</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"energy_consumption_freight_electric"</span><span class="p">]</span> <span class="o">=</span> <span class="n">freight_electric</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"energy_consumption_electric"</span><span class="p">]</span> <span class="o">=</span> <span class="n">passenger_electric</span> <span class="o">+</span> <span class="n">freight_electric</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">_store_outputs</span><span class="p">(</span><span class="n">output_data</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">output_data</span>
@@ -7433,7 +7443,9 @@ Notes
 
 
 <a href="#aeromaps.models.impacts.energy_resources.energy_consumption.EnergyConsumption" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">EnergyConsumption</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;energy_consumption&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">EnergyConsumption</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"energy_consumption"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -7479,8 +7491,8 @@ Notes
                     <summary>Source code in <code>aeromaps/models/impacts/energy_resources/energy_consumption.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">766</span>
 <span class="normal">767</span>
-<span class="normal">768</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;energy_consumption&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="normal">768</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"energy_consumption"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">"custom"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">markets</span> <span class="o">=</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -7605,31 +7617,31 @@ Notes
 <span class="normal">880</span>
 <span class="normal">881</span>
 <span class="normal">882</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Total energy consumption per market and aggregates.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Total energy consumption per market and aggregates."""</span>
     <span class="n">output_data</span> <span class="o">=</span> <span class="p">{}</span>
 
-    <span class="n">passenger_markets</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">&quot;passenger&quot;</span><span class="p">))</span>
-    <span class="n">freight_markets</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">&quot;freight&quot;</span><span class="p">))</span>
+    <span class="n">passenger_markets</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">"passenger"</span><span class="p">))</span>
+    <span class="n">freight_markets</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">"freight"</span><span class="p">))</span>
 
     <span class="n">passenger_energy_without_operations</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">passenger_energy</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="n">passenger_markets</span><span class="p">:</span>
         <span class="n">mid</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">id</span>
         <span class="n">market_energy_without_operations</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel_without_operations&quot;</span><span class="p">]</span>
-            <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen_without_operations&quot;</span><span class="p">]</span>
-            <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric_without_operations&quot;</span><span class="p">]</span>
+            <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel_without_operations"</span><span class="p">]</span>
+            <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen_without_operations"</span><span class="p">]</span>
+            <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric_without_operations"</span><span class="p">]</span>
         <span class="p">)</span>
         <span class="n">market_energy</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel&quot;</span><span class="p">]</span>
-            <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen&quot;</span><span class="p">]</span>
-            <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric&quot;</span><span class="p">]</span>
+            <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel"</span><span class="p">]</span>
+            <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen"</span><span class="p">]</span>
+            <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric"</span><span class="p">]</span>
         <span class="p">)</span>
 
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_without_operations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_without_operations"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">market_energy_without_operations</span>
         <span class="p">)</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">market_energy</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="n">market_energy</span>
 
         <span class="n">passenger_energy_without_operations</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">market_energy_without_operations</span>
@@ -7645,20 +7657,20 @@ Notes
     <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="n">freight_markets</span><span class="p">:</span>
         <span class="n">mid</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">id</span>
         <span class="n">market_energy_without_operations</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel_without_operations&quot;</span><span class="p">]</span>
-            <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen_without_operations&quot;</span><span class="p">]</span>
-            <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric_without_operations&quot;</span><span class="p">]</span>
+            <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel_without_operations"</span><span class="p">]</span>
+            <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen_without_operations"</span><span class="p">]</span>
+            <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric_without_operations"</span><span class="p">]</span>
         <span class="p">)</span>
         <span class="n">market_energy</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel&quot;</span><span class="p">]</span>
-            <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen&quot;</span><span class="p">]</span>
-            <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric&quot;</span><span class="p">]</span>
+            <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_dropin_fuel"</span><span class="p">]</span>
+            <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_hydrogen"</span><span class="p">]</span>
+            <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_electric"</span><span class="p">]</span>
         <span class="p">)</span>
 
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_without_operations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_without_operations"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">market_energy_without_operations</span>
         <span class="p">)</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">market_energy</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"energy_consumption_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="n">market_energy</span>
 
         <span class="n">freight_energy_without_operations</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">market_energy_without_operations</span>
@@ -7678,18 +7690,18 @@ Notes
     <span class="k">if</span> <span class="n">freight_energy</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">freight_energy</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
 
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;energy_consumption_passenger_without_operations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"energy_consumption_passenger_without_operations"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">passenger_energy_without_operations</span>
     <span class="p">)</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;energy_consumption_freight_without_operations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"energy_consumption_freight_without_operations"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">freight_energy_without_operations</span>
     <span class="p">)</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;energy_consumption_without_operations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"energy_consumption_without_operations"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">passenger_energy_without_operations</span> <span class="o">+</span> <span class="n">freight_energy_without_operations</span>
     <span class="p">)</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;energy_consumption_passenger&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">passenger_energy</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;energy_consumption_freight&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">freight_energy</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;energy_consumption&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">passenger_energy</span> <span class="o">+</span> <span class="n">freight_energy</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"energy_consumption_passenger"</span><span class="p">]</span> <span class="o">=</span> <span class="n">passenger_energy</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"energy_consumption_freight"</span><span class="p">]</span> <span class="o">=</span> <span class="n">freight_energy</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"energy_consumption"</span><span class="p">]</span> <span class="o">=</span> <span class="n">passenger_energy</span> <span class="o">+</span> <span class="n">freight_energy</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">_store_outputs</span><span class="p">(</span><span class="n">output_data</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">output_data</span>
@@ -7773,7 +7785,7 @@ Notes
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       

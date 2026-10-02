@@ -17,7 +17,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -25,7 +25,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -5620,7 +5620,9 @@ which caches those arrays during <code>compute</code> and calls these functions 
 
 
 <a href="#aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet_push.fleet_model_push_visualisations.visu_retirements_array" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">visu_retirements_array</span><span class="p">(</span><span class="n">vol_obs</span><span class="p">,</span> <span class="n">obs_names</span><span class="p">,</span> <span class="n">obs_name</span><span class="p">,</span> <span class="n">color_mix</span><span class="o">=</span><span class="n">colors_26</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">visu_retirements_array</span><span class="p">(</span>
+    <span class="n">vol_obs</span><span class="p">,</span> <span class="n">obs_names</span><span class="p">,</span> <span class="n">obs_name</span><span class="p">,</span> <span class="n">color_mix</span><span class="o">=</span><span class="n">colors_26</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -5917,7 +5919,7 @@ which caches those arrays during <code>compute</code> and calls these functions 
     <span class="n">obs_name</span><span class="p">,</span>
     <span class="n">color_mix</span><span class="o">=</span><span class="n">colors_26</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Visualise retired aircraft seats from a 3D volume array.</span>
 
 <span class="sd">    Parameters</span>
@@ -5935,19 +5937,19 @@ which caches those arrays during <code>compute</code> and calls these functions 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    None</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">vol_obs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">vol_obs</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">vol_obs</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;vol_obs must be 3D with shape (time, aggregation, displayed), got </span><span class="si">{</span><span class="n">vol_obs</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"vol_obs must be 3D with shape (time, aggregation, displayed), got </span><span class="si">{</span><span class="n">vol_obs</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
 
     <span class="n">T</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">M</span> <span class="o">=</span> <span class="n">vol_obs</span><span class="o">.</span><span class="n">shape</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">obs_names</span><span class="p">)</span> <span class="o">!=</span> <span class="n">M</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;obs_names length (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">obs_names</span><span class="p">)</span><span class="si">}</span><span class="s2">) must match vol_obs third dimension (</span><span class="si">{</span><span class="n">M</span><span class="si">}</span><span class="s2">).&quot;</span>
+            <span class="sa">f</span><span class="s2">"obs_names length (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">obs_names</span><span class="p">)</span><span class="si">}</span><span class="s2">) must match vol_obs third dimension (</span><span class="si">{</span><span class="n">M</span><span class="si">}</span><span class="s2">)."</span>
         <span class="p">)</span>
 
     <span class="c1"># Optional monotonic correction from the end of the horizon.</span>
@@ -5962,7 +5964,7 @@ which caches those arrays during <code>compute</code> and calls these functions 
     <span class="n">type_obs</span> <span class="o">=</span> <span class="n">retirement_seats_volumes</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">type_obs_ini</span> <span class="o">=</span> <span class="n">retirements_seats_volumes_ini</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">type_obs</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No retirement volumes to plot.&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"No retirement volumes to plot."</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
 
     <span class="c1"># Sort categories by total volume and mean date</span>
@@ -5999,7 +6001,7 @@ which caches those arrays during <code>compute</code> and calls these functions 
     <span class="n">top_ini</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_bars</span><span class="p">)</span>
 
     <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mf">5.5</span><span class="p">))</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">"y"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"grey"</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">"--"</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">p_categories</span><span class="p">):</span>
         <span class="n">top</span> <span class="o">=</span> <span class="n">top</span> <span class="o">+</span> <span class="n">type_obs</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span>
@@ -6036,9 +6038,9 @@ which caches those arrays during <code>compute</code> and calls these functions 
                 <span class="n">label</span><span class="o">=</span><span class="n">obs_names</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
                 <span class="n">color</span><span class="o">=</span><span class="n">color_mix</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">24</span><span class="p">],</span>
                 <span class="n">linewidth</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-                <span class="n">edgecolor</span><span class="o">=</span><span class="s2">&quot;0.2&quot;</span><span class="p">,</span>
+                <span class="n">edgecolor</span><span class="o">=</span><span class="s2">"0.2"</span><span class="p">,</span>
                 <span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
-                <span class="n">hatch</span><span class="o">=</span><span class="s2">&quot;..&quot;</span><span class="p">,</span>
+                <span class="n">hatch</span><span class="o">=</span><span class="s2">".."</span><span class="p">,</span>
                 <span class="n">zorder</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span>
@@ -6047,9 +6049,9 @@ which caches those arrays during <code>compute</code> and calls these functions 
                 <span class="n">top_ini</span><span class="p">,</span>
                 <span class="n">color</span><span class="o">=</span><span class="n">color_mix</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">24</span><span class="p">],</span>
                 <span class="n">linewidth</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-                <span class="n">edgecolor</span><span class="o">=</span><span class="s2">&quot;0.2&quot;</span><span class="p">,</span>
+                <span class="n">edgecolor</span><span class="o">=</span><span class="s2">"0.2"</span><span class="p">,</span>
                 <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
-                <span class="n">hatch</span><span class="o">=</span><span class="s2">&quot;..&quot;</span><span class="p">,</span>
+                <span class="n">hatch</span><span class="o">=</span><span class="s2">".."</span><span class="p">,</span>
                 <span class="n">zorder</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">bottom</span> <span class="o">=</span> <span class="n">top</span>
@@ -6060,11 +6062,11 @@ which caches those arrays during <code>compute</code> and calls these functions 
         <span class="n">bottom</span><span class="p">,</span>
         <span class="n">top</span><span class="p">,</span>
         <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-        <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span>
+        <span class="n">color</span><span class="o">=</span><span class="s2">"grey"</span><span class="p">,</span>
         <span class="n">linewidth</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-        <span class="n">edgecolor</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">,</span>
-        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Others&quot;</span><span class="p">,</span>
-        <span class="n">hatch</span><span class="o">=</span><span class="s2">&quot;//&quot;</span><span class="p">,</span>
+        <span class="n">edgecolor</span><span class="o">=</span><span class="s2">"white"</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="s2">"Others"</span><span class="p">,</span>
+        <span class="n">hatch</span><span class="o">=</span><span class="s2">"//"</span><span class="p">,</span>
         <span class="n">zorder</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span>
@@ -6072,34 +6074,34 @@ which caches those arrays during <code>compute</code> and calls these functions 
         <span class="n">bottom_ini</span><span class="p">,</span>
         <span class="n">top_ini</span><span class="p">,</span>
         <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
-        <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span>
+        <span class="n">color</span><span class="o">=</span><span class="s2">"grey"</span><span class="p">,</span>
         <span class="n">linewidth</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-        <span class="n">edgecolor</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">,</span>
-        <span class="n">hatch</span><span class="o">=</span><span class="s2">&quot;//&quot;</span><span class="p">,</span>
+        <span class="n">edgecolor</span><span class="o">=</span><span class="s2">"white"</span><span class="p">,</span>
+        <span class="n">hatch</span><span class="o">=</span><span class="s2">"//"</span><span class="p">,</span>
         <span class="n">zorder</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span>
         <span class="n">x</span><span class="p">,</span>
         <span class="mi">0</span><span class="p">,</span>
         <span class="mi">0</span><span class="p">,</span>
-        <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span>
+        <span class="n">color</span><span class="o">=</span><span class="s2">"grey"</span><span class="p">,</span>
         <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
-        <span class="n">edgecolor</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+        <span class="n">edgecolor</span><span class="o">=</span><span class="s2">"black"</span><span class="p">,</span>
         <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
-        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Temporary </span><span class="se">\n</span><span class="s2"> storage&quot;</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="s2">"Temporary </span><span class="se">\n</span><span class="s2"> storage"</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span>
         <span class="n">framealpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
         <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.05</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
-        <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper left&quot;</span><span class="p">,</span>
+        <span class="n">loc</span><span class="o">=</span><span class="s2">"upper left"</span><span class="p">,</span>
         <span class="n">borderaxespad</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
         <span class="n">ncol</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">x</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.05</span> <span class="o">*</span> <span class="n">top_ini</span><span class="o">.</span><span class="n">min</span><span class="p">()),</span> <span class="mf">1.05</span> <span class="o">*</span> <span class="n">top</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Years&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"Years"</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">obs_name</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
@@ -6118,7 +6120,9 @@ which caches those arrays during <code>compute</code> and calls these functions 
 
 
 <a href="#aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet_push.fleet_model_push_visualisations.visu_fleet_array" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">visu_fleet_array</span><span class="p">(</span><span class="n">vol_obs</span><span class="p">,</span> <span class="n">obs_names</span><span class="p">,</span> <span class="n">obs_name</span><span class="p">,</span> <span class="n">color_mix</span><span class="o">=</span><span class="n">colors_26</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">visu_fleet_array</span><span class="p">(</span>
+    <span class="n">vol_obs</span><span class="p">,</span> <span class="n">obs_names</span><span class="p">,</span> <span class="n">obs_name</span><span class="p">,</span> <span class="n">color_mix</span><span class="o">=</span><span class="n">colors_26</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6212,7 +6216,7 @@ which caches those arrays during <code>compute</code> and calls these functions 
 <span class="normal">323</span>
 <span class="normal">324</span>
 <span class="normal">325</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">visu_fleet_array</span><span class="p">(</span><span class="n">vol_obs</span><span class="p">,</span> <span class="n">obs_names</span><span class="p">,</span> <span class="n">obs_name</span><span class="p">,</span> <span class="n">color_mix</span><span class="o">=</span><span class="n">colors_26</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Stacked-area evolution of a per-type 2D volume array (T, M).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Stacked-area evolution of a per-type 2D volume array (T, M)."""</span>
     <span class="n">totals</span> <span class="o">=</span> <span class="n">vol_obs</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="n">top_k</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mi">48</span><span class="p">,</span> <span class="n">vol_obs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
     <span class="n">top_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="o">-</span><span class="n">totals</span><span class="p">)[:</span><span class="n">top_k</span><span class="p">]</span>
@@ -6240,7 +6244,7 @@ which caches those arrays during <code>compute</code> and calls these functions 
     <span class="n">bottom</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_bars</span><span class="p">)</span>
     <span class="n">top</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_bars</span><span class="p">)</span>
     <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">"y"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"grey"</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">"--"</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">p_categories</span><span class="p">):</span>
         <span class="n">top</span> <span class="o">=</span> <span class="n">top</span> <span class="o">+</span> <span class="n">vol_obs</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span>
@@ -6264,33 +6268,33 @@ which caches those arrays during <code>compute</code> and calls these functions 
                 <span class="n">color</span><span class="o">=</span><span class="n">color_mix</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">24</span><span class="p">],</span>
                 <span class="n">linewidth</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
                 <span class="n">alpha</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
-                <span class="n">hatch</span><span class="o">=</span><span class="s2">&quot;..&quot;</span><span class="p">,</span>
-                <span class="n">edgecolor</span><span class="o">=</span><span class="s2">&quot;0.2&quot;</span><span class="p">,</span>
+                <span class="n">hatch</span><span class="o">=</span><span class="s2">".."</span><span class="p">,</span>
+                <span class="n">edgecolor</span><span class="o">=</span><span class="s2">"0.2"</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">bottom</span> <span class="o">=</span> <span class="n">top</span>
-    <span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;hatch.color&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;white&quot;</span>
+    <span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">"hatch.color"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"white"</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span>
         <span class="n">x</span><span class="p">,</span>
         <span class="n">bottom</span><span class="p">,</span>
         <span class="n">top</span><span class="p">,</span>
         <span class="n">alpha</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
-        <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span>
+        <span class="n">color</span><span class="o">=</span><span class="s2">"grey"</span><span class="p">,</span>
         <span class="n">linewidth</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-        <span class="n">edgecolor</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">,</span>
-        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Others&quot;</span><span class="p">,</span>
-        <span class="n">hatch</span><span class="o">=</span><span class="s2">&quot;//&quot;</span><span class="p">,</span>
+        <span class="n">edgecolor</span><span class="o">=</span><span class="s2">"white"</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="s2">"Others"</span><span class="p">,</span>
+        <span class="n">hatch</span><span class="o">=</span><span class="s2">"//"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span>
         <span class="n">framealpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
         <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.05</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
-        <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper left&quot;</span><span class="p">,</span>
+        <span class="n">loc</span><span class="o">=</span><span class="s2">"upper left"</span><span class="p">,</span>
         <span class="n">borderaxespad</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
         <span class="n">ncol</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">x</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.1</span> <span class="o">*</span> <span class="n">top</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Years&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">"Years"</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="n">obs_name</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
@@ -6309,7 +6313,9 @@ which caches those arrays during <code>compute</code> and calls these functions 
 
 
 <a href="#aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet_push.fleet_model_push_visualisations.visu_retirement_age" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">visu_retirement_age</span><span class="p">(</span><span class="n">vol_obs</span><span class="p">,</span> <span class="n">obs_names</span><span class="p">,</span> <span class="n">color_mix</span><span class="o">=</span><span class="n">colors_26</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">visu_retirement_age</span><span class="p">(</span>
+    <span class="n">vol_obs</span><span class="p">,</span> <span class="n">obs_names</span><span class="p">,</span> <span class="n">color_mix</span><span class="o">=</span><span class="n">colors_26</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6413,7 +6419,7 @@ which caches those arrays during <code>compute</code> and calls these functions 
 <span class="normal">419</span>
 <span class="normal">420</span>
 <span class="normal">421</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">visu_retirement_age</span><span class="p">(</span><span class="n">vol_obs</span><span class="p">,</span> <span class="n">obs_names</span><span class="p">,</span> <span class="n">color_mix</span><span class="o">=</span><span class="n">colors_26</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Average retirement age (and operating age) per type from a 3D array (T, A, M).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Average retirement age (and operating age) per type from a 3D array (T, A, M)."""</span>
     <span class="n">totals</span> <span class="o">=</span> <span class="n">vol_obs</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
     <span class="n">top_k</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mi">48</span><span class="p">,</span> <span class="n">vol_obs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
     <span class="n">top_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="o">-</span><span class="n">totals</span><span class="p">)[:</span><span class="n">top_k</span><span class="p">]</span>
@@ -6446,7 +6452,7 @@ which caches those arrays during <code>compute</code> and calls these functions 
 
     <span class="n">x</span> <span class="o">=</span> <span class="n">t</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2025</span>
     <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mf">5.5</span><span class="p">))</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">"y"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"grey"</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">"--"</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">ac</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">obs_names</span><span class="p">)):</span>
         <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span>
             <span class="n">n_years</span><span class="p">[:,</span> <span class="n">ac</span><span class="p">],</span>
@@ -6463,12 +6469,12 @@ which caches those arrays during <code>compute</code> and calls these functions 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">mask</span><span class="p">):</span>
             <span class="k">continue</span>
         <span class="k">if</span> <span class="n">ac</span> <span class="o">&lt;</span> <span class="mi">24</span><span class="p">:</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color_mix</span><span class="p">[</span><span class="n">ac</span><span class="p">],</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">obs_names</span><span class="p">[</span><span class="n">ac</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s2">"-"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color_mix</span><span class="p">[</span><span class="n">ac</span><span class="p">],</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">obs_names</span><span class="p">[</span><span class="n">ac</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
                 <span class="n">x</span><span class="p">,</span>
                 <span class="n">y</span><span class="p">,</span>
-                <span class="s2">&quot;--&quot;</span><span class="p">,</span>
+                <span class="s2">"--"</span><span class="p">,</span>
                 <span class="n">color</span><span class="o">=</span><span class="n">color_mix</span><span class="p">[</span><span class="n">ac</span> <span class="o">-</span> <span class="mi">24</span><span class="p">],</span>
                 <span class="n">markersize</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
                 <span class="n">label</span><span class="o">=</span><span class="n">obs_names</span><span class="p">[</span><span class="n">ac</span><span class="p">],</span>
@@ -6484,25 +6490,25 @@ which caches those arrays during <code>compute</code> and calls these functions 
         <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">y_agg</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">retirements_seats_volumes_ini</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">500</span><span class="p">)</span>
     <span class="p">)</span>
     <span class="n">y_agg</span><span class="p">[</span><span class="o">~</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y_agg</span><span class="p">,</span> <span class="s2">&quot;*-&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;avg ret age&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y_agg</span><span class="p">,</span> <span class="s2">"*-"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"black"</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"avg ret age"</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 
     <span class="n">operating_years</span> <span class="o">=</span> <span class="p">(</span><span class="n">vol_obs</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">ages_t_y</span><span class="p">[:,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
     <span class="n">operating_volumes</span> <span class="o">=</span> <span class="n">vol_obs</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
         <span class="n">x</span><span class="p">,</span>
         <span class="n">operating_years</span> <span class="o">/</span> <span class="n">operating_volumes</span><span class="p">,</span>
-        <span class="s2">&quot;*-&quot;</span><span class="p">,</span>
+        <span class="s2">"*-"</span><span class="p">,</span>
         <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
         <span class="n">markersize</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
-        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;avg op age&quot;</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="s2">"avg op age"</span><span class="p">,</span>
         <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="n">xmin</span><span class="o">=</span><span class="mi">2025</span><span class="p">,</span> <span class="n">xmax</span><span class="o">=</span><span class="mi">2025</span> <span class="o">+</span> <span class="n">vol_obs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Years&quot;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Average retirement age&quot;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">ncol</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Retirements volumes &gt; 500 seats per year&quot;</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.05</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">"Years"</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">"Average retirement age"</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">ncol</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">"Retirements volumes &gt; 500 seats per year"</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.05</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
     <span class="k">return</span> <span class="kc">None</span>
@@ -6520,7 +6526,9 @@ which caches those arrays during <code>compute</code> and calls these functions 
 
 
 <a href="#aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet_push.fleet_model_push_visualisations.visu_energy_intensity" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">visu_energy_intensity</span><span class="p">(</span><span class="n">energy_content</span><span class="p">,</span> <span class="n">ask_content</span><span class="p">,</span> <span class="n">years</span><span class="p">,</span> <span class="n">market_name</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">visu_energy_intensity</span><span class="p">(</span>
+    <span class="n">energy_content</span><span class="p">,</span> <span class="n">ask_content</span><span class="p">,</span> <span class="n">years</span><span class="p">,</span> <span class="n">market_name</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6539,10 +6547,10 @@ which caches those arrays during <code>compute</code> and calls these functions 
 <span class="normal">430</span>
 <span class="normal">431</span>
 <span class="normal">432</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">visu_energy_intensity</span><span class="p">(</span><span class="n">energy_content</span><span class="p">,</span> <span class="n">ask_content</span><span class="p">,</span> <span class="n">years</span><span class="p">,</span> <span class="n">market_name</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Per-segment drop-in energy intensity (MJ/ASK) over time from 3D arrays.&quot;&quot;&quot;</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">"""Per-segment drop-in energy intensity (MJ/ASK) over time from 3D arrays."""</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">"y"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"grey"</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">"--"</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">years</span><span class="p">,</span> <span class="n">energy_content</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span> <span class="o">/</span> <span class="n">ask_content</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Energy efficiency &quot;</span> <span class="o">+</span> <span class="n">market_name</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">"Energy efficiency "</span> <span class="o">+</span> <span class="n">market_name</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="n">ymin</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="n">xmin</span><span class="o">=</span><span class="n">years</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">xmax</span><span class="o">=</span><span class="n">years</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
@@ -6618,7 +6626,7 @@ which caches those arrays during <code>compute</code> and calls these functions 
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       

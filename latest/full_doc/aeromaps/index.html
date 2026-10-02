@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -5778,7 +5778,13 @@
 
 
 <a href="#aeromaps.create_process" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">create_process</span><span class="p">(</span><span class="n">configuration_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">custom_models</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">optimisation</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">multi_regional</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">disable_execution_statistics</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">create_process</span><span class="p">(</span>
+    <span class="n">configuration_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">custom_models</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">optimisation</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">multi_regional</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">disable_execution_statistics</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -5918,13 +5924,13 @@ avoid semaphore exhaustion with many disciplines.</p>
 
 <p><span class="doc-section-title">Examples:</span></p>
     <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Single-region process</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">process</span> <span class="o">=</span> <span class="n">create_process</span><span class="p">(</span><span class="n">configuration_file</span><span class="o">=</span><span class="s2">&quot;config.yaml&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">process</span> <span class="o">=</span> <span class="n">create_process</span><span class="p">(</span><span class="n">configuration_file</span><span class="o">=</span><span class="s2">"config.yaml"</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">process</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Multi-regional process (auto-detected from config)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">process</span> <span class="o">=</span> <span class="n">create_process</span><span class="p">(</span><span class="n">configuration_file</span><span class="o">=</span><span class="s2">&quot;config_with_regionalisation.yaml&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">process</span> <span class="o">=</span> <span class="n">create_process</span><span class="p">(</span><span class="n">configuration_file</span><span class="o">=</span><span class="s2">"config_with_regionalisation.yaml"</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">process</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">process</span><span class="o">.</span><span class="n">regional_processes</span><span class="p">[</span><span class="s2">&quot;FR&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="s2">&quot;co2_emissions&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">process</span><span class="o">.</span><span class="n">regional_processes</span><span class="p">[</span><span class="s2">"FR"</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="s2">"co2_emissions"</span><span class="p">)</span>
 </code></pre></div>
 
 
@@ -6030,12 +6036,12 @@ avoid semaphore exhaustion with many disciplines.</p>
     <span class="n">multi_regional</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">disable_execution_statistics</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">AeroMAPSProcess</span><span class="p">,</span> <span class="n">MultiRegionalProcess</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Create an AeroMAPS process, auto-detecting single vs multi-regional mode.</span>
 
 <span class="sd">    This factory function automatically creates the appropriate process type</span>
 <span class="sd">    based on the configuration file contents or the multi_regional parameter.</span>
-<span class="sd">    If the configuration file contains a &#39;regionalisation&#39; section, a</span>
+<span class="sd">    If the configuration file contains a 'regionalisation' section, a</span>
 <span class="sd">    MultiRegionalProcess is created; otherwise, a standard AeroMAPSProcess</span>
 <span class="sd">    is created.</span>
 
@@ -6045,17 +6051,17 @@ avoid semaphore exhaustion with many disciplines.</p>
 <span class="sd">        Path to the configuration file (default is None).</span>
 <span class="sd">    custom_models : dict, optional</span>
 <span class="sd">        Dictionary of additional models to be used. These are merged with</span>
-<span class="sd">        the standard models loaded from the configuration file&#39;s</span>
+<span class="sd">        the standard models loaded from the configuration file's</span>
 <span class="sd">        `models.standards` list (default is None).</span>
 <span class="sd">    optimisation : bool, optional</span>
 <span class="sd">        Whether to enable optimisation (default is False).</span>
 <span class="sd">        Note: Only supported for single-region mode currently.</span>
 <span class="sd">    multi_regional : bool, optional</span>
 <span class="sd">        Whether to force multi-regional mode (default is False).</span>
-<span class="sd">        This can also be auto-detected from the configuration file&#39;s</span>
-<span class="sd">        &#39;regionalisation&#39; section.</span>
+<span class="sd">        This can also be auto-detected from the configuration file's</span>
+<span class="sd">        'regionalisation' section.</span>
 <span class="sd">    disable_execution_statistics : bool, optional</span>
-<span class="sd">        Whether to disable GEMSEO&#39;s execution statistics shared memory.</span>
+<span class="sd">        Whether to disable GEMSEO's execution statistics shared memory.</span>
 <span class="sd">        If None (default), automatically enabled for multi-regional mode to</span>
 <span class="sd">        avoid semaphore exhaustion with many disciplines.</span>
 
@@ -6067,14 +6073,14 @@ avoid semaphore exhaustion with many disciplines.</p>
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; # Single-region process</span>
-<span class="sd">    &gt;&gt;&gt; process = create_process(configuration_file=&quot;config.yaml&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; process = create_process(configuration_file="config.yaml")</span>
 <span class="sd">    &gt;&gt;&gt; process.compute()</span>
 <span class="sd">    &gt;&gt;&gt;</span>
 <span class="sd">    &gt;&gt;&gt; # Multi-regional process (auto-detected from config)</span>
-<span class="sd">    &gt;&gt;&gt; process = create_process(configuration_file=&quot;config_with_regionalisation.yaml&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; process = create_process(configuration_file="config_with_regionalisation.yaml")</span>
 <span class="sd">    &gt;&gt;&gt; process.compute()</span>
-<span class="sd">    &gt;&gt;&gt; process.regional_processes[&quot;FR&quot;].plot(&quot;co2_emissions&quot;)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    &gt;&gt;&gt; process.regional_processes["FR"].plot("co2_emissions")</span>
+<span class="sd">    """</span>
     <span class="c1"># Check if multi-regional mode should be used</span>
     <span class="n">use_multi_regional</span> <span class="o">=</span> <span class="n">multi_regional</span>
 
@@ -6084,14 +6090,14 @@ avoid semaphore exhaustion with many disciplines.</p>
             <span class="kn">from</span><span class="w"> </span><span class="nn">aeromaps.utils.yaml</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_yaml_file</span>
 
             <span class="n">config</span> <span class="o">=</span> <span class="n">read_yaml_file</span><span class="p">(</span><span class="n">configuration_file</span><span class="p">)</span>
-            <span class="n">use_multi_regional</span> <span class="o">=</span> <span class="s2">&quot;regionalisation&quot;</span> <span class="ow">in</span> <span class="n">config</span>
+            <span class="n">use_multi_regional</span> <span class="o">=</span> <span class="s2">"regionalisation"</span> <span class="ow">in</span> <span class="n">config</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
             <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="s2">&quot;Failed to auto-detect multi-regional mode from configuration file &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">configuration_file</span><span class="si">!r}</span><span class="s2">: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">. Falling back to single-region mode. &quot;</span>
-                <span class="s2">&quot;Set multi_regional=True explicitly to force multi-regional mode.&quot;</span><span class="p">,</span>
+                <span class="s2">"Failed to auto-detect multi-regional mode from configuration file "</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">configuration_file</span><span class="si">!r}</span><span class="s2">: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">. Falling back to single-region mode. "</span>
+                <span class="s2">"Set multi_regional=True explicitly to force multi-regional mode."</span><span class="p">,</span>
                 <span class="ne">UserWarning</span><span class="p">,</span>
             <span class="p">)</span>
 
@@ -6100,8 +6106,8 @@ avoid semaphore exhaustion with many disciplines.</p>
             <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="s2">&quot;Optimisation mode is not yet supported for multi-regional processes. &quot;</span>
-                <span class="s2">&quot;Using standard MDA mode instead.&quot;</span><span class="p">,</span>
+                <span class="s2">"Optimisation mode is not yet supported for multi-regional processes. "</span>
+                <span class="s2">"Using standard MDA mode instead."</span><span class="p">,</span>
                 <span class="ne">UserWarning</span><span class="p">,</span>
             <span class="p">)</span>
 
@@ -6131,7 +6137,11 @@ avoid semaphore exhaustion with many disciplines.</p>
 
 
 <a href="#aeromaps.create_multi_regional_process" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">create_multi_regional_process</span><span class="p">(</span><span class="n">configuration_file</span><span class="p">,</span> <span class="n">custom_models</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">disable_execution_statistics</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">create_multi_regional_process</span><span class="p">(</span>
+    <span class="n">configuration_file</span><span class="p">,</span>
+    <span class="n">custom_models</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">disable_execution_statistics</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6228,13 +6238,13 @@ with access to its multi-regional API (regional_processes, etc.).</p>
 
 
 <p><span class="doc-section-title">Examples:</span></p>
-    <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">process</span> <span class="o">=</span> <span class="n">create_multi_regional_process</span><span class="p">(</span><span class="s2">&quot;config.yaml&quot;</span><span class="p">)</span>
+    <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">process</span> <span class="o">=</span> <span class="n">create_multi_regional_process</span><span class="p">(</span><span class="s2">"config.yaml"</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">process</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Access regional data</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">region_id</span> <span class="ow">in</span> <span class="n">process</span><span class="o">.</span><span class="n">list_regions</span><span class="p">():</span>
 <span class="gp">... </span>    <span class="n">regional_proc</span> <span class="o">=</span> <span class="n">process</span><span class="o">.</span><span class="n">regional_processes</span><span class="p">[</span><span class="n">region_id</span><span class="p">]</span>
-<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">region_id</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">regional_proc</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;vector_outputs&#39;</span><span class="p">][</span><span class="s1">&#39;co2_emissions&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">region_id</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">regional_proc</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">'vector_outputs'</span><span class="p">][</span><span class="s1">'co2_emissions'</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Get aggregated global results</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">global_outputs</span> <span class="o">=</span> <span class="n">process</span><span class="o">.</span><span class="n">get_global_vector_outputs</span><span class="p">()</span>
@@ -6290,7 +6300,7 @@ with access to its multi-regional API (regional_processes, etc.).</p>
     <span class="n">custom_models</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">disable_execution_statistics</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MultiRegionalProcess</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Create a multi-regional AeroMAPS process explicitly.</span>
 
 <span class="sd">    Use this function when you specifically want a MultiRegionalProcess</span>
@@ -6299,11 +6309,11 @@ with access to its multi-regional API (regional_processes, etc.).</p>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    configuration_file : str</span>
-<span class="sd">        Path to the configuration file with &#39;regionalisation&#39; section.</span>
+<span class="sd">        Path to the configuration file with 'regionalisation' section.</span>
 <span class="sd">    custom_models : dict, optional</span>
 <span class="sd">        Dictionary of additional models to be used.</span>
 <span class="sd">    disable_execution_statistics : bool, optional</span>
-<span class="sd">        Whether to disable GEMSEO&#39;s execution statistics.</span>
+<span class="sd">        Whether to disable GEMSEO's execution statistics.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -6312,17 +6322,17 @@ with access to its multi-regional API (regional_processes, etc.).</p>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; process = create_multi_regional_process(&quot;config.yaml&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; process = create_multi_regional_process("config.yaml")</span>
 <span class="sd">    &gt;&gt;&gt; process.compute(parallel=True, max_workers=4)</span>
 <span class="sd">    &gt;&gt;&gt;</span>
 <span class="sd">    &gt;&gt;&gt; # Access regional data</span>
 <span class="sd">    &gt;&gt;&gt; for region_id in process.list_regions():</span>
 <span class="sd">    ...     regional_proc = process.regional_processes[region_id]</span>
-<span class="sd">    ...     print(f&quot;{region_id}: {regional_proc.data[&#39;vector_outputs&#39;][&#39;co2_emissions&#39;].iloc[-1]}&quot;)</span>
+<span class="sd">    ...     print(f"{region_id}: {regional_proc.data['vector_outputs']['co2_emissions'].iloc[-1]}")</span>
 <span class="sd">    &gt;&gt;&gt;</span>
 <span class="sd">    &gt;&gt;&gt; # Get aggregated global results</span>
 <span class="sd">    &gt;&gt;&gt; global_outputs = process.get_global_vector_outputs()</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="n">MultiRegionalProcess</span><span class="p">(</span>
         <span class="n">configuration_file</span><span class="o">=</span><span class="n">configuration_file</span><span class="p">,</span>
         <span class="n">custom_models</span><span class="o">=</span><span class="n">custom_models</span><span class="p">,</span>
@@ -6406,13 +6416,13 @@ or a list of AeroMAPSProcess objects.</p>
 
 
 <p><span class="doc-section-title">Examples:</span></p>
-    <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">process1</span> <span class="o">=</span> <span class="n">create_process</span><span class="p">(</span><span class="n">configuration_file</span><span class="o">=</span><span class="s2">&quot;config1.yaml&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">process2</span> <span class="o">=</span> <span class="n">create_process</span><span class="p">(</span><span class="n">configuration_file</span><span class="o">=</span><span class="s2">&quot;config2.yaml&quot;</span><span class="p">)</span>
+    <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">process1</span> <span class="o">=</span> <span class="n">create_process</span><span class="p">(</span><span class="n">configuration_file</span><span class="o">=</span><span class="s2">"config1.yaml"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">process2</span> <span class="o">=</span> <span class="n">create_process</span><span class="p">(</span><span class="n">configuration_file</span><span class="o">=</span><span class="s2">"config2.yaml"</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">process1</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">process2</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">multi</span> <span class="o">=</span> <span class="n">assemble_processes</span><span class="p">({</span><span class="s2">&quot;scenario_1&quot;</span><span class="p">:</span> <span class="n">process1</span><span class="p">,</span> <span class="s2">&quot;scenario_2&quot;</span><span class="p">:</span> <span class="n">process2</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">multi</span> <span class="o">=</span> <span class="n">assemble_processes</span><span class="p">({</span><span class="s2">"scenario_1"</span><span class="p">:</span> <span class="n">process1</span><span class="p">,</span> <span class="s2">"scenario_2"</span><span class="p">:</span> <span class="n">process2</span><span class="p">})</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">multi</span><span class="o">.</span><span class="n">list_available_plots</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">multi</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="s2">&quot;co2_emissions_comparison&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">multi</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="s2">"co2_emissions_comparison"</span><span class="p">)</span>
 </code></pre></div>
 
 
@@ -6444,7 +6454,7 @@ or a list of AeroMAPSProcess objects.</p>
 <span class="normal">180</span>
 <span class="normal">181</span>
 <span class="normal">182</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">assemble_processes</span><span class="p">(</span><span class="n">processes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AeroMAPSProcessesAssembly</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Create a MultiProcess manager for scenario comparison.</span>
 
 <span class="sd">    Parameters</span>
@@ -6460,14 +6470,14 @@ or a list of AeroMAPSProcess objects.</p>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; process1 = create_process(configuration_file=&quot;config1.yaml&quot;)</span>
-<span class="sd">    &gt;&gt;&gt; process2 = create_process(configuration_file=&quot;config2.yaml&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; process1 = create_process(configuration_file="config1.yaml")</span>
+<span class="sd">    &gt;&gt;&gt; process2 = create_process(configuration_file="config2.yaml")</span>
 <span class="sd">    &gt;&gt;&gt; process1.compute()</span>
 <span class="sd">    &gt;&gt;&gt; process2.compute()</span>
-<span class="sd">    &gt;&gt;&gt; multi = assemble_processes({&quot;scenario_1&quot;: process1, &quot;scenario_2&quot;: process2})</span>
+<span class="sd">    &gt;&gt;&gt; multi = assemble_processes({"scenario_1": process1, "scenario_2": process2})</span>
 <span class="sd">    &gt;&gt;&gt; multi.list_available_plots()</span>
-<span class="sd">    &gt;&gt;&gt; multi.plot(&quot;co2_emissions_comparison&quot;)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    &gt;&gt;&gt; multi.plot("co2_emissions_comparison")</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="n">AeroMAPSProcessesAssembly</span><span class="p">(</span><span class="n">processes</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -6540,7 +6550,7 @@ or a list of AeroMAPSProcess objects.</p>
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       

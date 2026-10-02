@@ -17,7 +17,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -25,7 +25,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -5615,7 +5615,12 @@ Module grouping models to compute total airline costs and airfares for passenger
 
 
 <a href="#aeromaps.models.impacts.costs.airlines.total_airline_cost_and_airfare.PassengerAircraftSimpleAirfare" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">PassengerAircraftSimpleAirfare</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;passenger_aircraft_simple_airfare&#39;</span><span class="p">,</span> <span class="n">fleet_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">PassengerAircraftSimpleAirfare</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"passenger_aircraft_simple_airfare"</span><span class="p">,</span>
+    <span class="n">fleet_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -5687,8 +5692,8 @@ Notes
                     <summary>Source code in <code>aeromaps/models/impacts/costs/airlines/total_airline_cost_and_airfare.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">49</span>
 <span class="normal">50</span>
-<span class="normal">51</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;passenger_aircraft_simple_airfare&quot;</span><span class="p">,</span> <span class="n">fleet_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="normal">51</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"passenger_aircraft_simple_airfare"</span><span class="p">,</span> <span class="n">fleet_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">"custom"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">markets</span> <span class="o">=</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -5814,7 +5819,7 @@ Notes
 <span class="normal">104</span>
 <span class="normal">105</span>
 <span class="normal">106</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute global and per-market airfares from costs and load factors.</span>
+<span class="w">    </span><span class="sd">"""Compute global and per-market airfares from costs and load factors.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -5825,27 +5830,27 @@ Notes
 <span class="sd">    -------</span>
 <span class="sd">    dict</span>
 <span class="sd">        Output airfares per ASK and per RPK for all markets.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">output_data</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="n">load_factor</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;load_factor&quot;</span><span class="p">]</span>
+    <span class="n">load_factor</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"load_factor"</span><span class="p">]</span>
 
     <span class="n">airfare_per_ask</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;total_cost_per_ask&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;operational_profit_per_ask&quot;</span><span class="p">]</span>
+        <span class="n">input_data</span><span class="p">[</span><span class="s2">"total_cost_per_ask"</span><span class="p">]</span> <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"operational_profit_per_ask"</span><span class="p">]</span>
     <span class="p">)</span>
     <span class="n">airfare_per_rpk</span> <span class="o">=</span> <span class="n">airfare_per_ask</span> <span class="o">/</span> <span class="p">(</span><span class="n">load_factor</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span>
 
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;airfare_per_ask&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">airfare_per_ask</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;airfare_per_rpk&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">airfare_per_rpk</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"airfare_per_ask"</span><span class="p">]</span> <span class="o">=</span> <span class="n">airfare_per_ask</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"airfare_per_rpk"</span><span class="p">]</span> <span class="o">=</span> <span class="n">airfare_per_rpk</span>
 
-    <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">&quot;passenger&quot;</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">"passenger"</span><span class="p">):</span>
         <span class="n">mid</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">id</span>
-        <span class="n">load_factor_m</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;load_factor_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+        <span class="n">load_factor_m</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"load_factor_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span>
         <span class="n">airfare_per_ask_m</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;total_cost_per_ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;operational_profit_per_ask&quot;</span><span class="p">]</span>
+            <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"total_cost_per_ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"operational_profit_per_ask"</span><span class="p">]</span>
         <span class="p">)</span>
         <span class="n">airfare_per_rpk_m</span> <span class="o">=</span> <span class="n">airfare_per_ask_m</span> <span class="o">/</span> <span class="p">(</span><span class="n">load_factor_m</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;airfare_per_ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">airfare_per_ask_m</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;airfare_per_rpk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">airfare_per_rpk_m</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"airfare_per_ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="n">airfare_per_ask_m</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"airfare_per_rpk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="n">airfare_per_rpk_m</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">_store_outputs</span><span class="p">(</span><span class="n">output_data</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">output_data</span>
@@ -5872,7 +5877,12 @@ Notes
 
 
 <a href="#aeromaps.models.impacts.costs.airlines.total_airline_cost_and_airfare.PassengerAircraftTotalCost" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">PassengerAircraftTotalCost</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;passenger_aircraft_total_cost&#39;</span><span class="p">,</span> <span class="n">fleet_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">PassengerAircraftTotalCost</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"passenger_aircraft_total_cost"</span><span class="p">,</span>
+    <span class="n">fleet_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -5975,8 +5985,8 @@ Notes
                     <summary>Source code in <code>aeromaps/models/impacts/costs/airlines/total_airline_cost_and_airfare.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">168</span>
 <span class="normal">169</span>
-<span class="normal">170</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;passenger_aircraft_total_cost&quot;</span><span class="p">,</span> <span class="n">fleet_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="normal">170</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"passenger_aircraft_total_cost"</span><span class="p">,</span> <span class="n">fleet_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">"custom"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">markets</span> <span class="o">=</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -6172,7 +6182,7 @@ Notes
 <span class="normal">321</span>
 <span class="normal">322</span>
 <span class="normal">323</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute total airline cost per ASK/RPK for global and market splits.</span>
+<span class="w">    </span><span class="sd">"""Compute total airline cost per ASK/RPK for global and market splits.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -6183,26 +6193,26 @@ Notes
 <span class="sd">    -------</span>
 <span class="sd">    dict</span>
 <span class="sd">        Output total cost series per ASK and per RPK.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">output_data</span> <span class="o">=</span> <span class="p">{}</span>
 
-    <span class="n">load_factor</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;load_factor&quot;</span><span class="p">]</span>
+    <span class="n">load_factor</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"load_factor"</span><span class="p">]</span>
 
     <span class="n">total_cost_per_ask_without_extra_tax</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;doc_non_energy_per_ask_mean&quot;</span><span class="p">]</span>
-        <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;doc_energy_per_ask_mean&quot;</span><span class="p">]</span>
-        <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;non_operating_cost_per_ask&quot;</span><span class="p">]</span>
-        <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;indirect_operating_cost_per_ask&quot;</span><span class="p">]</span>
-        <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;noc_carbon_offset_per_ask&quot;</span><span class="p">]</span>
-        <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;operational_efficiency_cost_non_energy_per_ask&quot;</span><span class="p">]</span>
-        <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;load_factor_cost_non_energy_per_ask&quot;</span><span class="p">]</span>
+        <span class="n">input_data</span><span class="p">[</span><span class="s2">"doc_non_energy_per_ask_mean"</span><span class="p">]</span>
+        <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"doc_energy_per_ask_mean"</span><span class="p">]</span>
+        <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"non_operating_cost_per_ask"</span><span class="p">]</span>
+        <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"indirect_operating_cost_per_ask"</span><span class="p">]</span>
+        <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"noc_carbon_offset_per_ask"</span><span class="p">]</span>
+        <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"operational_efficiency_cost_non_energy_per_ask"</span><span class="p">]</span>
+        <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"load_factor_cost_non_energy_per_ask"</span><span class="p">]</span>
     <span class="p">)</span>
     <span class="n">total_extra_tax_per_ask</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;doc_carbon_tax_lowering_offset_per_ask_mean&quot;</span><span class="p">]</span>
-        <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;passenger_tax_per_ask&quot;</span><span class="p">]</span>
-        <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;doc_energy_tax_per_ask_mean&quot;</span><span class="p">]</span>
+        <span class="n">input_data</span><span class="p">[</span><span class="s2">"doc_carbon_tax_lowering_offset_per_ask_mean"</span><span class="p">]</span>
+        <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"passenger_tax_per_ask"</span><span class="p">]</span>
+        <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"doc_energy_tax_per_ask_mean"</span><span class="p">]</span>
     <span class="p">)</span>
-    <span class="n">total_subsidy_per_ask</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;doc_energy_subsidy_per_ask_mean&quot;</span><span class="p">]</span>
+    <span class="n">total_subsidy_per_ask</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"doc_energy_subsidy_per_ask_mean"</span><span class="p">]</span>
     <span class="n">total_cost_per_ask</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">total_cost_per_ask_without_extra_tax</span> <span class="o">+</span> <span class="n">total_extra_tax_per_ask</span> <span class="o">-</span> <span class="n">total_subsidy_per_ask</span>
     <span class="p">)</span>
@@ -6216,35 +6226,35 @@ Notes
         <span class="n">total_cost_per_rpk_without_extra_tax</span> <span class="o">+</span> <span class="n">total_extra_tax_per_rpk</span> <span class="o">-</span> <span class="n">total_subsidy_per_rpk</span>
     <span class="p">)</span>
 
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;total_cost_per_ask_without_extra_tax&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_cost_per_ask_without_extra_tax</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;total_extra_tax_per_ask&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_extra_tax_per_ask</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;total_extra_tax_per_rpk&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_extra_tax_per_rpk</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;total_subsidy_per_ask&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_subsidy_per_ask</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;total_subsidy_per_rpk&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_subsidy_per_rpk</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;total_cost_per_ask&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_cost_per_ask</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;total_cost_per_rpk_without_extra_tax&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_cost_per_rpk_without_extra_tax</span>
-    <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;total_cost_per_rpk&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_cost_per_rpk</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"total_cost_per_ask_without_extra_tax"</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_cost_per_ask_without_extra_tax</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"total_extra_tax_per_ask"</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_extra_tax_per_ask</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"total_extra_tax_per_rpk"</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_extra_tax_per_rpk</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"total_subsidy_per_ask"</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_subsidy_per_ask</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"total_subsidy_per_rpk"</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_subsidy_per_rpk</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"total_cost_per_ask"</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_cost_per_ask</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"total_cost_per_rpk_without_extra_tax"</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_cost_per_rpk_without_extra_tax</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="s2">"total_cost_per_rpk"</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_cost_per_rpk</span>
 
-    <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">&quot;passenger&quot;</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">traffic_type</span><span class="o">=</span><span class="s2">"passenger"</span><span class="p">):</span>
         <span class="n">mid</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">id</span>
 
-        <span class="n">load_factor_m</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;load_factor_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+        <span class="n">load_factor_m</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"load_factor_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span>
 
         <span class="n">total_cost_per_ask_without_extra_tax_m</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;doc_non_energy_per_ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_mean&quot;</span><span class="p">]</span>
-            <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;doc_energy_per_ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_mean&quot;</span><span class="p">]</span>
-            <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;non_operating_cost_per_ask&quot;</span><span class="p">]</span>
-            <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;indirect_operating_cost_per_ask&quot;</span><span class="p">]</span>
-            <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;noc_carbon_offset_per_ask&quot;</span><span class="p">]</span>
-            <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;operational_efficiency_cost_non_energy_per_ask&quot;</span><span class="p">]</span>
-            <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;load_factor_cost_non_energy_per_ask&quot;</span><span class="p">]</span>
+            <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"doc_non_energy_per_ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_mean"</span><span class="p">]</span>
+            <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"doc_energy_per_ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_mean"</span><span class="p">]</span>
+            <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"non_operating_cost_per_ask"</span><span class="p">]</span>
+            <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"indirect_operating_cost_per_ask"</span><span class="p">]</span>
+            <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"noc_carbon_offset_per_ask"</span><span class="p">]</span>
+            <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"operational_efficiency_cost_non_energy_per_ask"</span><span class="p">]</span>
+            <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"load_factor_cost_non_energy_per_ask"</span><span class="p">]</span>
         <span class="p">)</span>
         <span class="n">total_extra_tax_per_ask_m</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;doc_carbon_tax_lowering_offset_per_ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_mean&quot;</span><span class="p">]</span>
-            <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;passenger_tax_per_ask&quot;</span><span class="p">]</span>
-            <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;doc_energy_tax_per_ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_mean&quot;</span><span class="p">]</span>
+            <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"doc_carbon_tax_lowering_offset_per_ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_mean"</span><span class="p">]</span>
+            <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">"passenger_tax_per_ask"</span><span class="p">]</span>
+            <span class="o">+</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"doc_energy_tax_per_ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_mean"</span><span class="p">]</span>
         <span class="p">)</span>
-        <span class="n">total_subsidy_per_ask_m</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;doc_energy_subsidy_per_ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_mean&quot;</span><span class="p">]</span>
+        <span class="n">total_subsidy_per_ask_m</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"doc_energy_subsidy_per_ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">_mean"</span><span class="p">]</span>
         <span class="n">total_cost_per_ask_m</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">total_cost_per_ask_without_extra_tax_m</span>
             <span class="o">+</span> <span class="n">total_extra_tax_per_ask_m</span>
@@ -6262,18 +6272,18 @@ Notes
             <span class="o">-</span> <span class="n">total_subsidy_per_rpk_m</span>
         <span class="p">)</span>
 
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;total_cost_per_ask_without_extra_tax_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"total_cost_per_ask_without_extra_tax_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">total_cost_per_ask_without_extra_tax_m</span>
         <span class="p">)</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;total_extra_tax_per_ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_extra_tax_per_ask_m</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;total_extra_tax_per_rpk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_extra_tax_per_rpk_m</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;total_subsidy_per_ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_subsidy_per_ask_m</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;total_subsidy_per_rpk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_subsidy_per_rpk_m</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;total_cost_per_ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_cost_per_ask_m</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;total_cost_per_rpk_without_extra_tax_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"total_extra_tax_per_ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_extra_tax_per_ask_m</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"total_extra_tax_per_rpk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_extra_tax_per_rpk_m</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"total_subsidy_per_ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_subsidy_per_ask_m</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"total_subsidy_per_rpk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_subsidy_per_rpk_m</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"total_cost_per_ask_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_cost_per_ask_m</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"total_cost_per_rpk_without_extra_tax_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">total_cost_per_rpk_without_extra_tax_m</span>
         <span class="p">)</span>
-        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;total_cost_per_rpk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_cost_per_rpk_m</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">"total_cost_per_rpk_</span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_cost_per_rpk_m</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">_store_outputs</span><span class="p">(</span><span class="n">output_data</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">output_data</span>
@@ -6300,7 +6310,12 @@ Notes
 
 
 <a href="#aeromaps.models.impacts.costs.airlines.total_airline_cost_and_airfare.PassengerAircraftMarginalCost" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">PassengerAircraftMarginalCost</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;passenger_aircraft_marginal_cost&#39;</span><span class="p">,</span> <span class="n">fleet_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">PassengerAircraftMarginalCost</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"passenger_aircraft_marginal_cost"</span><span class="p">,</span>
+    <span class="n">fleet_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6352,7 +6367,7 @@ Notes
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/impacts/costs/airlines/total_airline_cost_and_airfare.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">336</span>
-<span class="normal">337</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;passenger_aircraft_marginal_cost&quot;</span><span class="p">,</span> <span class="n">fleet_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="normal">337</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"passenger_aircraft_marginal_cost"</span><span class="p">,</span> <span class="n">fleet_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -6378,7 +6393,13 @@ Notes
 
 
 <a href="#aeromaps.models.impacts.costs.airlines.total_airline_cost_and_airfare.PassengerAircraftMarginalCost.compute" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span><span class="n">rpk</span><span class="p">,</span> <span class="n">rpk_no_elasticity</span><span class="p">,</span> <span class="n">total_cost_per_rpk_without_extra_tax</span><span class="p">,</span> <span class="n">total_extra_tax_per_rpk</span><span class="p">,</span> <span class="n">total_subsidy_per_rpk</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span>
+    <span class="n">rpk</span><span class="p">,</span>
+    <span class="n">rpk_no_elasticity</span><span class="p">,</span>
+    <span class="n">total_cost_per_rpk_without_extra_tax</span><span class="p">,</span>
+    <span class="n">total_extra_tax_per_rpk</span><span class="p">,</span>
+    <span class="n">total_subsidy_per_rpk</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6634,7 +6655,7 @@ Notes
     <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
     <span class="c1"># np.ndarray,</span>
 <span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Execute the computation of marginal cost and airfare.</span>
 
 <span class="sd">    Parameters</span>
@@ -6660,7 +6681,7 @@ Notes
 <span class="sd">        Airfare per revenue passenger kilometer (RPK) [€/RPK].</span>
 
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">intial_total_cost_per_rpk_without_extra_tax</span> <span class="o">=</span> <span class="n">total_cost_per_rpk_without_extra_tax</span><span class="p">[</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span> <span class="o">-</span> <span class="mi">1</span>
     <span class="p">]</span>
@@ -6709,8 +6730,8 @@ Notes
     <span class="c1"># ADD 2019 value to the airfare_per_rpk series</span>
     <span class="n">airfare_per_rpk</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">initial_price_per_rpk_corrected</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;marginal_cost_per_rpk&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">marginal_cost_per_rpk</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;airfare_per_rpk&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">airfare_per_rpk</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"marginal_cost_per_rpk"</span><span class="p">]</span> <span class="o">=</span> <span class="n">marginal_cost_per_rpk</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"airfare_per_rpk"</span><span class="p">]</span> <span class="o">=</span> <span class="n">airfare_per_rpk</span>
 
     <span class="k">return</span> <span class="p">(</span>
         <span class="n">marginal_cost_per_rpk</span><span class="p">,</span>
@@ -6797,7 +6818,7 @@ Notes
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       

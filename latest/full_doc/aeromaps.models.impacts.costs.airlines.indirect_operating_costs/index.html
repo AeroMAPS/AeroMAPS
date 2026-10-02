@@ -17,7 +17,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -25,7 +25,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -5614,7 +5614,9 @@
 
 
 <a href="#aeromaps.models.impacts.costs.airlines.indirect_operating_costs.PassengerAircraftIndirectOpCosts" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">PassengerAircraftIndirectOpCosts</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;passenger_aircraft_ioc&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">PassengerAircraftIndirectOpCosts</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"passenger_aircraft_ioc"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -5665,7 +5667,7 @@
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/impacts/costs/airlines/indirect_operating_costs.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">27</span>
-<span class="normal">28</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;passenger_aircraft_ioc&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="normal">28</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"passenger_aircraft_ioc"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -5809,7 +5811,7 @@
     <span class="n">ioc_reference_years</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
     <span class="n">ioc_reference_years_values</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute indirect operating cost per ASK by interpolation.</span>
+<span class="w">    </span><span class="sd">"""Compute indirect operating cost per ASK by interpolation.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -5822,7 +5824,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    indirect_operating_cost_per_ask</span>
 <span class="sd">        Values for airlines indirect-operating costs per ASK [€/ASK].</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Simple computation of airline indirect-operating costs (NOC)</span>
 
     <span class="n">ioc_prospective</span> <span class="o">=</span> <span class="n">aeromaps_interpolation_function</span><span class="p">(</span>
@@ -5831,12 +5833,12 @@
         <span class="n">ioc_reference_years_values</span><span class="p">,</span>
         <span class="n">model_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;indirect_operating_cost_per_ask&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ioc_prospective</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"indirect_operating_cost_per_ask"</span><span class="p">]</span> <span class="o">=</span> <span class="n">ioc_prospective</span>
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">historic_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot;indirect_operating_cost_per_ask&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span><span class="p">,</span> <span class="s2">&quot;indirect_operating_cost_per_ask&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">"indirect_operating_cost_per_ask"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span><span class="p">,</span> <span class="s2">"indirect_operating_cost_per_ask"</span>
         <span class="p">]</span>
-    <span class="n">indirect_operating_cost_per_ask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;indirect_operating_cost_per_ask&quot;</span><span class="p">]</span>
+    <span class="n">indirect_operating_cost_per_ask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">"indirect_operating_cost_per_ask"</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">indirect_operating_cost_per_ask</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -5861,7 +5863,11 @@
 
 
 <a href="#aeromaps.models.impacts.costs.airlines.indirect_operating_costs.PassengerAircraftNocCarbonOffset" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">PassengerAircraftNocCarbonOffset</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;passenger_aircraft_noc_carbon_offset&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">PassengerAircraftNocCarbonOffset</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"passenger_aircraft_noc_carbon_offset"</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -5913,7 +5919,7 @@
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/models/impacts/costs/airlines/indirect_operating_costs.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">77</span>
-<span class="normal">78</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;passenger_aircraft_noc_carbon_offset&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="normal">78</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"passenger_aircraft_noc_carbon_offset"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -5939,7 +5945,12 @@
 
 
 <a href="#aeromaps.models.impacts.costs.airlines.indirect_operating_costs.PassengerAircraftNocCarbonOffset.compute" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span><span class="n">carbon_offset</span><span class="p">,</span> <span class="n">ask</span><span class="p">,</span> <span class="n">carbon_offset_price_reference_years</span><span class="p">,</span> <span class="n">carbon_offset_price_reference_years_values</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span>
+    <span class="n">carbon_offset</span><span class="p">,</span>
+    <span class="n">ask</span><span class="p">,</span>
+    <span class="n">carbon_offset_price_reference_years</span><span class="p">,</span>
+    <span class="n">carbon_offset_price_reference_years_values</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6110,7 +6121,7 @@
     <span class="n">carbon_offset_price_reference_years</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
     <span class="n">carbon_offset_price_reference_years_values</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Interpolates carbon offset cost and derives carbon offset cost per ASK.</span>
+<span class="w">    </span><span class="sd">"""Interpolates carbon offset cost and derives carbon offset cost per ASK.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -6129,21 +6140,21 @@
 <span class="sd">        Share of remaining CO2 emissions offset [€/tCO₂].</span>
 <span class="sd">    noc_carbon_offset_per_ask</span>
 <span class="sd">        Non-operating cost per ASK due to carbon offset [€/ASK].</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">carbon_offset_price_prospective</span> <span class="o">=</span> <span class="n">aeromaps_interpolation_function</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">carbon_offset_price_reference_years</span><span class="p">,</span>
         <span class="n">carbon_offset_price_reference_years_values</span><span class="p">,</span>
         <span class="n">model_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;carbon_offset_price&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">carbon_offset_price_prospective</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"carbon_offset_price"</span><span class="p">]</span> <span class="o">=</span> <span class="n">carbon_offset_price_prospective</span>
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">historic_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot;carbon_offset_price&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
-    <span class="n">carbon_offset_price</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;carbon_offset_price&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">"carbon_offset_price"</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">carbon_offset_price</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">"carbon_offset_price"</span><span class="p">]</span>
 
     <span class="n">noc_carbon_offset_per_ask</span> <span class="o">=</span> <span class="n">carbon_offset</span> <span class="o">*</span> <span class="n">carbon_offset_price</span> <span class="o">*</span> <span class="mi">10</span><span class="o">**</span><span class="mi">6</span> <span class="o">/</span> <span class="n">ask</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;noc_carbon_offset_per_ask&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">noc_carbon_offset_per_ask</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"noc_carbon_offset_per_ask"</span><span class="p">]</span> <span class="o">=</span> <span class="n">noc_carbon_offset_per_ask</span>
 
     <span class="k">return</span> <span class="p">(</span><span class="n">carbon_offset_price</span><span class="p">,</span> <span class="n">noc_carbon_offset_per_ask</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -6226,7 +6237,7 @@
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       
