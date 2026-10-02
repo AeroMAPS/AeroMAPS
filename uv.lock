@@ -106,7 +106,7 @@ requires-dist = [
     { name = "deepdiff", specifier = ">=8,<9" },
     { name = "dill", specifier = ">=0.4.0,<0.5" },
     { name = "docstring-inheritance", specifier = ">=2.0.0,<3" },
-    { name = "gemseo", specifier = "<6.3.0" },
+    { name = "gemseo", specifier = ">=6.2.0,<6.3.0" },
     { name = "ipydatagrid", specifier = ">=1.1.14,<2" },
     { name = "ipympl", specifier = ">=0.9.3,<0.10" },
     { name = "ipysheet", specifier = ">=0.5.0,<1" },
