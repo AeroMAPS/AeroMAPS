@@ -6170,7 +6170,10 @@ no name has to be typed by hand.</p>
 <li><code>air_transport_co2_emissions_detailed</code> replaces each decomposable wedge by its sub-wedges, with the keywords 
 <code>efficiency_granularity</code> (<code>"aircraft"</code> or <code>"category"</code>), <code>energy_granularity</code> (<code>"pathway"</code> or <code>"family"</code>) and 
 <code>offset_granularity</code> (<code>"scheme"</code> or <code>"category"</code>); a lever whose decomposition is not available is drawn as a single 
-band;</li>
+band. The keyword <code>lever_order</code> sets the stacking: <code>"aeromaps"</code> (default) follows the cascade (efficiency, operations, 
+load factor, energy, offsets), and <code>"atag"</code> follows the ATAG roadmap, with the alternative aircraft (hydrogen and 
+electric pathways) stacked with the aircraft technology ahead of operations and load factor, then the drop-in fuels, 
+then the offsets. Only the stacking changes, not the value of any sub-lever;</li>
 <li><code>air_transport_co2_emissions_grouped</code> is the same plot per fleet category, per fuel family and per category of 
 offsetting schemes;</li>
 <li><code>air_transport_co2_emissions_per_market</code> draws each lever per market in one panel per lever, since some market 
