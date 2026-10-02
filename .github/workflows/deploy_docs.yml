@@ -49,19 +49,18 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Set up Python 3.10
-        uses: actions/setup-python@v5
+        uses: astral-sh/setup-uv@v7
         with:
           python-version: "3.10"
+          enable-cache: true
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install -r docs/requirements.txt
-          pip install -e .  # Install the package for autodoc
+          uv sync  # Install the package for autodoc
 
       - name: Build docs (verification)
         run: |
-          mkdocs build
+          uv run mkdocs build
           echo "Build successful! Site generated in ./site/"
 
   # Check if we should deploy (for push events)
@@ -112,15 +111,14 @@ jobs:
           fetch-depth: 0  # Required for mike to work with git history
 
       - name: Set up Python 3.10
-        uses: actions/setup-python@v5
+        uses: astral-sh/setup-uv@v7
         with:
           python-version: "3.10"
+          enable-cache: true
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install -r docs/requirements.txt
-          pip install -e .  # Install the package for autodoc
+          uv sync # Install the package for autodoc
 
       - name: Configure Git for Mike
         run: |
@@ -129,7 +127,7 @@ jobs:
 
       - name: Build docs (verification)
         run: |
-          mkdocs build
+          uv run mkdocs build
           echo "Build successful! Site generated in ./site/"
           ls -la site/
 

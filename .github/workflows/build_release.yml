@@ -15,29 +15,18 @@ jobs:
         os: [ ubuntu-latest ]
 
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  
+      - uses: astral-sh/setup-uv@v7
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install Poetry
-        run: |
-          pipx install poetry==${{ vars.POETRY_VERSION }}
-          pipx inject poetry poetry-dynamic-versioning[plugin]
-        shell: bash
-
-      - name: Poetry path
-        run: echo "$HOME/.poetry/bin" >> $GITHUB_PATH
-        shell: bash
-
       - name: Build AeroMAPS
-        run: poetry build
-        shell: bash
+        run: uv build
+
 
       - name: publish AeroMAPS to PyPI
         env:
-          TOKEN: ${{ secrets.PYPI }} # do not use the secret directly in run command, it would write it plainly in the log
-        run: |
-          poetry config pypi-token.pypi "$TOKEN"
-          poetry publish
+          UV_PUBLISH_TOKEN: ${{ secrets.PYPI }}
+        run: uv publish

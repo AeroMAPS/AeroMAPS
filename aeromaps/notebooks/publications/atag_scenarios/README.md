@@ -15,10 +15,10 @@ cd aeromaps/notebooks/publications/atag_scenarios
 **1. The `paper` dependency group**, which supplies the `myst` command line tool:
 
 ```bash
-poetry install --with paper
+uv sync --group paper
 ```
 
-**2. Typst**, for the PDF only. It is a standalone binary, not a Python package, so Poetry does not
+**2. Typst**, for the PDF only. It is a standalone binary, not a Python package, so uv does not
 install it. Get it from [typst.app](https://github.com/typst/typst/releases), your package manager,
 or `cargo install typst-cli`, and make sure `typst --version` answers. Without it the HTML build
 works and the PDF export stops with `The typst CLI must be installed to build PDFs with typst`.
