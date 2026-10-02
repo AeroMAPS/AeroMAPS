@@ -77,7 +77,7 @@ models:
 
 def main():
     realised = realised_dropin_shares(
-        json.loads(SOURCE_OUTPUTS.read_text(encoding="utf-8")), FIRST_YEAR
+        json.loads(SOURCE_OUTPUTS.read_text(encoding="utf-8")), SOURCE_ENERGY, FIRST_YEAR
     )
     quantity_to_share(SOURCE_ENERGY, realised, output_file=SHARE_ENERGY)
     body = SHARE_ENERGY.read_text(encoding="utf-8")

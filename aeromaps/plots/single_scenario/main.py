@@ -286,6 +286,10 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
     # in its technology pillar rather than with the fuels.
     ALTERNATIVE_AIRCRAFT_FAMILIES = ("hydrogen", "electric")
 
+    # Labels of the efficiency bands that make up fleet renewal, as opposed to the new
+    # aircraft: replacement of the old reference by the recent one, and its drift.
+    RENEWAL_BAND_LABELS = ("Fleet renewal", "Continuous improvement")
+
     def __init__(
         self,
         process,
@@ -384,12 +388,12 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
 
         bands = [
             (
-                "Fleet renewal",
+                self.RENEWAL_BAND_LABELS[0],
                 self._col(efficiency_sub_lever_column("fleet_renewal")),
                 efficiency_cmap(0.3),
             ),
             (
-                "Continuous improvement",
+                self.RENEWAL_BAND_LABELS[1],
                 self._col(efficiency_sub_lever_column("continuous_improvement")),
                 efficiency_cmap(0.4),
             ),
@@ -710,8 +714,8 @@ class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
         # alternative aircraft belong to the technology pillar, and operations and the
         # load factor share one colour.
         shade = self._atag_shades
-        renewal = [b for b in efficiency[:2]] if len(efficiency) > 2 else efficiency[:1]
-        technology = efficiency[len(renewal) :] + alternative
+        renewal = [b for b in efficiency if b[0] in self.RENEWAL_BAND_LABELS]
+        technology = [b for b in efficiency if b[0] not in self.RENEWAL_BAND_LABELS] + alternative
         bands = (
             demand
             + shade(renewal, ATAG_COLORS["fleet_renewal"], 0.3)

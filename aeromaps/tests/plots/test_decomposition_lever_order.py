@@ -3,7 +3,7 @@ The ATAG lever order of the detailed CO2 decomposition plot.
 
 Only the stacking changes with ``lever_order="atag"``: the sub-lever values are the
 same, so the bands still close on the same curves, and the ATAG pillars of
-``bottom_up_pillars`` sum to the same total as the cascade does.
+``bottom_up_roadmap_pillars`` sum to the same total as the cascade does.
 """
 
 import os
@@ -18,7 +18,7 @@ import pytest
 
 from aeromaps import create_process
 from aeromaps.plots.single_scenario.main import AirTransportCO2EmissionsDetailedPlot
-from aeromaps.utils.decomposition import bottom_up_pillars
+from aeromaps.utils.decomposition import bottom_up_roadmap_pillars
 
 CONFIG = os.path.join(
     os.path.dirname(__file__), "..", "tested_configs", "config_advanced.yaml"
@@ -63,7 +63,7 @@ def test_atag_order_puts_alternative_aircraft_before_operations(process):
 
 
 def test_atag_pillars_close_on_the_gross_cascade(process):
-    pillars = bottom_up_pillars(process)
+    pillars = bottom_up_roadmap_pillars(process)
     frame = process.data["vector_outputs"]
     years = range(process.parameters.prospection_start_year, process.parameters.end_year + 1)
     technology = frame["co2_emissions_last_historical_year_technology"]

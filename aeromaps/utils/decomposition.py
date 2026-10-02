@@ -279,10 +279,12 @@ def mitigation_wedges(view, anchors=(), start_year=2024, first_year=2000):
     ]
 
 
-def bottom_up_pillars(process):
-    """The ATAG pillars of a bottom-up scenario, from its detailed sub-levers.
+def bottom_up_roadmap_pillars(process):
+    """The roadmap pillars of a bottom-up scenario, from its detailed sub-levers.
 
-    The same five pillars ``pillar_totals`` returns for a top-down scenario, but read
+    The pillars follow the roadmap convention of this module (the one ATAG uses):
+    alternative aircraft count as technology and load factor joins operations. They
+    are the same pillars ``pillar_totals`` returns for a top-down scenario, but read
     from the sub-wedges of the detailed decomposition instead of counterfactual runs:
 
     ``fleet_renewal``
