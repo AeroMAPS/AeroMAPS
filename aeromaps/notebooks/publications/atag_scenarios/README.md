@@ -107,8 +107,13 @@ classifying it:
 from aeromaps.utils.scenarios import list_scenarios
 
 for scenario in list_scenarios(category="institutional"):
-    print(scenario.folder, scenario.name, scenario.tags)
+    print(scenario.folder, scenario.name, scenario.tags, scenario.scope)
 ```
+
+`scenario.yaml` also declares what the scenario covers, in an optional `scope` block (`region`,
+`traffic` from `domestic` / `international`, and `emissions` from `ttw` / `wtw`); the ATAG
+scenarios are `world`, domestic and international. `list_scenarios` filters on it with
+`region=` and `traffic=`, and an unknown value in the block raises, naming the file.
 
 Each notebook opens by copying its scenario into `./workdir`, and runs against that copy:
 
