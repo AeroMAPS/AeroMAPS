@@ -3,130 +3,33 @@
 ## Version 1.2.0
 
 Changed:
-- Corrected the first-order delay on the price demand responds to, which ran only from the
-  prospection start year and entered the projection from that year's raw price. Every historic
-  year was left unfiltered, so the effective price was not delayed at all over the period the
-  model was calibrated against. This was not a transient: the price index is anchored on the
-  same series at a reference year sitting on that boundary, so the cold start landed in the
-  denominator and shifted projected demand permanently, by -2.6 % of 2050 traffic under
-  SSP2-1.9 and +3.3 % under SSP2-4.5, in opposite directions. The recursion now starts at the
-  first year of the series, which is the convention the calibration used. Because the memory is
-  about 1.26 years the result does not depend on where the series begins: 2000, 2010, 2015 and
-  2019 give the same effective price at 2024 to four decimals. The function was duplicated
-  verbatim in the two demand models and now lives in one place. (#144)
-- Reproduced the ATAG Waypoint 2050 scenarios lever by lever across the three editions of the
-  report, with a MyST document that reads only committed outputs and names the notebook behind
-  each result. (#144)
-- Added a CO2 decomposition following the reports' own pillars: fleet renewal, next generation
-  aircraft technology, operations and infrastructure, SAF, and market-based measures. Alternative
-  aircraft are counted as technology rather than as fuel, and the technology split is anchored on
-  the report's own T0 frozen-fleet and T1 renewal-only scenarios. (#144)
-- Added tank-to-wake twins for the reported scenarios, derived from the well-to-wake files by the
-  CORSIA scaling the reports describe, so both accounting scopes are available from committed
-  outputs. Agreement with the report's published technology curves is 0.3 % to 2.6 % at 2050.
-  (#144)
-- Added demand-price coupling for the ATAG scenarios, closing the feedback the reports leave out,
-  under both fixed-volume and fixed-share readings of a SAF mandate. (#144)
-- Added a full lever sweep over traffic, technology, operations and fuel, placing the three
-  published scenarios inside the range their own levers can produce. (#144)
-- Added climate analysis for the ATAG scenarios: per-mechanism temperature decomposition, non-CO2
-  uncertainty bands from the contrail-sensitivity and fuel-effect literature, and contrail
-  avoidance strategies parameterised on Teoh et al. (2020). (#144)
-- Re-baselined the third-edition scenarios on observed traffic through 2023, kept inside those
-  scenarios' own inputs rather than in the packaged defaults. (#144)
-- Made the scenario-comparison utilities usable against committed JSON, so results can be plotted
-  without re-running a process. (#144)
-- Stripped outputs from every tracked notebook and enforced the existing nbstripout hook. (#144)
-- Energy carriers, processes and resources yaml files are validated at load time: a key no energy model reads is now rejected instead of silently resolving to zero. The accepted vocabulary is collected from the energy models themselves, each key belonging to exactly one `inputs` block. (#158)
-- Moved `fossil_kerosene`'s emission factor from `technical:` to `environmental:` in the three `icas_2024` energy carriers files. It was read from either block, so no result changes. (#158)
-- Documented `mandate_type: "quantity"` and `mandate_quantity`, and corrected the subsidy keys, in the shipped energy templates. (#158)
-- Moved the reference scenarios into the package, at `aeromaps/resources/scenarios/`: one folder per scenario holding its configurations and inputs, with the shared market definitions beside them and a `scenario.yaml` giving each a name, a category (institutional, industrial or academic) and tags. `aeromaps.utils.scenarios` lists and filters them, and `prepare_scenario` copies one into a sandbox before it is run. That copy is the point: the scenario notebooks write, both their outputs and their regenerated tank-to-wake twins, so running one in place edited the installed package. The results those runs produce stay with the publication that reports them. Covers the ATAG editions and their coupled-demand and climate extensions, the ICAO LTAG scenarios from the ECATS study, and the coupled LTAG scenarios from the WCTR one. (#144)
-- Moved the ATAG document and notebooks to `aeromaps/notebooks/publications/atag_scenarios/`, alongside the other publications, and removed the `notebooks/scenarios/` tree that held only them. No committed result changed. (#144)
-- Dropped the duplicated `socioeconomic_drivers` custom model from the WCTR configurations and the test fixtures, which declared a file identical to the packaged model. The built discipline set is unchanged either way. (#144)
-- Pinned `gemseo` to `>=6.2.0,<6.3.0`. The constraint had no lower bound, so an install without the lock file could resolve a version predating `max_consecutive_unsuccessful_iterations` and `SequenceTransformer.set_bounds` (6.1.0), or `inner_mda_settings` as a settings model (6.2.0) -- all of which the MDA code relies on. (#157)
-- Added a `regionalisation.global_models` block, allowing non-namespaced disciplines coupled across regions in `unified_mda` mode. (#157)
+- Added the ATAG Waypoint 2050 scenarios: reproduction of the three editions, decomposition into the report's pillars, tank-to-wake twins, demand-price coupling, lever sweep and climate analysis. (#144, #170)
+- Added a bottom-up variant of the ATAG third-edition scenarios and an ATAG lever order for the detailed CO2 plot. (#170)
+- Moved the reference scenarios into the package, with metadata to list and filter them. (#144, #170)
+- Added a decomposition of the CO2 levers into sub-levers (per aircraft, operational concept, pathway, offsetting scheme and market), with new plots and a tutorial. (#163)
+- Added generic operations and offsets modules. (#163)
+- Added comparison plots for background-scenario drivers and fuel-switching quantities, and made comparison utilities usable on committed JSON results. (#144)
+- Validated energy configuration files at load time and documented quantity mandates in the energy templates. (#158)
+- The MDA now raises when it does not converge, and `unified_mda` uses the same tolerance as a single region. (#157)
+- Added a `regionalisation.global_models` block for disciplines coupled across regions. (#157)
+- Pinned `gemseo` to `>=6.2.0,<6.3.0`. (#157)
+- Stripped outputs from tracked notebooks. (#144)
+- Migrated from Poetry to uv. (#166, #172)
 
 Fixed:
-- Corrected a family of silent-zero defects in the generic energy model, where a misspelled or
-  unregistered key resolved to a null series instead of raising: emission factors missing the
-  `mean_` prefix, a plural `resources_names`, subsidy and tax lookups, and a process's own
-  emission factor, which was read from `input_data` but never registered. (#144)
-- Corrected intensity curves reading as zero before their first reference year. Emission factors
-  and fuel prices are properties of a fuel and now clamp backwards, while mandates, which are
-  quantities, still truncate. (#144)
-- Corrected a double-count of electrofuel's green electricity and DAC-CO2, present in both its
-  cost and its emission factor. The report-derived values are life-cycle figures that already
-  include those resources, and charging for them again overstated the 2050 fuel price by 84 % and
-  roughly a third of the third edition's 2050 residual. (#144)
-- Corrected `aggregate_regions_to_single_process` writing machine-absolute paths into the
-  configuration it generates, which resolved on one machine only. (#144)
-- Corrected the ATAG re-baseline having been applied to `resources/data/parameters.json` and
-  `partitioning_inputs.json`, which silently moved the baseline of every other scenario in the
-  repository; no publication or tutorial output had been regenerated against it. The scenarios
-  that want that baseline now state it themselves, and
-  `aggregate_regions_to_single_process` takes a `region_baseline` so a caller can rebaseline a
-  multi-regional publication without editing it. (#144)
-- Corrected `compare_json_files` raising `IndexError` from inside its own tolerance filter when
-  two JSON files held lists of different lengths, instead of reporting them as different. (#144)
-- Corrected historic contrail forcing being zeroed, and ERF unit labels. (#144)
-- Corrected the alternative-aircraft wedge of the ATAG decomposition, which computed the energy
-  split with SAF taken first while drawing that pillar above the fuel band. The same
-  battery-electric fleet was credited 246.3 Mt in T4, where no SAF competes for it, and 6.3 Mt
-  in S2. The split now takes the alternative leg first, matching the stacking. Because no
-  ordering of a nested decomposition is canonical, the module documents the measured
-  indeterminacy rather than presenting the new order as correct. (#144)
-- Corrected the discontinuity where CORSIA-derived offsets stop in 2035 and the prescribed
-  residual shares begin in 2036. The prescribed shares were also too small for the scenarios with
-  higher gross emissions, so net emissions rose between 2036 and 2040 before falling. Post-2035
-  offsetting is now stated as a target on net emissions instead: a linear decline from the 2035
-  level to zero at 2050, which is the shape all three published scenarios draw. `make_offset_glide.py`
-  derives the schedule from each scenario's own gross trajectory, since copying one scenario's
-  schedule to another is what caused the defect. (#144)
-- Corrected the coupled-demand figure starting its CO2 panel at 2023, and added a background row
-  showing the population, GDP per capita and carbon price behind each SSP pathway. (#144)
-- Corrected envelope mode of the multi-scenario comparison plots dropping one member scenario
-  and labelling none of them, so a grouped envelope drew n-1 lines under an empty legend.
-  Members are now all drawn and labelled with their scenario name. (#144)
-- Added a per-pixel digitisation of the third edition's own S0-S2 charts, tracing the boundary
-  between the SAF and market-based bands, which is emissions before offsetting and therefore
-  comparable with `co2_emissions_including_energy`. The validation table now covers the three
-  headline scenarios as well as T0-T4. (#144)
-- Replaced the hand-written bibliography, whose keys were invented locally and which cited no
-  reference for GEMSEO or for fleet renewal, with entries taken from the author's own
-  libraries. (#144)
-- Added comparison plots for the background-scenario drivers, `population_comparison`,
-  `gdp_per_capita_comparison` and `carbon_price_comparison`, so a figure mixing drivers with
-  results can draw every panel through the same code path and share the grouping and envelope
-  behaviour. These carry outputs that only exist under an income-driven demand model, so the
-  registry test now skips a plot whose required outputs no test scenario produces, instead of
-  failing it. (#144)
-- Added `dropin_mfsp_without_carbon_tax_comparison` and `co2_per_energy_comparison`, which are
-  the two quantities a fuel-switching lever acts on directly, and made `years_source`
-  overridable per call. The cost plots default to the projection alone, which is right where a
-  scenario only models cost forward and wrong where the historic part is populated and carries
-  the calibration the projection starts from. (#144)
-- Extracted `build_pathways_manager` from `AeroMAPSProcess`, so results loaded from committed
-  JSON can reconstruct the pathway metadata from the same YAML the scenario ran against. Every
-  pathway-aware plot previously fell back to an empty figure against stored results. `SimpleMFSP`
-  takes an `mfsp_type` that skips its toggle, `ResultsView.plot` forwards keywords to the plot
-  class, and the per-RPK cost breakdown honours `legend=False`, which together let those plots be
-  used in a document built without a live kernel. (#144)
-- Fixed kerosene selectivity being ignored, and inverted, in the bottom-up model. (#158)
-- An unrecognised `mandate_type` now raises instead of giving a pathway no mandate at all. (#158)
-- Process emission factors are now read: the environmental models registered no process `environmental` block and looked the factor up under a name no configuration writes, so hydrogen liquefaction and electrolysis emissions read exactly zero. Every process emission factor in the repository is 0.0, so no committed result moves. (#158)
-- Corrected `resources_names` in the `mea_2024` energy carriers file, which silently dropped `hydrogen_electrolysis`'s `transport` resource from cost and emissions. (#158)
-- Coupling seeds now follow an `end_year` set after `create_process`: the price-elastic demand seeded `airfare_per_rpk` only up to the end year the process was created with, so RPK went NaN beyond it and the climate model raised. A value set in `process.parameters` still wins over the seed.
-- Changing the year bounds between two `compute()` calls now gives the results of a process created with them, instead of a `KeyError` or NaN emissions. The year index, the output frames, the disciplines' caches, the fleet model's dataframe and the MDA chain, whose coupling defaults and solver bounds are sized at its first run, were all kept at the previous years; `setup_mda()` no longer needs calling after such a change. (#107)
-- Missing values no longer travel inside the MDA coupling vector. AeroMAPS series are legitimately undefined over the historical years, and a coupling belonging to an unused pathway is undefined throughout; GEMSEO has no notion of a missing value, so those NaNs were carried as an in-band `-999999` sentinel. A sentinel in the numeric channel is destroyed by any operation the solver is entitled to perform on that vector -- notably `set_bounds`, whose projection clips it to the bound so it never converts back, taking a converged solve (9 iterations, 1.27e-11) to a non-converged one (20 iterations, 6.88e-07) on a scenario with no excursion at all. The pattern is now held in a mask beside the vector, frozen after the solver's first complete sweep and scoped to that solve, so the vector carries only real numbers. Results are bit-identical; `set_bounds` works; a NaN at a position the mask says carries a value is reported as "converged on NaN" exactly rather than heuristically. (#157)
-- Fixed disciplines mutating their MDA inputs in place, which corrupted GEMSEO's previous-iterate snapshot and pinned the normalised residual above the requested tolerance. (#157)
-- Fixed multi-regional outputs being duplicated on every repeated `compute()`. (#157)
-- An MDA that stops before reaching its convergence tolerance, or that reaches it only because its coupling variables have gone NaN, now raises instead of silently returning results that are not a solution of the coupled system. Set `process.on_mda_failure = "warn"` to keep the old behaviour. (#157)
-- Multi-regional `unified_mda` mode now solves with the same MDA settings as a single-region process (`tolerance=1e-10`, `max_mda_iter=200`) instead of `tolerance=1e-5` and GEMSEO's default of 20 iterations. (#157)
-- `RPKElasticity` no longer clips the airfare inside `compute`. It raises the airfare ratio to a fractional price elasticity, which numpy evaluates to NaN on a negative base, and it used to defend itself by substituting a clipped airfare -- so the physics ran on one value while the solver's residual was formed on another, and nothing downstream could tell. The physical domain is now *declared* by the model (`AIRFARE_BOUNDS_RELATIVE`, reaching the solver through `MDAChain.set_bounds`) and enforced by projecting the iterate, so solver and physics agree on what was evaluated. The projection governs the iterate carried between iterations, not a value passed producer-to-consumer within one Gauss-Seidel sweep; in that case the model now returns NaN and the run fails through the convergence check rather than returning a saturated number. Scenario results are unchanged. (#157)
-- The global ASK-weighted DOC means no longer return NaN in a year where no market has any traffic, where they computed `0/0`. The weight for an average of per-ASK *intensities* is a share, and it is no longer reconstructed from the volumes at the point of use: `ASKAggregator` now publishes `ask_<market>_share`, and the six DOC means weight by it. Where there is traffic the two forms are the same number; in a year where no market flies, the split falls back to the `<market>_rpk_share_last_historical_year` the scenario declares, so the weighting is defined by construction rather than divided out of zero. Years where only some markets are empty are unaffected, and a pre-existing NaN is left alone. (#157)
-- Fuel subsidies and fuel excise taxes now reach the airfare. `PassengerAircraftDocEnergySubsidy` and `PassengerAircraftDocEnergyTax` were netted into the reporting total `doc_total_per_ask_mean` but were not read by `PassengerAircraftTotalCost`, so a SAF subsidy moved the reported cost and left the fare -- and therefore price-elastic demand -- untouched. Energy taxes now join the carbon tax and the passenger tax in `total_extra_tax_per_*`; energy subsidies get their own category, `total_subsidy_per_ask` / `total_subsidy_per_rpk` (and per market), and are subtracted from `total_cost_per_*`. Both are applied on top of the supply function in `PassengerAircraftMarginalCost`, so they reach the fare at full pass-through and leave its base-year calibration untouched. Which side of the supply function each term now sits on, and the pass-through it therefore receives: *inside*, damped to `1/(1-a.eta)` (~0.95 on the shipped calibration), the energy DOC and hence the fuel price, the non-energy DOC, NOC, IOC, the carbon offset and the efficiency/load-factor cost terms; *outside*, at exactly 1.0, the carbon tax, the passenger tax, the energy tax and the energy subsidy. The tax wedge and the subsidy are applied at the same point with opposite signs, so equal amounts of the two cancel exactly. The carbon tax sitting outside is inherited from the previous code, not a new choice. **This changes results**: any scenario carrying an energy tax or subsidy now produces different traffic, because the channel from fuel policy to demand did not previously exist. Scenarios defining neither are unchanged. (#157)
-- `OperationalEfficiencyCost` no longer returns NaN when `operations_final_gain` is zero, where it computed `0/0`. No operational measure is targeted, so the cost is now zero; with price-elastic demand the NaN reached the airfare and the run failed. Scenarios with a non-zero final gain are unchanged. (#157)
-- `MultiRegionalProcess` now follows an `end_year` changed after creation, in both execution modes. `separate_processes` resized the regions but not the top-level chain and raised on the aggregated climate outputs; `unified_mda` raised nothing and returned results that stopped at the old end year, because its namespaced disciplines are copies holding their own parameters. Regions with different year bounds are now refused. (#157)
+- Corrected the first-order delay on the price seen by demand, which shifted projected traffic. (#144)
+- Corrected silent zeros in the generic energy model from misspelled or unregistered keys, including process emission factors. (#144, #158)
+- Corrected intensity curves reading zero before their first reference year. (#144)
+- Corrected a double count of green electricity and DAC-CO2 in electrofuel cost and emissions. (#144)
+- Corrected the ATAG re-baseline having modified the default parameters of every scenario. (#144)
+- Corrected the ATAG decomposition order, the post-2035 offset trajectory and several figures. (#144)
+- Corrected `aggregate_regions_to_single_process`, `compare_json_files`, historic contrail forcing and the envelope mode of comparison plots. (#144)
+- Restored pathway-aware plots on results loaded from JSON. (#144)
+- Fixed kerosene selectivity being ignored and inverted in the bottom-up model, and an unrecognised `mandate_type` now raises. (#158)
+- Fuel subsidies and energy taxes now reach the airfare; this changes results for scenarios that use them. (#157)
+- Fixed NaN sources in the MDA: sentinel values in the coupling vector, disciplines mutating their inputs, non-positive airfares, zero-traffic DOC means and duplicated columns on repeated `compute()`. (#157)
+- Fixed changing `end_year` after `create_process`. (#107, #167)
+- Fixed the markets global block overwriting the IAM model selector, and stale share keys in two markets files.
 
 
 ## Version 1.1.0
