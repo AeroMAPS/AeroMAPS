@@ -2,9 +2,7 @@
 
 As a contributor please read the [developer guide](#developer-guide) and the [coding guidelines and best practices]().
 
-## Developer Guide
-
-#### Quick Start
+## Quick Start
 
 - Install [uv](#uv)
 
@@ -37,32 +35,8 @@ uv sync --extra lca
 ```
 
 
-### Environments
+## Developer Guide
 
-#### UV
-
-We use [uv](https://docs.astral.sh/uv/) to handle all development tasks such as dependencies management, packaging, testing, checking, managing development enviroments. Follow uv's [installation guide](https://docs.astral.sh/uv/getting-started/installation/#standalone-installer) to start.
-
-With uv installed there's no need to install a specific python version as uv handles it.
-
-#### Development environment
-
-From the root repository of the project (where you can find the uv.lock file) open a terminal and create a python virtual environment (venv) with:
-
-```bash
-uv venv
-```
-
-you can chose the python version with the flag `--python` followed by the version, eg:
-
-```bash
-uv venv --python 3.11
-```
-
-You can find more information about uv venv [here](https://docs.astral.sh/uv/pip/environments/).
-
-
-With
 
 
 
@@ -74,7 +48,7 @@ With
 
 ### Versioning
 
-### Configuring your IDE
+### Configure your IDE
 
 #### PyCharm
 

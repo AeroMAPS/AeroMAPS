@@ -63,7 +63,7 @@ pip install --upgrade aeromaps[lca]
 Contributing
 ------------------
 
-If you want to contribute to the development of AeroMAPS, check out the documentation [contribution guide](docs/books/developers.md) section.
+If you want to contribute to the development of AeroMAPS, check out the documentation [contribution guide](docs/books/developers/index.md) section.
 
 Citation
 --------
