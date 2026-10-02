@@ -4,7 +4,7 @@ repos:
     hooks:
       - id: uv-lock
       - id: uv-export
-        args: ["--frozen", "--group", "doc", "--no-hashes", "--output-file=docs/requirements.txt", "--format", "requirements-txt", "--quiet"]
+        args: ["--frozen", "--no-default-groups", "--group", "doc", "--no-emit-project", "--no-hashes", "--output-file=docs/requirements.txt", "--format", "requirements-txt", "--quiet"]
         files: '^uv\.lock$'
   - repo: local
     hooks:

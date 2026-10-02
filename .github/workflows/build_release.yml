@@ -28,5 +28,5 @@ jobs:
 
       - name: publish AeroMAPS to PyPI
         env:
-          TOKEN: ${{ secrets.PYPI }} # do not use the secret directly in run command, it would write it plainly in the log
+          UV_PUBLISH_TOKEN: ${{ secrets.PYPI }}
         run: uv publish

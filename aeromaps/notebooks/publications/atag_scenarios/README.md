@@ -15,7 +15,7 @@ cd aeromaps/notebooks/publications/atag_scenarios
 **1. The `paper` dependency group**, which supplies the `myst` command line tool:
 
 ```bash
-uv sinc --group paper
+uv sync --group paper
 ```
 
 **2. Typst**, for the PDF only. It is a standalone binary, not a Python package, so uv does not
