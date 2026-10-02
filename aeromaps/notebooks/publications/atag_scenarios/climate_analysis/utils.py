@@ -153,16 +153,78 @@ def load_non_co2_bands(path=NON_CO2_BANDS):
             )
         band["implied_saf_contrail_reduction_percent"] = implied
 
+    _check_contrail_bands(document["derivation"], bands)
     return document["reference"], bands, document["mitigation_pairing"]
+
+
+def derive_contrail_bands(derivation):
+    """Contrail RF and efficacy for each band, from the inputs they rest on.
+
+    The band on the product RF x efficacy is its ±1σ: the product of two
+    independent factors, with coefficients of variation taken from Lee et al.'s
+    RF range (±70 % at 5–95 %, so 0.70 / 1.645) and from the spread of Wang et
+    al.'s three efficacies. That deviation is split between the two factors in
+    proportion to their squared coefficients of variation, so each band states
+    both explicitly without pushing either to an extreme.
+
+    Returns
+    -------
+    dict
+        ``{band: {"sensitivity_rf", "ratio_erf_rf", "contrail_erf_multiplier"}}``.
+    """
+    from statistics import NormalDist, pstdev
+
+    cv_rf = float(derivation["lee_rf_5_95_relative"]) / NormalDist().inv_cdf(0.95)
+    efficacies = [float(e) for e in derivation["wang_efficacy_samples"]]
+    mean_efficacy = sum(efficacies) / len(efficacies)
+    cv_efficacy = pstdev(efficacies) / mean_efficacy
+
+    cv2_rf, cv2_efficacy = cv_rf**2, cv_efficacy**2
+    cv_product = ((1.0 + cv2_rf) * (1.0 + cv2_efficacy) - 1.0) ** 0.5
+    share_rf = cv2_rf / (cv2_rf + cv2_efficacy)
+
+    central_rf = float(derivation["central_sensitivity_rf"])
+    central_efficacy = float(derivation["central_ratio_erf_rf"])
+    derived = {}
+    for key, multiplier in (
+        ("low", 1.0 - cv_product),
+        ("central", 1.0),
+        ("high", 1.0 + cv_product),
+    ):
+        derived[key] = {
+            "sensitivity_rf": central_rf * multiplier**share_rf,
+            "ratio_erf_rf": central_efficacy * multiplier ** (1.0 - share_rf),
+            "contrail_erf_multiplier": multiplier,
+        }
+    return derived
+
+
+def _check_contrail_bands(derivation, bands, tolerance=5e-4):
+    """Refuse a band file whose declared values drift from their derivation."""
+    derived = derive_contrail_bands(derivation)
+    for key, band in bands.items():
+        for field, expected in derived[key].items():
+            declared = float(band[field])
+            if abs(declared / expected - 1.0) > tolerance:
+                raise ValueError(
+                    f"band {key!r} declares {field} = {declared} but its derivation "
+                    f"gives {expected:.6g}; update non_co2_uncertainty.yaml"
+                )
 
 
 def apply_non_co2_band(process, band):
     """Apply one uncertainty band to an already-built process, in place.
 
-    Sets the contrail radiative-forcing sensitivity on the climate model and the
-    particle-number emission index on every non-default drop-in pathway (the
-    SAF pathways). Both are read at compute time, so this must be called before
+    Sets the contrail RF sensitivity and the ERF/RF ratio carrying the efficacy
+    on the climate model, and the particle-number emission index on every SAF
+    pathway. All three are read at compute time, so this must be called before
     ``compute()`` and after ``create_process()``.
+
+    Only non-fossil drop-in pathways take the SAF index. Fossil kerosene is the
+    reference the correction is relative to, and a fossil pathway that is not the
+    default, such as hydroprocessed kerosene, keeps the index it declares: it is
+    not SAF, and stamping SAF's value on it would silently give it SAF's contrail
+    benefit.
     """
     climate_model = process.models["climate_model"]
     # Deep-copy first. The settings dict is shared with whatever the climate
@@ -170,13 +232,15 @@ def apply_non_co2_band(process, band):
     # this band into every process built afterwards -- silently, and in a way
     # that depends on the order the bands happen to be run in.
     climate_model.species_settings = copy.deepcopy(climate_model.species_settings)
-    climate_model.species_settings["Contrails"]["sensitivity_rf"] = float(band["sensitivity_rf"])
+    contrails = climate_model.species_settings["Contrails"]
+    contrails["sensitivity_rf"] = float(band["sensitivity_rf"])
+    contrails["ratio_erf_rf"] = float(band["ratio_erf_rf"])
 
     emission_index = float(band["saf_emission_index_particles_number"])
     applied = []
     for pathway in process.pathways_manager.get(aircraft_type="dropin_fuel"):
-        if getattr(pathway, "default", False):
-            continue  # fossil kerosene is the reference the correction is relative to
+        if getattr(pathway, "default", False) or pathway.energy_origin == "fossil":
+            continue
         setattr(
             process.parameters, f"{pathway.name}_emission_index_particles_number", emission_index
         )

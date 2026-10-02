@@ -69,8 +69,14 @@ GENERATED = HERE / "_generated"
 # paths therefore, rather than a relative prefix that would have to track the depth
 # of two directory trees at once.
 FULL_INPUTS = (find_scenario("atag_3rd_edition_full").path / "data_inputs").as_posix()
+FULL_CONFIGS = (find_scenario("atag_3rd_edition_full").path / "config_files").as_posix()
 LIGHT_INPUTS = (find_scenario("atag_3rd_edition_light").path / "data_inputs").as_posix()
 MARKETS = (scenarios_root() / "markets").as_posix()
+# The climate model every ATAG scenario runs against, so that the sweep's climate
+# series agree with the published scenarios rather than with the packaged default.
+CLIMATE_MODEL = (
+    scenarios_root() / "climate_models" / "climate_model_fair_contrail_efficacy.yaml"
+).as_posix()
 
 # The third edition uses its own low/high files. The shared markets_low/high.yaml encode
 # second-edition growth whose spread lives in a COVID trough that the observed-data
@@ -190,7 +196,7 @@ SERIES_COLUMNS = {
 
 def _standards():
     """Model bundles of the third-edition full scenarios, read from S1."""
-    base = yaml.safe_load((ATAG / "3rd_edition_full/config_files/config_s1.yaml").read_text())
+    base = yaml.safe_load(Path(f"{FULL_CONFIGS}/config_s1.yaml").read_text())
     return base["models"]["standards"]
 
 
@@ -210,7 +216,7 @@ def config_path(traffic, saf):
                 "outputs": {"json_outputs_file": f"./{path.stem}_outputs.json"},
             },
             "models": {
-                "climate": {"climate_model_data_file": "default"},
+                "climate": {"climate_model_data_file": CLIMATE_MODEL},
                 "energy": dict(SAF_LEVELS[saf]),
                 "standards": _standards(),
                 "markets": {"markets_data_file": TRAFFIC_LEVELS[traffic]},
@@ -222,9 +228,7 @@ def config_path(traffic, saf):
 
 def technology_overrides(technology):
     """Parameter overrides carrying one technology variant."""
-    inputs = json.loads(
-        (ATAG / f"3rd_edition_full/data_inputs/{technology.lower()}_inputs.json").read_text()
-    )
+    inputs = json.loads(Path(f"{FULL_INPUTS}/{technology.lower()}_inputs.json").read_text())
     missing = [key for key in TECHNOLOGY_KEYS if key not in inputs]
     if missing:
         raise KeyError(f"{technology}_inputs.json is missing {missing}")
@@ -383,7 +387,17 @@ def wide(tidy=None):
     return sweep_utils.tidy_to_wide(read_results() if tidy is None else tidy, CELL_KEYS, DERIVED)
 
 
-def plot_grid(tidy=None, color_by="traffic", first_year=2023, alpha=0.18, figsize=(11, 12)):
+# How a lever level reads in a legend: "low" is a level of the traffic axis, and
+# "Low traffic" is what it means.
+LEVEL_LABELS = {
+    "traffic": {"low": "Low traffic", "central": "Central traffic", "high": "High traffic"},
+    "technology": {level: "%s technology" % level for level in TECHNOLOGY_LEVELS},
+    "operations": {level: "%s operations" % level for level in OPERATIONS_LEVELS},
+    "saf": {level: "%s fuel" % level for level in SAF_LEVELS},
+}
+
+
+def plot_grid(tidy=None, color_by="traffic", first_year=2023, alpha=0.18, figsize=(9.5, 15.5)):
     """Every cell of the grid, one translucent line each, over five metrics.
 
     One line per scenario at low opacity, so the density of the bundle carries the
@@ -420,6 +434,7 @@ def plot_grid(tidy=None, color_by="traffic", first_year=2023, alpha=0.18, figsiz
         figsize=figsize,
         highlight=PUBLISHED_CELLS,
         highlight_styles=PUBLISHED_STYLES,
+        level_labels=LEVEL_LABELS.get(color_by),
         suptitle="All %d lever combinations, coloured by %s"
         % (frame[frame["year"] >= first_year].groupby(CELL_KEYS).ngroups, color_by),
     )

@@ -2,82 +2,75 @@
 # ===============================================================
 #
 # The Waypoint 2050 reports quantify CO2 only. AeroMAPS computes the non-CO2
-# terms as well, but every scenario in this reproduction runs on a single
-# central set of climate coefficients, so nothing in the published figures
-# shows how wide the non-CO2 answer actually is.
+# terms as well, and this file sets how wide the contrail answer is allowed to
+# be. It follows the approach of Wang et al. (2026) on every axis:
 #
-# Two distinct uncertainties are missing, and they are not the same question:
+#   Wang, Z., Voigt, C., et al. (2026), Using aviation fuel hydrogen content to
+#   assess contrails and climate impact, Research Square preprint,
+#   doi:10.21203/rs.3.rs-10602102/v1.
 #
-#   1. HOW LARGE the non-CO2 effect is. Contrail forcing is the largest single
-#      warming term in 2050 and the least well constrained.
-#   2. HOW MUCH DECARBONISATION REDUCES IT. Cleaner fuels emit fewer soot
-#      particles, which reduces contrail forcing -- but by how much is itself
-#      an open question, and the modelling literature disagrees by a factor of
-#      three.
+# Three quantities are banded, each stated explicitly in every band:
 #
-# Both are represented here. Bands are named by CLIMATE IMPACT, not by
-# parameter magnitude: `high` is the worst outcome (largest contrail impact AND
-# the weakest reduction from measures), `low` the best. Read `high` as "high
-# warming", never as "high mitigation".
+#   1. HOW LARGE contrail RF is. Anchored, as Wang et al. do, on the 2018
+#      contrail cirrus RF of Lee et al. (2021, Table 3): 111.4 (33, 189)
+#      mW m-2, i.e. +-70 % at 5-95 %. The central sensitivity_rf reproduces
+#      111.4 in 2018 over the historical distance every ATAG run shares
+#      (see ../../../../resources/scenarios/climate_models/).
+#   2. HOW EFFECTIVE that RF is at warming. Wang et al.'s RF-based efficacy,
+#      sampled at 0.20, 0.31 and 0.60 (mean 0.37), carried in AeroCM's
+#      ratio_erf_rf with efficacy_erf at 1.0.
+#   3. HOW MUCH SAF REDUCES IT. Wang et al.'s contrail energy-forcing reduction
+#      for 15.2 % fuel hydrogen content, representative of 100 % SAF:
+#      52 [35, 67] %, between their high- and low-soot simulations (Fig. 2c).
 #
-# Axis 1 -- contrail sensitivity_rf
-# ---------------------------------
-# Passed to AeroCM through the climate model's species settings. The three
-# values are taken verbatim from the configurations the repository already
-# ships and has published with:
+# Bands are named by CLIMATE IMPACT, not by parameter magnitude: `high` is the
+# worst outcome (largest contrail warming AND the weakest reduction from SAF),
+# `low` the best. Read `high` as "high warming", never as "high mitigation".
 #
-#   aeromaps/notebooks/publications/ecats_2026/data/climate_data/
-#       climate_model_fair_lowcontrails.yaml    0.92e-12
-#       (packaged default: climate_model_fair.yaml)  2.23e-12
-#       climate_model_fair_highcontrails.yaml   3.54e-12
+# How RF and efficacy share one band
+# ----------------------------------
+# Wang et al. propagate RF and efficacy together in a Monte Carlo and report
+# +-1 sigma. The product of two independent factors with coefficients of
+# variation 0.426 (Lee's +-70 % over 1.645 sigma) and 0.456 (Wang's three
+# efficacies) has a coefficient of variation of 0.653, so +-1 sigma is x0.347 and
+# x1.653. That deviation is split between the two factors in proportion to their
+# squared coefficients of variation (0.466 for RF, 0.534 for efficacy), so that
+# each band states both explicitly and neither is pushed to an extreme. Stacking
+# both extremes instead would give about x0.16 to x2.8, far wider than either
+# source's own spread. The loader re-derives every band from `derivation` and
+# refuses a file that disagrees with it.
 #
-# They span 0.41x to 1.59x the central value. For scale, Lee et al. (2021) give
-# a contrail RF of 111 [33, 189] mW/m2 for 2018 (0.30x-1.70x), while Teoh et
-# al. (2024) simulate 62.1 mW/m2 for 2019 with a model-sensitivity range of
-# 34.8-74.8 (0.56x-1.20x). This band therefore sits between the two: wider than
-# one study's sensitivity analysis, narrower than the older extrapolated 95%
-# interval.
-#
-# Axis 2 -- SAF particle number emission index
-# --------------------------------------------
-# FuelEffectCorrectionContrails (non_co2.py:218) scales contrail forcing by
+# SAF particle-number emission index
+# ----------------------------------
+# FuelEffectCorrectionContrails scales contrail forcing by
 #
 #     sum over pathways of  massic_share * sqrt(EIn_pathway / EIn_default)
 #
-# so a target percentage reduction R at 100% SAF maps onto an emission index of
+# which is linear in blend share exactly as Wang et al.'s Eq. 5 is, so a
+# reduction R at 100 % SAF maps onto an emission index of
 #
 #     EIn_SAF = EIn_kerosene * (1 - R)^2        with EIn_kerosene = 2.0e14
 #
-# The bounds are the spread of the modelling literature as surveyed by Teoh et
-# al. (2022): Bock & Burkhardt find 15% and Burkhardt et al. 50% for fleet-wide
-# SAF; Schumann et al. compute 39% for a 50% cut in nvPM; Teoh et al. measure
-# 44% at 100% SAF. Caiazzo et al. report -4% to +18% over the United States --
-# i.e. SAF could make contrails worse -- but that is a regional result and is
-# deliberately left outside this band.
-#
-# The central value is the repository's existing 8.0e13, which implies 36.8%
-# and sits inside that literature range. It is left untouched on purpose: every
-# band's centre must still reproduce the committed scenarios exactly, which is
-# what the notebooks' drift guards check.
-#
-# References
-# ----------
-# Teoh et al. (2024), Global aviation contrail climate effects from 2019 to
-#   2021, Atmos. Chem. Phys. 24, 6071-6093. doi:10.5194/acp-24-6071-2024
-# Teoh et al. (2022), Targeted Use of Sustainable Aviation Fuel to Maximize
-#   Climate Benefits, Environ. Sci. Technol. 56, 17246-17255.
-#   doi:10.1021/acs.est.2c05781
-# Lee et al. (2021), The contribution of global aviation to anthropogenic
-#   climate forcing for 2000 to 2018, Atmos. Environ. 244, 117834.
+# The central 4.608e13 is also what every ATAG energy file now carries, so the
+# centre of every band reproduces the committed scenarios exactly, which is what
+# the notebooks' drift guards check.
 
 reference:
   citation: >-
-    Contrail sensitivity band as shipped in the repository's ecats_2026 climate
-    configurations; SAF particle-number band from the modelling literature
-    surveyed by Teoh et al. (2022).
+    Contrail RF anchored on Lee et al. (2021); RF-based efficacy and SAF contrail
+    reduction of Wang et al. (2026).
   dois:
-    - 10.5194/acp-24-6071-2024
-    - 10.1021/acs.est.2c05781
+    - 10.1016/j.atmosenv.2020.117834
+    - 10.21203/rs.3.rs-10602102/v1
+
+# Inputs the band values are derived from. The loader recomputes the bands from
+# these and checks them against the declared values below.
+derivation:
+  lee_rf_2018_mw_m2: 111.4
+  lee_rf_5_95_relative: 0.70
+  wang_efficacy_samples: [0.20, 0.31, 0.60]
+  central_sensitivity_rf: 2.05236e-12
+  central_ratio_erf_rf: 0.37
 
 # Emission index of the default drop-in pathway (fossil kerosene) in the ATAG
 # energy files, used to express the SAF bounds as percentage reductions.
@@ -88,29 +81,35 @@ bands:
   low:
     label: Low non-CO2
     description: >-
-      Smallest contrail forcing and the strongest reduction from cleaner fuel:
-      the optimistic end for climate outcomes.
-    sensitivity_rf: 0.92e-12
-    saf_emission_index_particles_number: 5.0e+13   # -50 %, Burkhardt et al.
-    implied_saf_contrail_reduction_percent: 50.0
+      Contrail RF and efficacy at -1 sigma of their product and the strongest
+      reduction from SAF: the optimistic end for climate outcomes.
+    sensitivity_rf: 1.25353e-12      # x0.6108 of central
+    ratio_erf_rf: 0.2101             # x0.5678 of central
+    contrail_erf_multiplier: 0.3468  # product, -1 sigma
+    saf_emission_index_particles_number: 2.178e+13   # -67 %, Wang low-soot
+    implied_saf_contrail_reduction_percent: 67.0
 
   central:
     label: Central
     description: >-
-      The packaged defaults on both axes. Reproduces the committed scenarios
-      exactly.
-    sensitivity_rf: 2.23e-12
-    saf_emission_index_particles_number: 8.0e+13   # -36.8 %, repository default
-    implied_saf_contrail_reduction_percent: 36.8
+      Lee's 2018 contrail RF, Wang's mean efficacy and Wang's mean SAF
+      reduction. Reproduces the committed scenarios exactly.
+    sensitivity_rf: 2.05236e-12
+    ratio_erf_rf: 0.37
+    contrail_erf_multiplier: 1.0
+    saf_emission_index_particles_number: 4.608e+13   # -52 %, Wang central
+    implied_saf_contrail_reduction_percent: 52.0
 
   high:
     label: High non-CO2
     description: >-
-      Largest contrail forcing and the weakest reduction from cleaner fuel: the
-      pessimistic end for climate outcomes.
-    sensitivity_rf: 3.54e-12
-    saf_emission_index_particles_number: 1.445e+14  # -15 %, Bock & Burkhardt
-    implied_saf_contrail_reduction_percent: 15.0
+      Contrail RF and efficacy at +1 sigma of their product and the weakest
+      reduction from SAF: the pessimistic end for climate outcomes.
+    sensitivity_rf: 2.59353e-12      # x1.2637 of central
+    ratio_erf_rf: 0.4841             # x1.3083 of central
+    contrail_erf_multiplier: 1.6532  # product, +1 sigma
+    saf_emission_index_particles_number: 8.45e+13    # -35 %, Wang high-soot
+    implied_saf_contrail_reduction_percent: 35.0
 
 # Which mitigation-gain bound in contrail_variants.yaml each band pairs with,
 # when the avoidance scenarios are run under these bands. The pairing follows

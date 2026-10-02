@@ -25,15 +25,22 @@ from dataclasses import dataclass, field
 from difflib import get_close_matches
 from importlib.resources import files
 from pathlib import Path
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from aeromaps.utils.yaml import read_yaml_file
 
-# The shared market definitions several scenarios reach through ``../../markets``.
-# Not a scenario itself, and travels with every sandbox for that reason.
-SHARED_DIRS = ("markets",)
+# Folders several scenarios reach through ``../../<folder>``: the shared market
+# definitions, and the climate models a scenario family runs against. Neither is a
+# scenario itself, and both travel with every sandbox for that reason.
+SHARED_DIRS = ("markets", "climate_models")
 
 METADATA_FILE = "scenario.yaml"
+
+# What a scenario covers, as declared in its ``scope`` block. ``region`` is free text
+# (``world``, ``europe``...); the other two are closed vocabularies, so a typo is an
+# error rather than a scenario that quietly matches nothing.
+SCOPE_TRAFFIC = ("domestic", "international")
+SCOPE_EMISSIONS = ("ttw", "wtw")
 
 # A folder is a scenario if it holds configurations under one of these names.
 CONFIG_DIRS = ("config_files", "configs")
@@ -49,6 +56,9 @@ class Scenario:
     category: str = "uncategorised"
     tags: List[str] = field(default_factory=list)
     description: str = ""
+    # {"region": "world", "traffic": ["domestic", "international"], "emissions": [...]};
+    # empty when the scenario does not declare one.
+    scope: Dict[str, object] = field(default_factory=dict)
 
     @property
     def config_dir(self) -> Path:
@@ -65,6 +75,39 @@ class Scenario:
 def scenarios_root() -> Path:
     """The packaged directory holding the reference scenarios."""
     return Path(str(files("aeromaps") / "resources" / "scenarios"))
+
+
+def _read_scope(raw, source) -> Dict[str, object]:
+    """The ``scope`` block of a scenario file, validated.
+
+    ``region`` is a string; ``traffic`` and ``emissions`` are lists drawn from
+    :data:`SCOPE_TRAFFIC` and :data:`SCOPE_EMISSIONS`. A bare string is read as a
+    one-item list. Anything else raises, naming the file.
+    """
+    if not raw:
+        return {}
+    if not isinstance(raw, dict):
+        raise ValueError(f"{source}: `scope` must be a mapping, got {type(raw).__name__}.")
+    allowed = {"region": None, "traffic": SCOPE_TRAFFIC, "emissions": SCOPE_EMISSIONS}
+    unknown = sorted(set(raw) - set(allowed))
+    if unknown:
+        raise ValueError(f"{source}: unknown scope key(s) {unknown}. Accepted: {sorted(allowed)}.")
+    scope = {}
+    for key, value in raw.items():
+        if key == "region":
+            if not isinstance(value, str):
+                raise ValueError(f"{source}: scope.region must be a string, got {value!r}.")
+            scope[key] = value.lower()
+            continue
+        values = [value] if isinstance(value, str) else list(value or [])
+        values = [str(v).lower() for v in values]
+        bad = [v for v in values if v not in allowed[key]]
+        if bad:
+            raise ValueError(
+                f"{source}: scope.{key} has {bad}; accepted values: {list(allowed[key])}."
+            )
+        scope[key] = values
+    return scope
 
 
 def _read(folder: Path) -> Scenario:
@@ -87,13 +130,22 @@ def _read(folder: Path) -> Scenario:
         category=meta.get("category") or "uncategorised",
         tags=[str(tag) for tag in tags],
         description=meta.get("description") or "",
+        scope=_read_scope(meta.get("scope"), metadata_path),
     )
 
 
-def list_scenarios(category: Optional[str] = None, tag: Optional[str] = None) -> List[Scenario]:
-    """Every packaged scenario, optionally filtered by category or tag.
+def list_scenarios(
+    category: Optional[str] = None,
+    tag: Optional[str] = None,
+    region: Optional[str] = None,
+    traffic: Optional[str] = None,
+) -> List[Scenario]:
+    """Every packaged scenario, optionally filtered by category, tag or scope.
 
-    Matching is case-insensitive on both, since these are labels written by hand.
+    Matching is case-insensitive, since these are labels written by hand. ``region``
+    matches the scenario's declared region, and ``traffic`` keeps the scenarios whose
+    declared scope covers that traffic (``"international"``, ``"domestic"``). A
+    scenario with no declared scope matches neither filter.
     """
     found = []
     for folder in sorted(scenarios_root().iterdir()):
@@ -107,6 +159,10 @@ def list_scenarios(category: Optional[str] = None, tag: Optional[str] = None) ->
     if tag is not None:
         wanted = tag.lower()
         found = [s for s in found if any(t.lower() == wanted for t in s.tags)]
+    if region is not None:
+        found = [s for s in found if s.scope.get("region") == region.lower()]
+    if traffic is not None:
+        found = [s for s in found if traffic.lower() in s.scope.get("traffic", [])]
     return found
 
 

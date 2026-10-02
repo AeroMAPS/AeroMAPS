@@ -107,8 +107,13 @@ classifying it:
 from aeromaps.utils.scenarios import list_scenarios
 
 for scenario in list_scenarios(category="institutional"):
-    print(scenario.folder, scenario.name, scenario.tags)
+    print(scenario.folder, scenario.name, scenario.tags, scenario.scope)
 ```
+
+`scenario.yaml` also declares what the scenario covers, in an optional `scope` block (`region`,
+`traffic` from `domestic` / `international`, and `emissions` from `ttw` / `wtw`); the ATAG
+scenarios are `world`, domestic and international. `list_scenarios` filters on it with
+`region=` and `traffic=`, and an unknown value in the block raises, naming the file.
 
 Each notebook opens by copying its scenario into `./workdir`, and runs against that copy:
 
@@ -162,6 +167,11 @@ configuration that says which files feed which:
   `--write DIR` emits `table.tex`
 - `report_data/digitise_scenarios.py` — traces the report's own S0-S2 curves out of its
   charts, per pixel; `--write` merges them into `atag_3rd_edition_figures.yaml`
+- `bottom_up/build_scenarios.py` and `bottom_up/calibrate_fleet.py` — the bottom-up variants of S0-S2
+  (`atag_3rd_edition_bottom_up`): the first writes their operations, offsets and configurations from the
+  top-down inputs, the second fits the bottom-up fleet to the top-down energy per ASK (`renewal`
+  first, on T1, then `s0 s1 s2`); `bottom_up/comparison.ipynb` compares their decomposition and
+  their results with the top-down ones
 - `../../../resources/historical_data/extend_atag_baseline.py` — the observed-through-2023 baseline
   in the third-edition inputs
 

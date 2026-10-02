@@ -167,9 +167,11 @@ def _aggregate_fuel_policy(region_configs, fuel_carrier, year_range):
     Compute every region and aggregate the ``fuel_carrier`` policy into a global share and
     a global emission factor over ``year_range``.
 
-    Returns ``(years, global_share_pct, global_ef, reference_region_id)`` where
-    ``reference_region_id`` is the first region that defines ``fuel_carrier`` (used as the
-    template for the technical/economic block of the aggregated carrier).
+    Returns ``(years, global_share_pct, global_ef, reference_region_id, offset_share_pct)``
+    where ``reference_region_id`` is the first region that defines ``fuel_carrier`` (used as
+    the template for the technical/economic block of the aggregated carrier) and
+    ``offset_share_pct`` is the regions' combined carbon offset as a share of their combined
+    CO2 emissions.
     """
     from aeromaps import create_process  # local import: avoids circular import at load time
 
@@ -221,6 +223,8 @@ def _aggregate_fuel_policy(region_configs, fuel_carrier, year_range):
     total_dropin = np.zeros(len(years))
     total_saf = np.zeros(len(years))
     total_saf_ef = np.zeros(len(years))
+    total_co2 = np.zeros(len(years))
+    total_offset = np.zeros(len(years))
     reference_region = None
 
     for region_id, df in region_frames.items():
@@ -231,6 +235,16 @@ def _aggregate_fuel_policy(region_configs, fuel_carrier, year_range):
             return np.array([float(series.loc[y]) if y in idx else 0.0 for y in years])
 
         total_dropin += at_years(df["energy_consumption_dropin_fuel"])
+        # Offsets are aggregated alongside the fuel policy, as the share of the
+        # regions' combined emissions they cover: a region without an offset
+        # scheme (domestic markets, outside CORSIA) contributes emissions and no
+        # offsets, which is what lowers the global share.
+        # The regional frame carries total emissions as the last step of the Kaya
+        # decomposition, which is what the residual-share offset model applies to.
+        if "co2_emissions_including_energy" in df.columns:
+            total_co2 += at_years(df["co2_emissions_including_energy"])
+        if "carbon_offset" in df.columns:
+            total_offset += at_years(df["carbon_offset"].fillna(0.0))
         if saf_var not in df.columns:
             continue
 
@@ -274,7 +288,10 @@ def _aggregate_fuel_policy(region_configs, fuel_carrier, year_range):
     # deployed nowhere the whole array is NaN and this is a no-op, which is why the
     # guard above tests deployment rather than declaration.
     global_ef = pd.Series(global_ef).ffill().bfill().to_numpy()
-    return years, global_share, global_ef, reference_region
+    offset_share = 100.0 * np.divide(
+        total_offset, total_co2, out=np.zeros_like(total_offset), where=total_co2 > 0
+    )
+    return years, global_share, global_ef, reference_region, offset_share
 
 
 def _custom_data_type(years, values):
@@ -374,7 +391,7 @@ def aggregate_regions_to_single_process(
             os.path.join(os.path.dirname(os.path.abspath(output_config)), "_rebaselined"),
         )
 
-    years, global_share, global_ef, auto_reference = _aggregate_fuel_policy(
+    years, global_share, global_ef, auto_reference, offset_share = _aggregate_fuel_policy(
         region_configs, fuel_carrier, year_range
     )
     if reference_region is None:
@@ -469,4 +486,11 @@ def aggregate_regions_to_single_process(
     }
     write_yaml_file(collapsed, output_config)
 
-    return create_process(configuration_file=output_config, **create_process_kwargs)
+    process = create_process(configuration_file=output_config, **create_process_kwargs)
+    # The regions' offsets, as the share of their combined CO2 emissions they cover,
+    # year by year over the same grid as the fuel policy. It is returned rather than
+    # written, since where offsets live in the inputs is the caller's choice; feeding
+    # it to the residual-share offset model reproduces the regions' offsetting on the
+    # global process.
+    process.aggregated_offset_share = pd.Series(offset_share, index=years)
+    return process

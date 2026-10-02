@@ -168,7 +168,10 @@ Four plots show the sub-levers:
 - `air_transport_co2_emissions_detailed` replaces each decomposable wedge by its sub-wedges, with the keywords 
 `efficiency_granularity` (`"aircraft"` or `"category"`), `energy_granularity` (`"pathway"` or `"family"`) and 
 `offset_granularity` (`"scheme"` or `"category"`); a lever whose decomposition is not available is drawn as a single 
-band;
+band. The keyword `lever_order` sets the stacking: `"aeromaps"` (default) follows the cascade (efficiency, operations, 
+load factor, energy, offsets), and `"atag"` follows the ATAG roadmap, with the alternative aircraft (hydrogen and 
+electric pathways) stacked with the aircraft technology ahead of operations and load factor, then the drop-in fuels, 
+then the offsets. Only the stacking changes, not the value of any sub-lever;
 - `air_transport_co2_emissions_grouped` is the same plot per fleet category, per fuel family and per category of 
 offsetting schemes;
 - `air_transport_co2_emissions_per_market` draws each lever per market in one panel per lever, since some market 

@@ -1,0 +1,74 @@
+# Climate model shared by the ATAG Waypoint 2050 scenarios.
+#
+# Identical to the packaged default (resources/data/default_climate_models/
+# climate_model_fair.yaml) except for the two contrail values below, which follow
+# the approach of Wang et al. (2026), "Using aviation fuel hydrogen content to
+# assess contrails and climate impact", Research Square preprint,
+# doi:10.21203/rs.3.rs-10602102/v1.
+#
+# Kept here rather than edited in the packaged default so that no other AeroMAPS
+# scenario changes. Scenario configurations reach it through
+# ../../climate_models/, and prepare_scenario copies this folder into every
+# sandbox for that reason.
+
+# CLIMATE CONFIGURATION FILE
+
+# Name of the climate model (IPCC, GWP*, LWE, FaIR)
+# See AeroCM documentation for available models
+climate_model: "FaIR"
+
+# Default species settings from AeroCM
+# See AeroCM documentation for available species settings depending on the climate model
+species_settings:
+  CO2:
+    ratio_erf_rf: 1.0
+
+  Contrails:
+      # Anchored, as Wang et al. do, on the 2018 contrail cirrus RF of Lee et al.
+      # (2021, Table 3): 111.4 mW m-2. Every ATAG run shares one 2018 distance
+      # (historical traffic, no SAF yet), over which the packaged 2.23e-12 gives
+      # 121.042 mW m-2, so this is 2.23e-12 x 111.4 / 121.0421700. Wang et al.
+      # then scale with fuel burn where AeroMAPS scales with distance flown.
+      #
+      # The packaged 2.23e-12 is Lee's ERF sensitivity (9.36e-10 mW m-2 km-1,
+      # Table 2) divided by 0.42, which sits 23 % above Lee's own RF sensitivity
+      # (1.82e-9, Table 3): Lee's ERF ensemble keeps one study unscaled as an ERF,
+      # so ERF / RF there is 0.52 rather than 0.42.
+      sensitivity_rf: 2.05236e-12
+      # 0.37 rather than the packaged 0.42: the mean RF-based efficacy that
+      # Wang et al. sample (0.20, 0.31, 0.60) to turn contrail RF into an
+      # efficacy-weighted ERF. AeroCM computes ERF as RF x ratio_erf_rf and hands
+      # efficacy_erf to FaIR as the species' forcing efficacy, so temperature sees
+      # their product either way. Placing the whole factor in ratio_erf_rf, with
+      # efficacy_erf at 1.0, makes the reported contrails_erf the same quantity
+      # as the preprint's efficacy-weighted ERF.
+      ratio_erf_rf: 0.37
+      efficacy_erf: 1.0
+
+  NOx - ST O3 increase:
+    sensitivity_rf: 7.64e-12
+    ratio_erf_rf: 1.37
+    efficacy_erf: 1.0
+
+  NOx - CH4 decrease and induced:
+    ch4_loss_per_nox: -3.9
+    ratio_erf_rf: 1.18
+    efficacy_erf: 1.0
+
+  H2O:
+    sensitivity_rf: 5.2e-15
+    ratio_erf_rf: 1.0
+    efficacy_erf: 1.0
+
+  Soot:
+    ratio_erf_rf: 1.0
+    efficacy_erf: 1.0
+
+  Sulfur:
+    ratio_erf_rf: 1.0
+    efficacy_erf: 1.0
+
+# Default model settings from AeroCM
+# See AeroCM documentation for available model settings depending on the climate model
+model_settings:
+  rcp: "RCP45"

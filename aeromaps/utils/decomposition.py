@@ -277,3 +277,77 @@ def mitigation_wedges(view, anchors=(), start_year=2024, first_year=2000):
         net,
         net - offset,
     ]
+
+
+def bottom_up_roadmap_pillars(process):
+    """The roadmap pillars of a bottom-up scenario, from its detailed sub-levers.
+
+    The pillars follow the roadmap convention of this module (the one ATAG uses):
+    alternative aircraft count as technology and load factor joins operations. They
+    are the same pillars ``pillar_totals`` returns for a top-down scenario, but read
+    from the sub-wedges of the detailed decomposition instead of counterfactual runs:
+
+    ``fleet_renewal``
+        Replacement of the old reference aircraft by the recent one, with its
+        continuous improvement. This is the roadmap's renewal-only trajectory.
+    ``next_generation``
+        Every new aircraft, the freight fleet, the traffic mix, and the alternative
+        aircraft (hydrogen and electric pathways), which the roadmap counts as
+        technology.
+    ``operations``
+        Operations and load factor, as the roadmap's pillar bundles them.
+    ``saf``
+        The drop-in fuel pathways, with the residual energy effects.
+    ``market_based``
+        The carbon offset.
+
+    The five sum, with the gross residual, to the frozen-technology trajectory, like
+    the top-down pillars. Returns a year-indexed DataFrame of MtCO2 avoided, in the
+    order of the roadmap's stack; ``DataFrame.attrs["gross"]`` holds the gross
+    emissions.
+
+    Parameters
+    ----------
+    process
+        A computed ``AeroMAPSProcess`` with the bottom-up fleet and the generic
+        energy models (``DetailedCo2EmissionsPerAircraft`` and ``PerPathway``).
+    """
+    import pandas as pd
+
+    from aeromaps.models.impacts.emissions.co2_emissions import (
+        ENERGY_SUB_LEVER_OTHER,
+        aircraft_efficiency_sub_lever_columns,
+        efficiency_sub_lever_column,
+        pathway_energy_column,
+    )
+    from aeromaps.plots.colors import energy_family
+
+    frame = process.data["vector_outputs"]
+    columns = set(frame.columns)
+
+    def total(names):
+        names = [name for name in names if name in columns]
+        return frame[names].fillna(0.0).sum(axis=1)
+
+    renewal = [efficiency_sub_lever_column(k) for k in ("fleet_renewal", "continuous_improvement")]
+    efficiency = aircraft_efficiency_sub_lever_columns(process.fleet_model.fleet)
+    next_generation = [c for c in efficiency if c not in renewal]
+
+    alternative, dropin = [], [ENERGY_SUB_LEVER_OTHER]
+    for pathway in process.pathways_manager.get_all():
+        family = energy_family(pathway.aircraft_type, pathway.energy_origin)
+        target = alternative if family in ("hydrogen", "electric") else dropin
+        target.append(pathway_energy_column(pathway.name))
+
+    pillars = pd.DataFrame(
+        {
+            "fleet_renewal": total(renewal),
+            "next_generation": total(next_generation) + total(alternative),
+            "operations": frame["co2_emissions_including_aircraft_efficiency"]
+            - frame["co2_emissions_including_load_factor"],
+            "saf": total(dropin),
+            "market_based": frame["carbon_offset"],
+        }
+    )
+    pillars.attrs["gross"] = frame["co2_emissions_including_energy"]
+    return pillars

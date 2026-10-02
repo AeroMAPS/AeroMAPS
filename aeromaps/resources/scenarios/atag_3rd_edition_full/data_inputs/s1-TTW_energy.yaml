@@ -80,7 +80,7 @@ hefa_oil_crops_trees:
         nox: 0.01514
         sulfur: 0.0
         soot: 6.0e-06
-        particles_number: 80000000000000.0
+        particles_number: 46080000000000.0
     economics:
       mean_mfsp_without_resource: !AeroMapsCustomDataType
         years:
@@ -183,7 +183,7 @@ atj_cellulosic_cover_crops:
         nox: 0.01514
         sulfur: 0.0
         soot: 6.0e-06
-        particles_number: 80000000000000.0
+        particles_number: 46080000000000.0
     economics:
       mean_mfsp_without_resource: !AeroMapsCustomDataType
         years:
@@ -290,7 +290,7 @@ hefa_waste_residue_lipids:
         nox: 0.01514
         sulfur: 0.0
         soot: 6.0e-06
-        particles_number: 80000000000000.0
+        particles_number: 46080000000000.0
     economics:
       mean_mfsp_without_resource: !AeroMapsCustomDataType
         years:
@@ -389,7 +389,7 @@ atj_agricultural_residues:
         nox: 0.01514
         sulfur: 0.0
         soot: 6.0e-06
-        particles_number: 80000000000000.0
+        particles_number: 46080000000000.0
     economics:
       mean_mfsp_without_resource: !AeroMapsCustomDataType
         years:
@@ -490,7 +490,7 @@ ft_woody_biomass:
         nox: 0.01514
         sulfur: 0.0
         soot: 6.0e-06
-        particles_number: 80000000000000.0
+        particles_number: 46080000000000.0
     economics:
       mean_mfsp_without_resource: !AeroMapsCustomDataType
         years:
@@ -589,7 +589,7 @@ ft_municipal_solid_waste:
         nox: 0.01514
         sulfur: 0.0
         soot: 6.0e-06
-        particles_number: 80000000000000.0
+        particles_number: 46080000000000.0
     economics:
       mean_mfsp_without_resource: !AeroMapsCustomDataType
         years:
@@ -690,7 +690,7 @@ atj_waste_gas:
         nox: 0.01514
         sulfur: 0.0
         soot: 6.0e-06
-        particles_number: 80000000000000.0
+        particles_number: 46080000000000.0
     economics:
       mean_mfsp_without_resource: !AeroMapsCustomDataType
         years:
@@ -790,7 +790,7 @@ electrofuel:
         nox: 0.01514
         sulfur: 0.0
         soot: 6.0e-06
-        particles_number: 80000000000000.0
+        particles_number: 46080000000000.0
     economics:
       mean_mfsp_without_resource: !AeroMapsCustomDataType
         years:

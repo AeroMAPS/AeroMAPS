@@ -1,0 +1,125 @@
+# The non-CO2 assumptions this work runs on, at each band
+# =======================================================
+#
+# One row per quantity the climate analysis varies, with the value it takes in
+# each band and where that value comes from. It is the summary of what the other
+# tables compare: contrail_forcing.yaml for the first three rows, saf_contrails
+# for the next two, and contrail_avoidance for the last four. The hydroprocessing
+# rows were taken out of the paper's table.
+#
+# Cells are kept short; the text explains how each value is obtained (the RF is
+# Lee et al.'s 2018 total matched on this model's distance, the efficacy samples
+# Wang et al.'s 0.20, 0.31 and 0.60, the SAF reduction is at 15.2 % hydrogen
+# content, the avoidance values are Teoh et al.'s 95 % interval).
+#
+# The columns are named for the climate they produce, not for the magnitude of
+# the parameter. Reading down the avoidance rows the gain therefore decreases,
+# because the low-warming band carries the strongest mitigation; the same
+# convention is used in non_co2_uncertainty.yaml and contrail_variants.yaml,
+# whose headers explain it at length.
+
+columns:
+  - {header: Quantity, width: "0.33"}
+  - {header: Low warming, width: "0.13"}
+  - {header: Central, width: "0.13"}
+  - {header: High warming, width: "0.13"}
+  - {header: Source, width: "0.16"}
+
+label: tab:climate_assumptions
+size: scriptsize
+
+caption_head: Non-CO$_2$ assumptions, by band.
+# The body is the author's text, so it is not wrapped in red.
+caption_red: false
+caption_body: >-
+  The bands are named for the climate outcome they produce, so the low-warming
+  band carries the smallest contrail forcing together with the strongest
+  mitigation, and reading down the avoidance rows the gain decreases. The first
+  two rows multiply: the band is set on one standard deviation of their product
+  and split between them in proportion to the variance each contributes, which is
+  why neither is at an extreme of its own literature range. The three avoidance
+  families are run as separate scenario variants.
+
+rows:
+  - cells:
+      - Contrail RF [pW m$^{-2}$ km$^{-1}$]
+      - "1.25"
+      - "2.05"
+      - "2.59"
+      - \citet{lee_contribution_2021}
+    source: climate_models/climate_model_fair_contrail_efficacy.yaml
+
+  - cells:
+      - Contrail efficacy (ERF/RF)
+      - "0.21"
+      - "0.37"
+      - "0.48"
+      - \citet{wang_fuel_2026}
+    source: non_co2_uncertainty.yaml
+
+  - cells:
+      - Contrail ERF [pW m$^{-2}$ km$^{-1}$]
+      - "0.26"
+      - "0.76"
+      - "1.26"
+      - Multiplication of the two rows above
+    source: derived
+
+  - cells:
+      - CO$_2$ warming per 1000 PgC (TCRE) [K]
+      - "1.0"
+      - "1.65"
+      - "2.3"
+      - \citet{ipcc_ar6_wg1}
+    source: >-
+      IPCC AR6 WG1, SPM D.1.1, likely range and best estimate; applied in index.md as
+      a scaling of each run's CO2 warming, since the climate model runs one central
+      FaIR configuration
+
+  - cells:
+      - Contrail reduction, 100 \% SAF
+      - 67 \%
+      - 52 \%
+      - 35 \%
+      - \citet{wang_fuel_2026}
+    source: non_co2_uncertainty.yaml
+
+  - cells:
+      - SAF particle number index [per kg]
+      - "$2.18 \\times 10^{13}$"
+      - "$4.61 \\times 10^{13}$"
+      - "$8.45 \\times 10^{13}$"
+      - Calculated from row above
+    source: the ATAG energy files
+
+  - cells:
+      - Avoidance, low-risk diversion
+      - 23.0 \%
+      - 20.0 \%
+      - 17.4 \%
+      - \citet{teoh2020}
+    source: contrail_variants.yaml
+
+  - cells:
+      - Avoidance, small-scale diversion
+      - 65.6 \%
+      - 59.3 \%
+      - 52.4 \%
+      - \citet{teoh2020}
+    source: contrail_variants.yaml
+
+  - cells:
+      - Fuel penalty, small-scale diversion
+      - "0.017 \\%"
+      - "0.014 \\%"
+      - "0.010 \\%"
+      - \citet{teoh2020}
+    source: contrail_variants.yaml
+
+  - cells:
+      - Avoidance, combustor (from 2035)
+      - 82.1 \%
+      - 68.8 \%
+      - 45.2 \%
+      - \citet{teoh2020}
+    source: contrail_variants.yaml
