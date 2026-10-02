@@ -166,12 +166,12 @@ jobs:
       - name: Deploy docs with Mike
         run: |
           if [[ "${{ steps.version.outputs.update_aliases }}" == "true" && -n "${{ steps.version.outputs.alias }}" ]]; then
-            mike deploy --push --update-aliases ${{ steps.version.outputs.version }} ${{ steps.version.outputs.alias }}
+            uv run mike deploy --push --update-aliases ${{ steps.version.outputs.version }} ${{ steps.version.outputs.alias }}
           else
-            mike deploy --push ${{ steps.version.outputs.version }}
+            uv run mike deploy --push ${{ steps.version.outputs.version }}
           fi
 
       - name: Set default version (only for main branch)
         if: github.ref == 'refs/heads/main'
         run: |
-          mike set-default --push latest
+          uv run mike set-default --push latest
