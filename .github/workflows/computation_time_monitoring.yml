@@ -43,7 +43,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
-        run: uv sync --locked --dev
+        run: uv sync --locked
 
       - name: Set notebook list
         shell: bash
@@ -67,19 +67,9 @@ jobs:
           git fetch origin main:main
           git checkout main
 
-      #TODO: Removed once migrated to uv
-      - name: Install Poetry (for main branch)
-        uses: snok/install-poetry@v1
-        with:
-          virtualenvs-create: true
-          virtualenvs-in-project: true
 
       - name: Install dependencies (main)
-      # TODO: change to uv sync --locked once the main 
-      # branch has been updated to use uv
-        run: |
-          poetry env use ${{ matrix.python-version }}
-          poetry install
+        run: uv sync --locked --dev 
 
       - name: Run notebooks on main branch
         shell: bash
@@ -92,7 +82,7 @@ jobs:
             nb_trimmed=$(echo "$nb" | tr -d '\r')
             echo "Timing $nb_trimmed on main"
             start=$(date +%s)
-            poetry run pytest --no-cov --nbval-lax -p no:python -n 0 "$nb_trimmed"
+            uv run pytest --no-cov --nbval-lax -p no:python -n 0 "$nb_trimmed"
             end=$(date +%s)
             echo "$((end - start))" > "${RUNNER_TEMP}/timings/$(basename "$nb_trimmed").main.time"
           done
@@ -104,18 +94,13 @@ jobs:
         run: |
           git checkout $BRANCH_NAME
           git stash pop || true
-      
-      # TODO: Removed once migrated to uv
-      - uses: astral-sh/setup-uv@v7
-        with:
-          python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
         run: |
           rm -rf .venv uv.lock
           uv lock
-          uv sync 
-        # --locked 
+          uv sync --locked
+
 
       - name: Run notebooks on current branch
         shell: bash
