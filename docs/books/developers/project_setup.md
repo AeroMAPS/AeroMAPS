@@ -2,7 +2,7 @@
 
 ## UV
 
-We use [uv](https://docs.astral.sh/uv/) to handle all development tasks such as dependencies management, packaging, testing, checking, managing development enviroments. Follow uv's [installation guide](https://docs.astral.sh/uv/getting-started/installation/#standalone-installer) to start.
+We use [uv](https://docs.astral.sh/uv/) to handle all development tasks such as dependencies management, packaging, testing, checking, managing development environments. Follow uv's [installation guide](https://docs.astral.sh/uv/getting-started/installation/#standalone-installer) to start.
 
 With uv installed there's no need to install a specific python version as uv handles it.
 
@@ -29,15 +29,15 @@ uv venv --python 3.11
 You can find more information about uv venv [here](https://docs.astral.sh/uv/pip/environments/).
 
 
-With the development enverionment created, you can install the package and its requierements with:
+With the development environment created, you can install the package and its requirements with:
 
 ```bash
 uv sync
 ```
 
-This will install AeroMAPS in editable mode which means the package will be installed in the development enverionment while it still being visible and editable from the repository tree.
+This will install AeroMAPS in editable mode which means the package will be installed in the development environment while it still being visible and editable from the repository tree.
 
-While activating the environmnent is not neccessary to code within the project, it can be useful to investigate the code when needed.
+While activating the environment is not necessary to code within the project, it can be useful to investigate the code when needed.
 
 To activate the environment within the terminal use:
 
@@ -65,3 +65,12 @@ Install pre-commit hooks with
 ```bash
 pre-commit install
 ```
+
+Pre-commit uses Ruff as a tool for analyzing and formatting code. We recommend 
+automating the usage of the tool by installing the Ruff Extension on your IDE when
+[you configure your IDE](#configure-your-IDE) and installing the tool in your 
+environment with:
+
+```bash
+uv tool install ruff
+``` 
