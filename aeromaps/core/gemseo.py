@@ -222,6 +222,11 @@ def nan_intrusions(mda) -> dict[str, int]:
     return dict(getattr(mda, "_aeromaps_nan_intrusions", {}) or {})
 
 
+def nan_masks(mda) -> dict[str, ndarray]:
+    """The masks frozen during ``mda``'s last solve, keyed by coupling name."""
+    return dict(getattr(mda, "_aeromaps_nan_masks", {}) or {})
+
+
 def _masks_from_local_data(mda) -> dict[str, ndarray]:
     """Which positions of each resolved coupling carry a value, after the first sweep.
 
@@ -331,6 +336,7 @@ def _install_mask_hooks(mda) -> None:
             original_execute()
         finally:
             mda._aeromaps_nan_intrusions = intrusions
+            mda._aeromaps_nan_masks = _ACTIVE_MASKS.get() or {}
             _ACTIVE_MASKS.reset(mask_token)
             _ACTIVE_INTRUSIONS.reset(intrusion_token)
 
@@ -793,9 +799,18 @@ def _couplings_with_spread_nans(mda, count: int = 5) -> list[str]:
     belonging to a pathway the scenario does not use is legitimately NaN throughout.
     Neither produces a NaN after a real value; a variable blowing up during the solve
     does, and that is the signature this looks for.
+
+    Only a fallback for couplings the solve did not mask. A masked coupling has already
+    been judged exactly by :func:`nan_intrusions`, and the shape test would wrongly flag
+    one that is undefined *between* real values -- a pathway's share of an energy origin
+    that is used and then phased out is 0/0 from then on, which is undefined, not a NaN
+    that spread.
     """
+    masked = nan_masks(mda)
     spread = []
     for name in sorted(mda.coupling_structure.strong_couplings):
+        if name in masked:
+            continue
         value = mda.io.data.get(name)
         if value is None:
             continue

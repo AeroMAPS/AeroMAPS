@@ -34,6 +34,7 @@ from aeromaps.core.gemseo import (
     freeze_nan_masks_after_first_sweep,
     nan_intrusions,
     nan_mask,
+    nan_masks,
     record_nan_intrusion,
 )
 from aeromaps.models.base import AeroMAPSModel
@@ -72,6 +73,19 @@ class _Source(AeroMAPSModel):
         return {"x": _partly_defined(1.0) + 0.4 * input_data["y"].fillna(0.0)}
 
 
+class _PhasedOutSource(_Source):
+    """``x`` is defined for a few projected years, then undefined again.
+
+    The shape of a pathway's share of an energy origin that is used and then phased out:
+    0/0 once the origin is empty, the same at every sweep.
+    """
+
+    def compute(self, input_data):
+        x = _partly_defined(1.0) + 0.4 * input_data["y"].fillna(0.0)
+        x.iloc[HISTORICAL + 6 :] = np.nan
+        return {"x": x}
+
+
 class _Sink(AeroMAPSModel):
     def __init__(self, name="sink", **kwargs):
         super().__init__(name=name, model_type="custom", **kwargs)
@@ -82,9 +96,9 @@ class _Sink(AeroMAPSModel):
         return {"y": _partly_defined(1.0) + 0.4 * input_data["x"].fillna(0.0)}
 
 
-def _chain(masked=True):
+def _chain(masked=True, source=_Source):
     disciplines = [
-        AeroMAPSCustomModelWrapper(_Source(parameters=_Parameters())),
+        AeroMAPSCustomModelWrapper(source(parameters=_Parameters())),
         AeroMAPSCustomModelWrapper(_Sink(parameters=_Parameters())),
     ]
     for discipline in disciplines:
@@ -278,6 +292,30 @@ def test_a_clean_solve_records_no_intrusion():
     chain, mda, _history = _solve(masked=True)
     assert nan_intrusions(mda) == {}
     assert check_mda_convergence(chain) == []
+
+
+def test_a_coupling_undefined_after_real_values_passes_when_masked():
+    """The mask, not the NaN shape, judges a masked coupling.
+
+    The phased-out ``x`` holds a NaN after a real value, which the shape heuristic reads
+    as a NaN that spread. But it was already undefined there after the first sweep and
+    never changed, so no intrusion is recorded, and the solve is accepted.
+    """
+    chain = _chain(masked=True, source=_PhasedOutSource)
+    chain.execute()
+    mda = chain.inner_mdas[0]
+
+    assert "x" in nan_masks(mda)
+    assert nan_intrusions(mda) == {}
+    assert check_mda_convergence(chain) == []
+
+
+def test_the_shape_heuristic_still_guards_an_unmasked_solve():
+    chain = _chain(masked=False, source=_PhasedOutSource)
+    chain.execute()
+
+    with pytest.raises(Exception, match="NaN after a real value"):
+        check_mda_convergence(chain)
 
 
 def test_record_nan_intrusion_outside_a_solve_is_harmless():
