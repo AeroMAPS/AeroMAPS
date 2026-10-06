@@ -792,6 +792,36 @@ def _worst_residual_contributors(mda, count: int = 5) -> str:
     return f"\n  Largest residual contributors: {listed}."
 
 
+def late_defined_couplings(mda) -> dict[str, int]:
+    """Masked couplings that gained a value where the mask froze them as undefined.
+
+    The mask is frozen after the first sweep, so a position undefined then stays out of
+    the residual for the whole solve, and the solver writes it back as NaN after every
+    iteration. A discipline reading it *before* its producer in the sweep (a backward
+    coupling) therefore never sees the value the producer computes later, and the
+    solver never measures whether it settled: the run can converge on a wrong answer
+    with every other check passing.
+
+    Read at the end of the solve, when the local data hold the disciplines' raw outputs
+    (Gauss-Seidel stops before writing back). A coupling legitimately undefined there --
+    a phased-out pathway's share -- is still NaN, and is not reported.
+
+    Returns
+    -------
+    dict[str, int]
+        Coupling name to the number of such positions.
+    """
+    late = {}
+    for name, mask in nan_masks(mda).items():
+        value = mda.io.data.get(name)
+        if not isinstance(value, pd.Series) or len(value) != len(mask):
+            continue
+        count = int((~mask & value.notna().to_numpy()).sum())
+        if count:
+            late[name] = count
+    return late
+
+
 def _couplings_with_spread_nans(mda, count: int = 5) -> list[str]:
     """Coupling variables holding a NaN *after* a real value, i.e. NaN that spread.
 
@@ -873,6 +903,21 @@ def check_mda_convergence(mda_chain, context: str = "", on_failure: str = "raise
                 f"variable(s) went NaN at a position that held a value after the first "
                 f"sweep, so the residual ({residual:.3e}) is measuring a dead component "
                 f"differencing against itself, not a solution. Worst: "
+                + ", ".join(f"{name} ({count})" for name, count in worst[:5])
+                + "."
+            )
+            continue
+
+        late = late_defined_couplings(mda)
+        if late:
+            worst = sorted(late.items(), key=lambda item: -item[1])
+            failures.append(
+                f"{context}{mda.name} did not solve every position: {len(late)} coupling "
+                f"variable(s) were undefined after the first sweep but hold a value at the "
+                f"end. Those positions were held out of the residual and handed back as NaN "
+                f"to disciplines reading them before their producer, so the result there is "
+                f"neither checked nor necessarily right. A discipline is producing NaN in the "
+                f"first sweep only (e.g. a 0/0 on a seeded coupling). Worst: "
                 + ", ".join(f"{name} ({count})" for name, count in worst[:5])
                 + "."
             )
