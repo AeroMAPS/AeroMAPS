@@ -52,7 +52,7 @@ To activate the environment within the terminal use:
 
 Pointing to the development environment's python interpreter within your IDE can be useful to execute code, debug, run tests, etc from your IDE graphical interface. Check how to [configure your IDE](#configure-your-ide) for that.
 
-### Setup pre-commit
+## Setup pre-commit
 
 While [pre-commit](https://pre-commit.com/) is a project dependency, we recommend installing pre-commit globally as a development tool. That can be done with:
 
@@ -68,7 +68,7 @@ pre-commit install
 
 Pre-commit uses Ruff as a tool for analyzing and formatting code. We recommend 
 automating the usage of the tool by installing the Ruff Extension on your IDE when
-[you configure your IDE](#configure-your-IDE) and installing the tool in your 
+you [configure your IDE](#configure-your-IDE) and installing the tool in your 
 environment with:
 
 ```bash

@@ -61,8 +61,8 @@ through your IDE's interface.
 
 ## Pull request
 
-Before opening a `Pull Request` (PR) make sure that your pull request covers the
-[PR checklist](#pull-request-checklist).
+Before opening a `Pull Request` (PR) and requesting for a review make sure that your 
+pull request covers the [PR checklist](#pull-request-checklist).
 
 ### Pull request checklist
 
@@ -90,8 +90,20 @@ on it, a new window on will pop in your browser to open a PR on github.
 gh pre create --base main --head name_of_the_branch --title "The title of your PR" --body "Description of your PR"
 ```
 
-We recommend to use the github interface.
+We recommend using the github interface.
 
+### Drafting a pull request
+
+Sometimes it is useful to have feedback on your modification while they are still a
+work in progress. You can set a PR as a draft so that other collaborators can have
+visibility on your changes while they are still in progress. Once you are done, you can
+set it as ready to merge and request a reviewer.
+
+### Pull request review
+
+Every PR goes through a review process. Once your PR is ready to merge, request for it 
+to be review by a collaborator. Your reviewer might suggest changes to the PR, fixes,
+etc.
 
 ## Keeping your branch synchronized with main and rebasing
 
@@ -110,7 +122,7 @@ git checkout -b your_branch_name
 git rebase main 
 ```
 
-When rebasing you might encounter conflicts do to modifications done on a file that
+When rebasing you might encounter conflicts due to modifications done on a file that
 you are also modifying. You will have to solve this conflicts manually before
 continuing. 
 

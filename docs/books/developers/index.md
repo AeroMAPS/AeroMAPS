@@ -1,10 +1,10 @@
 # Contribution and development
 
-As a contributor please read the [developer guide](#developer-guide) and the [coding guidelines and best practices]().
+As a contributor please read the [developer guide](/docs/books/developers/index.md) and the [coding guidelines and best practices](coding_guidelines.md).
 
 ## Quick Start
 
-- Install [uv](#uv)
+- Install [uv](project_setup.md#uv)
 
 - Clone the repository:
     ```bash
@@ -14,7 +14,7 @@ As a contributor please read the [developer guide](#developer-guide) and the [co
     ```bash
     cd aeromaps
     ```
-- create a [develompent environment](#development-environment):
+- create a [development environment](project_setup.md#development-environment):
     ```bash
     uv venv
     ```
@@ -33,19 +33,6 @@ If you also want to run the custom life cycle assessment model (which requires a
 ```bash
 uv sync --extra lca
 ```
-
-
-## Developer Guide
-
-
-### Development workflow
-
-### Git
-
-### Testing
-
-### Documentation
-
 ### Versioning
 
 ### Configure your IDE
