@@ -26,17 +26,11 @@ As a contributor please read the [developer guide](/docs/books/developers/index.
     ```bash
     pre-commit install
     ```
-- Configure your [IDE](#configuring-your-ide)
+- Configure your IDE
 
-If you also want to run the custom life cycle assessment model (which requires a valid ecoinvent license), install the extra dependencies with this command:
+If you also want to run the custom life cycle assessment model (which requires a valid 
+ecoinvent license), install the extra dependencies with this command:
 
 ```bash
 uv sync --extra lca
 ```
-### Versioning
-
-### Configure your IDE
-
-#### PyCharm
-
-#### VSCode
