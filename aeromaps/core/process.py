@@ -63,11 +63,33 @@ from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet_push.airc
 
 # Generic energy models imports
 from aeromaps.models.impacts.generic_energy_model.common.energy_carriers_manager import (
-    EnergyCarrierManager,
-    EnergyCarrierMetadata,
+    build_pathways_manager,
+)
+from aeromaps.models.impacts.generic_energy_model.common.yaml_schema import (
+    validate_energy_carriers_data,
+    validate_processes_data,
+    validate_resources_data,
 )
 from aeromaps.models.impacts.generic_energy_model.common.energy_carriers_factory import (
     AviationEnergyCarriersFactory,
+)
+
+# Generic operations models imports
+from aeromaps.models.impacts.generic_operations_model.common.operations_manager import (
+    OperationalConceptManager,
+    OperationalConceptMetadata,
+)
+from aeromaps.models.impacts.generic_operations_model.common.operations_factory import (
+    OperationsFactory,
+)
+
+# Generic offsets models imports
+from aeromaps.models.impacts.generic_offsets_model.common.offsets_manager import (
+    OffsetSchemeManager,
+    OffsetSchemeMetadata,
+)
+from aeromaps.models.impacts.generic_offsets_model.common.offsets_factory import (
+    OffsetsFactory,
 )
 
 # TODO: investigate if this should be handle in a model layer
@@ -116,6 +138,14 @@ DEFAULT_CONFIG_PATH = os.path.join(CURRENT_DIR, "..", "resources", "data", "conf
 
 # Base directory for resources/data (used to resolve relative paths in config.yaml)
 DEFAULT_RESOURCES_DATA_DIR = os.path.join(CURRENT_DIR, "..", "resources", "data")
+
+# The parameters every year index, output frame and coupling seed is sized on.
+YEAR_BOUND_NAMES = (
+    "climate_historic_start_year",
+    "historic_start_year",
+    "prospection_start_year",
+    "end_year",
+)
 
 # TODO(flex-start-year): delete this guard once downstream configs are migrated
 # and a release cycle has passed (target: remove after 2026-12, or once no
@@ -277,6 +307,12 @@ class AeroMAPSProcess(object):
         """
         # Initialize pathways_manager to None - will be populated if energy models are used
         self.pathways_manager = None
+
+        # Initialize operations_manager to None - will be populated if generic operations models are used
+        self.operations_manager = None
+
+        # Initialize offsets_manager to None - will be populated if generic offsets models are used
+        self.offsets_manager = None
 
         # How a non-converged MDA is reported at the end of compute(): "raise"
         # (default), "warn" or "ignore". An unconverged run is not a solution of the
@@ -490,6 +526,8 @@ class AeroMAPSProcess(object):
         self._initialize_climate_model()
         self._initialize_lca_model()
         self._initialize_generic_energy()
+        self._initialize_operations()
+        self._initialize_offsets()
         self._initialize_vector_inputs()
 
         # Fail loudly on stale `_2019` config keys (renamed when prospection_start_year
@@ -511,7 +549,8 @@ class AeroMAPSProcess(object):
 
         Warning
         ---------
-        This method should be called only if end year was modified, otherwise it is called in __init__.
+        This method is called in __init__. A change of the year bounds needs no new call:
+        compute() rebuilds the MDA chain itself.
         """
         #  Initialize conventional disciplines.
         # Here and not in common_setup because one need to create scenario
@@ -534,6 +573,10 @@ class AeroMAPSProcess(object):
             inner_mda_name="MDAGaussSeidel",
             log_convergence=True,
         )
+        self._configure_mda_chain()
+
+    def _configure_mda_chain(self):
+        """Install on ``mda_chain`` what its settings do not carry, so a rebuilt chain gets it too."""
         # Missing values travel beside the coupling vector rather than inside it.
         freeze_nan_masks_after_first_sweep(self.mda_chain)
         # Models declare the physical domain of their couplings; the solver enforces it.
@@ -1021,7 +1064,15 @@ class AeroMAPSProcess(object):
         return self.data["str_inputs"]
 
     def plot(
-        self, name, save=False, size_inches=None, remove_title=False, fig=None, ax=None, legend=True
+        self,
+        name,
+        save=False,
+        size_inches=None,
+        remove_title=False,
+        fig=None,
+        ax=None,
+        legend=True,
+        **kwargs,
     ):
         """Generate a predefined AeroMAPS plot.
 
@@ -1055,7 +1106,10 @@ class AeroMAPSProcess(object):
             Object holding the created plot, as returned by the plot
             function.
         """
-        plot_kwargs = dict(fig=fig, ax=ax, legend=legend)
+        # Extra keywords reach the plot class, so options a plot exposes on its
+        # constructor (mfsp_type, or the decomposition's anchors) can be set from
+        # a live process. Matches ResultsView.plot, which already forwards them.
+        plot_kwargs = dict(fig=fig, ax=ax, legend=legend, **kwargs)
         if name in available_plots_fleet:
             try:
                 fig_obj = available_plots_fleet[name](self, **plot_kwargs)
@@ -1097,22 +1151,53 @@ class AeroMAPSProcess(object):
             Dictionary of input variable names and values for
             execution.
         """
+        self._resize_to_year_bounds()
         input_data = self.parameters.to_dict()
         if self.fleet is not None:
             # Necessary when user hard coded the fleet
             self.fleet_model.fleet.all_aircraft_elements = (
                 self.fleet_model.fleet.get_all_aircraft_elements()
             )
+            self.fleet_model._initialize_df()
             self.fleet_model.compute()
 
             # This is needed since fleet model is particular discipline
             input_data["dummy_fleet_model_output"] = np.array([1.0])
 
-        # Initialize the dataframes witjh latest parameter values
+        # Initialize the dataframes witjh latest parameter values, then re-register the
+        # coupling seeds the models rebuilt on them (e.g. for a changed end_year)
         for disc in self.disciplines:
             disc.model._initialize_df()
+            if isinstance(disc, (AeroMAPSAutoModelWrapper, AeroMAPSCustomModelWrapper)):
+                disc.refresh_coupling_seeds()
 
         return input_data
+
+    def _year_bounds(self):
+        return tuple(getattr(self.parameters, name) for name in YEAR_BOUND_NAMES)
+
+    def _resize_to_year_bounds(self):
+        """Discard the state sized on previous year bounds when they have changed.
+
+        The year index and output frames are built at creation, the disciplines cache
+        their outputs, and the MDA chain sizes its coupling defaults and solver bounds
+        at its first execution: all of them hold arrays over the previous years.
+        """
+        if self._year_bounds() == self._sized_year_bounds:
+            return
+        self._initialize_years()
+        self.data["vector_outputs"] = pd.DataFrame(index=self.data["years"]["full_years"])
+        self.data["climate_outputs"] = pd.DataFrame(index=self.data["years"]["climate_full_years"])
+        for disc in self.disciplines:
+            if disc.cache is not None:
+                disc.cache.clear()
+        if getattr(self, "mda_chain", None) is not None:
+            # Same settings, but the coupling defaults are initialised again.
+            settings = self.mda_chain.settings.model_copy(
+                update={"initialize_defaults": True}, deep=True
+            )
+            self.mda_chain = MDAChain(disciplines=self.disciplines, settings_model=settings)
+            self._configure_mda_chain()
 
     def _initialize_configuration(self):
         """Load and merge configuration settings.
@@ -1304,6 +1389,8 @@ class AeroMAPSProcess(object):
                                 os.path.join(DEFAULT_RESOURCES_DATA_DIR, default_value)
                             )
                         )
+                elif default_filename is not None:
+                    resolved_path = Path(os.path.join(DEFAULT_RESOURCES_DATA_DIR, default_filename))
             elif os.path.isabs(user_value):
                 resolved_path = Path(user_value)
             else:
@@ -1628,6 +1715,7 @@ class AeroMAPSProcess(object):
         )
 
         self.energy_resources_data = read_yaml_file(str(resources_data_file_path))
+        validate_resources_data(self.energy_resources_data, str(resources_data_file_path))
 
         # The first level of the yaml conf file contains all the pathways
         resources = list(self.energy_resources_data.keys())
@@ -1670,6 +1758,7 @@ class AeroMAPSProcess(object):
         )
 
         self.energy_processes_data = read_yaml_file(str(processes_data_path))
+        validate_processes_data(self.energy_processes_data, str(processes_data_path))
 
         # The first level of the yaml conf file contains all the pathways
         processes = list(self.energy_processes_data.keys())
@@ -1710,48 +1799,28 @@ class AeroMAPSProcess(object):
         )
 
         self.energy_carriers_data = read_yaml_file(str(energy_carriers_data_file_path))
+        validate_energy_carriers_data(
+            self.energy_carriers_data, str(energy_carriers_data_file_path)
+        )
 
         # The first level of the yaml conf file contains all the pathways
         pathways = list(self.energy_carriers_data.keys())
 
-        # create a metadata manager for the pathways to easily sort them later
-        self.pathways_manager = EnergyCarrierManager()
-
+        # create a metadata manager for the pathways to easily sort them later.
+        # Built by the shared helper, so results loaded from committed JSON can
+        # reconstruct the same manager from the same YAML.
         for pathway in pathways:
             pathway_data = self.energy_carriers_data[pathway]
             if "name" not in pathway_data:
                 raise ValueError("The pathway configuration file should contain its name")
             if "inputs" not in pathway_data:
                 raise ValueError("The pathway configuration file should contain inputs")
-            self.pathways_manager.add(
-                EnergyCarrierMetadata(
-                    name=pathway,
-                    aircraft_type=pathway_data.get("aircraft_type"),
-                    default=pathway_data.get("default"),
-                    mandate_type=pathway_data.get("inputs").get("mandate", {}).get("mandate_type"),
-                    energy_origin=pathway_data.get("energy_origin"),
-                    resources_used=pathway_data.get("inputs")
-                    .get("technical", {})
-                    .get("resource_names", []),
-                    resources_used_processes={
-                        el: (
-                            list(
-                                self.energy_processes_data.get(el, {})
-                                .get("inputs", {})
-                                .get("technical", {})
-                                .get(f"{el}_resource_names", [])
-                            )
-                            or [None]
-                        )[0]
-                        for el in pathway_data.get("inputs", {})
-                        .get("technical", {})
-                        .get("processes_names", [])
-                    },
-                    cost_model=pathway_data.get("cost_model"),
-                    environmental_model=pathway_data.get("environmental_model"),
-                )
-            )
+        self.pathways_manager = build_pathways_manager(
+            self.energy_carriers_data, self.energy_processes_data
+        )
 
+        for pathway in pathways:
+            pathway_data = self.energy_carriers_data[pathway]
             inputs = pathway_data["inputs"]
             # Flatten the inputs dictionary and interpolate the necessary values
             for key, value in inputs.items():
@@ -1791,6 +1860,188 @@ class AeroMAPSProcess(object):
                 fuel_market=self._fuel_market,
                 fuel_trade=self._fuel_trade,
             )
+        )
+
+    def _remove_models(self, names):
+        """Recursively remove models whose key is in ``names`` from ``self.models``.
+
+        ``self.models`` mixes nested standard-group dictionaries with flat
+        factory-added entries, so the removal walks the whole structure.
+
+        Parameters
+        ----------
+        names : set of str
+            Model keys to remove wherever they appear.
+        """
+
+        def _prune(models_dict):
+            for key in list(models_dict.keys()):
+                value = models_dict[key]
+                if key in names:
+                    del models_dict[key]
+                elif isinstance(value, dict):
+                    _prune(value)
+
+        _prune(self.models)
+
+    def _initialize_operations(self):
+        """Initialize generic operational concepts.
+
+        Reads the operational concept configurations, builds concept metadata,
+        flattens and interpolates the per-concept, per-channel gain inputs
+        (fuel-efficiency gain, contrail gain, contrail overconsumption), and uses
+        the ``OperationsFactory`` to create the model that composes the concept
+        gains into the aggregate operational effects (``operations_gain``,
+        ``operations_contrails_gain``, ``operations_contrails_overconsumption``).
+        The generic model replaces the simple operations and contrails models, so
+        those are removed from the models dictionary.
+        Skipped if the models.operations key is not present in the user configuration.
+        """
+        operations_config = self._get_user_config_value("models", "operations", default=None)
+        if operations_config is None:
+            return
+
+        operations_data_file_path = self._resolve_config_path(
+            "models",
+            "operations",
+            "operations_model_data_file",
+            default_filename="default_operations/operations_data.yaml",
+        )
+
+        self.operations_data = read_yaml_file(str(operations_data_file_path))
+
+        # The first level of the yaml conf file contains all the operational concepts
+        concepts = list(self.operations_data.keys())
+
+        self.operations_manager = OperationalConceptManager()
+
+        for concept in concepts:
+            concept_data = self.operations_data[concept]
+            if "name" not in concept_data:
+                raise ValueError(
+                    "The operational concept configuration file should contain its name"
+                )
+            if concept_data["name"] != concept:
+                # The concept is registered under its key and its inputs under its name.
+                raise ValueError(
+                    f"Operational concept '{concept}': its name field "
+                    f"('{concept_data['name']}') must match its key."
+                )
+            if "inputs" not in concept_data:
+                raise ValueError("The operational concept configuration file should contain inputs")
+
+            inputs = concept_data["inputs"]
+            self.operations_manager.add(
+                OperationalConceptMetadata(
+                    name=concept,
+                    category=concept_data.get("category"),
+                    has_fuel_efficiency="fuel_efficiency" in inputs,
+                    has_contrails="contrails" in inputs,
+                )
+            )
+
+            # Flatten each channel's inputs with a "<concept>_<channel>" prefix
+            # (so fuel_efficiency.gain and contrails.gain do not collide) and interpolate.
+            for channel, value in inputs.items():
+                flattened_yaml = _flatten_dict(value, f"{concept_data['name']}_{channel}")
+                inputs[channel] = self._convert_custom_data_types(flattened_yaml)
+                self.parameters.from_dict(inputs[channel])
+
+            concept_data["inputs"] = inputs
+            self.operations_data[concept] = concept_data
+
+        # The generic operations model is the single producer of the aggregate
+        # operational effects, so drop the simple operations and contrails models.
+        self._remove_models(
+            {"operations_logistic", "operations_interpolation", "operations_contrails_simple"}
+        )
+
+        self.models.update(
+            OperationsFactory.instantiate_operations_models(
+                self.operations_data, self.operations_manager
+            )
+        )
+
+    def _initialize_offsets(self):
+        """Initialize generic offsetting schemes.
+
+        Reads the offsetting scheme configurations, builds scheme metadata, flattens
+        and interpolates the per-scheme inputs (quantity rule and price), and uses
+        the ``OffsetsFactory`` to create the model that computes each scheme's offset
+        quantity and expense and sums them into the aggregates (``carbon_offset``,
+        ``carbon_offset_price``, ``noc_carbon_offset_per_ask``). The generic model
+        replaces the simple offset models and the single-price offset cost model, so
+        those are removed from the models dictionary.
+        Skipped if the models.offsets key is not present in the user configuration.
+        """
+        offsets_config = self._get_user_config_value("models", "offsets", default=None)
+        if offsets_config is None:
+            return
+
+        offsets_data_file_path = self._resolve_config_path(
+            "models",
+            "offsets",
+            "offsets_model_data_file",
+            default_filename="default_offsets/offsets_data.yaml",
+        )
+
+        self.offsets_data = read_yaml_file(str(offsets_data_file_path))
+
+        # The first level of the yaml conf file contains all the offsetting schemes
+        schemes = list(self.offsets_data.keys())
+
+        self.offsets_manager = OffsetSchemeManager()
+
+        for scheme in schemes:
+            scheme_data = self.offsets_data[scheme]
+            if "name" not in scheme_data:
+                raise ValueError("The offsetting scheme configuration file should contain its name")
+            if scheme_data["name"] != scheme:
+                # The scheme is registered under its key and its inputs under its name.
+                raise ValueError(
+                    f"Offsetting scheme '{scheme}': its name field "
+                    f"('{scheme_data['name']}') must match its key."
+                )
+            if "inputs" not in scheme_data or "quantity" not in scheme_data["inputs"]:
+                raise ValueError(
+                    "The offsetting scheme configuration file should contain inputs with a quantity rule"
+                )
+
+            inputs = scheme_data["inputs"]
+            quantity = dict(inputs["quantity"])
+            # The mode is metadata, not an interpolated input.
+            self.offsets_manager.add(
+                OffsetSchemeMetadata(
+                    name=scheme,
+                    category=scheme_data.get("category"),
+                    quantity_mode=quantity.pop("mode", None),
+                )
+            )
+            inputs["quantity"] = quantity
+
+            # Flatten each block's inputs with a "<scheme>_<block>" prefix and interpolate.
+            for block, value in inputs.items():
+                flattened_yaml = _flatten_dict(value, f"{scheme_data['name']}_{block}")
+                inputs[block] = self._convert_custom_data_types(flattened_yaml)
+                self.parameters.from_dict(inputs[block])
+
+            scheme_data["inputs"] = inputs
+            self.offsets_data[scheme] = scheme_data
+
+        # The generic offsets model is the single producer of the aggregate offset and
+        # its price, so drop the simple offset models and the single-price cost model.
+        self._remove_models(
+            {
+                "level_carbon_offset",
+                "residual_carbon_offset",
+                "manual_carbon_offset",
+                "carbon_offset",
+                "passenger_aircraft_noc_carbon_offset",
+            }
+        )
+
+        self.models.update(
+            OffsetsFactory.instantiate_offsets_models(self.offsets_data, self.offsets_manager)
         )
 
     def _initialize_climate_model(self):
@@ -2091,6 +2342,7 @@ class AeroMAPSProcess(object):
         dictionary.
         """
         # Years
+        self._sized_year_bounds = self._year_bounds()
         self.data["years"] = {}
         self.data["years"]["full_years"] = list(
             range(self.parameters.historic_start_year, self.parameters.end_year + 1)

@@ -39,6 +39,10 @@ class EnergyResourceConsumption(AeroMAPSModel):
     - Detailed i/o documentation is not yet provided for models defined wityh generic .yaml files?
     """
 
+    #: Keys of a resource's ``specifications`` this model reads. Collected by
+    #: ``generic_energy_model/common/yaml_schema.py`` to validate the energy YAML files.
+    RESOURCE_INPUT_KEYS = ("availability",)
+
     def __init__(
         self,
         name,
@@ -199,6 +203,10 @@ class OverallResourcesConsumption(AeroMAPSModel):
     --------------
     - Detailed i/o documentation is not yet provided for models defined wityh generic .yaml files
     """
+
+    #: Keys of a resource's ``specifications`` this model reads. Collected by
+    #: ``generic_energy_model/common/yaml_schema.py`` to validate the energy YAML files.
+    RESOURCE_INPUT_KEYS = ("availability",)
 
     def __init__(
         self,

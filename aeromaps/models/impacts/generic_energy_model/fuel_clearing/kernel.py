@@ -103,7 +103,7 @@ def _require_cvxpy():
         raise ImportError(
             "The fuel-clearing kernel needs cvxpy and Clarabel, which are not part of "
             "the default AeroMAPS install. Install them with "
-            "`poetry install --with test`, or `pip install 'cvxpy>=1.5'`."
+            "`uv sync --group test`, or `pip install 'cvxpy>=1.5'`."
         ) from exc
     return cp
 

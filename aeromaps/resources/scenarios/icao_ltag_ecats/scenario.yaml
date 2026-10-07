@@ -1,0 +1,9 @@
+name: "ICAO LTAG integrated scenarios"
+category: institutional
+tags: ["icao ltag", "exogenous demand"]
+scope:
+  region: world
+  traffic: [domestic, international]
+description: >-
+  ICAO's Long-Term Aspirational Goal integrated scenarios IS0 to IS3, in their
+  international and total-aviation scopes.

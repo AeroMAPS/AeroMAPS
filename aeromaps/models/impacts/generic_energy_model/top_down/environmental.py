@@ -37,6 +37,34 @@ class TopDownEnvironmental(AeroMAPSModel):
 
     MODEL_APPROACH = "top_down"
 
+    #: Keys this model takes from each block of a pathway's ``inputs``. Collected by
+    #: ``common/yaml_schema.py`` to validate the energy YAML files; a key belongs to exactly
+    #: one block, and models declaring the same key must agree on it.
+    PATHWAY_INPUT_KEYS = {
+        "environmental": (
+            "mean_co2_emission_factor_without_resource",
+            "emission_index",
+        ),
+        "technical": (
+            "kerosene_selectivity",
+            "resource_names",
+            "processes_names",
+            "resource_specific_consumption",
+            "lhv",
+            "plant_lifespan",
+            "plant_load_factor",
+        ),
+    }
+
+    #: Same, for the processes a pathway declares.
+    PROCESS_INPUT_KEYS = {
+        "environmental": ("mean_co2_emission_factor_without_resource",),
+        "technical": ("resource_names", "resource_specific_consumption"),
+    }
+
+    #: Keys of a resource's ``specifications`` this model reads.
+    RESOURCE_INPUT_KEYS = ("co2_emission_factor",)
+
     def __init__(
         self,
         name,
@@ -139,6 +167,18 @@ class TopDownEnvironmental(AeroMAPSModel):
                 else:
                     # TODO initialize with zeros instead of actual val?
                     self.input_names[key] = val
+
+            # The environmental block has to be registered here: this model reads
+            # the process's own emission factor below, and registering only the
+            # cost block left that read missing from input_data, so .get()
+            # returned the null series and a process's own emissions were
+            # silently dropped. Economics stays registered alongside it, since a
+            # process may declare either block and the cost model reads that one.
+            for key, val in (
+                processes_data[process_key].get("inputs").get("environmental", {}) or {}
+            ).items():
+                # TODO initialize with zeros instead of actual val?
+                self.input_names[key] = val
 
             for key, val in processes_data[process_key].get("inputs").get("economics", {}).items():
                 # TODO initialize with zeros instead of actual val?
@@ -306,14 +346,23 @@ class TopDownEnvironmental(AeroMAPSModel):
 
         # 3 ) --> pathway gets a process that makes own emissions (besides resources)
         for process_key in self.process_keys:
+            # The key carries the mean_ prefix, matching the pathway lookup above, the
+            # cost model's process lookup and every processes file in the repository,
+            # the packaged default included. Without the prefix the lookup missed and
+            # .get() returned the null series, so a process's own emissions were
+            # silently dropped from the pathway's emission factor.
             co2_emission_factor_process = input_data.get(
-                f"{process_key}_co2_emission_factor_without_resource", optional_null_series
+                f"{process_key}_mean_co2_emission_factor_without_resource", optional_null_series
             )
             output_data[
                 f"{self.pathway_name}_{process_key}_without_resources_mean_co2_emission_factor"
             ] = co2_emission_factor_process
 
-            co2_emission_factor = co2_emission_factor.add(co2_emission_factor_process)
+            # fill_value=0 for the same reason as every other addition in this method: a
+            # process factor declared with an empty `years:` list is interpolated from the
+            # prospection start year only, and its shorter index must not poison the
+            # pathway emission factor over the historical years.
+            co2_emission_factor = co2_emission_factor.add(co2_emission_factor_process, fill_value=0)
 
         # Store the total CO2 emission factor in the dataframe
         output_data[f"{self.pathway_name}_mean_co2_emission_factor"] = co2_emission_factor

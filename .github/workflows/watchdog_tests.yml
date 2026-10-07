@@ -54,7 +54,7 @@ jobs:
         os: ${{ fromJson(needs.check-run.outputs.is_light == 'true' && '["ubuntu-latest"]' || '["ubuntu-latest","windows-latest","macos-latest"]') }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # If macos increase the max number of semaphores
       - name: Set sysctl for macOS
@@ -62,21 +62,18 @@ jobs:
         run: |
           sudo sysctl -w kern.posix.sem.max=30000
           
-      - name: Install poetry
-        run: pipx install poetry==${{ vars.POETRY_VERSION }}
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+      - uses: astral-sh/setup-uv@v7
         with:
           python-version: ${{ matrix.python-version }}
-          cache: 'poetry'
+          enable-cache: true
 
-      - name: Install latest version of dependencies
+      - name: Install dependencies
         run: |
-          poetry env use ${{ matrix.python-version }}
-          poetry env remove --all || true
-          poetry update
-          poetry install
+          uv lock --upgrade
+          uv sync --dev
+
+      - name: Register venv as python3 kernel
+        run: uv run python -m ipykernel install --user --name python3   
 
       - name: Notebook tests
         run: |
@@ -89,5 +86,5 @@ jobs:
             ! -path "aeromaps/notebooks/tutorials/09_optimise_a_scenario/example_optim_with_elasticity.ipynb")
 
           # Run pytest with nbmake on all notebooks in parallel
-          poetry run pytest --no-cov --nbmake --nbmake-timeout=5000 -p no:python -n=auto $notebooks -s
+          uv run pytest --no-cov --nbmake --nbmake-timeout=5000 -p no:python -n=auto $notebooks -s
         shell: bash

@@ -42,6 +42,20 @@ def processes():
     return {"scenario_1": proc1, "scenario_2": proc2, "scenario_3": proc3}
 
 
+def _carries(data, required_outputs):
+    """Whether one scenario holds every required output.
+
+    Mirrors ``MultiScenarioPlot._check_missing_outputs``: an output may live in
+    either frame, and looking only in ``vector_outputs`` would report the climate
+    series as missing.
+    """
+    frames = [data.get("vector_outputs"), data.get("climate_outputs")]
+    return all(
+        any(frame is not None and output in frame.columns for frame in frames)
+        for output in required_outputs
+    )
+
+
 def test_multi_plots_registry_nonempty():
     """Guard against an accidentally-empty registry."""
     assert _MULTI_PLOTS, "available_multi_plots is empty"
@@ -58,8 +72,19 @@ def test_list_available_plots_matches_registry(processes):
 
 @pytest.mark.parametrize("plot_name", _MULTI_PLOTS)
 def test_multi_plot(processes, plot_name):
-    """Every registered multi-scenario plot must build."""
+    """Every registered multi-scenario plot must build.
+
+    Some plots draw quantities a scenario only carries under a particular model
+    chain: the background-scenario drivers, for instance, exist only when traffic
+    is income-driven, and the configurations used here are CAGR-driven. Those are
+    skipped rather than failed, since the fixture not producing an output says
+    nothing about whether the plot works. The plot is still required to declare
+    what it needs, so a plot that declares nothing is always exercised.
+    """
     multi = assemble_processes(processes)
+    required = available_multi_plots[plot_name].required_outputs
+    if required and not any(_carries(process.data, required) for process in processes.values()):
+        pytest.skip(f"no test scenario carries {required}")
     assert multi.plot(plot_name) is not None
 
 

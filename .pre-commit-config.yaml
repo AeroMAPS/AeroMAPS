@@ -1,15 +1,15 @@
 repos:
-  - repo: https://github.com/python-poetry/poetry
-    rev: '1.8.3'
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    rev: "0.12.20"
     hooks:
-      - id: poetry-check
-      - id: poetry-export
-        args: [ "--with", "doc", "--without-hashes", "-o", "docs/requirements.txt", "-f", "requirements.txt" ]
-        files: 'poetry.lock'
+      - id: uv-lock
+      - id: uv-export
+        args: ["--frozen", "--no-default-groups", "--group", "doc", "--no-emit-project", "--no-hashes", "--output-file=docs/requirements.txt", "--format", "requirements-txt", "--quiet"]
+        files: '^uv\.lock$'
   - repo: local
     hooks:
       # Ruff hooks are copied from https://github.com/astral-sh/ruff-pre-commit, but specifying
-      # a local repo ensures using locked version of Ruff in Poetry.
+      # a local repo ensures using locked version of Ruff in uv.
       - id: ruff
         name: ruff
         description: "Run 'ruff' for extremely fast Python linting"

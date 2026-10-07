@@ -1,117 +1,132 @@
-[tool.poetry]
+[project]
 name = "aeromaps"
-version = "1.0.0"
+dynamic = ["version"]
 description = "AeroMAPS: Multidisciplinary Assessment of Prospective Scenarios for air transport"
-readme = "README.md"
 authors = [
-    "Thomas PLANES <thomas.planes@isae-supaero.fr>",
-    "Scott DELBECQ <scott.delbecq@isae-supaero.fr>",
-    "Antoine SALGAS <antoine.salgas@isae-supaero.fr>",
-    "Felix POLLET <felix.pollet@isae-supaero.fr>",
-    "Ian COSTA ALVES <ian.costa-alves@isae-supaero.fr>",
+    { name = "Thomas PLANES", email = "thomas.planes@isae-supaero.fr" },
+    { name = "Scott DELBECQ", email = "scott.delbecq@isae-supaero.fr" },
+    { name = "Antoine SALGAS", email = "antoine.salgas@isae-supaero.fr" },
+    { name = "Felix POLLET", email = "felix.pollet@isae-supaero.fr" },
+    { name = "Ian COSTA ALVES", email = "ian.costa-alves@isae-supaero.fr" },
 ]
+requires-python = ">=3.10, <3.12"
+readme = "README.md"
+license = "GPL-3.0-only"
 keywords = [
     "air transport",
     "climate change",
     "prospective scenarios",
     "energy issues",
 ]
-license = "GPL-3.0-only"
-homepage = "https://github.com/AeroMAPS/AeroMAPS"
+dependencies = [
 
-[tool.poetry.dependencies]
-# Core and standard libraries
-python = ">=3.10, <3.12"
-numpy = "^1.20.3"
-scipy = "^1.4.1"
-pandas = ">=1.3.0,<=2.2.2"
-xlrd = "1.2.0"
-openpyxl = "^3.1.2"
-# Lower bound is not cosmetic. 6.1.0 introduced `max_consecutive_unsuccessful_iterations`
-# (the divergence guard `check_mda_convergence` diagnoses) and `SequenceTransformer.set_bounds`;
-# 6.2.0 made `inner_mda_settings` a `BaseMDASettings` model, which `_setup_unified_mda` passes.
-# 6.2.0 is also what poetry.lock resolves and what CI therefore tests.
-gemseo = ">=6.2.0,<6.3.0"
-deepdiff = "^8"
-sympy = "^1.14.0"
-dill = "^0.4.0"
-aerocm = "0.1.1b0"
+    # Core dependencies
+    "numpy>=1.20.3,<2",
+    "scipy>=1.4.1,<2",
+    "pandas>=1.3.0,<=2.2.2",
+    "xlrd==1.2.0",
+    "openpyxl>=3.1.2,<4",
+    # Lower bound is not cosmetic. 6.1.0 introduced `max_consecutive_unsuccessful_iterations`
+    # (the divergence guard `check_mda_convergence` diagnoses) and `SequenceTransformer.set_bounds`;
+    # 6.2.0 made `inner_mda_settings` a `BaseMDASettings` model, which `_setup_unified_mda` passes.
+    # 6.2.0 is also what uv.lock resolves and what CI therefore tests.
+    "gemseo>=6.2.0,<6.3.0",
+    "deepdiff>=8,<9",
+    "sympy>=1.14.0,<2",
+    "dill>=0.4.0,<0.5",
+    "aerocm==0.1.1b0",
 
-# Data visualization
-matplotlib = "^3.7"
-ipympl = "^0.9.3"
-plotly = "^5.0.0"
-seaborn = "^0.13.2"
+    # Data visualization dependencies
+    "matplotlib>=3.7,<4",
+    "ipympl>=0.9.3,<0.10",
+    "plotly>=5.0.0,<6",
+    "seaborn>=0.13.2,<0.14",
 
-# Graphical User Interface
-markdown = "^3.4.3"
-aenum = "^3.1.12"
-docstring-inheritance = "^2.0.0"
-dacite = "^1.8.0"
-jupyterlab = "^3.3.0"
-ipywidgets = "^8.0.6"
-ipysheet = ">=0.5.0, <1"
-ipydatagrid = "^1.1.14"
-ipytree = "^0.2.2"
+    # Graphical User Interface
+    "markdown>=3.4.3,<4",
+    "aenum>=3.1.12,<4",
+    "docstring-inheritance>=2.0.0,<3",
+    "dacite>=1.8.0,<2",
+    "jupyterlab>=3.3.0,<4",
+    "ipywidgets>=8.0.6,<9",
+    "ipysheet>=0.5.0, <1",
+    "ipydatagrid>=1.1.14,<2",
+    "ipytree>=0.2.2,<0.3",
 
-# Web deployment
-voila = "^0.5.0"
+    # Web deployment
+    "voila>=0.5.0,<0.6",
 
-# Optional dependencies
-lca-modeller = {version = "*", python = ">=3.10, <3.12", optional = true}
-premise = {version = "2.3.4", python = ">=3.10, <3.12", optional = true}  # freeze premise version to ensure correct LCI names
+]
 
-[tool.poetry.extras]
-lca = ["lca-modeller", "premise"]
+[project.optional-dependencies]
+lca = [
+    "lca-modeller ; python_full_version >= '3.10' and python_full_version < '3.12'",
+    "premise==2.3.4 ; python_full_version >= '3.10' and python_full_version < '3.12'",
+]
 
+[project.urls]
+Homepage = "https://github.com/AeroMAPS/AeroMAPS"
 
-[tool.poetry.group.test.dependencies]
-pytest = "^8.0"
-pytest-cov = "^5.0"
-coverage = { version = "^7.0", extras = ["toml"] }
-nbval = "^0.11"
-wrapt = "^1.16.0"
-nbmake = "^1.5.0"
-pytest-xdist = "^3.7.0"
-# The fuel-clearing kernel solves a convex program; Clarabel ships with cvxpy.
-# Deliberately NOT a core dependency: the fuel-market mode is opt-in, and the
-# default mode must not make every AeroMAPS install carry a convex solver. The
-# kernel imports it lazily and raises with an install hint when it is absent.
-# Promote to an extra (or to core) when the mode ships.
-cvxpy = "^1.5"
-# Parquet engine for the fuel-clearing reference fixture. Test-group for the same
-# reason as cvxpy: nothing in aeromaps/ reads parquet at runtime.
-pyarrow = ">=15.0"
+[project.scripts]
+aeromaps = "aeromaps.core.cli:main"
 
-[tool.poetry.group.doc.dependencies]
-mkdocs = "^1.6.1"
-mkdocs-bibtex = "^2.16.0"
-mkdocs-jupyter = "^0.25.1"
-mkdocs-material = "^9.7.0"
-mkdocstrings = { version = "^0.30.0", extras = ["python"] }
-mike = "^2.0.0"
+[dependency-groups]
+test = [
+    "pytest>=8.0,<9",
+    "pytest-cov>=5.0,<6",
+    "coverage[toml]>=7.0,<8",
+    "nbval>=0.11,<0.12",
+    "wrapt>=1.16.0,<2",
+    "nbmake>=1.5.0,<2",
+    "pytest-xdist>=3.7.0,<4",
+    # The fuel-clearing kernel solves a convex program; Clarabel ships with cvxpy.
+    # Deliberately NOT a core dependency: the fuel-market mode is opt-in, and the
+    # default mode must not make every AeroMAPS install carry a convex solver. The
+    # kernel imports it lazily and raises with an install hint when it is absent.
+    # Promote to an extra (or to core) when the mode ships.
+    "cvxpy>=1.5,<2",
+    # Parquet engine for the fuel-clearing reference fixture. Test-group for the same
+    # reason as cvxpy: nothing in aeromaps/ reads parquet at runtime.
+    "pyarrow>=15.0",
+]
+doc = [
+    "mkdocs>=1.6.1,<2",
+    "mkdocs-bibtex>=2.16.0,<3",
+    "mkdocs-jupyter>=0.25.1,<0.26",
+    "mkdocs-material>=9.7.0,<10",
+    "mkdocstrings[python]>=0.30.0,<0.31",
+    "mike>=2.0.0,<3",
+]
+paper = ["mystmd>=1.3,<2"]
+lint = [
+    "pre-commit>=3.5.0,<4",
+    "nbstripout>=0.6.0,<0.7",
+    "ruff==0.5.4",
+]
 
-[tool.poetry.group.lint.dependencies]
-pre-commit = "^3.5.0"
-nbstripout = "^0.6.0"
-ruff = "0.5.4"
+[tool.uv]
+default-groups = "all"
+cache-keys = [
+    { file = "pyproject.toml" },
+    { git = { commit = true, tags = true } },
+]
 
-[tool.poetry.scripts]
-    aeromaps = "aeromaps.core.cli:main"
-
-# Dynamic versioning settings ==================================================
-# poetry-dynamic-versioning has to be installed in the same environment as
-# Poetry (normally outside your project environment).
-# see https://github.com/mtkennerly/poetry-dynamic-versioning#installation
-[tool.poetry-dynamic-versioning]
-enable = true
-vcs = "git"
-style = "semver"
 
 # Packaging system =============================================================
 [build-system]
-requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning>=1.0.0,<2.0.0"]
-build-backend = "poetry_dynamic_versioning.backend"
+requires = [
+    "setuptools",
+    "setuptools_scm[toml]",
+]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["aeromaps*"]
+
+[tool.setuptools_scm]
 
 [tool.ruff]
 line-length = 100

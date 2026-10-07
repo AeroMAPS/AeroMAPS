@@ -4,6 +4,9 @@ from aeromaps.models.air_transport.air_traffic.ask_market import ASKAggregator, 
 from aeromaps.models.air_transport.air_traffic.price_and_income_elasticity import (
     RPKPriceIncomeElasticity,
 )
+from aeromaps.models.air_transport.air_traffic.socioeconomic_drivers import (
+    SocioeconomicDrivers,
+)
 from aeromaps.models.air_transport.air_traffic.price_elasticity_logistic_income import (
     RPKLogisticIncomePriceElasticity,
 )
@@ -164,6 +167,12 @@ def create_market_rpk_demand_model(
             models[reference_name] = RPKReferenceMarket(name=reference_name, market_id=mid)
 
     models["rpk_demand"] = demand_class(name="rpk_demand", passenger_market_ids=passenger_ids)
+    # Both demand classes read ``population`` and ``gdp_per_capita``, and nothing
+    # else in the package produces them, so the driver belongs with them rather
+    # than in a bundle every scenario loads: ``parameters.json`` ships no defaults
+    # for the reference-year inputs, so a CAGR scenario that acquired this model
+    # would start failing on inputs it has no reason to declare.
+    models["socioeconomic_drivers"] = SocioeconomicDrivers(name="socioeconomic_drivers")
     return models
 
 

@@ -3,6 +3,7 @@
 All plots discover energy carriers dynamically via ``pathways_manager``.
 """
 
+from aeromaps.plots.labels import readable_label
 from aeromaps.plots.single_scenario_plot import SingleScenarioPlot, plot_3_x, plot_3_y
 from aeromaps.plots.multi_scenario_plot import ENERGY_ORIGIN_COLORS, ENERGY_ORIGIN_FALLBACK_COLORS
 
@@ -16,7 +17,7 @@ def _get_origin_color(energy_origin, fallback_index=0):
 
 def _readable_label(raw_name):
     """Turn a snake_case name into a readable label."""
-    return raw_name.replace("_", " ").title()
+    return readable_label(raw_name)
 
 
 def _aggregate_pathways_energy(df, years, pathways):

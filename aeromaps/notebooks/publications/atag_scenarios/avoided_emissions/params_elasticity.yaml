@@ -1,0 +1,56 @@
+# Single audited source for the price elasticity of air travel demand.
+#
+# Both halves of this paper read this file: the retrospective counterfactual in
+# `retrospective/` and, once it lands, the coupled prospective run. That is
+# deliberate. An avoided-emissions critique that used one elasticity to shrink
+# the historical baseline and a different one to shrink the forecast would be
+# doing the thing it accuses the reports of doing.
+#
+# Sign convention: negative. A 1 % fare increase changes traffic by
+# `central` %.
+
+central: -0.9
+
+# The interval swept in the sensitivity analysis. It is deliberately wider than
+# any single study, because the point of the sweep is to find where the
+# published 14.6 Gt becomes recoverable, not to defend one value.
+sweep:
+  low: -1.8
+  high: -0.05
+  steps: 71
+
+# Where the central value and the interval come from. Values are the ranges the
+# sources report for aggregate, long-run, global passenger demand; route- and
+# market-level elasticities in the same sources are larger in magnitude and are
+# not what this analysis needs.
+sources:
+  brons2002:
+    range: [-1.52, -0.81]
+    note: >-
+      Meta-analysis of 204 estimates. Mean around -1.15; the interval given here
+      is the reported spread across aggregation levels.
+  intervistas2007:
+    range: [-1.4, -0.6]
+    note: >-
+      Prepared for IATA. National-level elasticities cluster near -0.8, route
+      level considerably higher in magnitude.
+  gossling_humpe_2020:
+    range: [-1.3, -0.6]
+    note: Global aviation demand and income, used for the order of magnitude.
+
+# Pass-through and fuel cost share, the two other numbers R1 needs. Both are
+# declared here rather than buried in code, and both are swept.
+pass_through: 1.0
+fuel_cost_share:
+  central: 0.20
+  sweep: [0.10, 0.15, 0.20, 0.25, 0.30]
+  note: >-
+    Fuel was roughly a fifth of airline operating cost through the 1990s and
+    around a third at the 2008 and 2012 price peaks. 0.20 is the conservative
+    choice here, because a smaller fuel share means a smaller fare response and
+    therefore a larger avoided figure: it is the assumption most favourable to
+    the number under critique.
+
+# R2 only: the share of the observed load-factor gain that airlines are allowed
+# to recover under frozen 1990 technology.
+load_factor_recovery: 0.5

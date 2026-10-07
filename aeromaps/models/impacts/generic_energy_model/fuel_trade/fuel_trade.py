@@ -191,6 +191,12 @@ class FuelTrade(AeroMAPSModel):
         ``regionalisation.fuel_trade``, which also tells every region how to wire itself.
     """
 
+    #: Keys this model takes from each block of a pathway's ``inputs``, read per region as
+    #: ``{region}:{pathway}_energy_offered``. Collected by ``common/yaml_schema.py``.
+    PATHWAY_INPUT_KEYS = {
+        "supply": ("energy_offered",),
+    }
+
     def __init__(self, name="fuel_trade", configuration_data=None, *args, **kwargs):
         super().__init__(name=name, model_type="custom", *args, **kwargs)
 

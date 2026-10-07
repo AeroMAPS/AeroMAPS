@@ -300,6 +300,29 @@ def test_the_converter_falls_back_to_the_sentinel_without_a_mask():
     assert int(back.isna().sum()) == HISTORICAL
 
 
+def test_a_masked_out_position_stays_out_of_the_vector_when_it_gains_a_value():
+    """The mask is frozen: a value where it says NaN must not reach the residual.
+
+    ``convert_array_to_value`` hands the disciplines NaN at that position whatever the
+    vector holds, so a number left in the vector would be differenced by the solver while
+    no discipline ever sees it.
+    """
+    series = _partly_defined(2.0)
+    mask = series.notna().to_numpy()
+    series.iloc[0] = 5.0  # was NaN after the first sweep, now holds a number
+    converter = CustomDataConverter(None)
+    token = _ACTIVE_MASKS.set({"solo": mask})
+    try:
+        values = converter.convert_value_to_array("solo", series)
+        back = converter.convert_array_to_value("solo", values)
+    finally:
+        _ACTIVE_MASKS.reset(token)
+
+    assert values[0] == CustomDataConverter.DEAD_FILL
+    assert np.isnan(back.iloc[0])
+    assert values[-1] == pytest.approx(2.0)
+
+
 def test_a_length_change_falls_back_rather_than_re_masking():
     """A coupling whose length changed is a different bug and must not be papered over."""
     mask = np.ones(len(YEARS), dtype=bool)

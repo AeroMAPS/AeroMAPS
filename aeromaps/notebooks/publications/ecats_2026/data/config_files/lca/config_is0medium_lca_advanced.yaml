@@ -1,19 +1,19 @@
 data:
   inputs:
-    json_inputs_file: "../../ltag_data_inputs/is0medium_inputs.json"
-    partitioning_data_file: "../../partitioning_data/partitioning_updated_inputs.json"
+    json_inputs_file: "../../../../../../resources/scenarios/icao_ltag_ecats/ltag_data_inputs/is0medium_inputs.json"
+    partitioning_data_file: "../../../../../../resources/scenarios/icao_ltag_ecats/partitioning_data/partitioning_updated_inputs.json"
   outputs:
     json_outputs_file: "../../ltag_data_outputs/is0medium_outputs.json"
 
 models:
   markets:
-    markets_data_file: "../../ltag_data_inputs/markets_is0medium.yaml"
+    markets_data_file: "../../../../../../resources/scenarios/icao_ltag_ecats/ltag_data_inputs/markets_is0medium.yaml"
 
   climate:
     climate_model_data_file: default
 
   energy:
-    energy_carriers_model_data_file: "../../ltag_data_inputs/is0_energy_inputs.yaml"
+    energy_carriers_model_data_file: "../../../../../../resources/scenarios/icao_ltag_ecats/ltag_data_inputs/is0_energy_inputs.yaml"
     
   life_cycle_assessment:
     lca_model_data_file: "../../lca_data/custom_lca_model_ecats.yaml"

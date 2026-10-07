@@ -461,7 +461,18 @@ def compare_json_files(
                 idx = idx_str[:-1]  # Remove the trailing ']'
                 other_parent = eval(prefix.replace("root", "other_json"))
                 if isinstance(other_parent, list):
-                    if np.isclose(
+                    # An index reported as added or removed need not exist in the
+                    # other document: that is exactly what a list of a different
+                    # length means, and there is nothing to compare it against.
+                    # Leaving the entry in `diff` is what makes the caller report
+                    # a difference rather than raising IndexError here.
+                    if int(idx) >= len(other_parent):
+                        iterable_messages.append(
+                            f"For: {prefix}, index {idx} is present in one file only "
+                            f"({value}); the two lists have different lengths "
+                            f"({len(other_parent)} against at least {int(idx) + 1})"
+                        )
+                    elif np.isclose(
                         value, other_parent[int(idx)], rtol=rtol, atol=atol, equal_nan=True
                     ):
                         keys_to_remove.append(key)
@@ -797,3 +808,17 @@ def clean_notebooks_on_tests(namespace=None, force_cleanup=False):
         logger.info(f"✅ Cleaned up {len(to_delete)} variables")
     else:
         logger.info("⏭ Skipping cleanup during notebook run")
+
+
+def check_unique_names(model_name, names):
+    """Raise if two outputs share a name, which would make one silently overwrite the other."""
+    seen, duplicates = set(), []
+    for name in names:
+        if name in seen:
+            duplicates.append(name)
+        seen.add(name)
+    if duplicates:
+        raise ValueError(
+            f"Model '{model_name}': output names {sorted(set(duplicates))} are declared twice. "
+            "Rename the concepts, schemes or categories involved."
+        )

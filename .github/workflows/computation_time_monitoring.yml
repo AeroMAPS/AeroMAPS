@@ -34,21 +34,16 @@ jobs:
 
     steps:
 
-      - name: Checkout current branch
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - uses: astral-sh/setup-uv@v7
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install Poetry
-        run: pipx install poetry
-
       - name: Install dependencies
-        run: |
-          poetry env use ${{ matrix.python-version }}
-          poetry install
+        run: uv sync --locked
 
       - name: Set notebook list
         shell: bash
@@ -65,18 +60,16 @@ jobs:
         id: branch
         shell: bash
         run: |
-          raw_branch_name=$(git rev-parse --abbrev-ref HEAD)
-          echo "BRANCH_NAME=$raw_branch_name" >> $GITHUB_ENV
+          echo "BRANCH_NAME=${{ github.event.pull_request.head.ref }}" >> $GITHUB_ENV
 
       - name: Checkout main branch
         run: |
           git fetch origin main:main
           git checkout main
 
+
       - name: Install dependencies (main)
-        run: |
-          poetry env use ${{ matrix.python-version }}
-          poetry install
+        run: uv sync --locked --dev 
 
       - name: Run notebooks on main branch
         shell: bash
@@ -89,7 +82,7 @@ jobs:
             nb_trimmed=$(echo "$nb" | tr -d '\r')
             echo "Timing $nb_trimmed on main"
             start=$(date +%s)
-            poetry run pytest --no-cov --nbval-lax -p no:python -n 0 "$nb_trimmed"
+            uv run pytest --no-cov --nbval-lax -p no:python -n 0 "$nb_trimmed"
             end=$(date +%s)
             echo "$((end - start))" > "${RUNNER_TEMP}/timings/$(basename "$nb_trimmed").main.time"
           done
@@ -104,8 +97,10 @@ jobs:
 
       - name: Install dependencies
         run: |
-          poetry env use ${{ matrix.python-version }}
-          poetry install
+          rm -rf .venv uv.lock
+          uv lock
+          uv sync --locked
+
 
       - name: Run notebooks on current branch
         shell: bash
@@ -120,7 +115,7 @@ jobs:
             safe_branch=$(echo "$BRANCH_NAME" | tr '/' '_')
             echo "Timing $nb_trimmed on $BRANCH_NAME"
             start=$(date +%s)
-            poetry run pytest --no-cov --nbval-lax -p no:python -n 0 "$nb_trimmed"
+            uv run pytest --no-cov --nbval-lax -p no:python -n 0 "$nb_trimmed"
             end=$(date +%s)
             echo "$((end - start))" > "${RUNNER_TEMP}/timings/$(basename "$nb_trimmed").$safe_branch.time"
           done

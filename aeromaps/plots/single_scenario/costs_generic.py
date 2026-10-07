@@ -2842,11 +2842,26 @@ class DetailledMFSPBreakdown(SingleScenarioPlot):
 class SimpleMFSP(SingleScenarioPlot):
     required_outputs = []
 
-    def __init__(self, process, figsize=None, **kwargs):
+    def __init__(self, process, figsize=None, mfsp_type=None, **kwargs):
+        """Minimum fuel selling price per pathway.
+
+        ``mfsp_type`` selects ``"net_mfsp"``, which includes the carbon tax, or
+        ``"mean_mfsp"``, which is the production cost alone. Passing it draws
+        that variant directly and skips the toggle, which is what a document
+        built without a live kernel needs: the widget renders as a stray repr
+        there rather than as a control.
+        """
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize, **kwargs)
         self.pathways_manager = self.process.pathways_manager
-        self.plot_interact()
+        if mfsp_type is None:
+            self.plot_interact()
+        else:
+            self.create_plot(mfsp_type)
+            # create_plot clears the axes and draws a fresh legend, so the
+            # setting the base class applied on the way out of __init__ has
+            # already been undone by the time we get here.
+            self._apply_legend_setting()
 
     def _get_default_figsize(self):
         return (plot_1_x, plot_1_y)
@@ -2994,6 +3009,18 @@ class NetEnergyDOCPerRPKBreakdown(SingleScenarioPlot):
     * Subsidy (shown as a negative area below zero)
 
     A black total line for ``doc_net_energy_per_rpk_mean`` is overlaid.
+
+    Parameters
+    ----------
+    groups : dict, optional
+        Maps a pathway name to a group label. Pathways sharing a label are summed
+        into one band, component by component, and named by the label in the
+        legend; pathways left out keep a band of their own. Useful when a scenario
+        deploys many pathways of the same kind, e.g. seven biomass routes that a
+        reader only needs to see as bio-SAF.
+    group_colors : dict, optional
+        Maps a group label to a colour. A group without one takes the colour of
+        its first member pathway.
     """
 
     required_outputs = [
@@ -3015,7 +3042,10 @@ class NetEnergyDOCPerRPKBreakdown(SingleScenarioPlot):
         "subsidy": "Subsidies",
     }
 
-    def __init__(self, process, figsize=None, **kwargs):
+    def __init__(self, process, figsize=None, groups=None, group_colors=None, **kwargs):
+        # Set before super().__init__, which calls create_plot() on the way out.
+        self.groups = dict(groups or {})
+        self.group_colors = dict(group_colors or {})
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize, **kwargs)
 
@@ -3200,8 +3230,17 @@ class NetEnergyDOCPerRPKBreakdown(SingleScenarioPlot):
                 )
 
     def _draw_legends(self, pathways, pathway_colors):
-        """Add two legends: one for carrier colours, one for component hatches."""
+        """Add two legends: one for carrier colours, one for component hatches.
+
+        Both are drawn with explicit handles rather than from the artists, so the
+        base class's ``_apply_legend_setting`` cannot remove them afterwards. The
+        setting is therefore honoured here instead, which is what lets several of
+        these panels sit side by side carrying one legend between them.
+        """
         from matplotlib.lines import Line2D
+
+        if self._legend_setting is False:
+            return
 
         # Left legend – active energy carriers
         carrier_handles = [
@@ -3272,7 +3311,43 @@ class NetEnergyDOCPerRPKBreakdown(SingleScenarioPlot):
         self.ax.add_artist(legend1)
         self.ax.add_artist(legend2)
 
-    def create_plot(self):
+    def _group(self, pathways, data, pathway_colors):
+        """Merge pathways sharing a group label into one band per label.
+
+        Returns stand-ins for ``pathways`` (anything with a ``name``), their data
+        and their colours, in the order the first member of each group appears,
+        so a grouped plot stacks in the same order as an ungrouped one.
+        """
+        if not self.groups:
+            return pathways, data, pathway_colors
+        from types import SimpleNamespace
+
+        # A label equal to the name of a pathway left out of ``groups`` would merge that
+        # pathway into the group, against the promise that omitted pathways keep a band.
+        ungrouped = {p.name for p in pathways if p.name not in self.groups}
+        clashes = sorted(ungrouped & set(self.groups.values()))
+        if clashes:
+            raise ValueError(
+                f"Group labels {clashes} are also the names of pathways that are not in "
+                "`groups`, which would merge them into the group. Rename the label, or "
+                "map those pathways too."
+            )
+
+        order, merged, colors = [], {}, {}
+        for p in pathways:
+            label = self.groups.get(p.name, p.name)
+            if label not in merged:
+                order.append(SimpleNamespace(name=label))
+                merged[label] = {
+                    comp: np.zeros_like(values) for comp, values in data[p.name].items()
+                }
+                colors[label] = self.group_colors.get(label, pathway_colors[p.name])
+            for comp, values in data[p.name].items():
+                merged[label][comp] = merged[label][comp] + values
+        return order, merged, colors
+
+    def _prepare(self):
+        """Active pathways, their per-RPK cost data and colours, grouped if asked."""
         pathways = self._get_active_pathways()
         colors_cmap = plt.cm.get_cmap("tab20", max(len(self.pathways_manager.get_all()), 1))
         all_pathways = self.pathways_manager.get_all()
@@ -3280,6 +3355,10 @@ class NetEnergyDOCPerRPKBreakdown(SingleScenarioPlot):
 
         total_rpk = self._total_rpk()
         data = self._compute_pathway_data(pathways, total_rpk)
+        return self._group(pathways, data, pathway_colors)
+
+    def create_plot(self):
+        pathways, data, pathway_colors = self._prepare()
 
         self._draw_stacked(pathways, data, pathway_colors)
         self._draw_legends(pathways, pathway_colors)
@@ -3296,13 +3375,7 @@ class NetEnergyDOCPerRPKBreakdown(SingleScenarioPlot):
         for line in list(self.ax.lines):
             line.remove()
 
-        pathways = self._get_active_pathways()
-        colors_cmap = plt.cm.get_cmap("tab20", max(len(self.pathways_manager.get_all()), 1))
-        all_pathways = self.pathways_manager.get_all()
-        pathway_colors = {p.name: colors_cmap(i) for i, p in enumerate(all_pathways)}
-
-        total_rpk = self._total_rpk()
-        data = self._compute_pathway_data(pathways, total_rpk)
+        pathways, data, pathway_colors = self._prepare()
 
         self._draw_stacked(pathways, data, pathway_colors)
         self._draw_legends(pathways, pathway_colors)

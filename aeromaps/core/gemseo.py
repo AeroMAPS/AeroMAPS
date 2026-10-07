@@ -461,7 +461,9 @@ class CustomDataConverter(SimpleGrammarDataConverter):
             intruding = is_nan & mask
             if intruding.any():
                 record_nan_intrusion(name, int(intruding.sum()))
-            return np.where(is_nan, self.DEAD_FILL, values)
+            # Masked-out positions stay out even if they now hold a number: the disciplines
+            # get NaN back there, so the residual must not see it either.
+            return np.where(mask & ~is_nan, values, self.DEAD_FILL)
         return super().convert_value_to_array(name, value)
 
     def convert_array_to_value(self, name: str, array_: Any) -> Any:
@@ -503,7 +505,38 @@ class CustomDataConverter(SimpleGrammarDataConverter):
 SimpleGrammar.DATA_CONVERTER_CLASS = CustomDataConverter
 
 
-class AeroMAPSAutoModelWrapper(AutoPyDiscipline):
+class _CouplingSeedMixin:
+    """Registers a model's coupling seeds (``_coupling_defaults``) as discipline defaults."""
+
+    def _register_coupling_seeds(self):
+        # A parameter value already in the defaults wins over the seed. The seeded keys
+        # are remembered so that a refresh only ever touches them.
+        self._seeded_coupling_names = set()
+        for key, value in getattr(self.model, "_coupling_defaults", {}).items():
+            if key in self.input_grammar.names and key not in self.default_input_data:
+                self.default_input_data[key] = value
+                self._seeded_coupling_names.add(key)
+
+    def refresh_coupling_seeds(self):
+        """Re-register the seeds the model rebuilt in its last ``_initialize_df``.
+
+        Seeds span the model's years, so without this an ``end_year`` changed after the
+        discipline was built leaves seeds that stop at the old end year.
+        """
+        seeds = getattr(self.model, "_coupling_defaults", {})
+        # A multi-regional copy keys its defaults as "{region}:name".
+        to_namespaced = self.input_grammar.to_namespaced
+        for key in list(self._seeded_coupling_names):
+            default_key = to_namespaced.get(key, key)
+            if hasattr(self.model.parameters, key):
+                # Set as a parameter since the discipline was built: it wins from now on.
+                self.default_input_data[default_key] = getattr(self.model.parameters, key)
+                self._seeded_coupling_names.discard(key)
+            elif key in seeds:
+                self.default_input_data[default_key] = seeds[key]
+
+
+class AeroMAPSAutoModelWrapper(_CouplingSeedMixin, AutoPyDiscipline):
     """
     Wraps the AeroMAPSModel class into a discipline.
     Inputs and outputs are automatically declared from the model's compute() function signature.
@@ -530,10 +563,7 @@ class AeroMAPSAutoModelWrapper(AutoPyDiscipline):
             if hasattr(self.model.parameters, input):
                 self.default_input_data[input] = getattr(self.model.parameters, input)
         # Also register coupling defaults from the model (seed values for MDA initialization)
-        if hasattr(self.model, "_coupling_defaults"):
-            for key, value in self.model._coupling_defaults.items():
-                if key in self.input_grammar.names and key not in self.default_input_data:
-                    self.default_input_data[key] = value
+        self._register_coupling_seeds()
 
     def _run(self, input_data):
         try:
@@ -550,7 +580,7 @@ class AeroMAPSAutoModelWrapper(AutoPyDiscipline):
             raise
 
 
-class AeroMAPSCustomModelWrapper(Discipline):
+class AeroMAPSCustomModelWrapper(_CouplingSeedMixin, Discipline):
     """
     Wraps the AeroMAPSModel class into a discipline.
     Inputs and outputs are declared through the attributes 'input_names' and 'output_names' of the model.
@@ -614,10 +644,7 @@ class AeroMAPSCustomModelWrapper(Discipline):
         # Also register coupling defaults from the model (seed values for MDA
         # initialization), mirroring AeroMAPSAutoModelWrapper. A parameter value
         # (set just above) still wins over the coupling seed.
-        if hasattr(self.model, "_coupling_defaults"):
-            for key, value in self.model._coupling_defaults.items():
-                if key in self.input_grammar.names and key not in self.default_input_data:
-                    self.default_input_data[key] = value
+        self._register_coupling_seeds()
 
 
 # =============================================================================

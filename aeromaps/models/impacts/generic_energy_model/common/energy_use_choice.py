@@ -146,6 +146,16 @@ class EnergyUseChoice(AeroMAPSModel):
         Dictionary of output variable names populated at model initialisation before MDA chain creation.
     """
 
+    #: The mandate types this model dispatches on.
+    MANDATE_TYPES = ("share", "quantity")
+
+    #: Keys this model takes from each block of a pathway's ``inputs``. Collected by
+    #: ``common/yaml_schema.py`` to validate the energy YAML files; a key belongs to exactly
+    #: one block, and models declaring the same key must agree on it.
+    PATHWAY_INPUT_KEYS = {
+        "mandate": ("mandate_type", "mandate_share", "mandate_quantity"),
+    }
+
     def __init__(
         self,
         name,
@@ -185,6 +195,14 @@ class EnergyUseChoice(AeroMAPSModel):
                     {
                         f"{name}_mandate_share": pd.Series([0.0]),
                     }
+                )
+            elif pathway.mandate_type is not None:
+                # Without this, an unrecognised type would silently give a pathway no mandate
+                # at all: it would simply never deploy.
+                raise ValueError(
+                    f"Unsupported mandate type for pathway '{name}': "
+                    f"'{pathway.mandate_type}'. Accepted: "
+                    f"{', '.join(repr(t) for t in self.MANDATE_TYPES)}."
                 )
 
         # Fill and initialize inputs not defined in the yaml file (either user inputs or other models outputs)
@@ -298,13 +316,24 @@ class EnergyUseChoice(AeroMAPSModel):
                         if (total_quantity <= energy_consumption.fillna(0)).all():
                             # If the sum of quantities is less than or equal to the total, keep the quantities as output
                             for pathway in type_quantity_pathways:
-                                pathway_consumption = input_data[f"{pathway.name}_mandate_quantity"]
+                                # Reindex onto the full horizon before publishing. A mandate
+                                # curve only spans the prospective years, while the branch
+                                # below emits a full-horizon series, so without this the
+                                # output length depends on which branch runs. That is stable
+                                # under exogenous demand but not under price-elastic demand,
+                                # where total energy moves between MDA iterations and can flip
+                                # the branch: the coupling variable then changes size mid-solve
+                                # and GEMSEO, which fixes its slices on first resolution,
+                                # fails with a shape mismatch.
+                                pathway_consumption = (
+                                    input_data[f"{pathway.name}_mandate_quantity"]
+                                    .reindex(energy_consumption.index)
+                                    .fillna(0)
+                                )
                                 output_data[f"{pathway.name}_energy_consumption"] = (
                                     pathway_consumption
                                 )
-                                remaining_energy_consumption -= pathway_consumption.reindex(
-                                    energy_consumption.index
-                                ).fillna(0)
+                                remaining_energy_consumption -= pathway_consumption
                         else:
                             # If the sum exceeds the total, decrease them homogeneously
                             scaling_factor = pd.Series(

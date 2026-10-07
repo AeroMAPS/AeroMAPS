@@ -133,6 +133,25 @@ def test_the_model_declares_its_domain_rather_than_enforcing_it():
     assert not hasattr(model, "_warn_if_bounded"), "the model must not police its own input"
 
 
+def test_the_domain_and_the_seed_follow_the_configured_reference_airfare():
+    """The multiplier divides by ``initial_airfare_per_rpk``, so the band is relative to it."""
+
+    class _ConfiguredParameters(_Parameters):
+        initial_airfare_per_rpk = 2.0 * INITIAL_AIRFARE
+
+    model = RPKElasticity(
+        name="rpk_elasticity",
+        passenger_market_ids=["short_range"],
+        parameters=_ConfiguredParameters(),
+    )
+    model._initialize_df()
+
+    low, high = model._coupling_bounds["airfare_per_rpk"]
+    assert low == pytest.approx(2.0 * INITIAL_AIRFARE * LOW_FACTOR)
+    assert high == pytest.approx(2.0 * INITIAL_AIRFARE * HIGH_FACTOR)
+    assert (model._coupling_defaults["airfare_per_rpk"] == 2.0 * INITIAL_AIRFARE).all()
+
+
 def test_the_band_is_wide_enough_to_be_inactive_at_a_solution():
     """A bound active at convergence would move the answer, which it must not."""
     low, high = INITIAL_AIRFARE * LOW_FACTOR, INITIAL_AIRFARE * HIGH_FACTOR

@@ -102,3 +102,24 @@ class DocNetEnergyPerRPKComparisonPlot(MultiScenarioPlot):
         self.ax.set_ylabel("Energy costs [€/RPK]")
         self.ax.legend(loc="best")
         self.ax.grid(True, alpha=0.3)
+
+
+class DropInMFSPWithoutCarbonTaxComparisonPlot(MultiScenarioPlot):
+    """Compare the fleet-average drop-in fuel price, excluding the carbon tax.
+
+    The price of the energy itself, separated from the price of emitting. The two
+    move for different reasons and respond to different policy, so a figure that
+    shows only their sum cannot say which one is driving.
+    """
+
+    required_outputs = ["dropin_fuel_mean_net_mfsp_without_carbon_tax"]
+    column_name = "dropin_fuel_mean_net_mfsp_without_carbon_tax"
+    years_source = "prospective_years"
+
+    def create_plot(self):
+        self._plot_grouped_series()
+        self.ax.set_xlabel("Year", fontsize=12)
+        self.ax.set_ylabel("Drop-in fuel price [EUR/MJ]", fontsize=12)
+        self.ax.set_title("Fuel Price Excluding Carbon Tax", fontsize=14)
+        self.ax.legend(loc="best")
+        self.ax.grid(True, alpha=0.3)

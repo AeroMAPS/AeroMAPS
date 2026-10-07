@@ -1,0 +1,13 @@
+operations:
+  name: operations
+  category: operations
+  inputs:
+    fuel_efficiency:
+      gain: !AeroMapsCustomDataType
+        years:
+        - 2020
+        - 2050
+        values:
+        - 0.0
+        - 6.0
+        method: linear

@@ -81,6 +81,12 @@ models:
     resources_model_data_file: "./default_energy_carriers/resources_data.yaml"
     processes_model_data_file: "./default_energy_carriers/processes_data.yaml"
 
+  # Generic offsets model — optional. Offsetting schemes (ETS, CORSIA, removals...),
+  # each with its own quantity rule and price; replaces the simple offset models and
+  # the single offset price. The file ships with an annotated example at its top.
+  # offsets:
+  #   offsets_model_data_file: "./default_offsets/offsets_data.yaml"
+
   # Life Cycle Assessment — optional.
   #   .json  → built-in default LCA model
   #   .yaml  → custom LCA model (needs: pip install aeromaps[lca])

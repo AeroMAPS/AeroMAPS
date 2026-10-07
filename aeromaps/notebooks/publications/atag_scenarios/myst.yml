@@ -1,0 +1,35 @@
+version: 1
+
+# Standalone MyST project for the ATAG Waypoint 2050 reproduction. It sits
+# outside docs/, so `mkdocs build` never sees these MyST directives and the two
+# documentation toolchains stay independent.
+project:
+  id: aeromaps-atag-waypoint2050
+  title: Reproducing the ATAG Waypoint 2050 scenarios
+  description: >-
+    An open reproduction of the ATAG Waypoint 2050 decarbonisation scenarios in
+    AeroMAPS, lever by lever, extended with demand-price coupling and contrail
+    avoidance.
+  keywords:
+    - aviation decarbonisation
+    - prospective scenarios
+    - scenario reproduction
+    - sustainable aviation fuel
+    - open-source modelling
+  bibliography:
+    - references.bib
+  settings:
+    # Notebook cells ending on a plot call leave a repr like
+    # "<matplotlib.legend.Legend at 0x...>" in the outputs; drop it rather than
+    # requiring a trailing semicolon on every plotting cell.
+    output_matplotlib_strings: remove
+  # Only the document is part of the MyST project. The notebooks stay out of the toc on
+  # purpose: `myst build --execute` runs every page from the project root, and the
+  # scenario notebooks resolve their configs relative to their own edition folder, so
+  # they must be run in place (which is how their committed outputs are produced). The
+  # document reads those outputs and names the producing notebook for each result.
+  toc:
+    - file: index.md
+
+site:
+  template: book-theme
