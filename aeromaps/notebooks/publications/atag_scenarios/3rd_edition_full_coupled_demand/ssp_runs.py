@@ -1,0 +1,197 @@
+"""Shared machinery for the coupled-demand SSP runs.
+
+The coupled scenario is run twice, under the two readings of the same published SAF
+trajectory, because the reports do not say which one they mean:
+
+``quantity``
+    The mandate fixes a SAF *volume*. If demand falls, that volume is unchanged, so the
+    blend share rises on its own -- and at a large enough demand response it saturates,
+    with SAF displacing the entire drop-in fleet.
+
+``share``
+    The mandate fixes a SAF *percentage*. If demand falls, SAF volume falls with it and
+    the blend share is unchanged. This is how real mandates (ReFuelEU Aviation, the UK
+    and Brazilian schemes) are written.
+
+Both are defensible readings of *Waypoint 2050*, which reports SAF as a 2050 volume
+without stating what would happen to it under lower traffic. They give materially
+different answers once demand is price-elastic, so both are carried explicitly rather
+than one being chosen silently.
+
+A third entry, ``nosaf``, is not another reading of the same question -- it is a
+fuel-only counterfactual paired against ``share``: the same demand model and the
+same background pathway, with every drop-in SAF mandate zeroed by
+``make_energy_files.py`` so fossil kerosene supplies the whole drop-in fleet. It
+lets the demand response be read against its own fuel baseline, which is a
+sharper comparison than against the exogenous forecast alone, since the
+exogenous forecast is not run under the same cost model at all.
+"""
+
+from pathlib import Path
+
+from aeromaps import create_process
+from aeromaps.utils.scenarios import find_scenario
+from make_energy_files import KEROSENE_BY_PATHWAY, KEROSENE_LEVELS, kerosene_price
+
+HERE = Path(__file__).resolve().parent
+# The configurations ship with the package; the results they produce stay here.
+CONFIGS = find_scenario("atag_3rd_edition_coupled_demand").config_dir
+
+# All REMIND-MAgPIE 1.5 under SSP2, spanning roughly a factor of twenty-four in the
+# 2050 carbon price (1033 / 212 / 43 US$2010 per tCO2).
+#
+# SSP2-34 is dropped: at 89 US$2010/tCO2 it sits between 2.6 and 4.5 without changing
+# the conclusion, and three pathways read more clearly. SSP2-19 is kept because it is
+# the only one on the far side of the volume/share pivot -- it is where a fixed SAF
+# volume leaves *less* residual CO2 than a fixed share, so without it the two mandate
+# readings converge but never actually cross.
+PATHWAYS = ["SSP2-19", "SSP2-26", "SSP2-45"]
+
+MANDATES = {
+    "quantity": {
+        "config": "config_s1.yaml",
+        "suffix": "",
+        "label": "fixed SAF volume",
+    },
+    "share": {
+        "config": "config_s1_share.yaml",
+        "suffix": "_share",
+        "label": "fixed SAF share",
+    },
+    # Not a third mandate reading -- the fuel-only counterfactual paired
+    # against "share": same demand model, same background pathway, same
+    # everything except the energy carrier file, where make_energy_files.py
+    # has zeroed every drop-in SAF mandate. Comparing the demand response
+    # against this rather than only against the exogenous forecast isolates
+    # what SAF's own cost does to traffic.
+    "nosaf": {
+        "config": "config_s1_nosaf.yaml",
+        "suffix": "_nosaf",
+        "label": "no SAF",
+    },
+}
+
+
+# First year carrying a carbon price. The AR6 pathways price carbon from 2020
+# onwards, so without this the three differ already in 2026, the first year the
+# demand model projects, and the comparison between them starts from three
+# different costs of flying. Holding the price at zero through 2026 gives them a
+# common starting point and lets them separate only once the price bites.
+CARBON_TAX_START_YEAR = 2027
+
+
+def delayed_carbon_tax(ar6_years, values):
+    """The AR6 price trajectory, held at zero until ``CARBON_TAX_START_YEAR``.
+
+    The AR6 grid is decadal, so the series keeps its own anchors from the first
+    decade at or after the start year and adds a zero at the year before it: the
+    price is zero through that year and rises linearly from the start year to the
+    next AR6 anchor.
+    """
+    kept = [
+        (year, value) for year, value in zip(ar6_years, values) if year >= CARBON_TAX_START_YEAR
+    ]
+    years = [ar6_years[0], CARBON_TAX_START_YEAR - 1] + [year for year, _ in kept]
+    prices = [0.0, 0.0] + [value for _, value in kept]
+    return years, prices
+
+
+def build(pathway, ar6_data, ar6_years, mandate="quantity"):
+    """A coupled process for one SSP pathway under one mandate reading.
+
+    Population, GDP per capita and the carbon price all come from the same pathway, so
+    each run is internally consistent: a world that prices carbon aggressively is also
+    the world whose income trajectory the demand model sees. The price is the only one
+    of the three that is delayed, since it is the only one a policy sets.
+    """
+    process = create_process(configuration_file=str(CONFIGS / MANDATES[mandate]["config"]))
+    for parameter, values in (
+        ("population", ar6_data["population"][pathway]),
+        ("gdp_per_capita", ar6_data["gdp_per_capita"][pathway]),
+    ):
+        setattr(process.parameters, f"{parameter}_reference_years", ar6_years)
+        setattr(process.parameters, f"{parameter}_reference_years_values", values)
+
+    tax_years, tax_values = delayed_carbon_tax(ar6_years, ar6_data["carbon_tax"][pathway])
+    for parameter in ("carbon_tax", "exogenous_carbon_price"):
+        setattr(process.parameters, f"{parameter}_reference_years", tax_years)
+        setattr(process.parameters, f"{parameter}_reference_years_values", tax_values)
+    set_kerosene_level(process, KEROSENE_LEVELS[KEROSENE_BY_PATHWAY[pathway]])
+    return process
+
+
+def set_kerosene_level(process, level):
+    """Hold fossil kerosene at ``level`` EUR/MJ from 2026, keeping its history."""
+    key = "fossil_kerosene_mean_mfsp_without_resource"
+    years, values = kerosene_price(
+        getattr(process.parameters, f"{key}_years"),
+        getattr(process.parameters, f"{key}_values"),
+        level=level,
+    )
+    setattr(process.parameters, f"{key}_years", years)
+    setattr(process.parameters, f"{key}_values", values)
+
+
+def output_path(pathway, mandate="quantity"):
+    stem = pathway.lower().replace("-", "_") + MANDATES[mandate]["suffix"]
+    return HERE / "data_outputs" / f"{stem}.json"
+
+
+def run_all(ar6_data, ar6_years, mandate="quantity", write=True):
+    """Compute every pathway under one mandate reading."""
+    processes = {}
+    for pathway in PATHWAYS:
+        print(f"computing {pathway} ({MANDATES[mandate]['label']}) ...", flush=True)
+        process = build(pathway, ar6_data, ar6_years, mandate)
+        process.compute()
+        if write:
+            process.write_json(str(output_path(pathway, mandate)))
+        processes[pathway] = process
+    return processes
+
+
+def summarise(processes, mandate="quantity"):
+    """One row per pathway: demand response and the resulting SAF blend."""
+    import pandas as pd
+
+    rows = []
+    for pathway, process in processes.items():
+        vector = process.data["vector_outputs"]
+        climate = process.data["climate_outputs"]
+        coupled = vector.loc[2050, "rpk"]
+        exogenous = vector.loc[2050, "rpk_no_elasticity"]
+        dropin = vector.loc[2050, "energy_consumption_dropin_fuel"]
+        fossil = vector.loc[2050, "dropin_fuel_fossil_energy_consumption"]
+        rows.append(
+            {
+                "pathway": pathway,
+                "mandate": MANDATES[mandate]["label"],
+                "2050 RPK [T]": coupled / 1e12,
+                "exogenous RPK [T]": exogenous / 1e12,
+                "demand response [%]": 100 * (coupled / exogenous - 1),
+                "2050 SAF share [%]": 100 * (1 - fossil / dropin) if dropin else float("nan"),
+                "2050 CO2 [Mt]": climate.loc[2050, "co2_emissions"],
+            }
+        )
+    return pd.DataFrame(rows).set_index("pathway")
+
+
+def main():
+    """Refresh every mandate reading, the no-SAF counterfactual included.
+
+    The two comparison notebooks each run one reading, so the counterfactual they
+    are drawn against has no notebook of its own and would otherwise keep whatever
+    inputs it was last run with. Run this whenever the coupled inputs change::
+
+        python ssp_runs.py
+    """
+    from get_data import get_ar6_input_data
+
+    ar6_data, ar6_years = get_ar6_input_data(start_year=2010, end_year=2100, plot_data=False)
+    for mandate in MANDATES:
+        processes = run_all(ar6_data, ar6_years, mandate=mandate)
+        print(summarise(processes, mandate).round(2), end="\n\n")
+
+
+if __name__ == "__main__":
+    main()

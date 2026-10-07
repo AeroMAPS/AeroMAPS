@@ -15,10 +15,14 @@
 #   inputs:
 #     # Policy
 #     mandate:
-#       mandate_type: "share"    # or "volume". If "share", the mandate is a share of the aircraft-type fuel demand, if "volume", it is directly a volume of fuel.
-#       mandate_share: !AeroMapsCustomDataType
+#       mandate_type: "share"    # or "quantity". If "share", the mandate is a share of the aircraft-type fuel demand, if "quantity", it is directly a quantity of energy.
+#       mandate_share: !AeroMapsCustomDataType   # with mandate_type: "share", [%] of the aircraft-type fuel demand
 #         years: [2020, 2030, 2040, 2050]
 #         values: [0.0, 1.0, 2.0, 3.0]
+#         method: linear
+#       mandate_quantity: !AeroMapsCustomDataType  # with mandate_type: "quantity", [MJ] of energy carrier
+#         years: [2020, 2030, 2040, 2050]
+#         values: [0.0, 1.0e+9, 2.0e+9, 3.0e+9]
 #         method: linear
 #     # Technical
 #     technical:

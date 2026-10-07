@@ -1,0 +1,14 @@
+{
+  "s1": {
+    "consumption_evolution": -26.335907691798223,
+    "electric_share": 0.0
+  },
+  "s0": {
+    "consumption_evolution": -17.70319765591175,
+    "electric_share": 0.0
+  },
+  "s2": {
+    "consumption_evolution": -26.335907691798223,
+    "electric_share": 70.0
+  }
+}

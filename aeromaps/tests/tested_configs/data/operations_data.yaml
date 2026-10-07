@@ -1,0 +1,46 @@
+airline_operations:
+  name: "airline_operations"
+  category: "airline_operations"
+  inputs:
+    fuel_efficiency:
+      gain: !AeroMapsCustomDataType
+        years: [2020, 2030, 2040, 2050]
+        values: [0.0, 3.5, 4.3, 4.7]
+        method: linear
+
+
+airspace_and_atm:
+  name: "airspace_and_atm"
+  category: "airspace_and_atm"
+  inputs:
+    fuel_efficiency:
+      gain: !AeroMapsCustomDataType
+        years: [2020, 2030, 2040, 2050]
+        values: [0.0, 3.5, 4.2, 5.7]
+        method: linear
+
+
+airports_and_ground_operations:
+  name: "airports_and_ground_operations"
+  category: "airports_and_ground_operations"
+  inputs:
+    fuel_efficiency:
+      gain: !AeroMapsCustomDataType
+        years: [2020, 2030, 2040, 2050]
+        values: [0.0, 0.8, 1.0, 1.2]
+        method: linear
+
+
+contrail_avoidance:
+  name: "contrail_avoidance"
+  category: "contrails"
+  inputs:
+    contrails:
+      gain: !AeroMapsCustomDataType
+        years: [2020, 2035, 2050]
+        values: [0.0, 30.0, 60.0]
+        method: linear
+      overconsumption: !AeroMapsCustomDataType
+        years: [2020, 2050]
+        values: [0.0, 0.5]
+        method: linear

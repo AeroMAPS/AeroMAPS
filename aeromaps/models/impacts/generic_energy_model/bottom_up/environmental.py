@@ -44,6 +44,33 @@ class BottomUpEnvironmental(AeroMAPSModel):
 
     MODEL_APPROACH = "bottom_up"
 
+    #: Keys this model takes from each block of a pathway's ``inputs``. Collected by
+    #: ``common/yaml_schema.py`` to validate the energy YAML files; a key belongs to exactly
+    #: one block, and models declaring the same key must agree on it.
+    PATHWAY_INPUT_KEYS = {
+        "environmental": (
+            "eis_co2_emission_factor_without_resource",
+            "emission_index",
+        ),
+        "technical": (
+            "kerosene_selectivity",
+            "resource_names",
+            "processes_names",
+            "eis_resource_specific_consumption",
+            "eis_plant_lifespan",
+            "lhv",
+        ),
+    }
+
+    #: Same, for the processes a pathway declares.
+    PROCESS_INPUT_KEYS = {
+        "environmental": ("eis_co2_emission_factor_without_resource",),
+        "technical": ("resource_names", "eis_resource_specific_consumption"),
+    }
+
+    #: Keys of a resource's ``specifications`` this model reads.
+    RESOURCE_INPUT_KEYS = ("co2_emission_factor",)
+
     def __init__(
         self,
         name,
@@ -141,6 +168,12 @@ class BottomUpEnvironmental(AeroMAPSModel):
                 else:
                     # TODO initialize with zeros instead of actual val?
                     self.input_names[key] = val
+
+            for key, val in (
+                processes_data[process_key].get("inputs").get("environmental", {}) or {}
+            ).items():
+                # TODO initialize with zeros instead of actual val?
+                self.input_names[key] = val
 
             for key, val in processes_data[process_key].get("inputs").get("economics", {}).items():
                 # TODO initialize with zeros instead of actual val?
@@ -254,7 +287,7 @@ class BottomUpEnvironmental(AeroMAPSModel):
                     0.0,
                 )
                 kerosene_selectivity = _get_value_for_year(
-                    input_data.get(f"{self.pathway_name}_eis_kerosene_selectivity"), year, 1.0
+                    input_data.get(f"{self.pathway_name}_kerosene_selectivity"), year, 1.0
                 )
 
                 vintage_emission_factor = _custom_series_addition(
@@ -286,8 +319,8 @@ class BottomUpEnvironmental(AeroMAPSModel):
                         resources_consumption = (
                             energy_production_commissioned[year] * specific_consumption
                         )
-                        resources_consumption_with_selectivity = (
-                            resources_consumption * kerosene_selectivity
+                        resources_mobilised_with_selectivity = (
+                            resources_consumption / kerosene_selectivity
                         )
 
                         total_ressource_consumption.loc[year : year + lifespan - 1] = (
@@ -295,14 +328,14 @@ class BottomUpEnvironmental(AeroMAPSModel):
                         )
                         total_ressource_mobilised_with_selectivity.loc[
                             year : year + lifespan - 1
-                        ] = resources_consumption_with_selectivity
+                        ] = resources_mobilised_with_selectivity
 
                         output_data[
                             f"{self.pathway_name}_excluding_processes_{key}_total_consumption"
                         ].loc[year : year + lifespan - 1] += resources_consumption
                         output_data[
                             f"{self.pathway_name}_excluding_processes_{key}_total_mobilised_with_selectivity"
-                        ].loc[year : year + lifespan - 1] += resources_consumption_with_selectivity
+                        ].loc[year : year + lifespan - 1] += resources_mobilised_with_selectivity
 
                         # Get the CO2 emission factor for the resource
                         unit_emissions = input_data.get(
@@ -339,8 +372,8 @@ class BottomUpEnvironmental(AeroMAPSModel):
                             resources_consumption = (
                                 energy_production_commissioned[year] * specific_consumption
                             )
-                            resources_consumption_with_selectivity = (
-                                resources_consumption * kerosene_selectivity
+                            resources_mobilised_with_selectivity = (
+                                resources_consumption / kerosene_selectivity
                             )
 
                             total_ressource_consumption.loc[year : year + lifespan - 1] = (
@@ -348,7 +381,7 @@ class BottomUpEnvironmental(AeroMAPSModel):
                             )
                             total_ressource_mobilised_with_selectivity.loc[
                                 year : year + lifespan - 1
-                            ] = resources_consumption_with_selectivity
+                            ] = resources_mobilised_with_selectivity
 
                             output_data[
                                 f"{self.pathway_name}_{process_key}_{key}_total_consumption"
@@ -357,7 +390,7 @@ class BottomUpEnvironmental(AeroMAPSModel):
                                 f"{self.pathway_name}_{process_key}_{key}_total_mobilised_with_selectivity"
                             ].loc[
                                 year : year + lifespan - 1
-                            ] += resources_consumption_with_selectivity
+                            ] += resources_mobilised_with_selectivity
 
                             # Get the CO2 emission factor for the resource
                             unit_emissions = input_data.get(
@@ -402,7 +435,7 @@ class BottomUpEnvironmental(AeroMAPSModel):
                 for process_key in self.process_keys:
                     # Get the inputs for the year
                     process_emission_factor = _get_value_for_year(
-                        input_data.get(f"{process_key}_eis_co2_emission_factor_without_resources"),
+                        input_data.get(f"{process_key}_eis_co2_emission_factor_without_resource"),
                         year,
                         0.0,
                     )

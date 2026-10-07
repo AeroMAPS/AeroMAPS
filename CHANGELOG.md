@@ -1,5 +1,37 @@
 # Changelog
 
+## Version 1.2.0
+
+Changed:
+- Added the ATAG Waypoint 2050 scenarios: reproduction of the three editions, decomposition into the report's pillars, tank-to-wake twins, demand-price coupling, lever sweep and climate analysis. (#144, #170)
+- Added a bottom-up variant of the ATAG third-edition scenarios and an ATAG lever order for the detailed CO2 plot. (#170)
+- Moved the reference scenarios into the package, with metadata to list and filter them. (#144, #170)
+- Added a decomposition of the CO2 levers into sub-levers (per aircraft, operational concept, pathway, offsetting scheme and market), with new plots and a tutorial. (#163)
+- Added generic operations and offsets modules. (#163)
+- Added comparison plots for background-scenario drivers and fuel-switching quantities, and made comparison utilities usable on committed JSON results. (#144)
+- Validated energy configuration files at load time and documented quantity mandates in the energy templates. (#158)
+- The MDA now raises when it does not converge, and `unified_mda` uses the same tolerance as a single region. (#157)
+- Added a `regionalisation.global_models` block for disciplines coupled across regions. (#157)
+- Pinned `gemseo` to `>=6.2.0,<6.3.0`. (#157)
+- Stripped outputs from tracked notebooks. (#144)
+- Migrated from Poetry to uv. (#166, #172)
+
+Fixed:
+- Corrected the first-order delay on the price seen by demand, which shifted projected traffic. (#144)
+- Corrected silent zeros in the generic energy model from misspelled or unregistered keys, including process emission factors. (#144, #158)
+- Corrected intensity curves reading zero before their first reference year. (#144)
+- Corrected a double count of green electricity and DAC-CO2 in electrofuel cost and emissions. (#144)
+- Corrected the ATAG re-baseline having modified the default parameters of every scenario. (#144)
+- Corrected the ATAG decomposition order, the post-2035 offset trajectory and several figures. (#144)
+- Corrected `aggregate_regions_to_single_process`, `compare_json_files`, historic contrail forcing and the envelope mode of comparison plots. (#144)
+- Restored pathway-aware plots on results loaded from JSON. (#144)
+- Fixed kerosene selectivity being ignored and inverted in the bottom-up model, and an unrecognised `mandate_type` now raises. (#158)
+- Fuel subsidies and energy taxes now reach the airfare; this changes results for scenarios that use them. (#157)
+- Fixed NaN sources in the MDA: sentinel values in the coupling vector, disciplines mutating their inputs, non-positive airfares, zero-traffic DOC means and duplicated columns on repeated `compute()`. (#157)
+- Fixed changing `end_year` after `create_process`. (#107, #167)
+- Fixed the markets global block overwriting the IAM model selector, and stale share keys in two markets files.
+
+
 ## Version 1.1.0
 
 Changed:
@@ -165,7 +197,7 @@ Fixed:
 
 - Changed:
     - Updated JOAS publication notebook with reviewers feedback. (#37)
-    - Updated voilà minimum version. (#38)
+    - Updated voilÃ  minimum version. (#38)
 
 - Fixed:
     - Corrected soot calculation. (#36)

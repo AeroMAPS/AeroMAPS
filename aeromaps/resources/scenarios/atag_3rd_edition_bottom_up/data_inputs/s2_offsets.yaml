@@ -1,0 +1,138 @@
+corsia:
+  name: corsia
+  category: offsets
+  inputs:
+    quantity:
+      mode: level
+      reference_year: 2019
+      baseline_level_vs_reference_year: !AeroMapsCustomDataType
+        years:
+        - 2020
+        - 2050
+        values:
+        - 999999.0
+        - 999999.0
+        method: linear
+      coverage: !AeroMapsCustomDataType
+        years:
+        - 2020
+        - 2050
+        values:
+        - 100.0
+        - 100.0
+        method: linear
+    economics:
+      price: !AeroMapsCustomDataType
+        years:
+        - 2020
+        - 2050
+        values:
+        - 0.0
+        - 0.0
+        method: linear
+residual_offsets:
+  name: residual_offsets
+  category: offsets
+  inputs:
+    quantity:
+      mode: share_of_residual
+      share: !AeroMapsCustomDataType
+        years:
+        - 2020
+        - 2035
+        - 2036
+        - 2037
+        - 2038
+        - 2039
+        - 2040
+        - 2041
+        - 2042
+        - 2043
+        - 2044
+        - 2045
+        - 2046
+        - 2047
+        - 2048
+        - 2049
+        - 2050
+        values:
+        - 0.0
+        - 0.0
+        - 16.2493
+        - 19.4856
+        - 22.5747
+        - 25.578
+        - 28.9677
+        - 32.0933
+        - 35.4957
+        - 38.9907
+        - 43.2494
+        - 47.6735
+        - 53.2094
+        - 60.3253
+        - 70.1812
+        - 82.2494
+        - 100.0
+        method: linear
+    economics:
+      price: !AeroMapsCustomDataType
+        years:
+        - 2020
+        - 2050
+        values:
+        - 0.0
+        - 0.0
+        method: linear
+prescribed_offsets:
+  name: prescribed_offsets
+  category: offsets
+  inputs:
+    quantity:
+      mode: quantity
+      amount: !AeroMapsCustomDataType
+        years:
+        - 2020
+        - 2022
+        - 2023
+        - 2024
+        - 2025
+        - 2026
+        - 2027
+        - 2028
+        - 2029
+        - 2030
+        - 2031
+        - 2032
+        - 2033
+        - 2034
+        - 2035
+        - 2036
+        - 2050
+        values:
+        - 0.0
+        - 0.0
+        - 19.041039435866402
+        - 45.42572375843365
+        - 57.12133367606881
+        - 72.50756092217927
+        - 118.50628714929557
+        - 131.8418956922163
+        - 147.15583411408397
+        - 160.173745039803
+        - 160.1771071727971
+        - 162.0292001386294
+        - 162.74024623067737
+        - 163.2037817088446
+        - 161.7878013591845
+        - 0.0
+        - 0.0
+        method: linear
+    economics:
+      price: !AeroMapsCustomDataType
+        years:
+        - 2020
+        - 2050
+        values:
+        - 0.0
+        - 0.0
+        method: linear

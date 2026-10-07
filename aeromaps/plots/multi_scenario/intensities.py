@@ -14,7 +14,7 @@ class CO2PerRPKComparisonPlot(MultiScenarioPlot):
         self.ax.set_xlabel("Year", fontsize=12)
         self.ax.set_ylabel("CO2 per RPK [gCO2/RPK]", fontsize=12)
         self.ax.set_title("Carbon Intensity per Passenger Kilometer", fontsize=14)
-        self.ax.legend(loc='best')
+        self.ax.legend(loc="best")
         self.ax.grid(True, alpha=0.3)
         self.ax.set_ylim(bottom=0)
 
@@ -30,7 +30,7 @@ class CO2PerRTKComparisonPlot(MultiScenarioPlot):
         self.ax.set_xlabel("Year", fontsize=12)
         self.ax.set_ylabel("CO2 per RTK [gCO2/RTK]", fontsize=12)
         self.ax.set_title("Carbon Intensity per Revenue Tonne Kilometer", fontsize=14)
-        self.ax.legend(loc='best')
+        self.ax.legend(loc="best")
         self.ax.grid(True, alpha=0.3)
         self.ax.set_ylim(bottom=0)
 
@@ -46,7 +46,7 @@ class EnergyPerASKComparisonPlot(MultiScenarioPlot):
         self.ax.set_xlabel("Year", fontsize=12)
         self.ax.set_ylabel("Energy per ASK [MJ/ASK]", fontsize=12)
         self.ax.set_title("Energy Intensity per Available Seat Kilometer", fontsize=14)
-        self.ax.legend(loc='best')
+        self.ax.legend(loc="best")
         self.ax.grid(True, alpha=0.3)
         self.ax.set_ylim(bottom=0)
 
@@ -62,6 +62,26 @@ class EnergyPerRTKComparisonPlot(MultiScenarioPlot):
         self.ax.set_xlabel("Year", fontsize=12)
         self.ax.set_ylabel("Energy per RTK [MJ/RTK]", fontsize=12)
         self.ax.set_title("Energy Intensity per Revenue Tonne Kilometer", fontsize=14)
-        self.ax.legend(loc='best')
+        self.ax.legend(loc="best")
         self.ax.grid(True, alpha=0.3)
         self.ax.set_ylim(bottom=0)
+
+
+class CO2PerEnergyComparisonPlot(MultiScenarioPlot):
+    """Compare the fleet-average carbon intensity of energy across scenarios.
+
+    Grams of CO2 per megajoule delivered, which is what a fuel-switching lever
+    acts on directly, as distinct from the intensity per passenger-kilometre,
+    which also moves with aircraft efficiency and load factor.
+    """
+
+    required_outputs = ["co2_per_energy_mean"]
+    column_name = "co2_per_energy_mean"
+
+    def create_plot(self):
+        self._plot_grouped_series()
+        self.ax.set_xlabel("Year", fontsize=12)
+        self.ax.set_ylabel("Carbon intensity of energy [gCO2/MJ]", fontsize=12)
+        self.ax.set_title("Carbon Intensity of Energy Across Scenarios", fontsize=14)
+        self.ax.legend(loc="best")
+        self.ax.grid(True, alpha=0.3)

@@ -72,28 +72,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+
       # If macos increase the max number of semaphores
       - name: Set sysctl for macOS
         if: matrix.os == 'macos-latest'
         run: |
           sudo sysctl -w kern.posix.sem.max=30000
 
-
-      - name: Install poetry
-        run: pipx install poetry==${{ vars.POETRY_VERSION }}
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+      - uses: astral-sh/setup-uv@v7
         with:
           python-version: ${{ matrix.python-version }}
-          cache: 'poetry'
-      - name: Activate environment and install dependencies
-        run: |
-          poetry env use ${{ matrix.python-version }}
-          poetry install
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync --locked --dev 
 
       - name: Unit tests
-        run: poetry run pytest aeromaps
+        run: uv run pytest aeromaps 
 
       - name: Notebook tests
         run: |
@@ -107,5 +102,5 @@ jobs:
             ! -path "aeromaps/notebooks/tutorials/09_optimise_a_scenario/example_optim_with_elasticity.ipynb")
 
           # Run pytest with nbmake on all notebooks in parallel
-          poetry run pytest --no-cov --nbmake --nbmake-timeout=5000 -p no:python -n=auto $notebooks -s
+          uv run pytest --no-cov --nbmake --nbmake-timeout=5000 -p no:python -n=auto $notebooks -s
         shell: bash

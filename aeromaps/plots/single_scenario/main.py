@@ -1,7 +1,25 @@
+import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
 import numpy as np
 
+from aeromaps.models.impacts.emissions.co2_emissions import (
+    ENERGY_SUB_LEVER_OTHER,
+    MARKET_CROSS_MIX,
+    OPERATIONS_OTHER,
+    aircraft_efficiency_lever_names,
+    efficiency_sub_lever_column,
+    market_lever_column,
+    market_lever_names,
+    offset_category_column,
+    offset_scheme_column,
+    operations_category_column,
+    operations_concept_column,
+    pathway_energy_column,
+)
+from aeromaps.plots import colors
+from aeromaps.plots.labels import readable_label
 from aeromaps.plots.single_scenario_plot import SingleScenarioPlot
+from aeromaps.utils.decomposition import DEFAULT_COLORS as ATAG_COLORS
 from aeromaps.plots.single_scenario_plot import plot_1_x
 from aeromaps.plots.single_scenario_plot import plot_1_y
 
@@ -106,7 +124,7 @@ class AirTransportCO2EmissionsPlot(SingleScenarioPlot):
             self.years,
             self.df["co2_emissions_last_historical_year_technology_baseline3"],
             self.df["co2_emissions_last_historical_year_technology"],
-            color="lightskyblue",
+            color=colors.LEVER_COLORS["demand"],
             label="Demand/supply side management",
         )
 
@@ -114,7 +132,7 @@ class AirTransportCO2EmissionsPlot(SingleScenarioPlot):
             self.years,
             self.df["co2_emissions_last_historical_year_technology"],
             self.df["co2_emissions_including_aircraft_efficiency"],
-            color="gold",
+            color=colors.LEVER_COLORS["efficiency"],
             label="Aircraft efficiency",
         )
 
@@ -122,7 +140,7 @@ class AirTransportCO2EmissionsPlot(SingleScenarioPlot):
             self.years,
             self.df["co2_emissions_including_aircraft_efficiency"],
             self.df["co2_emissions_including_load_factor"],
-            color="orange",
+            color=colors.LEVER_OPERATIONS_LOADFACTOR,
             label="Fleet operations and load factor",
         )
 
@@ -130,7 +148,7 @@ class AirTransportCO2EmissionsPlot(SingleScenarioPlot):
             self.years,
             self.df["co2_emissions_including_load_factor"],
             self.df_climate.loc[self.years, "co2_emissions"],
-            color="yellowgreen",
+            color=colors.LEVER_COLORS["energy"],
             label="Aircraft energy",
         )
 
@@ -140,7 +158,7 @@ class AirTransportCO2EmissionsPlot(SingleScenarioPlot):
             self.df_climate.loc[self.years, "co2_emissions"],
             self.df_climate.loc[self.years, "co2_emissions"] - self.df["carbon_offset"],
             color="white",
-            facecolor="silver",
+            facecolor=colors.LEVER_COLORS["offset"],
             hatch="//",
             label="Carbon offset",
         )
@@ -186,7 +204,7 @@ class AirTransportCO2EmissionsPlot(SingleScenarioPlot):
             self.years,
             self.df["co2_emissions_last_historical_year_technology_baseline3"],
             self.df["co2_emissions_last_historical_year_technology"],
-            color="lightskyblue",
+            color=colors.LEVER_COLORS["demand"],
             label="Demand/supply side management",
         )
 
@@ -194,7 +212,7 @@ class AirTransportCO2EmissionsPlot(SingleScenarioPlot):
             self.years,
             self.df["co2_emissions_last_historical_year_technology"],
             self.df["co2_emissions_including_aircraft_efficiency"],
-            color="gold",
+            color=colors.LEVER_COLORS["efficiency"],
             label="Aircraft efficiency",
         )
 
@@ -202,7 +220,7 @@ class AirTransportCO2EmissionsPlot(SingleScenarioPlot):
             self.years,
             self.df["co2_emissions_including_aircraft_efficiency"],
             self.df["co2_emissions_including_load_factor"],
-            color="orange",
+            color=colors.LEVER_OPERATIONS_LOADFACTOR,
             label="Fleet operations and load factor",
         )
 
@@ -210,7 +228,7 @@ class AirTransportCO2EmissionsPlot(SingleScenarioPlot):
             self.years,
             self.df["co2_emissions_including_load_factor"],
             self.df_climate.loc[self.years, "co2_emissions"],
-            color="yellowgreen",
+            color=colors.LEVER_COLORS["energy"],
             label="Aircraft energy",
         )
 
@@ -220,10 +238,763 @@ class AirTransportCO2EmissionsPlot(SingleScenarioPlot):
             self.df_climate.loc[self.years, "co2_emissions"],
             self.df_climate.loc[self.years, "co2_emissions"] - self.df["carbon_offset"],
             color="white",
-            facecolor="silver",
+            facecolor=colors.LEVER_COLORS["offset"],
             hatch="//",
             label="Carbon offset",
         )
+        self.fig.canvas.draw()
+
+
+class AirTransportCO2EmissionsDetailedPlot(SingleScenarioPlot):
+    """
+    Variant of AirTransportCO2EmissionsPlot where the levers of action are
+    decomposed into sub-levers: fleet renewal and each new aircraft of the fleet for
+    the efficiency lever, each category of operational concepts for the operations
+    lever, each energy pathway for the energy lever, and each offsetting scheme for
+    the carbon offset.
+
+    Each decomposition is independent and optional: the efficiency lever is only
+    decomposed when the bottom-up fleet model and DetailedCo2EmissionsPerAircraft
+    are used, the operations lever when the generic operations module is used, the
+    energy lever when the generic energy models and DetailedCo2EmissionsPerPathway
+    are used, and the carbon offset when the generic offsets module is used. Any
+    lever whose sub-levers are not available (e.g. a top-down fleet model, or
+    non-generic energy models) simply falls back to a single aggregated band,
+    exactly like AirTransportCO2EmissionsPlot.
+    """
+
+    required_outputs = [
+        "co2_emissions_last_historical_year_technology",
+        "co2_emissions_including_aircraft_efficiency",
+        "co2_emissions_including_load_factor",
+        "co2_emissions_including_energy",
+        "co2_emissions_last_historical_year_technology_baseline3",
+        "carbon_offset",
+        "co2_emissions",
+    ]
+
+    # Bands whose absolute contribution never exceeds this value [MtCO2] are not
+    # drawn nor referenced in the legend (their thickness would not be visible)
+    NEGLIGIBLE_BAND_THRESHOLD = 1e-3
+
+    EFFICIENCY_GRANULARITIES = ("aircraft", "category")
+    ENERGY_GRANULARITIES = ("pathway", "family")
+    OFFSET_GRANULARITIES = ("scheme", "category")
+    LEVER_ORDERS = ("aeromaps", "atag")
+
+    # Energy families flown by alternative aircraft: the ATAG roadmap counts them
+    # in its technology pillar rather than with the fuels.
+    ALTERNATIVE_AIRCRAFT_FAMILIES = ("hydrogen", "electric")
+
+    # Labels of the efficiency bands that make up fleet renewal, as opposed to the new
+    # aircraft: replacement of the old reference by the recent one, and its drift.
+    RENEWAL_BAND_LABELS = ("Fleet renewal", "Continuous improvement")
+
+    def __init__(
+        self,
+        process,
+        figsize=None,
+        efficiency_granularity="aircraft",
+        energy_granularity="pathway",
+        offset_granularity="scheme",
+        lever_order="aeromaps",
+        **kwargs,
+    ):
+        """
+        Parameters
+        ----------
+        efficiency_granularity : {"aircraft", "category"}
+            Granularity of the aircraft-efficiency decomposition: one band per
+            individual aircraft (default) or one band per fleet category (the
+            per-aircraft contributions summed within each category).
+        energy_granularity : {"pathway", "family"}
+            Granularity of the aircraft-energy decomposition: one band per energy
+            pathway (default) or one band per fuel family (biofuels / electrofuels
+            / fossil-derived / hydrogen / electric). Hydrogen is its own family and
+            is never merged with drop-in electrofuels.
+        offset_granularity : {"scheme", "category"}
+            Granularity of the carbon offset decomposition, when the generic offsets
+            module is used: one band per offsetting scheme (default) or one band per
+            category of schemes.
+        lever_order : {"aeromaps", "atag"}
+            Order in which the levers are stacked. ``"aeromaps"`` (default) follows the
+            cascade: efficiency, operations, load factor, energy, offsets. ``"atag"``
+            follows the ATAG roadmap, with its colours: aircraft technology (efficiency, then the
+            alternative aircraft taken out of the energy lever), operations and load
+            factor, drop-in fuels, offsets. Only the stacking changes: each sub-lever
+            keeps its value, so the bands still sum to the same total, and
+            ``aeromaps.utils.decomposition.mitigation_wedges`` uses the same convention.
+        """
+        if lever_order not in self.LEVER_ORDERS:
+            raise ValueError(f"lever_order must be one of {self.LEVER_ORDERS}, got {lever_order!r}")
+        if efficiency_granularity not in self.EFFICIENCY_GRANULARITIES:
+            raise ValueError(
+                f"efficiency_granularity must be one of {self.EFFICIENCY_GRANULARITIES}, "
+                f"got {efficiency_granularity!r}"
+            )
+        if energy_granularity not in self.ENERGY_GRANULARITIES:
+            raise ValueError(
+                f"energy_granularity must be one of {self.ENERGY_GRANULARITIES}, "
+                f"got {energy_granularity!r}"
+            )
+        if offset_granularity not in self.OFFSET_GRANULARITIES:
+            raise ValueError(
+                f"offset_granularity must be one of {self.OFFSET_GRANULARITIES}, "
+                f"got {offset_granularity!r}"
+            )
+        self._efficiency_granularity = efficiency_granularity
+        self._energy_granularity = energy_granularity
+        self._offset_granularity = offset_granularity
+        self._lever_order = lever_order
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize, **kwargs)
+
+    def _get_default_figsize(self):
+        return (plot_1_x, plot_1_y)
+
+    def _col(self, column):
+        """Sub-lever column over the plot years, NaNs treated as zero."""
+        return self.df.loc[self.years, column].fillna(0)
+
+    def _sum_cols(self, columns):
+        """Sum of several sub-lever columns over the plot years (for grouping)."""
+        return self.df.loc[self.years, list(columns)].fillna(0).sum(axis=1)
+
+    def _efficiency_bands(self):
+        """Return the (label, values, color) list of the aircraft efficiency sub-levers.
+
+        Sub-levers are shown per individual aircraft or, when
+        ``efficiency_granularity="category"``, aggregated per fleet category.
+        Returns None when the decomposition is not available (e.g. a top-down
+        fleet model is used instead of the bottom-up one), so that the caller
+        falls back to a single aggregated band.
+        """
+        fleet_model = getattr(self.process, "fleet_model", None)
+        if fleet_model is None or efficiency_sub_lever_column("fleet_renewal") not in (
+            self.df.columns
+        ):
+            return None
+
+        lever_names = aircraft_efficiency_lever_names(fleet_model.fleet)
+        # (category, aircraft, column) for every aircraft with a contribution.
+        aircraft = [
+            (category_name, aircraft_name, column)
+            for (category_name, _, aircraft_name), column in lever_names.items()
+            if column in self.df.columns
+        ]
+
+        # Ordinal sub-levers read as steps of the efficiency lever's own hue (blue).
+        efficiency_cmap = colors.LEVER_SEQUENTIAL_CMAP["efficiency"]
+
+        bands = [
+            (
+                self.RENEWAL_BAND_LABELS[0],
+                self._col(efficiency_sub_lever_column("fleet_renewal")),
+                efficiency_cmap(0.3),
+            ),
+            (
+                self.RENEWAL_BAND_LABELS[1],
+                self._col(efficiency_sub_lever_column("continuous_improvement")),
+                efficiency_cmap(0.4),
+            ),
+        ]
+
+        if self._efficiency_granularity == "category":
+            categories = list(dict.fromkeys(category for category, _, _ in aircraft))
+            ramp = efficiency_cmap(np.linspace(0.5, 0.9, max(len(categories), 1)))
+            for category_name, color in zip(categories, ramp):
+                columns = [col for cat, _, col in aircraft if cat == category_name]
+                bands.append((f"{category_name} fleet", self._sum_cols(columns), color))
+        else:
+            ramp = efficiency_cmap(np.linspace(0.5, 0.9, max(len(aircraft), 1)))
+            for (category_name, aircraft_name, column), color in zip(aircraft, ramp):
+                bands.append((f"{aircraft_name} ({category_name})", self._col(column), color))
+
+        bands.append(
+            (
+                "Freight fleet",
+                self._col(efficiency_sub_lever_column("freight")),
+                efficiency_cmap(0.2),
+            )
+        )
+        # Residual (traffic mix) is not an identity band -> neutral grey.
+        bands.append(
+            (
+                "Traffic mix",
+                self._col(efficiency_sub_lever_column("other")),
+                colors.NEUTRAL,
+            )
+        )
+        return bands
+
+    def _operations_bands(self):
+        """Return the (label, values, color) list of the fleet operations sub-levers.
+
+        One band per category of operational concepts (e.g. airline operations,
+        airspace and ATM, airports and ground operations), plus the residual.
+        Returns None when the generic operations module is not used, so that the
+        caller falls back to the merged "operations and load factor" band.
+        """
+        operations_manager = getattr(self.process, "operations_manager", None)
+        if operations_manager is None or "co2_emissions_including_operations" not in (
+            self.df.columns
+        ):
+            return None
+
+        categories = list(
+            dict.fromkeys(
+                concept.category
+                for concept in operations_manager.get_all()
+                if concept.has_fuel_efficiency and concept.category
+            )
+        )
+        columns = [
+            (category, operations_category_column(category))
+            for category in categories
+            if operations_category_column(category) in self.df.columns
+        ]
+        if not columns:
+            return None
+
+        operations_cmap = colors.LEVER_SEQUENTIAL_CMAP["operations"]
+        ramp = operations_cmap(np.linspace(0.4, 0.8, max(len(columns), 1)))
+        bands = [
+            (readable_label(category), self._col(column), color)
+            for (category, column), color in zip(columns, ramp)
+        ]
+        bands.append(
+            (
+                "Other operational effects",
+                self._col(operations_concept_column(OPERATIONS_OTHER)),
+                colors.NEUTRAL,
+            )
+        )
+        return bands
+
+    def _energy_bands(self, part="all"):
+        """Return the (label, values, color) list of the energy pathway sub-levers.
+
+        ``part`` restricts the bands to the alternative aircraft (hydrogen and
+        electric families), to the drop-in fuels and the residual, or keeps all of
+        them. It is only used by the ATAG lever order.
+
+        Sub-levers are shown per pathway or, when ``energy_granularity="family"``,
+        aggregated per fuel family (biofuels / electrofuels / fossil / hydrogen /
+        electric). Hydrogen is always its own family and is never merged with
+        drop-in electrofuels, even though e-hydrogen and electrofuels share the
+        "electricity" origin. Returns None when the decomposition is not available
+        (e.g. non-generic, top-down energy models are used), so that the caller
+        falls back to a single aggregated band.
+        """
+        if self.pathways_manager is None or ENERGY_SUB_LEVER_OTHER not in (self.df.columns):
+            return None
+
+        # Group pathways by fuel family (hydrogen / electric kept separate from
+        # drop-in fuels via the pathway's aircraft_type), preserving first-seen order.
+        pathways_by_family = {}
+        for pathway in self.pathways_manager.get_all():
+            column = pathway_energy_column(pathway.name)
+            if column in self.df.columns:
+                family = colors.energy_family(pathway.aircraft_type, pathway.energy_origin)
+                pathways_by_family.setdefault(family, []).append((pathway.name, column))
+
+        bands = []
+        for family, pathways in pathways_by_family.items():
+            is_alternative = family in self.ALTERNATIVE_AIRCRAFT_FAMILIES
+            if (part == "alternative" and not is_alternative) or (
+                part == "dropin" and is_alternative
+            ):
+                continue
+            colormap = colors.ENERGY_FAMILY_COLORMAPS.get(
+                family, colors.ENERGY_FAMILY_FALLBACK_COLORMAP
+            )
+            if self._energy_granularity == "family":
+                # One solid band per fuel family.
+                label = colors.ENERGY_FAMILY_LABELS.get(family, family.replace("_", " ").title())
+                columns = [column for _, column in pathways]
+                bands.append((label, self._sum_cols(columns), colormap(0.7)))
+            else:
+                pathway_colors = colormap(np.linspace(0.4, 0.8, len(pathways)))
+                for (pathway_name, column), color in zip(pathways, pathway_colors):
+                    bands.append((readable_label(pathway_name), self._col(column), color))
+        # Residual energy effects are not an identity band -> neutral grey.
+        if part != "alternative":
+            bands.append(
+                ("Other energy effects", self._col(ENERGY_SUB_LEVER_OTHER), colors.NEUTRAL)
+            )
+        return bands
+
+    def _offset_bands(self):
+        """Return the (label, values, color) list of the carbon offset sub-levers.
+
+        One band per offsetting scheme or, when ``offset_granularity="category"``,
+        per category of schemes. The schemes sum exactly to the carbon offset, so
+        there is no residual band. Returns None when the generic offsets module is
+        not used, so that the caller falls back to a single offset band.
+        """
+        offsets_manager = getattr(self.process, "offsets_manager", None)
+        if offsets_manager is None:
+            return None
+
+        if self._offset_granularity == "category":
+            keys = offsets_manager.get_all_types("category")
+            columns = [(key, offset_category_column(key)) for key in keys]
+        else:
+            columns = [(s.name, offset_scheme_column(s.name)) for s in offsets_manager.get_all()]
+        columns = [(key, column) for key, column in columns if column in self.df.columns]
+        if not columns:
+            return None
+
+        # Offsets are not a technology lever: shades of the neutral offset grey.
+        ramp = colors.LEVER_SEQUENTIAL_CMAP["offset"](np.linspace(0.45, 0.85, len(columns)))
+        return [
+            (readable_label(key), self._col(column), color)
+            for (key, column), color in zip(columns, ramp)
+        ]
+
+    def _plot_sub_lever_bands(self, upper, bands):
+        """Stack sub-lever bands downwards from the given upper curve.
+
+        Negligible bands are subtracted but not drawn, so that the legend only
+        references visible bands.
+        """
+        for label, values, color in bands:
+            lower = upper - values
+            if values.abs().max() > self.NEGLIGIBLE_BAND_THRESHOLD:
+                self.ax.fill_between(self.years, upper, lower, color=color, label=label)
+            upper = lower
+        return upper
+
+    def create_plot(self):
+        self.ax.plot(
+            self.historic_years,
+            self.df_climate.loc[self.historic_years, "co2_emissions"],
+            color="black",
+            linestyle="-",
+            label="Historical emissions",
+            linewidth=3,
+            zorder=4,
+        )
+
+        (self.line_co2_emissions_no_action,) = self.ax.plot(
+            self.prospective_years,
+            self.df.loc[
+                self.prospective_years, "co2_emissions_last_historical_year_technology_baseline3"
+            ],
+            color="red",
+            linestyle="-",
+            label="Emissions at 2019 technological level with trend air traffic growth",
+            linewidth=3,
+            zorder=3,
+        )
+
+        (self.line_co2_emissions,) = self.ax.plot(
+            self.prospective_years,
+            self.df_climate.loc[self.prospective_years, "co2_emissions"],
+            color="green",
+            linestyle="-",
+            label="Projected emissions including all levers of action",
+            linewidth=3,
+            zorder=3,
+        )
+
+        (self.line_co2_emissions_offset,) = self.ax.plot(
+            self.prospective_years,
+            self.df_climate.loc[self.prospective_years, "co2_emissions"]
+            - self.df.loc[self.prospective_years, "carbon_offset"],
+            color="grey",
+            linestyle="--",
+            label="Projected emissions including all levers of action and offsetting",
+            linewidth=2,
+            zorder=3,
+        )
+
+        self._draw_fills()
+
+        self.ax.grid()
+        self.ax.set_title(
+            "Evolution of annual CO₂ emissions from air transport - Detailed levers of action"
+        )
+        self.ax.set_xlabel("Year")
+        self.ax.set_ylabel("Annual CO₂ emissions [MtCO₂]")
+        self.ax.legend(loc=2, fontsize=6, ncols=2)
+        self.ax.set_xlim(self.years[0], self.years[-1])
+
+    def _offset_fill(self, upper, values, label, color):
+        """Hatched offset band between ``upper`` and ``upper - values``."""
+        if values.abs().max() > self.NEGLIGIBLE_BAND_THRESHOLD:
+            self.ax.fill_between(
+                self.years,
+                upper,
+                upper - values,
+                color="white",
+                facecolor=color,
+                hatch="//",
+                label=label,
+            )
+        return upper - values
+
+    @staticmethod
+    def _atag_shades(bands, base, lightest=0.5):
+        """Recolour ``bands`` in shades of the ATAG colour ``base``.
+
+        The sub-levers of one ATAG pillar share its colour, so they are told apart by
+        lightness, from ``base`` towards white. Residual bands stay neutral grey.
+        """
+        neutral = mcolors.to_hex(colors.NEUTRAL)
+        identity = [i for i, (_, _, c) in enumerate(bands) if mcolors.to_hex(c) != neutral]
+        steps = np.linspace(0.0, lightest, max(len(identity), 1))
+        rgb = np.array(mcolors.to_rgb(base))
+        shades = {i: tuple(rgb + (1.0 - rgb) * t) for i, t in zip(identity, steps)}
+        return [(label, values, shades.get(i, c)) for i, (label, values, c) in enumerate(bands)]
+
+    def _draw_fills_atag(self):
+        """Stack the levers in the ATAG order, from the same sub-lever values.
+
+        Demand, then aircraft technology (the efficiency sub-levers, followed by the
+        alternative aircraft), then operations and load factor, then the drop-in
+        fuels, then offsets. A lever without decomposition is one band, taken as the
+        gap between the curves that bound it in the cascade.
+        """
+        col = self._col
+        alternative = self._energy_bands(part="alternative")
+        dropin = self._energy_bands(part="dropin")
+        if alternative is None:
+            # No pathway decomposition: the energy lever is a single band.
+            alternative = []
+            dropin = [
+                (
+                    "Aircraft energy",
+                    col("co2_emissions_including_load_factor")
+                    - self.df_climate.loc[self.years, "co2_emissions"],
+                    colors.LEVER_COLORS["energy"],
+                )
+            ]
+
+        efficiency = self._efficiency_bands()
+        if efficiency is None:
+            efficiency = [
+                (
+                    "Aircraft efficiency",
+                    col("co2_emissions_last_historical_year_technology")
+                    - col("co2_emissions_including_aircraft_efficiency"),
+                    colors.LEVER_COLORS["efficiency"],
+                )
+            ]
+
+        operations = self._operations_bands()
+        if operations is not None:
+            operations = operations + [
+                (
+                    "Load factor",
+                    col("co2_emissions_including_operations")
+                    - col("co2_emissions_including_load_factor"),
+                    colors.LEVER_COLORS["loadfactor"],
+                )
+            ]
+        else:
+            operations = [
+                (
+                    "Fleet operations and load factor",
+                    col("co2_emissions_including_aircraft_efficiency")
+                    - col("co2_emissions_including_load_factor"),
+                    colors.LEVER_OPERATIONS_LOADFACTOR,
+                )
+            ]
+
+        demand = [
+            (
+                "Demand/supply side management",
+                col("co2_emissions_last_historical_year_technology_baseline3")
+                - col("co2_emissions_last_historical_year_technology"),
+                colors.LEVER_COLORS["demand"],
+            )
+        ]
+        # ATAG's palette: renewal and the new aircraft are two steps of technology, the
+        # alternative aircraft belong to the technology pillar, and operations and the
+        # load factor share one colour.
+        shade = self._atag_shades
+        renewal = [b for b in efficiency if b[0] in self.RENEWAL_BAND_LABELS]
+        technology = [b for b in efficiency if b[0] not in self.RENEWAL_BAND_LABELS] + alternative
+        bands = (
+            demand
+            + shade(renewal, ATAG_COLORS["fleet_renewal"], 0.3)
+            + shade(technology, ATAG_COLORS["next_generation"], 0.5)
+            + shade(operations, ATAG_COLORS["operations"], 0.45)
+            + shade(dropin, ATAG_COLORS["fuel"], 0.55)
+        )
+        upper = col("co2_emissions_last_historical_year_technology_baseline3")
+        upper = self._plot_sub_lever_bands(upper, bands)
+
+        plt.rc("hatch", linewidth=4)
+        offset_bands = self._offset_bands()
+        if offset_bands is None:
+            offset_bands = [("Carbon offset", col("carbon_offset"), colors.LEVER_COLORS["offset"])]
+        for label, values, color in self._atag_shades(offset_bands, ATAG_COLORS["market_based"], 0.4):
+            upper = self._offset_fill(upper, values, label, color)
+
+    def _draw_fills(self):
+        if self._lever_order == "atag":
+            return self._draw_fills_atag()
+        # Demand/supply side management
+        self.ax.fill_between(
+            self.years,
+            self.df["co2_emissions_last_historical_year_technology_baseline3"],
+            self.df["co2_emissions_last_historical_year_technology"],
+            color=colors.LEVER_COLORS["demand"],
+            label="Demand/supply side management",
+        )
+
+        # Aircraft efficiency: decomposed into sub-levers when available, otherwise
+        # a single aggregated band (same as AirTransportCO2EmissionsPlot)
+        efficiency_bands = self._efficiency_bands()
+        if efficiency_bands is not None:
+            upper = self.df.loc[self.years, "co2_emissions_last_historical_year_technology"]
+            self._plot_sub_lever_bands(upper, efficiency_bands)
+        else:
+            self.ax.fill_between(
+                self.years,
+                self.df["co2_emissions_last_historical_year_technology"],
+                self.df["co2_emissions_including_aircraft_efficiency"],
+                color=colors.LEVER_COLORS["efficiency"],
+                label="Aircraft efficiency",
+            )
+
+        # Fleet operations: decomposed per operational category when the generic
+        # operations module is used, then the load factor as its own band;
+        # otherwise a single merged band (same as AirTransportCO2EmissionsPlot)
+        operations_bands = self._operations_bands()
+        if operations_bands is not None:
+            upper = self.df.loc[self.years, "co2_emissions_including_aircraft_efficiency"]
+            self._plot_sub_lever_bands(upper, operations_bands)
+            self.ax.fill_between(
+                self.years,
+                self.df["co2_emissions_including_operations"],
+                self.df["co2_emissions_including_load_factor"],
+                color=colors.LEVER_COLORS["loadfactor"],
+                label="Load factor",
+            )
+        else:
+            self.ax.fill_between(
+                self.years,
+                self.df["co2_emissions_including_aircraft_efficiency"],
+                self.df["co2_emissions_including_load_factor"],
+                color=colors.LEVER_OPERATIONS_LOADFACTOR,
+                label="Fleet operations and load factor",
+            )
+
+        # Aircraft energy: decomposed into sub-levers when available, otherwise
+        # a single aggregated band (same as AirTransportCO2EmissionsPlot)
+        energy_bands = self._energy_bands()
+        if energy_bands is not None:
+            upper = self.df.loc[self.years, "co2_emissions_including_load_factor"]
+            self._plot_sub_lever_bands(upper, energy_bands)
+        else:
+            self.ax.fill_between(
+                self.years,
+                self.df["co2_emissions_including_load_factor"],
+                self.df_climate.loc[self.years, "co2_emissions"],
+                color=colors.LEVER_COLORS["energy"],
+                label="Aircraft energy",
+            )
+
+        # Carbon offset: decomposed per scheme when the generic offsets module is
+        # used, otherwise a single band (same as AirTransportCO2EmissionsPlot)
+        plt.rc("hatch", linewidth=4)
+        offset_bands = self._offset_bands()
+        if offset_bands is not None:
+            upper = self.df_climate.loc[self.years, "co2_emissions"]
+            for label, values, color in offset_bands:
+                lower = upper - values
+                if values.abs().max() > self.NEGLIGIBLE_BAND_THRESHOLD:
+                    self.ax.fill_between(
+                        self.years,
+                        upper,
+                        lower,
+                        color="white",
+                        facecolor=color,
+                        hatch="//",
+                        label=label,
+                    )
+                upper = lower
+        else:
+            self.ax.fill_between(
+                self.years,
+                self.df_climate.loc[self.years, "co2_emissions"],
+                self.df_climate.loc[self.years, "co2_emissions"] - self.df["carbon_offset"],
+                color="white",
+                facecolor=colors.LEVER_COLORS["offset"],
+                hatch="//",
+                label="Carbon offset",
+            )
+
+    def _update_plot_elements(self):
+        self.line_co2_emissions_no_action.set_ydata(
+            self.df.loc[
+                self.prospective_years, "co2_emissions_last_historical_year_technology_baseline3"
+            ]
+        )
+
+        self.line_co2_emissions.set_ydata(
+            self.df_climate.loc[self.prospective_years, "co2_emissions"]
+        )
+
+        self.line_co2_emissions_offset.set_ydata(
+            self.df_climate.loc[self.prospective_years, "co2_emissions"]
+            - self.df.loc[self.prospective_years, "carbon_offset"]
+        )
+
+        for collection in self.ax.collections:
+            collection.remove()
+
+        self._draw_fills()
+        self.fig.canvas.draw()
+
+
+class AirTransportCO2EmissionsGroupedPlot(AirTransportCO2EmissionsDetailedPlot):
+    """
+    Coarse-granularity variant of AirTransportCO2EmissionsDetailedPlot: the
+    aircraft-efficiency lever is decomposed per fleet category (rather than per
+    individual aircraft) and the aircraft-energy lever per fuel family (biofuels /
+    electrofuels / fossil-derived / hydrogen / electric, rather than per pathway;
+    hydrogen is kept separate from electrofuels), and the carbon offset per category
+    of offsetting schemes. For a mixed choice, use AirTransportCO2EmissionsDetailedPlot
+    directly with the ``efficiency_granularity`` / ``energy_granularity`` /
+    ``offset_granularity`` keywords.
+    """
+
+    def __init__(
+        self,
+        process,
+        figsize=None,
+        efficiency_granularity="category",
+        energy_granularity="family",
+        offset_granularity="category",
+        **kwargs,
+    ):
+        super().__init__(
+            process,
+            figsize=figsize,
+            efficiency_granularity=efficiency_granularity,
+            energy_granularity=energy_granularity,
+            offset_granularity=offset_granularity,
+            **kwargs,
+        )
+
+
+class AirTransportCO2EmissionsPerMarketPlot(SingleScenarioPlot):
+    """
+    Small-multiples decomposition of the CO2 levers of action per market.
+
+    One panel per lever of action (demand, aircraft efficiency, fleet operations,
+    load factor, aircraft energy); within each panel the annual CO2 contribution of
+    every market is drawn as a signed line (positive = emissions avoided w.r.t.
+    the last-historical-year technology), together with the cross-market-mix
+    residual. Market colours are kept consistent across panels.
+
+    A faceted layout is used on purpose: several per-market contributions turn
+    negative over time, for which a single stacked chart would be order-dependent
+    and misleading. Requires DetailedCo2EmissionsPerMarket.
+    """
+
+    # (lever key as produced by DetailedCo2EmissionsPerMarket, panel title)
+    _LEVERS = [
+        ("demand", "Demand"),
+        ("efficiency", "Aircraft efficiency"),
+        ("operations", "Fleet operations"),
+        ("loadfactor", "Load factor"),
+        ("energy", "Aircraft energy"),
+    ]
+
+    required_outputs = [market_lever_column("efficiency", MARKET_CROSS_MIX)]
+
+    def __init__(self, process, figsize=None, **kwargs):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize, **kwargs)
+
+    def _get_default_figsize(self):
+        return (plot_1_x, plot_1_y)
+
+    def _ordered_market_ids(self):
+        """Canonical market order: passenger markets (config order) then freight."""
+        markets = self.process.markets
+        return [m.id for m in markets.get(traffic_type="passenger")] + [
+            m.id for m in markets.get(traffic_type="freight")
+        ]
+
+    def create_plot(self):
+        # Replace the single default axes by a 2x2 grid of lever panels.
+        self.ax.remove()
+        self.facet_axes = self.fig.subplots(2, 3).flatten()
+        for axis in self.facet_axes[len(self._LEVERS) :]:
+            axis.set_visible(False)
+        self._draw_facets()
+
+    def _draw_facets(self):
+        for legend in list(self.fig.legends):
+            legend.remove()
+
+        market_ids = self._ordered_market_ids()
+        # Validated categorical palette, constant per market across panels.
+        market_color = colors.market_colors(market_ids)
+        names = market_lever_names(self.process.markets)
+        years = self.prospective_years
+        last_year = years[-1]
+
+        for ax, (lever, title) in zip(self.facet_axes, self._LEVERS):
+            ax.clear()
+            ax.axhline(0, color="black", linewidth=0.6)
+            for mid in market_ids:
+                column = names.get((lever, mid))
+                if column is None or column not in self.df.columns:
+                    continue
+                series = self.df.loc[years, column]
+                ax.plot(
+                    years,
+                    series,
+                    color=market_color[mid],
+                    label=mid.replace("_", " ").title(),
+                )
+                # Direct end-label: secondary (non-colour) encoding of identity,
+                # required alongside the market palette for CVD/contrast safety.
+                ax.annotate(
+                    mid.replace("_", " ").title(),
+                    xy=(last_year, series.loc[last_year]),
+                    xytext=(3, 0),
+                    textcoords="offset points",
+                    va="center",
+                    fontsize=6,
+                    color=market_color[mid],
+                    clip_on=False,
+                )
+            cross_column = names.get((lever, MARKET_CROSS_MIX))
+            if cross_column in self.df.columns:
+                ax.plot(
+                    years,
+                    self.df.loc[years, cross_column],
+                    color=colors.NEUTRAL,
+                    linestyle=":",
+                    label="Cross-market mix",
+                )
+            ax.set_title(title, fontsize=9)
+            ax.grid(True, alpha=0.3)
+            ax.tick_params(labelsize=7)
+
+        self.fig.suptitle("CO₂ levers of action decomposed per market", fontsize=11)
+        self.fig.supxlabel("Year", fontsize=8)
+        self.fig.supylabel("Annual CO₂ avoided [MtCO₂]", fontsize=8)
+        handles, labels = self.facet_axes[0].get_legend_handles_labels()
+        if handles:
+            self.fig.legend(
+                handles,
+                labels,
+                loc="outside lower center",
+                ncols=min(len(labels), 5),
+                fontsize=7,
+            )
+
+    def _update_plot_elements(self):
+        self._draw_facets()
         self.fig.canvas.draw()
 
 

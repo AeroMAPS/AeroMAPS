@@ -1,0 +1,16 @@
+variant,frozen_2050_mt
+freeze-all|klower|splice2019,5388.581812525413
+freeze-all|klower|splice2000,5388.581812525413
+freeze-all|klower|splice2019|rescaled,5838.193257391861
+freeze-all|endpoint|splice2019,5196.736081003377
+freeze-all|endpoint|splice2000,5196.736081003377
+freeze-all|endpoint|splice2019|rescaled,5196.736081003377
+fuel-side|klower|splice2019,4123.096406840667
+fuel-side|klower|splice2000,4123.096406840667
+fuel-side|klower|splice2019|rescaled,4467.118525702123
+fuel-side|endpoint|splice2019,3976.3048253400216
+fuel-side|endpoint|splice2000,3976.3048253400216
+fuel-side|endpoint|splice2019|rescaled,3976.3048253400216
+R0,5388.581812525413
+R1,4328.157278518504
+R2,4020.2626898092253
