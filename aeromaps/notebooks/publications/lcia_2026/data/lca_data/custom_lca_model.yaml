@@ -74,10 +74,10 @@ model:
 
     soot:
         amount: fossil_kerosene_mass_consumption * fossil_kerosene_emission_index_soot + lcaf_mass_consumption * lcaf_emission_index_soot + saf_ftg_mass_consumption * saf_ftg_emission_index_soot + saf_dac_emission_index_soot * saf_dac_mass_consumption + saf_co2_emission_index_soot * saf_co2_mass_consumption
-        name: 'soot' # or 'Particulate Matter, < 2.5 um' in ecoinvent
+        name: 'soot' # CHANGE TO 'Particulate Matter, < 2.5 um' FOR RECIPE, IW+ and EF v3.1
         categories:
             - 'air'
-            - 'lower stratosphere + upper troposphere'
+            - 'lower stratosphere + upper troposphere'  # CHANGE TO 'non-urban air or from high stacks' for EF v3.1
         tags:
             - phase: 'soot'
             
@@ -97,6 +97,9 @@ methods:
     #- "('ReCiPe 2016 v1.03, endpoint (H)', 'human health', 'climate change: human health')"
     - "('ReCiPe 2016 v1.03, endpoint (H)', 'human health', 'particulate matter formation')"
     - "('ReCiPe 2016 v1.03, endpoint (H)', 'human health', 'photochemical oxidant formation: human health')"
+    #- "('EF v3.1', 'particulate matter formation', 'impact on human health')"
+    #- "('EF v3.1', 'photochemical oxidant formation: human health', 'tropospheric ozone concentration increase')"
+    #- "('EF v3.1', 'climate change', 'global warming potential (GWP100)')"
     
 
 # --- Additional/custom LCIA methods provided by the user ---
@@ -126,6 +129,10 @@ custom_methods:
     - name: "('IWP - Lee', 'human health', 'climate change: human health')"
       filepath: './data/lca_data/LCIA/CFs_human_health_climate_change_Lee_IWP.csv'
       unit: 'DALY'
+      
+    #- name: "('IWP', 'human health', 'climate change: human health')"
+    #  filepath: './data/lca_data/LCIA/CFs_human_health_climate_change_IWP.csv'
+    #  unit: 'DALY'
       
     - name: "('IWP', 'human health', 'particulate matter formation')"
       filepath: './data/lca_data/LCIA/CFs_human_health_particulate_matter_IWP.csv'

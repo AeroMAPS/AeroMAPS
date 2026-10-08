@@ -31,7 +31,7 @@ saf_ftg:
         method: linear
       emission_index:
         h2o: 1.231
-        nox: 0.01514
+        nox: 0.0156
         sulfur: 0.0
         soot: 6.0e-06
         particles_number: 8.0e+13
@@ -84,7 +84,7 @@ saf_co2:
         method: linear
       emission_index:
         h2o: 1.231
-        nox: 0.01514
+        nox: 0.0156
         sulfur: 0.0
         soot: 6.0e-06
         particles_number: 8.0e+13
@@ -132,7 +132,7 @@ lcaf:
         method: linear
       emission_index:
         h2o: 1.231
-        nox: 0.01514
+        nox: 0.0156
         sulfur: 0.0012
         soot: 3.0e-05
         particles_number: 2.0e+14
@@ -162,7 +162,7 @@ fossil_kerosene:
         method: linear
       emission_index:
         h2o: 1.231
-        nox: 0.01514
+        nox: 0.0156
         sulfur: 0.0012
         soot: 3.0e-05
         particles_number: 2.0e+14
