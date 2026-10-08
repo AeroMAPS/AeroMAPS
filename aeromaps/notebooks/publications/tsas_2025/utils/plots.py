@@ -1,4 +1,4 @@
-import brightway2 as bw
+import bw2data as bd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import math
@@ -93,7 +93,7 @@ def plot_stacked_evolution_subplots(xarray_data):
         name = name.replace(":", "\n")
         name = "".join([a if a.isupper() else b for a, b in zip(name, name.title())])
 
-        unit = bw.Method(method).metadata.get("unit")
+        unit = bd.Method(method).metadata.get("unit")
         unit = unit.replace("]", "")
         unit = unit.replace("m2*a crop-Eq", r"m$^2\times$yr annual crop land")
         unit = unit.replace("-Eq", "-eq")

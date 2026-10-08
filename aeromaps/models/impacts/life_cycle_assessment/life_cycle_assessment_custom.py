@@ -9,10 +9,30 @@ import numpy as np
 from typing import Dict
 import xarray as xr
 
+# Suppress known upstream LCA/SymPy warnings without hiding other deprecations.
+from sympy.utilities.exceptions import SymPyDeprecationWarning
+warnings.filterwarnings(
+    "ignore",
+    message=r"\s*non-Expr objects in a Matrix is deprecated",
+    category=SymPyDeprecationWarning,
+)
+warnings.filterwarnings(
+    "ignore",
+    message=r"\s*Using non-Expr arguments in Add is deprecated",
+    category=SymPyDeprecationWarning,
+)
+warnings.filterwarnings("ignore", category=SyntaxWarning)
+warnings.filterwarnings(
+    "ignore",
+    message=r"All values in characterization matrix .* are zero",
+    category=UserWarning,
+    module=r"bw2calc\.multi_lca",
+)
+
 try:
     import lca_algebraic as agb
     from lca_modeller.io.configuration import LCAProblemConfigurator
-    import brightway2 as bw
+    import bw2data as bd
 except ImportError as e:
     raise ImportError(
         "Required libraries for Custom Life Cycle Assessment module are not installed. "
@@ -30,9 +50,6 @@ from aeromaps.models.impacts.life_cycle_assessment.utils.functions import (
 # Constants
 KEY_YEAR = "year"
 KEY_METHOD = "method"
-
-# suppress warnings from woosh (to be resolved in future versions of lca-modeller?)
-warnings.filterwarnings("ignore", category=SyntaxWarning)
 
 
 class LifeCycleAssessmentCustom(AeroMAPSModel):
@@ -375,7 +392,7 @@ class LifeCycleAssessmentCustom(AeroMAPSModel):
         # Add units in metadata
         units_attr = res.coords["impacts"].attrs.get("units", {})
         for imethod, method in enumerate(methods):
-            units_attr[method] = unit = bw.Method(method).metadata.get("unit", None)
+            units_attr[method] = unit = bd.Method(method).metadata.get("unit", None)
         res.coords["impacts"].attrs["units"] = units_attr
 
         return res

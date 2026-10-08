@@ -107,7 +107,7 @@ def plot_stacked_evolution_subplots(xarray_data, start_year: int = 2020, end_yea
         name = name.replace(":", "\n")
         name = "".join([a if a.isupper() else b for a, b in zip(name, name.title())])
 
-        unit = xarray_data.coords["impacts"].attrs["units"][method]  #bw.Method(method).metadata.get("unit")
+        unit = xarray_data.coords["impacts"].attrs["units"][method]
         unit = unit.replace("]", "")
         unit = unit.replace("m2*a crop-Eq", r"m$^2\times$yr annual crop land")
         unit = unit.replace("-Eq", "-eq")
