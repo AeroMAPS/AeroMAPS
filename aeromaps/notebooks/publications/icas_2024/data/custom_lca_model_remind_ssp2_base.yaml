@@ -1,4 +1,4 @@
-project: example_methodology_ei391
+project: icas_2024
 
 ecoinvent:
     version: 3.9.1
@@ -34,18 +34,16 @@ premise:
 model:
 
     airports:
-        custom_attributes:
-            - attribute: "phase"
-              value: "airport"
+        tags:
+            - phase: "airport"
               
         name: 'market for airport'
         amount: 8.88e-14 * rpk_long_range + 2.58e-13 * rpk_medium_range + 6.17e-13 * rpk_short_range  # from ecoinvent 'transport, passenger aircraft, xxx haul'
         
 
     aircraft:
-        custom_attributes:
-            - attribute: "phase"
-              value: "aircraft production"
+        tags:
+            - phase: "aircraft production"
 
         long_range:
             name: 'aircraft production, passenger aircraft, long haul'
@@ -66,9 +64,8 @@ model:
             unit: kilogram
             
             combustion:
-                custom_attributes:
-                    - attribute: 'phase'
-                      value: 'combustion kerosene'
+                tags:
+                    - phase: "combustion kerosene"
                       
                 CO2:
                     amount: 0.074 * fossil_kerosene_lhv   # 74gCO2/MJ L. Jing et al. 2022 - doi: 10.1038/s41467-022-35392-1
@@ -98,9 +95,8 @@ model:
                         - 'lower stratosphere + upper troposphere'
 
                 others_combustion_kero:  # amounts from Fabre et al. 2022 --> SAE, Procedure for the Calculation of Aircraft Emissions, 2009
-                    #custom_attributes:
-                    #    - attribute: 'subphase'
-                    #      value: 'others combustion (kero)'
+                    #tags:
+                    #    - subphase: "others combustion (kero)"
 
                     CO:
                         amount: 2.01e-3
@@ -180,9 +176,8 @@ model:
                                     
             production:
                 unit: kilogram
-                custom_attributes:
-                        - attribute: "phase"
-                          value: "production kerosene"
+                tags:
+                        - phase: "production kerosene"
                 
                 market_row:
                     amount: 0.719396
@@ -230,9 +225,8 @@ model:
             unit: kilogram
             
             combustion:
-                custom_attributes:
-                    - attribute: 'phase'
-                      value: 'combustion biofuel'
+                tags:
+                    - phase: "combustion biofuel"
                       
                 CO2:
                     amount: 0.074 * generic_biofuel_lhv
@@ -261,9 +255,8 @@ model:
                         - 'lower stratosphere + upper troposphere'
 
                 others_combustion_non_kero:
-                    #custom_attributes:
-                    #    - attribute: 'subphase'
-                    #      value: 'others combustion (biofuel and efuel)'
+                    #tags:
+                    #    - subphase: "others combustion (biofuel and efuel)"
 
                     CO:
                         amount: 2.01e-3
@@ -292,10 +285,8 @@ model:
                             - 'urban air close to ground'
                                 
             production:
-                production:
-                custom_attributes:
-                    - attribute: "phase"
-                      value: "production biofuel"
+                tags:
+                    - phase: "production biofuel"
                       
                 name: 'kerosene production, via Fischer-Tropsch, from forest residues, energy allocation'
                 loc: 'RER'
@@ -305,9 +296,8 @@ model:
             unit: kilogram
             
             combustion:
-                custom_attributes:
-                    - attribute: 'phase'
-                      value: 'combustion electrofuel'
+                tags:
+                    - phase: "combustion electrofuel"
                       
                 CO2:
                     amount: 0.074 * electrofuel_lhv
@@ -340,12 +330,11 @@ model:
                     name: '#others_combustion_non_kero'  # reference previously defined activity
             
             production:
-                #custom_attributes:
-                #    - attribute: 'phase'
-                #      value: 'production electrofuel'
+                #tags:
+                #    - phase: "production electrofuel"
                       
                 name: 'kerosene production, synthetic, Fischer Tropsch process, hydrogen from electrolysis, energy allocation' 
-                loc: 'RER'
+                loc: 'EUR'
                 add:  # add exchanges
                     - amount: sum(market group for electricity*) * elec_solar_share  # sum(name*) gets the sum of all exchs starting by 'name' in the parent act
                       #specific electricity mix:  # this activity can be modified (since background act is copied)
@@ -360,20 +349,19 @@ model:
                           # if only amount is provided, the amount of all input acts will be replaced.
                           amount: old_amount * (1 - elec_solar_share) # special symbol 'old_amount' references the previous amount of this exchange
                           
-                    - input_activity: 'syngas, RWGS, Production, for Fischer Tropsch process, hydrogen from electrolysis#RER' # use '#' for specifying loc
+                    - input_activity: 'syngas, RWGS, Production, for Fischer Tropsch process, hydrogen from electrolysis#EUR' # use '#' for specifying loc
                       new_value:
                           # if only activity is provided, the previous amounts will be kept. This is the same as using amount: old_amount
                           # amount: old_amount  <-- unecessary here.
                           syngas updated:
                               name: 'syngas, RWGS, Production, for Fischer Tropsch process, hydrogen from electrolysis'
-                              loc: 'RER'
+                              loc: 'EUR'
                               update:
                                   - input_activity: 'hydrogen production, gaseous, 30 bar, from PEM electrolysis, from grid electricity#EUR'
                                     new_value:
                                         hydrogen updated:
-                                            custom_attributes:
-                                              - attribute: 'phase'
-                                                value: 'production electrofuel electrolysis'
+                                            tags:
+                                              - phase: "production electrofuel electrolysis"
                                             name: 'hydrogen production, gaseous, 30 bar, from PEM electrolysis, from grid electricity'
                                             loc: 'EUR'
                                             add:
@@ -401,23 +389,22 @@ model:
                                                   new_value:
                                                       amount: old_amount / (1 - elec_solar_share * (1 - load_factor_photovoltaic))
                                                                     
-                                  - input_activity: 'carbon monoxide, from RWGS, for Fischer Tropsch process, hydrogen from electrolysis#RER'
+                                  - input_activity: 'carbon monoxide, from RWGS, for Fischer Tropsch process, hydrogen from electrolysis#EUR'
                                     new_value:
                                         carbon monoxide updated:
                                             name: 'carbon monoxide, from RWGS, for Fischer Tropsch process, hydrogen from electrolysis'
-                                            loc: 'RER'
+                                            loc: 'EUR'
                                             update:
                                                 - input_activity: 'hydrogen production, gaseous, 30 bar, from PEM electrolysis, from grid electricity#EUR'
                                                   new_value:
                                                       name: '#hydrogen updated'  # reference a previously defined activity
-                                                - input_activity: 'carbon dioxide, captured, with a solvent-based direct air capture system, 1MtCO2#RER'
+                                                - input_activity: 'carbon dioxide, captured, with a solvent-based direct air capture system, 1MtCO2#EUR'
                                                   new_value:
                                                       direct air capture updated:
-                                                          custom_attributes:
-                                                              - attribute: 'phase'
-                                                                value: 'production electrofuel DAC'
+                                                          tags:
+                                                              - phase: "production electrofuel DAC"
                                                           name: 'carbon dioxide, captured, with a solvent-based direct air capture system, 1MtCO2'
-                                                          loc: 'RER'
+                                                          loc: 'EUR'
                                                           add:
                                                               - amount: sum(market group for electricity*) * elec_solar_share
                                                                 name: 'electricity production, photovoltaic, commercial'
@@ -427,7 +414,7 @@ model:
                                                                 new_value:
                                                                     amount: old_amount * (1 - elec_solar_share)  
                                                         
-                                                              - input_activity: 'direct air capture system, solvent-based, 1MtCO2#RER'
+                                                              - input_activity: 'direct air capture system, solvent-based, 1MtCO2#EUR'
                                                                 new_value:
                                                                     amount: old_amount / (1 - elec_solar_share * (1 - load_factor_photovoltaic))
                                                         
