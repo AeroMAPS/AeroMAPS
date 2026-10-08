@@ -60,25 +60,10 @@ If you also want to use the custom life cycle assessment model (which requires a
 pip install --upgrade aeromaps[lca]
 ```
 
-For developers
+Contributing
 ------------------
 
-If you want to contribute to the development of AeroMAPS, you can clone the repository and install the package in a 
-virtual environment using [uv](https://docs.astral.sh/uv/):
-
-``` {.bash}
-git clone https://github.com/AeroMAPS/AeroMAPS.git
-cd aeromaps
-uv sync
-```
-
-If you also want to run the custom life cycle assessment model (which requires a valid ecoinvent license), install 
-the extra dependencies with this command:
-
-``` {.bash}
-uv sync --extra lca
-```
-
+If you want to contribute to the development of AeroMAPS, check out the documentation [contribution guide](docs/books/developers/index.md) section.
 
 Citation
 --------
