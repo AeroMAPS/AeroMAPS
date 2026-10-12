@@ -3,7 +3,7 @@
 *.svg
 *.idea
 *.DS_Store
-
+.coverage*
 **/.ipynb_checkpoints
 /.ipynb_checkpoints
 
