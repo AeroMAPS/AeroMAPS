@@ -84,9 +84,8 @@ def export_lca(
 
         # Simplify
         for lambd, method_name in zip(lambdas, methods_dict.keys()):
-
-            if isinstance(lambd.expr, AxisDict):
-                lambd.expr = lambd.expr._dict
+            #if isinstance(lambd.expr, AxisDict):
+            #    lambd.expr = lambd.expr._dict
             lambd.expr = round_expr(lambd.expr, num_digits=num_digits)
 
         # Save

@@ -42,15 +42,15 @@ model:
 
         long_range:
             name: 'aircraft production, passenger aircraft, long haul'
-            amount: aircraft_production_long_range
+            amount: aircraft_production_long_range  # name to be fixed with new fleet model
 
         medium_range:
             name: 'aircraft production, passenger aircraft, medium haul'
-            amount: aircraft_production_medium_range
+            amount: aircraft_production_medium_range  # name to be fixed with new fleet model
 
         short_range:
             name: 'aircraft production, passenger aircraft, short haul'
-            amount: aircraft_production_short_range
+            amount: aircraft_production_short_range  # name to be fixed with new fleet model
         
     fuel:
         
