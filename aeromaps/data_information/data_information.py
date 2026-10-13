@@ -14,22 +14,17 @@ the file is loaded. The legacy semicolon-separated CSV format is still readable
 for backward compatibility.
 """
 
-import re
+from __future__ import annotations
 import warnings
 from pathlib import Path
-
 import pandas as pd
+from pydantic import ValidationError
 import xarray as xr
-import yaml
 
-from aeromaps.utils.units import UnitError, parse_unit
-
-
-def _glob_to_regex(pattern: str) -> re.Pattern:
-    """Translate a glob pattern with ``*`` wildcards into a capturing regex."""
-    parts = pattern.split("*")
-    regex = "(.*)".join(re.escape(part) for part in parts)
-    return re.compile(f"^{regex}$")
+from aeromaps.data_information.variable_model import Variable
+from aeromaps.data_information.variable_patterns import VariablePattern
+from aeromaps.utils.units import UnitError
+from aeromaps.utils.yaml import read_yaml_file
 
 
 class DataInformation:
@@ -57,49 +52,102 @@ class DataInformation:
 
     _UNKNOWN = {"Unit": "N/A", "Description": "N/A", "Source": "N/A"}
 
+    __variables: dict[str, Variable]
+    """A mapping of variable names to a :class:`Variable`."""
+
+    __patterns: list[VariablePattern]
+    """A list of :class:`VariablePattern`."""
+
     # Explicit sentinel for entries whose unit is not expressible statically
     # (e.g. LCA impacts, whose unit depends on the LCIA method)
     NOT_APPLICABLE = "N/A"
 
-    def __init__(self, variables: dict, patterns: list = None, source_file=None):
-        self.variables = variables or {}
-        self.patterns = []
+    def __init__(
+        self,
+        variables: dict[str, dict[str, str]] | dict[str, Variable],
+        patterns: list[dict] | None = None,
+        source_file: str | Path | None = None,
+    ):
         self.source_file = source_file
-        self._validate_units()
-        for rule in patterns or []:
-            if "match" not in rule:
-                raise ValueError(f"Pattern rule without 'match' key in '{source_file}': {rule}")
-            unit = rule.get("unit")
-            if unit is not None and str(unit) != self.NOT_APPLICABLE:
-                try:
-                    parse_unit(str(unit))
-                except UnitError as e:
-                    raise UnitError(
-                        f"Invalid unit in pattern '{rule['match']}' of '{source_file}': {e}"
-                    ) from e
-            self.patterns.append({**rule, "_regex": _glob_to_regex(rule["match"])})
+        self.__variables = self._load_variables(variables)
+        self.__patterns = self._load_patterns(patterns or [])
 
-    def _validate_units(self):
+    @property
+    def variables(self):
+        """Return the data's variables mapping."""
+        return self.__variables
+
+    @property
+    def patterns(self):
+        """Return the data's patterns mapping."""
+        return self.__patterns
+
+    def _load_variables(
+        self, variables: dict[str, dict[str, str]] | dict[str, Variable]
+    ) -> dict[str, Variable]:
+        """Load and validate the data variables.
+
+        Args:
+            variables: The variables to be loaded and validated.
+
+        Returns:
+            The variables mapping.
+
+        Raises:
+            UnitError if any variable contains invalid units.
+        """
         errors = []
-        for name, entry in self.variables.items():
-            unit = entry.get("unit")
-            if unit is None:
-                errors.append(f"  - variable '{name}': missing unit")
-                continue
-            if str(unit) == self.NOT_APPLICABLE:
+        validated_variables = {}
+        for variable in variables:
+            info = variables[variable]
+            if isinstance(info, Variable):
+                validated_variables[variable] = info
                 continue
             try:
-                parse_unit(str(unit))
-            except UnitError as e:
-                errors.append(f"  - variable '{name}': {e}")
+                validated_variables[variable] = Variable(variable_name=variable, **info)
+            except ValidationError as e:
+                errors.extend(self.__extract_unit_errors(e))
+
         if errors:
             raise UnitError(
                 f"Invalid units in data information file '{self.source_file}':\n"
                 + "\n".join(errors)
             )
 
+        return validated_variables
+
+    def _load_patterns(self, patterns: list[dict[str, str]]) -> list[VariablePattern]:
+        """Parse the patterns from the data.
+
+        Args:
+            patterns: ordered list of dicts with keys 'match' (glob pattern), 'unit',
+                'description' and optionally 'source'.
+        """
+
+        valid_patterns = []
+        errors = []
+        for rule in patterns:
+            if "match" not in rule:
+                raise ValueError(
+                    f"Pattern rule without 'match' key in '{self.source_file}': {rule}"
+                )
+            try:
+                pattern = VariablePattern(
+                    pattern=rule.get("match"),
+                    unit=rule.get("unit", "N/A"),
+                    description=rule.get("description", "N/A"),
+                    source=rule.get("source", ""),
+                )
+                valid_patterns.append(pattern)
+            except ValidationError as e:
+                errors.extend(self.__extract_unit_errors(e))
+
+        if errors:
+            raise UnitError(f"Invalid pattern rule in '{self.source_file}': \n" + "\n".join(errors))
+        return valid_patterns
+
     @classmethod
-    def from_file(cls, file_name) -> "DataInformation":
+    def from_file(cls, file_name) -> DataInformation:
         """
         Load metadata from a YAML file (or a legacy CSV file).
 
@@ -125,19 +173,9 @@ class DataInformation:
         return cls.from_yaml(path)
 
     @classmethod
-    def from_yaml(cls, file_name) -> "DataInformation":
+    def from_yaml(cls, file_name) -> DataInformation:
         """Load metadata from the YAML format (sections 'variables' and 'patterns')."""
-        try:
-            with open(file_name, "r", encoding="utf-8") as file:
-                content = yaml.safe_load(file)
-        except FileNotFoundError:
-            raise FileNotFoundError(f"Data information file not found: '{file_name}'")
-        except yaml.YAMLError as e:
-            raise ValueError(f"Failed to parse data information file '{file_name}': {e}") from e
-        if not isinstance(content, dict):
-            raise ValueError(
-                f"Expected a YAML mapping with 'variables'/'patterns' in '{file_name}'."
-            )
+        content = read_yaml_file(file_name)
         return cls(
             variables=content.get("variables", {}),
             patterns=content.get("patterns", []),
@@ -145,7 +183,7 @@ class DataInformation:
         )
 
     @classmethod
-    def from_csv(cls, file_name) -> "DataInformation":
+    def from_csv(cls, file_name) -> DataInformation:
         """Load metadata from the legacy semicolon-separated CSV format."""
         try:
             df = pd.read_csv(file_name, encoding="utf-8-sig", sep=";")
@@ -168,7 +206,7 @@ class DataInformation:
             variables[row["Name"]] = entry
         return cls(variables=variables, patterns=[], source_file=file_name)
 
-    def lookup(self, name: str):
+    def lookup(self, name: str) -> dict[str, str] | None:
         """
         Resolve metadata for a variable name.
 
@@ -183,23 +221,23 @@ class DataInformation:
             Dict with keys 'Unit', 'Description' and 'Source', or None if the
             name matches neither an exact entry nor a pattern.
         """
-        entry = self.variables.get(name)
-        if entry is not None:
+        variable = self.__variables.get(name)
+        if variable is not None:
             return {
-                "Unit": entry.get("unit", "N/A"),
-                "Description": entry.get("description", "N/A"),
-                "Source": entry.get("source", ""),
+                "Unit": variable.unit,
+                "Description": variable.description,
+                "Source": variable.source or "",
             }
-        for rule in self.patterns:
-            match = rule["_regex"].match(name)
+        for rule in self.__patterns:
+            match = rule._regex.match(name)
             if match:
-                description = rule.get("description", "N/A")
+                description = rule.description
                 prefix = match.group(1) if match.groups() else ""
                 description = str(description).format(name=name, prefix=prefix)
                 return {
-                    "Unit": rule.get("unit", "N/A"),
+                    "Unit": rule.unit,
                     "Description": description,
-                    "Source": rule.get("source", ""),
+                    "Source": rule.source,
                 }
         return None
 
@@ -251,3 +289,10 @@ class DataInformation:
                 if self.lookup(variable) is None:
                     names.add(variable)
         return sorted(names)
+
+    @staticmethod
+    def __extract_unit_errors(error: ValidationError):
+        details = error.errors(include_url=False)
+        if any(err["loc"] != ("unit",) or err["type"] != "value_error" for err in details):
+            raise error
+        return [f"  - {err['msg']}" for err in details]

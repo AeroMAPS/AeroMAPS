@@ -35,7 +35,6 @@ from gemseo import generate_n2_plot
 from aeromaps.models.base import AeroMAPSModel, AeroMapsCustomDataType
 from aeromaps.core.gemseo import (
     AeroMAPSAutoModelWrapper,
-   
     AeroMAPSCustomModelWrapper,
     apply_coupling_bounds,
     check_mda_convergence,
@@ -54,7 +53,7 @@ from aeromaps.utils.functions import (
     custom_logger_config,
 )
 from aeromaps.utils.yaml import read_yaml_file
-from aeromaps.utils.data_information import DataInformation
+from aeromaps.data_information.data_information import DataInformation
 from aeromaps.plots.single_scenario import available_plots, available_plots_fleet
 
 # Fleet model imports
@@ -1076,11 +1075,9 @@ class AeroMAPSProcess(object):
             return None
         entry = entry or {}
         return {
-            "Unit": unit if unit is not None else entry.get("Unit", "N/A"),
-            "Description": (
-                description if description is not None else entry.get("Description", "N/A")
-            ),
-            "Source": entry.get("Source", ""),
+            "Unit": unit if unit is not None else entry.get("Unit"),
+            "Description": (description if description is not None else entry.get("Description")),
+            "Source": entry.get("Source"),
         }
 
     def _lookup_discipline_metadata(self, name):
@@ -2358,6 +2355,9 @@ class AeroMAPSProcess(object):
                             model = AeroMAPSAutoModelWrapper(model=model, metadata=registry)
                         self.disciplines.append(model)
                     else:
+                        # TODO: This check is unnecessary if we enforce that all
+                        # AeroMAPSModel subclasses implement compute() by adding it
+                        # as a abstract method in the base class.
                         raise AttributeError(
                             f"Model '{model.name}' has no compute() method. "
                             "All AeroMAPSModel subclasses must implement compute()."
@@ -3016,17 +3016,16 @@ class AeroMAPSProcess(object):
             DataFrame containing metadata for all current inputs and
             outputs.
         """
-        if file_name is None:
-            file_name = self._resolve_data_information_path()
-        self._data_information = DataInformation.from_file(file_name)
-        return self._build_data_information_df(file_name)
+        self._load_data_information(file_name=file_name)
+        return self._build_data_information_df()
 
-    def _load_data_information(self):
+    def _load_data_information(self, file_name=None) -> DataInformation:
         """Return the metadata registry, loading it from the configured file once."""
-        if self._data_information is None:
-            self._data_information = DataInformation.from_file(
-                self._resolve_data_information_path()
-            )
+        resolved_path = self._resolve_data_information_path()
+        file_name = file_name or resolved_path
+        new_file = file_name != resolved_path
+        if self._data_information is None or new_file:
+            self._data_information = DataInformation.from_file(file_name)
         return self._data_information
 
     def _resolve_data_information_path(self):
@@ -3052,12 +3051,13 @@ class AeroMAPSProcess(object):
             raise ValueError("Cannot resolve data information file path. Check your configuration.")
         return file_name
 
-    def _build_data_information_df(self, file_name):
+    def _build_data_information_df(self):
         """Build the consolidated metadata table of the process data.
 
         Metadata is resolved through get_variable_information, so what a
         model declares for its own variables wins over the registry.
         """
+        source_file = self._data_information.source_file
         rows = []
         unresolved = []
         for data_type, variables in self.data.items():
@@ -3073,7 +3073,7 @@ class AeroMAPSProcess(object):
         if unresolved:
             logging.warning(
                 f"{len(unresolved)} variables have no unit nor description, neither declared "
-                f"by a model nor listed in '{file_name}' (first ones: {unresolved[:5]}). "
+                f"by a model nor listed in '{source_file}' (first ones: {unresolved[:5]}). "
                 "Declare them in the model or add entries or pattern rules to the file."
             )
         return pd.DataFrame(rows, columns=["Name", "Type", "Unit", "Description", "Source"])

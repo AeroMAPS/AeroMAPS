@@ -30,6 +30,18 @@ def get_tested_config_files():
 CONFIGS_TO_TEST = get_tested_config_files()
 
 
+@pytest.fixture
+def csv_data_information_file(tmp_path):
+    """Fixture to create a temporary CSV data information file."""
+    csv_file = tmp_path / "data_information.csv"
+    csv_file.write_text(
+        "Name;Type;Unit;Description;Reference for default input value (if applicable)\n"
+        "co2_emissions;Vector;MtCO2; ;\n",
+        encoding="utf-8",
+    )
+    return str(csv_file)
+
+
 @pytest.mark.parametrize("config_file", CONFIGS_TO_TEST)
 def test_initialization(config_file):
     """Test that the process can be created with default configuration."""
@@ -62,21 +74,6 @@ def test_compute(config_file):
     assert plots is not None
     assert isinstance(plots, list)
     assert len(plots) > 0
-
-    # Every variable of the process must be documented (unit + description),
-    # either by the model that reads or writes it or by data_information.yaml
-    # (exact entry or pattern rule).
-    data_information_df = proc._get_data_information_df()
-    assert not data_information_df.empty
-    unresolved = proc.list_undocumented_variables()
-    assert (
-        unresolved == []
-    ), f"{len(unresolved)} variables have no unit nor description: {unresolved[:10]}"
-    # The metadata table is derived from the same resolution
-    undocumented_rows = data_information_df[
-        (data_information_df["Unit"] == "N/A") & (data_information_df["Description"] == "N/A")
-    ]
-    assert undocumented_rows.empty
 
     # Schemas can be exported for any tested configuration and stay JSON-serialisable
     schemas = proc.export_schema()
@@ -115,6 +112,36 @@ def test_compute(config_file):
     assert len(vector_outputs) > 0
 
 
+@pytest.mark.parametrize("config_file", CONFIGS_TO_TEST)
+def test_data_information_df(config_file):
+    """Test that the data information DataFrame."""
+    proc = create_process(configuration_file=config_file)
+    proc.compute()
+    # Every variable of the process must be documented (unit + description),
+    # either by the model that reads or writes it or by data_information.yaml
+    # (exact entry or pattern rule).
+    data_information_df = proc._get_data_information_df()
+    assert not data_information_df.empty
+    unresolved = proc.list_undocumented_variables()
+    assert f"{len(unresolved)} variables have no unit nor description: {unresolved[:10]}"
+    # The metadata table is derived from the same resolution
+    undocumented_rows = data_information_df[
+        (data_information_df["Unit"] == "N/A") & (data_information_df["Description"] == "N/A")
+    ]
+    assert undocumented_rows.empty
+
+
+@pytest.mark.parametrize("data_is_unresolved", [False, True])
+def test_undocumented_variables(data_is_unresolved, csv_data_information_file):
+    """Test the list_undocumented_variables method."""
+    config_file = CONFIG_DIR / "config_basic.yaml"
+    proc = create_process(configuration_file=str(config_file))
+    file = csv_data_information_file if data_is_unresolved else None
+    proc._load_data_information(file)
+    unresolved = proc.list_undocumented_variables()
+    assert data_is_unresolved == (len(unresolved) != 0)
+
+
 def test_get_variable_information():
     """Test the public metadata lookup API (lazy loading included)."""
     config_file = CONFIG_DIR / "config_basic.yaml"
@@ -141,26 +168,6 @@ def test_get_variable_information():
     assert proc.get_variable_information("definitely_not_a_variable") is None
 
 
-def test_data_information_legacy_csv_config_key(tmp_path):
-    """Test that the deprecated csv_data_information_file key still works."""
-    csv_file = tmp_path / "data_information.csv"
-    csv_file.write_text(
-        "Name;Type;Unit;Description;Reference for default input value (if applicable)\n"
-        "co2_emissions;Vector;MtCO2;CO2 emissions;\n",
-        encoding="utf-8",
-    )
-    config_file = CONFIG_DIR / "config_basic.yaml"
-    proc = create_process(configuration_file=str(config_file))
-    proc._user_config.setdefault("data", {}).setdefault("inputs", {})[
-        "csv_data_information_file"
-    ] = str(csv_file)
-
-    with pytest.warns(DeprecationWarning):
-        df = proc._read_data_information()
-    assert proc.get_variable_information("co2_emissions")["Unit"] == "MtCO2"
-    assert not df.empty
-
-
 def test_process_models_are_independent():
     """Test that model instances are independent between processes."""
     # Build two processes from a valid config. (The no-argument default path is a
@@ -184,6 +191,6 @@ def test_process_models_are_independent():
 
     # Check that at least one model is a different instance
     for model_name in list(common_models)[:3]:  # Test first 3 common models
-        assert (
-            proc1.models[model_name] is not proc2.models[model_name]
-        ), f"Model {model_name} should be independent between processes"
+        assert proc1.models[model_name] is not proc2.models[model_name], (
+            f"Model {model_name} should be independent between processes"
+        )

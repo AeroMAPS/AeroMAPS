@@ -17,7 +17,7 @@ from aeromaps.core.gemseo import (
     check_coupling_units,
 )
 from aeromaps.models.base import AeroMAPSModel
-from aeromaps.utils.data_information import DataInformation
+from aeromaps.data_information.data_information import DataInformation
 from aeromaps.utils.units import UnitError
 
 
