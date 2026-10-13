@@ -1,4 +1,4 @@
-import brightway2 as bw
+import bw2data as bd
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mtick
 import seaborn as sns
@@ -16,10 +16,10 @@ def plot_stacked_evolution_subplots(xarray_data):
     df = df.pivot_table(values="lca", index=["impacts", "axis"], columns="year")
 
     # Remove phases containing 'sum'
-    df_filtered = df[~df.index.get_level_values("axis").str.contains("sum")]
-    df_filtered = df_filtered[
-        ~df_filtered.index.get_level_values("axis").str.contains("_other_")
-    ]  # make sure it is equal to zero before deleting
+    df_filtered = df[~df.index.get_level_values("axis").str.contains("all")]
+    #df_filtered = df_filtered[
+    #    ~df_filtered.index.get_level_values("axis").str.contains("_other_")
+    #]  # make sure it is equal to zero before deleting
 
     methods = df_filtered.index.get_level_values("impacts").unique()  # [:9]
     years = df_filtered.columns
@@ -43,6 +43,7 @@ def plot_stacked_evolution_subplots(xarray_data):
         "production_electrofuel_DAC": ("0.35", ""),
         "production_electrofuel_electrolysis": ("0.8", "\\"),
         "production_kerosene": (palette[8], ""),
+        "Others": ("k", ""),
     }
 
     # Create subplots
@@ -51,7 +52,7 @@ def plot_stacked_evolution_subplots(xarray_data):
 
     for i, method in enumerate(methods):
         df_method = df_filtered.xs(method, level="impacts")
-        df_method.index = df_method.index.str.replace("_other_", "Others")
+        df_method.index = df_method.index.str.replace("*other*", "Others")
 
         # Remove elements with no contribution to score
         df_method = df_method.loc[~(df_method.eq(0).all(axis=1))]
@@ -71,7 +72,7 @@ def plot_stacked_evolution_subplots(xarray_data):
         name = name.replace(":", "\n")
         name = "".join([a if a.isupper() else b for a, b in zip(name, name.title())])
 
-        unit = bw.Method(method).metadata.get("unit")
+        unit = bd.Method(method).metadata.get("unit")
         unit = unit.replace("]", "")
         unit = unit.replace("m2*a crop-Eq", r"m$^2\times$yr annual crop land")
         unit = unit.replace("-Eq", "-eq")
@@ -129,8 +130,8 @@ def plot_stacked_evolution_subplots(xarray_data):
 
 
 def plot_stacked_sensitivity_subplots(df, kerosene_scenario_values):
-    # Remove phases containing 'sum'
-    df_filtered = df[~df.index.get_level_values("phase").str.contains("sum")]
+    # Remove total value
+    df_filtered = df[~df.index.get_level_values("phase").str.contains("all")]
 
     methods = df_filtered.index.get_level_values("method").unique()  # [9:]
     years = df_filtered.columns
@@ -154,6 +155,7 @@ def plot_stacked_sensitivity_subplots(df, kerosene_scenario_values):
         "Production Electrofuel\n(Direct Air Capture)": ("0.35", ""),
         "Production Electrofuel\n(Electrolysis)": ("0.8", "\\"),
         "production_kerosene": (palette[8], ""),
+        '*other*': ('k', '')
     }
 
     # Create subplots
@@ -163,7 +165,7 @@ def plot_stacked_sensitivity_subplots(df, kerosene_scenario_values):
     for i, method in enumerate(methods):
         df_method = df_filtered.xs(method, level="method")
         df_method.index = df_method.index.str.replace(
-            "_other_", "Production Electrofuel\n(Fischer-Tropsch process)"
+            "*other*", "Production Electrofuel\n(Fischer-Tropsch process)"
         )
         df_method.index = df_method.index.str.replace(
             "production_electrofuel_DAC", "Production Electrofuel\n(Direct Air Capture)"
@@ -295,7 +297,7 @@ def plot_evolution_subplots_iams(df):
             # axes[i].plot(years, df_method, alpha=0.8)
 
             # Customize the subplot
-            unit = bw.Method(eval(method)).metadata.get("unit")
+            unit = bd.Method(eval(method)).metadata.get("unit")
             unit = unit.replace("]", "")
             unit = unit.replace("m2*a crop-Eq", r"m$^2\times$yr annual crop land")
             unit = unit.replace("-Eq", "-eq")

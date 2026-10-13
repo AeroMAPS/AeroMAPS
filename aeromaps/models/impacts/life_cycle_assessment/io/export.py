@@ -13,7 +13,7 @@ try:
     from lca_algebraic.lca import _preMultiLCAAlgebric
     from lca_algebraic.params import _param_registry
     from lca_algebraic.stats import _round_expr
-    import brightway2 as bw
+    import bw2data as bd
 except ImportError as e:
     raise ImportError(
         "Required libraries for Custom Life Cycle Assessment module are not installed. "
@@ -84,9 +84,8 @@ def export_lca(
 
         # Simplify
         for lambd, method_name in zip(lambdas, methods_dict.keys()):
-
-            if isinstance(lambd.expr, AxisDict):
-                lambd.expr = lambd.expr._dict
+            #if isinstance(lambd.expr, AxisDict):
+            #    lambd.expr = lambd.expr._dict
             lambd.expr = round_expr(lambd.expr, num_digits=num_digits)
 
         # Save
@@ -104,7 +103,7 @@ def export_lca(
     # Build list of impacts
     impacts = {key: Impact(
         name=str(method),
-        unit=bw.Method(method).metadata.get("unit", "")
+        unit=bd.Method(method).metadata.get("unit", "")
     ) for key, method in methods_dict.items()}
 
     return Model(

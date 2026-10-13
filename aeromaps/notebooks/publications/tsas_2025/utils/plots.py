@@ -1,4 +1,4 @@
-import brightway2 as bw
+import bw2data as bd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import math
@@ -21,10 +21,10 @@ def plot_stacked_evolution_subplots(xarray_data):
     df = df.pivot_table(values="lca", index=["impacts", "axis"], columns="year")
 
     # Remove phases containing 'sum'
-    df_filtered = df[~df.index.get_level_values("axis").str.contains("sum")]
-    df_filtered = df_filtered[
-        ~df_filtered.index.get_level_values("axis").str.contains("_other_")
-    ]  # make sure it is equal to zero before deleting
+    df_filtered = df[~df.index.get_level_values("axis").str.contains("all")]
+    #df_filtered = df_filtered[
+    #    ~df_filtered.index.get_level_values("axis").str.contains("_other_")
+    #]  # make sure it is equal to zero before deleting
 
     methods = df_filtered.index.get_level_values("impacts").unique()  # [:9]
     years = df_filtered.columns
@@ -46,6 +46,7 @@ def plot_stacked_evolution_subplots(xarray_data):
         "hydrogen_production": (palette[6], ""),
         "CO2 from combustion": (palette[7], ""),
         "Non-CO2 from combustion": ("0.8", "//"),
+        "Others": ('k', ''),
         #'Production Electrofuel\n(Electrolysis)': ('0.8', '\\'),
         #'production_kerosene': (palette[8], ''),
     }
@@ -56,7 +57,7 @@ def plot_stacked_evolution_subplots(xarray_data):
 
     for i, method in enumerate(methods):
         df_method = df_filtered.xs(method, level="impacts")
-        df_method.index = df_method.index.str.replace("_other_", "Others")
+        df_method.index = df_method.index.str.replace("*other*", "Others")
 
         # Group CO2 emissions together
         co2_rows = df_method.index.str.startswith("CO2")
@@ -93,7 +94,7 @@ def plot_stacked_evolution_subplots(xarray_data):
         name = name.replace(":", "\n")
         name = "".join([a if a.isupper() else b for a, b in zip(name, name.title())])
 
-        unit = bw.Method(method).metadata.get("unit")
+        unit = bd.Method(method).metadata.get("unit")
         unit = unit.replace("]", "")
         unit = unit.replace("m2*a crop-Eq", r"m$^2\times$yr annual crop land")
         unit = unit.replace("-Eq", "-eq")

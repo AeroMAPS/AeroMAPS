@@ -13,6 +13,57 @@ from tqdm.notebook import tqdm
 
 FUNCTIONAL_UNIT_KEY = "air_transport"
 TOTAL_AXIS_KEY = "total"
+KEY_AXIS_ALL_INTERNAL = "_all_"
+KEY_AXIS_ALL = "*all*"
+KEY_AXIS_OTHER = "*other*"
+
+
+def axis_keys_for_expression(expr, axis):
+    if not isinstance(expr, dict):
+        return None
+
+    if KEY_AXIS_ALL_INTERNAL not in expr:
+        return list(expr.keys())
+
+    axis_keys = sorted(
+        (
+            key
+            for key in expr
+            if key not in {None, KEY_AXIS_ALL_INTERNAL, KEY_AXIS_ALL, KEY_AXIS_OTHER}
+        ),
+        key=str,
+    )
+    keys = [KEY_AXIS_ALL] + axis_keys
+    if axis != TOTAL_AXIS_KEY:
+        keys.append(KEY_AXIS_OTHER)
+    return keys
+
+
+def convert_axis_values(values, include_other):
+    if not isinstance(values, dict) or KEY_AXIS_ALL_INTERNAL not in values:
+        return values
+
+    if KEY_AXIS_ALL in values:
+        raise ValueError(
+            'Cannot convert contribution keys: both "_all_" and "*all*" are present.'
+        )
+
+    total = values[KEY_AXIS_ALL_INTERNAL]
+    axis_values = {
+        key: value
+        for key, value in values.items()
+        if key not in {None, KEY_AXIS_ALL_INTERNAL, KEY_AXIS_ALL, KEY_AXIS_OTHER}
+    }
+    converted = {KEY_AXIS_ALL: total}
+    for axis_name in sorted(axis_values, key=str):
+        converted[axis_name] = total - axis_values[axis_name]
+
+    if include_other:
+        converted[KEY_AXIS_OTHER] = total - sum(
+            converted[axis_name] for axis_name in axis_values
+        )
+
+    return converted
 
 
 class ParamType(str, Enum):
@@ -259,6 +310,7 @@ class Model:
 
         # Compute value of impacts
         impacts = lambd.evaluate(self.params, param_values)
+        impacts = convert_axis_values(impacts, include_other=axis != TOTAL_AXIS_KEY)
 
         # Filter out "null"=zero axis
 

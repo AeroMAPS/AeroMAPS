@@ -12,7 +12,7 @@ import xarray as xr
 try:
     import lca_algebraic as agb
     from lca_modeller.io.configuration import LCAProblemConfigurator
-    import brightway2 as bw
+    import bw2data as bd
 except ImportError as e:
     raise ImportError(
         "Required libraries for Custom Life Cycle Assessment module are not installed. "
@@ -30,9 +30,9 @@ from aeromaps.models.impacts.life_cycle_assessment.utils.functions import (
 # Constants
 KEY_YEAR = "year"
 KEY_METHOD = "method"
-
-# suppress warnings from woosh (to be resolved in future versions of lca-modeller?)
-warnings.filterwarnings("ignore", category=SyntaxWarning)
+KEY_AXIS_ALL_INTERNAL = "_all_"
+KEY_AXIS_ALL = "*all*"
+KEY_AXIS_OTHER = "*other*"
 
 
 class LifeCycleAssessmentCustom(AeroMAPSModel):
@@ -130,17 +130,38 @@ class LifeCycleAssessmentCustom(AeroMAPSModel):
         print("===========================================")
 
         # --- Add LCA impact categories the outputs to the AeroMAPSModel ---
-        self.axis_keys = getattr(self.lambdas[0], "axis_keys", None)
+        self.axis_keys = self._get_public_axis_keys(self.lambdas)
         if self.axis_keys:
-            self.axis_keys = list(self.axis_keys)
             for method in self.methods:
                 for phase in self.axis_keys:
                     method_with_axis = method + (phase,)
                     self.output_names.append(tuple_to_varname(method_with_axis))
+                # Keep the historical total output name as an alias to "*all*".
                 self.output_names.append(tuple_to_varname(method))
         else:
             for method in self.methods:
                 self.output_names.append(tuple_to_varname(method))
+
+    def _get_public_axis_keys(self, lambdas) -> list:
+        """
+        Return the axis labels exposed in xarray and AeroMAPS outputs.
+
+        lca_algebraic stores the total under "_all_" internally. The public
+        xarray returned by compute_impacts_xarray exposes it as "*all*" and
+        adds "*other*" when an axis split is requested.
+        """
+        if self.axis is None:
+            return []
+
+        raw_axis_keys = getattr(lambdas[0], "axis_keys", None) if lambdas else None
+        axis_keys = [] if raw_axis_keys is None else list(raw_axis_keys)
+        axis_keys = sorted(
+            axis
+            for axis in axis_keys
+            if axis not in {None, KEY_AXIS_ALL_INTERNAL, KEY_AXIS_ALL, KEY_AXIS_OTHER}
+        )
+
+        return [KEY_AXIS_ALL] + axis_keys + [KEY_AXIS_OTHER]
 
     def compute(self, input_data) -> dict:
         """
@@ -163,7 +184,7 @@ class LifeCycleAssessmentCustom(AeroMAPSModel):
         res = self._multi_lca_algebraic_raw(**params_dict)
 
         # --- Store xarray to enable user to access data after process calculation ---
-        res["params"] = params_dict[KEY_YEAR]  # replace param index by actual years
+        res["params"] = params_dict.get(KEY_YEAR, self.years)  # replace param index by actual years
         res = res.rename({"params": KEY_YEAR})  # rename 'params' dimension to 'year'
         self.xarray_lca = res
 
@@ -299,7 +320,8 @@ class LifeCycleAssessmentCustom(AeroMAPSModel):
         Returns
         ------
         xr.DataArray
-            3 dimension xarray of lca results, with dims=("systems", "impacts", "params"]
+            3 or 4 dimension xarray of LCA results, with
+            dims=("systems", "impacts", "axis" (optional), "params").
         """
 
         models = {self.model: self.lambdas}
@@ -318,8 +340,9 @@ class LifeCycleAssessmentCustom(AeroMAPSModel):
         #    models = {models: None}
 
         param_length = compute_param_length(params)
-        out = np.full((len(models.keys()), len(methods), param_length), np.nan, float)
-        axis_keys = self.axis_keys
+        tmp = {}
+        axes = set()
+        has_axis_values = False
 
         for imodel, (model, lambdas) in enumerate(models.items()):
             dbname = model.key[0]
@@ -336,32 +359,68 @@ class LifeCycleAssessmentCustom(AeroMAPSModel):
                     if lambdas:
                         print("Lambdas do not match with len of methods. Recompiling expressions.")
                     lambdas = agb.lca._preMultiLCAAlgebric(model, methods, axis=axis)
+                    if model is self.model:
+                        self.lambdas = lambdas
+                        self.axis_keys = self._get_public_axis_keys(lambdas)
 
-                if self.axis_keys:
-                    # Reshape array to add dimension corresponding to axis keys
-                    out = np.expand_dims(out, axis=-2)
-                    out = np.repeat(out, len(axis_keys), axis=-2)
                 for imethod, lambd_with_params in enumerate(lambdas):
                     value = lambd_with_params.compute(**params).value
                     if isinstance(value, dict):
-                        # axis values
-                        # value = list(float(value[axis]) if axis in value else 0.0 for axis in lambd_with_params.axis_keys)
-                        for iaxis, ax in enumerate(axis_keys):
-                            out[imodel, imethod, iaxis, :] = np.float_(value[ax])
-                    else:
-                        out[imodel, imethod, :] = value
-        if axis_keys:
+                        has_axis_values = True
+                        axes |= set(value.keys())
+                    tmp[(imodel, imethod)] = value
+
+        if has_axis_values:
+            axes = list(
+                sorted(
+                    axis_name
+                    for axis_name in axes - {KEY_AXIS_ALL_INTERNAL}
+                    if axis_name is not None
+                )
+            )
+            out = np.full((len(models), len(methods), len(axes) + 2, param_length), np.nan, float)
+            out[:, :, -1, :] = 0.0
+
+            for (imodel, imethod), value in tmp.items():
+                if not isinstance(value, dict):
+                    out[imodel, imethod, 0, :] = value
+                    continue
+
+                if KEY_AXIS_ALL_INTERNAL not in value:
+                    raise ValueError(
+                        f'Missing "{KEY_AXIS_ALL_INTERNAL}" total in '
+                        "lca_algebraic result for method "
+                        f"{methods[imethod]}."
+                    )
+
+                for iaxis, axis_name in enumerate(axes, start=1):
+                    data = value[KEY_AXIS_ALL_INTERNAL] - value.get(axis_name, 0.0)
+                    out[imodel, imethod, iaxis, :] = data
+                    out[imodel, imethod, -1, :] -= data
+
+                data = value[KEY_AXIS_ALL_INTERNAL]
+                out[imodel, imethod, 0, :] = data
+                out[imodel, imethod, -1, :] += data
+
+            axes = [KEY_AXIS_ALL] + axes
+            if axis is not None:
+                axes = axes + [KEY_AXIS_OTHER]
+
             res = xr.DataArray(
-                out,
+                out[:, :, : len(axes), :],
                 name="lca",
                 coords=[
                     ("systems", np.fromiter((m.key for m in models.keys()), dtype="O")),
                     ("impacts", np.fromiter(methods, dtype="O")),
-                    ("axis", np.fromiter(axis_keys, dtype="O")),
+                    ("axis", np.fromiter(axes, dtype="O")),
                     ("params", list(range(param_length))),
                 ],
             )
         else:
+            out = np.full((len(models), len(methods), param_length), np.nan, float)
+            for (imodel, imethod), value in tmp.items():
+                out[imodel, imethod, :] = value
+
             res = xr.DataArray(
                 out,
                 name="lca",
@@ -375,7 +434,7 @@ class LifeCycleAssessmentCustom(AeroMAPSModel):
         # Add units in metadata
         units_attr = res.coords["impacts"].attrs.get("units", {})
         for imethod, method in enumerate(methods):
-            units_attr[method] = unit = bw.Method(method).metadata.get("unit", None)
+            units_attr[method] = unit = bd.Method(method).metadata.get("unit", None)
         res.coords["impacts"].attrs["units"] = units_attr
 
         return res
@@ -481,18 +540,24 @@ class LifeCycleAssessmentCustom(AeroMAPSModel):
         """
         output_data = {}
 
-        if self.axis_keys:
+        if "axis" in res.dims:
             for method in res.coords["impacts"].values:
-                for phase in res.coords["axis"].values:
-                    method_with_axis = method + (phase,)
-                    value = res.sel(systems=self.model.key, impacts=method, axis=phase).to_series()
-                    value = value.reindex(range(self.historic_start_year, self.end_year + 1))
-                    output_data[tuple_to_varname(method_with_axis)] = value
-                # Also add total over all axes
-                value = res.sel(
-                            systems=self.model.key,
-                            impacts=method
-                        ).sum(dim="axis").to_series()
+                if self.axis is not None:
+                    for phase in res.coords["axis"].values:
+                        method_with_axis = method + (phase,)
+                        value = res.sel(
+                            systems=self.model.key, impacts=method, axis=phase
+                        ).to_series()
+                        value = value.reindex(range(self.historic_start_year, self.end_year + 1))
+                        output_data[tuple_to_varname(method_with_axis)] = value
+
+                # Historical total output name, now read directly from "*all*".
+                total_axis = (
+                    KEY_AXIS_ALL
+                    if KEY_AXIS_ALL in res.coords["axis"].values
+                    else res.coords["axis"].values[0]
+                )
+                value = res.sel(systems=self.model.key, impacts=method, axis=total_axis).to_series()
                 value = value.reindex(range(self.historic_start_year, self.end_year + 1))
                 output_data[tuple_to_varname(method)] = value
         else:
