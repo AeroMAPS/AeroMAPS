@@ -184,6 +184,9 @@ class MultiRegionalProcess(AeroMAPSProcess):
         # TODO: discuss if that is not satisfactory.
         logging.getLogger("gemseo.utils.source_parsing").setLevel(logging.ERROR)
 
+        # Variable metadata registry, lazily loaded by _read_data_information
+        self._data_information = None
+
         # Store configuration file path early (before parent init)
         self.configuration_file = os.path.abspath(os.fspath(configuration_file))
 
