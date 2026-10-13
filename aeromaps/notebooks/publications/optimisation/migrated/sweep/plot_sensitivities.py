@@ -22,6 +22,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import pandas as pd
 from matplotlib.lines import Line2D
+from matplotlib.ticker import MaxNLocator
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
@@ -540,18 +541,14 @@ def discount():
 # --------------------------------------------------------------------------- #
 
 # Each row names its JSON relative to this folder, because the rows come from two
-# places: blocks A-D in results/, and the carbon-budget ladder, the other cases at the
-# central budget and the fossil BAU in results_e/.
-BASELINE_ROW = ("results/base.json", "ReFuelEU budget, 10 % biomass, eps -0.9, r 4.5 %")
+# places: blocks A-D in results/, and the carbon-budget ladder and the other cases at the
+# central budget in results_e/. The fossil BAU is not a row: it is a reference rather
+# than a sensitivity, and it stretched every axis until the sensitivities were unreadable.
+BASELINE_ROW = ("results/base.json", "Baseline")
 
 SUMMARY_GROUPS = [
     (
-        "Reference",
-        INK,
-        [("results_e/fossil_main.json", "fossil BAU, no mandate")],
-    ),
-    (
-        "Carbon budget  (% of world budget)",
+        "Carbon budget",
         "#762a83",
         [
             ("results_e/opt_main_3_8.json", "3.8 %"),
@@ -562,7 +559,7 @@ SUMMARY_GROUPS = [
         ],
     ),
     (
-        "Biomass allocated to aviation",
+        "Biomass allocation",
         "#35978f",
         [
             ("results_e/opt_B5_refueleu.json", "5 %"),
@@ -573,17 +570,17 @@ SUMMARY_GROUPS = [
     (
         "Technology",
         "#5e5e5e",
-        [("results_e/opt_pess_refueleu.json", "efficiency gain 0.91 %/yr")],
+        [("results_e/opt_pess_refueleu.json", "efficiency +0.91 %/yr")],
     ),
     (
         "Price elasticity",
         "#2166ac",
         [
             ("results/fixed_demand.json", "fixed demand"),
-            ("results/eps_m0_6.json", "-0.6"),
-            ("results/eps_m0_8.json", "-0.8"),
-            ("results/eps_m1_0.json", "-1.0"),
-            ("results/eps_m1_4.json", "-1.4"),
+            ("results/eps_m0_6.json", "\u22120.6"),
+            ("results/eps_m0_8.json", "\u22120.8"),
+            ("results/eps_m1_0.json", "\u22121.0"),
+            ("results/eps_m1_4.json", "\u22121.4"),
         ],
     ),
     (
@@ -611,9 +608,9 @@ SUMMARY_GROUPS = [
         "Discount rate",
         "#8c6d31",
         [
-            ("results/r_3_2.json", "3.2 %  †"),
-            ("results/r_7.json", "7 %  †"),
-            ("results/r_15.json", "15 %  (extreme)  †"),
+            ("results/r_3_2.json", "3.2 % †"),
+            ("results/r_7.json", "7 % †"),
+            ("results/r_15.json", "15 % †"),
         ],
     ),
 ]
@@ -622,53 +619,49 @@ SUMMARY_GROUPS = [
 def _surplus_loss(vectors):
     """The objective, cumulative discounted total surplus loss to 2050, in bn EUR.
 
-    The fixed-demand run uses the no-feedback chain, which does not report it. Its
-    equivalent is exact rather than approximate: the model sums discounted area_loss
-    plus the 2026-2050 discounted airline cost increase, and with traffic equal to the
-    reference traffic area_loss is identically zero. The reconstruction matches the
-    reported value to six decimals on the elastic runs.
+    NaN for the fixed-demand run, which leaves its row empty in that panel. The
+    no-feedback chain does not report the objective, and what could be rebuilt from it --
+    the 2026-2050 discounted airline cost increase alone -- has no travel term, so it is
+    not the same quantity as the elastic rows.
     """
-    if "cumulative_total_surplus_loss_discounted" in vectors:
-        return vectors["cumulative_total_surplus_loss_discounted"][-1] / 1e9
-    airline = vectors["cumulative_total_airline_cost_increase_discounted"]
-    return (airline[YEARS.index(2050)] - airline[YEARS.index(2025)]) / 1e9
+    if "cumulative_total_surplus_loss_discounted" not in vectors:
+        return float("nan")
+    return vectors["cumulative_total_surplus_loss_discounted"][-1] / 1e9
 
 
-SUMMARY_METRICS = [
-    ("a. Cumulative surplus loss", "discounted, 2020-2050  [bn EUR]", _surplus_loss),
+def _mandate(pathway):
+    """(2035, 2050) mandate share of one pathway: the pair a mandate panel draws."""
+    key = f"generic_{pathway}_mandate_share"
+    return lambda v: (v[key][YEARS.index(2035)], v[key][-1])
+
+
+# Mandates first -- they are what the optimiser chooses -- then what follows from them.
+# A mandate metric returns a (2035, 2050) pair and is drawn as a wide ring and a dot; the
+# others return one number. Cumulative CO2 is not here: it is the constraint, identical in
+# every run outside the carbon-budget group, whose rows already name it.
+#
+# Each entry is (title, x label, key, metric). The key is drawn under the panel with the
+# panel's own markers and says what period a marker stands for.
+SUMMARY_MANDATES = [
+    ("a. Biofuel", "Mandate share  [%]", ["2035", "2050"], _mandate("biofuel")),
+    ("b. Electrofuel", "Mandate share  [%]", ["2035", "2050"], _mandate("electrofuel")),
+]
+SUMMARY_OUTCOMES = [
+    ("c. Surplus loss", "[Bn \u20ac, discounted]", ["Cumulative to 2050"], _surplus_loss),
     (
-        "b. Cumulative CO2 emissions",
-        "2020-2050  [GtCO2]",
-        lambda v: v["cumulative_co2_emissions"][YEARS.index(2050)],
-    ),
-    (
-        "c. CO2 emissions in 2050",
-        "[MtCO2/yr]",
+        "d. CO$_2$ emissions",
+        "[MtCO$_2$/yr]",
+        ["2050"],
         lambda v: v["co2_emissions_passenger"][-1] + v["co2_emissions_freight"][-1],
     ),
-    ("d. Traffic in 2050", "[trillion RPK]", lambda v: v["rpk"][-1] / 1e12),
-    (
-        "e. Biofuel mandate, 2035",
-        "[% of drop-in blend]",
-        lambda v: v["generic_biofuel_mandate_share"][YEARS.index(2035)],
-    ),
-    (
-        "f. Biofuel mandate, 2050",
-        "[% of drop-in blend]",
-        lambda v: v["generic_biofuel_mandate_share"][-1],
-    ),
-    (
-        "g. Electrofuel mandate, 2035",
-        "[% of drop-in blend]",
-        lambda v: v["generic_electrofuel_mandate_share"][YEARS.index(2035)],
-    ),
-    (
-        "h. Electrofuel mandate, 2050",
-        "[% of drop-in blend]",
-        lambda v: v["generic_electrofuel_mandate_share"][-1],
-    ),
+    ("e. Traffic", "[Tn RPK]", ["2050"], lambda v: v["rpk"][-1] / 1e12),
 ]
-MANDATE_PANELS = slice(4, 8)  # drawn on one shared scale, so the four read against each other
+SUMMARY_METRICS = SUMMARY_MANDATES + SUMMARY_OUTCOMES
+
+# Half a page of an Elsevier journal: 190 mm is the double-column width. Saved at exactly
+# this size, so the font sizes below are the printed ones (Elsevier asks for 7 pt or more).
+SUMMARY_FIGSIZE = (190 / 25.4, 128 / 25.4)
+SUMMARY_FONT = 7.0
 
 
 def _summary_row(path):
@@ -690,102 +683,138 @@ def _summary_row(path):
         if run is None or not run["feasible"]:
             return None, "infeasible"
     vectors = json.load(open(json_path))["vector_outputs"]
-    return [metric(vectors) for _, _, metric in SUMMARY_METRICS], "ok"
+    return [metric(vectors) for *_, metric in SUMMARY_METRICS], "ok"
 
 
 def summary():
-    """Every sensitivity against one baseline, on eight quantities.
+    """Every sensitivity against one baseline: the two mandates, then three outcomes.
 
     Blocks A-D vary one parameter at the ReFuelEU-equivalent budget. The carbon-budget
     group is block E's main ladder; the biomass and technology groups are the other
     block E cases re-optimised at that same central budget, so every group except the
     carbon budget shares the baseline's cumulative emissions.
+
+    One row of panels, so a run reads straight across from what the optimiser chose to
+    what came of it. Sized for print, so it carries no title or note of its own: those
+    belong to the article's caption.
     """
     baseline, _ = _summary_row(BASELINE_ROW[0])
 
     rows, ticks, labels, styles, separators = [], [], [], [], []
     y = 0.0
     ticks.append(y)
-    labels.append(f"BASELINE   {BASELINE_ROW[1]}")
-    styles.append((INK, "bold", 8.5))
-    rows.append((y, baseline, NEUTRAL, True))
+    labels.append(BASELINE_ROW[1])
+    styles.append((INK, "bold"))
+    rows.append((y, baseline, NEUTRAL))
     y += 1.0
     for group, colour, members in SUMMARY_GROUPS:
         separators.append(y - 0.5)
-        y += 0.6
+        y += 0.5
         ticks.append(y)
-        labels.append(group.upper())
-        styles.append((colour, "bold", 8.5))
+        labels.append(group)
+        styles.append((colour, "bold"))
         y += 1.0
         for path, label in members:
             values, status = _summary_row(path)
-            note = {"ok": "", "missing": "   (not on disk)", "infeasible": "   (infeasible)"}
+            note = {"ok": "", "missing": "  (not on disk)", "infeasible": "  (infeasible)"}
             ticks.append(y)
-            labels.append(f"   {label}{note[status]}")
-            styles.append((INK if status == "ok" else MUTED, "normal", 9))
+            labels.append(f"{label}{note[status]}")
+            styles.append((INK if status == "ok" else MUTED, "normal"))
             if values is not None:
-                rows.append((y, values, colour, False))
+                rows.append((y, values, colour))
             y += 1.0
 
-    figure, axes = plt.subplots(2, 4, figsize=(18.0, 17.0), sharey=True)
-    flat = axes.ravel()
-    mandate_top = max(max(values[i] for _, values, _, _ in rows) for i in range(8)[MANDATE_PANELS])
-    for index, (axis, (title, xlabel, _)) in enumerate(zip(flat, SUMMARY_METRICS)):
-        _frame(axis)
-        axis.grid(axis="y", visible=False)
-        axis.axvline(baseline[index], color=MUTED, lw=0.9, ls=":", zorder=0)
-        for boundary in separators:
-            axis.axhline(boundary, color=GRID, lw=1.0, zorder=0)
-        for y, values, colour, is_baseline in rows:
-            value = values[index]
-            axis.plot([baseline[index], value], [y, y], color=colour, lw=1.2, alpha=0.45)
-            axis.plot(
-                value,
-                y,
-                "o",
-                color="white" if is_baseline else colour,
-                ms=7,
-                zorder=2,
-                markeredgecolor=colour,
-                markeredgewidth=2.0 if is_baseline else 1.3,
-            )
-        if index in range(8)[MANDATE_PANELS]:
-            axis.set_xlim(-2, mandate_top * 1.06)
-        axis.set_xlabel(xlabel, fontsize=9, color=MUTED)
-        axis.set_title(title, loc="left", fontsize=11, color=INK, pad=8)
+    mandates = range(len(SUMMARY_MANDATES))
+    mandate_top = max(max(values[i]) for _, values, _ in rows for i in mandates)
 
-    for axis in axes[:, 0]:
-        axis.set_yticks(ticks)
-        axis.set_yticklabels(labels)
-        for text, (colour, weight, size) in zip(axis.get_yticklabels(), styles):
+    # Type 42 keeps the PDF's text as embedded TrueType, which production can edit.
+    with plt.rc_context({"pdf.fonttype": 42, "ps.fonttype": 42}):
+        figure = plt.figure(figsize=SUMMARY_FIGSIZE, layout="constrained")
+        figure.get_layout_engine().set(w_pad=0.04, h_pad=0.02, wspace=0.03)
+        grid = figure.add_gridspec(1, len(SUMMARY_METRICS))
+        axes = []
+        for column in range(len(SUMMARY_METRICS)):
+            axes.append(figure.add_subplot(grid[0, column], sharey=axes[0] if axes else None))
+
+        marker = {"ms": 4, "zorder": 2, "markeredgewidth": 0.9}
+        # The first year of a pair is a wide ring, so that the usual dot sits inside it,
+        # and both still read, where the two years coincide.
+        ring = {**marker, "ms": 7, "color": "white"}
+        for index, (axis, (title, xlabel, key, _)) in enumerate(zip(axes, SUMMARY_METRICS)):
+            _frame(axis)
+            axis.tick_params(labelsize=SUMMARY_FONT, length=2.5, width=0.6, pad=2)
+            axis.tick_params(axis="y", length=0, labelleft=index == 0)
+            axis.grid(axis="y", visible=False)
+            axis.grid(axis="x", lw=0.5)
+            for boundary in separators:
+                axis.axhline(boundary, color=GRID, lw=0.7, zorder=0)
+            if index in mandates:
+                for reference in baseline[index]:
+                    axis.axvline(reference, color=MUTED, lw=0.7, ls=":", zorder=0)
+                # One stem per year, each from the baseline's value for that year, so a
+                # stem means the same here as in the outcome panels: the deviation.
+                stem = {"lw": 0.9, "alpha": 0.45, "solid_capstyle": "butt"}
+                for y, values, colour in rows:
+                    for reference, value in zip(baseline[index], values[index]):
+                        axis.plot([reference, value], [y, y], color=colour, **stem)
+                    early, late = values[index]
+                    axis.plot(early, y, "o", markeredgecolor=colour, **ring)
+                    dot = {**marker, "zorder": 3}
+                    axis.plot(late, y, "o", color=colour, markeredgecolor=colour, **dot)
+                axis.set_xlim(-4, max(mandate_top * 1.06, 63))
+                axis.set_xticks(range(0, 61, 20))
+            else:
+                axis.axvline(baseline[index], color=MUTED, lw=0.7, ls=":", zorder=0)
+                for y, values, colour in rows:
+                    value = values[index]
+                    axis.plot([baseline[index], value], [y, y], color=colour, lw=0.9, alpha=0.45)
+                    axis.plot(value, y, "o", color=colour, markeredgecolor=colour, **marker)
+                # Round steps keep the first tick away from the left edge. A label that
+                # overhangs the axis makes the layout open a wider gap before that panel.
+                axis.xaxis.set_major_locator(MaxNLocator(nbins=6, steps=[1, 2, 5, 10]))
+            axis.set_xlabel(xlabel, fontsize=SUMMARY_FONT, color=MUTED, labelpad=2)
+            dot = {**marker, "color": MUTED, "markeredgecolor": MUTED}
+            key_styles = [{**ring, "markeredgecolor": MUTED}, dot][-len(key) :]
+            axis.legend(
+                [Line2D([], [], ls="none", marker="o", **style) for style in key_styles],
+                key,
+                loc="upper center",
+                bbox_to_anchor=(0.5, -0.075),
+                ncol=len(key),
+                frameon=False,
+                fontsize=SUMMARY_FONT,
+                labelcolor=MUTED,
+                handletextpad=0.1,
+                columnspacing=1.2,
+                borderpad=0,
+                borderaxespad=0,
+            )
+            axis.set_title(
+                title, loc="left", fontsize=SUMMARY_FONT + 1, fontweight="bold", color=INK, pad=4
+            )
+
+        axes[0].set_yticks(ticks)
+        axes[0].set_yticklabels(labels)
+        for text, (colour, weight) in zip(axes[0].get_yticklabels(), styles):
             text.set_color(colour)
             text.set_fontweight(weight)
-            text.set_fontsize(size)
-    axes[0, 0].invert_yaxis()
+        axes[0].set_ylim(-0.9, ticks[-1] + 0.9)
+        axes[0].invert_yaxis()
 
-    figure.suptitle(
-        "Every sensitivity against one baseline",
-        x=0.006,
-        ha="left",
-        fontsize=14,
-        color=INK,
-    )
-    figure.text(
-        0.006,
-        0.968,
-        "Every optimisation outside the carbon-budget group is held to the ReFuelEU-equivalent "
-        "budget, 3.8656 GtCO2 over 2020-2050, which is why panel b is a single line for them. "
-        "Dotted line and hollow marker: the baseline.\n"
-        "Panel a is the objective, discounted to 2020 at each run's own rate; the runs marked "
-        "† use a different rate, so their level is not comparable with the rest.",
-        ha="left",
-        va="top",
-        fontsize=9,
-        color=MUTED,
-    )
-    figure.tight_layout(rect=(0, 0.0, 1, 0.945))
-    for suffix in ("png", "pdf"):
-        figure.savefig(HERE / f"fig_sensitivity_summary.{suffix}", dpi=200, bbox_inches="tight")
+        # The layout sizes each gap to that panel's own tick labels and key, which leaves
+        # them a millimetre apart. Take its outer extent and space the panels evenly.
+        figure.canvas.draw()
+        boxes = [axis.get_position() for axis in axes]
+        figure.set_layout_engine("none")
+        width = boxes[0].width
+        gap = (boxes[-1].x1 - boxes[0].x0 - len(axes) * width) / (len(axes) - 1)
+        for index, (axis, box) in enumerate(zip(axes, boxes)):
+            axis.set_position([boxes[0].x0 + index * (width + gap), box.y0, width, box.height])
+
+        # No bbox_inches="tight": it would crop the page to the artwork and the printed
+        # width would no longer be the 190 mm the font sizes assume.
+        for suffix in ("png", "pdf"):
+            figure.savefig(HERE / f"fig_sensitivity_summary.{suffix}", dpi=300)
     print("wrote fig_sensitivity_summary.png / .pdf")
 
 
