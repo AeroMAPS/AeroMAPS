@@ -67,7 +67,7 @@ VARIABLES = {
     "area_loss": ("EUR/yr", "Passenger surplus loss: area under the demand curve"),
     "cumulative_total_surplus_loss_discounted": (
         "EUR",
-        "Cumulative total surplus loss from 2020, discounted to 2020 (the objective)",
+        "Cumulative total surplus loss from 2025, discounted to 2020 (the objective)",
     ),
     # Emissions
     "co2_emissions_including_energy": ("MtCO2/yr", "CO2 emissions, all levers applied"),

@@ -50,7 +50,8 @@ The `family` column of `scenarios.csv`:
   energy. Carbon budget and resource shares in `scenarios.csv` are shares of the *world*
   totals; every run is then downscaled to the EU perimeter (15.49 % of world traffic).
 - **`cumulative_total_surplus_loss_discounted`** is measured against 2019 unit economics,
-  not against a no-policy scenario, so it is negative even for fossil BAU. Policy costs
+  not against a no-policy scenario, so it is negative even for fossil BAU. It sums
+  2025–2050, the years a mandate can act, discounted to 2020. Policy costs
   are differences between two scenarios; for the sensitivities, each measured against a
   fossil BAU sharing its elasticity and discount rate, they are in
   `runs/sweep_summary.csv`.

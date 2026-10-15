@@ -3,7 +3,7 @@
 ``cumulative_total_surplus_loss_discounted`` is measured against 2019 unit economics
 applied to the exogenous traffic trajectory, not against a no-policy scenario. Unit
 costs fall over the horizon, so that quantity is negative for every scenario in this
-batch -- fossil BAU included, at -194 bn EUR. Only *differences* against a reference
+batch -- fossil BAU included, at -195 bn EUR. Only *differences* against a reference
 are policy costs, and the reference has to share the run's parameters: the discount
 rate rescales the whole series, and the elasticity moves the traffic it is summed over.
 
