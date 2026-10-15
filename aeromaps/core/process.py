@@ -38,6 +38,7 @@ from aeromaps.core.gemseo import (
     apply_coupling_bounds,
     check_mda_convergence,
     freeze_nan_masks_after_first_sweep,
+    share_mda_across_functions,
 )
 from aeromaps.core import models as aeromaps_models
 
@@ -659,6 +660,8 @@ class AeroMAPSProcess(object):
                 if self.gemseo_settings.get("algorithm") is None:
                     raise ValueError("Cannot run MDO: 'algorithm' is not set in gemseo_settings.")
                 logging.info("Running MDO")
+                if self.gemseo_settings.get("share_mda_across_functions"):
+                    share_mda_across_functions(self.scenario)
                 self.scenario.execute(self.gemseo_settings["algorithm"])
         else:
             if not hasattr(self, "mda_chain") or self.mda_chain is None:
@@ -2577,6 +2580,13 @@ class AeroMAPSProcess(object):
         # self.gemseo_settings["grammar_type"] = Discipline.GrammarType.SIMPLE
         self.gemseo_settings["doe_input_names"] = None
         self.gemseo_settings["doe_output_names"] = None
+        # One MDA solve per design point instead of one per function (MDF only); see
+        # share_mda_across_functions in aeromaps/core/gemseo.py for the gain and the limits.
+        # TODO: consider making this the default for MDF with serial finite differences.
+        # The memo is cleared before every execution, so reusing a process with changed
+        # parameters is safe; it is opt-in only until it has been used beyond the ReFuelEU
+        # optimisation paper, where it gave identical iterates at ~10x less cost.
+        self.gemseo_settings["share_mda_across_functions"] = False
 
     def _format_input_vectors(self):
         """Normalize parameter vector shapes and indices.

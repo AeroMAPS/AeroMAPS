@@ -183,45 +183,6 @@ def set_mandate(process, biofuel, electrofuel):
 # --------------------------------------------------------------------------- #
 
 
-def share_mda_across_functions(process, size=16):
-    """One MDA solve per design point instead of one per function.
-
-    MDF hands the objective and each constraint its own ``MDOFunction`` and
-    ``set_differentiation_method("finite_differences")`` differentiates each of them
-    separately: seven sweeps over the same eleven design points, seven identical MDA
-    solves each time. Measured on this problem, three SLSQP iterations cost 252 MDA
-    solves where 33 are needed -- 607 s instead of 54 s.
-
-    GEMSEO's own discipline cache does not absorb the repeats. Its key is a hash of
-    all 241 chain inputs, and three identical calls produce three entries even when
-    the stored inputs compare byte-identical. Keying on the design variables -- the
-    only thing the converged fixed point depends on -- does absorb them, with iterates
-    identical to the uncached run and the objective agreeing to nine significant
-    digits.
-
-    An LRU of 16 covers a full function sweep (eleven points); without a bound the
-    memo would retain every design point of the run, each holding 241 arrays.
-    """
-    mda = process.scenario.formulation.mda
-    solve, memo = mda.execute, OrderedDict()
-
-    def cached(input_data=None, **kwargs):
-        if input_data is None:
-            return solve(**kwargs)
-        key = tuple((name, tuple(np.ravel(value))) for name, value in sorted(input_data.items()))
-        if key in memo:
-            memo.move_to_end(key)
-        else:
-            outputs = solve(input_data, **kwargs)
-            memo[key] = {k: (v.copy() if hasattr(v, "copy") else v) for k, v in outputs.items()}
-            while len(memo) > size:
-                memo.popitem(last=False)
-        return memo[key]
-
-    mda.execute = cached
-    return process
-
-
 # Smallest electrofuel share the optimiser may ask for. A pathway share returning to
 # exactly zero after being positive gives 0/0 in its own share variable and the MDA dies
 # with "converged on NaN", so the design space is held off zero rather than at it. This
@@ -361,8 +322,9 @@ def setup_optimisation(
     CustomDataConverter._list_names.update(process.scenario.get_optim_variable_names())
 
     # One MDA solve per design point rather than one per function. Roughly 11x here;
-    # see the docstring above for why GEMSEO's own cache does not do this.
-    share_mda_across_functions(process)
+    # see share_mda_across_functions in aeromaps/core/gemseo.py for why GEMSEO's own
+    # cache does not do this. Installed by process.compute(), just before the run.
+    process.gemseo_settings["share_mda_across_functions"] = True
 
     if warm_start:
         # Start each MDA from the previous solve's couplings. The finite-difference
@@ -778,7 +740,7 @@ def status(cases=None, budgets=None):
 #   MDA object). Processes work but measured 436 s against 112 s serial on three
 #   SLSQP iterations -- roughly 4x slower, because each point ships the whole
 #   106-discipline chain to a worker and, worse, the workers cannot see the memo
-#   installed by share_mda_across_functions, whose ~7x saving is larger than
+#   installed by share_mda_across_functions (aeromaps.core.gemseo), whose ~7x saving is larger than
 #   anything the parallelism could return.
 
 
