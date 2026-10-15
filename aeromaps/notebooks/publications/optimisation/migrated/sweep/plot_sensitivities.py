@@ -26,6 +26,13 @@ from matplotlib.ticker import MaxNLocator
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
+sys.path.insert(0, str(HERE.parent))
+
+import paper_style as style  # noqa: E402
+
+# The paper's house style, so these figures match the notebook's whether they are drawn
+# from it or from the command line.
+style.apply()
 
 YEARS = list(range(2000, 2051))
 # Every time axis starts in 2019: the last historical year, and the state the objective,
@@ -34,12 +41,12 @@ YEARS = list(range(2000, 2051))
 SPAN = slice(2019, 2050)
 YEAR_TICKS = [2019, 2025, 2030, 2035, 2040, 2045, 2050]
 PROSPECTION_START_YEAR = 2020  # the year the objective discounts to
-INK, MUTED, GRID = "#1a1a1a", "#6b6b6b", "#e2e2e2"
+INK, MUTED, GRID = style.INK, style.MUTED, style.GRID
 
 # Diverging around the baseline: tighter is warm, looser is cool, baseline neutral.
-TIGHTER_2, TIGHTER_1 = "#b2182b", "#ef8a62"
-NEUTRAL = "#4d4d4d"
-LOOSER_1, LOOSER_2 = "#67a9cf", "#2166ac"
+TIGHTER_2, TIGHTER_1 = style.RED, style.RED_LIGHT
+NEUTRAL = style.NEUTRAL
+LOOSER_1, LOOSER_2 = style.NAVY_LIGHT, style.NAVY
 
 
 def outputs(run):
@@ -122,26 +129,20 @@ def realised_abatement_cost(run):
     return cost / abated.where(abated > 0)
 
 
-def _frame(axis):
-    axis.grid(True, color=GRID, lw=0.7)
-    axis.set_axisbelow(True)
-    for side in ("top", "right"):
-        axis.spines[side].set_visible(False)
-    for side in ("left", "bottom"):
-        axis.spines[side].set_color(MUTED)
-    axis.tick_params(colors=MUTED, labelsize=9)
+def _frame(axis, grid="y"):
+    style.tidy(axis, grid=grid)
 
 
 PANELS = [
-    ("a. Air traffic", "RPK  [trillion pkm]"),
-    ("b. Residual CO2 emissions", "annual  [MtCO2]"),
-    ("c. Cost per tonne of CO2 abated", "EUR/tCO2 vs frozen-2019 baseline"),
-    ("d. Biofuel mandate", "share of drop-in blend  [%]"),
-    ("e. Electrofuel mandate", "share of drop-in blend  [%]"),
-    ("f. Alternative fuel consumed", "biofuel + electrofuel  [EJ/yr]"),
-    ("g. Airfare", "EUR cents per RPK"),
-    ("h. Direct operating cost", "EUR cents per ASK"),
-    ("i. Energy direct operating cost", "EUR cents per ASK"),
+    ("a. Traffic", "Traffic (trillion RPK)"),
+    ("b. Residual CO$_2$ emissions", "Emissions (MtCO$_2$/yr)"),
+    ("c. Cost per tonne of CO$_2$ abated", "Cost vs frozen 2019 (€/tCO$_2$)"),
+    ("d. Biofuel mandate", "Biofuel share (%)"),
+    ("e. Electrofuel mandate", "Electrofuel share (%)"),
+    ("f. Alternative fuel consumed", "Biofuel + electrofuel (EJ/yr)"),
+    ("g. Airfare", "Airfare (€ cents/RPK)"),
+    ("h. Direct operating cost", "Cost (€ cents/ASK)"),
+    ("i. Energy direct operating cost", "Cost (€ cents/ASK)"),
 ]
 
 # The airfare the demand curve, the supply curve and the surplus are all anchored on --
@@ -168,9 +169,9 @@ def _cost_row(row, cases):
     """
     for axis, key in zip(row, COST_ROW):
         shown = []
-        for _, run, colour, style, width in cases:
+        for _, run, colour, dash, width in cases:
             data = series(run, key).loc[SPAN] * 100  # EUR -> euro cents
-            axis.plot(data.index, data, color=colour, lw=width, ls=style)
+            axis.plot(data.index, data, color=colour, lw=width, ls=dash)
             shown.append(data)
         tail = pd.concat([data.loc[2023:] for data in shown])
         low, high = tail.min(), tail.max()
@@ -186,7 +187,7 @@ def _cost_row(row, cases):
                 xytext=(4, -4),
                 textcoords="offset points",
                 va="top",
-                fontsize=8,
+                fontsize=style.SMALL_SIZE - 1,
                 color=MUTED,
             )
 
@@ -199,7 +200,7 @@ def _cost_row(row, cases):
         textcoords="offset points",
         ha="right",
         va="top",
-        fontsize=8,
+        fontsize=style.SMALL_SIZE - 1,
         color=MUTED,
     )
 
@@ -217,8 +218,8 @@ def sensitivity_panels(cases, title, subtitle, legend_title, stem, annotate=None
         _frame(axis)
     (traffic, emissions, mac), (biofuel, electrofuel, volume), cost_row = axes
 
-    for label, run, colour, style, width in cases:
-        kwargs = dict(color=colour, lw=width, ls=style)
+    for label, run, colour, dash, width in cases:
+        kwargs = dict(color=colour, lw=width, ls=dash)
         rpk = series(run, "rpk").loc[SPAN]
         traffic.plot(rpk.index, rpk / 1e12, **kwargs)
 
@@ -251,8 +252,8 @@ def sensitivity_panels(cases, title, subtitle, legend_title, stem, annotate=None
         annotate(axes)
 
     for axis, (panel_title, ylabel) in zip(axes.ravel(), PANELS):
-        axis.set_title(panel_title, loc="left", fontsize=10.5, color=INK, pad=8)
-        axis.set_ylabel(ylabel, fontsize=9, color=MUTED)
+        axis.set_title(panel_title)
+        axis.set_ylabel(ylabel)
 
     handles = [Line2D([], [], color=c, lw=w, ls=s, label=name) for name, _, c, s, w in cases]
     figure.legend(
@@ -261,13 +262,11 @@ def sensitivity_panels(cases, title, subtitle, legend_title, stem, annotate=None
         loc="lower center",
         ncol=ncol,
         frameon=False,
-        fontsize=9,
-        title_fontsize=9,
         bbox_to_anchor=(0.5, -0.005),
     )
-    figure.suptitle(title, x=0.006, ha="left", fontsize=13, color=INK)
+    figure.suptitle(title, x=0.006, ha="left")
     # Same offsets in inches as the two-row layout had, on a taller figure.
-    figure.text(0.006, 0.955, subtitle, ha="left", fontsize=9, color=MUTED)
+    figure.text(0.006, 0.955, subtitle, ha="left", fontsize=style.SMALL_SIZE, color=MUTED)
     figure.tight_layout(rect=(0, 0.035, 1, 0.948))
     for suffix in ("png", "pdf"):
         figure.savefig(HERE / f"{stem}.{suffix}", dpi=200, bbox_inches="tight")
@@ -294,7 +293,7 @@ def ramp_up():
             xy=(2050, 22.0),
             xytext=(2022, 0.72),
             textcoords=("data", "axes fraction"),
-            fontsize=8.5,
+            fontsize=style.SMALL_SIZE,
             color=MUTED,
             arrowprops=dict(arrowstyle="->", color=MUTED, lw=0.8),
         )
@@ -303,7 +302,7 @@ def ramp_up():
             xy=(2046, 40.5),
             xytext=(2022, 0.78),
             textcoords=("data", "axes fraction"),
-            fontsize=8.5,
+            fontsize=style.SMALL_SIZE,
             color=MUTED,
             arrowprops=dict(arrowstyle="->", color=MUTED, lw=0.8),
         )
@@ -313,7 +312,7 @@ def ramp_up():
         "Industrial ramp-up limits set the mandate, not the carbon budget",
         "Blocks B and B'. Case main, eps -0.9, biomass 10 %, same 3.8656 GtCO2 budget. "
         "Rate variants solid, volume variants dashed; warm is tighter than baseline, cool looser.",
-        "ramp-up limit",
+        "Ramp-up limit",
         "fig_rampup_panels",
         annotate=notes,
     )
@@ -365,11 +364,11 @@ def pathway():
 
     cases = [
         ("baseline (grid electricity)", "base", NEUTRAL, "-", 2.2),
-        ("dedicated wind, no electricity limit", "efuel_wind", "#1b7837", "-", 2.2),
+        ("dedicated wind, no electricity limit", "efuel_wind", style.TEAL, "-", 2.2),
     ]
 
-    for label, run, colour, style, width in cases:
-        kwargs = dict(color=colour, lw=width, ls=style)
+    for label, run, colour, dash, width in cases:
+        kwargs = dict(color=colour, lw=width, ls=dash)
         ef = series(run, "generic_electrofuel_mean_co2_emission_factor_without_resource")
         factor.plot(ef.loc[SPAN].index, ef.loc[SPAN], **kwargs)
         mfsp = series(run, "generic_electrofuel_mean_mfsp_without_resource")
@@ -388,16 +387,16 @@ def pathway():
     # not identical at all: see panel (f). Discounted, biofuel also competes with itself
     # at every other date, which is why the dotted line slopes.
     biofuel_mac = abatement_cost("base", "generic_biofuel").loc[SPAN]
-    mac.plot(biofuel_mac.index, biofuel_mac, color="#8c510a", lw=2.0, ls=(0, (1, 1.4)))
+    mac.plot(biofuel_mac.index, biofuel_mac, color=style.BIOFUEL, lw=2.0, ls=(0, (1, 1.4)))
 
     kerosene = series("base", "fossil_kerosene_mean_co2_emission_factor_without_resource")
     factor.axhline(kerosene.loc[2050], color=MUTED, lw=1.0, ls=(0, (4, 3)))
-    factor.annotate("fossil kerosene, 88.7", xy=(2029, 95), fontsize=8.5, color=MUTED)
+    factor.annotate("fossil kerosene, 88.7", xy=(2029, 95), fontsize=style.SMALL_SIZE, color=MUTED)
     factor.set_yscale("log")
 
     biofuel_price = series("base", "generic_biofuel_mean_mfsp_without_resource")
     price.axhline(biofuel_price.loc[2050] * 1000, color=MUTED, lw=1.0, ls=(0, (4, 3)))
-    price.annotate("biofuel, 37.4", xy=(2022, 39.5), fontsize=8.5, color=MUTED)
+    price.annotate("biofuel, 37.4", xy=(2022, 39.5), fontsize=style.SMALL_SIZE, color=MUTED)
 
     # The year the baseline pathway starts abating anything at all.
     baseline_ef = series("base", "generic_electrofuel_mean_co2_emission_factor_without_resource")
@@ -408,7 +407,7 @@ def pathway():
         xy=(first, 0.55),
         xytext=(2031.5, 0.79),
         textcoords=("data", "axes fraction"),
-        fontsize=8.5,
+        fontsize=style.SMALL_SIZE,
         color=MUTED,
     )
     mac.annotate(
@@ -416,8 +415,8 @@ def pathway():
         xy=(2033, biofuel_mac.loc[2033]),
         xytext=(2032, 0.06),
         textcoords=("data", "axes fraction"),
-        fontsize=9,
-        color="#8c510a",
+        fontsize=style.SMALL_SIZE,
+        color=style.BIOFUEL,
     )
     _cost_row(cost_row, cases)
     for axis in axes.ravel():
@@ -430,27 +429,27 @@ def pathway():
     mac.set_ylim(0, 1200)
 
     for axis, panel_title, ylabel in [
-        (factor, "a. INPUT: electrofuel emission factor", "gCO2/MJ  [log scale]"),
-        (price, "b. INPUT: electrofuel production cost", "EUR/GJ"),
+        (factor, "a. Input: electrofuel emission factor", "Emission factor (gCO$_2$/MJ, log)"),
+        (price, "b. Input: electrofuel production cost", "Production cost (€/GJ)"),
         (
             mac,
-            "c. Discounted cost per tonne of CO2 abated",
-            "EUR(2020)/tCO2 vs fossil kerosene",
+            "c. Discounted cost per tonne of CO$_2$ abated",
+            "Cost vs kerosene (€ 2020/tCO$_2$)",
         ),
-        (electrofuel, "d. OUTPUT: electrofuel mandate", "share of drop-in blend  [%]"),
-        (consumed, "e. OUTPUT: electrofuel consumed", "EJ/yr"),
-        (biofuel, "f. OUTPUT: biofuel mandate", "share of drop-in blend  [%]"),
+        (electrofuel, "d. Output: electrofuel mandate", "Electrofuel share (%)"),
+        (consumed, "e. Output: electrofuel consumed", "Consumption (EJ/yr)"),
+        (biofuel, "f. Output: biofuel mandate", "Biofuel share (%)"),
         *[(axis, *panel) for axis, panel in zip(cost_row, PANELS[6:])],
     ]:
-        axis.set_title(panel_title, loc="left", fontsize=10.5, color=INK, pad=8)
-        axis.set_ylabel(ylabel, fontsize=9, color=MUTED)
+        axis.set_title(panel_title)
+        axis.set_ylabel(ylabel)
 
     handles = [Line2D([], [], color=c, lw=w, ls=s, label=name) for name, _, c, s, w in cases]
     handles.append(
         Line2D(
             [],
             [],
-            color="#8c510a",
+            color=style.BIOFUEL,
             lw=2.0,
             ls=(0, (1, 1.4)),
             label="biofuel (same cost curve in both runs)",
@@ -458,12 +457,10 @@ def pathway():
     )
     figure.legend(
         handles=handles,
-        title="pathway",
+        title="Pathway",
         loc="lower center",
         ncol=3,
         frameon=False,
-        fontsize=9,
-        title_fontsize=9,
         bbox_to_anchor=(0.5, -0.005),
     )
     figure.suptitle(
@@ -471,8 +468,6 @@ def pathway():
         "optimiser rebuilds the schedule around it",
         x=0.006,
         ha="left",
-        fontsize=13,
-        color=INK,
     )
     figure.text(
         0.006,
@@ -481,7 +476,7 @@ def pathway():
         "allocation, is dropped entirely rather than relaxed. Electrofuel reaches 49 % of "
         "the blend against 14 %, and early biofuel is held back to pay for it.",
         ha="left",
-        fontsize=9,
+        fontsize=style.SMALL_SIZE,
         color=MUTED,
     )
     figure.tight_layout(rect=(0, 0.038, 1, 0.948))
@@ -506,7 +501,7 @@ def discount():
             xy=(2047, 12.0),
             xytext=(2021.5, 0.72),
             textcoords=("data", "axes fraction"),
-            fontsize=8.5,
+            fontsize=style.SMALL_SIZE,
             color=MUTED,
             arrowprops=dict(arrowstyle="->", color=MUTED, lw=0.8),
         )
@@ -516,7 +511,7 @@ def discount():
             xy=(2050, 46.0),
             xytext=(2021.5, 0.44),
             textcoords=("data", "axes fraction"),
-            fontsize=8.5,
+            fontsize=style.SMALL_SIZE,
             color=MUTED,
             arrowprops=dict(arrowstyle="->", color=MUTED, lw=0.8),
         )
@@ -526,7 +521,7 @@ def discount():
         "Discount rate: mechanical between 3.2 and 7 %, decisive at 15 %",
         "Block D. The 3.2 % line is drawn heavier with the baseline dashed over it, because "
         "the two designs are identical to every digit.",
-        "social discount rate",
+        "Social discount rate",
         "fig_discount_panels",
         annotate=notes,
         ncol=4,
@@ -549,7 +544,7 @@ BASELINE_ROW = ("results/base.json", "Baseline")
 SUMMARY_GROUPS = [
     (
         "Carbon budget",
-        "#762a83",
+        style.NAVY,
         [
             ("results_e/opt_main_3_8.json", "3.8 %"),
             ("results_e/opt_main_3_4.json", "3.4 %"),
@@ -560,7 +555,7 @@ SUMMARY_GROUPS = [
     ),
     (
         "Biomass allocation",
-        "#35978f",
+        style.GREEN,
         [
             ("results_e/opt_B5_refueleu.json", "5 %"),
             ("results_e/opt_B75_refueleu.json", "7.5 %"),
@@ -569,12 +564,12 @@ SUMMARY_GROUPS = [
     ),
     (
         "Technology",
-        "#5e5e5e",
+        style.DARK_GREY,
         [("results_e/opt_pess_refueleu.json", "efficiency +0.91 %/yr")],
     ),
     (
         "Price elasticity",
-        "#2166ac",
+        style.PURPLE,
         [
             ("results/fixed_demand.json", "fixed demand"),
             ("results/eps_m0_6.json", "\u22120.6"),
@@ -585,7 +580,7 @@ SUMMARY_GROUPS = [
     ),
     (
         "Ramp-up rate",
-        "#b2182b",
+        style.RED,
         [
             ("results/rate_11_8.json", "11.8 %/yr  (IEA NZE)"),
             ("results/rate_39.json", "39 %/yr  (wind/PV)"),
@@ -593,7 +588,7 @@ SUMMARY_GROUPS = [
     ),
     (
         "Ramp-up volume",
-        "#ef8a62",
+        style.ORANGE,
         [
             ("results/vol_0_1.json", "0.1 EJ/yr"),
             ("results/vol_0_4.json", "0.4 EJ/yr"),
@@ -601,12 +596,12 @@ SUMMARY_GROUPS = [
     ),
     (
         "Electrofuel pathway",
-        "#1b7837",
+        style.TEAL,
         [("results/efuel_wind.json", "dedicated wind")],
     ),
     (
         "Discount rate",
-        "#8c6d31",
+        style.OCHRE,
         [
             ("results/r_3_2.json", "3.2 % †"),
             ("results/r_7.json", "7 % †"),
@@ -643,18 +638,18 @@ def _mandate(pathway):
 # Each entry is (title, x label, key, metric). The key is drawn under the panel with the
 # panel's own markers and says what period a marker stands for.
 SUMMARY_MANDATES = [
-    ("a. Biofuel", "Mandate share  [%]", ["2035", "2050"], _mandate("biofuel")),
-    ("b. Electrofuel", "Mandate share  [%]", ["2035", "2050"], _mandate("electrofuel")),
+    ("a. Biofuel", "Mandate share (%)", ["2035", "2050"], _mandate("biofuel")),
+    ("b. Electrofuel", "Mandate share (%)", ["2035", "2050"], _mandate("electrofuel")),
 ]
 SUMMARY_OUTCOMES = [
-    ("c. Surplus loss", "[Bn \u20ac, discounted]", ["Cumulative to 2050"], _surplus_loss),
+    ("c. Surplus loss", "Loss (Bn \u20ac, discounted)", ["Cumulative to 2050"], _surplus_loss),
     (
         "d. CO$_2$ emissions",
-        "[MtCO$_2$/yr]",
+        "Emissions (MtCO$_2$/yr)",
         ["2050"],
         lambda v: v["co2_emissions_passenger"][-1] + v["co2_emissions_freight"][-1],
     ),
-    ("e. Traffic", "[Tn RPK]", ["2050"], lambda v: v["rpk"][-1] / 1e12),
+    ("e. Traffic", "Traffic (trillion RPK)", ["2050"], lambda v: v["rpk"][-1] / 1e12),
 ]
 SUMMARY_METRICS = SUMMARY_MANDATES + SUMMARY_OUTCOMES
 
@@ -727,8 +722,8 @@ def summary():
     mandates = range(len(SUMMARY_MANDATES))
     mandate_top = max(max(values[i]) for _, values, _ in rows for i in mandates)
 
-    # Type 42 keeps the PDF's text as embedded TrueType, which production can edit.
-    with plt.rc_context({"pdf.fonttype": 42, "ps.fonttype": 42}):
+    # Sized for print, so the type is set here rather than taken from the house scale.
+    with plt.rc_context({"font.size": SUMMARY_FONT, "legend.framealpha": 0}):
         figure = plt.figure(figsize=SUMMARY_FIGSIZE, layout="constrained")
         figure.get_layout_engine().set(w_pad=0.04, h_pad=0.02, wspace=0.03)
         grid = figure.add_gridspec(1, len(SUMMARY_METRICS))
@@ -741,10 +736,9 @@ def summary():
         # and both still read, where the two years coincide.
         ring = {**marker, "ms": 7, "color": "white"}
         for index, (axis, (title, xlabel, key, _)) in enumerate(zip(axes, SUMMARY_METRICS)):
-            _frame(axis)
+            _frame(axis, grid="x")
             axis.tick_params(labelsize=SUMMARY_FONT, length=2.5, width=0.6, pad=2)
             axis.tick_params(axis="y", length=0, labelleft=index == 0)
-            axis.grid(axis="y", visible=False)
             axis.grid(axis="x", lw=0.5)
             for boundary in separators:
                 axis.axhline(boundary, color=GRID, lw=0.7, zorder=0)
@@ -772,7 +766,7 @@ def summary():
                 # Round steps keep the first tick away from the left edge. A label that
                 # overhangs the axis makes the layout open a wider gap before that panel.
                 axis.xaxis.set_major_locator(MaxNLocator(nbins=6, steps=[1, 2, 5, 10]))
-            axis.set_xlabel(xlabel, fontsize=SUMMARY_FONT, color=MUTED, labelpad=2)
+            axis.set_xlabel(xlabel, fontsize=SUMMARY_FONT, labelpad=2)
             dot = {**marker, "color": MUTED, "markeredgecolor": MUTED}
             key_styles = [{**ring, "markeredgecolor": MUTED}, dot][-len(key) :]
             axis.legend(
@@ -789,9 +783,7 @@ def summary():
                 borderpad=0,
                 borderaxespad=0,
             )
-            axis.set_title(
-                title, loc="left", fontsize=SUMMARY_FONT + 1, fontweight="bold", color=INK, pad=4
-            )
+            axis.set_title(title, fontsize=SUMMARY_FONT + 1, pad=4)
 
         axes[0].set_yticks(ticks)
         axes[0].set_yticklabels(labels)

@@ -24,20 +24,30 @@ import pandas as pd
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
+sys.path.insert(0, str(HERE.parent))
+
+import paper_style as style  # noqa: E402
 
 YEARS = list(range(2000, 2051))
 ANCHOR = 0.09236379319842411
 
 # Ordered light -> dark on |eps|. A sequential ramp, not a categorical palette: the
 # variable is ordered, and reading the panels means reading that order off the ink.
+# Purple, the hue price elasticity has in the summary figure -- navy is the carbon budget.
 CASES = [
-    ("fixed demand", "fixed_demand", "#c6dbef"),
-    ("-0.6", "eps_m0_6", "#9ecae1"),
-    ("-0.8", "eps_m0_8", "#4292c6"),
-    ("-0.9 (baseline)", "base", "#2171b5"),
-    ("-1.4", "eps_m1_4", "#08306b"),
+    (label, run, colour)
+    for (label, run), colour in zip(
+        [
+            ("fixed demand", "fixed_demand"),
+            ("-0.6", "eps_m0_6"),
+            ("-0.8", "eps_m0_8"),
+            ("-0.9 (baseline)", "base"),
+            ("-1.4", "eps_m1_4"),
+        ],
+        style.ramp(style.SEQUENTIAL_PURPLE, 5),
+    )
 ]
-INK, MUTED, GRID = "#1a1a1a", "#6b6b6b", "#e2e2e2"
+INK, MUTED, GRID = style.INK, style.MUTED, style.GRID
 SPAN = slice(2019, 2050)  # as in plot_sensitivities: anchored on 2019
 
 
@@ -72,13 +82,7 @@ def main():
         # last years at their own scale, where the ordering is the point: 2050 traffic
         # falls as |eps| rises, even though cumulative traffic rises.
         zoom = traffic.inset_axes([0.56, 0.09, 0.42, 0.40])
-        zoom.grid(True, color=GRID, lw=0.6)
-        zoom.set_axisbelow(True)
-        for side in ("top", "right"):
-            zoom.spines[side].set_visible(False)
-        for side in ("left", "bottom"):
-            zoom.spines[side].set_color(MUTED)
-        zoom.tick_params(colors=MUTED, labelsize=7)
+        style.inset_frame(zoom)
         zoom.plot(
             reference.loc[2044:2050].index,
             reference.loc[2044:2050] / 1e12,
@@ -95,7 +99,7 @@ def main():
                 color=colour,
                 lw=2.4 if run == "base" else 1.7,
             )
-        zoom.set_title("2044-2050, enlarged", fontsize=7.5, color=MUTED, pad=3)
+        zoom.set_title("Zoom: 2044-2050", fontsize=style.SMALL_SIZE, fontweight="normal", pad=4)
 
         fare = series("base", "airfare_per_rpk")
         crossing = next(y for y in range(2025, 2051) if fare.loc[y] > ANCHOR)
@@ -106,7 +110,7 @@ def main():
             xytext=(crossing - 1.5, 0.86),
             textcoords=("data", "axes fraction"),
             ha="right",
-            fontsize=8.5,
+            fontsize=style.SMALL_SIZE,
             color=MUTED,
         )
         traffic.annotate(
@@ -115,7 +119,7 @@ def main():
             xytext=(2029, 0.10),
             textcoords=("data", "axes fraction"),
             ha="center",
-            fontsize=8.5,
+            fontsize=style.SMALL_SIZE,
             color=MUTED,
             arrowprops=dict(
                 arrowstyle="-", color=MUTED, lw=0.8, connectionstyle="angle3,angleA=0,angleB=90"
@@ -126,7 +130,7 @@ def main():
             xy=(2043, 39.6),
             xytext=(2022, 0.80),
             textcoords=("data", "axes fraction"),
-            fontsize=8.5,
+            fontsize=style.SMALL_SIZE,
             color=MUTED,
             arrowprops=dict(arrowstyle="->", color=MUTED, lw=0.8),
         )
@@ -135,7 +139,7 @@ def main():
             xy=(2049, 15.0),
             xytext=(2022, 0.62),
             textcoords=("data", "axes fraction"),
-            fontsize=8.5,
+            fontsize=style.SMALL_SIZE,
             color=MUTED,
             arrowprops=dict(arrowstyle="->", color=MUTED, lw=0.8),
         )
@@ -145,7 +149,7 @@ def main():
         "Cost-optimal path to the same carbon budget, by price elasticity",
         "Blocks A and A'. Case main, biomass 10 %, cumulative 2020-2050 CO2 fixed at "
         "3.8656 GtCO2 (ReFuelEU linear) in every run.",
-        "price elasticity",
+        "Price elasticity",
         "fig_elasticity_panels",
         annotate=notes,
     )
