@@ -37,6 +37,7 @@ from aeromaps.core.gemseo import (
     AeroMAPSCustomModelWrapper,
     apply_coupling_bounds,
     check_mda_convergence,
+    evaluate_at_optimum,
     freeze_nan_masks_after_first_sweep,
     share_mda_across_functions,
 )
@@ -663,6 +664,8 @@ class AeroMAPSProcess(object):
                 if self.gemseo_settings.get("share_mda_across_functions"):
                     share_mda_across_functions(self.scenario)
                 self.scenario.execute(self.gemseo_settings["algorithm"])
+                if self.gemseo_settings.get("evaluate_at_optimum"):
+                    evaluate_at_optimum(self.scenario)
         else:
             if not hasattr(self, "mda_chain") or self.mda_chain is None:
                 raise ValueError("MDA chain not created. Please call setup_mda() first.")
@@ -2587,6 +2590,9 @@ class AeroMAPSProcess(object):
         # parameters is safe; it is opt-in only until it has been used beyond the ReFuelEU
         # optimisation paper, where it gave identical iterates at ~10x less cost.
         self.gemseo_settings["share_mda_across_functions"] = False
+        # Outputs are harvested from the last MDA solved, which need not be at x_opt; this
+        # solves once more at x_opt so they describe it (MDF only). See evaluate_at_optimum.
+        self.gemseo_settings["evaluate_at_optimum"] = True
 
     def _format_input_vectors(self):
         """Normalize parameter vector shapes and indices.

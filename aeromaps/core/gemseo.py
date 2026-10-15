@@ -986,3 +986,28 @@ def share_mda_across_functions(scenario, size: int = 16) -> None:
 
     mda.execute = cached
     mda._shared_solve_memo = memo
+
+
+def evaluate_at_optimum(scenario) -> None:
+    """Solve the MDA once more at the optimum, so the disciplines hold its outputs.
+
+    After an optimisation the disciplines' local data are those of the last MDA that
+    was solved -- usually a finite-difference point next to the final iterate -- and
+    that iterate is not always the point GEMSEO reports as ``x_opt``, which is the best
+    point feasible within ``ineq_tolerance``. On the ReFuelEU optimisation 14 runs out
+    of 74 ended on a different iterate, up to 0.037 points of mandate share and 0.25 %
+    of objective away from it. Harvesting outputs after this call makes them describe
+    the reported optimum, at the cost of one MDA.
+
+    Only MDF holds a single MDA over the whole chain; other formulations are left as
+    they are. A memo installed by :func:`share_mda_across_functions` is cleared first,
+    so that the solve is real and not a lookup.
+    """
+    mda = getattr(scenario.formulation, "mda", None)
+    result = scenario.optimization_result
+    if mda is None or result is None or result.x_opt is None:
+        return
+    memo = getattr(mda, "_shared_solve_memo", None)
+    if memo is not None:
+        memo.clear()
+    mda.execute(scenario.design_space.convert_array_to_dict(result.x_opt))

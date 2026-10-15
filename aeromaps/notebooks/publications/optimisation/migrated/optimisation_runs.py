@@ -326,6 +326,13 @@ def setup_optimisation(
     # cache does not do this. Installed by process.compute(), just before the run.
     process.gemseo_settings["share_mda_across_functions"] = True
 
+    # The published outputs were harvested from the last MDA solved, not re-solved at
+    # x_opt. In 14 of 74 runs that is SLSQP's final iterate rather than GEMSEO's x_opt,
+    # which sits within ineq_tolerance of the carbon budget but over it (up to 5e-5
+    # relative); the final iterate meets it to 1e-9. The two are 0.037 points of
+    # mandate share apart at most. Kept off so a re-run reproduces the published files.
+    process.gemseo_settings["evaluate_at_optimum"] = False
+
     if warm_start:
         # Start each MDA from the previous solve's couplings. The finite-difference
         # points sit ~1e-6 apart, so Gauss-Seidel needs about half the sweeps:

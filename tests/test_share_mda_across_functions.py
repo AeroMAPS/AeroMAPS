@@ -1,6 +1,8 @@
-"""``share_mda_across_functions`` on GEMSEO's Sellar problem: same optimum, fewer solves."""
+"""The MDF helpers of ``aeromaps.core.gemseo`` on GEMSEO's Sellar problem."""
 
 import logging
+
+import numpy as np
 
 from gemseo import create_scenario
 from gemseo.algos.opt.scipy_local.settings.slsqp import SLSQP_Settings
@@ -9,7 +11,7 @@ from gemseo.problems.mdo.sellar.sellar_2 import Sellar2
 from gemseo.problems.mdo.sellar.sellar_design_space import SellarDesignSpace
 from gemseo.problems.mdo.sellar.sellar_system import SellarSystem
 
-from aeromaps.core.gemseo import share_mda_across_functions
+from aeromaps.core.gemseo import evaluate_at_optimum, share_mda_across_functions
 
 
 def _sellar(formulation="MDF"):
@@ -80,3 +82,22 @@ def test_parallel_differentiation_warns(caplog):
     with caplog.at_level(logging.WARNING):
         share_mda_across_functions(scenario)
     assert "parallel_differentiation" in caplog.text
+
+
+def test_evaluate_at_optimum_leaves_the_disciplines_at_x_opt():
+    scenario = _sellar()
+    share_mda_across_functions(scenario)
+    scenario.execute(SLSQP_Settings(max_iter=10))
+    sellar_1 = scenario.formulation.disciplines[0]
+    x_opt = scenario.design_space.convert_array_to_dict(scenario.optimization_result.x_opt)
+
+    evaluate_at_optimum(scenario)
+
+    for name, value in x_opt.items():
+        np.testing.assert_array_equal(scenario.formulation.mda.io.data[name], value)
+    # A fresh, uncached solve at x_opt gives the same couplings.
+    fresh = _sellar()
+    fresh.formulation.mda.execute(x_opt)
+    np.testing.assert_allclose(
+        sellar_1.io.data["y_1"], fresh.formulation.disciplines[0].io.data["y_1"], rtol=1e-10
+    )
