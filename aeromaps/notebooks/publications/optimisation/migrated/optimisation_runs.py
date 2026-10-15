@@ -326,11 +326,14 @@ def setup_optimisation(
     # cache does not do this. Installed by process.compute(), just before the run.
     process.gemseo_settings["share_mda_across_functions"] = True
 
-    # The published outputs were harvested from the last MDA solved, not re-solved at
-    # x_opt. In 14 of 74 runs that is SLSQP's final iterate rather than GEMSEO's x_opt,
-    # which sits within ineq_tolerance of the carbon budget but over it (up to 5e-5
-    # relative); the final iterate meets it to 1e-9. The two are 0.037 points of
-    # mandate share apart at most. Kept off so a re-run reproduces the published files.
+    # Keep the outputs of SLSQP's final iterate rather than re-solving at GEMSEO's x_opt.
+    # x_opt is the best point feasible within ineq_tolerance (1e-4), and in 14 of the 74
+    # published runs that is the iterate *before* the last: it overspends the carbon
+    # budget by up to 5e-5 and sits off the vertex, which the final step restores to
+    # 1e-9 before the KKT test stops the run. The published JSONs are that converged
+    # final iterate -- e.g. r_3_2 matches base there to 5e-7 pp, against 0.0185 pp at
+    # x_opt. Note that the HDF's optimum, and what is read from it (read_run,
+    # read_constraints, f_opt in sweep_summary.csv), is still GEMSEO's x_opt.
     process.gemseo_settings["evaluate_at_optimum"] = False
 
     if warm_start:

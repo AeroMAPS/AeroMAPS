@@ -999,6 +999,12 @@ def evaluate_at_optimum(scenario) -> None:
     of objective away from it. Harvesting outputs after this call makes them describe
     the reported optimum, at the cost of one MDA.
 
+    Consistent is not the same as better converged. SLSQP may approach the boundary from
+    outside, and ``x_opt`` can then be the iterate before its last step: within
+    ``ineq_tolerance`` of feasible, so preferred for its lower objective, but still off
+    the vertex the final step lands on. That was the case in all 14 runs above, which is
+    why that paper opts out and keeps the final iterate.
+
     Only MDF holds a single MDA over the whole chain; other formulations are left as
     they are. A memo installed by :func:`share_mda_across_functions` is cleared first,
     so that the solve is real and not a lookup.
