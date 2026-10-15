@@ -8,7 +8,7 @@ generic_biomass:
         years: [2020, 2030, 2040, 2050]
         values: [62.8e+12, 72.1e+12, 97.8e+12, 101.8e+12]
         method: linear
-      aviation_allocated_share: 1.533510   # 9.90% of global x 15.49% EU traffic share
+      aviation_allocated_share: 1.549   # 10% of global x 15.49% EU traffic share; build_process sets it per case
 
 generic_electricity:
   name: "generic_electricity"

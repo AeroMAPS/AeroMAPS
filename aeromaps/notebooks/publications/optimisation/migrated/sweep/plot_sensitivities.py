@@ -528,8 +528,8 @@ def discount():
     )
 
 
-# Named tests, grouped by the parameter they vary. The block letters of the brief are
-# an index, not a label -- a reader should not have to hold "B'" in their head to know
+# Named tests, grouped by the parameter they vary. The block letters are an index, not
+# a label -- a reader should not have to hold "B'" in their head to know
 # they are looking at a ramp-up volume.
 # --------------------------------------------------------------------------- #
 # The summary: every sensitivity, blocks A-E, against one baseline

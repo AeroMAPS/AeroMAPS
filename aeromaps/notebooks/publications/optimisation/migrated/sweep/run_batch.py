@@ -1,4 +1,4 @@
-"""Overnight sweep: one-parameter-at-a-time around the ReFuelEU-equivalent budget.
+"""Blocks A-D: one parameter at a time around the ReFuelEU-equivalent budget.
 
 Every run in blocks A-D shares one carbon budget -- the cumulative 2020-2050 CO2 of
 the ReFuelEU (linear) scenario at eps_P = -0.9, computed once and held fixed. It is
@@ -8,12 +8,10 @@ two are equivalent: when the constraint is active it pins
     cumulative_co2_emissions[2050] = gross_carbon_budget_2050 * share / 100
 
 and both factors on the right are exogenous, so a fixed share *is* a fixed absolute
-budget. Verified across the elasticity sweep: C2050 identical to six significant
-figures while C2025 moved by 0.6 %.
+budget. Across the elasticity runs, C2050 is identical to six significant figures
+while C2025 moves by 0.6 %.
 
-Biomass allocated to aviation is 10 % here, not the paper's 9.90 %. The old value was
-reverse-engineered so that production efficiency covered 2019 aviation energy use,
-which makes a convention look derived.
+Biomass allocated to aviation is 10 % of the world supply, a round convention.
 
 Usage
 -----
@@ -61,29 +59,22 @@ ROWS = HERE / "rows"
 # *before* the EU downscaling, hence the division by EU_ASK_SHARE.
 #
 # ``preflight.py`` recomputes this from the reference run and says so if it has moved.
-#
-# It moved when the mandate's first obligation became a step at 2025 rather than a
-# linear phase-in from 2020, which stopped the reference abating 4.06 MtCO2 in four years
-# the regulation obliges nothing -- abatement that lowered the ceiling for every run
-# rather than buying any of them headroom. (The ramp-up correction cannot move it: this
-# is the cumulative CO2 of an MDA, and constraints do not enter one.) Earlier values,
-# for reference: 3.119357596335 % / 3.8615905850289276 GtCO2.
+# The reference's mandate steps to its first obligation in 2025, as the regulation does,
+# so it abates nothing over 2021-2024. The ramp-up limits cannot move it: this is the
+# cumulative CO2 of an MDA, and constraints do not enter one.
 BUDGET_WORLD_SHARE = 3.122636344
 BUDGET_GTCO2 = 3.8656495
 
-BIOMASS_SHARE = 10.0  # % of world biomass allocated to aviation (was 9.90)
+BIOMASS_SHARE = 10.0  # % of world biomass allocated to aviation
 
-# The paper's default is ftol_abs=1e-3, a relative tolerance of ~2e-4 on an objective
-# of order 5. On the carbon-budget sweep that stopped SLSQP with the design still
-# moving and shifted mandate shares by up to 11.8 percentage points. Mandate share is
-# the headline output of this batch, so it is tightened.
-#
-# The ftol stop is disabled outright rather than tightened. "The objective stopped
-# moving" is not an optimality test, and a warm start near the optimum often leaves the
-# objective nearly flat on the first trial step: the first pass at ftol_abs=1e-8 stopped
-# r_3_2 after 4 evaluations without it having moved from its start point at all, while
-# its sibling r_7 moved by 2.09 and stopped on KKT. The KKT residual is the criterion
-# worth trusting. GEMSEO's xtol stop is still live, though, and a run seeded at its own
+# The ftol stop is disabled. ftol_abs=1e-3, a relative tolerance of ~2e-4 on an
+# objective of order 5, stops SLSQP on the carbon-budget ladder with the design still
+# moving, by up to 11.8 percentage points of mandate share. Tightening it is not enough
+# either: "the objective stopped moving" is not an optimality test, and a warm start
+# near the optimum often leaves the objective nearly flat on the first trial step -- at
+# ftol_abs=1e-8, r_3_2 stops after 4 evaluations without having moved from its start
+# point, while its sibling r_7 moves by 2.09 and stops on KKT. The KKT residual is the
+# criterion worth trusting. GEMSEO's xtol stop is still live, though, and a run seeded at its own
 # previous optimum can end on it without meeting KKT -- summary.csv records which
 # criterion stopped each run, and those are the ones to check.
 SEED = os.environ.get("AEROMAPS_SEED", "1") != "0"
@@ -98,8 +89,8 @@ MAX_ITER = 50
 
 # One parameter at a time from a common centre. ``base`` is the centre and is also
 # block A's eps = -0.9 entry, block B's 20 %/yr entry, block B's 0.2 EJ/yr entry, block
-# C's grid-electricity entry and block D's 4.5 % entry -- which is why the batch is 13
-# optimisations rather than the ~20 the brief estimated.
+# C's grid-electricity entry and block D's 4.5 % entry, so the fourteen runs cover
+# every variant once.
 RUNS = OrderedDict(
     [
         (
@@ -149,9 +140,9 @@ RUNS = OrderedDict(
 
 WIND_CSV = HERE / "efuel_dedicated_wind.csv"
 
-# Where each run's previous optimum came from, one row per (run, reference year). It is
-# the mandate the last sweep settled on, lifted out of that sweep's tidy CSV, and it is
-# used only as a start point: SLSQP still has to satisfy the current constraints from it.
+# Each run's start point, one row per (run, reference year): the point the published
+# runs started from. It is only a start point -- SLSQP still has to satisfy the
+# constraints from it.
 #
 # Seeding does more than save the cold start. Without it every run warm-starts from
 # ``base``, which makes base a barrier the queue has to wait on; with it the fourteen

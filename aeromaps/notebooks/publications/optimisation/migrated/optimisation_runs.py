@@ -46,18 +46,18 @@ REFUELEU_MANDATE = {
     "electrofuel": [1.2, 5.0, 10.0, 15.0, 35.0],
 }
 
-# The five published variants. ``biomass_share`` is the share of *world* biomass
-# allocated to aviation; ``efficiency_gain`` the annual drop-in energy-per-ASK gain
-# in %/yr, which is the only thing the pessimistic technology roadmap changes.
+# The five cases. ``biomass_share`` is the share of *world* biomass allocated to
+# aviation, a round convention; ``efficiency_gain`` the annual drop-in energy-per-ASK
+# gain in %/yr, which is the only thing the pessimistic technology roadmap changes.
 CASES = {
-    "main": {"biomass_share": 9.90, "efficiency_gain": 1.35, "label": "Reference"},
+    "main": {"biomass_share": 10.00, "efficiency_gain": 1.35, "label": "Reference"},
     "B5": {"biomass_share": 5.00, "efficiency_gain": 1.35, "label": "5 % biomass"},
     "B75": {"biomass_share": 7.50, "efficiency_gain": 1.35, "label": "7.5 % biomass"},
     "B15": {"biomass_share": 15.00, "efficiency_gain": 1.35, "label": "15 % biomass"},
-    "pess": {"biomass_share": 9.90, "efficiency_gain": 0.91, "label": "Low efficiency"},
+    "pess": {"biomass_share": 10.00, "efficiency_gain": 0.91, "label": "Low efficiency"},
 }
 
-# Electricity allocation is the same in every published case (paper section 3.4).
+# Electricity allocation is the same in every case (paper section 3.4).
 ELECTRICITY_SHARE = 5.0
 
 # Resource per unit of fuel energy, mirroring resource_specific_consumption in

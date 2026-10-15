@@ -6,7 +6,7 @@ optimum and the regulation it is compared against consume the same carbon. That 
 falls between the 3.2 and 3.0 rungs of the block E ladder, so it needs its own run.
 
 Blocks A-D already contain an optimisation at exactly this budget, ``base``. This one is
-not a copy of it: ``base`` is seeded from the previous sweep's optimum, and this is
+not a copy of it: ``base`` starts from its seed in ``previous_optima.csv``, and this is
 warm-started from the ladder's 3.2 optimum. On a non-convex problem the start
 point can decide which local optimum SLSQP lands on, so the two are worth comparing --
 the script prints the comparison and says whether they agree.
@@ -36,7 +36,7 @@ sys.path.insert(0, str(HERE))
 
 import optimisation_runs as R  # noqa: E402
 from run_batch import BIOMASS_SHARE, BUDGET_GTCO2, BUDGET_WORLD_SHARE, FTOL, KKT_TOL_REL  # noqa: E402
-from run_block_e import BIOMASS_OVERRIDE, MAX_ITER, RESULTS_E  # noqa: E402
+from run_block_e import MAX_ITER, RESULTS_E  # noqa: E402
 
 CASES = ("main", "B5", "B75", "B15", "pess")
 
@@ -56,9 +56,7 @@ def main(case="main"):
 
     out = stem(case)
     warm_from = RESULTS_E / f"opt_{case}_3_2.hdf"
-    # The ladder's convention: main and pess at a round 10 %, the biomass cases at the
-    # allocation that defines them.
-    biomass = BIOMASS_OVERRIDE.get(case, R.CASES[case]["biomass_share"])
+    biomass = R.CASES[case]["biomass_share"]
     if out.with_suffix(".json").exists():
         print(f"{out.name}: on disk, skipped")
     else:

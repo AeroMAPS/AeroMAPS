@@ -1,4 +1,4 @@
-"""Turn the batch's saved runs into the three tables the brief asks for.
+"""Turn the saved runs of blocks A-D into three tidy tables.
 
   sweep_by_year.csv        one row per (run, year)
   sweep_summary.csv        one row per run: parameters, objective, diagnostics,

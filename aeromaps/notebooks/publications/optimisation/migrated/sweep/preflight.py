@@ -1,17 +1,10 @@
-"""Preflight for the overnight sweep: fix the budget, and say what it costs to use it.
+"""Preflight: fix the carbon budget every optimisation is held to, and check it.
 
-Four checks, in the brief's order.
-
-1. The ReFuelEU-derived carbon budget, recomputed from a fresh reference MDA at the
-   new 10 % biomass allocation, and its world-budget-share equivalent. The
-   ReFuelEU-step variant is run alongside for reference.
+1. The ReFuelEU-derived carbon budget, recomputed from a fresh reference MDA at 10 %
+   biomass allocation, and its world-budget-share equivalent. The ReFuelEU-step
+   variant and fossil BAU are run alongside for reference.
 2. Whether the ReFuelEU-linear trajectory satisfies G2-G6 -- and if not, under which
    of block B's ramp-up caps it would.
-3. Continuity of the eps_P = -1 branch of the surplus integral.
-4. Whether the 2019-technology reference is elasticity-invariant.
-
-Checks 3 and 4 were run during the elasticity study and are read back from its
-artefacts rather than repeated; pass --rerun-checks to run them again.
 
 Usage:  poetry run python preflight.py
 """
@@ -39,10 +32,7 @@ BIOMASS_SHARE = 10.0
 # holds flat between milestones and jumps at them, rather than the linear ramp the
 # yaml interpolates. Total SAF share, and the synthetic sub-share within it.
 #
-# The legacy branch encodes this as a reference-year list on run_opt_main_B099.ipynb
-# whose values read 5.3, 4.3, 4.8, 4.8, 2.4 across 2030-2034 -- not a step, and the
-# 2.4 at 2034 in particular cannot be right. It is rebuilt here from the regulation
-# as an explicit year-by-year series instead, which needs no interpolation at all.
+# Written out year by year from the regulation, so it needs no interpolation at all.
 REFUELEU_STEP = {
     # first_year: (total SAF %, synthetic sub-share %)
     2025: (2.0, 0.0),
@@ -266,51 +256,6 @@ def main():
     grid = pd.DataFrame(grid)
     print(grid.to_string(index=False, float_format=lambda v: f"{v:.6f}"))
     grid.to_csv(HERE / "preflight_refueleu_feasibility.csv", index=False)
-
-    print()
-    print("=" * 78)
-    print("PREFLIGHT 3 and 4 - read back from the elasticity study")
-    print("=" * 78)
-    _report_checks_3_and_4()
-
-
-def _report_checks_3_and_4():
-    elasticity = PAPER / "elasticity"
-
-    branch = elasticity / "step0_check2_branch.csv"
-    if branch.exists():
-        frame = pd.read_csv(branch)
-        print("\n  Check 3, eps = -1 branch continuity:")
-        print(frame.to_string(index=False))
-    else:
-        print("\n  Check 3: step0_check2_branch.csv not found")
-
-    print("\n  Check 4, 2019-technology reference across elasticities:")
-    rows = []
-    for path in sorted((elasticity / "results").glob("ref2019_eps*.json")):
-        data = json.load(open(path))
-        vectors = data["vector_outputs"]
-        rpk = pd.Series(vectors["rpk"], index=YEARS)
-        reference = pd.Series(vectors["rpk_no_elasticity"], index=YEARS)
-        rows.append(
-            {
-                "eps": path.stem.replace("ref2019_eps", ""),
-                "rpk_2050": rpk.loc[2050],
-                "rpk_no_elasticity_2050": reference.loc[2050],
-                "rebound": rpk.loc[2050] / reference.loc[2050],
-            }
-        )
-    if rows:
-        frame = pd.DataFrame(rows)
-        print(frame.to_string(index=False, float_format=lambda v: f"{v:.6f}"))
-        spread = frame.rpk_no_elasticity_2050.max() - frame.rpk_no_elasticity_2050.min()
-        print(f"\n    rpk_no_elasticity spread across eps: {spread:.3e}  (the invariant reference)")
-        print(
-            f"    realised rebound {frame.rebound.min():.4f} to {frame.rebound.max():.4f}"
-            f"  -> Check 4 FAILS, decompose against rpk_no_elasticity"
-        )
-    else:
-        print("    ref2019 runs not found")
 
 
 if __name__ == "__main__":

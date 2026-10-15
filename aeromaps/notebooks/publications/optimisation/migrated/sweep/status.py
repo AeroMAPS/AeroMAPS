@@ -1,4 +1,4 @@
-"""Where the overnight batch has got to, as one screen.
+"""Where the blocks A-D batch has got to, as one screen.
 
 Reads ``results/`` and ``summary.csv`` rather than any log, so it reports a batch
 started from any shell -- or from a notebook whose output went to a cell.
@@ -50,7 +50,7 @@ def main():
     summary = pd.read_csv(SUMMARY).set_index("run") if SUMMARY.exists() else pd.DataFrame()
     live, now = _running(), time.time()
 
-    print(f"=== overnight sweep, blocks A-D  ({time.strftime('%H:%M:%S')}) ===\n")
+    print(f"=== blocks A-D  ({time.strftime('%H:%M:%S')}) ===\n")
     done = failed = 0
     elapsed_total = 0.0
 

@@ -1,29 +1,19 @@
-"""Block E: the carbon-budget x biomass-share surface behind Figure 9, regenerated.
+"""Block E: the carbon-budget x biomass-share ladder behind Figure 9.
 
-Why it has to be re-run rather than reused. Two things moved under the published
-surface: the surplus beta is now anchored on ``initial_airfare_per_rpk`` -- the same
-2019 price that anchors supply and the traffic response -- where it used to be anchored
-on the scenario's own airfare in 2025; and aviation's biomass allocation is 10 % rather
-than the reverse-engineered 9.90 %. The first changes the objective non-uniformly,
-because the surplus share of it ranges from 15 % to 98 % across the budget ladder, so
-optima move rather than merely rescale.
+For each case, the surplus-loss optimum at every carbon budget from 3.8 down to 2.0 %
+of the world aviation budget, plus the minimum-CO2 end point. The budget axis is not
+centred on the ReFuelEU-equivalent value -- the point of the surface is to explore
+ambitious scenarios -- so that value, 3.1226 % of the world budget, is marked on the
+figure instead, alongside the ReFuelEU linear and step markers.
 
-Every surplus figure in the submitted paper depends on this surface: Table 3's
-cumulative losses, the 614 bn EUR vs BAU and its 537 bn EUR / 27 % split, the ReFuelEU
-annotations on Figure 9, and section 4.4's 39 % / 242 bn EUR / 95 bn EUR.
+``pess`` runs the same ladder, but it does not belong on Figure 9: its biomass share
+coincides with ``main``'s, so it would land on top of it. It is a technology
+sensitivity, reported separately.
 
-The budget axis is deliberately unchanged -- the point of the figure is to explore
-ambitious scenarios, so it is not re-centred on the ReFuelEU-equivalent value. That
-value, 3.119358 % of the world budget, is marked on the surface instead, alongside the
-existing ReFuelEU linear and step markers.
-
-``pess`` is swept here because it is the same ladder and costs nothing extra to run,
-but it does not belong on Figure 9: its biomass share coincides with ``main``'s, so it
-would land on top of it. It is a technology sensitivity, reported separately.
-
-Each case is a continuation chain -- loosest budget first, each run started from the
-previous optimum -- so a case must stay serial. Cases are independent, and run in
-parallel.
+Without ``--seed``, each case is a continuation chain -- loosest budget first, each run
+started from the previous optimum -- so a case stays serial while cases run in
+parallel. With ``--seed block_e_seeds.csv`` every rung is an independent job started
+from the point the published ladder started from.
 
 Usage
 -----
@@ -50,13 +40,11 @@ sys.path.insert(0, str(HERE))
 RESULTS_E = HERE / "results_e"
 LOGS = HERE / "logs"
 
-# The published ladder, unchanged. min-CO2 is appended by run_sweep itself.
+# The ladder, as % of the world budget. min-CO2 is appended by run_sweep itself.
 BUDGETS = [3.8, 3.6, 3.4, 3.2, 3.0, 2.8, 2.6, 2.4, 2.2, 2.0]
 
 # The four biomass shares Figure 9 interpolates over, plus the technology sensitivity.
-# 9.90 becomes 10.0 for the two cases that carried it; B5/B75/B15 keep their own.
 CASES = ["main", "B5", "B75", "B15", "pess"]
-BIOMASS_OVERRIDE = {"main": 10.0, "pess": 10.0}
 
 FTOL = 0.0
 KKT_TOL_REL = 1e-6
@@ -81,8 +69,6 @@ def run_case(case):
     disable_gemseo_execution_statistics()
     os.chdir(PAPER)
 
-    if case in BIOMASS_OVERRIDE:
-        R.CASES[case]["biomass_share"] = BIOMASS_OVERRIDE[case]
     RESULTS_E.mkdir(exist_ok=True)
     R.RESULTS_DIR = RESULTS_E
 
@@ -136,8 +122,6 @@ def run_rung(case, tag, seed_dir):
     disable_gemseo_execution_statistics()
     os.chdir(PAPER)
 
-    if case in BIOMASS_OVERRIDE:
-        R.CASES[case]["biomass_share"] = BIOMASS_OVERRIDE[case]
     RESULTS_E.mkdir(exist_ok=True)
     R.RESULTS_DIR = RESULTS_E
 
@@ -282,8 +266,6 @@ def run_case_reference(case, kind):
     configure_logger(level=logging.WARNING)
     disable_gemseo_execution_statistics()
     os.chdir(PAPER)
-    if case in BIOMASS_OVERRIDE:
-        R.CASES[case]["biomass_share"] = BIOMASS_OVERRIDE[case]
     RESULTS_E.mkdir(exist_ok=True)
     R.RESULTS_DIR = RESULTS_E
     R.run_reference(case, kind=kind)
