@@ -43,7 +43,7 @@ PAPER = Path(__file__).resolve().parent.parent
 CONFIG_DIR = PAPER / "data"
 # Where run_optimisation and run_sweep write; the drivers in runs/ point it at their own
 # results folder.
-RESULTS_DIR = PAPER / "runs" / "results_budget_ladder"
+RESULTS_DIR = PAPER / "runs" / "results_carbon_biomass_grid"
 
 # Mandate shares over OPTIM_YEARS for the two non-optimised references.
 REFUELEU_MANDATE = {

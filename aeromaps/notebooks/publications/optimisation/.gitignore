@@ -2,7 +2,7 @@
 # dump (.json); the sweeps in this folder come to roughly 215 MB, all of it regenerable
 # by the drivers sitting beside it. What is committed instead is the analysis: the CSVs
 # carry every number the figures and the reports quote.
-results_budget_ladder/
+results_carbon_biomass_grid/
 results_sensitivities/
 
 # Solver logs. Kept so a sweep in progress can be watched, not as a record of it.

@@ -7,7 +7,7 @@ and one who re-runs the optimisations rebuilds the dataset from them with
     poetry run python -m helpers.dataset      # from the paper folder
 
 which reads, for each run the article uses (``SCENARIOS``), its raw outputs under
-``runs/results_sensitivities`` or ``runs/results_budget_ladder`` -- one JSON of model outputs and, for an
+``runs/results_sensitivities`` or ``runs/results_carbon_biomass_grid`` -- one JSON of model outputs and, for an
 optimisation, one HDF of its history -- and writes
 
     scenarios.csv    one row per run: what kind of run it is, its parameters, and
@@ -167,16 +167,16 @@ SCENARIOS = {
     # the carbon-budget ladder of each case, its minimum-CO2 end, and the case at the
     # ReFuelEU-equivalent budget
     **{
-        f"opt_{case}_{tag}": "results_budget_ladder"
+        f"opt_{case}_{tag}": "results_carbon_biomass_grid"
         for case in CASE_LABELS
         for tag in [*BUDGET_TAGS, "mincarb", "refueleu"]
     },
     # one-parameter sensitivities around base, at the ReFuelEU-equivalent budget
     **{run: "results_sensitivities" for run in SENSITIVITIES},
     # fixed-mandate references
-    "fossil_main": "results_budget_ladder",
-    "fossil_pess": "results_budget_ladder",
-    "refueleu_main": "results_budget_ladder",
+    "fossil_main": "results_carbon_biomass_grid",
+    "fossil_pess": "results_carbon_biomass_grid",
+    "refueleu_main": "results_carbon_biomass_grid",
     "refueleu_step": "results_sensitivities",
 }
 

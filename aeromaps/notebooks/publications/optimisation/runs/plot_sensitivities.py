@@ -539,7 +539,7 @@ def discount():
 
 # Each row names its JSON relative to this folder, because the rows come from two
 # places: blocks A-D in results_sensitivities/, and the carbon-budget ladder and the other
-# cases at the central budget in results_budget_ladder/. The fossil BAU is not a row: it is a reference rather
+# cases at the central budget in results_carbon_biomass_grid/. The fossil BAU is not a row: it is a reference rather
 # than a sensitivity, and it stretched every axis until the sensitivities were unreadable.
 BASELINE_ROW = ("results_sensitivities/base.json", "Baseline")
 
@@ -548,26 +548,26 @@ SUMMARY_GROUPS = [
         "Carbon budget",
         style.NAVY,
         [
-            ("results_budget_ladder/opt_main_3_8.json", "3.8 %"),
-            ("results_budget_ladder/opt_main_3_4.json", "3.4 %"),
-            ("results_budget_ladder/opt_main_3_0.json", "3.0 %"),
-            ("results_budget_ladder/opt_main_2_6.json", "2.6 %"),
-            ("results_budget_ladder/opt_main_2_2.json", "2.2 %"),
+            ("results_carbon_biomass_grid/opt_main_3_8.json", "3.8 %"),
+            ("results_carbon_biomass_grid/opt_main_3_4.json", "3.4 %"),
+            ("results_carbon_biomass_grid/opt_main_3_0.json", "3.0 %"),
+            ("results_carbon_biomass_grid/opt_main_2_6.json", "2.6 %"),
+            ("results_carbon_biomass_grid/opt_main_2_2.json", "2.2 %"),
         ],
     ),
     (
         "Biomass allocation",
         style.GREEN,
         [
-            ("results_budget_ladder/opt_B5_refueleu.json", "5 %"),
-            ("results_budget_ladder/opt_B75_refueleu.json", "7.5 %"),
-            ("results_budget_ladder/opt_B15_refueleu.json", "15 %"),
+            ("results_carbon_biomass_grid/opt_B5_refueleu.json", "5 %"),
+            ("results_carbon_biomass_grid/opt_B75_refueleu.json", "7.5 %"),
+            ("results_carbon_biomass_grid/opt_B15_refueleu.json", "15 %"),
         ],
     ),
     (
         "Technology",
         style.DARK_GREY,
-        [("results_budget_ladder/opt_pess_refueleu.json", "efficiency +0.91 %/yr")],
+        [("results_carbon_biomass_grid/opt_pess_refueleu.json", "efficiency +0.91 %/yr")],
     ),
     (
         "Price elasticity",
