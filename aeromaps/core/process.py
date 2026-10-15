@@ -2587,8 +2587,7 @@ class AeroMAPSProcess(object):
         # share_mda_across_functions in aeromaps/core/gemseo.py for the gain and the limits.
         # TODO: consider making this the default for MDF with serial finite differences.
         # The memo is cleared before every execution, so reusing a process with changed
-        # parameters is safe; it is opt-in only until it has been used beyond the ReFuelEU
-        # optimisation paper, where it gave identical iterates at ~10x less cost.
+        # parameters is safe; it is opt-in only until it has seen wider use.
         self.gemseo_settings["share_mda_across_functions"] = False
         # Outputs are harvested from the last MDA solved, which need not be at x_opt; this
         # solves once more at x_opt so they describe it (MDF only). See evaluate_at_optimum.

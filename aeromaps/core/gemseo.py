@@ -922,19 +922,18 @@ def share_mda_across_functions(scenario, size: int = 16) -> None:
 
     Under MDF the objective and each constraint get their own ``MDOFunction``, and
     finite differences differentiate each of them separately: with one objective and six
-    constraints, every perturbed design point is solved seven times over. Measured on the
-    ReFuelEU optimisation (``notebooks/publications/optimisation``), three SLSQP
-    iterations cost 252 MDA solves where 33 are needed -- 607 s instead of 54 s.
+    constraints, every perturbed design point is solved seven times over, where one solve
+    would serve all seven functions.
 
     GEMSEO's own discipline cache does not absorb the repeats. Its key is a hash of
     every chain input, and three identical calls produce three entries even when the
     stored inputs compare byte-identical. Keying on what the formulation actually passes
-    to ``mda.execute`` -- the design variables alone -- does absorb them, with iterates
-    identical to the uncached run and the objective agreeing to nine significant digits.
+    to ``mda.execute`` -- the design variables alone -- does absorb them, and leaves the
+    iterates unchanged.
 
     An LRU of ``size`` entries must cover a full finite-difference sweep, n + 1 points for
-    n design variables (11 in the ReFuelEU problem); without a bound the memo would retain
-    every design point of the run.
+    n design variables; without a bound the memo would retain every design point of the
+    run.
 
     Two limits, which are why this is opt-in:
 
@@ -944,7 +943,7 @@ def share_mda_across_functions(scenario, size: int = 16) -> None:
       parameter changed *during* a run would be missed; nothing in AeroMAPS does that.
     * The memo lives on one MDA object in one Python process. With
       ``parallel_differentiation``, each worker solves on its own copy and the repeats
-      come back -- measured 4x slower than serial here, so a warning is logged.
+      come back, on top of shipping the chain to the workers, so a warning is logged.
 
     Args:
         scenario: An MDF scenario. Any other formulation is left untouched, with a warning.
@@ -994,16 +993,14 @@ def evaluate_at_optimum(scenario) -> None:
     After an optimisation the disciplines' local data are those of the last MDA that
     was solved -- usually a finite-difference point next to the final iterate -- and
     that iterate is not always the point GEMSEO reports as ``x_opt``, which is the best
-    point feasible within ``ineq_tolerance``. On the ReFuelEU optimisation 14 runs out
-    of 74 ended on a different iterate, up to 0.037 points of mandate share and 0.25 %
-    of objective away from it. Harvesting outputs after this call makes them describe
-    the reported optimum, at the cost of one MDA.
+    point feasible within ``ineq_tolerance``. Harvesting outputs after this call makes
+    them describe the reported optimum, at the cost of one MDA.
 
     Consistent is not the same as better converged. SLSQP may approach the boundary from
     outside, and ``x_opt`` can then be the iterate before its last step: within
     ``ineq_tolerance`` of feasible, so preferred for its lower objective, but still off
-    the vertex the final step lands on. That was the case in all 14 runs above, which is
-    why that paper opts out and keeps the final iterate.
+    the vertex the final step lands on. A study that wants that final iterate instead
+    sets ``gemseo_settings["evaluate_at_optimum"] = False``.
 
     Only MDF holds a single MDA over the whole chain; other formulations are left as
     they are. A memo installed by :func:`share_mda_across_functions` is cleared first,
