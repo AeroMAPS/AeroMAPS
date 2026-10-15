@@ -158,8 +158,7 @@ def run_rung(case, tag, seed_dir):
     R.setup_optimisation = tightened
 
     budget = None if tag == "mincarb" else float(tag.replace("_", "."))
-    seed = R.read_run(Path(seed_dir) / f"opt_{case}_{tag}.hdf")
-    x0 = seed["x"] if seed and seed["feasible"] else None
+    x0 = _seed(case, tag, Path(seed_dir), R)
 
     print(f"=== block E, {case} {tag}, biomass {R.CASES[case]['biomass_share']} % ===", flush=True)
     print(
@@ -176,6 +175,31 @@ def run_rung(case, tag, seed_dir):
         f"{row['evaluations']} evals {row['seconds']} s",
         flush=True,
     )
+
+
+def _seed(case, tag, source, R):
+    """A rung's start point, or None for the cold start.
+
+    ``source`` is a seeds CSV -- ``block_e_seeds.csv`` holds the start points of the
+    published ladder, one row per (run, year) -- or a directory of earlier optima as
+    HDFs, of which only a feasible one is used.
+    """
+    run = f"opt_{case}_{tag}"
+    if source.suffix == ".csv":
+        import pandas as pd
+
+        # round_trip: pandas' default parser can land one ulp off, and an SLSQP run
+        # started one ulp away is not the same run.
+        frame = pd.read_csv(source, float_precision="round_trip")
+        rows = frame[frame.run == run].sort_values("year")
+        if rows.empty:
+            return None
+        return {
+            "biofuel": rows.biofuel_mandate_share.tolist(),
+            "electrofuel": rows.electrofuel_mandate_share.tolist(),
+        }
+    seed = R.read_run(source / f"{run}.hdf")
+    return seed["x"] if seed and seed["feasible"] else None
 
 
 def _spawn_rung(case, tag, seed_dir):

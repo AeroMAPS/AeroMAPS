@@ -64,7 +64,7 @@ by up to 11.8 percentage points on the carbon-budget sweep.
 poetry run python preflight.py                  # budget, ReFuelEU feasibility, checks 3 and 4
 poetry run python run_references.py             # 8 matched fossil-BAU references
 poetry run python run_batch.py --jobs 3         # blocks A-D, 14 optimisations, resumable
-poetry run python run_block_e.py --jobs 4 --seed ../lagrange/results_tight
+poetry run python run_block_e.py --jobs 4 --seed block_e_seeds.csv
                                                 # block E, 55 optimisations, resumable
 poetry run python run_refueleu_budget.py B5 B75 B15 pess
                                                 # the other cases at the central budget
@@ -82,7 +82,9 @@ logs.
 **Seeding.** With `previous_optima.csv` present, every run of blocks A–D starts from the
 previous sweep's optimum for that same run, so none depends on another and all fourteen run
 in parallel. `AEROMAPS_SEED=0` restores the old order, where `base` runs alone first and
-the rest warm-start from it. Block E's `--seed DIR` does the same per rung; without it,
+the rest warm-start from it. Block E's `--seed block_e_seeds.csv` does the same per rung,
+from the start points the published ladder used (46 seeded, 9 cold starts); `--seed DIR`
+reads them from a directory of earlier optima instead. Without `--seed`,
 each case is a continuation chain down the ladder and runs one rung at a time. A seed is
 only a start point: every run still has to meet the KKT criterion from there, and a run
 that stops on anything else is flagged in `summary.csv`.
