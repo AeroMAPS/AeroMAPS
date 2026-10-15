@@ -69,12 +69,11 @@ RESOURCE_PER_FUEL = {"biomass": 2.104355, "electricity": 2.290426}
 PASSENGER_MARKETS = {
     "config_rte.yaml": ["short_range", "medium_range", "long_range"],
     "config_rte_nofeedback.yaml": ["short_range", "medium_range", "long_range"],
-    "config_1m.yaml": ["passenger"],
 }
 
 # Configs whose markets.yaml wires in the RPKElasticity layer, and so have an
 # airfare <-> RPK loop to seed. The no-feedback variant has neither parameter.
-ELASTIC_CONFIGS = {"config_rte.yaml", "config_1m.yaml"}
+ELASTIC_CONFIGS = {"config_rte.yaml"}
 
 
 # --------------------------------------------------------------------------- #
