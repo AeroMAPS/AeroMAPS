@@ -1,0 +1,41 @@
+variable,unit,description
+rpk,pkm/yr,Revenue passenger kilometres
+rpk_no_elasticity,pkm/yr,Revenue passenger kilometres before the price response
+ask,ASK/yr,Available seat kilometres
+airfare_per_rpk,EUR/pkm,Airfare per revenue passenger kilometre
+total_cost_per_rpk,EUR/pkm,Airline cost per revenue passenger kilometre
+doc_energy_per_ask_mean,EUR/ASK,Fleet-mean energy direct operating cost per ASK
+doc_total_per_ask_mean,EUR/ASK,Fleet-mean total direct operating cost per ASK
+total_airline_cost,EUR/yr,Total airline cost
+total_airline_cost_increase,EUR/yr,Airline cost increase against 2019 unit costs
+area_loss,EUR/yr,Passenger surplus loss: area under the demand curve
+cumulative_total_surplus_loss_discounted,EUR,"Cumulative total surplus loss from 2020, discounted to 2020 (the objective)"
+co2_emissions_including_energy,MtCO2/yr,"CO2 emissions, all levers applied"
+co2_emissions_passenger,MtCO2/yr,CO2 emissions of passenger traffic
+co2_emissions_freight,MtCO2/yr,CO2 emissions of freight traffic
+co2_emissions_last_historical_year_technology_baseline3,MtCO2/yr,CO2 emissions with 2019 technology flying the scenario's traffic
+cumulative_co2_emissions,GtCO2,Cumulative CO2 emissions from 2020
+energy_consumption,MJ/yr,Total energy consumption
+energy_consumption_dropin_fuel,MJ/yr,Drop-in fuel energy consumption
+generic_biofuel_energy_consumption,MJ/yr,Biofuel energy consumption
+generic_electrofuel_energy_consumption,MJ/yr,Electrofuel energy consumption
+fossil_kerosene_share_dropin_fuel,%,Fossil kerosene share of the drop-in blend
+generic_biofuel_share_dropin_fuel,%,Biofuel share of the drop-in blend
+generic_electrofuel_share_dropin_fuel,%,Electrofuel share of the drop-in blend
+generic_biofuel_mandate_share,%,"Biofuel mandate, share of the drop-in blend"
+generic_electrofuel_mandate_share,%,"Electrofuel mandate, share of the drop-in blend"
+fossil_kerosene_mean_mfsp,EUR/MJ,Fossil kerosene minimum fuel selling price
+generic_biofuel_mean_mfsp,EUR/MJ,Biofuel minimum fuel selling price
+generic_electrofuel_mean_mfsp,EUR/MJ,Electrofuel minimum fuel selling price
+fossil_kerosene_mean_mfsp_without_resource,EUR/MJ,"Fossil kerosene MFSP, excluding resource cost"
+generic_biofuel_mean_mfsp_without_resource,EUR/MJ,"Biofuel MFSP, excluding resource cost"
+generic_electrofuel_mean_mfsp_without_resource,EUR/MJ,"Electrofuel MFSP, excluding resource cost"
+fossil_kerosene_mean_co2_emission_factor,gCO2/MJ,Fossil kerosene emission factor
+generic_biofuel_mean_co2_emission_factor,gCO2/MJ,Biofuel emission factor
+generic_electrofuel_mean_co2_emission_factor,gCO2/MJ,Electrofuel emission factor
+fossil_kerosene_mean_co2_emission_factor_without_resource,gCO2/MJ,"Fossil kerosene emission factor, excluding resource emissions"
+generic_biofuel_mean_co2_emission_factor_without_resource,gCO2/MJ,"Biofuel emission factor, excluding resource emissions"
+generic_electrofuel_mean_co2_emission_factor_without_resource,gCO2/MJ,"Electrofuel emission factor, excluding resource emissions"
+biomass_availability_aviation_allocated,MJ/yr,Biomass allocated to aviation
+electricity_availability_aviation_allocated,MJ/yr,Electricity allocated to aviation
+generic_biomass_consumed_global_share,%,"Biomass consumed, share of world supply"
