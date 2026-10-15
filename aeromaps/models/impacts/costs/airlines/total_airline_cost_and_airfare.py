@@ -388,7 +388,7 @@ class PassengerAircraftMarginalCost(AeroMAPSModel):
         # normalises the airfare by that same key, so supply and demand must be anchored
         # on one price. The default is AeroMAPS's own 2019 cost plus the 20-year average
         # IATA markup, deflated and converted at 1.14 $/€, as derived in
-        # publications/optimisation/equilibriums.ipynb.
+        # publications/optimisation/migrated/equilibriums.ipynb.
         initial_price_per_rpk_corrected = initial_airfare_per_rpk
 
         # Were defining the inverse market-level suppy function ( cost =f (rpk) ) as a linear function by hypothesis

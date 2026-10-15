@@ -152,12 +152,9 @@ YEAR_BOUND_NAMES = (
 # TODO(flex-start-year): delete this guard once downstream configs are migrated
 # and a release cycle has passed (target: remove after 2026-12, or once no
 # in-repo config and no known external scenario still carries a `_2019` key).
-# As of 2026-07 neither condition is met: four input files still use old keys
-# and must be migrated to `_last_historical_year` before removal:
-#   - notebooks/publications/ecats_2026/data/data_optim/markets_is2medium.yaml
-#   - notebooks/publications/tsas_2025/data/data_tsas_optim/markets_is2medium.yaml
-#   - notebooks/publications/optimisation/data/partitioned_inputs.json
-#   - notebooks/publications/optimisation/data/partitioned_inputs_merged.json
+# As of 2026-10 no in-repo input file carries an old key any more (only stale
+# .ipynb_checkpoints copies do); what remains is the release cycle for external
+# scenarios.
 # (Output/result files carrying `_2019` — outputs.json, slsqp_*.json,
 # *_outputs.json — are never loaded as inputs and do not block removal.)
 #
