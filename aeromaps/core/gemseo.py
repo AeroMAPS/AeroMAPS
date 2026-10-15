@@ -1010,4 +1010,8 @@ def evaluate_at_optimum(scenario) -> None:
     memo = getattr(mda, "_shared_solve_memo", None)
     if memo is not None:
         memo.clear()
-    mda.execute(scenario.design_space.convert_array_to_dict(result.x_opt))
+    # Through the grammar's converter, as GEMSEO's own function adapter does: it gives
+    # back the declared type, a list for CustomDataConverter._list_names.
+    converter = mda.io.input_grammar.data_converter
+    design = scenario.design_space.convert_array_to_dict(result.x_opt)
+    mda.execute({name: converter.convert_array_to_value(name, x) for name, x in design.items()})
