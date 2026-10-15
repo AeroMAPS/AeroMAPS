@@ -404,6 +404,10 @@ def stacked_cascade_impacts(
         )
 
         cumulative = max(pos_bottom, neg_bottom)# + impact_total #new_level
+        
+    if i < 2:  # special case for IWP where only CC and PM exist (not O3)
+        i+=1
+        ax.bar(i, 0.0, width=bar_width)
 
     labels = [
         imp[2]
@@ -420,7 +424,10 @@ def stacked_cascade_impacts(
     ymin, ymax = ax.get_ylim()
     ax.set_ylim(ymin, ymax * 1.03)
 
-    ax.set_xticks(range(len(impacts)))
+    if len(impacts) < 3:
+        labels.append("")
+    #ax.set_xticks(range(len(impacts)))
+    ax.set_xticks([0,1,2])
     ax.set_xticklabels(labels)
 
     ax.axhline(0, color="black", linewidth=0.8)
@@ -432,104 +439,130 @@ def stacked_cascade_impacts(
     
 
 def stacked_cascade_scenarios(
-    scenarios, 
-    ylim=None, 
+    scenarios,
+    ylim=None,
     lcia_method: str = 'LCIA Aviation',
-    targets=[
-        "climate change: human health",
-        "pm25: human health",
-        "o3: human health",
-    ], 
+    targets=None,
+    comparison: str = 'scenarios',
+    methods_dict=None,
 ):
-    
+    """Plot cascade bars for scenarios or LCIA methods in one figure.
+
+    Parameters
+    ----------
+    scenarios : dict
+        For comparison='scenarios': {subplot_title: (data_array, year)}.
+        For comparison='methods': {method_name: (data_array, year)}.
+    comparison : {'scenarios', 'methods'}
+        Select whether the dictionary keys are subplot titles or method names.
+    methods_dict : dict, optional
+        Required for comparison='methods':
+        {method_name: (subplot_title, list_of_target_impacts)}.
+    """
+    if comparison not in ('scenarios', 'methods'):
+        raise ValueError("comparison must be 'scenarios' or 'methods'")
+    if not scenarios:
+        raise ValueError('scenarios must not be empty')
+    if comparison == 'methods' and methods_dict is None:
+        raise ValueError("methods_dict is required when comparison='methods'")
+
+    if targets is None:
+        targets = [
+            'climate change: human health',
+            'pm25: human health',
+            'o3: human health',
+        ]
+
     n = len(scenarios)
-    n_cols = 4
+    n_cols = min(4, n)
     n_rows = math.ceil(n / n_cols)
 
     fig, axes = plt.subplots(
         n_rows,
         n_cols,
-        figsize=(10, n_rows * 6.5),
+        figsize=(2.5 * n_cols, n_rows * 6.5),
         sharey=True,
-        facecolor="white"
+        facecolor='white',
+        squeeze=False,
     )
-
     axes = axes.flatten()
 
     for i, ((name, (da, year)), ax) in enumerate(zip(scenarios.items(), axes)):
-        
+        if comparison == 'methods':
+            method = name
+            title, method_targets = methods_dict[method]
+        else:
+            method = lcia_method
+            method_targets = targets
+            title = name
+
         stacked_cascade_impacts(
             da,
             year=year,
             ax=ax,
             palette_dict=palette_dict,
-            lcia_method=lcia_method,
-            targets=targets
+            lcia_method=method,
+            targets=method_targets,
         )
 
-        ax.set_title(name, fontsize=11)
+        ax.set_title(title, fontsize=11)
 
         if i % n_cols == 0:
-            ax.set_ylabel("Health Impacts (DALYs)", fontsize=12)
+            ax.set_ylabel('Damages to Human Health (DALYs/annual emissions)', fontsize=12)
 
-    # hide unused axes
-    for j in range(i+1, len(axes)):
-        axes[j].axis("off")
+    # Hide unused axes.
+    for j in range(n, len(axes)):
+        axes[j].axis('off')
 
-    # legend
+    # Shared legend.
     entries = collections.OrderedDict()
-
     for key, (color, hatch) in palette_dict.items():
-
         label = key
-
-        if "CO2" in label:
-            label = r"CO$_2$"
-        elif key == "non_NOx":
-            label = r"non-NO$_x$ (for PM$_{2.5}$ & O$_3$)"
-        elif key == "NOx":
-            label = r"NO$_x$"
+        if 'CO2' in label:
+            label = r'CO$_2$'
+        elif key == 'non_NOx':
+            label = r'non-NO$_x$ (for PM$_{2.5}$ & O$_3$)'
+        elif key == 'NOx':
+            label = r'NO$_x$'
         else:
-            label = label.replace("_"," ").title()
+            label = label.replace('_', ' ').title()
 
-        patch = plt.Rectangle(
-            (0,0),1,1,
+        entries[label] = plt.Rectangle(
+            (0, 0), 1, 1,
             facecolor=color,
-            edgecolor="0.2",
-            hatch=hatch
+            edgecolor='0.2',
+            hatch=hatch,
         )
 
-        entries[label] = patch
-        
-    if ylim:
+    if ylim is not None:
         axes[0].set_ylim(ylim)
-    
+
     axes[0].yaxis.set_major_formatter(ticker.FuncFormatter(sci_notation))
     axes[0].tick_params(axis='y', labelsize=12)
 
     legend = fig.legend(
         entries.values(),
         entries.keys(),
-        loc="lower center",
+        loc='lower center',
         bbox_to_anchor=(0.5, 0),
         ncol=4,
         fontsize=11,
-        #title="Contribution",
         title_fontsize=12,
     )
 
+    # Draw before measuring the legend bounding box.
+    fig.canvas.draw()
     bbox = legend.get_window_extent(fig.canvas.get_renderer()).transformed(
         fig.transFigure.inverted()
     )
-
     fig.tight_layout(rect=(0, bbox.y1, 1, 1), h_pad=0.5, w_pad=0.5)
 
-    plt.show()
-    
+    return fig
+
 
 def sci_notation(x, pos):
     if x == 0:
         return "0"
     exponent = int(np.floor(np.log10(abs(x))))
     coeff = x / 10**exponent
-    return r"${:.0f}\times10^{{{}}}$".format(coeff, exponent)
+    return r"${:.1f}\times10^{{{}}}$".format(coeff, exponent)

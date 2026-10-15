@@ -4,4 +4,4 @@ nitrogen oxides,air::lower stratosphere + upper troposphere,3.219E-05,kilogram
 sulfur dioxide,air::lower stratosphere + upper troposphere,-2.101E-04,kilogram
 water vapour,air::lower stratosphere + upper troposphere,5.465E-08,kilogram
 "carbon dioxide, fossil",air::lower stratosphere + upper troposphere,9.28E-07,kilogram
-soot,air::lower stratosphere + upper troposphere,1.082E-03,kilogram
+"Particulate Matter, < 2.5 um",air::lower stratosphere + upper troposphere,1.082E-03,kilogram

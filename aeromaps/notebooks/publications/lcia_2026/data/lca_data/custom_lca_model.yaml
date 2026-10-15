@@ -74,7 +74,7 @@ model:
 
     soot:
         amount: fossil_kerosene_mass_consumption * fossil_kerosene_emission_index_soot + lcaf_mass_consumption * lcaf_emission_index_soot + saf_ftg_mass_consumption * saf_ftg_emission_index_soot + saf_dac_emission_index_soot * saf_dac_mass_consumption + saf_co2_emission_index_soot * saf_co2_mass_consumption
-        name: 'soot' # CHANGE TO 'Particulate Matter, < 2.5 um' FOR RECIPE, IW+ and EF v3.1
+        name: 'Particulate Matter, < 2.5 um'
         categories:
             - 'air'
             - 'lower stratosphere + upper troposphere'  # CHANGE TO 'non-urban air or from high stacks' for EF v3.1
