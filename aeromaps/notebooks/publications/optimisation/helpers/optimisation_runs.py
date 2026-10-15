@@ -1,4 +1,4 @@
-"""Scenario construction and run drivers for the migrated ReFuelEU optimisation.
+"""Scenario construction and run drivers for the ReFuelEU optimisation.
 
 The published work is five variants of one problem, differing only in how much
 biomass aviation is allocated and how fast aircraft efficiency improves. They are
@@ -10,7 +10,7 @@ Two entry points:
                   optimisation started from the previous one's optimum.
 ``run_reference`` a plain MDA at a fixed mandate (fossil BAU, ReFuelEU).
 
-Both write their results to ``results/`` as soon as a run finishes and skip what
+Both write their results to ``RESULTS_DIR`` as soon as a run finishes and skip what
 is already on disk, so an interrupted sweep resumes where it stopped.
 """
 
@@ -41,9 +41,9 @@ OPTIM_YEARS = [2030, 2035, 2040, 2045, 2050]
 PAPER = Path(__file__).resolve().parent.parent
 # Configurations are named as in data/, which is where build_process looks for them.
 CONFIG_DIR = PAPER / "data"
-# Where run_optimisation and run_sweep write; the drivers in sweep/ point it at their own
+# Where run_optimisation and run_sweep write; the drivers in runs/ point it at their own
 # results folder.
-RESULTS_DIR = PAPER / "sweep" / "results_e"
+RESULTS_DIR = PAPER / "runs" / "results_budget_ladder"
 
 # Mandate shares over OPTIM_YEARS for the two non-optimised references.
 REFUELEU_MANDATE = {
@@ -389,7 +389,7 @@ def _save(process, stem):
 
 
 def run_optimisation(case, budget=None, config="config_rte.yaml", x0=None, max_iter=50, **kwargs):
-    """One optimisation, saved to ``results/``. ``budget=None`` means min-CO2."""
+    """One optimisation, saved to ``RESULTS_DIR``. ``budget=None`` means min-CO2."""
     objective = "carbon" if budget is None else "surplus"
     stem = RESULTS_DIR / (
         f"opt_{case}_mincarb" if budget is None else f"opt_{case}_{budget_tag(budget)}"
@@ -686,7 +686,7 @@ DEFAULT_BUDGETS = [3.8, 3.6, 3.4, 3.2, 3.0, 2.8, 2.6, 2.4, 2.2, 2.0]
 def status(cases=None, budgets=None):
     """What is on disk, as a case-by-budget grid, with the age of each result.
 
-    The terminal view of a sweep in progress. It reads ``results/`` rather than any
+    The terminal view of a sweep in progress. It reads ``RESULTS_DIR`` rather than any
     log, so it reports a sweep running in a notebook kernel -- whose output goes to
     the cell, not to any terminal -- exactly as well as one started from a shell.
 

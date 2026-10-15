@@ -53,7 +53,7 @@ The `family` column of `scenarios.csv`:
   not against a no-policy scenario, so it is negative even for fossil BAU. Policy costs
   are differences between two scenarios; for the sensitivities, each measured against a
   fossil BAU sharing its elasticity and discount rate, they are in
-  `sweep/sweep_summary.csv`.
+  `runs/sweep_summary.csv`.
 - **Two points per optimisation.** `timeseries.csv` holds the outputs of the optimiser's
   final iterate, which is what the paper reports. `optima.csv` and `feasible` describe
   the point GEMSEO selects as its optimum, the best one within its 1e-4 feasibility

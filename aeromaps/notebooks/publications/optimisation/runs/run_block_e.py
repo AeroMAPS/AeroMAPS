@@ -37,7 +37,7 @@ PAPER = HERE.parent
 sys.path.insert(0, str(PAPER))
 sys.path.insert(0, str(HERE))
 
-RESULTS_E = HERE / "results_e"
+RESULTS_E = HERE / "results_budget_ladder"
 LOGS = HERE / "logs"
 
 # The ladder, as % of the world budget. min-CO2 is appended by run_sweep itself.
@@ -52,7 +52,7 @@ MAX_ITER = 50
 
 
 def run_case(case):
-    """One case's full budget continuation, written to results_e/."""
+    """One case's full budget continuation, written to results_budget_ladder/."""
     import logging
 
     from helpers import optimisation_runs as R

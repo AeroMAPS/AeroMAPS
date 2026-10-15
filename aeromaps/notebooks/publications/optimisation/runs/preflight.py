@@ -23,7 +23,7 @@ sys.path.insert(0, str(PAPER))
 
 from helpers import optimisation_runs as R  # noqa: E402
 
-RESULTS = HERE / "results"
+RESULTS = HERE / "results_sensitivities"
 YEARS = list(range(2000, 2051))
 OPTIM_YEARS = R.OPTIM_YEARS
 BIOMASS_SHARE = 10.0

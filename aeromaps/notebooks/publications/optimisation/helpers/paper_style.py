@@ -1,7 +1,7 @@
 """One look for every figure of the ReFuelEU optimisation paper.
 
 Imported by `02_results.ipynb`, `equilibriums.ipynb` and the plotting scripts in
-`sweep/`, so a figure drawn from the notebook and the same figure drawn from the command
+`runs/`, so a figure drawn from the notebook and the same figure drawn from the command
 line come out identical, and two figures set side by side in the article share their
 colours, their type and the way their axes are drawn.
 

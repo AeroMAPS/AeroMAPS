@@ -7,7 +7,7 @@ and one who re-runs the optimisations rebuilds the dataset from them with
     poetry run python -m helpers.dataset      # from the paper folder
 
 which reads, for each run the article uses (``SCENARIOS``), its raw outputs under
-``sweep/results`` or ``sweep/results_e`` -- one JSON of model outputs and, for an
+``runs/results_sensitivities`` or ``runs/results_budget_ladder`` -- one JSON of model outputs and, for an
 optimisation, one HDF of its history -- and writes
 
     scenarios.csv    one row per run: what kind of run it is, its parameters, and
@@ -41,7 +41,7 @@ import pandas as pd
 
 PAPER = Path(__file__).resolve().parent.parent
 DATA_DIR = PAPER / "dataset"
-RAW = PAPER / "sweep"
+RAW = PAPER / "runs"
 
 YEARS = range(2000, 2051)
 OPTIM_YEARS = [2030, 2035, 2040, 2045, 2050]
@@ -162,22 +162,22 @@ SENSITIVITIES = [
     "r_15",
 ]
 
-# Every run the article draws on, with the folder under sweep/ that holds its raw output.
+# Every run the article draws on, with the folder under runs/ that holds its raw output.
 SCENARIOS = {
     # the carbon-budget ladder of each case, its minimum-CO2 end, and the case at the
     # ReFuelEU-equivalent budget
     **{
-        f"opt_{case}_{tag}": "results_e"
+        f"opt_{case}_{tag}": "results_budget_ladder"
         for case in CASE_LABELS
         for tag in [*BUDGET_TAGS, "mincarb", "refueleu"]
     },
     # one-parameter sensitivities around base, at the ReFuelEU-equivalent budget
-    **{run: "results" for run in SENSITIVITIES},
+    **{run: "results_sensitivities" for run in SENSITIVITIES},
     # fixed-mandate references
-    "fossil_main": "results_e",
-    "fossil_pess": "results_e",
-    "refueleu_main": "results_e",
-    "refueleu_step": "results",
+    "fossil_main": "results_budget_ladder",
+    "fossil_pess": "results_budget_ladder",
+    "refueleu_main": "results_budget_ladder",
+    "refueleu_step": "results_sensitivities",
 }
 
 
@@ -246,7 +246,7 @@ def export(out_dir=DATA_DIR):
         inputs, floats = data["float_inputs"], data.get("float_outputs", {})
         row = {
             "scenario": scenario,
-            "source": f"sweep/{folder}",
+            "source": f"runs/{folder}",
             "family": family,
             "case": case,
             "objective": objective,

@@ -36,7 +36,7 @@ sys.path.insert(0, str(HERE))
 from helpers import optimisation_runs as R  # noqa: E402
 from run_batch import BIOMASS_SHARE, RUNS  # noqa: E402
 
-RESULTS = HERE / "results"
+RESULTS = HERE / "results_sensitivities"
 YEARS = list(range(2000, 2051))
 
 

@@ -105,7 +105,7 @@ def main(case="main"):
 def compare():
     """Against ``base``, which reached the same budget from a different start."""
     ladder = R.read_run(stem("main").with_suffix(".hdf"))
-    cold = R.read_run(HERE / "results" / "base.hdf")
+    cold = R.read_run(HERE / "results_sensitivities" / "base.hdf")
     if ladder is None or cold is None:
         return
 

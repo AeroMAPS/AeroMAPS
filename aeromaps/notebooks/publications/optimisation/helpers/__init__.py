@@ -1,4 +1,4 @@
-"""Code shared by the notebooks and the sweep drivers.
+"""Code shared by the notebooks and the run drivers in runs/.
 
 optimisation_runs   building, optimising and reading back one scenario
 dataset             the paper's dataset: exporting it from the runs, reading it back

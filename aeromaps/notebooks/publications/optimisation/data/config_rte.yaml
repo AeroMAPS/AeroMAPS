@@ -1,4 +1,4 @@
-# RTE optimisation paper, migrated to AeroMAPS main (generic energy + markets).
+# ReFuelEU optimisation paper: the scenario every optimisation is built on.
 data:
   inputs:
     json_inputs_file: "./partitioned_inputs_merged.json"

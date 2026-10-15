@@ -538,76 +538,76 @@ def discount():
 # --------------------------------------------------------------------------- #
 
 # Each row names its JSON relative to this folder, because the rows come from two
-# places: blocks A-D in results/, and the carbon-budget ladder and the other cases at the
-# central budget in results_e/. The fossil BAU is not a row: it is a reference rather
+# places: blocks A-D in results_sensitivities/, and the carbon-budget ladder and the other
+# cases at the central budget in results_budget_ladder/. The fossil BAU is not a row: it is a reference rather
 # than a sensitivity, and it stretched every axis until the sensitivities were unreadable.
-BASELINE_ROW = ("results/base.json", "Baseline")
+BASELINE_ROW = ("results_sensitivities/base.json", "Baseline")
 
 SUMMARY_GROUPS = [
     (
         "Carbon budget",
         style.NAVY,
         [
-            ("results_e/opt_main_3_8.json", "3.8 %"),
-            ("results_e/opt_main_3_4.json", "3.4 %"),
-            ("results_e/opt_main_3_0.json", "3.0 %"),
-            ("results_e/opt_main_2_6.json", "2.6 %"),
-            ("results_e/opt_main_2_2.json", "2.2 %"),
+            ("results_budget_ladder/opt_main_3_8.json", "3.8 %"),
+            ("results_budget_ladder/opt_main_3_4.json", "3.4 %"),
+            ("results_budget_ladder/opt_main_3_0.json", "3.0 %"),
+            ("results_budget_ladder/opt_main_2_6.json", "2.6 %"),
+            ("results_budget_ladder/opt_main_2_2.json", "2.2 %"),
         ],
     ),
     (
         "Biomass allocation",
         style.GREEN,
         [
-            ("results_e/opt_B5_refueleu.json", "5 %"),
-            ("results_e/opt_B75_refueleu.json", "7.5 %"),
-            ("results_e/opt_B15_refueleu.json", "15 %"),
+            ("results_budget_ladder/opt_B5_refueleu.json", "5 %"),
+            ("results_budget_ladder/opt_B75_refueleu.json", "7.5 %"),
+            ("results_budget_ladder/opt_B15_refueleu.json", "15 %"),
         ],
     ),
     (
         "Technology",
         style.DARK_GREY,
-        [("results_e/opt_pess_refueleu.json", "efficiency +0.91 %/yr")],
+        [("results_budget_ladder/opt_pess_refueleu.json", "efficiency +0.91 %/yr")],
     ),
     (
         "Price elasticity",
         style.PURPLE,
         [
-            ("results/fixed_demand.json", "fixed demand"),
-            ("results/eps_m0_6.json", "\u22120.6"),
-            ("results/eps_m0_8.json", "\u22120.8"),
-            ("results/eps_m1_0.json", "\u22121.0"),
-            ("results/eps_m1_4.json", "\u22121.4"),
+            ("results_sensitivities/fixed_demand.json", "fixed demand"),
+            ("results_sensitivities/eps_m0_6.json", "\u22120.6"),
+            ("results_sensitivities/eps_m0_8.json", "\u22120.8"),
+            ("results_sensitivities/eps_m1_0.json", "\u22121.0"),
+            ("results_sensitivities/eps_m1_4.json", "\u22121.4"),
         ],
     ),
     (
         "Ramp-up rate",
         style.RED,
         [
-            ("results/rate_11_8.json", "11.8 %/yr  (IEA NZE)"),
-            ("results/rate_39.json", "39 %/yr  (wind/PV)"),
+            ("results_sensitivities/rate_11_8.json", "11.8 %/yr  (IEA NZE)"),
+            ("results_sensitivities/rate_39.json", "39 %/yr  (wind/PV)"),
         ],
     ),
     (
         "Ramp-up volume",
         style.ORANGE,
         [
-            ("results/vol_0_1.json", "0.1 EJ/yr"),
-            ("results/vol_0_4.json", "0.4 EJ/yr"),
+            ("results_sensitivities/vol_0_1.json", "0.1 EJ/yr"),
+            ("results_sensitivities/vol_0_4.json", "0.4 EJ/yr"),
         ],
     ),
     (
         "Electrofuel pathway",
         style.TEAL,
-        [("results/efuel_wind.json", "dedicated wind")],
+        [("results_sensitivities/efuel_wind.json", "dedicated wind")],
     ),
     (
         "Discount rate",
         style.OCHRE,
         [
-            ("results/r_3_2.json", "3.2 % †"),
-            ("results/r_7.json", "7 % †"),
-            ("results/r_15.json", "15 % †"),
+            ("results_sensitivities/r_3_2.json", "3.2 % †"),
+            ("results_sensitivities/r_7.json", "7 % †"),
+            ("results_sensitivities/r_15.json", "15 % †"),
         ],
     ),
 ]

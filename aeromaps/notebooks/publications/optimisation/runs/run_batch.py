@@ -43,7 +43,7 @@ HERE = Path(__file__).resolve().parent
 PAPER = HERE.parent
 sys.path.insert(0, str(PAPER))
 
-RESULTS = HERE / "results"
+RESULTS = HERE / "results_sensitivities"
 LOGS = HERE / "logs"
 SUMMARY = HERE / "summary.csv"
 # One file per run. Parallel children cannot safely read-modify-write a shared CSV,
