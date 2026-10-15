@@ -38,7 +38,12 @@ EU_ASK_SHARE = 15.49 / 100
 # ReFuelEU reference years carrying a design variable.
 OPTIM_YEARS = [2030, 2035, 2040, 2045, 2050]
 
-RESULTS_DIR = Path("results")
+PAPER = Path(__file__).resolve().parent.parent
+# Configurations are named as in data/, which is where build_process looks for them.
+CONFIG_DIR = PAPER / "data"
+# Where run_optimisation and run_sweep write; the drivers in sweep/ point it at their own
+# results folder.
+RESULTS_DIR = PAPER / "sweep" / "results_e"
 
 # Mandate shares over OPTIM_YEARS for the two non-optimised references.
 REFUELEU_MANDATE = {
@@ -84,7 +89,7 @@ ELASTIC_CONFIGS = {"config_rte.yaml"}
 def build_process(case="main", config="config_rte.yaml", optimisation=False, carbon_budget=2.6):
     """Create the process and set every scenario parameter.
 
-    The constraint models of ``constraints_rte.py`` are part of the chain even for
+    The constraint models of ``helpers/constraints_rte.py`` are part of the chain even for
     a plain MDA, so their inputs must always be defined - otherwise GEMSEO cannot
     order the disciplines.
 
@@ -93,7 +98,7 @@ def build_process(case="main", config="config_rte.yaml", optimisation=False, car
     constraint.
     """
     settings = CASES[case]
-    process = create_process(configuration_file=config, optimisation=optimisation)
+    process = create_process(configuration_file=str(CONFIG_DIR / config), optimisation=optimisation)
 
     # Entry point for the airfare <-> RPK loop, as in the published notebook. The
     # no-feedback config has no such loop, and neither parameter exists there.
@@ -735,7 +740,7 @@ def status(cases=None, budgets=None):
 # they are the level at which this problem parallelises:
 #
 #     for case in main B5 B75 B15 pess; do
-#         poetry run python optimisation_runs.py $case > log_$case.txt 2>&1 &
+#         poetry run python -m helpers.optimisation_runs $case > log_$case.txt 2>&1 &
 #     done
 #
 # Five processes, one core each, five sweeps in the time of the slowest. Nothing

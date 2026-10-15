@@ -33,7 +33,7 @@ PAPER = HERE.parent
 sys.path.insert(0, str(PAPER))
 sys.path.insert(0, str(HERE))
 
-import optimisation_runs as R  # noqa: E402
+from helpers import optimisation_runs as R  # noqa: E402
 from run_batch import BIOMASS_SHARE, RUNS  # noqa: E402
 
 RESULTS = HERE / "results"

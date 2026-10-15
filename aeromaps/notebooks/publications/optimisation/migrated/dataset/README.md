@@ -64,5 +64,5 @@ The `family` column of `scenarios.csv`:
 
 ## Reproducing
 
-`python dataset.py` rebuilds these files from the raw optimisation outputs, which
-`01_optimisation_runs.ipynb` describes how to regenerate.
+`python -m helpers.dataset`, run from the paper folder, rebuilds these files from the
+raw optimisation outputs, which `01_optimisation_runs.ipynb` describes how to regenerate.

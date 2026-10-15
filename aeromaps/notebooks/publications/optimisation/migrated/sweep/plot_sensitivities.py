@@ -24,11 +24,13 @@ from matplotlib.lines import Line2D
 from matplotlib.ticker import MaxNLocator
 
 HERE = Path(__file__).resolve().parent
+FIGURES = HERE.parent / "figures"  # every figure of the paper, beside 02_results' own
+FIGURES.mkdir(exist_ok=True)
 sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(HERE.parent))
 
-import dataset as D  # noqa: E402
-import paper_style as style  # noqa: E402
+from helpers import dataset as D  # noqa: E402
+from helpers import paper_style as style  # noqa: E402
 
 # The paper's house style, so these figures match the notebook's whether they are drawn
 # from it or from the command line.
@@ -269,7 +271,7 @@ def sensitivity_panels(cases, title, subtitle, legend_title, stem, annotate=None
     figure.text(0.006, 0.955, subtitle, ha="left", fontsize=style.SMALL_SIZE, color=MUTED)
     figure.tight_layout(rect=(0, 0.035, 1, 0.948))
     for suffix in ("png", "pdf"):
-        figure.savefig(HERE / f"{stem}.{suffix}", dpi=200, bbox_inches="tight")
+        figure.savefig(FIGURES / f"{stem}.{suffix}", dpi=200, bbox_inches="tight")
     print(f"wrote {stem}.png / .pdf")
     return axes
 
@@ -481,7 +483,7 @@ def pathway():
     )
     figure.tight_layout(rect=(0, 0.038, 1, 0.948))
     for suffix in ("png", "pdf"):
-        figure.savefig(HERE / f"fig_pathway_panels.{suffix}", dpi=200, bbox_inches="tight")
+        figure.savefig(FIGURES / f"fig_pathway_panels.{suffix}", dpi=200, bbox_inches="tight")
     print("wrote fig_pathway_panels.png / .pdf")
 
 
@@ -800,7 +802,7 @@ def summary():
         # No bbox_inches="tight": it would crop the page to the artwork and the printed
         # width would no longer be the 190 mm the font sizes assume.
         for suffix in ("png", "pdf"):
-            figure.savefig(HERE / f"fig_sensitivity_summary.{suffix}", dpi=300)
+            figure.savefig(FIGURES / f"fig_sensitivity_summary.{suffix}", dpi=300)
     print("wrote fig_sensitivity_summary.png / .pdf")
 
 

@@ -5,7 +5,7 @@ Imported by `02_results.ipynb`, `equilibriums.ipynb` and the plotting scripts in
 line come out identical, and two figures set side by side in the article share their
 colours, their type and the way their axes are drawn.
 
-    import paper_style as style
+    from helpers import paper_style as style
     style.apply()
 
 What it settles:

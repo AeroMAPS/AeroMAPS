@@ -34,7 +34,7 @@ PAPER = HERE.parent
 sys.path.insert(0, str(PAPER))
 sys.path.insert(0, str(HERE))
 
-import optimisation_runs as R  # noqa: E402
+from helpers import optimisation_runs as R  # noqa: E402
 from run_batch import BIOMASS_SHARE, BUDGET_GTCO2, BUDGET_WORLD_SHARE, FTOL, KKT_TOL_REL  # noqa: E402
 from run_block_e import MAX_ITER, RESULTS_E  # noqa: E402
 

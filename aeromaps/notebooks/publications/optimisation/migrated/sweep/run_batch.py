@@ -221,7 +221,7 @@ def run_one(run_id):
     """Build, solve and save one run. Runs in the current process."""
     import logging
 
-    import optimisation_runs as R
+    from helpers import optimisation_runs as R
     from aeromaps.core.gemseo import disable_gemseo_execution_statistics
     from gemseo import configure_logger
     from gemseo.algos.opt.scipy_local.settings.slsqp import SLSQP_Settings

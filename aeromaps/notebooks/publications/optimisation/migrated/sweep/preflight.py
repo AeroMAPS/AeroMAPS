@@ -21,7 +21,7 @@ HERE = Path(__file__).resolve().parent
 PAPER = HERE.parent
 sys.path.insert(0, str(PAPER))
 
-import optimisation_runs as R  # noqa: E402
+from helpers import optimisation_runs as R  # noqa: E402
 
 RESULTS = HERE / "results"
 YEARS = list(range(2000, 2051))

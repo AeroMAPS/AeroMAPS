@@ -29,7 +29,7 @@ PAPER = HERE.parent
 sys.path.insert(0, str(PAPER))
 sys.path.insert(0, str(HERE))
 
-import optimisation_runs as R  # noqa: E402
+from helpers import optimisation_runs as R  # noqa: E402
 from run_batch import RESULTS, RUNS, rebuild_summary  # noqa: E402
 from run_references import reference_key  # noqa: E402
 

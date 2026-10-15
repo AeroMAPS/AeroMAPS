@@ -4,7 +4,7 @@ Every figure of ``02_results.ipynb`` is drawn from the four files in ``dataset/`
 from the raw runs: a reader who only wants to look at the scenarios needs nothing else,
 and one who re-runs the optimisations rebuilds the dataset from them with
 
-    poetry run python dataset.py
+    poetry run python -m helpers.dataset      # from the paper folder
 
 which reads, for each run the article uses (``SCENARIOS``), its raw outputs under
 ``sweep/results`` or ``sweep/results_e`` -- one JSON of model outputs and, for an
@@ -26,7 +26,7 @@ One subtlety the dataset inherits rather than resolves. ``timeseries.csv`` holds
 outputs of SLSQP's final iterate -- what the raw JSON holds -- while ``optima.csv`` and
 ``feasible`` describe GEMSEO's ``x_opt``, read from the HDF. In 14 of the 74
 optimisations the two are different iterates; see ``setup_optimisation`` in
-``optimisation_runs.py`` for why the final iterate is the one the paper reports.
+``helpers/optimisation_runs.py`` for why the final iterate is the one the paper reports.
 """
 
 from __future__ import annotations
@@ -39,9 +39,9 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-HERE = Path(__file__).resolve().parent
-DATA_DIR = HERE / "dataset"
-RAW = HERE / "sweep"
+PAPER = Path(__file__).resolve().parent.parent
+DATA_DIR = PAPER / "dataset"
+RAW = PAPER / "sweep"
 
 YEARS = range(2000, 2051)
 OPTIM_YEARS = [2030, 2035, 2040, 2045, 2050]

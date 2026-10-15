@@ -55,7 +55,7 @@ def run_case(case):
     """One case's full budget continuation, written to results_e/."""
     import logging
 
-    import optimisation_runs as R
+    from helpers import optimisation_runs as R
     from aeromaps.core.gemseo import disable_gemseo_execution_statistics
     from gemseo import configure_logger
     from gemseo.algos.opt.scipy_local.settings.slsqp import SLSQP_Settings
@@ -113,7 +113,7 @@ def run_rung(case, tag, seed_dir):
     """
     import logging
 
-    import optimisation_runs as R
+    from helpers import optimisation_runs as R
     from aeromaps.core.gemseo import disable_gemseo_execution_statistics
     from gemseo import configure_logger
     from gemseo.algos.opt.scipy_local.settings.slsqp import SLSQP_Settings
@@ -259,7 +259,7 @@ def drive_seeded(cases, jobs, seed_dir):
 def run_case_reference(case, kind):
     import logging
 
-    import optimisation_runs as R
+    from helpers import optimisation_runs as R
     from aeromaps.core.gemseo import disable_gemseo_execution_statistics
     from gemseo import configure_logger
 
@@ -388,7 +388,7 @@ def _started(log):
 
 
 def R_read(path):
-    import optimisation_runs as R
+    from helpers import optimisation_runs as R
 
     return R.read_run(path)
 

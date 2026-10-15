@@ -25,8 +25,8 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(HERE.parent))
 
-import dataset as D  # noqa: E402
-import paper_style as style  # noqa: E402
+from helpers import dataset as D  # noqa: E402
+from helpers import paper_style as style  # noqa: E402
 
 YEARS = list(range(2000, 2051))
 ANCHOR = 0.09236379319842411
