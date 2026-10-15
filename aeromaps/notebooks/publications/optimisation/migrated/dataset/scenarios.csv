@@ -1,97 +1,79 @@
 scenario,source,family,case,objective,label,carbon_budget_world_share_pct,biomass_world_share_pct,electricity_world_share_pct,price_elasticity,ramp_rate_cap,ramp_volume_cap_EJ_per_yr,social_discount_rate,efuel_pathway,feasible,carbon_budget_consumed_share,aviation_carbon_budget_constraint
+opt_main_3_8,sweep/results_e,budget ladder,main,surplus,"Reference, 3.8 % of world budget",3.8,10.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.5886200191101348,3.844955644619309e-08
+opt_main_3_6,sweep/results_e,budget ladder,main,surplus,"Reference, 3.6 % of world budget",3.6,10.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.557640001394881,2.993060681543211e-09
+opt_main_3_4,sweep/results_e,budget ladder,main,surplus,"Reference, 3.4 % of world budget",3.4,10.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.5266600005737184,1.318715993308607e-09
+opt_main_3_2,sweep/results_e,budget ladder,main,surplus,"Reference, 3.2 % of world budget",3.2,10.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.495680000667461,1.6518106956396675e-09
+opt_main_3_0,sweep/results_e,budget ladder,main,surplus,"Reference, 3.0 % of world budget",3.0,10.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.4647028847298926,7.731821775876827e-06
+opt_main_2_8,sweep/results_e,budget ladder,main,surplus,"Reference, 2.8 % of world budget",2.8,10.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.4337207454841261,2.17902413436017e-06
+opt_main_2_6,sweep/results_e,budget ladder,main,surplus,"Reference, 2.6 % of world budget",2.6,10.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.4027399995604801,-1.4126189306868685e-09
+opt_main_2_4,sweep/results_e,budget ladder,main,surplus,"Reference, 2.4 % of world budget",2.4,10.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.3717599995774812,-1.5081431328405786e-09
+opt_main_2_2,sweep/results_e,budget ladder,main,surplus,"Reference, 2.2 % of world budget",2.2,10.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.3407799995693074,-1.7284515306155673e-09
+opt_main_2_0,sweep/results_e,budget ladder,main,surplus,"Reference, 2.0 % of world budget",2.0,10.0,5.0,-0.9,0.2,0.2,0.045,grid,False,0.32548419368568154,0.07188044360930146
+opt_main_mincarb,sweep/results_e,budget ladder,main,carbon,"Reference, minimum CO2",2.6,10.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.3255070445616048,-0.24822705780145313
+opt_main_refueleu,sweep/results_e,central budget,main,surplus,"Reference, ReFuelEU-equivalent budget",3.122636344,10.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.48369645258126903,2.1141746204073998e-07
+opt_B5_3_8,sweep/results_e,budget ladder,B5,surplus,"5 % biomass, 3.8 % of world budget",3.8,5.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.5886202231155667,4.4890811363919324e-07
+opt_B5_3_6,sweep/results_e,budget ladder,B5,surplus,"5 % biomass, 3.6 % of world budget",3.6,5.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.5576400694697998,1.4906455842473035e-07
+opt_B5_3_4,sweep/results_e,budget ladder,B5,surplus,"5 % biomass, 3.4 % of world budget",3.4,5.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.5266604782814728,1.099350191772599e-06
+opt_B5_3_2,sweep/results_e,budget ladder,B5,surplus,"5 % biomass, 3.2 % of world budget",3.2,5.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.49567999951207026,-1.2075129782275295e-09
+opt_B5_3_0,sweep/results_e,budget ladder,B5,surplus,"5 % biomass, 3.0 % of world budget",3.0,5.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.46469999953103835,-1.2569386374553107e-09
+opt_B5_2_8,sweep/results_e,budget ladder,B5,surplus,"5 % biomass, 2.8 % of world budget",2.8,5.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.433720939471647,2.7460429012569455e-06
+opt_B5_2_6,sweep/results_e,budget ladder,B5,surplus,"5 % biomass, 2.6 % of world budget",2.6,5.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.40274129982241136,4.177634936033154e-06
+opt_B5_2_4,sweep/results_e,budget ladder,B5,surplus,"5 % biomass, 2.4 % of world budget",2.4,5.0,5.0,-0.9,0.2,0.2,0.045,grid,False,0.37606146198501933,0.015353681563814522
+opt_B5_2_2,sweep/results_e,budget ladder,B5,surplus,"5 % biomass, 2.2 % of world budget",2.2,5.0,5.0,-0.9,0.2,0.2,0.045,grid,False,0.36387625565009096,0.09268965904959924
+opt_B5_2_0,sweep/results_e,budget ladder,B5,surplus,"5 % biomass, 2.0 % of world budget",2.0,5.0,5.0,-0.9,0.2,0.2,0.045,grid,False,0.35678999151720436,0.2153544838289977
+opt_B5_mincarb,sweep/results_e,budget ladder,B5,carbon,"5 % biomass, minimum CO2",2.6,5.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.3823021887868528,-0.0656872149530484
+opt_B5_refueleu,sweep/results_e,central budget,B5,surplus,"5 % biomass, ReFuelEU-equivalent budget",3.122636344,5.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.4836963710096719,3.37691844083804e-09
+opt_B75_3_8,sweep/results_e,budget ladder,B75,surplus,"7.5 % biomass, 3.8 % of world budget",3.8,7.5,5.0,-0.9,0.2,0.2,0.045,grid,True,0.5886200005411667,1.088826295409928e-09
+opt_B75_3_6,sweep/results_e,budget ladder,B75,surplus,"7.5 % biomass, 3.6 % of world budget",3.6,7.5,5.0,-0.9,0.2,0.2,0.045,grid,True,0.5576405275729184,1.1320375808878312e-06
+opt_B75_3_4,sweep/results_e,budget ladder,B75,surplus,"7.5 % biomass, 3.4 % of world budget",3.4,7.5,5.0,-0.9,0.2,0.2,0.045,grid,True,0.5266600679128887,1.561006467383578e-07
+opt_B75_3_2,sweep/results_e,budget ladder,B75,surplus,"7.5 % biomass, 3.2 % of world budget",3.2,7.5,5.0,-0.9,0.2,0.2,0.045,grid,True,0.4956800240051997,5.9407290983589075e-08
+opt_B75_3_0,sweep/results_e,budget ladder,B75,surplus,"7.5 % biomass, 3.0 % of world budget",3.0,7.5,5.0,-0.9,0.2,0.2,0.045,grid,True,0.4647000101998871,2.733833397158439e-08
+opt_B75_2_8,sweep/results_e,budget ladder,B75,surplus,"7.5 % biomass, 2.8 % of world budget",2.8,7.5,5.0,-0.9,0.2,0.2,0.045,grid,True,0.4337212915373888,3.7751188013617284e-06
+opt_B75_2_6,sweep/results_e,budget ladder,B75,surplus,"7.5 % biomass, 2.6 % of world budget",2.6,7.5,5.0,-0.9,0.2,0.2,0.045,grid,True,0.40273999956077966,-1.411656130039694e-09
+opt_B75_2_4,sweep/results_e,budget ladder,B75,surplus,"7.5 % biomass, 2.4 % of world budget",2.4,7.5,5.0,-0.9,0.2,0.2,0.045,grid,True,0.3717600941562175,3.360821471256228e-07
+opt_B75_2_2,sweep/results_e,budget ladder,B75,surplus,"7.5 % biomass, 2.2 % of world budget",2.2,7.5,5.0,-0.9,0.2,0.2,0.045,grid,False,0.3476374468315072,0.02752023611068099
+opt_B75_2_0,sweep/results_e,budget ladder,B75,surplus,"7.5 % biomass, 2.0 % of world budget",2.0,7.5,5.0,-0.9,0.2,0.2,0.045,grid,False,0.34212347536079135,0.14813804231766917
+opt_B75_mincarb,sweep/results_e,budget ladder,B75,carbon,"7.5 % biomass, minimum CO2",2.6,7.5,5.0,-0.9,0.2,0.2,0.045,grid,True,0.34999436357118696,-0.16952470701490818
+opt_B75_refueleu,sweep/results_e,central budget,B75,surplus,"7.5 % biomass, ReFuelEU-equivalent budget",3.122636344,7.5,5.0,-0.9,0.2,0.2,0.045,grid,True,0.4836963696961444,2.689240756709474e-11
+opt_B15_3_8,sweep/results_e,budget ladder,B15,surplus,"15 % biomass, 3.8 % of world budget",3.8,15.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.5886200190924226,3.841391922748046e-08
+opt_B15_3_6,sweep/results_e,budget ladder,B15,surplus,"15 % biomass, 3.6 % of world budget",3.6,15.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.5576399994527321,-1.1742978786764174e-09
+opt_B15_3_4,sweep/results_e,budget ladder,B15,surplus,"15 % biomass, 3.4 % of world budget",3.4,15.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.5266600010396951,2.3897832589938577e-09
+opt_B15_3_2,sweep/results_e,budget ladder,B15,surplus,"15 % biomass, 3.2 % of world budget",3.2,15.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.49567999999162526,-2.072567090569015e-11
+opt_B15_3_0,sweep/results_e,budget ladder,B15,surplus,"15 % biomass, 3.0 % of world budget",3.0,15.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.464702566029716,6.877622922886266e-06
+opt_B15_2_8,sweep/results_e,budget ladder,B15,surplus,"15 % biomass, 2.8 % of world budget",2.8,15.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.4337199995848702,-1.2134099385997923e-09
+opt_B15_2_6,sweep/results_e,budget ladder,B15,surplus,"15 % biomass, 2.6 % of world budget",2.6,15.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.402740034774688,1.1176600000112905e-07
+opt_B15_2_4,sweep/results_e,budget ladder,B15,surplus,"15 % biomass, 2.4 % of world budget",2.4,15.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.37176026094923426,9.314348143311457e-07
+opt_B15_2_2,sweep/results_e,budget ladder,B15,surplus,"15 % biomass, 2.2 % of world budget",2.2,15.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.34078002368991056,9.507210875764601e-08
+opt_B15_2_0,sweep/results_e,budget ladder,B15,surplus,"15 % biomass, 2.0 % of world budget",2.0,15.0,5.0,-0.9,0.2,0.2,0.045,grid,False,0.3197159898323924,0.045444844807571425
+opt_B15_mincarb,sweep/results_e,budget ladder,B15,carbon,"15 % biomass, minimum CO2",2.6,15.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.31971598992740663,-0.26683953281622963
+opt_B15_refueleu,sweep/results_e,central budget,B15,surplus,"15 % biomass, ReFuelEU-equivalent budget",3.122636344,15.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.48369636916377234,-1.3308716034534725e-09
+opt_pess_3_8,sweep/results_e,budget ladder,pess,surplus,"Pessimistic technology, 3.8 % of world budget",3.8,10.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.5886199993466241,-1.318549727091666e-09
+opt_pess_3_6,sweep/results_e,budget ladder,pess,surplus,"Pessimistic technology, 3.6 % of world budget",3.6,10.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.5576402867326741,6.172317972335032e-07
+opt_pess_3_4,sweep/results_e,budget ladder,pess,surplus,"Pessimistic technology, 3.4 % of world budget",3.4,10.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.526660005616727,1.2954716658424633e-08
+opt_pess_3_2,sweep/results_e,budget ladder,pess,surplus,"Pessimistic technology, 3.2 % of world budget",3.2,10.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.4956800016398728,4.073345892635446e-09
+opt_pess_3_0,sweep/results_e,budget ladder,pess,surplus,"Pessimistic technology, 3.0 % of world budget",3.0,10.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.46469999948471913,-1.3866315962021554e-09
+opt_pess_2_8,sweep/results_e,budget ladder,pess,surplus,"Pessimistic technology, 2.8 % of world budget",2.8,10.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.4337204624758526,1.357722567756494e-06
+opt_pess_2_6,sweep/results_e,budget ladder,pess,surplus,"Pessimistic technology, 2.6 % of world budget",2.6,10.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.4027404905364012,1.584183600193274e-06
+opt_pess_2_4,sweep/results_e,budget ladder,pess,surplus,"Pessimistic technology, 2.4 % of world budget",2.4,10.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.3717599995047604,-1.7771790120773268e-09
+opt_pess_2_2,sweep/results_e,budget ladder,pess,surplus,"Pessimistic technology, 2.2 % of world budget",2.2,10.0,5.0,-0.9,0.2,0.2,0.045,grid,False,0.361244246497585,0.08262167248666596
+opt_pess_2_0,sweep/results_e,budget ladder,pess,surplus,"Pessimistic technology, 2.0 % of world budget",2.0,10.0,5.0,-0.9,0.2,0.2,0.045,grid,False,0.35889448632351867,0.22654862069478157
+opt_pess_mincarb,sweep/results_e,budget ladder,pess,carbon,"Pessimistic technology, minimum CO2",2.6,10.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.36403051143191545,-0.12501200074920096
+opt_pess_refueleu,sweep/results_e,central budget,pess,surplus,"Pessimistic technology, ReFuelEU-equivalent budget",3.122636344,10.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.4836963697705193,2.1740592739348512e-10
 base,sweep/results,sensitivity baseline,main,surplus,"baseline (eps -0.9, 20 %/yr, 0.2 EJ/yr, r 4.5 %)",3.122636344,10.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.4836963694746747,-5.379448040361726e-10
-efuel_wind,sweep/results,sensitivity C,main,surplus,"dedicated-wind electrofuel, no electricity limit",3.122636344,10.0,5.0,-0.9,0.2,0.2,0.045,dedicated wind,True,0.4836964770625078,2.738545159671892e-07
 eps_m0_6,sweep/results,sensitivity A,main,surplus,eps_P = -0.6,3.122636344,10.0,5.0,-0.6,0.2,0.2,0.045,grid,True,0.4836964615685778,2.342696421229561e-07
 eps_m0_8,sweep/results,sensitivity A,main,surplus,eps_P = -0.8,3.122636344,10.0,5.0,-0.8,0.2,0.2,0.045,grid,True,0.4836963713373966,4.212342042547988e-09
 eps_m1_0,sweep/results,sensitivity A,main,surplus,eps_P = -1.0,3.122636344,10.0,5.0,-1.0,0.2,0.2,0.045,grid,True,0.4836963698470852,4.118915469705907e-10
 eps_m1_4,sweep/results,sensitivity A,main,surplus,eps_P = -1.4,3.122636344,10.0,5.0,-1.4,0.2,0.2,0.045,grid,True,0.4836963709051188,3.1116940955574082e-09
 fixed_demand,sweep/results,sensitivity A',main,cost,fixed demand (no cost feedback),3.122636344,10.0,5.0,,0.2,0.2,0.045,grid,True,0.48369636913206204,-1.4104287906397111e-09
-fossil,sweep/results,reference,main,none,Fossil BAU (no optimisation),2.6,10.0,5.0,-0.9,0.2,0.2,0.045,grid,,0.6357144070300103,0.7497250153538431
-r_15,sweep/results,sensitivity D,main,surplus,discount rate 15 % (extreme),3.122636344,10.0,5.0,-0.9,0.2,0.2,0.15,grid,True,0.48369636968560004,1.4171949307589088e-16
-r_3_2,sweep/results,sensitivity D,main,surplus,discount rate 3.2 %,3.122636344,10.0,5.0,-0.9,0.2,0.2,0.032,grid,True,0.48369636979400155,2.76467804287377e-10
-r_7,sweep/results,sensitivity D,main,surplus,discount rate 7 %,3.122636344,10.0,5.0,-0.9,0.2,0.2,0.07,grid,True,0.483696369631981,-1.3675024077067782e-10
 rate_11_8,sweep/results,sensitivity B,main,surplus,ramp rate 11.8 %/yr (IEA NZE),3.122636344,10.0,5.0,-0.9,0.118,0.2,0.045,grid,True,0.4836964889239315,3.0410594096079305e-07
 rate_39,sweep/results,sensitivity B,main,surplus,ramp rate 39 %/yr (wind/PV emergence),3.122636344,10.0,5.0,-0.9,0.39,0.2,0.045,grid,True,0.4836963696856,-1.4171949307589088e-16
-ref_fossil_epsm0_6,sweep/results,reference,main,none,"Fossil BAU, reference for eps_m0_6 (no optimisation)",3.119357596335,10.0,5.0,-0.6,0.2,0.2,0.045,grid,,0.6246391324996978,0.36145247001337166
-ref_fossil_epsm0_8,sweep/results,reference,main,none,"Fossil BAU, reference for eps_m0_8 (no optimisation)",3.119357596335,10.0,5.0,-0.8,0.2,0.2,0.045,grid,,0.6320738292173291,0.3805450568959911
-ref_fossil_epsm0_9,sweep/results,reference,main,none,"Fossil BAU, reference for base, rate_11_8, rate_39, vol_0_1, vol_0_4, efuel_wind (no optimisation)",3.119357596335,10.0,5.0,-0.9,0.2,0.2,0.045,grid,,0.6357144070300103,0.3898974365252784
-ref_fossil_epsm1,sweep/results,reference,main,none,"Fossil BAU, reference for eps_m1_0 (no optimisation)",3.119357596335,10.0,5.0,-1.0,0.2,0.2,0.045,grid,,0.6393039572877057,0.39912081288158063
-ref_fossil_epsm1_4,sweep/results,reference,main,none,"Fossil BAU, reference for eps_m1_4 (no optimisation)",3.119357596335,10.0,5.0,-1.4,0.2,0.2,0.045,grid,,0.6531563736342845,0.4347341146581867
-ref_fossil_nofeedback,sweep/results,reference,main,none,"Fossil BAU, reference for fixed_demand (no optimisation)",3.119357596335,10.0,5.0,,0.2,0.2,0.045,grid,,0.6011105127655327,0.3010887115107723
-ref_fossil_r0_032,sweep/results,reference,main,none,"Fossil BAU, reference for r_3_2 (no optimisation)",3.119357596335,10.0,5.0,-0.9,0.2,0.2,0.032,grid,,0.6357144070300103,0.3898974365252784
-ref_fossil_r0_07,sweep/results,reference,main,none,"Fossil BAU, reference for r_7 (no optimisation)",3.119357596335,10.0,5.0,-0.9,0.2,0.2,0.07,grid,,0.6357144070300103,0.3898974365252784
-ref_fossil_r0_15,sweep/results,reference,main,none,"Fossil BAU, reference for r_15 (no optimisation)",3.119357596335,10.0,5.0,-0.9,0.2,0.2,0.15,grid,,0.6357144070300103,0.3898974365252784
-refueleu_linear,sweep/results,reference,main,none,"ReFuelEU, mandate interpolated linearly (no optimisation)",2.6,10.0,5.0,-0.9,0.2,0.2,0.045,grid,,0.48369636974021046,0.2601941277118394
-refueleu_step,sweep/results,reference,main,none,"ReFuelEU, mandate held in steps (no optimisation)",2.6,10.0,5.0,-0.9,0.2,0.2,0.045,grid,,0.5111960941720373,0.3485783627487667
 vol_0_1,sweep/results,sensitivity B',main,surplus,ramp volume 0.1 EJ/yr,3.122636344,10.0,5.0,-0.9,0.2,0.1,0.045,grid,True,0.4836963691751137,-1.3019463714776972e-09
 vol_0_4,sweep/results,sensitivity B',main,surplus,ramp volume 0.4 EJ/yr,3.122636344,10.0,5.0,-0.9,0.2,0.4,0.045,grid,True,0.4836963696856,0.0
-fossil_B15,sweep/results_e,reference,B15,none,"15 % biomass, Fossil BAU (no optimisation)",2.6,15.0,5.0,-0.9,0.2,0.2,0.045,grid,,0.6357144070300103,0.7497250153538431
-fossil_B5,sweep/results_e,reference,B5,none,"5 % biomass, Fossil BAU (no optimisation)",2.6,5.0,5.0,-0.9,0.2,0.2,0.045,grid,,0.6357144070300103,0.7497250153538431
-fossil_B75,sweep/results_e,reference,B75,none,"7.5 % biomass, Fossil BAU (no optimisation)",2.6,7.5,5.0,-0.9,0.2,0.2,0.045,grid,,0.6357144070300103,0.7497250153538431
-fossil_main,sweep/results_e,reference,main,none,"Reference, Fossil BAU (no optimisation)",2.6,10.0,5.0,-0.9,0.2,0.2,0.045,grid,,0.6357144070300103,0.7497250153538431
-fossil_pess,sweep/results_e,reference,pess,none,"Pessimistic technology, Fossil BAU (no optimisation)",2.6,10.0,5.0,-0.9,0.2,0.2,0.045,grid,,0.6819997688573936,0.9030437381818985
-opt_B15_2_0,sweep/results_e,budget ladder,B15,surplus,"15 % biomass, 2.0 % of world budget",2.0,15.0,5.0,-0.9,0.2,0.2,0.045,grid,False,0.3197159898323924,0.045444844807571425
-opt_B15_2_2,sweep/results_e,budget ladder,B15,surplus,"15 % biomass, 2.2 % of world budget",2.2,15.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.34078002368991056,9.507210875764601e-08
-opt_B15_2_4,sweep/results_e,budget ladder,B15,surplus,"15 % biomass, 2.4 % of world budget",2.4,15.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.37176026094923426,9.314348143311457e-07
-opt_B15_2_6,sweep/results_e,budget ladder,B15,surplus,"15 % biomass, 2.6 % of world budget",2.6,15.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.402740034774688,1.1176600000112905e-07
-opt_B15_2_8,sweep/results_e,budget ladder,B15,surplus,"15 % biomass, 2.8 % of world budget",2.8,15.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.4337199995848702,-1.2134099385997923e-09
-opt_B15_3_0,sweep/results_e,budget ladder,B15,surplus,"15 % biomass, 3.0 % of world budget",3.0,15.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.464702566029716,6.877622922886266e-06
-opt_B15_3_2,sweep/results_e,budget ladder,B15,surplus,"15 % biomass, 3.2 % of world budget",3.2,15.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.49567999999162526,-2.072567090569015e-11
-opt_B15_3_4,sweep/results_e,budget ladder,B15,surplus,"15 % biomass, 3.4 % of world budget",3.4,15.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.5266600010396951,2.3897832589938577e-09
-opt_B15_3_6,sweep/results_e,budget ladder,B15,surplus,"15 % biomass, 3.6 % of world budget",3.6,15.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.5576399994527321,-1.1742978786764174e-09
-opt_B15_3_8,sweep/results_e,budget ladder,B15,surplus,"15 % biomass, 3.8 % of world budget",3.8,15.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.5886200190924226,3.841391922748046e-08
-opt_B15_mincarb,sweep/results_e,budget ladder,B15,carbon,"15 % biomass, minimum CO2",2.6,15.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.31971598992740663,-0.26683953281622963
-opt_B15_refueleu,sweep/results_e,central budget,B15,surplus,"15 % biomass, ReFuelEU-equivalent budget",3.122636344,15.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.48369636916377234,-1.3308716034534725e-09
-opt_B5_2_0,sweep/results_e,budget ladder,B5,surplus,"5 % biomass, 2.0 % of world budget",2.0,5.0,5.0,-0.9,0.2,0.2,0.045,grid,False,0.35678999151720436,0.2153544838289977
-opt_B5_2_2,sweep/results_e,budget ladder,B5,surplus,"5 % biomass, 2.2 % of world budget",2.2,5.0,5.0,-0.9,0.2,0.2,0.045,grid,False,0.36387625565009096,0.09268965904959924
-opt_B5_2_4,sweep/results_e,budget ladder,B5,surplus,"5 % biomass, 2.4 % of world budget",2.4,5.0,5.0,-0.9,0.2,0.2,0.045,grid,False,0.37606146198501933,0.015353681563814522
-opt_B5_2_6,sweep/results_e,budget ladder,B5,surplus,"5 % biomass, 2.6 % of world budget",2.6,5.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.40274129982241136,4.177634936033154e-06
-opt_B5_2_8,sweep/results_e,budget ladder,B5,surplus,"5 % biomass, 2.8 % of world budget",2.8,5.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.433720939471647,2.7460429012569455e-06
-opt_B5_3_0,sweep/results_e,budget ladder,B5,surplus,"5 % biomass, 3.0 % of world budget",3.0,5.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.46469999953103835,-1.2569386374553107e-09
-opt_B5_3_2,sweep/results_e,budget ladder,B5,surplus,"5 % biomass, 3.2 % of world budget",3.2,5.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.49567999951207026,-1.2075129782275295e-09
-opt_B5_3_4,sweep/results_e,budget ladder,B5,surplus,"5 % biomass, 3.4 % of world budget",3.4,5.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.5266604782814728,1.099350191772599e-06
-opt_B5_3_6,sweep/results_e,budget ladder,B5,surplus,"5 % biomass, 3.6 % of world budget",3.6,5.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.5576400694697998,1.4906455842473035e-07
-opt_B5_3_8,sweep/results_e,budget ladder,B5,surplus,"5 % biomass, 3.8 % of world budget",3.8,5.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.5886202231155667,4.4890811363919324e-07
-opt_B5_mincarb,sweep/results_e,budget ladder,B5,carbon,"5 % biomass, minimum CO2",2.6,5.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.3823021887868528,-0.0656872149530484
-opt_B5_refueleu,sweep/results_e,central budget,B5,surplus,"5 % biomass, ReFuelEU-equivalent budget",3.122636344,5.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.4836963710096719,3.37691844083804e-09
-opt_B75_2_0,sweep/results_e,budget ladder,B75,surplus,"7.5 % biomass, 2.0 % of world budget",2.0,7.5,5.0,-0.9,0.2,0.2,0.045,grid,False,0.34212347536079135,0.14813804231766917
-opt_B75_2_2,sweep/results_e,budget ladder,B75,surplus,"7.5 % biomass, 2.2 % of world budget",2.2,7.5,5.0,-0.9,0.2,0.2,0.045,grid,False,0.3476374468315072,0.02752023611068099
-opt_B75_2_4,sweep/results_e,budget ladder,B75,surplus,"7.5 % biomass, 2.4 % of world budget",2.4,7.5,5.0,-0.9,0.2,0.2,0.045,grid,True,0.3717600941562175,3.360821471256228e-07
-opt_B75_2_6,sweep/results_e,budget ladder,B75,surplus,"7.5 % biomass, 2.6 % of world budget",2.6,7.5,5.0,-0.9,0.2,0.2,0.045,grid,True,0.40273999956077966,-1.411656130039694e-09
-opt_B75_2_8,sweep/results_e,budget ladder,B75,surplus,"7.5 % biomass, 2.8 % of world budget",2.8,7.5,5.0,-0.9,0.2,0.2,0.045,grid,True,0.4337212915373888,3.7751188013617284e-06
-opt_B75_3_0,sweep/results_e,budget ladder,B75,surplus,"7.5 % biomass, 3.0 % of world budget",3.0,7.5,5.0,-0.9,0.2,0.2,0.045,grid,True,0.4647000101998871,2.733833397158439e-08
-opt_B75_3_2,sweep/results_e,budget ladder,B75,surplus,"7.5 % biomass, 3.2 % of world budget",3.2,7.5,5.0,-0.9,0.2,0.2,0.045,grid,True,0.4956800240051997,5.9407290983589075e-08
-opt_B75_3_4,sweep/results_e,budget ladder,B75,surplus,"7.5 % biomass, 3.4 % of world budget",3.4,7.5,5.0,-0.9,0.2,0.2,0.045,grid,True,0.5266600679128887,1.561006467383578e-07
-opt_B75_3_6,sweep/results_e,budget ladder,B75,surplus,"7.5 % biomass, 3.6 % of world budget",3.6,7.5,5.0,-0.9,0.2,0.2,0.045,grid,True,0.5576405275729184,1.1320375808878312e-06
-opt_B75_3_8,sweep/results_e,budget ladder,B75,surplus,"7.5 % biomass, 3.8 % of world budget",3.8,7.5,5.0,-0.9,0.2,0.2,0.045,grid,True,0.5886200005411667,1.088826295409928e-09
-opt_B75_mincarb,sweep/results_e,budget ladder,B75,carbon,"7.5 % biomass, minimum CO2",2.6,7.5,5.0,-0.9,0.2,0.2,0.045,grid,True,0.34999436357118696,-0.16952470701490818
-opt_B75_refueleu,sweep/results_e,central budget,B75,surplus,"7.5 % biomass, ReFuelEU-equivalent budget",3.122636344,7.5,5.0,-0.9,0.2,0.2,0.045,grid,True,0.4836963696961444,2.689240756709474e-11
-opt_main_2_0,sweep/results_e,budget ladder,main,surplus,"Reference, 2.0 % of world budget",2.0,10.0,5.0,-0.9,0.2,0.2,0.045,grid,False,0.32548419368568154,0.07188044360930146
-opt_main_2_2,sweep/results_e,budget ladder,main,surplus,"Reference, 2.2 % of world budget",2.2,10.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.3407799995693074,-1.7284515306155673e-09
-opt_main_2_4,sweep/results_e,budget ladder,main,surplus,"Reference, 2.4 % of world budget",2.4,10.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.3717599995774812,-1.5081431328405786e-09
-opt_main_2_6,sweep/results_e,budget ladder,main,surplus,"Reference, 2.6 % of world budget",2.6,10.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.4027399995604801,-1.4126189306868685e-09
-opt_main_2_8,sweep/results_e,budget ladder,main,surplus,"Reference, 2.8 % of world budget",2.8,10.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.4337207454841261,2.17902413436017e-06
-opt_main_3_0,sweep/results_e,budget ladder,main,surplus,"Reference, 3.0 % of world budget",3.0,10.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.4647028847298926,7.731821775876827e-06
-opt_main_3_2,sweep/results_e,budget ladder,main,surplus,"Reference, 3.2 % of world budget",3.2,10.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.495680000667461,1.6518106956396675e-09
-opt_main_3_4,sweep/results_e,budget ladder,main,surplus,"Reference, 3.4 % of world budget",3.4,10.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.5266600005737184,1.318715993308607e-09
-opt_main_3_6,sweep/results_e,budget ladder,main,surplus,"Reference, 3.6 % of world budget",3.6,10.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.557640001394881,2.993060681543211e-09
-opt_main_3_8,sweep/results_e,budget ladder,main,surplus,"Reference, 3.8 % of world budget",3.8,10.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.5886200191101348,3.844955644619309e-08
-opt_main_mincarb,sweep/results_e,budget ladder,main,carbon,"Reference, minimum CO2",2.6,10.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.3255070445616048,-0.24822705780145313
-opt_main_refueleu,sweep/results_e,central budget,main,surplus,"Reference, ReFuelEU-equivalent budget",3.122636344,10.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.48369645258126903,2.1141746204073998e-07
-opt_pess_2_0,sweep/results_e,budget ladder,pess,surplus,"Pessimistic technology, 2.0 % of world budget",2.0,10.0,5.0,-0.9,0.2,0.2,0.045,grid,False,0.35889448632351867,0.22654862069478157
-opt_pess_2_2,sweep/results_e,budget ladder,pess,surplus,"Pessimistic technology, 2.2 % of world budget",2.2,10.0,5.0,-0.9,0.2,0.2,0.045,grid,False,0.361244246497585,0.08262167248666596
-opt_pess_2_4,sweep/results_e,budget ladder,pess,surplus,"Pessimistic technology, 2.4 % of world budget",2.4,10.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.3717599995047604,-1.7771790120773268e-09
-opt_pess_2_6,sweep/results_e,budget ladder,pess,surplus,"Pessimistic technology, 2.6 % of world budget",2.6,10.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.4027404905364012,1.584183600193274e-06
-opt_pess_2_8,sweep/results_e,budget ladder,pess,surplus,"Pessimistic technology, 2.8 % of world budget",2.8,10.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.4337204624758526,1.357722567756494e-06
-opt_pess_3_0,sweep/results_e,budget ladder,pess,surplus,"Pessimistic technology, 3.0 % of world budget",3.0,10.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.46469999948471913,-1.3866315962021554e-09
-opt_pess_3_2,sweep/results_e,budget ladder,pess,surplus,"Pessimistic technology, 3.2 % of world budget",3.2,10.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.4956800016398728,4.073345892635446e-09
-opt_pess_3_4,sweep/results_e,budget ladder,pess,surplus,"Pessimistic technology, 3.4 % of world budget",3.4,10.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.526660005616727,1.2954716658424633e-08
-opt_pess_3_6,sweep/results_e,budget ladder,pess,surplus,"Pessimistic technology, 3.6 % of world budget",3.6,10.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.5576402867326741,6.172317972335032e-07
-opt_pess_3_8,sweep/results_e,budget ladder,pess,surplus,"Pessimistic technology, 3.8 % of world budget",3.8,10.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.5886199993466241,-1.318549727091666e-09
-opt_pess_mincarb,sweep/results_e,budget ladder,pess,carbon,"Pessimistic technology, minimum CO2",2.6,10.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.36403051143191545,-0.12501200074920096
-opt_pess_refueleu,sweep/results_e,central budget,pess,surplus,"Pessimistic technology, ReFuelEU-equivalent budget",3.122636344,10.0,5.0,-0.9,0.2,0.2,0.045,grid,True,0.4836963697705193,2.1740592739348512e-10
-refueleu_B15,sweep/results_e,reference,B15,none,"15 % biomass, ReFuelEU mandate (no optimisation)",2.6,15.0,5.0,-0.9,0.2,0.2,0.045,grid,,0.48369636974021046,0.2601941277118394
-refueleu_B5,sweep/results_e,reference,B5,none,"5 % biomass, ReFuelEU mandate (no optimisation)",2.6,5.0,5.0,-0.9,0.2,0.2,0.045,grid,,0.48369636974021046,0.2601941277118394
-refueleu_B75,sweep/results_e,reference,B75,none,"7.5 % biomass, ReFuelEU mandate (no optimisation)",2.6,7.5,5.0,-0.9,0.2,0.2,0.045,grid,,0.48369636974021046,0.2601941277118394
-refueleu_main,sweep/results_e,reference,main,none,"Reference, ReFuelEU mandate (no optimisation)",2.6,10.0,5.0,-0.9,0.2,0.2,0.045,grid,,0.48369636974021046,0.2601941277118394
-refueleu_pess,sweep/results_e,reference,pess,none,"Pessimistic technology, ReFuelEU mandate (no optimisation)",2.6,10.0,5.0,-0.9,0.2,0.2,0.045,grid,,0.5120661521500547,0.3530679820388819
+efuel_wind,sweep/results,sensitivity C,main,surplus,"dedicated-wind electrofuel, no electricity limit",3.122636344,10.0,5.0,-0.9,0.2,0.2,0.045,dedicated wind,True,0.4836964770625078,2.738545159671892e-07
+r_3_2,sweep/results,sensitivity D,main,surplus,discount rate 3.2 %,3.122636344,10.0,5.0,-0.9,0.2,0.2,0.032,grid,True,0.48369636979400155,2.76467804287377e-10
+r_7,sweep/results,sensitivity D,main,surplus,discount rate 7 %,3.122636344,10.0,5.0,-0.9,0.2,0.2,0.07,grid,True,0.483696369631981,-1.3675024077067782e-10
+r_15,sweep/results,sensitivity D,main,surplus,discount rate 15 % (extreme),3.122636344,10.0,5.0,-0.9,0.2,0.2,0.15,grid,True,0.48369636968560004,1.4171949307589088e-16
+fossil_main,sweep/results_e,reference,main,none,"Reference, fossil BAU (no optimisation)",2.6,10.0,5.0,-0.9,0.2,0.2,0.045,grid,,0.6357144070300103,0.7497250153538431
+fossil_pess,sweep/results_e,reference,pess,none,"Pessimistic technology, fossil BAU (no optimisation)",2.6,10.0,5.0,-0.9,0.2,0.2,0.045,grid,,0.6819997688573936,0.9030437381818985
+refueleu_main,sweep/results_e,reference,main,none,"Reference, ReFuelEU mandate interpolated linearly (no optimisation)",2.6,10.0,5.0,-0.9,0.2,0.2,0.045,grid,,0.48369636974021046,0.2601941277118394
+refueleu_step,sweep/results,reference,main,none,"Reference, ReFuelEU mandate held in steps (no optimisation)",2.6,10.0,5.0,-0.9,0.2,0.2,0.045,grid,,0.5111960941720373,0.3485783627487667

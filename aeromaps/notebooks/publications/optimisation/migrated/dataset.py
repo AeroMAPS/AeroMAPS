@@ -6,8 +6,9 @@ and one who re-runs the optimisations rebuilds the dataset from them with
 
     poetry run python dataset.py
 
-which reads the raw runs under ``sweep/results`` and ``sweep/results_e`` (one JSON of
-model outputs and, for an optimisation, one HDF of its history each) and writes
+which reads, for each run the article uses (``SCENARIOS``), its raw outputs under
+``sweep/results`` or ``sweep/results_e`` -- one JSON of model outputs and, for an
+optimisation, one HDF of its history -- and writes
 
     scenarios.csv    one row per run: what kind of run it is, its parameters, and
                      whether the optimum it reports is feasible
@@ -40,7 +41,7 @@ import pandas as pd
 
 HERE = Path(__file__).resolve().parent
 DATA_DIR = HERE / "dataset"
-RAW_DIRS = [HERE / "sweep" / "results", HERE / "sweep" / "results_e"]
+RAW = HERE / "sweep"
 
 YEARS = range(2000, 2051)
 OPTIM_YEARS = [2030, 2035, 2040, 2045, 2050]
@@ -143,6 +144,41 @@ CASE_LABELS = {
     "B15": "15 % biomass",
     "pess": "Pessimistic technology",
 }
+BUDGET_TAGS = ["3_8", "3_6", "3_4", "3_2", "3_0", "2_8", "2_6", "2_4", "2_2", "2_0"]
+SENSITIVITIES = [
+    "base",
+    "eps_m0_6",
+    "eps_m0_8",
+    "eps_m1_0",
+    "eps_m1_4",
+    "fixed_demand",
+    "rate_11_8",
+    "rate_39",
+    "vol_0_1",
+    "vol_0_4",
+    "efuel_wind",
+    "r_3_2",
+    "r_7",
+    "r_15",
+]
+
+# Every run the article draws on, with the folder under sweep/ that holds its raw output.
+SCENARIOS = {
+    # the carbon-budget ladder of each case, its minimum-CO2 end, and the case at the
+    # ReFuelEU-equivalent budget
+    **{
+        f"opt_{case}_{tag}": "results_e"
+        for case in CASE_LABELS
+        for tag in [*BUDGET_TAGS, "mincarb", "refueleu"]
+    },
+    # one-parameter sensitivities around base, at the ReFuelEU-equivalent budget
+    **{run: "results" for run in SENSITIVITIES},
+    # fixed-mandate references
+    "fossil_main": "results_e",
+    "fossil_pess": "results_e",
+    "refueleu_main": "results_e",
+    "refueleu_step": "results",
+}
 
 
 # --------------------------------------------------------------------------- #
@@ -150,43 +186,34 @@ CASE_LABELS = {
 # --------------------------------------------------------------------------- #
 
 
-def _describe(scenario, folder):
-    """Family, case, objective and label of one run, from its name and folder."""
-    if folder == "results_e":
-        if not scenario.startswith("opt_"):
-            # fossil_<case> or refueleu_<case>: a fixed mandate, no optimisation
-            kind, case = scenario.split("_", 1)
-            mandate = "Fossil BAU" if kind == "fossil" else "ReFuelEU mandate"
-            return "reference", case, "none", f"{CASE_LABELS[case]}, {mandate} (no optimisation)"
-        _, case, tag = scenario.split("_", 2)
-        case_label = CASE_LABELS[case]
-        if tag == "mincarb":
-            return "budget ladder", case, "carbon", f"{case_label}, minimum CO2"
-        if tag == "refueleu":
-            return "central budget", case, "surplus", f"{case_label}, ReFuelEU-equivalent budget"
-        budget = tag.replace("_", ".")
-        return "budget ladder", case, "surplus", f"{case_label}, {budget} % of world budget"
+REFERENCE_LABELS = {
+    "fossil_main": "Reference, fossil BAU (no optimisation)",
+    "fossil_pess": "Pessimistic technology, fossil BAU (no optimisation)",
+    "refueleu_main": "Reference, ReFuelEU mandate interpolated linearly (no optimisation)",
+    "refueleu_step": "Reference, ReFuelEU mandate held in steps (no optimisation)",
+}
 
-    sys.path.insert(0, str(HERE / "sweep"))
-    from run_batch import RUNS
 
-    if scenario in RUNS:
+def _describe(scenario):
+    """Family, case, objective and label of one run."""
+    if scenario in REFERENCE_LABELS:
+        case = "pess" if scenario.endswith("pess") else "main"
+        return "reference", case, "none", REFERENCE_LABELS[scenario]
+    if scenario in SENSITIVITIES:
+        sys.path.insert(0, str(RAW))
+        from run_batch import RUNS
+
         spec = RUNS[scenario]
         objective = "cost" if spec.get("no_feedback") else "surplus"
         return f"sensitivity {spec['block']}", "main", objective, spec["label"]
-    labels = {
-        "fossil": "Fossil BAU (no optimisation)",
-        "refueleu_linear": "ReFuelEU, mandate interpolated linearly (no optimisation)",
-        "refueleu_step": "ReFuelEU, mandate held in steps (no optimisation)",
-    }
-    if scenario not in labels:
-        # A fossil BAU sharing the elasticity and discount rate of the runs it is the
-        # reference for, so that a difference against it is a policy cost.
-        from run_references import reference_key
-
-        matched = [run for run, spec in RUNS.items() if reference_key(spec) == scenario]
-        labels[scenario] = f"Fossil BAU, reference for {', '.join(matched)} (no optimisation)"
-    return "reference", "main", "none", labels[scenario]
+    _, case, tag = scenario.split("_", 2)
+    case_label = CASE_LABELS[case]
+    if tag == "mincarb":
+        return "budget ladder", case, "carbon", f"{case_label}, minimum CO2"
+    if tag == "refueleu":
+        return "central budget", case, "surplus", f"{case_label}, ReFuelEU-equivalent budget"
+    budget = tag.replace("_", ".")
+    return "budget ladder", case, "surplus", f"{case_label}, {budget} % of world budget"
 
 
 def _optimum(hdf):
@@ -212,77 +239,71 @@ def export(out_dir=DATA_DIR):
     out_dir.mkdir(parents=True, exist_ok=True)
     scenarios, series, optima = [], [], []
 
-    for folder in RAW_DIRS:
-        for path in sorted(folder.glob("*.json")):
-            data = json.load(open(path))
-            if "vector_outputs" not in data:
-                continue
-            scenario = path.stem
-            family, case, objective, label = _describe(scenario, folder.name)
-            inputs, floats = data["float_inputs"], data.get("float_outputs", {})
-            row = {
-                "scenario": scenario,
-                "source": f"sweep/{folder.name}",
-                "family": family,
-                "case": case,
-                "objective": objective,
-                "label": label,
-                "carbon_budget_world_share_pct": inputs["aviation_carbon_budget_objective"]
-                / EU_ASK_SHARE,
-                "biomass_world_share_pct": inputs[
-                    "generic_biomass_availability_aviation_allocated_share"
-                ]
-                / EU_ASK_SHARE,
-                "electricity_world_share_pct": inputs[
-                    "generic_electricity_availability_aviation_allocated_share"
-                ]
-                / EU_ASK_SHARE,
-                "price_elasticity": inputs.get("price_elasticity", np.nan),
-                "ramp_rate_cap": inputs["rate_ramp_up_constraint_biofuel"],
-                "ramp_volume_cap_EJ_per_yr": inputs["volume_ramp_up_constraint_biofuel"]
-                / EU_ASK_SHARE,
-                "social_discount_rate": inputs["social_discount_rate"],
-                "efuel_pathway": "dedicated wind" if scenario == "efuel_wind" else "grid",
-                "feasible": np.nan,
-                **{name: floats.get(name, np.nan) for name in FLOAT_OUTPUTS},
-            }
+    for scenario, folder in SCENARIOS.items():
+        path = RAW / folder / f"{scenario}.json"
+        data = json.load(open(path))
+        family, case, objective, label = _describe(scenario)
+        inputs, floats = data["float_inputs"], data.get("float_outputs", {})
+        row = {
+            "scenario": scenario,
+            "source": f"sweep/{folder}",
+            "family": family,
+            "case": case,
+            "objective": objective,
+            "label": label,
+            "carbon_budget_world_share_pct": inputs["aviation_carbon_budget_objective"]
+            / EU_ASK_SHARE,
+            "biomass_world_share_pct": inputs[
+                "generic_biomass_availability_aviation_allocated_share"
+            ]
+            / EU_ASK_SHARE,
+            "electricity_world_share_pct": inputs[
+                "generic_electricity_availability_aviation_allocated_share"
+            ]
+            / EU_ASK_SHARE,
+            "price_elasticity": inputs.get("price_elasticity", np.nan),
+            "ramp_rate_cap": inputs["rate_ramp_up_constraint_biofuel"],
+            "ramp_volume_cap_EJ_per_yr": inputs["volume_ramp_up_constraint_biofuel"] / EU_ASK_SHARE,
+            "social_discount_rate": inputs["social_discount_rate"],
+            "efuel_pathway": "dedicated wind" if scenario == "efuel_wind" else "grid",
+            "feasible": np.nan,
+            **{name: floats.get(name, np.nan) for name in FLOAT_OUTPUTS},
+        }
 
-            optimum = (
-                _optimum(path.with_suffix(".hdf")) if path.with_suffix(".hdf").exists() else None
-            )
-            if optimum is not None:
-                row["feasible"] = bool(optimum.is_feasible)
-                values = optimum.constraints or {}
-                for name in CONSTRAINTS:
-                    if name in values:
-                        component = np.ravel(np.asarray(values[name], dtype=float))
-                        if component.size == len(OPTIM_YEARS):
-                            optima += [
-                                (scenario, name, year, value)
-                                for year, value in zip(OPTIM_YEARS, component)
-                            ]
-                if CARBON_CONSTRAINT in values:
-                    optima.append(
-                        (
-                            scenario,
-                            CARBON_CONSTRAINT,
-                            np.nan,
-                            np.ravel(values[CARBON_CONSTRAINT])[0],
-                        )
+        optimum = _optimum(path.with_suffix(".hdf")) if path.with_suffix(".hdf").exists() else None
+        if optimum is not None:
+            row["feasible"] = bool(optimum.is_feasible)
+            values = optimum.constraints or {}
+            for name in CONSTRAINTS:
+                if name in values:
+                    component = np.ravel(np.asarray(values[name], dtype=float))
+                    if component.size == len(OPTIM_YEARS):
+                        optima += [
+                            (scenario, name, year, value)
+                            for year, value in zip(OPTIM_YEARS, component)
+                        ]
+            if CARBON_CONSTRAINT in values:
+                optima.append(
+                    (
+                        scenario,
+                        CARBON_CONSTRAINT,
+                        np.nan,
+                        np.ravel(values[CARBON_CONSTRAINT])[0],
                     )
-                x = np.ravel(np.asarray(optimum.design, dtype=float))
-                for pathway, part in (("electrofuel", x[:5]), ("biofuel", x[5:])):
-                    optima += [
-                        (scenario, f"{pathway}_design", year, value)
-                        for year, value in zip(OPTIM_YEARS, part)
-                    ]
-            scenarios.append(row)
+                )
+            x = np.ravel(np.asarray(optimum.design, dtype=float))
+            for pathway, part in (("electrofuel", x[:5]), ("biofuel", x[5:])):
+                optima += [
+                    (scenario, f"{pathway}_design", year, value)
+                    for year, value in zip(OPTIM_YEARS, part)
+                ]
+        scenarios.append(row)
 
-            vectors = data["vector_outputs"]
-            for variable, (unit, _) in VARIABLES.items():
-                values = vectors.get(variable)
-                if isinstance(values, list) and len(values) == len(YEARS):
-                    series.append([MODEL, scenario, REGION, variable, unit, *values])
+        vectors = data["vector_outputs"]
+        for variable, (unit, _) in VARIABLES.items():
+            values = vectors.get(variable)
+            if isinstance(values, list) and len(values) == len(YEARS):
+                series.append([MODEL, scenario, REGION, variable, unit, *values])
 
     pd.DataFrame(scenarios).to_csv(out_dir / "scenarios.csv", index=False)
     pd.DataFrame(

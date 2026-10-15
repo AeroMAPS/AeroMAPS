@@ -16,7 +16,6 @@ Usage:  poetry run python plot_elasticity.py
 
 from __future__ import annotations
 
-import json
 import sys
 from pathlib import Path
 
@@ -26,6 +25,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(HERE.parent))
 
+import dataset as D  # noqa: E402
 import paper_style as style  # noqa: E402
 
 YEARS = list(range(2000, 2051))
@@ -52,7 +52,7 @@ SPAN = slice(2019, 2050)  # as in plot_sensitivities: anchored on 2019
 
 
 def series(run, key):
-    vectors = json.load(open(HERE / "results" / f"{run}.json"))["vector_outputs"]
+    vectors = D.outputs(run)
     return pd.Series(vectors[key], index=YEARS) if key in vectors else None
 
 

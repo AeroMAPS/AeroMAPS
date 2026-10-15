@@ -15,7 +15,6 @@ Usage:  poetry run python plot_sensitivities.py
 
 from __future__ import annotations
 
-import json
 import sys
 from pathlib import Path
 
@@ -28,6 +27,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(HERE.parent))
 
+import dataset as D  # noqa: E402
 import paper_style as style  # noqa: E402
 
 # The paper's house style, so these figures match the notebook's whether they are drawn
@@ -50,12 +50,12 @@ LOOSER_1, LOOSER_2 = style.NAVY_LIGHT, style.NAVY
 
 
 def outputs(run):
-    return json.load(open(HERE / "results" / f"{run}.json"))["vector_outputs"]
+    return D.outputs(run)
 
 
 def discount_rate(run):
     """The run's own ``social_discount_rate``, so Block D runs discount at their rate."""
-    return json.load(open(HERE / "results" / f"{run}.json"))["float_inputs"]["social_discount_rate"]
+    return D.discount_rate(run)
 
 
 def discount_factor(run):
@@ -662,22 +662,16 @@ SUMMARY_FONT = 7.0
 def _summary_row(path):
     """(metric values, status) for one row; status is 'ok', 'missing' or 'infeasible'.
 
-    Feasibility is read from the optimisation history, not assumed from the JSON: an
-    infeasible run still writes one, holding its last iterate, and that is not a result.
+    Feasibility is read from the optimisation history, not assumed from the outputs: an
+    infeasible run still writes them, holding its last iterate, and that is not a result.
     A reference MDA has no history and no constraints to violate.
     """
-    json_path = HERE / path
-    if not json_path.exists():
+    run = Path(path).stem
+    if not D.exists(run):
         return None, "missing"
-    hdf = json_path.with_suffix(".hdf")
-    if hdf.exists():
-        sys.path.insert(0, str(HERE.parent))
-        import optimisation_runs as R
-
-        run = R.read_run(hdf)
-        if run is None or not run["feasible"]:
-            return None, "infeasible"
-    vectors = json.load(open(json_path))["vector_outputs"]
+    if D.feasible(run) is False:
+        return None, "infeasible"
+    vectors = D.outputs(run)
     return [metric(vectors) for *_, metric in SUMMARY_METRICS], "ok"
 
 

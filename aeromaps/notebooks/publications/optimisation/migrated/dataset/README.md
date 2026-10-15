@@ -1,7 +1,7 @@
 # ReFuelEU optimisation — scenario dataset
 
-The results behind the paper's figures: 96 AeroMAPS runs of EU aviation, 2000–2050.
-74 of them are optimisations of the biofuel and electrofuel mandates; the other 22 are
+The results behind the paper's figures: 78 AeroMAPS runs of EU aviation, 2000–2050.
+74 of them are optimisations of the biofuel and electrofuel mandates; the other 4 are
 fixed-mandate references (fossil business-as-usual, the ReFuelEU regulation). Every
 figure of `02_results.ipynb` is drawn from these files and nothing else.
 
@@ -41,9 +41,8 @@ The `family` column of `scenarios.csv`:
 - **sensitivity A–D** (14): one parameter varied at a time around `base`, at that same
   central budget — price elasticity (A), fixed demand (A′), ramp-up rate (B) and volume
   (B′) limits, a dedicated-wind electrofuel pathway (C), the social discount rate (D).
-- **reference** (22): fixed-mandate runs with no optimisation. A sensitivity's surplus
-  loss is read as a difference against the fossil reference that shares its elasticity
-  and discount rate (see its `label`).
+- **reference** (4): fixed-mandate runs with no optimisation — fossil BAU for `main` and
+  `pess`, and the ReFuelEU mandate for `main`, interpolated linearly or held in steps.
 
 ## Notes
 
@@ -52,7 +51,9 @@ The `family` column of `scenarios.csv`:
   totals; every run is then downscaled to the EU perimeter (15.49 % of world traffic).
 - **`cumulative_total_surplus_loss_discounted`** is measured against 2019 unit economics,
   not against a no-policy scenario, so it is negative even for fossil BAU. Policy costs
-  are differences between two scenarios.
+  are differences between two scenarios; for the sensitivities, each measured against a
+  fossil BAU sharing its elasticity and discount rate, they are in
+  `sweep/sweep_summary.csv`.
 - **Two points per optimisation.** `timeseries.csv` holds the outputs of the optimiser's
   final iterate, which is what the paper reports. `optima.csv` and `feasible` describe
   the point GEMSEO selects as its optimum, the best one within its 1e-4 feasibility
