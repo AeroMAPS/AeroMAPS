@@ -32,8 +32,10 @@ from aeromaps.core.gemseo import (
     _ACTIVE_MASKS,
     check_mda_convergence,
     freeze_nan_masks_after_first_sweep,
+    late_defined_couplings,
     nan_intrusions,
     nan_mask,
+    nan_masks,
     record_nan_intrusion,
 )
 from aeromaps.models.base import AeroMAPSModel
@@ -72,6 +74,19 @@ class _Source(AeroMAPSModel):
         return {"x": _partly_defined(1.0) + 0.4 * input_data["y"].fillna(0.0)}
 
 
+class _PhasedOutSource(_Source):
+    """``x`` is defined for a few projected years, then undefined again.
+
+    The shape of a pathway's share of an energy origin that is used and then phased out:
+    0/0 once the origin is empty, the same at every sweep.
+    """
+
+    def compute(self, input_data):
+        x = _partly_defined(1.0) + 0.4 * input_data["y"].fillna(0.0)
+        x.iloc[HISTORICAL + 6 :] = np.nan
+        return {"x": x}
+
+
 class _Sink(AeroMAPSModel):
     def __init__(self, name="sink", **kwargs):
         super().__init__(name=name, model_type="custom", **kwargs)
@@ -82,10 +97,30 @@ class _Sink(AeroMAPSModel):
         return {"y": _partly_defined(1.0) + 0.4 * input_data["x"].fillna(0.0)}
 
 
-def _chain(masked=True):
+class _FirstSweepNaNSink(_Sink):
+    """``y`` is undefined in 2030 on the first call only, real afterwards.
+
+    ``y`` is the backward coupling of the loop: ``_Source`` reads it before ``_Sink``
+    writes it, so after the first sweep it only ever reaches ``_Source`` through the
+    solver's write-back -- where the frozen mask turns 2030 back into NaN.
+    """
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.calls = 0
+
+    def compute(self, input_data):
+        self.calls += 1
+        output = super().compute(input_data)
+        if self.calls == 1:
+            output["y"].iloc[HISTORICAL + 10] = np.nan
+        return output
+
+
+def _chain(masked=True, source=_Source, sink=_Sink):
     disciplines = [
-        AeroMAPSCustomModelWrapper(_Source(parameters=_Parameters())),
-        AeroMAPSCustomModelWrapper(_Sink(parameters=_Parameters())),
+        AeroMAPSCustomModelWrapper(source(parameters=_Parameters())),
+        AeroMAPSCustomModelWrapper(sink(parameters=_Parameters())),
     ]
     for discipline in disciplines:
         for name in ("x", "y"):
@@ -278,6 +313,53 @@ def test_a_clean_solve_records_no_intrusion():
     chain, mda, _history = _solve(masked=True)
     assert nan_intrusions(mda) == {}
     assert check_mda_convergence(chain) == []
+
+
+def test_a_coupling_undefined_after_real_values_passes_when_masked():
+    """The mask, not the NaN shape, judges a masked coupling.
+
+    The phased-out ``x`` holds a NaN after a real value, which the shape heuristic reads
+    as a NaN that spread. But it was already undefined there after the first sweep and
+    never changed, so no intrusion is recorded, and the solve is accepted.
+    """
+    chain = _chain(masked=True, source=_PhasedOutSource)
+    chain.execute()
+    mda = chain.inner_mdas[0]
+
+    assert "x" in nan_masks(mda)
+    assert nan_intrusions(mda) == {}
+    assert check_mda_convergence(chain) == []
+
+
+def test_the_shape_heuristic_still_guards_an_unmasked_solve():
+    chain = _chain(masked=False, source=_PhasedOutSource)
+    chain.execute()
+
+    with pytest.raises(Exception, match="NaN after a real value"):
+        check_mda_convergence(chain)
+
+
+def test_a_coupling_undefined_only_in_the_first_sweep_is_reported():
+    """A first-sweep NaN on a backward coupling converges on a wrong answer, silently.
+
+    The mask holds 2030 out of the residual and writes it back as NaN, so ``_Source``
+    reads 0 there at every iteration: x = 1.0 and y = 1.4 instead of the fixed point
+    1 / (1 - 0.4). Nothing else flags it -- no intrusion, no NaN left at the end.
+    """
+    chain = _chain(masked=True, sink=_FirstSweepNaNSink)
+    chain.execute()
+    mda = chain.inner_mdas[0]
+    year = HISTORICAL + 10
+
+    assert not nan_masks(mda)["y"][year]
+    assert mda.io.data["x"].iloc[year] == pytest.approx(1.0)  # the wrong answer
+    assert nan_intrusions(mda) == {}
+    assert late_defined_couplings(mda) == {"y": 1}
+
+    failures = check_mda_convergence(chain, on_failure="ignore")
+    assert len(failures) == 1
+    assert "did not solve every position" in failures[0]
+    assert "y (1)" in failures[0]
 
 
 def test_record_nan_intrusion_outside_a_solve_is_harmless():
