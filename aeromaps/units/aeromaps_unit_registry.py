@@ -16,7 +16,7 @@ class AirTransportQuantities(StrEnum):
     AIRCRAFT = "aircraft"
 
 
-def _preprocess_units(expr):
+def _units_preprocessor(expr):
     """Group number-unit pairs: 100km -> (100*km).
 
     Args:
@@ -80,7 +80,7 @@ class AeroMAPSUnitRegistry(UnitRegistry):
             preprocessors=[
                 lambda s: s.replace("€", "EUR"),
                 lambda s: s.replace("$", "USD"),
-                _preprocess_units,
+                _units_preprocessor,
             ],
         )
 
@@ -106,7 +106,7 @@ class AeroMAPSUnitRegistry(UnitRegistry):
 
         return quantities if len(quantities) > 1 else quantities[0]
 
-    def dimension(self, unit: str) -> dict[str, int]:
+    def dimension(self, unit: str) -> dict[str, int] | str:
         """Return the dimensionality of the quantity considering derivate dimensions.
 
         Args:
@@ -114,10 +114,10 @@ class AeroMAPSUnitRegistry(UnitRegistry):
 
         Returns:
             The dimensionality of the unit considering derivate dimensions as
-            dict[dimension_name,dimension_magnitude].
+            dict[dimension_name,dimension_magnitude] or "dimensionless".
         """
         if self(unit).dimensionless:
-            return {"dimensionless": 0}
+            return "dimensionless"
         units = self(unit).units
 
         components = [
@@ -149,6 +149,7 @@ class AeroMAPSUnitRegistry(UnitRegistry):
 
     def __define_mass_tags(self):
         self.define("tCO2e = tonne * CO2e")
+        self.define("tCO2 = tonne * CO2")
         self.define("gCO2 = gram * CO2")
         self.define("GtCO2 = gigatonne * CO2")
         self.define("GtCO2we = gigatonne * CO2we")

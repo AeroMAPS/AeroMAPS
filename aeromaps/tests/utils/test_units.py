@@ -4,23 +4,24 @@ Test module for the AeroMAPS unit system (aeromaps/utils/units.py).
 
 import numpy as np
 import pandas as pd
-from pint import UndefinedUnitError
+from pint import DimensionalityError, UndefinedUnitError
 import pytest
 
 from aeromaps.units.aeromaps_unit_registry import AeroMAPSUnitRegistry
 from aeromaps.utils.units import (
-    UnitError,
     convert,
-    convert_factor,
     is_valid_unit,
     normalize_unit,
     parse_unit,
-    units_compatible,
 )
 
 
-def test_atomic_units():
-    ureg = AeroMAPSUnitRegistry()
+@pytest.fixture
+def ureg():
+    return AeroMAPSUnitRegistry()
+
+
+def test_atomic_units(ureg):
     assert ureg.unit_quantity("MJ") == "energy"
     assert ureg.unit_quantity("yr") == "time"
     assert ureg.unit_quantity("ASK") == "ASK"
@@ -28,8 +29,7 @@ def test_atomic_units():
     assert ureg.unit_quantity("%") == "dimensionless"
 
 
-def test_species_tagged_masses():
-    ureg = AeroMAPSUnitRegistry()
+def test_species_tagged_masses(ureg):
     assert ureg.unit_quantity("gCO2") == "mass[CO2]"
     assert ureg.unit_quantity("tCO2e") == "mass[CO2e]"
     assert ureg.unit_quantity("GtCO2we") == "mass[CO2we]"
@@ -37,27 +37,23 @@ def test_species_tagged_masses():
     assert ureg.unit_quantity("kg_fuel") == "mass[fuel]"
 
 
-def test_compound_units():
-    ureg = AeroMAPSUnitRegistry()
+def test_compound_units(ureg):
     dims = ureg.dimension("gCO2/MJ")
     assert dims == {"[energy]": -1, "[mass[CO2]]": 1}
 
 
-def test_parentheses():
+def test_parentheses(ureg):
     # €/(kg/day) = €·day/kg
-    ureg = AeroMAPSUnitRegistry()
     dims = ureg.dimension("€/(kg/day)")
     assert dims == {"[currency]": 1, "[mass]": -1, "[time]": 1}
 
 
-def test_left_associative_division():
+def test_left_associative_division(ureg):
     # a/b/c = a/(b·c)
-    ureg = AeroMAPSUnitRegistry()
     assert ureg("L/PAX/100km").dimensionality == ureg("L/(PAX*100km)").dimensionality
 
 
-def test_invalid_units():
-    ureg = AeroMAPSUnitRegistry()
+def test_invalid_units(ureg):
     for text in ["", "foobar", "MJ/", "€/(kg", "MJ//ASK"]:
         with pytest.raises(UndefinedUnitError):
             ureg(text)
@@ -85,15 +81,15 @@ def test_normalization_is_idempotent_and_preserves_dimension():
         assert parse_unit(normalized).dims == parse_unit(text).dims
 
 
-def test_simple_factors():
-    assert convert_factor("EJ", "MJ") == pytest.approx(1e12)
-    assert convert_factor("kWh", "MJ") == pytest.approx(3.6)
-    assert convert_factor("%", "-") == pytest.approx(0.01)
+def test_simple_factors(ureg):
+    assert ureg("EJ").to("MJ").magnitude == pytest.approx(1e12)
+    assert ureg("kWh").to("MJ").magnitude == pytest.approx(3.6)
+    assert ureg("%").to("").magnitude == pytest.approx(0.01)
 
 
-def test_compound_conversion():
-    assert convert(1.0, "gCO2/MJ", "tCO2/EJ") == pytest.approx(1e6)
-    assert convert(88.7, "gCO2/MJ", "kgCO2/MJ") == pytest.approx(0.0887)
+def test_compound_conversion(ureg):
+    assert ureg("gCO2/MJ").to("tCO2/EJ").magnitude == pytest.approx(1e6)
+    assert ureg("88.7gCO2/MJ").to("kgCO2/MJ").magnitude == pytest.approx(0.0887)
 
 
 def test_pandas_series_and_numpy():
@@ -105,34 +101,34 @@ def test_pandas_series_and_numpy():
     assert array[0] == pytest.approx(1e9)
 
 
-def test_incompatible_dimensions_raise():
-    with pytest.raises(UnitError):
-        convert(1.0, "MJ", "kg")
+def test_incompatible_dimensions_raise(ureg):
+    with pytest.raises(DimensionalityError):
+        ureg("MJ").to("kg")
     # CO2 and CO2e are deliberately not interchangeable
-    with pytest.raises(UnitError):
-        convert(1.0, "tCO2", "tCO2e")
+    with pytest.raises(DimensionalityError):
+        ureg("tCO2").to("tCO2e")
     # euros and dollars are deliberately not interchangeable
-    with pytest.raises(UnitError):
-        convert(1.0, "€", "$")
+    with pytest.raises(DimensionalityError):
+        ureg("€").to("$")
 
 
-def test_compatibility_check():
-    assert units_compatible("MJ", "EJ")
-    assert units_compatible("gCO2/MJ", "MtCO2/EJ")
-    assert not units_compatible("MJ", "MJ/ASK")
+def test_compatibility_check(ureg):
+    assert ureg("MJ").dimensionality == ureg("EJ").dimensionality
+    assert ureg("gCO2/MJ").dimensionality == ureg("MtCO2/EJ").dimensionality
+    assert not ureg("MJ").dimensionality == ureg("MJ/ASK").dimensionality
 
 
-def test_dimension_cancellation():
+def test_dimension_cancellation(ureg):
     # Identical dimensions cancel out to dimensionless
-    assert parse_unit("MJ/MJ").dims == ()
-    assert units_compatible("MJ/MJ", "-")
+    assert ureg.dimension("MJ/MJ") == "dimensionless"
+    assert ureg.dimension("MJ/MJ") == ureg.dimension("")
 
 
-def test_dimensionless_factor_in_compound():
+def test_dimensionless_factor_in_compound(ureg):
     # The 0.01 factor of % must survive inside a compound expression
-    assert convert_factor("%/yr", "-/yr") == pytest.approx(0.01)
+    assert ureg("%/yr").to("1/yr").magnitude == pytest.approx(0.01)
 
 
-def test_nested_parentheses_conversion():
+def test_nested_parentheses_conversion(ureg):
     # €/(MJ/yr) -> €/(EJ/yr): 1 € per MJ/yr of capacity = 1e12 € per EJ/yr
-    assert convert_factor("€/(MJ/yr)", "€/(EJ/yr)") == pytest.approx(1e12)
+    assert ureg("€/(MJ/yr)").to("€/(EJ/yr)").magnitude == pytest.approx(1e12)
