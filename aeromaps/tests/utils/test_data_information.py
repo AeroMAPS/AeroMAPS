@@ -6,6 +6,7 @@ Test module for the AeroMAPS variable metadata registry
 from pathlib import Path
 
 import pytest
+from yaml import YAMLError
 
 from aeromaps.utils.data_information import DataInformation
 from aeromaps.utils.units import UnitError, normalize_unit, parse_unit
@@ -129,7 +130,7 @@ class TestRegistry:
     def test_malformed_yaml_raises(self, tmp_path):
         bad_file = tmp_path / "bad.yaml"
         bad_file.write_text("variables: [unclosed", encoding="utf-8")
-        with pytest.raises(ValueError):
+        with pytest.raises(YAMLError):
             DataInformation.from_file(bad_file)
 
     def test_non_mapping_yaml_raises(self, tmp_path):

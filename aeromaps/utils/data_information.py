@@ -20,9 +20,9 @@ from pathlib import Path
 
 import pandas as pd
 import xarray as xr
-import yaml
 
 from aeromaps.utils.units import UnitError, parse_unit
+from aeromaps.utils.yaml import read_yaml_file
 
 
 def _glob_to_regex(pattern: str) -> re.Pattern:
@@ -127,17 +127,7 @@ class DataInformation:
     @classmethod
     def from_yaml(cls, file_name) -> "DataInformation":
         """Load metadata from the YAML format (sections 'variables' and 'patterns')."""
-        try:
-            with open(file_name, "r", encoding="utf-8") as file:
-                content = yaml.safe_load(file)
-        except FileNotFoundError:
-            raise FileNotFoundError(f"Data information file not found: '{file_name}'")
-        except yaml.YAMLError as e:
-            raise ValueError(f"Failed to parse data information file '{file_name}': {e}") from e
-        if not isinstance(content, dict):
-            raise ValueError(
-                f"Expected a YAML mapping with 'variables'/'patterns' in '{file_name}'."
-            )
+        content = read_yaml_file(file_name)
         return cls(
             variables=content.get("variables", {}),
             patterns=content.get("patterns", []),
