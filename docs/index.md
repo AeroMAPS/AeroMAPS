@@ -16,7 +16,7 @@ In particular, see:
 AeroMAPS is an open-source Python framework for performing Multidisciplinary Assessment of Prospective Scenarios for air transport.
 It is a simplified sectoral Integrated Assessment Model (IAM) focusing on air transport transition, aiming at assessing 
 the sustainability of air transport transition scenarios on multiple criteria.
-For instance, it allows simulating and analysing scenarios for reducing aviation climate impacts through various levers of 
+For instance, it allows simulating and analyzing scenarios for reducing aviation climate impacts through various levers of 
 action. 
 
 The objective is to provide:
@@ -26,7 +26,7 @@ The objective is to provide:
 - a tool to support decision-making by institutional, industrial or private stakeholders
 
 AeroMAPS is developed by ISAE-SUPAERO (Université de Toulouse, France) since 2020 (formerly CAST). 
-It is fed by research collaborations with several organisations (TU Delft, Airbus, DTU) and multidisciplinary 
+It is fed by research collaborations with several organizations (TU Delft, Airbus, DTU) and multidisciplinary 
 research activities from the [Institute for Sustainable Aviation](https://isa-toulouse.com/) (TBS, CERFACS).
 It relies on several open-source scientific packages, including in particular [GEMSEO](https://github.com/gemseo/gemseo), 
 [AeroCM](https://github.com/AeroMAPS/AeroCM) and [lca-modeller](https://github.com/AeroMAPS/lca-modeller).
