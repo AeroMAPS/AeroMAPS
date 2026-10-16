@@ -35,6 +35,7 @@ dependencies = [
     "sympy>=1.14.0,<2",
     "dill>=0.4.0,<0.5",
     "aerocm==0.1.1b0",
+    "pint>=0.25.3,<0.26",
 
     # Data visualization dependencies
     "matplotlib>=3.7,<4",
