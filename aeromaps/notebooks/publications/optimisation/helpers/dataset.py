@@ -50,7 +50,7 @@ EU_ASK_SHARE = 15.49 / 100
 MODEL = "AeroMAPS"
 REGION = "EU"  # every run is downscaled to the EU perimeter by EU_ASK_SHARE
 
-# Everything 02_results and the sweep plots read, then a few totals a reader will want.
+# Everything 02_results reads, then a few totals a reader will want.
 # Units checked against the model code; "drop-in blend" is drop-in fuel energy.
 VARIABLES = {
     # Traffic and prices
@@ -180,6 +180,12 @@ SCENARIOS = {
     "refueleu_step": "results_sensitivities",
 }
 
+# Runs added after the paper. To add one: save it under runs/<folder>/ (``<name>.json``,
+# plus ``<name>.hdf`` for an optimisation), declare it here as
+# ``"<name>": ("<folder>", "<objective>", "<label>")``, and rerun the export.
+ADDED = {}
+SCENARIOS.update({name: folder for name, (folder, _, _) in ADDED.items()})
+
 
 # --------------------------------------------------------------------------- #
 # Export
@@ -196,6 +202,9 @@ REFERENCE_LABELS = {
 
 def _describe(scenario):
     """Family, case, objective and label of one run."""
+    if scenario in ADDED:
+        _, objective, label = ADDED[scenario]
+        return "added", "", objective, label
     if scenario in REFERENCE_LABELS:
         case = "pess" if scenario.endswith("pess") else "main"
         return "reference", case, "none", REFERENCE_LABELS[scenario]

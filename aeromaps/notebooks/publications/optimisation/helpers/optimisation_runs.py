@@ -337,7 +337,7 @@ def setup_optimisation(
     # 1e-9 before the KKT test stops the run. The published JSONs are that converged
     # final iterate -- e.g. r_3_2 matches base there to 5e-7 pp, against 0.0185 pp at
     # x_opt. Note that the HDF's optimum, and what is read from it (read_run,
-    # read_constraints, f_opt in sweep_summary.csv), is still GEMSEO's x_opt.
+    # read_constraints, dataset/optima.csv), is still GEMSEO's x_opt.
     process.gemseo_settings["evaluate_at_optimum"] = False
 
     if warm_start:
