@@ -69,6 +69,7 @@ import inspect
 import logging
 import sys
 import traceback
+from collections import OrderedDict
 from contextvars import ContextVar
 from numbers import Number
 from typing import TYPE_CHECKING, ClassVar
@@ -914,3 +915,106 @@ def check_mda_convergence(mda_chain, context: str = "", on_failure: str = "raise
         if on_failure == "warn":
             logging.warning(message)
     return failures
+
+
+def share_mda_across_functions(scenario, size: int = 16) -> None:
+    """One MDA solve per design point instead of one per function.
+
+    Under MDF the objective and each constraint get their own ``MDOFunction``, and
+    finite differences differentiate each of them separately: with one objective and six
+    constraints, every perturbed design point is solved seven times over, where one solve
+    would serve all seven functions.
+
+    GEMSEO's own discipline cache does not absorb the repeats. Its key is a hash of
+    every chain input, and three identical calls produce three entries even when the
+    stored inputs compare byte-identical. Keying on what the formulation actually passes
+    to ``mda.execute`` -- the design variables alone -- does absorb them, and leaves the
+    iterates unchanged.
+
+    An LRU of ``size`` entries must cover a full finite-difference sweep, n + 1 points for
+    n design variables; without a bound the memo would retain every design point of the
+    run.
+
+    Two limits, which are why this is opt-in:
+
+    * The key is the design variables only. Every other input comes from the grammar
+      defaults and is assumed fixed while the memo lives, so the memo is cleared on each
+      call -- :meth:`AeroMAPSProcess.compute` calls this before every execution. A
+      parameter changed *during* a run would be missed; nothing in AeroMAPS does that.
+    * The memo lives on one MDA object in one Python process. With
+      ``parallel_differentiation``, each worker solves on its own copy and the repeats
+      come back, on top of shipping the chain to the workers, so a warning is logged.
+
+    Args:
+        scenario: An MDF scenario. Any other formulation is left untouched, with a warning.
+        size: How many design points to remember.
+    """
+    mda = getattr(scenario.formulation, "mda", None)
+    if mda is None:
+        LOGGER.warning(
+            "share_mda_across_functions needs an MDF formulation; %s has no MDA to share.",
+            type(scenario.formulation).__name__,
+        )
+        return
+    if scenario.formulation.optimization_problem.parallel_differentiation:
+        LOGGER.warning(
+            "share_mda_across_functions with parallel_differentiation: workers cannot see "
+            "the memo, so every function solves the MDA again in each of them."
+        )
+
+    memo = getattr(mda, "_shared_solve_memo", None)
+    if memo is not None:
+        # Already installed on this MDA: start the new execution from an empty memo.
+        memo.clear()
+        return
+
+    solve, memo = mda.execute, OrderedDict()
+
+    def cached(input_data=None, **kwargs):
+        if input_data is None:
+            return solve(**kwargs)
+        key = tuple((name, tuple(np.ravel(value))) for name, value in sorted(input_data.items()))
+        if key in memo:
+            memo.move_to_end(key)
+        else:
+            outputs = solve(input_data, **kwargs)
+            memo[key] = {k: (v.copy() if hasattr(v, "copy") else v) for k, v in outputs.items()}
+            while len(memo) > size:
+                memo.popitem(last=False)
+        return memo[key]
+
+    mda.execute = cached
+    mda._shared_solve_memo = memo
+
+
+def evaluate_at_optimum(scenario) -> None:
+    """Solve the MDA once more at the optimum, so the disciplines hold its outputs.
+
+    After an optimisation the disciplines' local data are those of the last MDA that
+    was solved -- usually a finite-difference point next to the final iterate -- and
+    that iterate is not always the point GEMSEO reports as ``x_opt``, which is the best
+    point feasible within ``ineq_tolerance``. Harvesting outputs after this call makes
+    them describe the reported optimum, at the cost of one MDA.
+
+    Consistent is not the same as better converged. SLSQP may approach the boundary from
+    outside, and ``x_opt`` can then be the iterate before its last step: within
+    ``ineq_tolerance`` of feasible, so preferred for its lower objective, but still off
+    the vertex the final step lands on. A study that wants that final iterate instead
+    sets ``gemseo_settings["evaluate_at_optimum"] = False``.
+
+    Only MDF holds a single MDA over the whole chain; other formulations are left as
+    they are. A memo installed by :func:`share_mda_across_functions` is cleared first,
+    so that the solve is real and not a lookup.
+    """
+    mda = getattr(scenario.formulation, "mda", None)
+    result = scenario.optimization_result
+    if mda is None or result is None or result.x_opt is None:
+        return
+    memo = getattr(mda, "_shared_solve_memo", None)
+    if memo is not None:
+        memo.clear()
+    # Through the grammar's converter, as GEMSEO's own function adapter does: it gives
+    # back the declared type, a list for CustomDataConverter._list_names.
+    converter = mda.io.input_grammar.data_converter
+    design = scenario.design_space.convert_array_to_dict(result.x_opt)
+    mda.execute({name: converter.convert_array_to_value(name, x) for name, x in design.items()})

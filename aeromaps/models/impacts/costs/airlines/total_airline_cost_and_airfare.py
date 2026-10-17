@@ -343,6 +343,7 @@ class PassengerAircraftMarginalCost(AeroMAPSModel):
         total_cost_per_rpk_without_extra_tax: pd.Series,
         total_extra_tax_per_rpk: pd.Series,
         total_subsidy_per_rpk: pd.Series,
+        initial_airfare_per_rpk: float = 0.09236379319842411,
     ) -> Tuple[
         pd.Series,
         pd.Series,
@@ -364,6 +365,8 @@ class PassengerAircraftMarginalCost(AeroMAPSModel):
             Total extra tax per revenue passenger kilometer (RPK) [€/RPK].
         total_subsidy_per_rpk
             Total subsidy per revenue passenger kilometer (RPK) [€/RPK].
+        initial_airfare_per_rpk
+            Airfare per RPK of the year before the prospective period [€/RPK].
 
         Returns
         ---------
@@ -380,12 +383,16 @@ class PassengerAircraftMarginalCost(AeroMAPSModel):
             self.prospection_start_year - 1
         ]
 
-        # initial price => Same markup as iata stats, but using aeromaps cost (~ +0.01 €/RPK)
-        initial_price_per_rpk_corrected = 0.09236379319842411
+        # 2019 airfare anchoring the inverse supply function, taken from
+        # ``global.elasticity.initial_airfare_per_rpk`` in markets.yaml. RPKElasticity
+        # normalises the airfare by that same key, so supply and demand must be anchored
+        # on one price. The default is AeroMAPS's own 2019 cost plus the 20-year average
+        # IATA markup, deflated and converted at 1.14 $/€, as derived in
+        # publications/optimisation/equilibriums.ipynb.
+        initial_price_per_rpk_corrected = initial_airfare_per_rpk
 
         # Were defining the inverse market-level suppy function ( cost =f (rpk) ) as a linear function by hypothesis
         # Calibration of this function is done base on average cost and prices for the last 20 years of IATA data (2020,2021,2022 excluded)
-        # ==> TODO store notebook somewhere
 
         b = 2 * intial_total_cost_per_rpk_without_extra_tax - initial_price_per_rpk_corrected
         a = (

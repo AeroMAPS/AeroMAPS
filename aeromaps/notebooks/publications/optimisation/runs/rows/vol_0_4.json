@@ -1,0 +1,22 @@
+{
+  "run": "vol_0_4",
+  "block": "B'",
+  "label": "ramp volume 0.4 EJ/yr",
+  "objective_name": "surplus",
+  "f_opt": -4.919427388999496,
+  "feasible": true,
+  "message": "Successive iterates of the design variables are closer than xtol_rel or xtol_abs. GEMSEO stopped the driver.",
+  "n_evaluations": 5,
+  "max_constraint_violation": 5.668779723035635e-16,
+  "seconds": 168.1,
+  "budget_world_share": 3.122636344,
+  "biomass_share": 10.0,
+  "elasticity": -0.9,
+  "rate_cap": 0.2,
+  "volume_cap": 0.4,
+  "discount_rate": 0.045,
+  "efuel_pathway": "grid electricity",
+  "dropped_constraints": "none",
+  "ftol_abs": 0.0,
+  "kkt_tol_rel": 1e-06
+}

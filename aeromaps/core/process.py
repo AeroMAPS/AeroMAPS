@@ -37,7 +37,9 @@ from aeromaps.core.gemseo import (
     AeroMAPSCustomModelWrapper,
     apply_coupling_bounds,
     check_mda_convergence,
+    evaluate_at_optimum,
     freeze_nan_masks_after_first_sweep,
+    share_mda_across_functions,
 )
 from aeromaps.core import models as aeromaps_models
 
@@ -150,12 +152,9 @@ YEAR_BOUND_NAMES = (
 # TODO(flex-start-year): delete this guard once downstream configs are migrated
 # and a release cycle has passed (target: remove after 2026-12, or once no
 # in-repo config and no known external scenario still carries a `_2019` key).
-# As of 2026-07 neither condition is met: four input files still use old keys
-# and must be migrated to `_last_historical_year` before removal:
-#   - notebooks/publications/ecats_2026/data/data_optim/markets_is2medium.yaml
-#   - notebooks/publications/tsas_2025/data/data_tsas_optim/markets_is2medium.yaml
-#   - notebooks/publications/optimisation/data/partitioned_inputs.json
-#   - notebooks/publications/optimisation/data/partitioned_inputs_merged.json
+# As of 2026-10 no in-repo input file carries an old key any more (only stale
+# .ipynb_checkpoints copies do); what remains is the release cycle for external
+# scenarios.
 # (Output/result files carrying `_2019` — outputs.json, slsqp_*.json,
 # *_outputs.json — are never loaded as inputs and do not block removal.)
 #
@@ -588,9 +587,9 @@ class AeroMAPSProcess(object):
             formulation_name=self.gemseo_settings["formulation"],
             main_mda_settings={
                 "inner_mda_name": "MDAGaussSeidel",
-                "max_mda_iter": 12,
+                "max_mda_iter": 50,
                 "initialize_defaults": True,
-                "tolerance": 1e-4,
+                "tolerance": 1e-10,
             },
             # grammar_type=self.gemseo_settings["grammar_type"],
             # input_data=self.input_data,
@@ -659,7 +658,11 @@ class AeroMAPSProcess(object):
                 if self.gemseo_settings.get("algorithm") is None:
                     raise ValueError("Cannot run MDO: 'algorithm' is not set in gemseo_settings.")
                 logging.info("Running MDO")
+                if self.gemseo_settings.get("share_mda_across_functions"):
+                    share_mda_across_functions(self.scenario)
                 self.scenario.execute(self.gemseo_settings["algorithm"])
+                if self.gemseo_settings.get("evaluate_at_optimum"):
+                    evaluate_at_optimum(self.scenario)
         else:
             if not hasattr(self, "mda_chain") or self.mda_chain is None:
                 raise ValueError("MDA chain not created. Please call setup_mda() first.")
@@ -2577,6 +2580,15 @@ class AeroMAPSProcess(object):
         # self.gemseo_settings["grammar_type"] = Discipline.GrammarType.SIMPLE
         self.gemseo_settings["doe_input_names"] = None
         self.gemseo_settings["doe_output_names"] = None
+        # One MDA solve per design point instead of one per function (MDF only); see
+        # share_mda_across_functions in aeromaps/core/gemseo.py for the gain and the limits.
+        # TODO: consider making this the default for MDF with serial finite differences.
+        # The memo is cleared before every execution, so reusing a process with changed
+        # parameters is safe; it is opt-in only until it has seen wider use.
+        self.gemseo_settings["share_mda_across_functions"] = False
+        # Outputs are harvested from the last MDA solved, which need not be at x_opt; this
+        # solves once more at x_opt so they describe it (MDF only). See evaluate_at_optimum.
+        self.gemseo_settings["evaluate_at_optimum"] = True
 
     def _format_input_vectors(self):
         """Normalize parameter vector shapes and indices.
