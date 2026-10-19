@@ -9,16 +9,22 @@
 #                        against (see fleet.yaml for the grouping).
 #   aircraft           — new aircraft entering service.
 #
-# Field units:
-#   energy_per_ask        energy consumption per seat-km [MJ/ASK]
-#   emission_index_nox    NOx emission index [kg/ASK]
-#   emission_index_soot   soot emission index [kg/ASK]
-#   doc_non_energy_base   base non-energy direct operating cost [€/ASK]
-#   entry_into_service_year [yr]   cruise_altitude [m]   ask_year [ASK/yr]
-#   rc_cost  recurring (per-unit) cost [€]   nrc_cost  development cost [€]
-#   oew      operational empty weight [t]
-#   hybridization_factor  0 (conventional) .. 1 (fully electric) [-]
-#   energy_type           DROP_IN_FUEL | HYDROGEN | ELECTRIC | HYBRID_ELECTRIC
+# Field units and status (unknown field names are rejected when loading):
+#   entry_into_service_year [yr]          required
+#   energy_per_ask        energy consumption per seat-km [MJ/ASK]       required
+#   emission_index_nox    NOx emission index                            required
+#   emission_index_soot   soot emission index                           required
+#       (both indices are only used relative to the fleet's last-historical-year
+#        average, to scale the fuel emission indices; the values below are per kg
+#        of fuel)
+#   doc_non_energy_base   base non-energy direct operating cost [€/ASK] required
+#   ask_year [ASK/yr], rc_cost recurring (per-unit) cost [€], nrc_cost development
+#       cost [€]: required only with the models_production_cost bundle
+#   cruise_altitude [m], oew operational empty weight [t]: informative, unused
+#   hybridization_factor  0 (conventional) .. 1 (fully electric) [-]    optional, 0
+#   energy_type           DROP_IN_FUEL (default) | HYDROGEN | ELECTRIC | HYBRID_ELECTRIC
+#       (new aircraft only; HYDROGEN/ELECTRIC need a default pathway of that
+#        aircraft type in the energy carriers file)
 #
 # Performance fields (energy_per_ask, emission_index_nox, emission_index_soot,
 # doc_non_energy_base) can be given in one of two modes — set exactly one:
@@ -40,7 +46,7 @@
 # relative gap to an improving reference, give the aircraft the reference's
 # improvement trajectory as its own continuous_improvement_factor_energy.
 #
-# See docs/books/configuration.md for the full reference.
+# Full reference: docs/books/configuration/fleet.md
 # =============================================================================
 reference_aircraft:
   - id: sr_conventional_nb_old        # referenced as old_ref/recent_ref in fleet.yaml

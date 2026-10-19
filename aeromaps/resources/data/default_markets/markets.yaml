@@ -1,41 +1,49 @@
-# Default market definitions for AeroMAPS.
-# These reproduce the previous hard-coded 4-market structure exactly.
-# FLEET REFACTORING FLAG In Phase 3 the fleet.yaml will reference these market ids.
+# Default market definitions for AeroMAPS: three passenger markets (short,
+# medium and long range) and one freight market.
+#
+# Referenced from the entry config as models.markets.markets_data_file. Always
+# loaded: this file is used when the entry config has no markets block.
+# Full reference (every key, its unit, status and the model reading it):
+#   docs/books/configuration/markets.md
 #
 # ─────────────────────────────────────────────────────────────────────────────
 # File structure
 # ─────────────────────────────────────────────────────────────────────────────
 # Three kinds of top-level blocks:
-#   global    (optional) — pipeline-wide switches, NOT overridable per market.
+#   global    (optional) — model selectors and settings shared by all markets.
 #   defaults  (optional) — input templates merged into every market.
 #   <market_id> (one or more, required) — per-market overrides of defaults.
 #
 # Flattening convention: leaf keys are pushed to ``self.parameters``.
-#   - ``global`` leaves         → no prefix         (e.g. ``use_elasticity``)
+#   - ``global`` leaves         → no prefix         (e.g. ``price_elasticity``)
 #   - market / defaults leaves  → ``<market_id>_<leaf_key>``
 # Sub-grouping keys (initial, growth, covid, …) are organisational only and
 # NOT included in flattened names. Leaves that would otherwise collide embed
 # the group name explicitly (``measures_start_year``, ``covid_end_year``, …).
 #
 # Merge rules (defaults → market): deep-merge keyed by traffic_type; per-market
-# values override at the leaf level; lists are replaced wholesale; sub-groups
-# absent in both remain absent (so optional disciplines stay opt-in via their
-# factory checks).
+# values override at the leaf level; lists are replaced wholesale.
 #
 # ─────────────────────────────────────────────────────────────────────────────
 # Per-market schema (see individual market entries below)
 # ─────────────────────────────────────────────────────────────────────────────
-# Required:
-#   name, traffic_type (passenger|freight), traffic_unit (RPK|RTK),
-#   inputs.initial  (2019 share + energy calibration; passenger costs.init too)
-# Optional sub-groups (fallback to ``defaults`` when omitted):
-#   inputs.growth, inputs.covid, inputs.reference        (all markets)
-#   inputs.load_factor, inputs.measures, inputs.costs    (passenger only)
+# Each market needs, in its own entry or through ``defaults``:
+#   name, traffic_type (passenger|freight), traffic_unit (RPK|RTK, informative)
+#   inputs.initial    last-historical-year shares (set per market)
+#   inputs.growth, inputs.covid, inputs.reference          (all markets)
+#   inputs.load_factor, inputs.measures                    (passenger)
+# A sub-group missing from both the market and ``defaults`` stops the run with a
+# "Missing required names" error. Model-dependent sub-groups:
 #   inputs.efficiency_simple
-#       passenger: gain curve + H2/electric introduction
-#       freight:   drop-in gain curve only — consumed when the
-#                  ``FreightAircraftEfficiencySimple`` model is included in the
-#                  user's model dict (see ``aeromaps/core/models.py``).
+#       passenger: gain curve + H2/electric introduction — read only by the
+#                  top-down efficiency bundles (models_efficiency_top_down[_interp])
+#       freight:   drop-in gain curve — read only by
+#                  models_efficiency_bottom_up_simple_freight
+#   inputs.costs (passenger) — read only by models_operation_cost_top_down[_feedback];
+#                  doc_non_energy_per_ask_dropin_fuel_init also by models_abatements_cost
+#
+# Shares are checked when the file is loaded: rpk shares (passenger), rtk shares
+# (freight) and energy shares (all markets) must each sum to 100 % ± 0.2.
 
 # Pipeline-wide switches. Applied once for the whole run; cannot be overridden
 # per market. Leaves are flattened WITHOUT a market prefix when reading the yaml.
@@ -55,6 +63,12 @@ global:
   # ``elasticity`` block is ignored.
   demand:
     model: cagr
+  # Load factor model selector (optional, default ``quadratic``):
+  #   quadratic            — reads load_factor_end_year and covid_load_factor_2020.
+  #   simple_interpolation — reads load_factor_reference_years[_values] and
+  #                          covid_load_factor_2020 (load_factor_end_year ignored).
+  # load_factor:
+  #   model: quadratic
   # Price elasticity of demand — global calibration (not per-market for now).
   # Used only by ``demand.model: cagr_elasticity``. ``use_elasticity: true`` is a
   # legacy alias for that mode (kept for configs predating ``demand.model``).
@@ -82,7 +96,7 @@ defaults:
         measures_final_impact: 0.0
         measures_start_year: 2051
         measures_duration: 5.0
-      efficiency_simple: # only whitout bottom up fleet model 
+      efficiency_simple: # read only by the top-down efficiency bundles
         energy_per_ask_dropin_fuel_gain_reference_years: []
         energy_per_ask_dropin_fuel_gain_reference_years_values: [2.0]
         hydrogen_final_market_share: 0.0
@@ -93,7 +107,7 @@ defaults:
         relative_energy_per_ask_hydrogen_wrt_dropin_reference_years_values: [1.0]
         relative_energy_per_ask_electric_wrt_dropin_reference_years: []
         relative_energy_per_ask_electric_wrt_dropin_reference_years_values: [1.0]
-      costs: # only whitout bottom up fleet model 
+      costs: # read only by the top-down operating-cost bundles
         doc_non_energy_per_ask_dropin_fuel_gain: 0.0
         relative_doc_non_energy_per_ask_hydrogen_wrt_dropin: 1.1
         relative_doc_non_energy_per_ask_electric_wrt_dropin: 1.0
@@ -112,7 +126,7 @@ defaults:
       reference:
         reference_cagr_reference_periods: []
         reference_cagr_reference_periods_values: [3.0]
-      # Used only when ``global.freight_efficiency.mode == simple``.
+      # Read only by the models_efficiency_bottom_up_simple_freight bundle.
       # efficiency_simple:
       #  energy_per_rtk_dropin_fuel_gain_reference_years: []
       #  energy_per_rtk_dropin_fuel_gain_reference_years_values: [1.5]

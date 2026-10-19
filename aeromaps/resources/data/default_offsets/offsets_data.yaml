@@ -1,4 +1,7 @@
 ### DEFAULT OFFSETS DATA ###
+# Referenced from the entry config as models.offsets.offsets_model_data_file.
+# Every input of the chosen quantity mode, and the price, is required.
+# Full reference: docs/books/configuration/operations_offsets.md
 # Offsetting schemes for the generic offsets model. Each scheme carries a quantity rule
 # and a price; the schemes sum into the aggregate carbon offset, the quantity-weighted
 # mean of their prices is the aggregate carbon offset price, and each scheme's quantity

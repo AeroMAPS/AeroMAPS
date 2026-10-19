@@ -1,3 +1,16 @@
+# Push fleet engine: future aircraft types, per segment (TP, RJ, NB, WB — the
+# passenger market ids). Read only with the models_efficiency_push bundle.
+# Every field is required:
+#   name                 type name, used in output names
+#   intro_year           first delivery year
+#   production_duration  length of the production run [years]
+#   energy_efficiency    energy per ASK [MJ/ASK]
+#   seats                seats per aircraft
+#   renewal_rate         share of the segment traffic at the end of the production
+#                        run that the deliveries of this type are sized to carry [-]
+#   time_to_market       ramp-up time of the delivery curve [years]
+#   ret_year_delay       shift of the retirement age [years], 0 for none
+# Full reference: docs/books/configuration/fleet_push.md
 markets:
   TP:
     new_aircraft_types:

@@ -1,69 +1,136 @@
 ### DEFAULT ENERGY CARRIERS DATA - TOP-DOWN MODEL ###
-# This file contains the default energy carriers data for the generic energy models
+# Energy pathways of the generic energy model. All pathways below use the
+# top-down environmental and cost models.
+#
+# Referenced from the entry config as models.energy.energy_carriers_model_data_file.
+# Full reference (every key, its unit, status and the model reading it):
+#   docs/books/configuration/energy.md
+#
+# Status markers used in the examples below:
+#   [REQUIRED]        the run stops with an error if the key is missing
+#   [OPTIONAL: x]     may be left out, the neutral default x applies
+#   [ZERO IF ABSENT]  may be left out, but then counts as 0 (no emission, no cost,
+#                     no consumption): provide it unless 0 is what you mean
+#   [TOP-DOWN] / [BOTTOM-UP]  read only when the pathway's environmental_model or
+#                     cost_model is that one; keys of the other family are accepted
+#                     by the file check but ignored
+#
+# Demand split, per aircraft type and per year: quantity mandates first, then
+# share mandates (share of the aircraft type's total energy), then the single
+# default pathway takes the rest. Exactly one default pathway is needed per
+# aircraft type that consumes energy.
 
 # -----------------------------------------------------------------------------
-# Example of a generic pathway for the top-down model (all possible fields) and options
+# Example of a top-down pathway (all fields)
 # -----------------------------------------------------------------------------
 # generic_example:
 #   # Metadata
-#   name: "generic_example"
-#   environmental_model: "top-down" # or "bottom-up", used to select the model used to compute energy carrier outputs
-#   cost_model: "top-down"
-#   aircraft_type: "dropin_fuel"  # or "hydrogen", "electric", based on the fleet model output and downstream processes
-#   energy_origin: "biomass"      # or "fossil", "electricity", free to add more : "nuclear", "solar" ==> used to compute usage of resources
-#   default: False                # if True, this energy carrier is used as default and the mandate specified is not used
+#   name: "generic_example"         # [REQUIRED] same value as the entry key
+#   environmental_model: "top-down" # [REQUIRED] "top-down" or "bottom-up"
+#   cost_model: "top-down"          # [REQUIRED] "top-down" or "bottom-up"
+#   aircraft_type: "dropin_fuel"    # [REQUIRED] "dropin_fuel", "hydrogen" or "electric"
+#   energy_origin: "biomass"        # [REQUIRED] free label grouping results; keep "fossil",
+#                                   #   "biomass", "electricity" for drop-in fuels
+#   default: False                  # [OPTIONAL: False] True for the pathway completing the
+#                                   #   demand of its aircraft type; it must have NO mandate block
 #   inputs:
-#     # Policy
+#     # Policy: [REQUIRED] on every non-default pathway (use a zero share to keep a
+#     # pathway without deploying it); absent on the default pathway
 #     mandate:
-#       mandate_type: "share"    # or "quantity". If "share", the mandate is a share of the aircraft-type fuel demand, if "quantity", it is directly a quantity of energy.
-#       mandate_share: !AeroMapsCustomDataType   # with mandate_type: "share", [%] of the aircraft-type fuel demand
+#       mandate_type: "share"       # "share" or "quantity"
+#       mandate_share: !AeroMapsCustomDataType     # with "share": [%] of the aircraft type's energy
 #         years: [2020, 2030, 2040, 2050]
 #         values: [0.0, 1.0, 2.0, 3.0]
 #         method: linear
-#       mandate_quantity: !AeroMapsCustomDataType  # with mandate_type: "quantity", [MJ] of energy carrier
-#         years: [2020, 2030, 2040, 2050]
-#         values: [0.0, 1.0e+9, 2.0e+9, 3.0e+9]
-#         method: linear
+#       # mandate_quantity: !AeroMapsCustomDataType  # with "quantity": [MJ] per year
+#       #   years: [2020, 2030, 2040, 2050]
+#       #   values: [0.0, 1.0e+9, 2.0e+9, 3.0e+9]
+#       #   method: linear
 #     # Technical
 #     technical:
-#       resource_names: [ "generic_resource" ]      # List of resources used to produce the energy carrier, excluding those used in processes
-#       resource_specific_consumption:
-#         generic_resource: 1.0                               # MJ of resource consumed per MJ of energy carrier produced
-#       kerosene_selectivity: 0.15            # Share of the fuel that is for aviation (used for resource mobilized, ..)
-#       lhv: 44                                                     # Lower Heating Value of the energy carrier in MJ/kg
-#       plant_load_factor: 0.95
-#       plant_lifespan: 25
-#       processes_names: [ "process1", "process2" ]             # List of processes used to produce the energy carrier
+#       lhv: 44                       # [REQUIRED] lower heating value [MJ/kg]
+#       resource_names: [ "generic_resource" ]   # [OPTIONAL: []] resources used directly
+#       resource_specific_consumption:           # [TOP-DOWN] [ZERO IF ABSENT]
+#         generic_resource: 1.0       # resource units per MJ of fuel, one entry per listed resource
+#       processes_names: [ "process1", "process2" ]  # [OPTIONAL: []] processes from processes_data.yaml
+#       kerosene_selectivity: 0.15    # [OPTIONAL: 1.0] share of the plant output that is jet fuel;
+#                                     #   only scales the resources mobilised, not costs or emissions
 #     # Environmental
 #     environmental:
-#       mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType   # co2 ef (MJ/kg) of the energy carrier "core" : these can also be part of resource/processes depending on user's choices
-#         years: []
+#       mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType  # [TOP-DOWN] [ZERO IF ABSENT]
+#         years: []                   # [gCO2/MJ] of the pathway itself, excluding resources and processes
 #         values: [50.0]
 #         method: linear
-#       emission_index:
-#         h2o: 1.0
-#         nox: 0.01
+#       emission_index:               # [REQUIRED] h2o, nox, sulfur, soot [kg/kg fuel]
+#         h2o: 1.231
+#         nox: 0.01514
 #         sulfur: 0.0
-#         soot: 0.0
-#         particles_number: 1e13
+#         soot: 6.0e-06
+#         particles_number: 8.0e+13   # [#/kg fuel] read only with models_energy_with_fuel_effect
+#                                     #   (drop-in), relative to the default drop-in pathway
 #     # Economics
 #     economics:
-#       mean_mfsp_without_resource: !AeroMapsCustomDataType     # Cost/minimum fuel selling price (€/MJ) of the energy carrier "core" : these can also be part of resource/processes depending on user's choices
-#         years: []
-#         values: [0.02]
+#       mean_mfsp_without_resource: !AeroMapsCustomDataType  # [TOP-DOWN] [ZERO IF ABSENT]
+#         years: []                   # [EUR/MJ] minimum selling price of the pathway itself,
+#         values: [0.02]              #   excluding resources and processes
 #         method: linear
-#       mean_unit_subsidy_without_resource: !AeroMapsCustomDataType # Subsidy (€/MJ) of the energy carrier "core" : these can also be part of resource/processes depending on user's choices
-#        years: []
-#        values: [0.0496]
-#        method: linear
-#       mean_unit_tax_without_resource: !AeroMapsCustomDataType # Tax (€/MJ) of the energy carrier "core" : these can also be part of resource/processes depending on user's choices
+#       mean_unit_subsidy_without_resource: !AeroMapsCustomDataType  # [OPTIONAL: 0] [EUR/MJ]
 #         years: []
 #         values: [0.0]
 #         method: linear
-#   outputs:
-#     # --> This is not used yet, but possible development would be to select what to compute based on user-defined outputs
+#       mean_unit_tax_without_resource: !AeroMapsCustomDataType      # [OPTIONAL: 0] [EUR/MJ]
+#         years: []
+#         values: [0.0]
+#         method: linear
+#   outputs:                          # not used
+#
 # -----------------------------------------------------------------------------
-
+# Bottom-up variant: same metadata, mandate, lhv and emission_index; the model
+# keys are replaced by their "eis_" (entry into service) counterparts, which
+# describe the plants commissioned each year. Start eis_ curves at or before the
+# prospection start year: years they do not cover take the model default (0).
+# -----------------------------------------------------------------------------
+# generic_bottom_up_example:
+#   name: "generic_bottom_up_example"
+#   environmental_model: "bottom-up"
+#   cost_model: "bottom-up"
+#   aircraft_type: "dropin_fuel"
+#   energy_origin: "biomass"
+#   default: False
+#   abatement_cost: False           # [OPTIONAL: False] True computes the carbon abatement cost;
+#                                   #   needs cost_model "bottom-up" and a pathway flagged
+#                                   #   abatement_cost_reference: True (usually fossil kerosene)
+#   compute_all_years: False        # [OPTIONAL: False] vintage values every year, even without
+#                                   #   new plants (avoids gaps in abatement-cost curves)
+#   inputs:
+#     mandate: {...}
+#     technical:
+#       lhv: 44
+#       resource_names: [ "generic_resource" ]
+#       eis_resource_specific_consumption:    # [BOTTOM-UP] [ZERO IF ABSENT]
+#         generic_resource: 1.0
+#       eis_plant_lifespan: 25        # [OPTIONAL: 25] [years]
+#       eis_plant_load_factor: 0.95   # [OPTIONAL: 1.0]
+#       technology_introduction_year: 2010     # [REQUIRED only if the pathway already
+#       technology_introduction_volume: 1.0e+9 #   produces in the historic start year] [year], [MJ]
+#     environmental:
+#       eis_co2_emission_factor_without_resource: !AeroMapsCustomDataType  # [BOTTOM-UP] [ZERO IF ABSENT]
+#         years: []                   # [gCO2/MJ]
+#         values: [20.0]
+#       emission_index: {...}
+#     economics:
+#       eis_capex: !AeroMapsCustomDataType          # [BOTTOM-UP] [ZERO IF ABSENT] [EUR per MJ/yr of capacity]
+#         years: [2020, 2050]
+#         values: [0.10, 0.06]
+#       eis_fixed_opex: !AeroMapsCustomDataType     # [BOTTOM-UP] [ZERO IF ABSENT] [EUR per MJ/yr, per year]
+#         years: []
+#         values: [0.004]
+#       eis_variable_opex: !AeroMapsCustomDataType  # [BOTTOM-UP] [ZERO IF ABSENT] [EUR/MJ]
+#         years: []
+#         values: [0.006]
+#       eis_construction_time: 3                    # [OPTIONAL: 3] [years]
+#       # mean_unit_subsidy_without_resource / mean_unit_tax_without_resource: as top-down
+# -----------------------------------------------------------------------------
 
 hefa_fog:
   # Metadata

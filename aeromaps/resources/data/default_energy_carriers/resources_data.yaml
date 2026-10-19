@@ -1,34 +1,42 @@
+### DEFAULT ENERGY RESOURCES DATA ###
+# Resources consumed by the energy pathways, directly or through processes.
+#
+# Referenced from the entry config as models.energy.resources_model_data_file.
+# Full reference: docs/books/configuration/energy.md
+# Status markers ([REQUIRED], [OPTIONAL: x], [ZERO IF ABSENT]) are explained at
+# the top of energy_carriers_data.yaml.
+#
+# The unit of a resource is the one the specific consumptions use (MJ for an
+# energy resource, kg for CO2…); every per-unit value is per unit of resource.
+
 # -----------------------------------------------------------------------------
-# Example of a generic resource (all possible fields and options)
+# Example of a generic resource (all fields)
 # -----------------------------------------------------------------------------
 # generic_resource:
-#   # ID
-#   name: "generic_resource"
+#   name: "generic_resource"        # [REQUIRED] same value as the entry key
+#   origin: "biomass"               # [OPTIONAL: "unknown"] groups resource-consumption outputs
 #   specifications:
-#     # Technical:
-#     co2_emission_factor: !AeroMapsCustomDataType    # gCO2/MJ, additional to process/pathways' emission factor
-#       years: [2020, 2030, 2040, 2050]
-#       values: [100, 80, 60, 40] # gCO2/MJ
+#     co2_emission_factor: !AeroMapsCustomDataType  # [ZERO IF ABSENT] [gCO2/unit], added to the
+#       years: [2020, 2030, 2040, 2050]             #   pathway and process emission factors
+#       values: [100, 80, 60, 40]
 #       method: linear
-#     load_factor: 1.0                                # Resource max LF (e.g. for renewables)
-#     # Availability
-#     availability:
-#       global: 1.0e+12 # [MJ] Global availability of the resource
-#       aviation_allocated_share: 5.0 # [%] Share of the global availability alalocated to aviation
-#     # Economical
-#     cost: !AeroMapsCustomDataType                   # €/MJ, additional to process/pathways' cost
-#       years: [2020, 2030, 2040, 2050]
-#       values: [0.01, 0.012, 0.013, 0.014] # €/MJ
+#     cost: !AeroMapsCustomDataType                 # [ZERO IF ABSENT] [EUR/unit], added to the
+#       years: [2020, 2030, 2040, 2050]             #   pathway and process costs
+#       values: [0.01, 0.012, 0.013, 0.014]
 #       method: linear
-#     subsidy: !AeroMapsCustomDataType                # €/MJ, additional to process/pathways' subsidy
-#       years: [2020, 2030, 2040, 2050]
-#       values: [0.0, 0.0, 0.0, 0.0] # €/MJ
+#     subsidy: !AeroMapsCustomDataType              # [OPTIONAL: 0] [EUR/unit], top-down cost model only
+#       years: []
+#       values: [0.0]
 #       method: linear
-#     tax: !AeroMapsCustomDataType                # €/MJ, additional to process/pathways' tax
-#       years: [2020, 2030, 2040, 2050]
-#       values: [0.0, 0.0, 0.0, 0.0] # €/MJ
+#     tax: !AeroMapsCustomDataType                  # [OPTIONAL: 0] [EUR/unit], top-down cost model only
+#       years: []
+#       values: [0.0]
 #       method: linear
-
+#     availability:                                 # [OPTIONAL] compared with consumption, does not cap it
+#       global: 1.0e+12               # [unit/yr] world availability
+#       aviation_allocated_share: 5.0 # [%] share allocated to aviation; needs "global"
+#     # load_factor: accepted by the file check but currently without effect, and a
+#     # plain number makes bottom-up runs fail: leave it out.
 # -----------------------------------------------------------------------------
 
 hefa_fog_biomass:
@@ -97,7 +105,7 @@ grid_electricity:
         method: linear
     load_factor: 1.0
     availability:
-      global: 250.0e+12 # [EJ]
+      global: 250.0e+12 # [MJ]
       aviation_allocated_share: 5.0 # [%] Share of the global availability
 
 co2_dac:

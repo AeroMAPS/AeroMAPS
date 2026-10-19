@@ -1,3 +1,6 @@
+# Push fleet engine: segment (TP, RJ, NB or WB) of each ICAO aircraft type found
+# in the calibration workbooks. A type missing from the list is left out.
+# Full reference: docs/books/configuration/fleet_push.md
 aircraft_types:
 - A19N : 'NB'
 - A20N : 'NB'

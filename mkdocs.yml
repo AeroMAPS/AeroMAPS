@@ -9,7 +9,17 @@ nav:
       - books/index.md # Main documentation page
       - GUI:
           - books/documentation_gui.md
-      - Configuration files: books/configuration.md
+      - Configuration files:
+          - books/configuration/index.md
+          - Entry config and loading rules: books/configuration/loading.md
+          - Model choices and their parameters: books/configuration/model_choices.md
+          - Markets and demand: books/configuration/markets.md
+          - Bottom-up fleet: books/configuration/fleet.md
+          - Push fleet: books/configuration/fleet_push.md
+          - Energy: books/configuration/energy.md
+          - Climate: books/configuration/climate.md
+          - Operations and offsets: books/configuration/operations_offsets.md
+          - Multi-region studies: books/configuration/regionalisation.md
       - Models documentation:
           - Air transport: books/documentation_airtransport.md
           - Impacts: books/documentation_impacts.md

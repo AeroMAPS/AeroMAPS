@@ -1,3 +1,13 @@
+# =============================================================================
+# AeroMAPS — packaged default configuration
+# =============================================================================
+# Your entry config is merged on top of this file: it supplies the default
+# paths and the default list of model bundles. Declaring a model block here does
+# NOT activate the model — energy, climate, fleet, operations, offsets and LCA
+# are only built when their block appears in YOUR entry config (the value
+# `default` points back to the files below). See example_config.yaml and
+# docs/books/configuration/.
+# =============================================================================
 data:
   inputs:
     csv_data_information_file: "./data_information.csv"
@@ -45,7 +55,7 @@ models:
     lca_model_data_file: "./default_lca/default_lca_model.json"
     split_by: phase  # May be moved to config file in future versions
 
-  standards:  # List of standard models to include from aeromaps.models.models.py
+  standards:  # List of model bundles to include from aeromaps/core/models.py
     - models_traffic
     - models_efficiency_bottom_up
     - models_energy_without_fuel_effect

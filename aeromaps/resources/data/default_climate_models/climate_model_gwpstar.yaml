@@ -1,4 +1,8 @@
 # CLIMATE CONFIGURATION FILE
+# Referenced from the entry config as models.climate.climate_model_data_file.
+# Every setting is optional (AeroCM fills in its defaults). Settings the chosen
+# model does not know, and misspelled species names, are ignored without error.
+# Full reference: docs/books/configuration/climate.md
 
 # Name of the climate model (IPCC, GWP*, LWE, FaIR)
 # See AeroCM documentation for available models

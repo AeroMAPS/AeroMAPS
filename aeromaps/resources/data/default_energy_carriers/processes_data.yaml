@@ -1,36 +1,49 @@
+### DEFAULT ENERGY PROCESSES DATA ###
+# Conversion processes used by the energy pathways (electrolysis, liquefaction…).
+# A process inherits the model of the pathway using it: top-down pathways read
+# the keys marked [TOP-DOWN], bottom-up pathways the ones marked [BOTTOM-UP].
+#
+# Referenced from the entry config as models.energy.processes_model_data_file.
+# Full reference: docs/books/configuration/energy.md
+# Status markers are explained at the top of energy_carriers_data.yaml.
+
 # -----------------------------------------------------------------------------
-# Example of a generic process (all possible fields and options)
+# Example of a generic process (all fields)
 # -----------------------------------------------------------------------------
 # generic_process:
-#   # Metadata
-#   name: "generic_process"
+#   name: "generic_process"         # [REQUIRED] same value as the entry key
 #   inputs:
-#     # Technical:
 #     technical:
-#       resource_names: [ "generic_resource" ]
-#       resource_specific_consumption:
-#         generic_resource: 0.5 # MJ of resource per MJ of process output
-#     plant_load_factor: 0.95
-#     # Environmental:
+#       resource_names: [ "generic_resource" ]   # [OPTIONAL: []]
+#       resource_specific_consumption:           # [TOP-DOWN] [ZERO IF ABSENT]
+#         generic_resource: 0.5       # resource units per MJ of fuel produced by the pathway
+#       # eis_resource_specific_consumption: {generic_resource: 0.5}  # [BOTTOM-UP] [ZERO IF ABSENT]
+#       # eis_plant_lifespan: 25      # [BOTTOM-UP] [OPTIONAL: 25] [years]
+#       # eis_plant_load_factor: 0.95 # [BOTTOM-UP] [OPTIONAL: 1.0] (cost)
+#       # load_factor: 0.95           # [BOTTOM-UP] [OPTIONAL: 1.0] (process capacity sizing)
 #     environmental:
-#       mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType # co2 ef (MJ/kg) of the process : these can also be part of core/resource depending on user's choices
-#         years: [2020, 2030, 2040, 2050]
+#       mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType  # [TOP-DOWN] [ZERO IF ABSENT]
+#         years: [2020, 2030, 2040, 2050]   # [gCO2/MJ] of the process itself, excluding resources
 #         values: [10.0, 8.0, 6.0, 4.0]
 #         method: linear
-#     # Economics:
+#       # eis_co2_emission_factor_without_resource: ...  # [BOTTOM-UP] [ZERO IF ABSENT] [gCO2/MJ]
 #     economics:
-#       mean_mfsp_without_resource: !AeroMapsCustomDataType  # Cost/MFSP (€/MJ) of the process : these can also be part of core/resource depending on user's choices
-#         years: [2020, 2030, 2040, 2050]
+#       mean_mfsp_without_resource: !AeroMapsCustomDataType  # [TOP-DOWN] [ZERO IF ABSENT]
+#         years: [2020, 2030, 2040, 2050]   # [EUR/MJ] cost of the process itself, excluding resources
 #         values: [0.01, 0.011, 0.012, 0.013]
 #         method: linear
-#       mean_unit_subsidy_without_resource: !AeroMapsCustomDataType # Subsidy (€/MJ) of the process : these can also be part of core/resource depending on user's choices
-#         years: [2020, 2030, 2040, 2050]
-#         values: [0.0, 0.0, 0.0, 0.0]
+#       mean_unit_subsidy_without_resource: !AeroMapsCustomDataType  # [TOP-DOWN] [OPTIONAL: 0] [EUR/MJ]
+#         years: []
+#         values: [0.0]
 #         method: linear
-#       mean_unit_tax_without_resource: !AeroMapsCustomDataType  # Tax (€/MJ) of the process : these can also be part of core/resource depending on user's choices
-#         years: [2020, 2030, 2040, 2050]
-#         values: [0.0, 0.0, 0.0, 0.0]
+#       mean_unit_tax_without_resource: !AeroMapsCustomDataType      # [TOP-DOWN] [OPTIONAL: 0] [EUR/MJ]
+#         years: []
+#         values: [0.0]
 #         method: linear
+#       # eis_capex: ...              # [BOTTOM-UP] [ZERO IF ABSENT] [EUR per MJ/yr of capacity]
+#       # eis_fixed_opex: ...         # [BOTTOM-UP] [ZERO IF ABSENT] [EUR per MJ/yr, per year]
+#       # eis_variable_opex: ...      # [BOTTOM-UP] [ZERO IF ABSENT] [EUR/MJ]
+#       # eis_construction_time: 3    # [BOTTOM-UP] [OPTIONAL: 3] [years]
 # -----------------------------------------------------------------------------
 
 liquefaction:

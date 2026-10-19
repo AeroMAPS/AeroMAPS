@@ -1,4 +1,7 @@
 ### DEFAULT OPERATIONS DATA ###
+# Referenced from the entry config as models.operations.operations_model_data_file;
+# active only when that block is declared. Every input of a declared channel is
+# required. Full reference: docs/books/configuration/operations_offsets.md
 # Operational concepts for the generic operations models. Each concept contributes one
 # or more gains that compose multiplicatively into the aggregate operational effects:
 #   - fuel_efficiency.gain      -> operations_gain [%]                      (energy per ASK, CO2)

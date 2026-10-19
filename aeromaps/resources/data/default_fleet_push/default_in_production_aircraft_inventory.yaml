@@ -1,3 +1,13 @@
+# Push fleet engine: aircraft types still delivered after the pivot year (2024),
+# per segment (TP, RJ, NB, WB — the passenger market ids). Read only with the
+# models_efficiency_push bundle. Every field is required:
+#   name                         type name, used in output names
+#   energy_efficiency            energy per ASK [MJ/ASK]
+#   seats                        seats per aircraft
+#   ret_year_delay               shift of the retirement age [years], 0 for none
+#   reference_production_points  delivery profile: year / value [aircraft/yr] points,
+#                                linear in between; end with 0 when production stops
+# Full reference: docs/books/configuration/fleet_push.md
 markets:
   TP:
     current_aircraft_types:
