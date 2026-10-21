@@ -65,6 +65,8 @@ __DERIVATE_DIMENSIONS_MAPPING = {
 
 
 class AeroMAPSUnitRegistry(UnitRegistry):
+    """A custom unit registry for AeroMAPS."""
+
     _DERIVATE_DIMENSIONS_MAPPING: dict[UnitsContainer, str] = {
         Quantity("J").dimensionality: QuantitiesDimensions.ENERGY,
         Quantity("meter").dimensionality: QuantitiesDimensions.DISTANCE,
@@ -72,6 +74,7 @@ class AeroMAPSUnitRegistry(UnitRegistry):
         Quantity("meter**3").dimensionality: QuantitiesDimensions.VOLUME,
         Quantity("W").dimensionality: QuantitiesDimensions.POWER,
     }
+    """A mapping of derived dimensions."""
 
     def __init__(self, *args, **kwargs):
         super().__init__(
@@ -82,16 +85,22 @@ class AeroMAPSUnitRegistry(UnitRegistry):
                 lambda s: s.replace("$", "USD"),
                 _units_preprocessor,
             ],
+            on_redefinition="ignore",
         )
 
         self.__define_air_transport_units()
         self.__define_species_tags()
         self.__define_currencies()
         self.__define_mass_tags()
-        self.define("m2 = meter **2")
-        self.define("Years = year = yr")
-
+        self.define("m2 = meter ** 2")
+        # define as canonical name = dim = symbol = alias
         self.define(f"{CAPITA} = [{CAPITA}]")
+
+    def _after_init(self):
+        super()._after_init()
+        print("initialized:", self._initialized)
+        self.define("ton = 1000 * kg = t = tonne")
+        self.define("year = day * 365.25 = yr = a = julian_year = years = Years")
 
     def unit_quantity(self, unit: str) -> str | list[str]:
         """Return the quantity that a unit represents.
@@ -101,6 +110,8 @@ class AeroMAPSUnitRegistry(UnitRegistry):
         Return:
             The physical quantity (or quantities) that the unit represents.
         """
+        if self(unit).dimensionless:
+            return "dimensionless"
 
         quantities = [key[1:-1] for key in self.dimension(unit).keys()]
 
@@ -156,7 +167,7 @@ class AeroMAPSUnitRegistry(UnitRegistry):
         self.define("gNOx = g * NOx")
         self.define("kg_NOx = kg * NOx")
         self.define("gfuel = g * fuel")
-        self.define("kg_fuel = kg * fuel")
+        self.define("kg_fuel = kg * fuel = kg_fuel = kgfuel")
 
     def __define_currencies(self):
         self.define("euro = [currency] = € = EUR")
@@ -190,3 +201,8 @@ class AeroMAPSUnitRegistry(UnitRegistry):
         assert len(species_tag) == 1
 
         return f"[mass{species_tag[0]}]"
+
+    def normalize_unit(self, unit: str) -> str:
+        """Return a normalized string representation of the quantity's unit."""
+
+        return f"{self(unit).units:~P}".replace(" ", "")
