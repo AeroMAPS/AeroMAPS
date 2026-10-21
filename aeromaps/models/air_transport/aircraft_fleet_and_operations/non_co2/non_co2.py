@@ -153,6 +153,7 @@ class FuelEffectCorrectionContrails(AeroMAPSModel):
         self.input_names.update(
             {
                 "total_aircraft_distance": pd.Series([0.0]),
+                "karcher_curve_case": ""
             }
         )
 
@@ -206,18 +207,29 @@ class FuelEffectCorrectionContrails(AeroMAPSModel):
                 for pathway in self.pathways_manager.get(
                     aircraft_type=aircraft_type,
                 ):
-                    relative_particles_number += (
-                        input_data[f"{pathway.name}_massic_share_{aircraft_type}"]
-                        / 100
-                        * np.sqrt(
-                            input_data[f"{pathway.name}_emission_index_particles_number"]
-                            / default_emission_index_number_particles
-                        )
-                    ).fillna(0)
+                    EI = input_data[f"{pathway.name}_emission_index_particles_number"]
 
-                fuel_effect_correction_contrails += (
-                    distance_share_dropin_fuel * relative_particles_number
-                )
+                    # warnings.warn(f"Fuel pathway = '{pathway.name}' .", UserWarning)
+                    # warnings.warn(f"EI = '{EI}' .", UserWarning)
+
+                    karcher_curve_case = input_data["karcher_curve_case"]
+                    relative_effect = (
+                            self._karcher_curve(EI, karcher_curve_case)
+                            / self._karcher_curve(default_emission_index_number_particles, karcher_curve_case)
+                    )
+                    # warnings.warn(f"Relative effect = '{relative_effect}' .", UserWarning)
+
+                    relative_particles_number += (
+                            input_data[f"{pathway.name}_massic_share_{aircraft_type}"]
+                            / 100
+                            * relative_effect
+                    ).fillna(0)
+                    # warnings.warn(f"Relative particles number = '{relative_particles_number}' .", UserWarning)
+
+                    fuel_effect_correction_contrails += (
+                            distance_share_dropin_fuel * relative_particles_number
+                    )
+
             elif aircraft_type == "hydrogen":
                 fuel_effect_correction_contrails += (
                     input_data["total_aircraft_distance_hydrogen"]
@@ -235,6 +247,37 @@ class FuelEffectCorrectionContrails(AeroMAPSModel):
 
         self._store_outputs(output_data)
         return output_data
+
+    def _karcher_curve(self, fuel_nvpm_number_emission_index,
+                       karcher_curve_case="No vPM"):  # "No vPM", "Intermediate vPM", "High vPM"
+        reference_nvpm_number_emission_index = 1.5e15
+        normalised_nvpm_number_emission_index = fuel_nvpm_number_emission_index / reference_nvpm_number_emission_index
+
+        def s_tau(x):
+            return 0.91 * np.arctan(1.96 * x ** 0.58)
+
+        normalised_nvpm_number_emission_index_threshold = 0.1
+        normalised_iceparticle_number_emission_index_threshold = s_tau(normalised_nvpm_number_emission_index_threshold)
+
+        normalised_iceparticle_number_emission_index_novpm = s_tau(normalised_nvpm_number_emission_index)
+
+        normalised_iceparticle_number_emission_index = np.copy(normalised_iceparticle_number_emission_index_novpm)
+        mask_low = (normalised_nvpm_number_emission_index < normalised_nvpm_number_emission_index_threshold)
+
+        if karcher_curve_case == "No vPM":
+            pass
+
+        elif karcher_curve_case == "Intermediate vPM":
+            normalised_iceparticle_number_emission_index[
+                mask_low] = normalised_iceparticle_number_emission_index_threshold
+
+        elif karcher_curve_case == "High vPM":
+            normalised_iceparticle_number_emission_index[
+                mask_low] = normalised_iceparticle_number_emission_index_threshold + (
+                    normalised_iceparticle_number_emission_index_threshold -
+                    normalised_iceparticle_number_emission_index_novpm[mask_low])
+
+        return normalised_iceparticle_number_emission_index
 
 
 class WithoutFuelEffectCorrectionContrails(AeroMAPSModel):
