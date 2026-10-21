@@ -148,10 +148,21 @@ class AeroMAPSModel(object):
     # None when approach-agnostic (shared across both wirings, or outside the split).
     MODEL_APPROACH = None
 
+    # Static variable metadata, keyed by I/O name: unit strings from the vocabulary of
+    # aeromaps.utils.units and free-text descriptions. Copied onto the instance as
+    # ``units`` / ``descriptions`` so that ``custom_setup`` can extend them for names
+    # generated at run time (per market, per pathway). The GEMSEO wrappers attach them
+    # to the discipline grammars; names left undeclared fall back to the metadata
+    # registry (data_information.yaml).
+    UNITS: dict = {}
+    DESCRIPTIONS: dict = {}
+
     def __init__(self, name, parameters=None, model_type="auto"):
         self.name = name
         self.parameters = parameters
         self.float_outputs = {}
+        self.units = dict(self.UNITS)
+        self.descriptions = dict(self.DESCRIPTIONS)
         if self.parameters is not None:
             self._initialize_df()
 
@@ -164,6 +175,46 @@ class AeroMAPSModel(object):
             self._skip_data_type_validation = False  # Whether to skip input/output data type validation. If True, input_names and output_names can be lists of names only.
         elif self.model_type != "auto":
             raise ValueError("model_type must be either 'auto' or 'custom'")
+
+    def declare_input(self, name, default, unit=None, description=None):
+        """Declare an input of a custom model together with its metadata.
+
+        Parameters
+        ----------
+        name
+            Variable name.
+        default
+            Default value, which also fixes the GEMSEO data type.
+        unit
+            Unit string from the vocabulary of ``aeromaps.utils.units``.
+        description
+            Short description of the variable.
+        """
+        self.input_names[name] = default
+        self._declare_metadata(name, unit, description)
+
+    def declare_output(self, name, default, unit=None, description=None):
+        """Declare an output of a custom model together with its metadata.
+
+        Parameters
+        ----------
+        name
+            Variable name.
+        default
+            Placeholder value, which fixes the GEMSEO data type.
+        unit
+            Unit string from the vocabulary of ``aeromaps.utils.units``.
+        description
+            Short description of the variable.
+        """
+        self.output_names[name] = default
+        self._declare_metadata(name, unit, description)
+
+    def _declare_metadata(self, name, unit, description):
+        if unit is not None:
+            self.units[name] = unit
+        if description is not None:
+            self.descriptions[name] = description
 
     def _initialize_df(self):
         self.climate_historic_start_year = self.parameters.climate_historic_start_year

@@ -1,5 +1,17 @@
 # Changelog
 
+## Unversioned
+
+-  New unit system (`aeromaps/utils/units.py`): controlled vocabulary of unit symbols, parsing of compound expressions, validation, and conversions (`convert`, `convert_factor`) with dimensional checks.
+- Variable metadata (unit, description, source) moved from `data_information.csv` to `data_information.yaml`, with exact entries plus ordered glob patterns for dynamically named variables (energy pathways, processes, climate species, LCA). All units are validated against the vocabulary at load time.
+- Full metadata coverage: every variable of the tested configurations is now documented (previously ~1350 variables had no unit/description), enforced by the test suite.|
+- New config key `data.inputs.data_information_file`; `csv_data_information_file` is deprecated but still read.
+- New API: `process.get_variable_information(name)` to query the unit/description of a variable.
+- Variable metadata now lives on the GEMSEO grammars: models declare units and descriptions (`declare_input`/`declare_output` for custom models, the class-level `UNITS` mapping for auto models, docstrings for descriptions), the wrappers validate every unit when the discipline is built and fall back to `data_information.yaml` for undeclared names. The process fails at assembly if a coupling variable is produced and consumed in different units, MJ against EJ included, since values are exchanged without conversion. `process.list_registry_resolved_variables()` lists what still relies on the registry.
+- New `aeromaps schema` command and `process.export_schema()`: JSON Schema (draft-07) of the process inputs and outputs derived from the grammars, with type, unit, description, source, default value, consumers and producer of every variable. The data information table (Excel sheet, `get_dataframes()["data_information"]`) is derived from the same resolution.
+- Units and metadata exposed to users: `aeromaps.utils.units` added to the API reference, and the basic example notebook shows `get_variable_information` and checked conversions.
+- Metadata realigned on the generic markets refactoring (#145): market-scoped variables (`<market_id>_<leaf>`, `cagr_rpk_<market_id>`, ...) are now covered by pattern rules instead of hard-coded per-market entries, so user-defined markets are documented automatically.
+
 ## Version 1.2.0
 
 Changed:

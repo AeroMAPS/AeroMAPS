@@ -1,6 +1,6 @@
 data:
   inputs:
-    csv_data_information_file: "./data_information.csv"
+    data_information_file: "./data_information.yaml"
     json_inputs_file: "./parameters.json"
     partitioning_data_file: "./partitioning_inputs.json"
   outputs:

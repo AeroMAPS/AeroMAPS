@@ -107,8 +107,14 @@ class RPKLogisticIncomePriceElasticity(AeroMAPSModel):
             "covid_end_year_passenger": 0.0,
             "gdp_per_capita_init": pd.Series([0.0]),
             "population_init": pd.Series([0.0]),
-            "price_reference_year": float(PRICE_REFERENCE_YEAR),
         }
+        self.declare_input(
+            "price_reference_year",
+            float(PRICE_REFERENCE_YEAR),
+            unit="yr",
+            description="Year whose net energy cost per RPK anchors the price index "
+            "(0 to use the calibrated reference price)",
+        )
         for mid in self.passenger_market_ids:
             self.input_names[f"{mid}_rpk_share_last_historical_year"] = 0.0
             self.input_names[f"rpk_{mid}_measures_impact"] = pd.Series([0.0])
