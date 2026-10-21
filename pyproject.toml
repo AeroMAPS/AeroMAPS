@@ -9,7 +9,7 @@ authors = [
     { name = "Felix POLLET", email = "felix.pollet@isae-supaero.fr" },
     { name = "Ian COSTA ALVES", email = "ian.costa-alves@isae-supaero.fr" },
 ]
-requires-python = ">=3.10, <3.12"
+requires-python = ">=3.11, <3.12"
 readme = "README.md"
 license = "GPL-3.0-only"
 keywords = [
@@ -19,7 +19,6 @@ keywords = [
     "energy issues",
 ]
 dependencies = [
-
     # Core dependencies
     "numpy>=1.20.3,<2",
     "scipy>=1.4.1,<2",
@@ -36,13 +35,12 @@ dependencies = [
     "dill>=0.4.0,<0.5",
     "aerocm==0.1.1b0",
     "pint>=0.25.3,<0.26",
-
+    "pint-pandas>=0.7.1",
     # Data visualization dependencies
     "matplotlib>=3.7,<4",
     "ipympl>=0.9.3,<0.10",
     "plotly>=5.0.0,<6",
     "seaborn>=0.13.2,<0.14",
-
     # Graphical User Interface
     "markdown>=3.4.3,<4",
     "aenum>=3.1.12,<4",
@@ -53,10 +51,8 @@ dependencies = [
     "ipysheet>=0.5.0, <1",
     "ipydatagrid>=1.1.14,<2",
     "ipytree>=0.2.2,<0.3",
-
     # Web deployment
     "voila>=0.5.0,<0.6",
-
 ]
 
 [project.optional-dependencies]
