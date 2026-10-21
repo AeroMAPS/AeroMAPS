@@ -121,7 +121,7 @@ class FuelEffectCorrectionContrails(AeroMAPSModel):
         for aircraft_type in self.pathways_manager.get_all_types("aircraft_type"):
             if aircraft_type == "dropin_fuel":
                 for pathway in self.pathways_manager.get(
-                    aircraft_type=aircraft_type,
+                        aircraft_type=aircraft_type,
                 ):
                     self.input_names.update(
                         {
@@ -193,8 +193,8 @@ class FuelEffectCorrectionContrails(AeroMAPSModel):
                     self.historic_start_year, self.end_year
                 )
                 distance_share_dropin_fuel = (
-                    input_data["total_aircraft_distance_dropin_fuel"]
-                    / input_data["total_aircraft_distance"]
+                        input_data["total_aircraft_distance_dropin_fuel"]
+                        / input_data["total_aircraft_distance"]
                 )
 
                 default_pathway = self.pathways_manager.get(
@@ -205,7 +205,7 @@ class FuelEffectCorrectionContrails(AeroMAPSModel):
                 ]
 
                 for pathway in self.pathways_manager.get(
-                    aircraft_type=aircraft_type,
+                        aircraft_type=aircraft_type,
                 ):
                     EI = input_data[f"{pathway.name}_emission_index_particles_number"]
 
@@ -226,15 +226,14 @@ class FuelEffectCorrectionContrails(AeroMAPSModel):
                     ).fillna(0)
                     # warnings.warn(f"Relative particles number = '{relative_particles_number}' .", UserWarning)
 
-                    fuel_effect_correction_contrails += (
-                            distance_share_dropin_fuel * relative_particles_number
-                    )
-
+                fuel_effect_correction_contrails += (
+                        distance_share_dropin_fuel * relative_particles_number
+                )
             elif aircraft_type == "hydrogen":
                 fuel_effect_correction_contrails += (
-                    input_data["total_aircraft_distance_hydrogen"]
-                    / input_data["total_aircraft_distance"]
-                    * input_data["contrails_relative_effect_hydrogen_wrt_kerosene"]
+                        input_data["total_aircraft_distance_hydrogen"]
+                        / input_data["total_aircraft_distance"]
+                        * input_data["contrails_relative_effect_hydrogen_wrt_kerosene"]
                 )
             elif aircraft_type == "electric":
                 pass
@@ -246,6 +245,7 @@ class FuelEffectCorrectionContrails(AeroMAPSModel):
         }
 
         self._store_outputs(output_data)
+
         return output_data
 
     def _karcher_curve(self, fuel_nvpm_number_emission_index,
@@ -293,8 +293,8 @@ class WithoutFuelEffectCorrectionContrails(AeroMAPSModel):
         super().__init__(name=name, *args, **kwargs)
 
     def compute(
-        self,
-        total_aircraft_distance: pd.Series,
+            self,
+            total_aircraft_distance: pd.Series,
     ) -> pd.Series:
         """Return a multiplicative correction equal to 1 for all years.
 
@@ -316,3 +316,4 @@ class WithoutFuelEffectCorrectionContrails(AeroMAPSModel):
 
         fuel_effect_correction_contrails = self.df["fuel_effect_correction_contrails"]
         return fuel_effect_correction_contrails
+
