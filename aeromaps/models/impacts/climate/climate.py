@@ -47,6 +47,7 @@ class ClimateModel(AeroMAPSModel):
             self,
             climate_model: str,
             name: str = "climate",
+            include_offset: bool = False,
             species_settings: dict | None = None,
             model_settings: dict | None = None,
             *args,
@@ -56,16 +57,19 @@ class ClimateModel(AeroMAPSModel):
 
         # --- Configuration ---
         self.climate_model = climate_model
+        self.include_offset = include_offset
         self.species_settings = species_settings
         self.model_settings = model_settings
 
         # --- Declare input names ---
         self.input_names = [
             "co2_emissions",
+            "co2_emissions_with_offset",
             "nox_emissions",
             "h2o_emissions",
             "sulfur_emissions",
             "soot_emissions",
+            "h2_leakage",
             "total_aircraft_distance",
             "operations_contrails_gain",
             "fuel_effect_correction_contrails",
@@ -78,14 +82,19 @@ class ClimateModel(AeroMAPSModel):
             "CO2": "co2",
             "Non-CO2": "non_co2",
             "Contrails": "contrails",
-            "NOx - ST O3 increase": "nox_short_term_o3_increase",
-            "NOX - CH4 induced O3": "nox_long_term_o3_decrease",
-            "NOX - CH4 decrease": "nox_ch4_decrease",
-            "NOX - CH4 induced H2O": "nox_stratospheric_water_vapor_decrease",
+            "NOx - ST O3": "nox_short_term_o3_increase",
+            "NOx - CH4 induced O3": "nox_long_term_o3_decrease",
+            "NOx - CH4": "nox_ch4_decrease",
+            "NOx - CH4 induced H2O": "nox_stratospheric_water_vapor_decrease",
             "H2O": "h2o",
-            "Sulfur": "sulfur",
-            "Soot": "soot",
-            "Aerosols": "aerosol",
+            "Soot - ARI": "soot_ari",
+            "Soot - ACI": "soot_aci",
+            "Sulfur - ARI": "sulfur_ari",
+            "Sulfur - ACI": "sulfur_aci",
+            "H2 leakage - ST O3": "h2_leakage_o3",
+            "H2 leakage - CH4 and induced": "h2_leakage_ch4",
+            "H2 leakage - SWV": "h2_leakage_swv",
+            "Aerosols": "aerosols",
         }
 
         # Output names list
@@ -114,31 +123,29 @@ class ClimateModel(AeroMAPSModel):
         # --- Prepare species inventory (and converting to ndarray) ---
         # Preprocess contrails
         idx1 = slice(self.climate_historic_start_year, self.end_year)
-        self.df_climate.loc[idx1, "contrails_distance_corrected"] = (
-                input_data["total_aircraft_distance"].loc[idx1]
-        )
-        # The fuel-effect correction is built from pathway massic shares, which only
-        # exist from the prospection start year onwards; it is zero over the historic
-        # period. Applying it there would wipe out the historic contrail distance (and
-        # with it all historic contrail forcing), so the correction is restricted to
-        # the prospective years and the historic years keep the raw distance above.
-        idx2 = slice(self.prospection_start_year, self.end_year)
-        self.df_climate.loc[idx2, "contrails_distance_corrected"] = (
-                input_data["total_aircraft_distance"].loc[idx2]
-                * (1 - input_data["operations_contrails_gain"].loc[idx2] / 100)
+        self.df_climate.loc[idx1, "contrails_correction_factors"] = 1
+        idx2 = slice(self.historic_start_year, self.end_year)
+        self.df_climate.loc[idx2, "contrails_correction_factors"] = (
+                (1 - input_data["operations_contrails_gain"].loc[idx2] / 100)
                 * input_data["fuel_effect_correction_contrails"].loc[idx2]
         )
-        contrails_distance_corrected = self.df_climate["contrails_distance_corrected"]
+        contrails_correction_factors = self.df_climate["contrails_correction_factors"]
+
+        if self.include_offset:
+            co2_inventory = input_data["co2_emissions_with_offset"].to_numpy() * 1e9  # convert from Mt to kg
+        else:
+            co2_inventory = input_data["co2_emissions"].to_numpy() * 1e9  # convert from Mt to kg
 
         # Create species inventory dictionary
         species_inventory = {
-            "CO2": input_data["co2_emissions"].to_numpy() * 1e9,  # convert from Mt to kg
-            "Contrails": contrails_distance_corrected.to_numpy(),  # in km
-            "NOx - ST O3 increase": input_data["nox_emissions"].to_numpy() * 1e9,  # in kg
-            "NOx - CH4 decrease and induced": input_data["nox_emissions"].to_numpy() * 1e9,  # in kg
+            "CO2": co2_inventory,
+            "Contrails": input_data["total_aircraft_distance"].to_numpy(),  # in km
+            "Contrails correction factors": contrails_correction_factors.to_numpy(),  # unitless
+            "NOx": input_data["nox_emissions"].to_numpy() * 1e9,  # in kg
             "H2O": input_data["h2o_emissions"].to_numpy() * 1e9,  # in kg
             "Soot": input_data["soot_emissions"].to_numpy() * 1e9,  # in kg
             "Sulfur": input_data["sulfur_emissions"].to_numpy() * 1e9,  # in kg
+            "H2 leakage": input_data["h2_leakage"].to_numpy() * 1e9,  # in kg
         }
 
         # --- Run climate simulation ---
@@ -201,6 +208,63 @@ class ClimateModel(AeroMAPSModel):
             "nox_long_term_o3_decrease_rf"] + self.df_climate["nox_ch4_decrease_rf"] + self.df_climate[
                                         "nox_stratospheric_water_vapor_decrease_rf"]
         output_data["nox_rf"] = self.df_climate["nox_rf"]
+
+        self.df_climate["temperature_increase_from_soot_from_aviation"] = self.df_climate[
+                                                                              "temperature_increase_from_soot_ari_from_aviation"] + \
+                                                                          self.df_climate[
+                                                                              "temperature_increase_from_soot_aci_from_aviation"]
+        output_data["temperature_increase_from_soot_from_aviation"] = self.df_climate[
+            "temperature_increase_from_soot_from_aviation"]
+        self.df_climate["soot_erf"] = self.df_climate["soot_ari_erf"] + self.df_climate["soot_aci_erf"]
+        output_data["soot_erf"] = self.df_climate["soot_erf"]
+        self.df_climate["soot_rf"] = self.df_climate["soot_ari_rf"] + self.df_climate["soot_aci_rf"]
+        output_data["soot_rf"] = self.df_climate["soot_rf"]
+
+        self.df_climate["temperature_increase_from_sulfur_from_aviation"] = self.df_climate[
+                                                                              "temperature_increase_from_sulfur_ari_from_aviation"] + \
+                                                                          self.df_climate[
+                                                                              "temperature_increase_from_sulfur_aci_from_aviation"]
+        output_data["temperature_increase_from_sulfur_from_aviation"] = self.df_climate[
+            "temperature_increase_from_sulfur_from_aviation"]
+        self.df_climate["sulfur_erf"] = self.df_climate["sulfur_ari_erf"] + self.df_climate["sulfur_aci_erf"]
+        output_data["sulfur_erf"] = self.df_climate["sulfur_erf"]
+        self.df_climate["sulfur_rf"] = self.df_climate["soot_ari_rf"] + self.df_climate["sulfur_aci_rf"]
+        output_data["sulfur_rf"] = self.df_climate["sulfur_rf"]
+
+        self.df_climate["temperature_increase_from_aerosols_ari_from_aviation"] = self.df_climate[
+                                                                              "temperature_increase_from_soot_ari_from_aviation"] + \
+                                                                          self.df_climate[
+                                                                              "temperature_increase_from_sulfur_ari_from_aviation"]
+        output_data["temperature_increase_from_aerosols_ari_from_aviation"] = self.df_climate[
+            "temperature_increase_from_aerosols_ari_from_aviation"]
+        self.df_climate["aerosols_ari_erf"] = self.df_climate["soot_ari_erf"] + self.df_climate["sulfur_ari_erf"]
+        output_data["aerosols_ari_erf"] = self.df_climate["aerosols_ari_erf"]
+        self.df_climate["aerosols_ari_rf"] = self.df_climate["soot_ari_rf"] + self.df_climate["sulfur_ari_rf"]
+        output_data["aerosols_ari_rf"] = self.df_climate["aerosols_ari_rf"]
+
+        self.df_climate["temperature_increase_from_aerosols_aci_from_aviation"] = self.df_climate[
+                                                                                      "temperature_increase_from_soot_aci_from_aviation"] + \
+                                                                                  self.df_climate[
+                                                                                      "temperature_increase_from_sulfur_aci_from_aviation"]
+        output_data["temperature_increase_from_aerosols_aci_from_aviation"] = self.df_climate[
+            "temperature_increase_from_aerosols_aci_from_aviation"]
+        self.df_climate["aerosols_aci_erf"] = self.df_climate["soot_aci_erf"] + self.df_climate["sulfur_aci_erf"]
+        output_data["aerosols_aci_erf"] = self.df_climate["aerosols_aci_erf"]
+        self.df_climate["aerosols_aci_rf"] = self.df_climate["soot_aci_rf"] + self.df_climate["sulfur_aci_rf"]
+        output_data["aerosols_aci_rf"] = self.df_climate["aerosols_aci_rf"]
+
+        self.df_climate["temperature_increase_from_h2_leakage_from_aviation"] = self.df_climate[
+                                                                             "temperature_increase_from_h2_leakage_o3_from_aviation"] + \
+                                                                         self.df_climate[
+                                                                             "temperature_increase_from_h2_leakage_ch4_from_aviation"] + \
+                                                                         self.df_climate[
+                                                                             "temperature_increase_from_h2_leakage_swv_from_aviation"]
+        output_data["temperature_increase_from_h2_leakage_from_aviation"] = self.df_climate[
+            "temperature_increase_from_h2_leakage_from_aviation"]
+        self.df_climate["h2_leakage_erf"] = self.df_climate["h2_leakage_o3_erf"] + self.df_climate["h2_leakage_ch4_erf"] + self.df_climate["h2_leakage_swv_erf"]
+        output_data["h2_leakage_erf"] = self.df_climate["h2_leakage_erf"]
+        self.df_climate["h2_leakage_rf"] = self.df_climate["h2_leakage_o3_rf"] + self.df_climate["h2_leakage_ch4_rf"] + self.df_climate["h2_leakage_swv_rf"]
+        output_data["h2_leakage_rf"] = self.df_climate["h2_leakage_rf"]
 
         ## ERF calculation for helping plot display
         # TODO: remove in the future

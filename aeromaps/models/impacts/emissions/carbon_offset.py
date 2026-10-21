@@ -60,7 +60,7 @@ class LevelCarbonOffset(AeroMAPSModel):
 
         Returns
         -------
-        carbon_offset_baseline_level_vs_corsia_reference_year
+        carbon_offset_baseline_level_vs_2019
             Level of CO2 emissions relative to 2019 from which higher emissions are offset [%].
         level_carbon_offset
             Annual carbon offset due to offsetting for a given level of emissions [MtCO2].
@@ -258,7 +258,8 @@ class CarbonOffset(AeroMAPSModel):
         level_carbon_offset: pd.Series,
         residual_carbon_offset: pd.Series,
         manual_carbon_offset: pd.Series,
-    ) -> pd.Series:
+        co2_emissions: pd.Series,
+    ) -> Tuple[pd.Series, pd.Series]:
         """
         Execute the computation of total carbon offset.
 
@@ -270,11 +271,15 @@ class CarbonOffset(AeroMAPSModel):
             Annual carbon offset due to offsetting of a given share of the remaining emissions [MtCO2].
         manual_carbon_offset
             Annual carbon offset provided exogenously via reference years/values [MtCO2].
-
+        co2_emissions
+            CO2 emissions trajectory [MtCO2].
         Returns
         -------
         carbon_offset
             Total annual carbon offset [MtCO2].
+
+        co2_emissions_with_offset
+            Total annual CO2 emissions by subtracting carbon offset [MtCO2].
 
         """
         carbon_offset = (
@@ -285,7 +290,13 @@ class CarbonOffset(AeroMAPSModel):
 
         self.df.loc[:, "carbon_offset"] = carbon_offset
 
-        return carbon_offset
+        self.df_climate["co2_emissions_with_offset"] = co2_emissions
+        for k in range(self.prospection_start_year, self.end_year + 1):
+            self.df_climate.loc[k, "co2_emissions_with_offset"] = co2_emissions.loc[k] - \
+                                                                  carbon_offset.loc[k]
+        co2_emissions_with_offset = self.df_climate["co2_emissions_with_offset"]
+
+        return carbon_offset, co2_emissions_with_offset
 
 
 class CumulativeCarbonOffset(AeroMAPSModel):

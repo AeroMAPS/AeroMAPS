@@ -30,13 +30,38 @@ species_settings:
     ratio_erf_rf: 1.0
     efficacy_erf: 1.0
 
-  Soot:
+  Soot - ARI:
     sensitivity_rf: 1.0e-10
     ratio_erf_rf: 1.0
     efficacy_erf: 1.0
 
-  Sulfur:
+  Soot - ACI:
+    sensitivity_rf: 0.0
+    ratio_erf_rf: 1.0
+    efficacy_erf: 1.0
+
+  Sulfur - ARI:
     sensitivity_rf: -2.0e-11
+    ratio_erf_rf: 1.0
+    efficacy_erf: 1.0
+
+  Sulfur - ACI:
+    sensitivity_rf: 0.0
+    ratio_erf_rf: 1.0
+    efficacy_erf: 1.0
+
+  H2 leakage - ST O3:
+    sensitivity_rf: 0.4e-12
+    ratio_erf_rf: 1.37
+    efficacy_erf: 1.0
+
+  H2 leakage - CH4 and induced:
+    sensitivity_rf: 5.3e-13
+    ratio_erf_rf: 1.18
+    efficacy_erf: 1.0
+
+  H2 leakage - SWV:
+    sensitivity_rf: 0.19e-12
     ratio_erf_rf: 1.0
     efficacy_erf: 1.0
 
@@ -44,3 +69,6 @@ species_settings:
 # See AeroCM documentation for available model settings depending on the climate model
 model_settings:
   tcre: 0.00045
+  
+# Inclusion of offset in CO2 emissions for calculating the temperature response
+include_offset: False  # Whether to include offset in CO2 emissions
