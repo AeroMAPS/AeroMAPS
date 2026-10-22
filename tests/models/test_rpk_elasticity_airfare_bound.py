@@ -371,9 +371,9 @@ def test_the_bound_reaches_the_model_when_it_reads_the_carried_iterate():
     unbounded = _loop(bounded=False, consumer_first=True)
     bounded = _loop(bounded=True, consumer_first=True)
 
-    assert (
-        unbounded.min() < LOW - 1e-9 or unbounded.max() > HIGH + 1e-9
-    ), "the unbounded loop stayed in band; this no longer reproduces anything"
+    assert unbounded.min() < LOW - 1e-9 or unbounded.max() > HIGH + 1e-9, (
+        "the unbounded loop stayed in band; this no longer reproduces anything"
+    )
     assert bounded.min() >= LOW - 1e-9
     assert bounded.max() <= HIGH + 1e-9
 
@@ -394,6 +394,6 @@ def test_the_bound_does_not_reach_the_model_when_the_producer_runs_first():
     unbounded = _loop(bounded=False, consumer_first=False)
     bounded = _loop(bounded=True, consumer_first=False)
 
-    assert np.array_equal(
-        unbounded, bounded
-    ), "the bound changed what the model received; the sweep order assumption is stale"
+    assert np.array_equal(unbounded, bounded), (
+        "the bound changed what the model received; the sweep order assumption is stale"
+    )
