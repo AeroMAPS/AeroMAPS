@@ -1,0 +1,155 @@
+generic_biofuel:
+  # Metadata
+  name: "generic_biofuel"
+  environmental_model: "top-down"
+  cost_model: "bottom-up"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "biomass"
+  default: False
+  abatement_cost: True
+  compute_all_years: True
+  # Until level two used to separate inputs. Then concatenated in variable name.
+  inputs:
+    # Policy
+    mandate:
+      mandate_type: "share"
+      mandate_share: !AeroMapsCustomDataType
+        years: [2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035, 2036, 2037, 2038, 2039, 2040, 2041, 2042, 2043, 2044, 2045, 2046, 2047, 2048, 2049, 2050, 2051, 2052, 2053, 2054, 2055, 2056, 2057, 2058, 2059, 2060, 2061, 2062, 2063, 2064, 2065, 2066, 2067, 2068, 2069, 2070]
+        values: [0.5, 0.5, 0.5, 0.6, 0.6, 0.7, 0.8, 0.9, 1.1, 1.2, 1.4, 1.6, 1.9, 2.2, 2.6, 3.1, 3.5, 4.1, 4.7, 5.4, 6.2, 7.2, 8.3, 9.5, 10.9, 12.5, 14.2, 16.1, 18.2, 20.5, 22.9, 25.4, 27.9, 30.5, 33.1, 35.6, 38.1, 40.4, 42.5, 44.4, 46.0, 47.1, 48.0, 48.7, 49.1, 49.4, 49.4, 49.4, 49.2, 48.9, 48.5]
+        method: linear
+    # Technical:
+    technical:
+      resource_names: [ "generic_biomass" ]
+      eis_resource_specific_consumption:
+        generic_biomass: 2.17
+      resource_specific_consumption:
+        generic_biomass: 2.17
+      kerosene_selectivity: 0.15
+      lhv: 44
+    # Environmental:
+    environmental:
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: [2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035, 2036, 2037, 2038, 2039, 2040, 2041, 2042, 2043, 2044, 2045, 2046, 2047, 2048, 2049, 2050, 2051, 2052, 2053, 2054, 2055, 2056, 2057, 2058, 2059, 2060, 2061, 2062, 2063, 2064, 2065, 2066, 2067, 2068, 2069, 2070]
+        values: [31.48, 31.31, 31.15, 30.98, 30.82, 30.65, 30.49, 30.32, 30.16, 29.99, 29.82, 29.66, 29.49, 29.33, 29.16, 29.0, 29.12, 29.25, 29.38, 29.51, 29.64, 29.76, 29.89, 30.02, 30.15, 30.27, 30.4, 30.53, 30.66, 30.79, 30.91, 30.87, 30.83, 30.79, 30.76, 30.72, 30.68, 30.64, 30.6, 30.56, 30.52, 30.48, 30.44, 30.4, 30.36, 30.32, 30.28, 30.24, 30.2, 30.16, 30.12]
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0
+        soot: 6.0e-06
+        particles_number: 8.0e+13
+    # Economics:
+    economics:
+      eis_capex: !AeroMapsCustomDataType
+        years: [2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035, 2036, 2037, 2038, 2039, 2040, 2041, 2042, 2043, 2044, 2045, 2046, 2047, 2048, 2049, 2050, 2051, 2052, 2053, 2054, 2055, 2056, 2057, 2058, 2059, 2060, 2061, 2062, 2063, 2064, 2065, 2066, 2067, 2068, 2069, 2070]
+        values: [0.06653, 0.06653, 0.06985, 0.07311, 0.07637, 0.07967, 0.08296, 0.08623,
+ 0.08954, 0.09280, 0.09606, 0.09934, 0.10262, 0.10590, 0.10917, 0.11245,
+ 0.11573, 0.11901, 0.12229, 0.12557, 0.12885, 0.13213, 0.13541, 0.13869,
+ 0.14197, 0.14525, 0.14853, 0.15181, 0.15509, 0.15837, 0.16165, 0.16165,
+ 0.16165, 0.16165, 0.16165, 0.16165, 0.16165, 0.16165, 0.16165, 0.16165,
+ 0.16165, 0.16165, 0.16165, 0.16165, 0.16165, 0.16165, 0.16165, 0.16165,
+ 0.16165, 0.16165, 0.16165]
+        method: linear
+      eis_variable_opex: !AeroMapsCustomDataType
+        years: [ ]
+        values: [ 0.0077 ]
+        method: linear
+  outputs:
+
+electrofuel:
+  # Metadata
+  name: "electrofuel"
+  environmental_model: "top-down"
+  cost_model: "bottom-up"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "electricity"
+  default: False
+  abatement_cost: True
+  compute_all_years: True
+  inputs:
+    mandate:
+      mandate_type: "share"
+      mandate_share: !AeroMapsCustomDataType
+        years: [2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035, 2036, 2037, 2038, 2039, 2040, 2041, 2042, 2043, 2044, 2045, 2046, 2047, 2048, 2049, 2050, 2051, 2052, 2053, 2054, 2055, 2056, 2057, 2058, 2059, 2060, 2061, 2062, 2063, 2064, 2065, 2066, 2067, 2068, 2069, 2070]
+        values: [0.0, 0.5, 0.5, 0.6, 0.6, 0.7, 0.8, 0.9, 1.1, 1.2, 1.4, 1.6, 1.9, 2.2, 2.6, 3.1, 3.5, 4.1, 4.7, 5.4, 6.2, 7.2, 8.3, 9.5, 10.9, 11.8, 11.5, 11.2, 10.9, 10.7, 10.4, 10.2, 9.9, 9.7, 9.5, 9.3, 9.1, 8.9, 8.7, 8.5, 8.4, 8.1, 7.9, 7.7, 7.5, 7.3, 7.1, 6.9, 6.8, 6.6, 6.4]
+        method: linear
+    # Technical:
+    technical:
+      kerosene_selectivity: 0.5
+      resource_names: [ "generic_electricity", "co2_dac"]
+      eis_resource_specific_consumption:
+        generic_electricity: 2.32
+        co2_dac: !AeroMapsCustomDataType
+          years: [2020, 2030, 2050, 2070]
+          values: [0.122857, 0.102286, 0.072914, 0.072914]
+          method: linear
+      resource_specific_consumption:
+        generic_electricity: 2.32
+        co2_dac: !AeroMapsCustomDataType
+          years: [ 2020, 2030, 2050, 2070 ]
+          values: [ 0.122857, 0.102286, 0.072914, 0.072914 ]
+          method: linear
+      lhv: 44
+    # Environmental:
+    environmental:
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [0.0]
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0
+        soot: 6.0e-06
+        particles_number: 8.0e+13
+    # Economics:
+    economics:
+      eis_capex: !AeroMapsCustomDataType
+        years: [2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035, 2036, 2037, 2038, 2039, 2040, 2041, 2042, 2043, 2044, 2045, 2046, 2047, 2048, 2049, 2050, 2051, 2052, 2053, 2054, 2055, 2056, 2057, 2058, 2059, 2060, 2061, 2062, 2063, 2064, 2065, 2066, 2067, 2068, 2069, 2070]
+        values: [0.6551, 0.6459, 0.6367, 0.6274, 0.6182, 0.6090, 0.5998, 0.5906, 0.5814,
+ 0.5721, 0.5629, 0.5503, 0.5386, 0.5269, 0.5152, 0.5035, 0.4918, 0.4801,
+ 0.4684, 0.4567, 0.4450, 0.4346, 0.4242, 0.4137, 0.4033, 0.3929, 0.3825,
+ 0.3721, 0.3617, 0.3513, 0.3409, 0.3409, 0.3409, 0.3409, 0.3409, 0.3409,
+ 0.3409, 0.3409, 0.3409, 0.3409, 0.3409, 0.3409, 0.3409, 0.3409, 0.3409,
+ 0.3409, 0.3409, 0.3409, 0.3409, 0.3409, 0.3409]
+        method: linear
+  outputs:
+
+
+fossil_kerosene:
+  # Metadata
+  name: "fossil_kerosene"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "fossil"
+  default: True
+  abatement_cost_reference: True ## CAUTION: impossible to compute CACs for the reference patwhay.
+  inputs:
+    # Technical:
+    technical:
+      lhv: 44
+      plant_load_factor: 0.95
+      plant_lifespan: 25
+    # Environmental:
+    environmental:
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: [2000, 2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035, 2036, 2037, 2038, 2039, 2040, 2041, 2042, 2043, 2044, 2045, 2046, 2047, 2048, 2049, 2050, 2051, 2052, 2053, 2054, 2055, 2056, 2057, 2058, 2059, 2060, 2061, 2062, 2063, 2064, 2065, 2066, 2067, 2068, 2069, 2070]
+        values: [89.0, 89.0, 89.0, 89.0, 89.0, 89.0, 89.0, 88.96932452, 88.94162348, 88.91643518, 88.8933766, 88.87212025, 88.75230492, 88.63632753, 88.52355517, 88.41327406, 88.30477638, 88.29581928, 88.28569195, 88.27404749, 88.26067237, 88.24711717, 88.22730319, 88.20408729, 88.17687335, 88.14464554, 88.11418616, 88.09889001, 88.08033818, 88.0584836, 88.0329368, 88.0034472, 87.97154358, 87.93582102, 87.89628496, 87.85331997, 87.80747033, 87.75494276, 87.70132893, 87.64866096, 87.59727907, 87.54982351, 87.52198274, 87.50108645, 87.48643693, 87.47903688, 87.47802477, 87.47860875, 87.4840868, 87.493766, 87.50673584, 87.52206257]
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0012
+        soot: 3.0e-05
+        particles_number: 2.0e+14
+    # Economics:
+    economics:
+      mean_mfsp_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [0.0154]
+        method: linear
+  outputs:
+
+
+
