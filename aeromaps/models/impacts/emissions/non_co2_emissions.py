@@ -1067,7 +1067,7 @@ class H2Leakage(AeroMAPSModel):
         """
 
         hydrogen_lhv = 120 # [MJ/kg] TODO: generic value
-        hydrogen_mass = energy_consumption_hydrogen / hydrogen_lhv * 10**9 # [MtH2]
+        hydrogen_mass = energy_consumption_hydrogen / hydrogen_lhv / 10**9 # [MtH2]
         self.df_climate.loc[self.climate_historic_start_year:self.prospection_start_year - 1, "h2_leakage"] = 0.0
         self.df_climate.loc[self.prospection_start_year:self.end_year, "h2_leakage"] = (
                 hydrogen_mass.loc[self.prospection_start_year:self.end_year]

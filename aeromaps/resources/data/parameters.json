@@ -253,6 +253,6 @@
     "elec_solar_share": 1.0,
     "load_factor_photovoltaic": 1.0,
     "price_reference_year": 2024,
-    "karcher_curve_case": "No vPM",
+    "karcher_curve_case": "Intermediate vPM",
     "h2_leakage_rate": 0.0
 }

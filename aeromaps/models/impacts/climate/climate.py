@@ -228,7 +228,7 @@ class ClimateModel(AeroMAPSModel):
             "temperature_increase_from_sulfur_from_aviation"]
         self.df_climate["sulfur_erf"] = self.df_climate["sulfur_ari_erf"] + self.df_climate["sulfur_aci_erf"]
         output_data["sulfur_erf"] = self.df_climate["sulfur_erf"]
-        self.df_climate["sulfur_rf"] = self.df_climate["soot_ari_rf"] + self.df_climate["sulfur_aci_rf"]
+        self.df_climate["sulfur_rf"] = self.df_climate["sulfur_ari_rf"] + self.df_climate["sulfur_aci_rf"]
         output_data["sulfur_rf"] = self.df_climate["sulfur_rf"]
 
         self.df_climate["temperature_increase_from_aerosols_ari_from_aviation"] = self.df_climate[
