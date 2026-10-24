@@ -1,0 +1,65 @@
+kero_ht:
+  # Metadata
+  name: "kero_ht"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "fossil"
+  default: False
+  abatement_cost: False
+  inputs:
+    mandate:
+      mandate_type: "share"
+      mandate_share: !AeroMapsCustomDataType
+        years: [2020, 2029, 2030, 2070]
+        values: [0.0, 0.0, 100.0, 100.0]
+        method: linear
+    # Technical:
+    technical:
+      lhv: 44
+    # Environmental:
+    environmental:
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [80.10]
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0
+        soot: 6.0e-06
+        particles_number: 8.0e+13
+    # Economics:
+    economics:
+  outputs:
+  outputs:
+  
+fossil_kerosene:
+  # Metadata
+  name: "fossil_kerosene"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "fossil"
+  default: True
+  inputs:
+    # Technical:
+    technical:
+      lhv: 44
+      plant_load_factor: 0.95
+      plant_lifespan: 25
+    # Environmental:
+    environmental:
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: [2000,2070]
+        values: [89.0, 89.0]
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0012
+        soot: 3.0e-05
+        particles_number: 2.0e+14
+    # Economics:
+    economics:
+  outputs:
