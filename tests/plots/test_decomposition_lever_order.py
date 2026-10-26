@@ -20,9 +20,7 @@ from aeromaps import create_process
 from aeromaps.plots.single_scenario.main import AirTransportCO2EmissionsDetailedPlot
 from aeromaps.utils.decomposition import bottom_up_roadmap_pillars
 
-CONFIG = os.path.join(
-    os.path.dirname(__file__), "..", "tested_configs", "config_advanced.yaml"
-)
+CONFIG = os.path.join(os.path.dirname(__file__), "..", "tested_configs", "config_advanced.yaml")
 
 
 @pytest.fixture(scope="module")
@@ -33,7 +31,11 @@ def process():
 
 
 def _band_labels(plot):
-    return [c.get_label() for c in plot.ax.collections if c.get_label() and not c.get_label().startswith("_")]
+    return [
+        c.get_label()
+        for c in plot.ax.collections
+        if c.get_label() and not c.get_label().startswith("_")
+    ]
 
 
 def test_lever_order_is_validated(process):
@@ -56,7 +58,9 @@ def test_atag_order_puts_alternative_aircraft_before_operations(process):
     atag = AirTransportCO2EmissionsDetailedPlot(process, lever_order="atag")
     labels = _band_labels(atag)
     alternative = [i for i, label in enumerate(labels) if "hydrogen" in label.lower()]
-    operations = [i for i, label in enumerate(labels) if label.startswith(("Load factor", "Fleet operations"))]
+    operations = [
+        i for i, label in enumerate(labels) if label.startswith(("Load factor", "Fleet operations"))
+    ]
     if alternative and operations:
         assert max(alternative) < min(operations)
     plt.close("all")

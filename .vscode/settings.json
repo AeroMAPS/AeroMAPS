@@ -7,6 +7,7 @@
     "--nbmake-timeout=5000",
     "-n=auto",
     "aeromaps",
+    "tests",
     "--ignore=aeromaps/notebooks/publications",
     "--ignore=aeromaps/notebooks/tutorials/07_life_cycle_assessment/life_cycle_assessment_custom.ipynb",
     "--ignore=aeromaps/notebooks/tutorials/07_life_cycle_assessment/utils/export_lca_model.ipynb",
