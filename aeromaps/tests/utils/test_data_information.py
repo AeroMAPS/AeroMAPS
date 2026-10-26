@@ -44,7 +44,7 @@ class TestDefaultFile:
         # Canonical spellings in the default file: normalizing must be a no-op
         # and preserve the parsed dimension.
         info = DataInformation.from_file(DEFAULT_FILE)
-        units = {str(e["unit"]) for e in info.variables.values()}
+        units = {str(e.unit) for e in info.variables.values()}
         units |= {str(p["unit"]) for p in info.patterns if p.get("unit") is not None}
         units.discard(DataInformation.NOT_APPLICABLE)
         for unit in units:

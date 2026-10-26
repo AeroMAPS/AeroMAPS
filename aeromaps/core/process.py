@@ -35,7 +35,6 @@ from gemseo import generate_n2_plot
 from aeromaps.models.base import AeroMAPSModel, AeroMapsCustomDataType
 from aeromaps.core.gemseo import (
     AeroMAPSAutoModelWrapper,
-   
     AeroMAPSCustomModelWrapper,
     apply_coupling_bounds,
     check_mda_convergence,
@@ -1076,11 +1075,9 @@ class AeroMAPSProcess(object):
             return None
         entry = entry or {}
         return {
-            "Unit": unit if unit is not None else entry.get("Unit", "N/A"),
-            "Description": (
-                description if description is not None else entry.get("Description", "N/A")
-            ),
-            "Source": entry.get("Source", ""),
+            "Unit": unit if unit is not None else entry.get("Unit"),
+            "Description": (description if description is not None else entry.get("Description")),
+            "Source": entry.get("Source"),
         }
 
     def _lookup_discipline_metadata(self, name):

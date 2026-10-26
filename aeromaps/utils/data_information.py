@@ -14,13 +14,14 @@ the file is loaded. The legacy semicolon-separated CSV format is still readable
 for backward compatibility.
 """
 
+from __future__ import annotations
 import re
 import warnings
 from pathlib import Path
-
 import pandas as pd
 import xarray as xr
 
+from aeromaps.data_information.variable_model import Variable
 from aeromaps.utils.units import UnitError, parse_unit
 from aeromaps.utils.yaml import read_yaml_file
 
@@ -61,8 +62,18 @@ class DataInformation:
     # (e.g. LCA impacts, whose unit depends on the LCIA method)
     NOT_APPLICABLE = "N/A"
 
-    def __init__(self, variables: dict, patterns: list = None, source_file=None):
+    def __init__(
+        self,
+        variables: dict[str, str] | dict[str, Variable],
+        patterns: list = None,
+        source_file=None,
+    ):
         self.variables = variables or {}
+        for variable in variables:
+            info = variables[variable]
+            if not isinstance(info, Variable):
+                self.variables[variable] = Variable(**info)
+
         self.patterns = []
         self.source_file = source_file
         self._validate_units()
@@ -82,7 +93,7 @@ class DataInformation:
     def _validate_units(self):
         errors = []
         for name, entry in self.variables.items():
-            unit = entry.get("unit")
+            unit = entry.unit
             if unit is None:
                 errors.append(f"  - variable '{name}': missing unit")
                 continue
@@ -99,7 +110,7 @@ class DataInformation:
             )
 
     @classmethod
-    def from_file(cls, file_name) -> "DataInformation":
+    def from_file(cls, file_name) -> DataInformation:
         """
         Load metadata from a YAML file (or a legacy CSV file).
 
@@ -121,21 +132,22 @@ class DataInformation:
                 "aeromaps/resources/data).",
                 DeprecationWarning,
             )
-            return cls.from_csv(path)
-        return cls.from_yaml(path)
+            return cls._from_csv(path)
+        return cls._from_yaml(path)
 
     @classmethod
-    def from_yaml(cls, file_name) -> "DataInformation":
+    def _from_yaml(cls, file_name) -> DataInformation:
         """Load metadata from the YAML format (sections 'variables' and 'patterns')."""
         content = read_yaml_file(file_name)
+        variables = content.get("variables", {})
         return cls(
-            variables=content.get("variables", {}),
+            variables={variable: Variable(**info) for variable, info in variables.items()},
             patterns=content.get("patterns", []),
             source_file=file_name,
         )
 
     @classmethod
-    def from_csv(cls, file_name) -> "DataInformation":
+    def _from_csv(cls, file_name) -> DataInformation:
         """Load metadata from the legacy semicolon-separated CSV format."""
         try:
             df = pd.read_csv(file_name, encoding="utf-8-sig", sep=";")
@@ -158,7 +170,7 @@ class DataInformation:
             variables[row["Name"]] = entry
         return cls(variables=variables, patterns=[], source_file=file_name)
 
-    def lookup(self, name: str):
+    def lookup(self, name: str) -> dict[str, str | None]:
         """
         Resolve metadata for a variable name.
 
@@ -176,9 +188,9 @@ class DataInformation:
         entry = self.variables.get(name)
         if entry is not None:
             return {
-                "Unit": entry.get("unit", "N/A"),
-                "Description": entry.get("description", "N/A"),
-                "Source": entry.get("source", ""),
+                "Unit": entry.unit,
+                "Description": entry.description,
+                "Source": entry.source or "",
             }
         for rule in self.patterns:
             match = rule["_regex"].match(name)
