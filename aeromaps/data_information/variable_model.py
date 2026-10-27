@@ -3,7 +3,6 @@
 from pydantic import BaseModel, ValidationInfo, field_validator
 
 from aeromaps.data_information.units_validator import unit_validator
-from aeromaps.utils.units import UnitError
 
 
 class Variable(BaseModel):
@@ -33,9 +32,6 @@ class Variable(BaseModel):
     def validate_unit(cls, value: str, info: ValidationInfo) -> str:
         """Validate units and atomize them to their corresponding unit."""
         name = info.data.get("variable_name")
-
-        if value is None:
-            raise UnitError(f"  - variable '{name}': missing unit")
         if str(value) == "N/A":
             return str(value)
         return unit_validator(value, f"  - variable '{name}'")

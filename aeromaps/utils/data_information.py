@@ -22,7 +22,7 @@ from pydantic import ValidationError
 import xarray as xr
 
 from aeromaps.data_information.variable_model import Variable
-from aeromaps.data_information.variable_patters import VariablePattern
+from aeromaps.data_information.variable_patterns import VariablePattern
 from aeromaps.utils.units import UnitError
 from aeromaps.utils.yaml import read_yaml_file
 
