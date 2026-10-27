@@ -93,6 +93,7 @@ class DataInformation:
             if not isinstance(info, Variable):
                 try:
                     validated_variables[variable] = Variable(variable_name=variable, **info)
+                # TODO: exception catches all ValidationErrors, not only unit errors. To fix.
                 except ValidationError as e:
                     errors.append(f"  - variable '{variable}': {e}")
             else:
@@ -115,6 +116,7 @@ class DataInformation:
         """
 
         valid_patterns = []
+        errors = []
         for rule in patterns:
             if "match" not in rule:
                 raise ValueError(
@@ -128,9 +130,12 @@ class DataInformation:
                     source=rule.get("source", ""),
                 )
                 valid_patterns.append(pattern)
+            # TODO: exception catches all ValidationErrors, not only unit errors. To fix.
             except ValidationError as e:
-                raise UnitError(f"{e} of '{self.source_file}': {e}")
+                errors.append(f"{e}")
 
+        if errors:
+            raise UnitError(f"Invalid pattern rule in '{self.source_file}': \n" + "\n".join(errors))
         return valid_patterns
 
     @classmethod
