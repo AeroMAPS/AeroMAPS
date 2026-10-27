@@ -19,6 +19,7 @@ import re
 import warnings
 from pathlib import Path
 import pandas as pd
+from pydantic import ValidationError
 import xarray as xr
 
 from aeromaps.data_information.variable_model import Variable
@@ -58,6 +59,9 @@ class DataInformation:
 
     _UNKNOWN = {"Unit": "N/A", "Description": "N/A", "Source": "N/A"}
 
+    variables: dict[str, Variable]
+    """A mapping of variable names to a Variable."""
+
     # Explicit sentinel for entries whose unit is not expressible statically
     # (e.g. LCA impacts, whose unit depends on the LCIA method)
     NOT_APPLICABLE = "N/A"
@@ -65,49 +69,72 @@ class DataInformation:
     def __init__(
         self,
         variables: dict[str, str] | dict[str, Variable],
-        patterns: list = None,
-        source_file=None,
+        patterns: list | None = None,
+        source_file: str | Path | None = None,
     ):
-        self.variables = variables or {}
+        self.source_file = source_file
+        self.variables = self._load_variables(variables)
+        self.patterns = self._parse_patterns(patterns or [])
+
+    def _load_variables(
+        self, variables: dict[str, str] | dict[str, Variable]
+    ) -> dict[str, Variable]:
+        """Load and validate the data variables.
+
+        Args:
+            variables: The variables to be loaded and validated.
+
+        Returns:
+            The variables mapping.
+
+        Raises:
+            UnitError if any variable contains invalid units.
+        """
+        errors = []
+        validated_variables = {}
         for variable in variables:
             info = variables[variable]
             if not isinstance(info, Variable):
-                self.variables[variable] = Variable(**info)
+                try:
+                    validated_variables[variable] = Variable(variable_name=variable, **info)
+                except ValidationError as e:
+                    errors.append(f"  - variable '{variable}': {e}")
+            else:
+                validated_variables[variable] = info
 
-        self.patterns = []
-        self.source_file = source_file
-        self._validate_units()
-        for rule in patterns or []:
+        if errors:
+            raise UnitError(
+                f"Invalid units in data information file '{self.source_file}':\n"
+                + "\n".join(errors)
+            )
+
+        return validated_variables
+
+    def _parse_patterns(self, patterns: list[dict[str, str]]) -> list[dict[str, str]]:
+        """Parse the patterns from the data.
+
+        Args:
+            patterns: ordered list of dicts with keys 'match' (glob pattern), 'unit',
+                'description' and optionally 'source'.
+        """
+
+        valid_patterns = []
+        for rule in patterns:
             if "match" not in rule:
-                raise ValueError(f"Pattern rule without 'match' key in '{source_file}': {rule}")
+                raise ValueError(
+                    f"Pattern rule without 'match' key in '{self.source_file}': {rule}"
+                )
             unit = rule.get("unit")
             if unit is not None and str(unit) != self.NOT_APPLICABLE:
                 try:
                     parse_unit(str(unit))
                 except UnitError as e:
                     raise UnitError(
-                        f"Invalid unit in pattern '{rule['match']}' of '{source_file}': {e}"
+                        f"Invalid unit in pattern '{rule['match']}' of '{self.source_file}': {e}"
                     ) from e
-            self.patterns.append({**rule, "_regex": _glob_to_regex(rule["match"])})
+            valid_patterns.append({**rule, "_regex": _glob_to_regex(rule["match"])})
 
-    def _validate_units(self):
-        errors = []
-        for name, entry in self.variables.items():
-            unit = entry.unit
-            if unit is None:
-                errors.append(f"  - variable '{name}': missing unit")
-                continue
-            if str(unit) == self.NOT_APPLICABLE:
-                continue
-            try:
-                parse_unit(str(unit))
-            except UnitError as e:
-                errors.append(f"  - variable '{name}': {e}")
-        if errors:
-            raise UnitError(
-                f"Invalid units in data information file '{self.source_file}':\n"
-                + "\n".join(errors)
-            )
+        return valid_patterns
 
     @classmethod
     def from_file(cls, file_name) -> DataInformation:
@@ -132,22 +159,21 @@ class DataInformation:
                 "aeromaps/resources/data).",
                 DeprecationWarning,
             )
-            return cls._from_csv(path)
-        return cls._from_yaml(path)
+            return cls.from_csv(path)
+        return cls.from_yaml(path)
 
     @classmethod
-    def _from_yaml(cls, file_name) -> DataInformation:
+    def from_yaml(cls, file_name) -> DataInformation:
         """Load metadata from the YAML format (sections 'variables' and 'patterns')."""
         content = read_yaml_file(file_name)
-        variables = content.get("variables", {})
         return cls(
-            variables={variable: Variable(**info) for variable, info in variables.items()},
+            variables=content.get("variables", {}),
             patterns=content.get("patterns", []),
             source_file=file_name,
         )
 
     @classmethod
-    def _from_csv(cls, file_name) -> DataInformation:
+    def from_csv(cls, file_name) -> DataInformation:
         """Load metadata from the legacy semicolon-separated CSV format."""
         try:
             df = pd.read_csv(file_name, encoding="utf-8-sig", sep=";")
@@ -185,12 +211,12 @@ class DataInformation:
             Dict with keys 'Unit', 'Description' and 'Source', or None if the
             name matches neither an exact entry nor a pattern.
         """
-        entry = self.variables.get(name)
-        if entry is not None:
+        variable = self.variables.get(name)
+        if variable is not None:
             return {
-                "Unit": entry.unit,
-                "Description": entry.description,
-                "Source": entry.source or "",
+                "Unit": variable.unit,
+                "Description": variable.description,
+                "Source": variable.source or "",
             }
         for rule in self.patterns:
             match = rule["_regex"].match(name)

@@ -1,4 +1,8 @@
-from pydantic import BaseModel
+"""Pydantic model for variables metadata."""
+
+from pydantic import BaseModel, ValidationInfo, field_validator
+
+from aeromaps.utils.units import UnitError, parse_unit
 
 
 class Variable(BaseModel):
@@ -6,6 +10,8 @@ class Variable(BaseModel):
 
     Fields
     ----------
+    variable_name: str
+        The name of the variable
     unit: str
         String representation of the unit
 
@@ -16,15 +22,24 @@ class Variable(BaseModel):
         The source of the variable if any.
     """
 
-    unit: str | None
+    variable_name: str
+    unit: str
     description: str
     source: str | None = None
 
-    # TODO: To convert to pint based unit registry for units validation.
-    # @field_validator("unit")
-    # @classmethod
-    # def validate_unit(cls, value:str) -> str:
-    #     """Validate units and atomize them to their corresponding unit."""
-    #     ureg = AeroMAPSUnitRegistry()
+    @field_validator("unit")
+    @classmethod
+    def validate_unit(cls, value: str, info: ValidationInfo) -> str:
+        """Validate units and atomize them to their corresponding unit."""
+        name = info.data.get("variable_name")
 
-    #     return ureg.normalize_unit(value)
+        if value is None:
+            raise UnitError(f"  - variable '{name}': missing unit")
+        if str(value) == "N/A":
+            return str(value)
+        try:
+            parse_unit(str(value))
+        except UnitError as e:
+            raise UnitError(f"  - variable '{name}': {e}")
+
+        return value
