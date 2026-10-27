@@ -15,7 +15,6 @@ for backward compatibility.
 """
 
 from __future__ import annotations
-import re
 import warnings
 from pathlib import Path
 import pandas as pd
@@ -23,15 +22,9 @@ from pydantic import ValidationError
 import xarray as xr
 
 from aeromaps.data_information.variable_model import Variable
-from aeromaps.utils.units import UnitError, parse_unit
+from aeromaps.data_information.variable_patters import VariablePattern
+from aeromaps.utils.units import UnitError
 from aeromaps.utils.yaml import read_yaml_file
-
-
-def _glob_to_regex(pattern: str) -> re.Pattern:
-    """Translate a glob pattern with ``*`` wildcards into a capturing regex."""
-    parts = pattern.split("*")
-    regex = "(.*)".join(re.escape(part) for part in parts)
-    return re.compile(f"^{regex}$")
 
 
 class DataInformation:
@@ -60,7 +53,10 @@ class DataInformation:
     _UNKNOWN = {"Unit": "N/A", "Description": "N/A", "Source": "N/A"}
 
     variables: dict[str, Variable]
-    """A mapping of variable names to a Variable."""
+    """A mapping of variable names to a :class:`Variable`."""
+
+    patterns: list[VariablePattern]
+    """A list of :class:`VariablePattern`."""
 
     # Explicit sentinel for entries whose unit is not expressible statically
     # (e.g. LCA impacts, whose unit depends on the LCIA method)
@@ -68,16 +64,16 @@ class DataInformation:
 
     def __init__(
         self,
-        variables: dict[str, str] | dict[str, Variable],
-        patterns: list | None = None,
+        variables: dict[str, dict[str, str]] | dict[str, Variable],
+        patterns: list[dict] | None = None,
         source_file: str | Path | None = None,
     ):
         self.source_file = source_file
         self.variables = self._load_variables(variables)
-        self.patterns = self._parse_patterns(patterns or [])
+        self.patterns = self._load_patterns(patterns or [])
 
     def _load_variables(
-        self, variables: dict[str, str] | dict[str, Variable]
+        self, variables: dict[str, dict[str, str]] | dict[str, Variable]
     ) -> dict[str, Variable]:
         """Load and validate the data variables.
 
@@ -110,7 +106,7 @@ class DataInformation:
 
         return validated_variables
 
-    def _parse_patterns(self, patterns: list[dict[str, str]]) -> list[dict[str, str]]:
+    def _load_patterns(self, patterns: list[dict[str, str]]) -> list[VariablePattern]:
         """Parse the patterns from the data.
 
         Args:
@@ -124,15 +120,16 @@ class DataInformation:
                 raise ValueError(
                     f"Pattern rule without 'match' key in '{self.source_file}': {rule}"
                 )
-            unit = rule.get("unit")
-            if unit is not None and str(unit) != self.NOT_APPLICABLE:
-                try:
-                    parse_unit(str(unit))
-                except UnitError as e:
-                    raise UnitError(
-                        f"Invalid unit in pattern '{rule['match']}' of '{self.source_file}': {e}"
-                    ) from e
-            valid_patterns.append({**rule, "_regex": _glob_to_regex(rule["match"])})
+            try:
+                pattern = VariablePattern(
+                    pattern=rule.get("match"),
+                    unit=rule.get("unit", "N/A"),
+                    description=rule.get("description", "N/A"),
+                    source=rule.get("source", ""),
+                )
+                valid_patterns.append(pattern)
+            except ValidationError as e:
+                raise UnitError(f"{e} of '{self.source_file}': {e}")
 
         return valid_patterns
 
@@ -196,7 +193,7 @@ class DataInformation:
             variables[row["Name"]] = entry
         return cls(variables=variables, patterns=[], source_file=file_name)
 
-    def lookup(self, name: str) -> dict[str, str | None]:
+    def lookup(self, name: str) -> dict[str, str] | None:
         """
         Resolve metadata for a variable name.
 
@@ -219,15 +216,15 @@ class DataInformation:
                 "Source": variable.source or "",
             }
         for rule in self.patterns:
-            match = rule["_regex"].match(name)
+            match = rule._regex.match(name)
             if match:
-                description = rule.get("description", "N/A")
+                description = rule.description
                 prefix = match.group(1) if match.groups() else ""
                 description = str(description).format(name=name, prefix=prefix)
                 return {
-                    "Unit": rule.get("unit", "N/A"),
+                    "Unit": rule.unit,
                     "Description": description,
-                    "Source": rule.get("source", ""),
+                    "Source": rule.source,
                 }
         return None
 
