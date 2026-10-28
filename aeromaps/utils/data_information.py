@@ -100,15 +100,13 @@ class DataInformation:
         validated_variables = {}
         for variable in variables:
             info = variables[variable]
-            if not isinstance(info, Variable):
-                try:
-                    validated_variables[variable] = Variable(variable_name=variable, **info)
-                # TODO: exception catches all ValidationErrors, not only unit errors. To fix.
-                except ValidationError as e:
-                    err_msg = e.errors(include_url=False)[0]["msg"]
-                    errors.append(f"  - {err_msg}")
-            else:
+            if isinstance(info, Variable):
                 validated_variables[variable] = info
+                continue
+            try:
+                validated_variables[variable] = Variable(variable_name=variable, **info)
+            except ValidationError as e:
+                errors.extend(self.__extract_unit_errors(e))
 
         if errors:
             raise UnitError(
@@ -141,10 +139,8 @@ class DataInformation:
                     source=rule.get("source", ""),
                 )
                 valid_patterns.append(pattern)
-            # TODO: exception catches all ValidationErrors, not only unit errors. To fix.
             except ValidationError as e:
-                err_msg = e.errors(include_url=False)[0]["msg"]
-                errors.append(f"{err_msg}")
+                errors.extend(self.__extract_unit_errors(e))
 
         if errors:
             raise UnitError(f"Invalid pattern rule in '{self.source_file}': \n" + "\n".join(errors))
@@ -293,3 +289,10 @@ class DataInformation:
                 if self.lookup(variable) is None:
                     names.add(variable)
         return sorted(names)
+
+    @staticmethod
+    def __extract_unit_errors(error: ValidationError):
+        details = error.errors(include_url=False)
+        if any(err["loc"] != ("unit",) or err["type"] != "value_error" for err in details):
+            raise error
+        return [f"  - {err['msg']}" for err in details]
