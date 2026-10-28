@@ -95,7 +95,8 @@ class DataInformation:
                     validated_variables[variable] = Variable(variable_name=variable, **info)
                 # TODO: exception catches all ValidationErrors, not only unit errors. To fix.
                 except ValidationError as e:
-                    errors.append(f"  - variable '{variable}': {e}")
+                    err_msg = e.errors(include_url=False)[0]["msg"]
+                    errors.append(f"  - {err_msg}")
             else:
                 validated_variables[variable] = info
 
@@ -132,7 +133,8 @@ class DataInformation:
                 valid_patterns.append(pattern)
             # TODO: exception catches all ValidationErrors, not only unit errors. To fix.
             except ValidationError as e:
-                errors.append(f"{e}")
+                err_msg = e.errors(include_url=False)[0]["msg"]
+                errors.append(f"{err_msg}")
 
         if errors:
             raise UnitError(f"Invalid pattern rule in '{self.source_file}': \n" + "\n".join(errors))

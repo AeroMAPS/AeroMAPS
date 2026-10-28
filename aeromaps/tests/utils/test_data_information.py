@@ -128,7 +128,7 @@ def test_invalid_unit_raises():
             }
         )
     assert "Invalid units in data information file " in str(e.value)
-    assert " - variable 'x'" in str(e.value)
+    assert "Invalid unit in variable 'x'" in str(e.value)
     assert "Invalid unit in variable 'y'" in str(e.value)
     assert "Invalid unit in variable 'special_mean_mfsp'" not in str(e.value)
 
