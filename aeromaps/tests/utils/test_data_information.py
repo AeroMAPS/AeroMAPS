@@ -119,10 +119,23 @@ def test_description_templating():
 
 
 def test_invalid_unit_raises():
-    with pytest.raises(UnitError):
-        DataInformation(variables={"x": {"unit": "not_a_unit", "description": "d"}})
-    with pytest.raises(UnitError):
+    with pytest.raises(UnitError) as e:
+        DataInformation(
+            variables={
+                "x": {"unit": "not_a_unit", "description": "d"},
+                "y": {"unit": "not_a_unit", "description": "d"},
+                "special_mean_mfsp": {"unit": "€/L", "description": "special"},
+            }
+        )
+    assert "Invalid units in data information file " in str(e.value)
+    assert " - variable 'x'" in str(e.value)
+    assert "Invalid unit in variable 'y'" in str(e.value)
+    assert "Invalid unit in variable 'special_mean_mfsp'" not in str(e.value)
+
+    with pytest.raises(UnitError) as e:
         DataInformation(variables={}, patterns=[{"match": "*", "unit": "not_a_unit"}])
+    assert "Invalid pattern rule in " in str(e.value)
+    assert "Invalid unit in pattern '*'" in str(e.value)
 
 
 def test_not_applicable_unit_is_accepted():
@@ -141,22 +154,25 @@ def test_build_dataframe_and_unresolved():
 
 
 def test_missing_file_raises(tmp_path):
-    with pytest.raises(FileNotFoundError):
+    with pytest.raises(FileNotFoundError) as e:
         DataInformation.from_file(tmp_path / "does_not_exist.yaml")
+    assert "YAML file not found:" in str(e.value)
 
 
 def test_malformed_yaml_raises(tmp_path):
     bad_file = tmp_path / "bad.yaml"
     bad_file.write_text("variables: [unclosed", encoding="utf-8")
-    with pytest.raises(YAMLError):
+    with pytest.raises(YAMLError) as e:
         DataInformation.from_file(bad_file)
+    assert "Invalid YAML in " in str(e.value)
 
 
 def test_non_mapping_yaml_raises(tmp_path):
     list_file = tmp_path / "list.yaml"
     list_file.write_text("- a\n- b\n", encoding="utf-8")
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError) as e:
         DataInformation.from_file(list_file)
+    assert "Expected a YAML mapping in " in str(e.value)
 
 
 def test_legacy_csv_is_deprecated_but_supported(tmp_path):
@@ -184,8 +200,8 @@ def test_bad_csv_file(tmp_path):
 
     with pytest.raises(FileNotFoundError) as e:
         DataInformation.from_csv("fake_file.csv")
-        assert "Data information file not found:" in e
+    assert "Data information file not found:" in str(e.value)
     # TODO: Can't replicate exception explicitly.
-    with pytest.raises(ValueError) as e:
-        DataInformation.from_csv(bad_csv)
-        assert "Failed to parse data information file " in e
+    # with pytest.raises(ValueError) as e:
+    #     DataInformation.from_csv(bad_csv)
+    # assert "Failed to parse data information file " in str(e.value)

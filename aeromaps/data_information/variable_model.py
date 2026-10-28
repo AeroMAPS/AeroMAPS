@@ -34,4 +34,4 @@ class Variable(BaseModel):
         name = info.data.get("variable_name")
         if str(value) == "N/A":
             return str(value)
-        return unit_validator(value, f"  - variable '{name}'")
+        return unit_validator(value, f"variable '{name}'")
