@@ -52,10 +52,10 @@ class DataInformation:
 
     _UNKNOWN = {"Unit": "N/A", "Description": "N/A", "Source": "N/A"}
 
-    variables: dict[str, Variable]
+    __variables: dict[str, Variable]
     """A mapping of variable names to a :class:`Variable`."""
 
-    patterns: list[VariablePattern]
+    __patterns: list[VariablePattern]
     """A list of :class:`VariablePattern`."""
 
     # Explicit sentinel for entries whose unit is not expressible statically
@@ -69,8 +69,18 @@ class DataInformation:
         source_file: str | Path | None = None,
     ):
         self.source_file = source_file
-        self.variables = self._load_variables(variables)
-        self.patterns = self._load_patterns(patterns or [])
+        self.__variables = self._load_variables(variables)
+        self.__patterns = self._load_patterns(patterns or [])
+
+    @property
+    def variables(self):
+        """Return the data's variables mapping."""
+        return self.__variables
+
+    @property
+    def patterns(self):
+        """Return the data's patterns mapping."""
+        return self.__patterns
 
     def _load_variables(
         self, variables: dict[str, dict[str, str]] | dict[str, Variable]
@@ -215,14 +225,14 @@ class DataInformation:
             Dict with keys 'Unit', 'Description' and 'Source', or None if the
             name matches neither an exact entry nor a pattern.
         """
-        variable = self.variables.get(name)
+        variable = self.__variables.get(name)
         if variable is not None:
             return {
                 "Unit": variable.unit,
                 "Description": variable.description,
                 "Source": variable.source or "",
             }
-        for rule in self.patterns:
+        for rule in self.__patterns:
             match = rule._regex.match(name)
             if match:
                 description = rule.description
