@@ -2,7 +2,14 @@
 
 import re
 
-from pydantic import BaseModel, PrivateAttr, ValidationInfo, field_validator, model_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    PrivateAttr,
+    ValidationInfo,
+    field_validator,
+    model_validator,
+)
 
 from aeromaps.data_information.units_validator import unit_validator
 
@@ -36,6 +43,8 @@ class VariablePattern(BaseModel):
     description: str
     source: str | None = None
     _regex: re.Pattern = PrivateAttr()
+
+    model_config = ConfigDict(extra="forbid")
 
     @field_validator("unit")
     @classmethod

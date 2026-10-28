@@ -1,6 +1,6 @@
 """Pydantic model for variables metadata."""
 
-from pydantic import BaseModel, ValidationInfo, field_validator
+from pydantic import BaseModel, ConfigDict, ValidationInfo, field_validator
 
 from aeromaps.data_information.units_validator import unit_validator
 
@@ -26,6 +26,7 @@ class Variable(BaseModel):
     unit: str
     description: str
     source: str | None = None
+    model_config = ConfigDict(extra="forbid")
 
     @field_validator("unit")
     @classmethod
