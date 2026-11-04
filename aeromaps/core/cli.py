@@ -92,6 +92,18 @@ class Main:
 
         print(f"Resources added in: {dest_dir}")
 
+    @staticmethod
+    def _schema(args):
+        """Export the JSON Schemas of the process inputs and outputs."""
+        from aeromaps.core.process import AeroMAPSProcess
+
+        process = AeroMAPSProcess(configuration_file=args.config)
+        if args.compute:
+            process.compute()
+        paths = process.export_schema(args.output_dir, include_defaults=not args.no_defaults)
+        for path in paths:
+            print(f"Schema written: {path}")
+
     def run(self):
         subparsers = self.parser.add_subparsers(title="sub-commands")
 
@@ -116,6 +128,41 @@ class Main:
             description="download notebooks",
         )
         parser_notebooks.set_defaults(func=self._notebooks)
+
+        # sub-command for exporting the variable schemas
+        parser_schema = subparsers.add_parser(
+            "schema",
+            help="export the JSON Schemas of the process inputs and outputs",
+            description=(
+                "export inputs_schema.json and outputs_schema.json, derived from the "
+                "GEMSEO grammars of the configured models (types, units, descriptions, "
+                "sources and default values)"
+            ),
+        )
+        parser_schema.add_argument(
+            "--config",
+            default=None,
+            help="AeroMAPS configuration file; the packaged default is used if omitted",
+        )
+        parser_schema.add_argument(
+            "--output-dir",
+            default=".",
+            help="directory where the two schema files are written",
+        )
+        parser_schema.add_argument(
+            "--no-defaults",
+            action="store_true",
+            help="omit the default values of the inputs",
+        )
+        parser_schema.add_argument(
+            "--compute",
+            action="store_true",
+            help=(
+                "run the process before exporting, so that the outputs of auto models "
+                "(untyped in their grammar) get their type from the results"
+            ),
+        )
+        parser_schema.set_defaults(func=self._schema)
 
         # Parse
         args = self.parser.parse_args()

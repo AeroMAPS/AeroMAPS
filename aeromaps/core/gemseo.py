@@ -89,6 +89,7 @@ from gemseo.disciplines.auto_py import AutoPyDiscipline
 from gemseo.core.discipline import Discipline
 
 from aeromaps.models.base import AeroMAPSModel
+from aeromaps.utils.units import UnitError, normalize_unit, parse_unit
 
 if TYPE_CHECKING:
     from gemseo.typing import NumberArray
@@ -149,6 +150,120 @@ def _format_model_traceback(model_file: str) -> str:
     if not frames:
         return ""
     return "".join(traceback.StackSummary.from_list(frames).format())
+
+
+# Sentinel for variables whose unit cannot be expressed statically (mirrors
+# DataInformation.NOT_APPLICABLE without importing the registry module here).
+UNIT_NOT_APPLICABLE = "N/A"
+
+
+def strip_namespace(name: str) -> str:
+    """Return a variable name without its regional namespace prefix."""
+    return name.split(":", 1)[1] if ":" in name else name
+
+
+def attach_variable_metadata(discipline: Discipline, model: AeroMAPSModel, registry=None) -> None:
+    """Attach unit and description metadata to the I/O of a wrapped discipline.
+
+    Units come from the model declaration first (``model.units``), then from the
+    registry. Descriptions come from the model declaration, then from the grammar
+    (GEMSEO parses the docstring of auto models), then from the registry. Every
+    unit is validated against the vocabulary so that a wrong unit fails when the
+    discipline is built rather than after the run.
+
+    Parameters
+    ----------
+    discipline
+        The wrapped discipline; receives a ``units`` mapping and a
+        ``metadata_origin`` mapping (``"model"``, ``"registry"`` or None).
+    model
+        The wrapped AeroMAPS model.
+    registry
+        Optional :class:`aeromaps.utils.data_information.DataInformation`.
+    """
+    discipline.units = {}
+    discipline.metadata_origin = {}
+    for grammar in (discipline.input_grammar, discipline.output_grammar):
+        for name in grammar.names:
+            unit = model.units.get(name)
+            origin = "model" if unit is not None else None
+            description = model.descriptions.get(name)
+            if description is None:
+                description = grammar.descriptions.get(name)
+            if registry is not None and (unit is None or description is None):
+                info = registry.lookup(name)
+                if info is not None:
+                    if unit is None:
+                        unit = info["Unit"]
+                        origin = "registry"
+                    if description is None and info["Description"] != UNIT_NOT_APPLICABLE:
+                        description = info["Description"]
+            if unit is not None and unit != UNIT_NOT_APPLICABLE:
+                try:
+                    parse_unit(unit)
+                except UnitError as e:
+                    raise UnitError(
+                        f"Invalid unit '{unit}' declared for variable '{name}' "
+                        f"of model '{model.name}': {e}"
+                    ) from e
+            discipline.units[name] = unit
+            discipline.metadata_origin[name] = origin
+            if description is not None and name not in grammar.descriptions:
+                grammar.descriptions[name] = description
+
+
+def check_coupling_units(disciplines: list[Discipline]) -> list[str]:
+    """Check that every coupling variable is produced and consumed in the same unit.
+
+    GEMSEO passes raw numbers between disciplines, so a commensurable but
+    different unit (MJ against EJ, ``%`` against ``-``) is as wrong as an
+    incompatible one: units must be identical after normalisation.
+
+    Parameters
+    ----------
+    disciplines
+        Disciplines carrying a ``units`` mapping (see attach_variable_metadata).
+
+    Returns
+    -------
+    mismatches
+        Human-readable descriptions of the mismatches found, empty if none.
+    """
+
+    def _declared(discipline, name):
+        unit = getattr(discipline, "units", {}).get(name)
+        if unit is None or unit == UNIT_NOT_APPLICABLE:
+            return None
+        return normalize_unit(unit)
+
+    producers = {}
+    for discipline in disciplines:
+        for name in discipline.output_grammar.names:
+            unit = _declared(discipline, name)
+            if unit is not None:
+                producers.setdefault(name, []).append((discipline.name, unit))
+
+    mismatches = []
+    for name, entries in producers.items():
+        first_producer, first_unit = entries[0]
+        for producer, unit in entries[1:]:
+            if unit != first_unit:
+                mismatches.append(
+                    f"'{name}': produced in '{first_unit}' by {first_producer} "
+                    f"and in '{unit}' by {producer}"
+                )
+    for discipline in disciplines:
+        for name in discipline.input_grammar.names:
+            unit = _declared(discipline, name)
+            if unit is None or name not in producers:
+                continue
+            producer, produced_unit = producers[name][0]
+            if unit != produced_unit:
+                mismatches.append(
+                    f"'{name}': produced in '{produced_unit}' by {producer}, "
+                    f"consumed in '{unit}' by {discipline.name}"
+                )
+    return mismatches
 
 
 class ExtendedJSONGrammar(JSONGrammar):
@@ -542,7 +657,7 @@ class AeroMAPSAutoModelWrapper(_CouplingSeedMixin, AutoPyDiscipline):
     Inputs and outputs are automatically declared from the model's compute() function signature.
     """
 
-    def __init__(self, model):
+    def __init__(self, model, metadata=None):
         self.model: AeroMAPSModel = model
 
         self.default_grammar_type = Discipline.GrammarType.SIMPLE
@@ -555,6 +670,7 @@ class AeroMAPSAutoModelWrapper(_CouplingSeedMixin, AutoPyDiscipline):
         self.name = model.__class__.__name__
 
         self.update_defaults()
+        attach_variable_metadata(self, model, metadata)
 
     def update_defaults(self):
         for input in self.input_grammar.names:
@@ -586,7 +702,7 @@ class AeroMAPSCustomModelWrapper(_CouplingSeedMixin, Discipline):
     Inputs and outputs are declared through the attributes 'input_names' and 'output_names' of the model.
     """
 
-    def __init__(self, model):
+    def __init__(self, model, metadata=None):
         super().__init__()
 
         # Whether to skip data type validation (at your own risk)
@@ -614,6 +730,7 @@ class AeroMAPSCustomModelWrapper(_CouplingSeedMixin, Discipline):
         # Initialize default input data
         self.update_defaults()
         # self.io.data_processor = AutoDiscDataProcessor()
+        attach_variable_metadata(self, model, metadata)
 
     def _run(self, input_data):
         if hasattr(self.model, "compute"):
@@ -701,6 +818,16 @@ def apply_namespace_to_discipline(discipline: Discipline, namespace: str) -> Dis
 
     # Update discipline name to include region identifier
     ns_disc.name = f"{namespace}_{ns_disc.name}"
+
+    # Variable metadata is keyed by grammar name, so follow the renaming
+    for attribute in ("units", "metadata_origin"):
+        mapping = getattr(ns_disc, attribute, None)
+        if mapping is not None:
+            setattr(
+                ns_disc,
+                attribute,
+                {f"{namespace}:{name}": value for name, value in mapping.items()},
+            )
 
     return ns_disc
 

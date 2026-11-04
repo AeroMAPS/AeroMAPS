@@ -5,6 +5,7 @@ This module tests the AeroMAPSProcess class functionality and that all model
 groups can be instantiated and run without errors.
 """
 
+import json
 from pathlib import Path
 
 import pytest
@@ -27,6 +28,18 @@ def get_tested_config_files():
 # removed from the basic analysis to run faster.
 
 CONFIGS_TO_TEST = get_tested_config_files()
+
+
+@pytest.fixture
+def csv_data_information_file(tmp_path):
+    """Fixture to create a temporary CSV data information file."""
+    csv_file = tmp_path / "data_information.csv"
+    csv_file.write_text(
+        "Name;Type;Unit;Description;Reference for default input value (if applicable)\n"
+        "co2_emissions;Vector;MtCO2; ;\n",
+        encoding="utf-8",
+    )
+    return str(csv_file)
 
 
 @pytest.mark.parametrize("config_file", CONFIGS_TO_TEST)
@@ -62,6 +75,15 @@ def test_compute(config_file):
     assert isinstance(plots, list)
     assert len(plots) > 0
 
+    # Schemas can be exported for any tested configuration and stay JSON-serialisable
+    schemas = proc.export_schema()
+    assert set(schemas) == {"inputs", "outputs"}
+    co2 = schemas["outputs"]["properties"]["co2_emissions"]
+    # After a run, untyped auto-model outputs get their type from the data containers
+    assert co2["type"] == "array"
+    assert co2["unit"] == "MtCO2"
+    json.dumps(schemas)
+
     float_inputs = proc.list_float_inputs()
     assert float_inputs is not None
     assert isinstance(float_inputs, dict)
@@ -88,6 +110,62 @@ def test_compute(config_file):
     vector_outputs = data["vector_outputs"]
     assert vector_outputs is not None
     assert len(vector_outputs) > 0
+
+
+@pytest.mark.parametrize("config_file", CONFIGS_TO_TEST)
+def test_data_information_df(config_file):
+    """Test that the data information DataFrame."""
+    proc = create_process(configuration_file=config_file)
+    proc.compute()
+    # Every variable of the process must be documented (unit + description),
+    # either by the model that reads or writes it or by data_information.yaml
+    # (exact entry or pattern rule).
+    data_information_df = proc._get_data_information_df()
+    assert not data_information_df.empty
+    unresolved = proc.list_undocumented_variables()
+    assert f"{len(unresolved)} variables have no unit nor description: {unresolved[:10]}"
+    # The metadata table is derived from the same resolution
+    undocumented_rows = data_information_df[
+        (data_information_df["Unit"] == "N/A") & (data_information_df["Description"] == "N/A")
+    ]
+    assert undocumented_rows.empty
+
+
+@pytest.mark.parametrize("data_is_unresolved", [False, True])
+def test_undocumented_variables(data_is_unresolved, csv_data_information_file):
+    """Test the list_undocumented_variables method."""
+    config_file = CONFIG_DIR / "config_basic.yaml"
+    proc = create_process(configuration_file=str(config_file))
+    file = csv_data_information_file if data_is_unresolved else None
+    proc._load_data_information(file)
+    unresolved = proc.list_undocumented_variables()
+    assert data_is_unresolved == (len(unresolved) != 0)
+
+
+def test_get_variable_information():
+    """Test the public metadata lookup API (lazy loading included)."""
+    config_file = CONFIG_DIR / "config_basic.yaml"
+    proc = create_process(configuration_file=str(config_file))
+
+    # Produced by a discipline: unit from the registry attached at build time,
+    # description from the producer's docstring
+    info = proc.get_variable_information("co2_emissions")
+    assert info["Unit"] == "MtCO2"
+    assert info["Description"] and info["Description"] != "N/A"
+    assert info["Source"] == ""
+    # Declared by the model that writes it
+    assert proc.get_variable_information("manual_carbon_offset")["Unit"] == "MtCO2"
+    registry_resolved = proc.list_registry_resolved_variables()
+    assert registry_resolved
+    assert "manual_carbon_offset" not in registry_resolved
+    assert "co2_emissions" in registry_resolved
+    # Pattern-resolved name (market ids are user-defined, so this must
+    # work for names absent from the file)
+    assert proc.get_variable_information("cagr_rpk_short_range")["Unit"] == "%"
+    # Namespaced names resolve through their bare name
+    assert proc.get_variable_information("FR:co2_emissions")["Unit"] == "MtCO2"
+    # Unknown variable
+    assert proc.get_variable_information("definitely_not_a_variable") is None
 
 
 def test_process_models_are_independent():

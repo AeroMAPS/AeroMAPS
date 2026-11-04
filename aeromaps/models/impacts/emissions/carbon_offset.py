@@ -201,6 +201,13 @@ class ManualCarbonOffset(AeroMAPSModel):
         Name of the model instance ('manual_carbon_offset' by default).
     """
 
+    # Units declared at the model level; descriptions come from the compute docstring.
+    UNITS = {
+        "manual_carbon_offset_reference_years": "yr",
+        "manual_carbon_offset_reference_years_values": "MtCO2",
+        "manual_carbon_offset": "MtCO2",
+    }
+
     def __init__(self, name="manual_carbon_offset", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 

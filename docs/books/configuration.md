@@ -125,7 +125,8 @@ for the same content as a ready-to-edit template.
 | `json_inputs_file` | yes | Scenario parameters (scalars and year-indexed vectors). See [parameters](#parametersjson). |
 | `partitioning_data_file` | no | Year-indexed inputs used to partition a global scenario into a sub-scope (region, market segment…). Holds `other_float_data`, `other_vector_data`, and an optional `climate_data` block. |
 | `partitioning_climate_data_file` | no | CSV of historical temperature data; falls back to the packaged `temperature_historical_dataset.csv`. |
-| `csv_data_information_file` | no | Metadata (units, descriptions) describing the inputs, used for display/export. |
+| `data_information_file` | no | Metadata (units, descriptions, sources) of the variables, used for display/export. YAML file with a `variables` section (exact names) and a `patterns` section (glob rules for dynamically named variables); units are validated against the vocabulary of `aeromaps/utils/units.py`. Defaults to the packaged `data_information.yaml`. |
+| `csv_data_information_file` | no | **Deprecated** legacy CSV equivalent of `data_information_file`; still read if the new key is absent. |
 
 ### 3.2 `data.outputs`
 
