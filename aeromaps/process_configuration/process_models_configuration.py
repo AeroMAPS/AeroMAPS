@@ -25,35 +25,35 @@ class StandardModels(StrEnum):
 
 
 class ClimateModelConfiguration(BaseProcessConfiguration):
-    climate_model_data_file: Path | str = Path("./default_climate_models/climate_model_fair.yaml")
+    climate_model_data_file: Path = Path("./default_climate_models/climate_model_fair.yaml")
 
 
 class MarketsModelConfiguration(BaseProcessConfiguration):
-    markets_data_file: Path | str = Path("./default_markets/markets.yaml")
+    markets_data_file: Path = Path("./default_markets/markets.yaml")
 
 
 class FleetModelConfiguration(BaseProcessConfiguration):
-    aircraft_inventory_model_data_file: Path | str = Path("./default_fleet/aircraft_inventory.yaml")
-    fleet_model_data_file: Path | str = Path("./default_fleet/fleet.yaml")
+    aircraft_inventory_model_data_file: Path = Path("./default_fleet/aircraft_inventory.yaml")
+    fleet_model_data_file: Path = Path("./default_fleet/fleet.yaml")
 
 
 class FleetPushModelConfiguration(BaseProcessConfiguration):
-    classification_data_file: Path | str = Path(
+    classification_data_file: Path = Path(
         "./default_fleet_push/default_aircraft_classification.yaml"
     )
-    market_param_data_file: Path | str = Path("./default_fleet_push/default_market_param.yaml")
-    in_production_inventory_file: Path | str = Path(
+    market_param_data_file: Path = Path("./default_fleet_push/default_market_param.yaml")
+    in_production_inventory_file: Path = Path(
         "./default_fleet_push/default_in_production_aircraft_inventory.yaml"
     )
-    new_aircraft_inventory_file: Path | str = Path(
+    new_aircraft_inventory_file: Path = Path(
         "./default_fleet_push/default_new_aircraft_inventory.yaml"
     )
-    aircraft_parameters_file: Path | str = Path(
+    aircraft_parameters_file: Path = Path(
         "../../utils/calibration_notebooks/"
         "fleet_calibrated_inputs_processed_here/"
         "aircraft_type_key_parameters.xlsx"
     )
-    fleet_snapshot_file: Path | str = Path(
+    fleet_snapshot_file: Path = Path(
         "../../utils/calibration_notebooks/"
         "fleet_calibrated_inputs_processed_here/"
         "agg_fleet_end_2024.xlsx"
@@ -61,23 +61,23 @@ class FleetPushModelConfiguration(BaseProcessConfiguration):
 
 
 class EnergyModelConfiguration(BaseProcessConfiguration):
-    energy_carriers_model_data_file: Path | str = Path(
+    energy_carriers_model_data_file: Path = Path(
         "./default_energy_carriers/energy_carriers_data.yaml"
     )
-    resources_model_data_file: Path | str = Path("./default_energy_carriers/resources_data.yaml")
-    processes_model_data_file: Path | str = Path("./default_energy_carriers/processes_data.yaml")
+    resources_model_data_file: Path = Path("./default_energy_carriers/resources_data.yaml")
+    processes_model_data_file: Path = Path("./default_energy_carriers/processes_data.yaml")
 
 
 class OperationsModelConfiguration(BaseProcessConfiguration):
-    operations_model_data_file: Path | str = Path("./default_operations/operations_data.yaml")
+    operations_model_data_file: Path = Path("./default_operations/operations_data.yaml")
 
 
 class OffsetsModelConfiguration(BaseProcessConfiguration):
-    offsets_model_data_file: Path | str = Path("./default_offsets/offsets_data.yaml")
+    offsets_model_data_file: Path = Path("./default_offsets/offsets_data.yaml")
 
 
 class LifeCycleAssessmentModelConfiguration(BaseProcessConfiguration):
-    lca_model_data_file: Path | str = Path("./default_lca/default_lca_model.json")
+    lca_model_data_file: Path = Path("./default_lca/default_lca_model.json")
     split_by: str = "phase"
 
 
