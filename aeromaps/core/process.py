@@ -2286,17 +2286,12 @@ class AeroMAPSProcess(object):
                                 "climate data has not been initialized."
                             )
                         model.climate_historical_data = self.climate_historical_data
-                    if hasattr(model, "compute"):
-                        if getattr(model, "model_type") == "custom":
-                            model = AeroMAPSCustomModelWrapper(model=model)
-                        else:
-                            model = AeroMAPSAutoModelWrapper(model=model)
-                        self.disciplines.append(model)
+                    if getattr(model, "model_type") == "custom":
+                        model = AeroMAPSCustomModelWrapper(model=model)
                     else:
-                        raise AttributeError(
-                            f"Model '{model.name}' has no compute() method. "
-                            "All AeroMAPSModel subclasses must implement compute()."
-                        )
+                        model = AeroMAPSAutoModelWrapper(model=model)
+                    self.disciplines.append(model)
+
                 else:
                     raise TypeError(
                         f"Entry '{key}' in the models dict is not an AeroMAPSModel instance "
