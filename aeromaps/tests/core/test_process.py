@@ -8,9 +8,60 @@ groups can be instantiated and run without errors.
 from pathlib import Path
 
 import pytest
+
 from aeromaps import create_process
+from aeromaps.utils.yaml import read_yaml_file
 
 CONFIG_DIR = Path(__file__).parent.parent / "tested_configs"
+
+DEFAULT_CONFIG_FILE = Path(__file__).parents[2] / "resources" / "data" / "config.yaml"
+
+BASIC_FULL_CONFIG_FILE = CONFIG_DIR / "config_basic_full.yaml"
+
+MERGED_BASIC_FULL_CONFIG = {
+    "data": {
+        "inputs": {
+            "csv_data_information_file": "./data_information.csv",
+            "json_inputs_file": "./parameters.json",
+            "partitioning_data_file": "./partitioning_inputs.json",
+        },
+        "outputs": {"json_outputs_file": "./outputs.json", "excel_outputs_file": "./data.xlsx"},
+    },
+    "models": {
+        "climate": {"climate_model_data_file": "default"},
+        "markets": {"markets_data_file": "./default_markets/markets.yaml"},
+        "fleet": {
+            "aircraft_inventory_model_data_file": "./default_fleet/aircraft_inventory.yaml",
+            "fleet_model_data_file": "./default_fleet/fleet.yaml",
+        },
+        "fleet_push": {
+            "classification_data_file": "./default_fleet_push/default_aircraft_classification.yaml",
+            "market_param_data_file": "./default_fleet_push/default_market_param.yaml",
+            "in_production_inventory_file": "./default_fleet_push/default_in_production_aircraft_inventory.yaml",
+            "new_aircraft_inventory_file": "./default_fleet_push/default_new_aircraft_inventory.yaml",
+            "aircraft_parameters_file": "../../utils/calibration_notebooks/fleet_calibrated_inputs_processed_here/aircraft_type_key_parameters.xlsx",
+            "fleet_snapshot_file": "../../utils/calibration_notebooks/fleet_calibrated_inputs_processed_here/agg_fleet_end_2024.xlsx",
+        },
+        "energy": {
+            "energy_carriers_model_data_file": "default",
+            "resources_model_data_file": "default",
+            "processes_model_data_file": "default",
+        },
+        "operations": {"operations_model_data_file": "./default_operations/operations_data.yaml"},
+        "offsets": {"offsets_model_data_file": "./default_offsets/offsets_data.yaml"},
+        "life_cycle_assessment": {"lca_model_data_file": "default", "split_by": "phase"},
+        "standards": [
+            "models_traffic",
+            "models_efficiency_top_down",
+            "models_energy_without_fuel_effect",
+            "models_offset",
+            "models_emissions",
+            "models_sustainability",
+            "models_energy_cost",
+            "models_operation_cost_top_down",
+        ],
+    },
+}
 
 
 def get_tested_config_files():
@@ -116,3 +167,15 @@ def test_process_models_are_independent():
         assert proc1.models[model_name] is not proc2.models[model_name], (
             f"Model {model_name} should be independent between processes"
         )
+
+
+def test_process_configuration():
+    """Test that the process properly loads the configuration"""
+
+    process = create_process(configuration_file=BASIC_FULL_CONFIG_FILE)
+    basic_full_config = read_yaml_file(BASIC_FULL_CONFIG_FILE)
+
+    default_config = read_yaml_file(DEFAULT_CONFIG_FILE)
+    assert process._user_config == basic_full_config
+    assert process._default_config == default_config
+    assert process.config == MERGED_BASIC_FULL_CONFIG
