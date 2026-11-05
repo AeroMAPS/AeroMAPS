@@ -1,7 +1,7 @@
 """AeroMAPS process data configuration models."""
 
 from pathlib import Path
-from aeromaps.config_models.base_config import BaseConfig
+from aeromaps.process_configuration.base_config import BaseConfig
 
 
 class DataInputs(BaseConfig):
