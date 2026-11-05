@@ -106,6 +106,7 @@ class ProcessModelsConfiguration(BaseProcessConfiguration):
             if model not in standard_models:
                 raise ValueError(
                     f"The model {model} doesn't correspond to any standard model. "
-                    f"Available standard models: {standard} ,"
-                    for standard in standard_models
+                    f"Available standard models: {', '.join(standard_models)}"
                 )
+
+        return value
