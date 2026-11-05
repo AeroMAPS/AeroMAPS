@@ -616,21 +616,18 @@ class AeroMAPSCustomModelWrapper(_CouplingSeedMixin, Discipline):
         # self.io.data_processor = AutoDiscDataProcessor()
 
     def _run(self, input_data):
-        if hasattr(self.model, "compute"):
-            try:
-                return self.model.compute(input_data)
-            except Exception:
-                model_file = inspect.getfile(type(self.model))
-                model_tb = _format_model_traceback(model_file)
-                LOGGER.error(
-                    "An error occurred when executing model: %s (file: %s)\n%s",
-                    self.model.name,
-                    model_file,
-                    model_tb,
-                )
-                raise
-        else:
-            raise AttributeError(f"Model {self.name} does not have a compute method")
+        try:
+            return self.model.compute(input_data)
+        except Exception:
+            model_file = inspect.getfile(type(self.model))
+            model_tb = _format_model_traceback(model_file)
+            LOGGER.error(
+                "An error occurred when executing model: %s (file: %s)\n%s",
+                self.model.name,
+                model_file,
+                model_tb,
+            )
+            raise
 
     def update_defaults(self):
         # Set default values if provided internally by the model (see e.g. LCA module)

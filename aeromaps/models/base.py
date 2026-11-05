@@ -2,6 +2,8 @@
 Utility base classes and climate-related helper functions used by AeroMAPS models.
 """
 
+from abc import ABC, abstractmethod
+
 import xarray as xr
 import pandas as pd
 import numpy as np
@@ -76,7 +78,7 @@ MARKET_SCOPES = frozenset({"per_market", "cross_market", "aggregator", "market_a
 MODEL_APPROACHES = frozenset({"top_down", "bottom_up"})
 
 
-class AeroMAPSModel(object):
+class AeroMAPSModel(ABC):
     """
     Base class for AeroMAPS model components that provides shared state and utilities.
 
@@ -164,6 +166,10 @@ class AeroMAPSModel(object):
             self._skip_data_type_validation = False  # Whether to skip input/output data type validation. If True, input_names and output_names can be lists of names only.
         elif self.model_type != "auto":
             raise ValueError("model_type must be either 'auto' or 'custom'")
+
+    @abstractmethod
+    def compute(self, input_data: dict) -> dict:
+        """Compute method to be implemented by subclasses."""
 
     def _initialize_df(self):
         self.climate_historic_start_year = self.parameters.climate_historic_start_year
