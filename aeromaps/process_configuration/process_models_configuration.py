@@ -1,25 +1,43 @@
 """AeroMAPS process models configuration."""
 
+from enum import StrEnum
 from typing import Optional
 
-from aeromaps.process_configuration.base_process_configuration import BaseConfiguration
+from pydantic import field_validator
+
+from aeromaps.process_configuration.base_process_configuration import BaseProcessConfiguration
 from pathlib import Path
 
 
-class ClimateModelConfiguration(BaseConfiguration):
+class StandardModels(StrEnum):
+    """Standard AeroMAPSModels."""
+
+    MODELS_TRAFFIC = "models_traffic"
+    MODELS_EFFICIENCY_BOTTOM_UP = "models_efficiency_bottom_up"
+    MODELS_ENERGY_WITHOUT_FUEL_EFFECT = "models_energy_without_fuel_effect"
+    MODELS_OFFSET = "models_offset"
+    MODELS_EMISSIONS = "models_emissions"
+    MODELS_SUSTAINABILITY = "models_sustainability"
+    MODELS_ENERGY_COST = "models_energy_cost"
+    MODELS_OPERATION_COST_BOTTOM_UP = "models_operation_cost_bottom_up"
+    MODELS_PRODUCTION_COST = "models_production_cost"
+    MODELS_ABATEMENTS_COST = "models_abatements_cost"
+
+
+class ClimateModelConfiguration(BaseProcessConfiguration):
     climate_model_data_file: Path | str = Path("./default_climate_models/climate_model_fair.yaml")
 
 
-class MarketsConfig(BaseConfiguration):
+class MarketsModelConfiguration(BaseProcessConfiguration):
     markets_data_file: Path | str = Path("./default_markets/markets.yaml")
 
 
-class FleetConfig(BaseConfiguration):
+class FleetModelConfiguration(BaseProcessConfiguration):
     aircraft_inventory_model_data_file: Path | str = Path("./default_fleet/aircraft_inventory.yaml")
     fleet_model_data_file: Path | str = Path("./default_fleet/fleet.yaml")
 
 
-class FleetPushConfig(BaseConfiguration):
+class FleetPushModelConfiguration(BaseProcessConfiguration):
     classification_data_file: Path | str = Path(
         "./default_fleet_push/default_aircraft_classification.yaml"
     )
@@ -42,7 +60,7 @@ class FleetPushConfig(BaseConfiguration):
     )
 
 
-class EnergyConfig(BaseConfiguration):
+class EnergyModelConfiguration(BaseProcessConfiguration):
     energy_carriers_model_data_file: Path | str = Path(
         "./default_energy_carriers/energy_carriers_data.yaml"
     )
@@ -50,40 +68,44 @@ class EnergyConfig(BaseConfiguration):
     processes_model_data_file: Path | str = Path("./default_energy_carriers/processes_data.yaml")
 
 
-class OperationsConfig(BaseConfiguration):
+class OperationsModelConfiguration(BaseProcessConfiguration):
     operations_model_data_file: Path | str = Path("./default_operations/operations_data.yaml")
 
 
-class OffsetsConfig(BaseConfiguration):
+class OffsetsModelConfiguration(BaseProcessConfiguration):
     offsets_model_data_file: Path | str = Path("./default_offsets/offsets_data.yaml")
 
 
-class LifeCycleAssessmentConfig(BaseConfiguration):
+class LifeCycleAssessmentModelConfiguration(BaseProcessConfiguration):
     lca_model_data_file: Path | str = Path("./default_lca/default_lca_model.json")
     split_by: str = "phase"
 
 
-class ProcessModelsConfiguration(BaseConfiguration):
+class ProcessModelsConfiguration(BaseProcessConfiguration):
     climate: ClimateModelConfiguration = ClimateModelConfiguration()
-    markets: MarketsConfig = MarketsConfig()
-    fleet: FleetConfig = FleetConfig()
-    fleet_push: FleetPushConfig = FleetPushConfig()
-    energy: EnergyConfig = EnergyConfig()
-    operations: OperationsConfig = OperationsConfig()
-    offsets: OffsetsConfig = OffsetsConfig()
-    life_cycle_assessment: LifeCycleAssessmentConfig = LifeCycleAssessmentConfig()
+    markets: MarketsModelConfiguration = MarketsModelConfiguration()
+    fleet: FleetModelConfiguration = FleetModelConfiguration()
+    fleet_push: FleetPushModelConfiguration = FleetPushModelConfiguration()
+    energy: EnergyModelConfiguration = EnergyModelConfiguration()
+    operations: OperationsModelConfiguration = OperationsModelConfiguration()
+    offsets: OffsetsModelConfiguration = OffsetsModelConfiguration()
+    life_cycle_assessment: LifeCycleAssessmentModelConfiguration = (
+        LifeCycleAssessmentModelConfiguration()
+    )
 
-    standards: list[str] = [
-        "models_traffic",
-        "models_efficiency_bottom_up",
-        "models_energy_without_fuel_effect",
-        "models_offset",
-        "models_emissions",
-        "models_sustainability",
-        "models_energy_cost",
-        "models_operation_cost_bottom_up",
-        "models_production_cost",
-        "models_abatements_cost",
-    ]
+    standards: list[str] = [model.value for model in StandardModels]
 
     customs: Optional[dict[str, str]] = None
+
+    @field_validator("standards")
+    @classmethod
+    def is_standard_model(cls, value: list[str]) -> list[str]:
+        """Check that the models in standards are indeed standard models."""
+        standard_models = [model.value for model in StandardModels]
+        for model in value:
+            if model not in standard_models:
+                raise ValueError(
+                    f"The model {model} doesn't correspond to any standard model. "
+                    f"Available standard models: {standard} ,"
+                    for standard in standard_models
+                )
