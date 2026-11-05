@@ -2,24 +2,24 @@
 
 from typing import Optional
 
-from aeromaps.process_configuration.base_config import BaseConfig
+from aeromaps.process_configuration.base_process_configuration import BaseConfiguration
 from pathlib import Path
 
 
-class ClimateConfig(BaseConfig):
+class ClimateModelConfiguration(BaseConfiguration):
     climate_model_data_file: Path | str = Path("./default_climate_models/climate_model_fair.yaml")
 
 
-class MarketsConfig(BaseConfig):
+class MarketsConfig(BaseConfiguration):
     markets_data_file: Path | str = Path("./default_markets/markets.yaml")
 
 
-class FleetConfig(BaseConfig):
+class FleetConfig(BaseConfiguration):
     aircraft_inventory_model_data_file: Path | str = Path("./default_fleet/aircraft_inventory.yaml")
     fleet_model_data_file: Path | str = Path("./default_fleet/fleet.yaml")
 
 
-class FleetPushConfig(BaseConfig):
+class FleetPushConfig(BaseConfiguration):
     classification_data_file: Path | str = Path(
         "./default_fleet_push/default_aircraft_classification.yaml"
     )
@@ -42,7 +42,7 @@ class FleetPushConfig(BaseConfig):
     )
 
 
-class EnergyConfig(BaseConfig):
+class EnergyConfig(BaseConfiguration):
     energy_carriers_model_data_file: Path | str = Path(
         "./default_energy_carriers/energy_carriers_data.yaml"
     )
@@ -50,21 +50,21 @@ class EnergyConfig(BaseConfig):
     processes_model_data_file: Path | str = Path("./default_energy_carriers/processes_data.yaml")
 
 
-class OperationsConfig(BaseConfig):
+class OperationsConfig(BaseConfiguration):
     operations_model_data_file: Path | str = Path("./default_operations/operations_data.yaml")
 
 
-class OffsetsConfig(BaseConfig):
+class OffsetsConfig(BaseConfiguration):
     offsets_model_data_file: Path | str = Path("./default_offsets/offsets_data.yaml")
 
 
-class LifeCycleAssessmentConfig(BaseConfig):
+class LifeCycleAssessmentConfig(BaseConfiguration):
     lca_model_data_file: Path | str = Path("./default_lca/default_lca_model.json")
     split_by: str = "phase"
 
 
-class ModelsConfig(BaseConfig):
-    climate: ClimateConfig = ClimateConfig()
+class ProcessModelsConfiguration(BaseConfiguration):
+    climate: ClimateModelConfiguration = ClimateModelConfiguration()
     markets: MarketsConfig = MarketsConfig()
     fleet: FleetConfig = FleetConfig()
     fleet_push: FleetPushConfig = FleetPushConfig()
