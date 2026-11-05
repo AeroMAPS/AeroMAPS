@@ -3,5 +3,5 @@
 from pydantic import BaseModel, ConfigDict
 
 
-class BaseConfig(BaseModel):
+class BaseProcessConfiguration(BaseModel):
     model_config = ConfigDict(extra="forbid")
