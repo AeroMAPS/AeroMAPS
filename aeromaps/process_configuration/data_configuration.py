@@ -16,5 +16,5 @@ class ProcessDataOutputs(BaseConfig):
 
 
 class ProcessDataConfiguration(BaseConfig):
-    inputs: ProcessDataInputs
-    outputs: ProcessDataOutputs
+    inputs: ProcessDataInputs = ProcessDataInputs()
+    outputs: ProcessDataOutputs = ProcessDataOutputs()
