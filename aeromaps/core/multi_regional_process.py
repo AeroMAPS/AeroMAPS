@@ -20,7 +20,7 @@ import warnings
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from contextlib import contextmanager
 from copy import deepcopy
-from typing import Dict, List, Optional, Literal
+from typing import Dict, List, Optional, Literal, Type
 
 # Third-party imports
 import numpy as np
@@ -46,6 +46,9 @@ from aeromaps.plots.single_scenario import (
     aggregation_safe_plots,
     available_plots,
     available_plots_fleet,
+)
+from aeromaps.process_configuration.multi_regional_process_configuration import (
+    AeroMAPSMultiRegionalProcessConfiguration,
 )
 
 
@@ -159,6 +162,10 @@ class MultiRegionalProcess(AeroMAPSProcess):
     >>> global_emissions = process.data["vector_outputs"]["overall:co2_emissions"]
     """
 
+    CONFIG_MODEL: Type[AeroMAPSMultiRegionalProcessConfiguration] = (
+        AeroMAPSMultiRegionalProcessConfiguration
+    )
+
     def __init__(
         self,
         configuration_file: str,
@@ -188,7 +195,7 @@ class MultiRegionalProcess(AeroMAPSProcess):
         self.configuration_file = os.path.abspath(os.fspath(configuration_file))
 
         # Initialize configuration parsing (without full parent init)
-        self._initialize_configuration_only()
+        self._initialize_configuration()
 
         # Read regionalisation config to determine execution mode
         # How a non-converged MDA is reported: "raise" (default), "warn" or "ignore".
@@ -248,26 +255,6 @@ class MultiRegionalProcess(AeroMAPSProcess):
             f"MultiRegionalProcess initialized with {len(self._region_ids)} regions "
             f"in '{self._execution_mode}' mode"
         )
-
-    def _initialize_configuration_only(self):
-        """Load configuration without triggering full AeroMAPSProcess initialization."""
-        from aeromaps.utils.yaml import read_yaml_file
-
-        # Load default config
-        from aeromaps.core.process import DEFAULT_CONFIG_PATH, DEFAULT_RESOURCES_DATA_DIR
-
-        self._default_config = read_yaml_file(DEFAULT_CONFIG_PATH)
-        self.config = deepcopy(self._default_config)
-        self._config_base_dir = DEFAULT_RESOURCES_DATA_DIR
-        self._user_config = {}
-
-        # Load user config if provided
-        if self.configuration_file is not None:
-            self._user_config = read_yaml_file(self.configuration_file)
-            self._config_base_dir = os.path.dirname(self.configuration_file)
-            self._deep_merge_config(self.config, self._user_config)
-
-    # Note: _deep_merge_config and _get_user_config_value are inherited from AeroMAPSProcess
 
     def _read_regionalisation_config(self):
         """Read and validate the regionalisation configuration."""
