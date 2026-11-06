@@ -11,7 +11,7 @@ import logging
 import os
 from json import load, dump
 from pathlib import Path
-from typing import Union
+from typing import Type, Union
 import dill
 
 # Third-party imports
@@ -255,6 +255,9 @@ class AeroMAPSProcess(object):
     climate_historical_data
         Historical climate dataset used by climate-related models.
     """
+
+    CONFIG_MODEL: Type[AeroMAPSProcessConfiguration] = AeroMAPSProcessConfiguration
+    """The class to be used to load the process configuration."""
 
     def __init__(
         self,
@@ -1188,9 +1191,7 @@ class AeroMAPSProcess(object):
         the user-specified configuration file if provided.
         """
         # Load the default configuration file
-        self._default_config = AeroMAPSProcessConfiguration(
-            **read_yaml_file(DEFAULT_CONFIG_PATH)
-        ).model_dump()
+        self._default_config = self.CONFIG_MODEL(**read_yaml_file(DEFAULT_CONFIG_PATH)).model_dump()
         self.config = deepcopy(self._default_config)
         if not self.config:
             raise RuntimeError(
@@ -1202,7 +1203,7 @@ class AeroMAPSProcess(object):
 
         # Load the new configuration file
         if self.configuration_file is not None:
-            user_config = AeroMAPSProcessConfiguration(**read_yaml_file(self.configuration_file))
+            user_config = self.CONFIG_MODEL(**read_yaml_file(self.configuration_file))
             self._user_config = user_config.model_dump(exclude_unset=True)
             self._config_base_dir = os.path.dirname(self.configuration_file)
             self.config = user_config.model_dump()
