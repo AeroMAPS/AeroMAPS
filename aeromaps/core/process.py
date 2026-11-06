@@ -1191,7 +1191,9 @@ class AeroMAPSProcess(object):
         the user-specified configuration file if provided.
         """
         # Load the default configuration file
-        self._default_config = self.CONFIG_MODEL(**read_yaml_file(DEFAULT_CONFIG_PATH)).model_dump()
+        self._default_config = AeroMAPSProcessConfiguration(
+            **read_yaml_file(DEFAULT_CONFIG_PATH)
+        ).model_dump()
         self.config = deepcopy(self._default_config)
         if not self.config:
             raise RuntimeError(
