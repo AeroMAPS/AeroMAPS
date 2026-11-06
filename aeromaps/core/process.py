@@ -1210,28 +1210,6 @@ class AeroMAPSProcess(object):
             self._config_base_dir = os.path.dirname(self.configuration_file)
             self.config = user_config.model_dump()
 
-    def _deep_merge_config(self, base: dict, override: dict) -> dict:
-        """Recursively merge override config into base config.
-
-        Parameters
-        ----------
-        base
-            The base configuration dictionary to merge into.
-        override
-            The override configuration dictionary.
-
-        Returns
-        -------
-        base
-            The merged configuration dictionary.
-        """
-        for key, value in override.items():
-            if key in base and isinstance(base[key], dict) and isinstance(value, dict):
-                self._deep_merge_config(base[key], value)
-            else:
-                base[key] = value
-        return base
-
     def _get_config_value(self, *keys, default=None):
         """Get a value from the nested configuration dictionary.
 
