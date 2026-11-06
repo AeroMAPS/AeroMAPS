@@ -1285,32 +1285,6 @@ class AeroMAPSProcess(object):
                 return default
         return value
 
-    def _resolve_config_file_path(self, *keys, default_filename: str = None) -> Union[Path, None]:
-        """Resolve a file path from nested config keys.
-
-        Parameters
-        ----------
-        *keys
-            Sequence of keys to navigate the nested config.
-        default_filename
-            Fallback filename if config key doesn't exist.
-
-        Returns
-        -------
-        path
-            Absolute path to the file, or None if not found.
-        """
-        path_value = self._get_config_value(*keys)
-        if path_value is None or not isinstance(path_value, str):
-            if default_filename is None:
-                return None
-            path_value = default_filename
-
-        if os.path.isabs(path_value):
-            return Path(path_value)
-
-        return Path(os.path.normpath(os.path.join(self._config_base_dir, path_value)))
-
     def _resolve_config_path(self, *keys, default_filename: str = None) -> Union[Path, None]:
         """Resolve a config path with fallback to default.
 
