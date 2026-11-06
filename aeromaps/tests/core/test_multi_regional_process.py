@@ -534,8 +534,8 @@ def test_process_configuration(tutorial_dir):
     mode = "separate_processes"
     process = _process(tutorial_dir, mode)
     process_config = read_yaml_file(tutorial_dir / CONFIGS[mode])
-
     default_config = read_yaml_file(DEFAULT_CONFIG_FILE)
-    assert process._user_config == process_config
+    SEPARATED_PROCESS_FULL_CONFIG["regionalisation"]["global_models"] = {}
     assert process._default_config == default_config
+    assert process._user_config == process_config
     assert process.config == SEPARATED_PROCESS_FULL_CONFIG
