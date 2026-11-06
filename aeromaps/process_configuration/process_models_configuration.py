@@ -1,9 +1,8 @@
 """AeroMAPS process models configuration."""
 
 from enum import StrEnum
-from typing import Optional
 
-from pydantic import field_validator
+# from pydantic import field_validator
 
 from aeromaps.process_configuration.base_process_configuration import BaseProcessConfiguration
 from pathlib import Path
@@ -25,41 +24,37 @@ class StandardModels(StrEnum):
 
 
 class ClimateModelConfiguration(BaseProcessConfiguration):
-    climate_model_data_file: Path | str | None = Path(
-        "./default_climate_models/climate_model_fair.yaml"
-    )
+    climate_model_data_file: Path | str | None = "./default_climate_models/climate_model_fair.yaml"
 
 
 class MarketsModelConfiguration(BaseProcessConfiguration):
-    markets_data_file: Path | str | None = Path("./default_markets/markets.yaml")
+    markets_data_file: Path | str | None = "./default_markets/markets.yaml"
 
 
 class FleetModelConfiguration(BaseProcessConfiguration):
-    aircraft_inventory_model_data_file: Path | str | None = Path(
+    aircraft_inventory_model_data_file: Path | str | None = (
         "./default_fleet/aircraft_inventory.yaml"
     )
-    fleet_model_data_file: Path | str | None = Path("./default_fleet/fleet.yaml")
+    fleet_model_data_file: Path | str | None = "./default_fleet/fleet.yaml"
 
 
 class FleetPushModelConfiguration(BaseProcessConfiguration):
-    classification_data_file: Path | str | None = Path(
+    classification_data_file: Path | str | None = (
         "./default_fleet_push/default_aircraft_classification.yaml"
     )
-    market_param_data_file: Path | str | None = Path(
-        "./default_fleet_push/default_market_param.yaml"
-    )
-    in_production_inventory_file: Path | str | None = Path(
+    market_param_data_file: Path | str | None = "./default_fleet_push/default_market_param.yaml"
+    in_production_inventory_file: Path | str | None = (
         "./default_fleet_push/default_in_production_aircraft_inventory.yaml"
     )
-    new_aircraft_inventory_file: Path | str | None = Path(
+    new_aircraft_inventory_file: Path | str | None = (
         "./default_fleet_push/default_new_aircraft_inventory.yaml"
     )
-    aircraft_parameters_file: Path | str | None = Path(
+    aircraft_parameters_file: Path | str | None = (
         "../../utils/calibration_notebooks/"
         "fleet_calibrated_inputs_processed_here/"
         "aircraft_type_key_parameters.xlsx"
     )
-    fleet_snapshot_file: Path | str | None = Path(
+    fleet_snapshot_file: Path | str | None = (
         "../../utils/calibration_notebooks/"
         "fleet_calibrated_inputs_processed_here/"
         "agg_fleet_end_2024.xlsx"
@@ -67,29 +62,23 @@ class FleetPushModelConfiguration(BaseProcessConfiguration):
 
 
 class EnergyModelConfiguration(BaseProcessConfiguration):
-    energy_carriers_model_data_file: Path | str | None = Path(
+    energy_carriers_model_data_file: Path | str | None = (
         "./default_energy_carriers/energy_carriers_data.yaml"
     )
-    resources_model_data_file: Path | str | None = Path(
-        "./default_energy_carriers/resources_data.yaml"
-    )
-    processes_model_data_file: Path | str | None = Path(
-        "./default_energy_carriers/processes_data.yaml"
-    )
+    resources_model_data_file: Path | str | None = "./default_energy_carriers/resources_data.yaml"
+    processes_model_data_file: Path | str | None = "./default_energy_carriers/processes_data.yaml"
 
 
 class OperationsModelConfiguration(BaseProcessConfiguration):
-    operations_model_data_file: Path | str | None = Path(
-        "./default_operations/operations_data.yaml"
-    )
+    operations_model_data_file: Path | str | None = "./default_operations/operations_data.yaml"
 
 
 class OffsetsModelConfiguration(BaseProcessConfiguration):
-    offsets_model_data_file: Path | str | None = Path("./default_offsets/offsets_data.yaml")
+    offsets_model_data_file: Path | str | None = "./default_offsets/offsets_data.yaml"
 
 
 class LifeCycleAssessmentModelConfiguration(BaseProcessConfiguration):
-    lca_model_data_file: Path | str | None = Path("./default_lca/default_lca_model.json")
+    lca_model_data_file: Path | str | None = "./default_lca/default_lca_model.json"
     split_by: str = "phase"
 
 
@@ -107,18 +96,17 @@ class ProcessModelsConfiguration(BaseProcessConfiguration):
 
     standards: list[str] = [model.value for model in StandardModels]
 
-    customs: Optional[dict[str, str]] = None
+    # TODO: properly validate standard models.
+    # @field_validator("standards")
+    # @classmethod
+    # def is_standard_model(cls, value: list[str]) -> list[str]:
+    #     """Check that the models in standards are indeed standard models."""
+    #     standard_models = [model.value for model in StandardModels]
+    #     for model in value:
+    #         if model not in standard_models:
+    #             raise ValueError(
+    #                 f"The model {model} doesn't correspond to any standard model. "
+    #                 f"Available standard models: {', '.join(standard_models)}"
+    #             )
 
-    @field_validator("standards")
-    @classmethod
-    def is_standard_model(cls, value: list[str]) -> list[str]:
-        """Check that the models in standards are indeed standard models."""
-        standard_models = [model.value for model in StandardModels]
-        for model in value:
-            if model not in standard_models:
-                raise ValueError(
-                    f"The model {model} doesn't correspond to any standard model. "
-                    f"Available standard models: {', '.join(standard_models)}"
-                )
-
-        return value
+    #     return value
