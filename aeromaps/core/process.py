@@ -43,6 +43,7 @@ from aeromaps.core import models as aeromaps_models
 
 from aeromaps.models.parameters import Parameters
 from aeromaps.models.yaml_interpolator import YAMLInterpolator
+from aeromaps.process_configuration.process_configuration import AeroMAPSProcessConfiguration
 from aeromaps.utils.functions import (
     _dict_to_df,
     _flatten_dict,
@@ -1187,7 +1188,9 @@ class AeroMAPSProcess(object):
         the user-specified configuration file if provided.
         """
         # Load the default configuration file
-        self._default_config = read_yaml_file(DEFAULT_CONFIG_PATH)
+        self._default_config = AeroMAPSProcessConfiguration(
+            **read_yaml_file(DEFAULT_CONFIG_PATH)
+        ).model_dump()
         self.config = deepcopy(self._default_config)
         if not self.config:
             raise RuntimeError(
@@ -1202,10 +1205,13 @@ class AeroMAPSProcess(object):
 
         # Load the new configuration file and merge if provided
         if self.configuration_file is not None:
-            self._user_config = read_yaml_file(self.configuration_file)
+            user_config = AeroMAPSProcessConfiguration(**read_yaml_file(self.configuration_file))
+            # self._user_config = read_yaml_file(self.configuration_file)
+            self._user_config = user_config.model_dump(exclude_unset=True)
             self._config_base_dir = os.path.dirname(self.configuration_file)
             # Deep merge the new configuration into the default
-            self._deep_merge_config(self.config, self._user_config)
+            # self._deep_merge_config(self.config, self._user_config)
+            self.config = user_config.model_dump()
 
     def _deep_merge_config(self, base: dict, override: dict) -> dict:
         """Recursively merge override config into base config.
