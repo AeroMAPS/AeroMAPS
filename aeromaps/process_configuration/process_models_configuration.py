@@ -1,6 +1,7 @@
 """AeroMAPS process models configuration."""
 
 from enum import StrEnum
+from typing import Any
 
 # from pydantic import field_validator
 
@@ -95,6 +96,8 @@ class ProcessModelsConfiguration(BaseProcessConfiguration):
     )
 
     standards: list[str] = [model.value for model in StandardModels]
+
+    customs: dict[str, Any] = {}
 
     # TODO: properly validate standard models.
     # @field_validator("standards")
