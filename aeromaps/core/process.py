@@ -1200,17 +1200,11 @@ class AeroMAPSProcess(object):
         # Set the base directory for resolving relative paths
         self._config_base_dir = DEFAULT_RESOURCES_DATA_DIR
 
-        # Store user config separately to check what was explicitly set
-        self._user_config = {}
-
-        # Load the new configuration file and merge if provided
+        # Load the new configuration file
         if self.configuration_file is not None:
             user_config = AeroMAPSProcessConfiguration(**read_yaml_file(self.configuration_file))
-            # self._user_config = read_yaml_file(self.configuration_file)
             self._user_config = user_config.model_dump(exclude_unset=True)
             self._config_base_dir = os.path.dirname(self.configuration_file)
-            # Deep merge the new configuration into the default
-            # self._deep_merge_config(self.config, self._user_config)
             self.config = user_config.model_dump()
 
     def _deep_merge_config(self, base: dict, override: dict) -> dict:
