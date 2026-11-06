@@ -529,13 +529,19 @@ def test_a_global_model_is_refused_in_separate_processes(tutorial_dir):
         _with_global_model(tutorial_dir, "separate_processes")
 
 
-def test_process_configuration(tutorial_dir):
+def test__multi_regional_process_configuration(tutorial_dir):
     """Test that the multi-regional process properly loads the configuration."""
     mode = "separate_processes"
     process = _process(tutorial_dir, mode)
     process_config = read_yaml_file(tutorial_dir / CONFIGS[mode])
     default_config = read_yaml_file(DEFAULT_CONFIG_FILE)
+    default_config["models"]["customs"] = {}
+    default_config["data"]["inputs"]["partitioning_other_data_file"] = None
+    default_config["data"]["inputs"]["partitioning_climate_data_file"] = None
     SEPARATED_PROCESS_FULL_CONFIG["regionalisation"]["global_models"] = {}
+    SEPARATED_PROCESS_FULL_CONFIG["models"]["customs"] = {}
+    SEPARATED_PROCESS_FULL_CONFIG["data"]["inputs"]["partitioning_other_data_file"] = None
+    SEPARATED_PROCESS_FULL_CONFIG["data"]["inputs"]["partitioning_climate_data_file"] = None
     assert process._default_config == default_config
     assert process._user_config == process_config
     assert process.config == SEPARATED_PROCESS_FULL_CONFIG

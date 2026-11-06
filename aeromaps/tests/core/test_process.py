@@ -174,8 +174,13 @@ def test_process_configuration():
 
     process = create_process(configuration_file=BASIC_FULL_CONFIG_FILE)
     basic_full_config = read_yaml_file(BASIC_FULL_CONFIG_FILE)
-
     default_config = read_yaml_file(DEFAULT_CONFIG_FILE)
+    default_config["models"]["customs"] = {}
+    default_config["data"]["inputs"]["partitioning_other_data_file"] = None
+    default_config["data"]["inputs"]["partitioning_climate_data_file"] = None
+    MERGED_BASIC_FULL_CONFIG["models"]["customs"] = {}
+    MERGED_BASIC_FULL_CONFIG["data"]["inputs"]["partitioning_other_data_file"] = None
+    MERGED_BASIC_FULL_CONFIG["data"]["inputs"]["partitioning_climate_data_file"] = None
     assert process._user_config == basic_full_config
     assert process._default_config == default_config
     assert process.config == MERGED_BASIC_FULL_CONFIG
