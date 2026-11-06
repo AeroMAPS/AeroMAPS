@@ -544,4 +544,4 @@ def test__multi_regional_process_configuration(tutorial_dir):
     SEPARATED_PROCESS_FULL_CONFIG["data"]["inputs"]["partitioning_climate_data_file"] = None
     assert process._default_config == default_config
     assert process._user_config == process_config
-    assert process.config == SEPARATED_PROCESS_FULL_CONFIG
+    assert process.config.model_dump() == SEPARATED_PROCESS_FULL_CONFIG
