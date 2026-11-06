@@ -8,6 +8,8 @@ class ProcessDataInputs(BaseProcessConfiguration):
     json_inputs_file: Path | str | None = "./parameters.json"
     partitioning_data_file: Path | str | None = "./partitioning_inputs.json"
     csv_data_information_file: Path | str | None = "./data_information.csv"
+    partitioning_other_data_file: Path | str | None = None
+    partitioning_climate_data_file: Path | str | None = None
 
 
 class ProcessDataOutputs(BaseProcessConfiguration):
