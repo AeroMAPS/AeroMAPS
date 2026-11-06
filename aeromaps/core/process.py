@@ -374,8 +374,7 @@ class AeroMAPSProcess(object):
         ValueError
             If a model name from the config is not found in aeromaps.core.models.
         """
-        standards = self._get_config_value("models", "standards", default=[])
-
+        standards = self.config.models.standards or []
         # Bypassing standards loading if the user explicitly set an empty list (to avoid loading default models)
         # if not standards:
         #    # Fallback to default_models_top_down if no standards specified
@@ -1208,7 +1207,7 @@ class AeroMAPSProcess(object):
             user_config = self.CONFIG_MODEL(**read_yaml_file(self.configuration_file))
             self._user_config = user_config.model_dump(exclude_unset=True)
             self._config_base_dir = os.path.dirname(self.configuration_file)
-            self.config = user_config.model_dump()
+            self.config = user_config
 
     def _get_config_value(self, *keys, default=None):
         """Get a value from the nested configuration dictionary.
@@ -1225,7 +1224,7 @@ class AeroMAPSProcess(object):
         value
             The configuration value or the default.
         """
-        value = self.config
+        value = self.config.model_dump()
         for key in keys:
             if isinstance(value, dict) and key in value:
                 value = value[key]
@@ -2081,9 +2080,7 @@ class AeroMAPSProcess(object):
                 lca_instance = LifeCycleAssessmentDefault(
                     name="life_cycle_assessment",
                     json_file=str(lca_model_file_path),
-                    split_by=self._get_config_value(
-                        "models", "life_cycle_assessment", "split_by", default=None
-                    ),
+                    split_by=self.config.models.life_cycle_assessment.split_by or None,
                     methods=self._get_config_value(
                         "models", "life_cycle_assessment", "methods", default=None
                     ),
@@ -2098,9 +2095,7 @@ class AeroMAPSProcess(object):
                 lca_instance = LifeCycleAssessmentCustom(
                     name="life_cycle_assessment",
                     configuration_file=lca_model_file_path,
-                    split_by=self._get_config_value(
-                        "models", "life_cycle_assessment", "split_by", default=None
-                    ),
+                    split_by=self.config.models.life_cycle_assessment.split_by or None,
                 )
             else:
                 raise ValueError(
@@ -2384,10 +2379,9 @@ class AeroMAPSProcess(object):
                 self.parameters.read_json_direct(merged_data)
             # If the alternative file is a single json file
             else:
-                user_input_file_path = self._resolve_config_file_path(
-                    "data", "inputs", "json_inputs_file"
-                )
+                user_input_file_path = self.config.data.inputs.json_inputs_file or None
                 if user_input_file_path:
+                    user_input_file_path = self._get_absolute_path(Path(user_input_file_path))
                     self.parameters.read_json(file_name=str(user_input_file_path))
 
         # Check if parameter is pd.Series and update index
@@ -2896,3 +2890,17 @@ class AeroMAPSProcess(object):
                     var_infos_df = pd.concat([var_infos_df, new_row], ignore_index=True)
 
         return var_infos_df
+
+    def _get_absolute_path(self, path: Path) -> Path:
+        """Return a resolved absolute path for a given path.
+        Args:
+
+            path: The path to check.
+        Returns:
+
+            The absolute path to the given path.
+        """
+        if path.is_absolute():
+            return path
+        else:
+            return Path(self._config_base_dir) / path
