@@ -41,7 +41,10 @@ def test_latex_table_structure():
         caption="A caption.",
         label="tab:example",
     )
-    assert r"\begin{tabular}{m{0.20\textwidth}M{0.10\textwidth}}" in fragment
+    assert (
+        r"\begin{tabular}{>{\raggedright\arraybackslash}m{0.20\textwidth}M{0.10\textwidth}}"
+        in fragment
+    )
     assert r"\textbf{Scenario} & \textbf{2050} \\" in fragment
     assert "S1 & 1.0 \\\\" in fragment
     assert r"\label{tab:example}" in fragment

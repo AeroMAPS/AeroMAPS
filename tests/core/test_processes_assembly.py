@@ -4,6 +4,7 @@ Test module for AeroMAPSProcessesAssembly core functionality.
 This module tests the AeroMAPSProcessesAssembly class for managing multiple scenarios.
 Plot-related tests are in test_multi_scenario_plots.py.
 """
+
 from pathlib import Path
 
 import pytest
@@ -100,10 +101,10 @@ def test_plot_classes_required_outputs(config_file):
     from aeromaps.plots.multi_scenario_plot import MultiScenarioPlot
 
     # Verify class attributes exist
-    assert hasattr(SingleScenarioPlot, 'required_outputs')
-    assert hasattr(SingleScenarioPlot, 'get_required_outputs')
-    assert hasattr(MultiScenarioPlot, 'required_outputs')
-    assert hasattr(MultiScenarioPlot, 'get_required_outputs')
+    assert hasattr(SingleScenarioPlot, "required_outputs")
+    assert hasattr(SingleScenarioPlot, "get_required_outputs")
+    assert hasattr(MultiScenarioPlot, "required_outputs")
+    assert hasattr(MultiScenarioPlot, "get_required_outputs")
 
     # Create test plot subclasses
     class TestSinglePlot(SingleScenarioPlot):
@@ -147,8 +148,5 @@ def test_plot_classes_required_outputs(config_file):
     assert single_plot.get_instance_required_outputs() == ["energy_consumption"]
 
     # Test instance parameter override for multi scenario
-    multi_plot = TestMultiPlot(
-        {"s1": proc1, "s2": proc2},
-        required_outputs=["energy_consumption"]
-    )
+    multi_plot = TestMultiPlot({"s1": proc1, "s2": proc2}, required_outputs=["energy_consumption"])
     assert multi_plot.get_instance_required_outputs() == ["energy_consumption"]

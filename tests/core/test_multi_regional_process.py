@@ -32,7 +32,11 @@ from aeromaps import create_multi_regional_process
 from aeromaps.core.multi_regional_process import _concat_series
 
 TUTORIAL = (
-    Path(__file__).parents[1].parent / "notebooks" / "tutorials" / "11_multi_regional_two_regions"
+    Path(__file__).parents[2]
+    / "aeromaps"
+    / "notebooks"
+    / "tutorials"
+    / "11_multi_regional_two_regions"
 )
 CONFIGS = {
     "separate_processes": "regionalisation_europe_separate_processes.yaml",

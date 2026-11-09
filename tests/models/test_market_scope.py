@@ -144,12 +144,12 @@ def test_base_default_approach_is_none():
     "cls,approach", list(EXPECTED_APPROACH.items()), ids=[c.__name__ for c in EXPECTED_APPROACH]
 )
 def test_declared_approach_matches_and_is_valid(cls, approach):
-    assert (
-        cls.MODEL_APPROACH in MODEL_APPROACHES
-    ), f"{cls.__name__} declares an unknown MODEL_APPROACH {cls.MODEL_APPROACH!r}"
-    assert (
-        cls.MODEL_APPROACH == approach
-    ), f"{cls.__name__} MODEL_APPROACH is {cls.MODEL_APPROACH!r}; expected {approach!r}"
+    assert cls.MODEL_APPROACH in MODEL_APPROACHES, (
+        f"{cls.__name__} declares an unknown MODEL_APPROACH {cls.MODEL_APPROACH!r}"
+    )
+    assert cls.MODEL_APPROACH == approach, (
+        f"{cls.__name__} MODEL_APPROACH is {cls.MODEL_APPROACH!r}; expected {approach!r}"
+    )
 
 
 @pytest.mark.parametrize("cls", APPROACH_AGNOSTIC, ids=[c.__name__ for c in APPROACH_AGNOSTIC])
@@ -164,9 +164,9 @@ def test_approach_agnostic_disciplines_declare_none(cls):
     "cls,scope", list(EXPECTED_SCOPE.items()), ids=[c.__name__ for c in EXPECTED_SCOPE]
 )
 def test_declared_scope_matches_expected_and_is_valid(cls, scope):
-    assert (
-        cls.MARKET_SCOPE in MARKET_SCOPES
-    ), f"{cls.__name__} declares an unknown MARKET_SCOPE {cls.MARKET_SCOPE!r}"
+    assert cls.MARKET_SCOPE in MARKET_SCOPES, (
+        f"{cls.__name__} declares an unknown MARKET_SCOPE {cls.MARKET_SCOPE!r}"
+    )
     assert cls.MARKET_SCOPE == scope, (
         f"{cls.__name__} MARKET_SCOPE changed to {cls.MARKET_SCOPE!r}; expected {scope!r}. "
         "If this is intentional, update EXPECTED_SCOPE (topology change — flag it in review)."
@@ -196,14 +196,14 @@ def test_demand_process_exposes_all_market_scopes():
         if model is None:
             continue
         scope = getattr(model, "MARKET_SCOPE", None)
-        assert (
-            scope in MARKET_SCOPES
-        ), f"{type(model).__name__} declares invalid MARKET_SCOPE {scope!r}"
+        assert scope in MARKET_SCOPES, (
+            f"{type(model).__name__} declares invalid MARKET_SCOPE {scope!r}"
+        )
         seen.setdefault(scope, type(model).__name__)
     for expected in ("per_market", "cross_market", "aggregator", "market_agnostic"):
-        assert (
-            expected in seen
-        ), f"no {expected!r} discipline found in the demand process; saw {seen}"
+        assert expected in seen, (
+            f"no {expected!r} discipline found in the demand process; saw {seen}"
+        )
 
 
 def test_describe_models_summary_and_filter():

@@ -130,9 +130,9 @@ def test_bounds_and_the_sentinel_break_a_solve_that_converged_without_them():
 
     _chain_, _mda, bounded = _solve(masked=False, bounds=(0.0, 1e6))
 
-    assert (
-        bounded[-1] > 1e-12
-    ), "expected the bound to break the sentinel solve; this no longer reproduces"
+    assert bounded[-1] > 1e-12, (
+        "expected the bound to break the sentinel solve; this no longer reproduces"
+    )
 
 
 def test_the_mask_makes_the_same_bound_harmless():

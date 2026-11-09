@@ -32,9 +32,9 @@ from aeromaps.models.impacts.generic_energy_model.common.yaml_schema import (
 )
 from aeromaps.utils.yaml import read_yaml_file
 
-REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
+REPOSITORY_ROOT = Path(__file__).parents[2]
 CONFIG_DIR = REPOSITORY_ROOT / "tests" / "tested_configs"
-DEFAULT_ENERGY_DIR = REPOSITORY_ROOT / "resources" / "data" / "default_energy_carriers"
+DEFAULT_ENERGY_DIR = REPOSITORY_ROOT / "aeromaps" / "resources" / "data" / "default_energy_carriers"
 
 DEFAULT_DATA_FILES = {
     "energy_carriers_model_data_file": DEFAULT_ENERGY_DIR / "energy_carriers_data.yaml",
@@ -300,7 +300,7 @@ def test_models_agree_on_where_every_shared_key_belongs():
 def _referenced_energy_files():
     """Every energy file any configuration in the repository points at."""
     referenced = {field: set() for field in DEFAULT_DATA_FILES}
-    for path in sorted(REPOSITORY_ROOT.rglob("*.yaml")):
+    for path in sorted((REPOSITORY_ROOT / "aeromaps").rglob("*.yaml")):
         try:
             configuration = yaml.load(path.read_text(encoding="utf-8"), Loader=yaml.Loader)
         except (yaml.YAMLError, UnicodeDecodeError):
@@ -323,9 +323,9 @@ def _referenced_energy_files():
 def test_every_energy_file_in_the_repository_is_accepted():
     """The sweep the rollout depends on: one offender was found, and it is fixed."""
     referenced = _referenced_energy_files()
-    assert (
-        sum(len(paths) for paths in referenced.values()) > 100
-    ), "the configuration sweep found almost nothing; its resolution logic is broken"
+    assert sum(len(paths) for paths in referenced.values()) > 100, (
+        "the configuration sweep found almost nothing; its resolution logic is broken"
+    )
 
     for field, paths in referenced.items():
         for path in sorted(paths):
