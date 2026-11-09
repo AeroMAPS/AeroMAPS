@@ -1305,24 +1305,25 @@ class AeroMAPSProcess(object):
         """
         resolved_path = None
 
-        # First check if user explicitly set this in their config
+        # TODO: Why 3 steps of default values? should default to a single value, either
+        # configuration, default or the given default_filename.
+        # - default_filename takes the value from the default config.
         user_value = self._get_user_config_value(*keys)
         if user_value is not None and isinstance(user_value, str):
             if user_value.lower() == "default":
-                # User wants to use the default value from the package's config
                 default_value = self._get_default_config_value(*keys)
-                if default_value is not None and isinstance(default_value, str):
+                default_path = default_value if isinstance(default_value, str) else default_filename
+                if default_path:
                     resolved_path = self._get_absolute_path(
-                        Path(default_value), DEFAULT_RESOURCES_DATA_DIR
-                    )
-                elif default_filename is not None:
-                    resolved_path = self._get_absolute_path(
-                        Path(default_filename), DEFAULT_RESOURCES_DATA_DIR
+                        Path(default_path), DEFAULT_RESOURCES_DATA_DIR
                     )
             else:
                 resolved_path = self._get_absolute_path(Path(user_value))
 
         # Check if value exists in merged config (from default config)
+        # TODO: checking the merged config, would be the same as checking both the user config
+        # and the default config? Why checking the 3 of them?
+        # this should be safe to be removed.
         elif (config_value := self._get_config_value(*keys)) is not None and isinstance(
             config_value, str
         ):
