@@ -1315,32 +1315,18 @@ class AeroMAPSProcess(object):
         This is useful when the package is installed via pip and relative paths would not work.
         """
         resolved_path = None
-
-        # TODO: Why 3 steps of default values? should default to a single value, either
-        # configuration, default or the given default_filename.
-        # - default_filename takes the value from the default config.
         user_value = self._get_user_config_value(*keys)
-        if user_value is not None and isinstance(user_value, str):
-            if user_value.lower() == "default":
-                default_value = self._get_default_config_value(*keys)
-                default_path = default_value if isinstance(default_value, str) else default_filename
-                if default_path:
-                    resolved_path = self._get_absolute_path(
-                        Path(default_path), DEFAULT_RESOURCES_DATA_DIR
-                    )
-            else:
-                resolved_path = self._get_absolute_path(Path(user_value))
-
-        # Check if value exists in merged config (from default config)
-        # Loop checks for the default for the cases where the user didn't set the value as "default"
-        elif (config_value := self._get_config_value(*keys)) is not None and isinstance(
-            config_value, str
-        ):
-            resolved_path = self._get_absolute_path(Path(config_value), DEFAULT_RESOURCES_DATA_DIR)
-
-        # Fallback to default filename if provided
-        elif default_filename is not None:
-            resolved_path = DEFAULT_RESOURCES_DATA_DIR / default_filename
+        use_user_value = isinstance(user_value, str) and not user_value.lower() == "default"
+        if use_user_value:
+            resolved_path = self._get_absolute_path(Path(user_value))
+        else:
+            default_value = self._get_default_config_value(*keys)
+            default_path = default_value if isinstance(default_value, str) else default_filename
+            resolved_path = (
+                self._get_absolute_path(Path(default_path), DEFAULT_RESOURCES_DATA_DIR)
+                if default_path
+                else None
+            )
 
         # Warn if the resolved path doesn't exist
         if resolved_path is not None and not resolved_path.exists():
