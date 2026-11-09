@@ -1326,17 +1326,11 @@ class AeroMAPSProcess(object):
         elif (config_value := self._get_config_value(*keys)) is not None and isinstance(
             config_value, str
         ):
-            if os.path.isabs(config_value):
-                resolved_path = Path(config_value)
-            else:
-                # Resolve relative to default resources/data directory
-                resolved_path = Path(
-                    os.path.normpath(os.path.join(DEFAULT_RESOURCES_DATA_DIR, config_value))
-                )
+            resolved_path = self._get_absolute_path(Path(config_value), DEFAULT_RESOURCES_DATA_DIR)
 
         # Fallback to default filename if provided
         elif default_filename is not None:
-            resolved_path = Path(os.path.join(DEFAULT_RESOURCES_DATA_DIR, default_filename))
+            resolved_path = Path(DEFAULT_RESOURCES_DATA_DIR) / default_filename
 
         # Warn if the resolved path doesn't exist
         if resolved_path is not None and not resolved_path.exists():
