@@ -1190,11 +1190,8 @@ class AeroMAPSProcess(object):
         the user-specified configuration file if provided.
         """
         # Load the default configuration file
-        self._default_config = AeroMAPSProcessConfiguration(
-            **read_yaml_file(DEFAULT_CONFIG_PATH)
-        ).model_dump()
-        self.config = deepcopy(self._default_config)
-        if not self.config:
+        self._default_config = AeroMAPSProcessConfiguration(**read_yaml_file(DEFAULT_CONFIG_PATH))
+        if not self._default_config:
             raise RuntimeError(
                 f"Default configuration file is empty or missing: '{DEFAULT_CONFIG_PATH}'"
             )
@@ -1277,7 +1274,7 @@ class AeroMAPSProcess(object):
         value
             The default configuration value or the default.
         """
-        value = self._default_config
+        value = self._default_config.model_dump()
         for key in keys:
             if isinstance(value, dict) and key in value:
                 value = value[key]
@@ -1315,22 +1312,15 @@ class AeroMAPSProcess(object):
                 # User wants to use the default value from the package's config
                 default_value = self._get_default_config_value(*keys)
                 if default_value is not None and isinstance(default_value, str):
-                    if os.path.isabs(default_value):
-                        resolved_path = Path(default_value)
-                    else:
-                        resolved_path = Path(
-                            os.path.normpath(
-                                os.path.join(DEFAULT_RESOURCES_DATA_DIR, default_value)
-                            )
-                        )
+                    resolved_path = self._get_absolute_path(
+                        Path(default_value), DEFAULT_RESOURCES_DATA_DIR
+                    )
                 elif default_filename is not None:
-                    resolved_path = Path(os.path.join(DEFAULT_RESOURCES_DATA_DIR, default_filename))
-            elif os.path.isabs(user_value):
-                resolved_path = Path(user_value)
+                    resolved_path = self._get_absolute_path(
+                        Path(default_filename), DEFAULT_RESOURCES_DATA_DIR
+                    )
             else:
-                resolved_path = Path(
-                    os.path.normpath(os.path.join(self._config_base_dir, user_value))
-                )
+                resolved_path = self._get_absolute_path(Path(user_value))
 
         # Check if value exists in merged config (from default config)
         elif (config_value := self._get_config_value(*keys)) is not None and isinstance(
@@ -2865,16 +2855,18 @@ class AeroMAPSProcess(object):
 
         return var_infos_df
 
-    def _get_absolute_path(self, path: Path) -> Path:
+    def _get_absolute_path(self, path: Path, base_dir: Path | str | None = None) -> Path:
         """Return a resolved absolute path for a given path.
         Args:
 
             path: The path to check.
+            base_dir: Optional base directory to retrieve the absolute path from.
         Returns:
 
             The absolute path to the given path.
         """
+        base = base_dir or self._config_base_dir
         if path.is_absolute():
             return path
         else:
-            return Path(self._config_base_dir) / path
+            return Path(base) / path

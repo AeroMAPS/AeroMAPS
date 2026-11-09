@@ -182,5 +182,5 @@ def test_process_configuration():
     MERGED_BASIC_FULL_CONFIG["data"]["inputs"]["partitioning_other_data_file"] = None
     MERGED_BASIC_FULL_CONFIG["data"]["inputs"]["partitioning_climate_data_file"] = None
     assert process._user_config == basic_full_config
-    assert process._default_config == default_config
+    assert process._default_config.model_dump() == default_config
     assert process.config.model_dump() == MERGED_BASIC_FULL_CONFIG
