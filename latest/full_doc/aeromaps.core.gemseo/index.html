@@ -7091,7 +7091,10 @@ stored in the process objects.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/core/gemseo.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">655</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">652</span>
+<span class="normal">653</span>
+<span class="normal">654</span>
+<span class="normal">655</span>
 <span class="normal">656</span>
 <span class="normal">657</span>
 <span class="normal">658</span>
@@ -7138,10 +7141,7 @@ stored in the process objects.</p>
 <span class="normal">699</span>
 <span class="normal">700</span>
 <span class="normal">701</span>
-<span class="normal">702</span>
-<span class="normal">703</span>
-<span class="normal">704</span>
-<span class="normal">705</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">apply_namespace_to_discipline</span><span class="p">(</span><span class="n">discipline</span><span class="p">:</span> <span class="n">Discipline</span><span class="p">,</span> <span class="n">namespace</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Discipline</span><span class="p">:</span>
+<span class="normal">702</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">apply_namespace_to_discipline</span><span class="p">(</span><span class="n">discipline</span><span class="p">:</span> <span class="n">Discipline</span><span class="p">,</span> <span class="n">namespace</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Discipline</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Apply a namespace prefix to all inputs and outputs of a GEMSEO discipline.</span>
 
 <span class="sd">    This function creates a deep copy of the discipline and applies the namespace</span>
@@ -7287,7 +7287,10 @@ stored in the process objects.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/core/gemseo.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">708</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">705</span>
+<span class="normal">706</span>
+<span class="normal">707</span>
+<span class="normal">708</span>
 <span class="normal">709</span>
 <span class="normal">710</span>
 <span class="normal">711</span>
@@ -7303,10 +7306,7 @@ stored in the process objects.</p>
 <span class="normal">721</span>
 <span class="normal">722</span>
 <span class="normal">723</span>
-<span class="normal">724</span>
-<span class="normal">725</span>
-<span class="normal">726</span>
-<span class="normal">727</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">apply_namespace_to_disciplines</span><span class="p">(</span>
+<span class="normal">724</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">apply_namespace_to_disciplines</span><span class="p">(</span>
     <span class="n">disciplines</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Discipline</span><span class="p">],</span> <span class="n">namespace</span><span class="p">:</span> <span class="nb">str</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Discipline</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">"""Apply a namespace to a list of disciplines.</span>
@@ -7422,7 +7422,10 @@ E.g., {"FR:rpk_init": <value>, "FR:energy_consumption_init": <value>, ...}</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/core/gemseo.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">730</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">727</span>
+<span class="normal">728</span>
+<span class="normal">729</span>
+<span class="normal">730</span>
 <span class="normal">731</span>
 <span class="normal">732</span>
 <span class="normal">733</span>
@@ -7445,10 +7448,7 @@ E.g., {"FR:rpk_init": <value>, "FR:energy_consumption_init": <value>, ...}</p>
 <span class="normal">750</span>
 <span class="normal">751</span>
 <span class="normal">752</span>
-<span class="normal">753</span>
-<span class="normal">754</span>
-<span class="normal">755</span>
-<span class="normal">756</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">build_namespaced_inputs</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">namespace</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="normal">753</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">build_namespaced_inputs</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">namespace</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Build a namespaced input dictionary from an AeroMAPS parameters object.</span>
 
 <span class="sd">    This function converts all parameters into a dictionary with namespaced keys,</span>
@@ -7589,7 +7589,10 @@ to log a warning, <code>"ignore"</code> to only return the messages.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/core/gemseo.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">813</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">810</span>
+<span class="normal">811</span>
+<span class="normal">812</span>
+<span class="normal">813</span>
 <span class="normal">814</span>
 <span class="normal">815</span>
 <span class="normal">816</span>
@@ -7689,10 +7692,7 @@ to log a warning, <code>"ignore"</code> to only return the messages.</p>
 <span class="normal">910</span>
 <span class="normal">911</span>
 <span class="normal">912</span>
-<span class="normal">913</span>
-<span class="normal">914</span>
-<span class="normal">915</span>
-<span class="normal">916</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">check_mda_convergence</span><span class="p">(</span><span class="n">mda_chain</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span><span class="p">,</span> <span class="n">on_failure</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"raise"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="normal">913</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">check_mda_convergence</span><span class="p">(</span><span class="n">mda_chain</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span><span class="p">,</span> <span class="n">on_failure</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"raise"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">"""Check that every solver inside ``mda_chain`` reached its tolerance.</span>
 
 <span class="sd">    A chain with no strongly coupled disciplines has no solver to check and</span>
