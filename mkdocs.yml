@@ -136,7 +136,11 @@ nav:
       - Basic example:
           - notebooks/examples_basic.ipynb
       - Other examples: books/other_examples.md
-  - Developers: books/developers.md
+  - Developers: 
+        - Developer Guide: books/developers/index.md
+        - Project setup: books/developers/project_setup.md
+        - Development workflow: books/developers/development_workflow.md
+        - Coding guidelines: books/developers/coding_guidelines.md
   - Changelog: books/CHANGELOG.md
 
 theme:
