@@ -165,6 +165,7 @@ class MultiRegionalProcess(AeroMAPSProcess):
     CONFIG_MODEL: Type[AeroMAPSMultiRegionalProcessConfiguration] = (
         AeroMAPSMultiRegionalProcessConfiguration
     )
+    config: AeroMAPSMultiRegionalProcessConfiguration
 
     def __init__(
         self,
@@ -205,9 +206,7 @@ class MultiRegionalProcess(AeroMAPSProcess):
         self._read_regionalisation_config()
 
         # Set execution mode from config (default: separate_processes for scalability)
-        self._execution_mode: ExecutionMode = self._regionalisation_config.get(
-            "execution_mode", "separate_processes"
-        )
+        self._execution_mode: ExecutionMode = self._regionalisation_config.execution_mode
 
         # Handle execution statistics based on mode
         if disable_execution_statistics is None:
@@ -258,16 +257,11 @@ class MultiRegionalProcess(AeroMAPSProcess):
 
     def _read_regionalisation_config(self):
         """Read and validate the regionalisation configuration."""
-        regionalisation_config = self.config.regionalisation.model_dump()
-
-        if not regionalisation_config:
-            raise ValueError(
-                "MultiRegionalProcess requires a 'regionalisation' section in the config file."
-            )
+        regionalisation_config = self.config.regionalisation
 
         self._regionalisation_config = regionalisation_config
         # Extract region definitions
-        regions_config = regionalisation_config.get("regions", {})
+        regions_config = regionalisation_config.regions
         if not regions_config:
             raise ValueError(
                 "Regionalisation config must specify at least one region under 'regions' key."
@@ -278,7 +272,7 @@ class MultiRegionalProcess(AeroMAPSProcess):
 
         # Resolve region config file paths
         for region_id, region_data in regions_config.items():
-            config_file = region_data.get("config_file")
+            config_file = region_data.config_file
             if config_file is None:
                 raise ValueError(f"Region '{region_id}' must specify a 'config_file'.")
 
@@ -288,12 +282,12 @@ class MultiRegionalProcess(AeroMAPSProcess):
             self._region_configs[region_id] = config_file
 
         # Store aggregation config and global namespace
-        self._aggregation_config = regionalisation_config.get("aggregation", {})
-        self._global_namespace = regionalisation_config.get("global_namespace", "overall")
+        self._aggregation_config = regionalisation_config.aggregation.model_dump()
+        self._global_namespace = regionalisation_config.global_namespace
 
         logging.info(
             f"Multi-regional configuration: {len(self._region_ids)} regions, "
-            f"execution_mode='{self._regionalisation_config.get('execution_mode', 'separate_processes')}'"
+            f"execution_mode='{regionalisation_config.execution_mode}'"
         )
 
     def _create_regional_processes(self):
@@ -359,7 +353,7 @@ class MultiRegionalProcess(AeroMAPSProcess):
         """
         self._top_level_model_names = []
 
-        top_level_config = self._regionalisation_config.get("top_level_models", {})
+        top_level_config = self._regionalisation_config.top_level_models
         if not top_level_config:
             return
 
@@ -535,7 +529,7 @@ class MultiRegionalProcess(AeroMAPSProcess):
         """
         self._global_model_names = []
 
-        global_config = self._regionalisation_config.get("global_models", {})
+        global_config = self._regionalisation_config.global_models
         if not global_config:
             return
 
