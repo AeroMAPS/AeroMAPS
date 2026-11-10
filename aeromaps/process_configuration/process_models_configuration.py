@@ -100,18 +100,3 @@ class ProcessModelsConfiguration(BaseProcessConfiguration):
     standards: list[str] = [model.value for model in StandardModels]
 
     customs: dict[str, Any] = {}
-
-    # TODO: properly validate standard models.
-    # @field_validator("standards")
-    # @classmethod
-    # def is_standard_model(cls, value: list[str]) -> list[str]:
-    #     """Check that the models in standards are indeed standard models."""
-    #     standard_models = [model.value for model in StandardModels]
-    #     for model in value:
-    #         if model not in standard_models:
-    #             raise ValueError(
-    #                 f"The model {model} doesn't correspond to any standard model. "
-    #                 f"Available standard models: {', '.join(standard_models)}"
-    #             )
-
-    #     return value

@@ -529,7 +529,7 @@ def test_a_global_model_is_refused_in_separate_processes(tutorial_dir):
         _with_global_model(tutorial_dir, "separate_processes")
 
 
-def test__multi_regional_process_configuration(tutorial_dir):
+def test_multi_regional_process_configuration(tutorial_dir):
     """Test that the multi-regional process properly loads the configuration."""
     mode = "separate_processes"
     process = _process(tutorial_dir, mode)

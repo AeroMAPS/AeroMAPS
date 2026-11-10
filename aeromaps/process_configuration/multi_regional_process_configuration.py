@@ -23,7 +23,7 @@ class AggregationConfiguration(BaseProcessConfiguration):
 
 
 class RegionalisationConfiguration(BaseProcessConfiguration):
-    execution_mode: Literal["separate_process", "unified_mda"] = "separate_processes"
+    execution_mode: Literal["separate_processes", "unified_mda"] = "separate_processes"
     global_namespace: str = "overall"
     regions: dict[str, RegionConfiguration] = {}
     aggregation: AggregationConfiguration = AggregationConfiguration()
