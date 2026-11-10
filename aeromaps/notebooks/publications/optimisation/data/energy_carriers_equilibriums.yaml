@@ -1,0 +1,55 @@
+### EQUILIBRIUMS.IPYNB ENERGY CARRIERS DATA - TOP-DOWN MODEL ###
+#
+# Only one carrier is declared: fossil_kerosene. The generic energy model treats
+# a carrier's `mandate_share` as the share of its aircraft-type's fuel demand it
+# supplies; whatever is left over falls to the carrier flagged `default: True`.
+# With no other dropin_fuel carrier declared, fossil_kerosene (default: True)
+# supplies 100% of it by construction -- no need to zero out mandate shares for
+# carriers that were copied in from the package default and aren't wanted here.
+# The v0.9.0-beta model this notebook reproduces had no blending at all (100%
+# fossil kerosene throughout), so this is the equivalent minimal declaration.
+#
+# See aeromaps/resources/data/default_energy_carriers/energy_carriers_data.yaml
+# for the full schema and every optional field.
+
+fossil_kerosene:
+  # Metadata
+  name: "fossil_kerosene"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "fossil"
+  default: True
+  inputs:
+    # Technical:
+    technical:
+      lhv: 44
+      plant_load_factor: 0.95
+      plant_lifespan: 25
+    # Environmental:
+    environmental:
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: [2000, 2050]
+        values: [88.7, 88.7]
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0012
+        soot: 3.0e-05
+        particles_number: 2.0e+14
+    # Economics:
+    economics:
+      # equilibriums.ipynb's stylized BAU kerosene price: flat at 0.41 EUR/L from
+      # historic_start_year (2000) through 2039, stepping to 1.2 EUR/L from 2040.
+      # Converted EUR/L -> EUR/MJ at 35.3 MJ/L, the same basis used in energy_rte.yaml.
+      #
+      # The curve MUST span back to historic_start_year: the leveling function
+      # does not extrapolate flat before its first declared year -- it returns
+      # NaN there, which would silently zero doc_energy_per_ask_mean for every
+      # year outside [2020, 2050].
+      mean_mfsp_without_resource: !AeroMapsCustomDataType
+        years: [2000, 2039, 2040, 2050]
+        values: [0.01161470368, 0.01161470368, 0.03399433428, 0.03399433428]  # 0.41, 0.41, 1.2, 1.2 EUR/L / 35.3
+        method: linear
+  outputs:

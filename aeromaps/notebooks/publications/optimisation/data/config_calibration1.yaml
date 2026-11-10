@@ -1,0 +1,23 @@
+# Fleet-model calibration of the drop-in efficiency gain (calibration_on_fleet.ipynb),
+# with the new drop-in aircraft. Set up as tutorials/05_use_fleet_models: default markets
+# and energy, the bottom-up fleet below, and the models the efficiency gain needs.
+models:
+  markets:
+    markets_data_file: default
+
+  fleet:
+    aircraft_inventory_model_data_file: "./aircraft_inventory.yaml"
+    fleet_model_data_file: "./fleet_calibration1.yaml"
+
+  energy:
+    energy_carriers_model_data_file: default
+    resources_model_data_file: default
+    processes_model_data_file: default
+
+  standards:
+    - models_traffic
+    - models_efficiency_bottom_up
+    - models_energy_without_fuel_effect
+    - models_energy_cost
+    - models_offset
+    - models_emissions
