@@ -206,7 +206,7 @@ class MultiRegionalProcess(AeroMAPSProcess):
         self._read_regionalisation_config()
 
         # Set execution mode from config (default: separate_processes for scalability)
-        self._execution_mode: ExecutionMode = self._regionalisation_config.execution_mode
+        self._execution_mode = self._regionalisation_config.execution_mode
 
         # Handle execution statistics based on mode
         if disable_execution_statistics is None:

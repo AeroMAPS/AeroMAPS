@@ -6,5 +6,10 @@ from aeromaps.process_configuration.process_models_configuration import ProcessM
 
 
 class AeroMAPSProcessConfiguration(BaseProcessConfiguration):
+    """Configuration class for an AeroMAPSProcess."""
+
     data: ProcessDataConfiguration = ProcessDataConfiguration()
+    """The process' data (inputs and outputs) configuration."""
+
     models: ProcessModelsConfiguration = ProcessModelsConfiguration()
+    """The process' models configuration."""
