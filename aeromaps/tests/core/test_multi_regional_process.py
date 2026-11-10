@@ -544,7 +544,8 @@ def test_multi_regional_process_configuration(tutorial_dir):
     SEPARATED_PROCESS_FULL_CONFIG["data"]["inputs"]["partitioning_other_data_file"] = None
     SEPARATED_PROCESS_FULL_CONFIG["data"]["inputs"]["partitioning_climate_data_file"] = None
     SEPARATED_PROCESS_FULL_CONFIG["models"]["life_cycle_assessment"]["methods"] = None
-    SEPARATED_PROCESS_FULL_CONFIG["regionalisation"]["top_level_models"] = {}
+    SEPARATED_PROCESS_FULL_CONFIG["regionalisation"]["top_level_models"] = None
+    SEPARATED_PROCESS_FULL_CONFIG["regionalisation"]["global_models"] = None
     assert process._default_config.model_dump() == default_config
     assert process._user_config == process_config
     assert process.config.model_dump() == SEPARATED_PROCESS_FULL_CONFIG

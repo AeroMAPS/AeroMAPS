@@ -359,8 +359,8 @@ class MultiRegionalProcess(AeroMAPSProcess):
 
         # Resolve standard model groups by name from aeromaps.core.models
         loaded = {}
-        top_level_config.model_dump()
-        for model_name in top_level_config.get("standards", []):
+        top_level_config
+        for model_name in top_level_config.standards:
             if hasattr(aeromaps_models, model_name):
                 loaded[model_name] = getattr(aeromaps_models, model_name)
             else:
@@ -370,7 +370,7 @@ class MultiRegionalProcess(AeroMAPSProcess):
                 )
 
         # Resolve custom models (path::Class specs), reusing the AeroMAPSProcess loader
-        customs = top_level_config.get("customs", None)
+        customs = top_level_config.customs
         if customs is not None:
             loaded.update(self._load_custom_models_from_config(customs))
 
@@ -534,9 +534,9 @@ class MultiRegionalProcess(AeroMAPSProcess):
         if not global_config:
             return
 
-        global_config = global_config.model_dump()
+        global_config = global_config
         loaded = {}
-        for model_name in global_config.get("standards", []):
+        for model_name in global_config.standards:
             if hasattr(aeromaps_models, model_name):
                 loaded[model_name] = getattr(aeromaps_models, model_name)
             else:
@@ -545,8 +545,8 @@ class MultiRegionalProcess(AeroMAPSProcess):
                     f"global_models.standards' is not found in aeromaps.core.models."
                 )
 
-        customs = global_config.get("customs", None)
-        if customs is not None:
+        customs = global_config.customs
+        if customs:
             loaded.update(self._load_custom_models_from_config(customs))
 
         self._register_models_into(loaded, self._global_model_names)
