@@ -1,6 +1,6 @@
 """AeroMAPS multi-regional process configuration model."""
 
-from typing import Any
+from typing import Any, Literal
 
 from aeromaps.process_configuration.process_configuration import (
     AeroMAPSProcessConfiguration,
@@ -23,12 +23,15 @@ class AggregationConfiguration(BaseProcessConfiguration):
 
 
 class RegionalisationConfiguration(BaseProcessConfiguration):
-    execution_mode: str | None = None
-    global_namespace: str | None = None
-    regions: dict[str, RegionConfiguration] | None = None
+    execution_mode: Literal["separate_process", "unified_mda"] = "separate_processes"
+    global_namespace: str = "overall"
+    regions: dict[str, RegionConfiguration] = {}
     aggregation: AggregationConfiguration = AggregationConfiguration()
     global_models: dict[str, Any] = {}
+    top_level_models: dict[str, Any] = {}
 
 
 class AeroMAPSMultiRegionalProcessConfiguration(AeroMAPSProcessConfiguration):
+    """Configuration data model for multi-regional processes."""
+
     regionalisation: RegionalisationConfiguration = RegionalisationConfiguration()
