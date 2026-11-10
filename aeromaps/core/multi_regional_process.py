@@ -258,15 +258,14 @@ class MultiRegionalProcess(AeroMAPSProcess):
 
     def _read_regionalisation_config(self):
         """Read and validate the regionalisation configuration."""
-        regionalisation_config = self._get_user_config_value("regionalisation", default=None)
+        regionalisation_config = self.config.regionalisation.model_dump()
 
-        if regionalisation_config is None:
+        if not regionalisation_config:
             raise ValueError(
                 "MultiRegionalProcess requires a 'regionalisation' section in the config file."
             )
 
         self._regionalisation_config = regionalisation_config
-
         # Extract region definitions
         regions_config = regionalisation_config.get("regions", {})
         if not regions_config:
