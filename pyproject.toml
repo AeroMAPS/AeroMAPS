@@ -31,7 +31,7 @@ dependencies = [
     # 6.2.0 made `inner_mda_settings` a `BaseMDASettings` model, which `_setup_unified_mda` passes.
     # 6.2.0 is also what uv.lock resolves and what CI therefore tests.
     "gemseo>=6.2.0,<6.3.0",
-    "deepdiff>=8,<9",
+    "deepdiff>=7,<9",
     "sympy>=1.14.0,<2",
     "dill>=0.4.0,<0.5",
     "aerocm==0.1.1b0",
@@ -60,9 +60,9 @@ dependencies = [
 
 [project.optional-dependencies]
 lca = [
-    "lca-modeller ; python_full_version >= '3.10' and python_full_version < '3.12'",
-    "premise==2.3.4 ; python_full_version >= '3.10' and python_full_version < '3.12'",
-]
+    "lca-modeller==0.1.5b0 ; python_full_version >= '3.11' and python_full_version < '3.12'",
+    "lca-algebraic-bw25 ; python_full_version >= '3.11' and python_full_version < '3.12'",
+ ]
 
 [project.urls]
 Homepage = "https://github.com/AeroMAPS/AeroMAPS"
@@ -101,6 +101,21 @@ cache-keys = [
     { file = "pyproject.toml" },
     { git = { commit = true, tags = true } },
 ]
+
+# Fix dependency resolution for platforms where compatible wheels may not be available
+# (issue related to LCA packages, inherited from premise)
+required-environments = [
+    "sys_platform == 'darwin' and platform_machine == 'x86_64'",
+    "sys_platform == 'darwin' and platform_machine == 'arm64'",
+]
+constraint-dependencies = [
+    "numba<0.63; sys_platform == 'darwin' and platform_machine == 'x86_64'",
+    "cryptography<49; sys_platform == 'darwin' and platform_machine == 'x86_64'",
+]
+
+[tool.uv.sources]
+# temporary fix pending for latest lca-algebraic-bw25 release (1.4.2) on pypi
+lca-algebraic-bw25 = { git = "https://github.com/oie-mines-paristech/lca_algebraic.git", tag = "1.4.2-bw25" }
 
 
 # Packaging system =============================================================

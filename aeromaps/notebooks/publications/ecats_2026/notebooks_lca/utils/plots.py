@@ -35,13 +35,30 @@ def plot_stacked_evolution_subplots(xarray_data, start_year: int = 2020, end_yea
     # Pivot the DataFrame to have years as columns
     df = df.pivot_table(values="lca", index=["impacts", "axis"], columns="year")
 
-    # Remove phases containing 'sum'
-    df_filtered = df[~df.index.get_level_values("axis").str.contains("sum")]
-    
-    #df_filtered = df_filtered[
-    #    ~df_filtered.index.get_level_values("axis").str.contains("_other_")
-    #]  # make sure it is equal to zero before deleting
-
+    # Remove results for '*all*' and '*other*'
+    # Numerical precision may result in *other* being non-zero,
+    # so remove it after checking its relative contribution is lower than 0.1%
+    if "*other*" in df.index.get_level_values("axis"):
+        total = df.xs("*all*", level="axis")
+        other = df.xs("*other*", level="axis")
+        relative_other = other.abs() / total.abs().replace(0, np.nan)
+        impacts_to_remove = relative_other.index[ 
+            (relative_other < 0.001).all(axis=1)
+        ]
+        axis = df.index.get_level_values("axis")
+        impacts = df.index.get_level_values("impacts")
+        df_filtered = df[
+            (axis != "*all*")
+            & ~((axis == "*other*") & impacts.isin(impacts_to_remove))
+        ]
+    elif "*all*" in df.index.get_level_values("axis"):
+        df_filtered = df[
+            df.index.get_level_values("axis") != "*all*"
+        ]
+    elif "_all_" in df.index.get_level_values("axis"):
+            df_filtered = df[
+                df.index.get_level_values("axis") != "*all*"
+            ]
     methods = df_filtered.index.get_level_values("impacts").unique()  # [:9]
     years = df_filtered.columns
 
@@ -62,6 +79,7 @@ def plot_stacked_evolution_subplots(xarray_data, start_year: int = 2020, end_yea
         "hydrogen_production": (palette[6], ""),
         "CO2 from combustion": (palette[7], ""),
         "Non-CO2 from combustion": ("0.8", "//"),
+        "Others": ("k", "//"),
     }
 
     # Create subplots
@@ -70,7 +88,7 @@ def plot_stacked_evolution_subplots(xarray_data, start_year: int = 2020, end_yea
 
     for i, method in enumerate(methods):
         df_method = df_filtered.xs(method, level="impacts")
-        df_method.index = df_method.index.str.replace("_other_", "Others")
+        df_method.index = df_method.index.str.replace("*other*", "Others")
 
         # Group CO2 emissions together
         co2_rows = df_method.index.str.startswith("CO2")
@@ -107,7 +125,7 @@ def plot_stacked_evolution_subplots(xarray_data, start_year: int = 2020, end_yea
         name = name.replace(":", "\n")
         name = "".join([a if a.isupper() else b for a, b in zip(name, name.title())])
 
-        unit = xarray_data.coords["impacts"].attrs["units"][method]  #bw.Method(method).metadata.get("unit")
+        unit = xarray_data.coords["impacts"].attrs["units"][method]
         unit = unit.replace("]", "")
         unit = unit.replace("m2*a crop-Eq", r"m$^2\times$yr annual crop land")
         unit = unit.replace("-Eq", "-eq")
@@ -188,7 +206,24 @@ def plot_stacked_evolution_pb_subplots(xarray_data, scaling_factors=None, label_
     df = df.set_index(["impacts", "axis", "year"])
     df = df.pivot_table(values="lca", index=["impacts", "axis"], columns="year")
     
+    # retain only pb methods
     df_filtered = df.loc[df.index.get_level_values('impacts').isin(pb_methods)]
+    
+    # Remove results for '*all*' and '*other*'
+    # Numerical precision may result in *other* being non-zero,
+    # so remove it after checking its relative contribution is lower than 0.1%
+    total = df.xs("*all*", level="axis")
+    other = df.xs("*other*", level="axis")
+    relative_other = other.abs() / total.abs().replace(0, np.nan)
+    impacts_to_remove = relative_other.index[ 
+        (relative_other < 0.001).all(axis=1)
+    ]
+    axis = df.index.get_level_values("axis")
+    impacts = df.index.get_level_values("impacts")
+    df_filtered = df[
+        (axis != "*all*")
+        & ~((axis == "*other*") & impacts.isin(impacts_to_remove))
+    ]
     
     # ---- Préparer variables ----
     methods = df_filtered.index.get_level_values("impacts").unique()
@@ -209,6 +244,7 @@ def plot_stacked_evolution_pb_subplots(xarray_data, scaling_factors=None, label_
         "hydrogen_production": (palette[6], ""),
         "CO2 from combustion": (palette[7], ""),
         "Non-CO2 from combustion": ("0.8", "//"),
+        "Others": ("k", ""),
     }
 
     fig, axes = plt.subplots(

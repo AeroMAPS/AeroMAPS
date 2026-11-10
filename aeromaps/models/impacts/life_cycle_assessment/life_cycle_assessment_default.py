@@ -12,7 +12,12 @@ import xarray as xr
 
 # AeroMAPS imports
 from aeromaps.models.base import AeroMAPSModel, aeromaps_interpolation_function
-from aeromaps.models.impacts.life_cycle_assessment.io.common import Model, TOTAL_AXIS_KEY
+from aeromaps.models.impacts.life_cycle_assessment.io.common import (
+    KEY_AXIS_ALL,
+    Model,
+    TOTAL_AXIS_KEY,
+    axis_keys_for_expression,
+)
 from aeromaps.models.impacts.life_cycle_assessment.utils.functions import (
     tuple_to_varname,
     is_not_nan,
@@ -82,10 +87,8 @@ class LifeCycleAssessmentDefault(AeroMAPSModel):
         print("===== LCA Default Model Import =====")
         self.model = Model.from_file(json_file, axis=self.axis, methods=methods, progress_bar=True)
         self.methods = [ast.literal_eval(s) for s in self.model.impacts.keys()]
-        self.axis_keys = None
         expr = self.model.expressions[self.axis][str(self.methods[0])].expr
-        if isinstance(expr, dict):
-            self.axis_keys = list(expr.keys())
+        self.axis_keys = axis_keys_for_expression(expr, self.axis)
         self.params_names = list(self.model.params.keys())
         print("====================================")
 
@@ -266,7 +269,7 @@ class LifeCycleAssessmentDefault(AeroMAPSModel):
         for imodel, (model_name, model) in enumerate(models.items()):
             expr = model.expressions[axis][str(methods[0])].expr
             if isinstance(expr, dict):
-                axis_keys = expr.keys()
+                axis_keys = self.axis_keys
                 out = np.expand_dims(out, axis=-2)
                 out = np.repeat(out, len(axis_keys), axis=-2)
             for imethod, method in enumerate(methods):
@@ -274,7 +277,7 @@ class LifeCycleAssessmentDefault(AeroMAPSModel):
                 if isinstance(result_dict, dict):
                     # result_dict = normalize_result_dict(result_dict, param_length)
                     for iaxis, ax in enumerate(axis_keys):
-                        out[imodel, imethod, iaxis, :] = result_dict[ax]  # np.array(list(result_dict.values()), dtype=float)
+                        out[imodel, imethod, iaxis, :] = result_dict.get(ax, 0.0)
                 else:
                     out[imodel, imethod, :] = result_dict
 
@@ -332,10 +335,12 @@ class LifeCycleAssessmentDefault(AeroMAPSModel):
                     value = value.reindex(range(self.historic_start_year, self.end_year + 1))
                     output_data[tuple_to_varname(method_with_axis)] = value
                 # Also add total over all axes
-                value = res.sel(
-                    systems=KEY_MODEL,
-                    impacts=method
-                ).sum(dim="axis").to_series()
+                if KEY_AXIS_ALL in res.coords["axis"].values:
+                    value = res.sel(
+                        systems=KEY_MODEL, impacts=method, axis=KEY_AXIS_ALL
+                    ).to_series()
+                else:
+                    value = res.sel(systems=KEY_MODEL, impacts=method).sum(dim="axis").to_series()
                 value = value.reindex(range(self.historic_start_year, self.end_year + 1))
                 output_data[tuple_to_varname(method)] = value
         else:

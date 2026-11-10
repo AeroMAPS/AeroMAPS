@@ -39,19 +39,26 @@ premise:
         # - electricity
         # - biomass
         # - dac
+        
+        
+# --- LCA-Modeller settings to handle modification of background processes ---
+# By default, LCA-Modeller copies modified background inventories into the foreground.
+# Use the following option to retain each original background activity and represent its modifications with correction exchanges.
+# This usually speeds up the compilation when large modifications are implemented.
+foreground_modifications: overlay
 
 
 # --- LCA model ---
 model:
 
     ## Airports
-    airports:              
-        name: 'market for airport'  # Name of ecoinvent process
-        amount: 8.88e-14 * rpk_long_range + 2.58e-13 * rpk_medium_range + 6.17e-13 * rpk_short_range  # Parameters can directly relate to AeroMAPS variables
+    airports:
         tags:  # Tag to ventilate impacts by life cycle phase
             - phase: 'airport'
+        name: 'market for airport'  # Name of ecoinvent process
+        amount: 8.88e-14 * rpk_long_range + 2.58e-13 * rpk_medium_range + 6.17e-13 * rpk_short_range  # Parameters can directly relate to AeroMAPS variables
         
-
+        
     ## Aircraft production
     aircraft:
         tags:
@@ -73,13 +80,14 @@ model:
         
     ## Contrails during operations
     contrails:
+        tags:
+            - phase: 'non-CO2 contrails'
         amount: total_aircraft_distance * fuel_effect_correction_contrails # correction factor for SAFs blending
         name: 'contrail'  # This is a new biosphere flow implemented by the updated LCIA method for climate change
         categories:  # <-- compartments of biosphere flow
             - 'air'
             - 'lower stratosphere + upper troposphere'
-        tags:
-            - phase: 'non-CO2 contrails'
+        
               
     radiative_forcing_co2:
         tags:
@@ -109,14 +117,14 @@ model:
             
             #### Combustion processes
             CO2:
+                tags:
+                    - phase: 'CO2 kerosene'
                 amount: 0.074 * fossil_kerosene_lhv  # 74gCO2/MJ L. Jing et al. 2022 - doi: 10.1038/s41467-022-35392-1
                 name: 'carbon dioxide, fossil'  # this is a biosphere process   
                 categories:
                     - 'air'
                     - 'lower stratosphere + upper troposphere'
-                tags:
-                    - phase: 'CO2 kerosene'
-            
+                
             nonCO2:
                 tags:
                     - phase: 'non-CO2 kerosene'
@@ -279,13 +287,13 @@ model:
             
             #### Combustion processes
             CO2:
+                tags:
+                    - phase: 'CO2 lcaf'
                 amount: 0.074 * lcaf_lhv
                 name: 'carbon dioxide, fossil' 
                 categories:
                     - 'air'
                     - 'lower stratosphere + upper troposphere'
-                tags:
-                    - phase: 'CO2 lcaf'
                     
             nonCO2:
                 tags:
@@ -418,11 +426,11 @@ model:
                     # (this should be done offline in the future for much better computational efficiency)
                     # comment the following lines to keep original dataset from premise and divide by approx. 3 computation times.
                     update: 
-                        - input_activity: 'methanol distillation, from wood, with CCS#RER' # use '#' for specifying loc
+                        - input_activity: 'methanol distillation, from wood, with CCS#EUR' # use '#' for specifying loc
                           new_value:
                               distillation:
                                   name: 'methanol distillation, from wood, with CCS'
-                                  loc: 'RER'
+                                  loc: 'EUR'
                                   add:  # correction to premise dataset using original publication from Hank et al. 2019
                                       - amount: 0.00052784
                                         name: 'treatment of wastewater, average, wastewater treatment'
@@ -521,7 +529,7 @@ model:
                     - phase: 'e-fuel production'
                       
                 name: 'kerosene production, synthetic, Fischer Tropsch process, hydrogen from electrolysis, energy allocation' 
-                loc: 'RER'
+                loc: 'EUR'
                 add:  # add exchanges to the selected ecoinvent/premise activity
                     - amount: sum(market group for electricity*)  # sum(name*) gets the sum of all exchs starting by 'name' in the parent act
                       name: 'electricity production, photovoltaic, 570kWp open ground installation, multi-Si'
@@ -531,36 +539,36 @@ model:
                       new_value: 
                           amount: 0.0
                           
-                    - input_activity: 'syngas, RWGS, Production, for Fischer Tropsch process, hydrogen from electrolysis#RER' # use '#' for specifying loc
+                    - input_activity: 'syngas, RWGS, Production, for Fischer Tropsch process, hydrogen from electrolysis#EUR' # use '#' for specifying loc
                       new_value:
                           # if only activity is provided, the previous amounts will be kept. This is the same as using amount: old_amount
-                          # amount: old_amount  <-- unecessary here.
+                          # amount: old_amount  <-- unnecessary here.
                           syngas updated:
                               name: 'syngas, RWGS, Production, for Fischer Tropsch process, hydrogen from electrolysis'
-                              loc: 'RER'
+                              loc: 'EUR'
                               update:
                                   - input_activity: 'hydrogen production, gaseous, 30 bar, from PEM electrolysis, from grid electricity#EUR'
                                     new_value:
                                         name: 'hydrogen production, gaseous, 30 bar, from PEM electrolysis, from open ground solar photovoltaic electricity'
                                         loc: 'RER'
                                                                     
-                                  - input_activity: 'carbon monoxide, from RWGS, for Fischer Tropsch process, hydrogen from electrolysis#RER'
+                                  - input_activity: 'carbon monoxide, from RWGS, for Fischer Tropsch process, hydrogen from electrolysis#EUR'
                                     new_value:
                                         carbon monoxide updated:
                                             name: 'carbon monoxide, from RWGS, for Fischer Tropsch process, hydrogen from electrolysis'
-                                            loc: 'RER'
+                                            loc: 'EUR'
                                             update:
                                                 - input_activity: 'hydrogen production, gaseous, 30 bar, from PEM electrolysis, from grid electricity#EUR'
                                                   new_value:
                                                       name: 'hydrogen production, gaseous, 30 bar, from PEM electrolysis, from open ground solar photovoltaic electricity'
                                                       loc: 'RER'
-                                                - input_activity: 'carbon dioxide, captured, with a solvent-based direct air capture system, 1MtCO2#RER'
+                                                - input_activity: 'carbon dioxide, captured, with a solvent-based direct air capture system, 1MtCO2#EUR'
                                                   new_value:
                                                       co2_capture:
                                                           dac:
                                                               amount: saf_dac_mass_consumption / (saf_dac_mass_consumption + saf_co2_mass_consumption + 1e-9)
                                                               name: 'carbon dioxide, captured, with a solvent-based direct air capture system, 1MtCO2'
-                                                              loc: 'RER'
+                                                              loc: 'EUR'
                                                               add:
                                                                   - amount: sum(market group for electricity*)
                                                                     name: 'electricity production, photovoltaic, 570kWp open ground installation, multi-Si'
@@ -572,7 +580,7 @@ model:
                                                           waste:
                                                               amount: saf_co2_mass_consumption / (saf_dac_mass_consumption + saf_co2_mass_consumption + 1e-9)
                                                               name: 'carbon dioxide, captured, at cement production plant, for subsequent reuse'
-                                                              loc: 'RER'
+                                                              loc: 'EUR'
                                                                                                                           
                 
         ### Hydrogen
