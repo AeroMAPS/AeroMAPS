@@ -50,6 +50,7 @@ from aeromaps.plots.single_scenario import (
 from aeromaps.process_configuration.multi_regional_process_configuration import (
     AeroMAPSMultiRegionalProcessConfiguration,
 )
+from aeromaps.core.gemseo import disable_gemseo_execution_statistics
 
 
 # Type alias for execution modes
@@ -192,10 +193,8 @@ class MultiRegionalProcess(AeroMAPSProcess):
         # TODO: discuss if that is not satisfactory.
         logging.getLogger("gemseo.utils.source_parsing").setLevel(logging.ERROR)
 
-        # Store configuration file path early (before parent init)
         self.configuration_file = os.path.abspath(os.fspath(configuration_file))
 
-        # Initialize configuration parsing (without full parent init)
         self._initialize_configuration()
 
         # Read regionalisation config to determine execution mode
@@ -214,8 +213,6 @@ class MultiRegionalProcess(AeroMAPSProcess):
             disable_execution_statistics = self._execution_mode == "unified_mda"
 
         if disable_execution_statistics:
-            from aeromaps.core.gemseo import disable_gemseo_execution_statistics
-
             disable_gemseo_execution_statistics()
             logging.info("Disabled GEMSEO execution statistics")
 
@@ -281,8 +278,7 @@ class MultiRegionalProcess(AeroMAPSProcess):
 
             self._region_configs[region_id] = config_file
 
-        # Store aggregation config and global namespace
-        self._aggregation_config = regionalisation_config.aggregation.model_dump()
+        self._aggregation_config = regionalisation_config.aggregation
         self._global_namespace = regionalisation_config.global_namespace
 
         logging.info(
