@@ -1210,10 +1210,9 @@ class AeroMAPSProcess(object):
 
         # Load the new configuration file
         if self.configuration_file is not None:
-            user_config = self.CONFIG_MODEL(**read_yaml_file(self.configuration_file))
-            self._user_config = user_config.model_dump(exclude_unset=True)
+            self.config = self.CONFIG_MODEL(**read_yaml_file(self.configuration_file))
+            self._user_config = self.config.model_dump(exclude_unset=True)
             self._config_base_dir = Path(self.configuration_file).parent
-            self.config = user_config
 
     def _initialize_data(self):
         """Initialize core data containers and indices."""
@@ -2685,7 +2684,7 @@ class AeroMAPSProcess(object):
         return field_name in configuration_model.model_fields_set
 
     def _resolve_path_field(self, model: BaseProcessConfiguration, field: str) -> Path:
-        """esolve a path-valued config field, falling back to the packaged default.
+        """Resolve a path-valued config field, falling back to the packaged default.
 
         Args:
             model (BaseProcessConfiguration): The configuration model from which the path is retrieved.
