@@ -2006,9 +2006,7 @@ class AeroMAPSProcess(object):
                     name="life_cycle_assessment",
                     json_file=str(lca_model_file_path),
                     split_by=self.config.models.life_cycle_assessment.split_by or None,
-                    methods=self._get_config_value(
-                        "models", "life_cycle_assessment", "methods", default=None
-                    ),
+                    methods=self.config.models.life_cycle_assessment.methods or None,
                 )
             # If yaml file, use the custom LCA model class
             elif lca_model_file_path.suffix.lower() in [".yaml", ".yml"]:

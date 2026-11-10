@@ -178,9 +178,11 @@ def test_process_configuration():
     default_config["models"]["customs"] = {}
     default_config["data"]["inputs"]["partitioning_other_data_file"] = None
     default_config["data"]["inputs"]["partitioning_climate_data_file"] = None
+    default_config["models"]["life_cycle_assessment"]["methods"] = None
     MERGED_BASIC_FULL_CONFIG["models"]["customs"] = {}
     MERGED_BASIC_FULL_CONFIG["data"]["inputs"]["partitioning_other_data_file"] = None
     MERGED_BASIC_FULL_CONFIG["data"]["inputs"]["partitioning_climate_data_file"] = None
+    MERGED_BASIC_FULL_CONFIG["models"]["life_cycle_assessment"]["methods"] = None
     assert process._user_config == basic_full_config
     assert process._default_config.model_dump() == default_config
     assert process.config.model_dump() == MERGED_BASIC_FULL_CONFIG

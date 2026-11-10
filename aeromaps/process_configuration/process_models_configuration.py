@@ -81,6 +81,9 @@ class OffsetsModelConfiguration(BaseProcessConfiguration):
 class LifeCycleAssessmentModelConfiguration(BaseProcessConfiguration):
     lca_model_data_file: Path | str | None = "./default_lca/default_lca_model.json"
     split_by: str = "phase"
+    methods: list[Any] | None = (
+        None  # TODO: better define the field typing as the field is never used during the tests.
+    )
 
 
 class ProcessModelsConfiguration(BaseProcessConfiguration):
