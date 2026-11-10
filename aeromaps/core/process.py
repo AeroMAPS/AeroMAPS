@@ -132,13 +132,10 @@ pd.set_option("display.max_columns", 150)
 pd.set_option("max_colwidth", 200)
 pd.options.mode.chained_assignment = None
 
-# Get the directory of the current script
+
 CURRENT_DIR = Path(__file__).resolve().parent
 
-# Construct the path to the default config.yaml file
-DEFAULT_CONFIG_PATH = CURRENT_DIR.parent / "resources" / "data" / "config.yaml"
-
-# Base directory for resources/data (used to resolve relative paths in config.yaml)
+# (used to resolve relative paths in config.yaml)
 DEFAULT_RESOURCES_DATA_DIR = Path(CURRENT_DIR).parent / "resources" / "data"
 
 # The parameters every year index, output frame and coupling seed is sized on.
@@ -194,7 +191,7 @@ def _renamed_input_replacement(key: str):
     return None
 
 
-class AeroMAPSProcess(object):
+class AeroMAPSProcess:
     """High-level AeroMAPS process driver.
 
     This class configures parameters, instantiates discipline models,
@@ -1192,27 +1189,16 @@ class AeroMAPSProcess(object):
             self._configure_mda_chain()
 
     def _initialize_configuration(self):
-        """Load and merge configuration settings.
+        """Load the process configuration settings."""
+        self._default_config = AeroMAPSProcessConfiguration()
 
-        This method reads the default configuration YAML file, converts
-        relative paths to absolute paths, and merges in overrides from
-        the user-specified configuration file if provided.
-        """
-        # Load the default configuration file
-        self._default_config = AeroMAPSProcessConfiguration(**read_yaml_file(DEFAULT_CONFIG_PATH))
-        if not self._default_config:
-            raise RuntimeError(
-                f"Default configuration file is empty or missing: '{DEFAULT_CONFIG_PATH}'"
-            )
-
-        # Set the base directory for resolving relative paths
-        self._config_base_dir = DEFAULT_RESOURCES_DATA_DIR
-
-        # Load the new configuration file
         if self.configuration_file is not None:
             self.config = self.CONFIG_MODEL(**read_yaml_file(self.configuration_file))
             self._user_config = self.config.model_dump(exclude_unset=True)
             self._config_base_dir = Path(self.configuration_file).parent
+        else:
+            self.config = self._default_config
+            self._config_base_dir = DEFAULT_RESOURCES_DATA_DIR
 
     def _initialize_data(self):
         """Initialize core data containers and indices."""
