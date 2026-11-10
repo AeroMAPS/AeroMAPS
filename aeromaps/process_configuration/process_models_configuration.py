@@ -24,6 +24,16 @@ class StandardModels(StrEnum):
     MODELS_ABATEMENTS_COST = "models_abatements_cost"
 
 
+class BaseModelConfiguration(BaseProcessConfiguration):
+    """Base class for model configuration classes."""
+
+    standards: list[str] = []
+    """The list of standard models to be used by the process from :mod:`aeromaps.models.models`."""
+
+    customs: dict[str, Any] = {}
+    """A mapping of custom models to be used by the process, if any."""
+
+
 class ClimateModelConfiguration(BaseProcessConfiguration):
     """Climate model configuration."""
 
@@ -124,7 +134,7 @@ class LifeCycleAssessmentModelConfiguration(BaseProcessConfiguration):
     """List of impact assessment methods available."""
 
 
-class ProcessModelsConfiguration(BaseProcessConfiguration):
+class ProcessModelsConfiguration(BaseModelConfiguration):
     """The process' models configuration."""
 
     climate: ClimateModelConfiguration = ClimateModelConfiguration()

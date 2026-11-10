@@ -359,6 +359,7 @@ class MultiRegionalProcess(AeroMAPSProcess):
 
         # Resolve standard model groups by name from aeromaps.core.models
         loaded = {}
+        top_level_config.model_dump()
         for model_name in top_level_config.get("standards", []):
             if hasattr(aeromaps_models, model_name):
                 loaded[model_name] = getattr(aeromaps_models, model_name)
@@ -533,6 +534,7 @@ class MultiRegionalProcess(AeroMAPSProcess):
         if not global_config:
             return
 
+        global_config = global_config.model_dump()
         loaded = {}
         for model_name in global_config.get("standards", []):
             if hasattr(aeromaps_models, model_name):

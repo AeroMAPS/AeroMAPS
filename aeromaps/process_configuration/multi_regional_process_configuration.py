@@ -1,11 +1,12 @@
 """AeroMAPS multi-regional process configuration model."""
 
-from typing import Any, Literal
+from typing import Literal
 
 from aeromaps.process_configuration.process_configuration import (
     AeroMAPSProcessConfiguration,
     BaseProcessConfiguration,
 )
+from aeromaps.process_configuration.process_models_configuration import BaseModelConfiguration
 
 
 class RegionConfiguration(BaseProcessConfiguration):
@@ -50,10 +51,10 @@ class RegionalisationConfiguration(BaseProcessConfiguration):
     aggregation: AggregationConfiguration = AggregationConfiguration()
     """Process aggregation configuration."""
 
-    global_models: dict[str, Any] = {}
+    global_models: BaseModelConfiguration | None = None
     """Models to  deliberately keep out of the multi-regional process namespacing."""
 
-    top_level_models: dict[str, Any] = {}
+    top_level_models: BaseModelConfiguration | None = None
     """Models that operate in a global namespace (under :attr:`MultiRegionalProcess._global_namespace`) in the multi-regional process."""
 
 
