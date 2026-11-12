@@ -1,0 +1,43 @@
+[tool.towncrier]
+directory = "changelog/fragments"
+filename = "CHANGELOG.md"
+title_format = "## Version {version} ({project_date})"
+start_string = "<!-- towncrier release notes start -->\n"
+issue_format = "[#{issue}](https://github.com/AeroMAPS/AeroMAPS/issues/{issue})"
+
+# Definition of fragment types
+[[tool.towncrier.type]]
+directory = "app"
+name = "Web App"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "added"
+name = "Added"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "misc"
+name = "Miscellaneous change"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "fixed"
+name = "Fixed"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "breaking"
+name = "Breaking change"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "changed"
+name = "Changed"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "removed"
+name = "Removed"
+showcontent = true
+
