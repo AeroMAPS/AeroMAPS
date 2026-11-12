@@ -180,10 +180,12 @@ def test_process_configuration():
     default_config["data"]["inputs"]["partitioning_other_data_file"] = None
     default_config["data"]["inputs"]["partitioning_climate_data_file"] = None
     default_config["models"]["life_cycle_assessment"]["methods"] = None
+    default_config["data_directory"] = None
     MERGED_BASIC_FULL_CONFIG["models"]["customs"] = {}
     MERGED_BASIC_FULL_CONFIG["data"]["inputs"]["partitioning_other_data_file"] = None
     MERGED_BASIC_FULL_CONFIG["data"]["inputs"]["partitioning_climate_data_file"] = None
     MERGED_BASIC_FULL_CONFIG["models"]["life_cycle_assessment"]["methods"] = None
+    MERGED_BASIC_FULL_CONFIG["data_directory"] = None
     assert process._user_config == basic_full_config
     assert process._default_config.model_dump() == default_config
     assert process.config.model_dump() == MERGED_BASIC_FULL_CONFIG
@@ -192,6 +194,7 @@ def test_process_configuration():
 def test_process_configuration_with_config_model():
     """Test that the process can be configured with an instance of the configuration data model."""
     config = AeroMAPSProcessConfiguration(**read_yaml_file(BASIC_FULL_CONFIG_FILE))
+    config.data_directory = Path(BASIC_FULL_CONFIG_FILE).parent
     process = create_process(
         configuration_file=BASIC_FULL_CONFIG_FILE, process_configuration_data_model=config
     )

@@ -1188,7 +1188,7 @@ class AeroMAPSProcess:
         self._default_config = AeroMAPSProcessConfiguration()
 
         if configuration_model:
-            self._load_configuration_from_model(configuration_model, configuration_file)
+            self._load_configuration_from_model(configuration_model)
         else:
             if configuration_file is not None:
                 self.configuration_file = Path(configuration_file)
@@ -1200,16 +1200,11 @@ class AeroMAPSProcess:
                 self.configuration_file = None
         self._user_config = self.config.model_dump(exclude_unset=True)
 
-    def _load_configuration_from_model(
-        self,
-        configuration_model: AeroMAPSProcessConfiguration,
-        configuration_file: Path | str | None,
-    ):
+    def _load_configuration_from_model(self, configuration_model: AeroMAPSProcessConfiguration):
         """Load the process configuration from a configuration data model.
 
         Args:
             configuration_model: The configuration data model.
-
         Raise:
             TypeError if the configuration model is not a :attr:`CONFIG_MODEL` instance.
         """
@@ -1217,11 +1212,16 @@ class AeroMAPSProcess:
             raise TypeError(
                 f"Expected a {self.CONFIG_MODEL}, got instead {type(configuration_model)}"
             )
+        if (
+            not configuration_model.data_directory
+            or not Path(configuration_model.data_directory).exists()
+        ):
+            raise ValueError(
+                f"A data directory must be provided when using a {self.CONFIG_MODEL} model for configuration. Data directory is {configuration_model.data_directory}"
+            )
+
         self.config = configuration_model
-        self.configuration_file = Path(configuration_file) if configuration_file else None
-        self._config_base_dir = (
-            self.configuration_file.parent if configuration_file else DEFAULT_RESOURCES_DATA_DIR
-        )
+        self._config_base_dir = configuration_model.data_directory
 
     def _initialize_data(self):
         """Initialize core data containers and indices."""
@@ -1838,7 +1838,7 @@ class AeroMAPSProcess:
         lca_config = self.config.models.life_cycle_assessment
 
         # Set up temporary file path for LCA model caching (for better performance within the same session)
-        config_dir = Path(self.configuration_file).resolve().parent
+        config_dir = self._config_base_dir
         tmp_dir = config_dir / "tmp"
         tmp_dir.mkdir(parents=True, exist_ok=True)  # create folder if needed
         lca_tmp_file_path = tmp_dir / "lca_tmp.pkl"
@@ -2123,7 +2123,7 @@ class AeroMAPSProcess:
         json_inputs_file_was_set = self._check_if_field_was_set(
             "json_inputs_file", self.config.data.inputs
         )
-        if self.configuration_file is not None and json_inputs_file_was_set:
+        if json_inputs_file_was_set:
             json_inputs_file = self.config.data.inputs.json_inputs_file
             # If the alternative file is a list of json files
             if isinstance(json_inputs_file, list):

@@ -194,9 +194,7 @@ class MultiRegionalProcess(AeroMAPSProcess):
         # TODO: discuss if that is not satisfactory.
         logging.getLogger("gemseo.utils.source_parsing").setLevel(logging.ERROR)
 
-        self.configuration_file = os.path.abspath(os.fspath(configuration_file))
-
-        self._initialize_configuration()
+        self._initialize_configuration(configuration_file, configuration_model)
 
         # Read regionalisation config to determine execution mode
         # How a non-converged MDA is reported: "raise" (default), "warn" or "ignore".
