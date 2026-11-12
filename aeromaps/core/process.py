@@ -276,7 +276,7 @@ class AeroMAPSProcess:
         ----------
         configuration_file
             Path to a configuration YAML file overriding default
-            settings.
+            settings. Ignored if a configuration_model is given to the constructor.
         custom_models
             Dictionary of additional model instances to be merged with
             the standard models loaded from the configuration file's
@@ -289,6 +289,9 @@ class AeroMAPSProcess:
             Whether to disable GEMSEO's execution statistics shared memory.
             If False, statistics are enabled. Set to True to disable
             (useful when running many disciplines to avoid semaphore exhaustion).
+        configuration_model:
+            The data model for the configuration, if used the configuration file is
+            ignored.
         """
         # Initialize pathways_manager to None - will be populated if energy models are used
         self.pathways_manager = None
@@ -1198,6 +1201,7 @@ class AeroMAPSProcess:
                 self.config = self._default_config
                 self._config_base_dir = DEFAULT_RESOURCES_DATA_DIR
                 self.configuration_file = None
+                logging.warning("No configuration was given, using default configuration instead.")
         self._user_config = self.config.model_dump(exclude_unset=True)
 
     def _load_configuration_from_model(self, configuration_model: AeroMAPSProcessConfiguration):
