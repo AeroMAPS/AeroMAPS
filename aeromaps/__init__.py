@@ -12,7 +12,7 @@ from aeromaps.core.process import AeroMAPSProcess
 from aeromaps.core.multi_regional_process import MultiRegionalProcess
 from aeromaps.core.processes_assembly import AeroMAPSProcessesAssembly
 from aeromaps.process_configuration.multi_regional_process_configuration import (
-    AeroMAPSMultiRegionalProcessConfiguration,
+    MultiRegionalProcessConfiguration,
 )
 from aeromaps.process_configuration.process_configuration import AeroMAPSProcessConfiguration
 
@@ -24,7 +24,7 @@ def create_process(
     multi_regional: bool = False,
     disable_execution_statistics: Optional[bool] = None,
     process_configuration_data_model: AeroMAPSProcessConfiguration
-    | AeroMAPSMultiRegionalProcessConfiguration
+    | MultiRegionalProcessConfiguration
     | None = None,
 ) -> Union[AeroMAPSProcess, MultiRegionalProcess]:
     """

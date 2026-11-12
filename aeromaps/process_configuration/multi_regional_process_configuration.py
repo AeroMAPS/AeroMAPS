@@ -58,7 +58,7 @@ class RegionalisationConfiguration(BaseProcessConfiguration):
     """Models that operate in a global namespace (under :attr:`MultiRegionalProcess._global_namespace`) in the multi-regional process."""
 
 
-class AeroMAPSMultiRegionalProcessConfiguration(AeroMAPSProcessConfiguration):
+class MultiRegionalProcessConfiguration(AeroMAPSProcessConfiguration):
     """Configuration data model for multi-regional processes."""
 
     regionalisation: RegionalisationConfiguration = RegionalisationConfiguration()

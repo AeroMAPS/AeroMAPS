@@ -48,7 +48,7 @@ from aeromaps.plots.single_scenario import (
     available_plots_fleet,
 )
 from aeromaps.process_configuration.multi_regional_process_configuration import (
-    AeroMAPSMultiRegionalProcessConfiguration,
+    MultiRegionalProcessConfiguration,
 )
 from aeromaps.core.gemseo import disable_gemseo_execution_statistics
 
@@ -163,17 +163,15 @@ class MultiRegionalProcess(AeroMAPSProcess):
     >>> global_emissions = process.data["vector_outputs"]["overall:co2_emissions"]
     """
 
-    CONFIG_MODEL: Type[AeroMAPSMultiRegionalProcessConfiguration] = (
-        AeroMAPSMultiRegionalProcessConfiguration
-    )
-    config: AeroMAPSMultiRegionalProcessConfiguration
+    CONFIG_MODEL: Type[MultiRegionalProcessConfiguration] = MultiRegionalProcessConfiguration
+    config: MultiRegionalProcessConfiguration
 
     def __init__(
         self,
         configuration_file: str,
         custom_models: Optional[dict] = None,
         disable_execution_statistics: Optional[bool] = None,
-        configuration_model: AeroMAPSMultiRegionalProcessConfiguration | None = None,
+        configuration_model: MultiRegionalProcessConfiguration | None = None,
     ):
         """Initialize a MultiRegionalProcess instance.
 
