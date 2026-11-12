@@ -10,6 +10,7 @@ from pathlib import Path
 import pytest
 
 from aeromaps import create_process
+from aeromaps.process_configuration.process_configuration import AeroMAPSProcessConfiguration
 from aeromaps.utils.yaml import read_yaml_file
 
 CONFIG_DIR = Path(__file__).parent.parent / "tested_configs"
@@ -186,3 +187,13 @@ def test_process_configuration():
     assert process._user_config == basic_full_config
     assert process._default_config.model_dump() == default_config
     assert process.config.model_dump() == MERGED_BASIC_FULL_CONFIG
+
+
+def test_process_configuration_with_config_model():
+    """Test that the process can be configured with an instance of the configuration data model."""
+    config = AeroMAPSProcessConfiguration(**read_yaml_file(BASIC_FULL_CONFIG_FILE))
+    process = create_process(
+        configuration_file=BASIC_FULL_CONFIG_FILE, process_configuration_data_model=config
+    )
+
+    assert isinstance(process.config, AeroMAPSProcessConfiguration)

@@ -173,6 +173,7 @@ class MultiRegionalProcess(AeroMAPSProcess):
         configuration_file: str,
         custom_models: Optional[dict] = None,
         disable_execution_statistics: Optional[bool] = None,
+        configuration_model: AeroMAPSMultiRegionalProcessConfiguration | None = None,
     ):
         """Initialize a MultiRegionalProcess instance.
 

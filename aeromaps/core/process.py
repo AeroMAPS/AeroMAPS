@@ -263,6 +263,7 @@ class AeroMAPSProcess:
         custom_models=None,
         optimisation=False,
         disable_execution_statistics=False,
+        configuration_model: AeroMAPSProcessConfiguration | None = None,
     ):
         """Initialize an AeroMAPSProcess instance.
 
@@ -308,12 +309,6 @@ class AeroMAPSProcess:
 
         custom_logger_config(logging.getLogger("gemseo.utils.source_parsing"))
 
-        self.configuration_file = (
-            os.path.abspath(os.fspath(configuration_file))
-            if configuration_file is not None
-            else None
-        )
-
         # Handle execution statistics
         if disable_execution_statistics:
             from aeromaps.core.gemseo import disable_gemseo_execution_statistics
@@ -321,7 +316,7 @@ class AeroMAPSProcess:
             disable_gemseo_execution_statistics()
             logging.info("Disabled GEMSEO execution statistics")
 
-        self._initialize_configuration()
+        self._initialize_configuration(configuration_file, configuration_model)
 
         # Store mode flags
         self._optimisation = optimisation
@@ -1188,17 +1183,45 @@ class AeroMAPSProcess:
             self.mda_chain = MDAChain(disciplines=self.disciplines, settings_model=settings)
             self._configure_mda_chain()
 
-    def _initialize_configuration(self):
+    def _initialize_configuration(self, configuration_file: Path | str | None, configuration_model):
         """Load the process configuration settings."""
         self._default_config = AeroMAPSProcessConfiguration()
 
-        if self.configuration_file is not None:
-            self.config = self.CONFIG_MODEL(**read_yaml_file(self.configuration_file))
-            self._user_config = self.config.model_dump(exclude_unset=True)
-            self._config_base_dir = Path(self.configuration_file).parent
+        if configuration_model:
+            self._load_configuration_from_model(configuration_model, configuration_file)
         else:
-            self.config = self._default_config
-            self._config_base_dir = DEFAULT_RESOURCES_DATA_DIR
+            if configuration_file is not None:
+                self.configuration_file = Path(configuration_file)
+                self.config = self.CONFIG_MODEL(**read_yaml_file(self.configuration_file))
+                self._config_base_dir = self.configuration_file.parent
+            else:
+                self.config = self._default_config
+                self._config_base_dir = DEFAULT_RESOURCES_DATA_DIR
+                self.configuration_file = None
+        self._user_config = self.config.model_dump(exclude_unset=True)
+
+    def _load_configuration_from_model(
+        self,
+        configuration_model: AeroMAPSProcessConfiguration,
+        configuration_file: Path | str | None,
+    ):
+        """Load the process configuration from a configuration data model.
+
+        Args:
+            configuration_model: The configuration data model.
+
+        Raise:
+            TypeError if the configuration model is not a :attr:`CONFIG_MODEL` instance.
+        """
+        if not isinstance(configuration_model, self.CONFIG_MODEL):
+            raise TypeError(
+                f"Expected a {self.CONFIG_MODEL}, got instead {type(configuration_model)}"
+            )
+        self.config = configuration_model
+        self.configuration_file = Path(configuration_file) if configuration_file else None
+        self._config_base_dir = (
+            self.configuration_file.parent if configuration_file else DEFAULT_RESOURCES_DATA_DIR
+        )
 
     def _initialize_data(self):
         """Initialize core data containers and indices."""
