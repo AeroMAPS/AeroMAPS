@@ -62,34 +62,61 @@ class EnergyIntensity(AeroMAPSModel):
         passenger_markets = self.markets.get(traffic_type="passenger")
         freight_markets = self.markets.get(traffic_type="freight")
 
-        self.input_names = {
-            "operations_gain": pd.Series([0.0]),
-            "operations_contrails_overconsumption": pd.Series([0.0]),
-        }
-        for m in passenger_markets:
-            mid = m.id
-            for energy_type in ("dropin_fuel", "hydrogen", "electric"):
-                self.input_names[f"energy_per_ask_without_operations_{mid}_{energy_type}"] = (
-                    pd.Series([0.0])
-                )
+        energy_types = ("dropin_fuel", "hydrogen", "electric")
 
+        self.input_names = {}
+        self.declare_input(
+            "operations_gain",
+            pd.Series([0.0]),
+            unit="%",
+            description="Impact of operational improvements in terms of percentage "
+            "reduction in fuel consumption per ASK",
+        )
+        self.declare_input(
+            "operations_contrails_overconsumption",
+            pd.Series([0.0]),
+            unit="%",
+            description="Impact of contrail operational improvements in terms of "
+            "percentage increase in fuel consumption",
+        )
+        for m in passenger_markets:
+            for energy_type in energy_types:
+                self.declare_input(
+                    f"energy_per_ask_without_operations_{m.id}_{energy_type}",
+                    pd.Series([0.0]),
+                    unit="MJ/ASK",
+                    description=f"Energy per ASK of the {m.id} market for {energy_type} "
+                    "aircraft, before operational corrections",
+                )
         for m in freight_markets:
-            mid = m.id
-            for energy_type in ("dropin_fuel", "hydrogen", "electric"):
-                self.input_names[f"energy_per_rtk_without_operations_{mid}_{energy_type}"] = (
-                    pd.Series([0.0])
+            for energy_type in energy_types:
+                self.declare_input(
+                    f"energy_per_rtk_without_operations_{m.id}_{energy_type}",
+                    pd.Series([0.0]),
+                    unit="MJ/RTK",
+                    description=f"Energy per RTK of the {m.id} market for {energy_type} "
+                    "aircraft, before operational corrections",
                 )
 
         self.output_names = {}
         for m in passenger_markets:
-            mid = m.id
-            for energy_type in ("dropin_fuel", "hydrogen", "electric"):
-                self.output_names[f"energy_per_ask_{mid}_{energy_type}"] = pd.Series([0.0])
-
+            for energy_type in energy_types:
+                self.declare_output(
+                    f"energy_per_ask_{m.id}_{energy_type}",
+                    pd.Series([0.0]),
+                    unit="MJ/ASK",
+                    description=f"Energy per ASK of the {m.id} market for {energy_type} "
+                    "aircraft, after operational corrections",
+                )
         for m in freight_markets:
-            mid = m.id
-            for energy_type in ("dropin_fuel", "hydrogen", "electric"):
-                self.output_names[f"energy_per_rtk_{mid}_{energy_type}"] = pd.Series([0.0])
+            for energy_type in energy_types:
+                self.declare_output(
+                    f"energy_per_rtk_{m.id}_{energy_type}",
+                    pd.Series([0.0]),
+                    unit="MJ/RTK",
+                    description=f"Energy per RTK of the {m.id} market for {energy_type} "
+                    "aircraft, after operational corrections",
+                )
 
     def compute(self, input_data: dict) -> dict:
         """Apply operational corrections to per-market energy intensities.

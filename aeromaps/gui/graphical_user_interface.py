@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from ipydatagrid import DataGrid
 
+from aeromaps.core.process import AeroMAPSProcess
 from aeromaps.gui.plots import plot_1, plot_2, plot_3
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_model import (
     AircraftParameters,
@@ -32,13 +33,13 @@ def make_box_layout():
 
 
 class GraphicalUserInterface(widgets.VBox):
-    def __init__(self, process):
+    def __init__(self, process: AeroMAPSProcess):
         super().__init__()
         # TODO: make these private attributes
         self.process = process
 
         self._data_files = {}
-        self._load_data(self.process._get_config_value("data", "outputs", "excel_outputs_file"))
+        self._load_data(self.process.config.data.outputs.excel_outputs_file)
 
         # Initialization of data tabs outputs
         self.w_data_information_df = None

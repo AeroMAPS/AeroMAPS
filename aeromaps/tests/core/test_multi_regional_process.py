@@ -30,7 +30,9 @@ import yaml
 
 from aeromaps import create_multi_regional_process
 from aeromaps.core.multi_regional_process import _concat_series
+from aeromaps.utils.yaml import read_yaml_file
 
+DEFAULT_CONFIG_FILE = Path(__file__).parents[2] / "resources" / "data" / "config.yaml"
 TUTORIAL = (
     Path(__file__).parents[1].parent / "notebooks" / "tutorials" / "11_multi_regional_two_regions"
 )
@@ -44,6 +46,81 @@ CONFIGS = {
 # off in SAF-type scenarios, and GEMSEO's default of 20 iterations stops well short.
 SINGLE_REGION_TOLERANCE = 1e-10
 SINGLE_REGION_MAX_ITER = 200
+
+SEPARATED_PROCESS_FULL_CONFIG = {
+    "data": {
+        "inputs": {
+            "data_information_file": "./data_information.yaml",
+            "json_inputs_file": "./parameters.json",
+            "partitioning_data_file": "./partitioning_inputs.json",
+        },
+        "outputs": {"json_outputs_file": "./outputs.json", "excel_outputs_file": "./data.xlsx"},
+    },
+    "models": {
+        "climate": {"climate_model_data_file": "./default_climate_models/climate_model_fair.yaml"},
+        "markets": {"markets_data_file": "./default_markets/markets.yaml"},
+        "fleet": {
+            "aircraft_inventory_model_data_file": "./default_fleet/aircraft_inventory.yaml",
+            "fleet_model_data_file": "./default_fleet/fleet.yaml",
+        },
+        "fleet_push": {
+            "classification_data_file": "./default_fleet_push/default_aircraft_classification.yaml",
+            "market_param_data_file": "./default_fleet_push/default_market_param.yaml",
+            "in_production_inventory_file": "./default_fleet_push/default_in_production_aircraft_inventory.yaml",
+            "new_aircraft_inventory_file": "./default_fleet_push/default_new_aircraft_inventory.yaml",
+            "aircraft_parameters_file": "../../utils/calibration_notebooks/fleet_calibrated_inputs_processed_here/aircraft_type_key_parameters.xlsx",
+            "fleet_snapshot_file": "../../utils/calibration_notebooks/fleet_calibrated_inputs_processed_here/agg_fleet_end_2024.xlsx",
+        },
+        "energy": {
+            "energy_carriers_model_data_file": "./default_energy_carriers/energy_carriers_data.yaml",
+            "resources_model_data_file": "./default_energy_carriers/resources_data.yaml",
+            "processes_model_data_file": "./default_energy_carriers/processes_data.yaml",
+        },
+        "operations": {"operations_model_data_file": "./default_operations/operations_data.yaml"},
+        "offsets": {"offsets_model_data_file": "./default_offsets/offsets_data.yaml"},
+        "life_cycle_assessment": {
+            "lca_model_data_file": "./default_lca/default_lca_model.json",
+            "split_by": "phase",
+        },
+        "standards": [
+            "models_traffic",
+            "models_efficiency_bottom_up",
+            "models_energy_without_fuel_effect",
+            "models_offset",
+            "models_emissions",
+            "models_sustainability",
+            "models_energy_cost",
+            "models_operation_cost_bottom_up",
+            "models_production_cost",
+            "models_abatements_cost",
+        ],
+    },
+    "regionalisation": {
+        "execution_mode": "separate_processes",
+        "global_namespace": "overall",
+        "regions": {
+            "EU_DOM": {"config_file": "data/region_eu_dom/config.yaml"},
+            "EU_INT": {"config_file": "data/region_eu_int/config.yaml"},
+        },
+        "aggregation": {
+            "sum": [
+                "co2_emissions_including_energy",
+                "co2_emissions_including_aircraft_efficiency",
+                "co2_emissions_including_load_factor",
+                "co2_emissions_last_historical_year_technology",
+                "cumulative_co2_emissions",
+                "cumulative_co2_emissions_including_aircraft_efficiency",
+                "cumulative_co2_emissions_including_load_factor",
+                "cumulative_co2_emissions_last_historical_year_technology",
+                "cumulative_carbon_offset",
+                "carbon_offset",
+                "rpk",
+                "ask",
+            ],
+            "weighted_average": [{"variable": "load_factor", "weight_by": "ask"}],
+        },
+    },
+}
 
 
 @pytest.fixture(scope="module")
@@ -450,3 +527,29 @@ def test_a_global_model_is_refused_in_separate_processes(tutorial_dir):
     """Separate processes solve each region alone, so no loop across regions can close."""
     with pytest.raises(NotImplementedError, match="global_models"):
         _with_global_model(tutorial_dir, "separate_processes")
+
+
+def test_multi_regional_process_configuration(tutorial_dir):
+    """Test that the multi-regional process properly loads the configuration."""
+    mode = "separate_processes"
+    process = _process(tutorial_dir, mode)
+    process_config = read_yaml_file(tutorial_dir / CONFIGS[mode])
+    default_config = read_yaml_file(DEFAULT_CONFIG_FILE)
+    default_config["models"]["customs"] = {}
+    default_config["data"]["inputs"]["partitioning_other_data_file"] = None
+    default_config["data"]["inputs"]["partitioning_climate_data_file"] = None
+    default_config["data"]["inputs"]["csv_data_information_file"] = None
+    default_config["models"]["life_cycle_assessment"]["methods"] = None
+    default_config["data_directory"] = None
+    SEPARATED_PROCESS_FULL_CONFIG["regionalisation"]["global_models"] = {}
+    SEPARATED_PROCESS_FULL_CONFIG["models"]["customs"] = {}
+    SEPARATED_PROCESS_FULL_CONFIG["data"]["inputs"]["partitioning_other_data_file"] = None
+    SEPARATED_PROCESS_FULL_CONFIG["data"]["inputs"]["partitioning_climate_data_file"] = None
+    SEPARATED_PROCESS_FULL_CONFIG["data"]["inputs"]["csv_data_information_file"] = None
+    SEPARATED_PROCESS_FULL_CONFIG["models"]["life_cycle_assessment"]["methods"] = None
+    SEPARATED_PROCESS_FULL_CONFIG["regionalisation"]["top_level_models"] = None
+    SEPARATED_PROCESS_FULL_CONFIG["regionalisation"]["global_models"] = None
+    SEPARATED_PROCESS_FULL_CONFIG["data_directory"] = None
+    assert process._default_config.model_dump() == default_config
+    assert process._user_config == process_config
+    assert process.config.model_dump() == SEPARATED_PROCESS_FULL_CONFIG
