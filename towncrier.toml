@@ -1,14 +1,28 @@
 [tool.towncrier]
-directory = "changelog/fragments"
+directory = "changelog"
 filename = "CHANGELOG.md"
 title_format = "## Version {version} ({project_date})"
 start_string = "<!-- towncrier release notes start -->\n"
 issue_format = "[#{issue}](https://github.com/AeroMAPS/AeroMAPS/issues/{issue})"
 
+# Definition of sections
+
+[[tool.towncrier.section]]
+name = "Web app"
+path = "app"
+
+[[tool.towncrier.section]]
+name = "Models"
+path = "models"
+
+[[tool.towncrier.section]]
+name = "Package"
+path = ""
+
 # Definition of fragment types
 [[tool.towncrier.type]]
-directory = "app"
-name = "Web App"
+directory = "feat"
+name = "Feature"
 showcontent = true
 
 [[tool.towncrier.type]]
