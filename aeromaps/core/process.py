@@ -11,7 +11,7 @@ import logging
 import os
 from json import load, dump
 from pathlib import Path
-from typing import Union
+from typing import ClassVar, Type
 import dill
 
 # Third-party imports
@@ -43,6 +43,8 @@ from aeromaps.core import models as aeromaps_models
 
 from aeromaps.models.parameters import Parameters
 from aeromaps.models.yaml_interpolator import YAMLInterpolator
+from aeromaps.process_configuration.base_process_configuration import BaseProcessConfiguration
+from aeromaps.process_configuration.process_configuration import AeroMAPSProcessConfiguration
 from aeromaps.utils.functions import (
     _dict_to_df,
     _flatten_dict,
@@ -130,14 +132,11 @@ pd.set_option("display.max_columns", 150)
 pd.set_option("max_colwidth", 200)
 pd.options.mode.chained_assignment = None
 
-# Get the directory of the current script
-CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# Construct the path to the default config.yaml file
-DEFAULT_CONFIG_PATH = os.path.join(CURRENT_DIR, "..", "resources", "data", "config.yaml")
+CURRENT_DIR = Path(__file__).resolve().parent
 
-# Base directory for resources/data (used to resolve relative paths in config.yaml)
-DEFAULT_RESOURCES_DATA_DIR = os.path.join(CURRENT_DIR, "..", "resources", "data")
+# (used to resolve relative paths in config.yaml)
+DEFAULT_RESOURCES_DATA_DIR = Path(CURRENT_DIR).parent / "resources" / "data"
 
 # The parameters every year index, output frame and coupling seed is sized on.
 YEAR_BOUND_NAMES = (
@@ -192,7 +191,7 @@ def _renamed_input_replacement(key: str):
     return None
 
 
-class AeroMAPSProcess(object):
+class AeroMAPSProcess:
     """High-level AeroMAPS process driver.
 
     This class configures parameters, instantiates discipline models,
@@ -208,6 +207,9 @@ class AeroMAPSProcess(object):
     optimisation
         Whether to configure GEMSEO for optimisation instead of a pure
         MDA chain.
+    configuration_model
+        The data model for the configuration, if used the configuration file is
+        ignored.
 
     Attributes
     ----------
@@ -255,12 +257,16 @@ class AeroMAPSProcess(object):
         Historical climate dataset used by climate-related models.
     """
 
+    _CONFIG_MODEL: ClassVar[Type[AeroMAPSProcessConfiguration]] = AeroMAPSProcessConfiguration
+    """The class to be used to load the process configuration."""
+
     def __init__(
         self,
         configuration_file=None,
         custom_models=None,
         optimisation=False,
         disable_execution_statistics=False,
+        configuration_model: AeroMAPSProcessConfiguration | None = None,
     ):
         """Initialize an AeroMAPSProcess instance.
 
@@ -273,7 +279,7 @@ class AeroMAPSProcess(object):
         ----------
         configuration_file
             Path to a configuration YAML file overriding default
-            settings.
+            settings. Ignored if a configuration_model is given to the constructor.
         custom_models
             Dictionary of additional model instances to be merged with
             the standard models loaded from the configuration file's
@@ -286,6 +292,9 @@ class AeroMAPSProcess(object):
             Whether to disable GEMSEO's execution statistics shared memory.
             If False, statistics are enabled. Set to True to disable
             (useful when running many disciplines to avoid semaphore exhaustion).
+        configuration_model
+            The data model for the configuration, if used the configuration file is
+            ignored.
         """
         # Initialize pathways_manager to None - will be populated if energy models are used
         self.pathways_manager = None
@@ -306,12 +315,6 @@ class AeroMAPSProcess(object):
 
         custom_logger_config(logging.getLogger("gemseo.utils.source_parsing"))
 
-        self.configuration_file = (
-            os.path.abspath(os.fspath(configuration_file))
-            if configuration_file is not None
-            else None
-        )
-
         # Handle execution statistics
         if disable_execution_statistics:
             from aeromaps.core.gemseo import disable_gemseo_execution_statistics
@@ -319,7 +322,7 @@ class AeroMAPSProcess(object):
             disable_gemseo_execution_statistics()
             logging.info("Disabled GEMSEO execution statistics")
 
-        self._initialize_configuration()
+        self._initialize_configuration(configuration_file, configuration_model)
 
         # Store mode flags
         self._optimisation = optimisation
@@ -370,8 +373,7 @@ class AeroMAPSProcess(object):
         ValueError
             If a model name from the config is not found in aeromaps.core.models.
         """
-        standards = self._get_config_value("models", "standards", default=[])
-
+        standards = self.config.models.standards or []
         # Bypassing standards loading if the user explicitly set an empty list (to avoid loading default models)
         # if not standards:
         #    # Fallback to default_models_top_down if no standards specified
@@ -390,8 +392,8 @@ class AeroMAPSProcess(object):
                     )
 
         # Load custom models from config if specified
-        customs = self._get_user_config_value("models", "customs", default=None)
-        if customs is not None:
+        customs = self.config.models.customs
+        if customs:
             custom_models = self._load_custom_models_from_config(customs)
             models.update(custom_models)
 
@@ -437,7 +439,9 @@ class AeroMAPSProcess(object):
 
             # Resolve the module path relative to the config file directory
             if not os.path.isabs(module_path):
-                module_path = os.path.normpath(os.path.join(self._config_base_dir, module_path))
+                module_path = os.path.normpath(
+                    os.path.join(str(self._config_base_dir), module_path)
+                )
 
             if not os.path.exists(module_path):
                 raise ValueError(
@@ -502,12 +506,20 @@ class AeroMAPSProcess(object):
         #    Currently it is driven by what should be available for models and what writes paramaters last (e.g. partitionning after custom setups)
 
         # Initialize markets registry (must precede disciplines that consume it)
+        config = self.config
         self._initialize_markets()
-        self._initialize_climate_model()
+        climate_config_was_set = self._check_if_field_was_set("climate", config.models)
+        if climate_config_was_set:
+            self._initialize_climate_model()
         self._initialize_lca_model()
-        self._initialize_generic_energy()
-        self._initialize_operations()
-        self._initialize_offsets()
+        if self._check_if_field_was_set("energy", config.models):
+            self._initialize_generic_energy()
+        operations_config_was_set = self._check_if_field_was_set("operations", config.models)
+        if operations_config_was_set:
+            self._initialize_operations()
+        offsets_config_was_set = self._check_if_field_was_set("offsets", config.models)
+        if offsets_config_was_set:
+            self._initialize_offsets()
         self._initialize_vector_inputs()
 
         # Fail loudly on stale `_2019` config keys (renamed when prospection_start_year
@@ -725,10 +737,9 @@ class AeroMAPSProcess(object):
             Path to the output JSON file. If None, the path from the
             configuration is used.
         """
-        if file_name is None:
-            file_name = self._resolve_config_path(
-                "data", "outputs", "json_outputs_file", default_filename="outputs.json"
-            )
+        if not file_name:
+            file_name = self._resolve_path_field(self.config.data.outputs, "json_outputs_file")
+
         if file_name is None:
             raise ValueError("Cannot resolve output JSON file path. Check your configuration.")
 
@@ -760,9 +771,8 @@ class AeroMAPSProcess(object):
             configuration is used.
         """
         if file_name is None:
-            file_name = self._resolve_config_path(
-                "data", "outputs", "excel_outputs_file", default_filename="data.xlsx"
-            )
+            file_name = self._resolve_path_field(self.config.data.outputs, "excel_output_file")
+
         if file_name is None:
             raise ValueError("Cannot resolve output Excel file path. Check your configuration.")
         try:
@@ -1179,230 +1189,46 @@ class AeroMAPSProcess(object):
             self.mda_chain = MDAChain(disciplines=self.disciplines, settings_model=settings)
             self._configure_mda_chain()
 
-    def _initialize_configuration(self):
-        """Load and merge configuration settings.
+    def _initialize_configuration(self, configuration_file: Path | str | None, configuration_model):
+        """Load the process configuration settings."""
+        self._default_config = AeroMAPSProcessConfiguration()
 
-        This method reads the default configuration YAML file, converts
-        relative paths to absolute paths, and merges in overrides from
-        the user-specified configuration file if provided.
+        if configuration_model:
+            self._load_configuration_from_model(configuration_model)
+        else:
+            if configuration_file is not None:
+                self.configuration_file = Path(configuration_file)
+                self.config = self._CONFIG_MODEL(**read_yaml_file(self.configuration_file))
+                self._config_base_dir = self.configuration_file.parent
+            else:
+                self.config = self._default_config
+                self._config_base_dir = DEFAULT_RESOURCES_DATA_DIR
+                self.configuration_file = None
+                logging.warning("No configuration was given, using default configuration instead.")
+        self._user_config = self.config.model_dump(exclude_unset=True)
+
+    def _load_configuration_from_model(self, configuration_model: AeroMAPSProcessConfiguration):
+        """Load the process configuration from a configuration data model.
+
+        Args:
+            configuration_model: The configuration data model.
+        Raise:
+            TypeError if the configuration model is not a :attr:`CONFIG_MODEL` instance.
         """
-        # Load the default configuration file
-        self._default_config = read_yaml_file(DEFAULT_CONFIG_PATH)
-        self.config = deepcopy(self._default_config)
-        if not self.config:
-            raise RuntimeError(
-                f"Default configuration file is empty or missing: '{DEFAULT_CONFIG_PATH}'"
+        if not isinstance(configuration_model, self._CONFIG_MODEL):
+            raise TypeError(
+                f"Expected a {self._CONFIG_MODEL}, got instead {type(configuration_model)}"
             )
-
-        # Set the base directory for resolving relative paths
-        self._config_base_dir = DEFAULT_RESOURCES_DATA_DIR
-
-        # Store user config separately to check what was explicitly set
-        self._user_config = {}
-
-        # Load the new configuration file and merge if provided
-        if self.configuration_file is not None:
-            self._user_config = read_yaml_file(self.configuration_file)
-            self._config_base_dir = os.path.dirname(self.configuration_file)
-            # Deep merge the new configuration into the default
-            self._deep_merge_config(self.config, self._user_config)
-
-    def _deep_merge_config(self, base: dict, override: dict) -> dict:
-        """Recursively merge override config into base config.
-
-        Parameters
-        ----------
-        base
-            The base configuration dictionary to merge into.
-        override
-            The override configuration dictionary.
-
-        Returns
-        -------
-        base
-            The merged configuration dictionary.
-        """
-        for key, value in override.items():
-            if key in base and isinstance(base[key], dict) and isinstance(value, dict):
-                self._deep_merge_config(base[key], value)
-            else:
-                base[key] = value
-        return base
-
-    def _get_config_value(self, *keys, default=None):
-        """Get a value from the nested configuration dictionary.
-
-        Parameters
-        ----------
-        *keys
-            Sequence of keys to navigate the nested config.
-        default
-            Default value if the key path doesn't exist.
-
-        Returns
-        -------
-        value
-            The configuration value or the default.
-        """
-        value = self.config
-        for key in keys:
-            if isinstance(value, dict) and key in value:
-                value = value[key]
-            else:
-                return default
-        return value
-
-    def _get_user_config_value(self, *keys, default=None):
-        """Get a value from the user configuration dictionary only.
-
-        This checks only the user-provided configuration, not the merged
-        config with defaults. Use this to determine if a user explicitly
-        set a value.
-
-        Parameters
-        ----------
-        *keys
-            Sequence of keys to navigate the nested config.
-        default
-            Default value if the key path doesn't exist.
-
-        Returns
-        -------
-        value
-            The user configuration value or the default.
-        """
-        value = self._user_config
-        for key in keys:
-            if isinstance(value, dict) and key in value:
-                value = value[key]
-            else:
-                return default
-        return value
-
-    def _get_default_config_value(self, *keys, default=None):
-        """Get a value from the default (package) configuration dictionary.
-
-        This checks only the default configuration from the package,
-        not the merged config with user overrides.
-
-        Parameters
-        ----------
-        *keys
-            Sequence of keys to navigate the nested config.
-        default
-            Default value if the key path doesn't exist.
-
-        Returns
-        -------
-        value
-            The default configuration value or the default.
-        """
-        value = self._default_config
-        for key in keys:
-            if isinstance(value, dict) and key in value:
-                value = value[key]
-            else:
-                return default
-        return value
-
-    def _resolve_config_file_path(self, *keys, default_filename: str = None) -> Union[Path, None]:
-        """Resolve a file path from nested config keys.
-
-        Parameters
-        ----------
-        *keys
-            Sequence of keys to navigate the nested config.
-        default_filename
-            Fallback filename if config key doesn't exist.
-
-        Returns
-        -------
-        path
-            Absolute path to the file, or None if not found.
-        """
-        path_value = self._get_config_value(*keys)
-        if path_value is None or not isinstance(path_value, str):
-            if default_filename is None:
-                return None
-            path_value = default_filename
-
-        if os.path.isabs(path_value):
-            return Path(path_value)
-
-        return Path(os.path.normpath(os.path.join(self._config_base_dir, path_value)))
-
-    def _resolve_config_path(self, *keys, default_filename: str = None) -> Union[Path, None]:
-        """Resolve a config path with fallback to default.
-
-        Parameters
-        ----------
-        *keys
-            Sequence of keys to navigate the nested config.
-        default_filename
-            Fallback filename relative to resources/data.
-
-        Returns
-        -------
-        path
-            Resolved absolute path.
-
-        Notes
-        -----
-        If the user specifies `"default"` as the value, the path will be resolved
-        from the default configuration file (relative to the package's resources/data directory).
-        This is useful when the package is installed via pip and relative paths would not work.
-        """
-        resolved_path = None
-
-        # First check if user explicitly set this in their config
-        user_value = self._get_user_config_value(*keys)
-        if user_value is not None and isinstance(user_value, str):
-            if user_value.lower() == "default":
-                # User wants to use the default value from the package's config
-                default_value = self._get_default_config_value(*keys)
-                if default_value is not None and isinstance(default_value, str):
-                    if os.path.isabs(default_value):
-                        resolved_path = Path(default_value)
-                    else:
-                        resolved_path = Path(
-                            os.path.normpath(
-                                os.path.join(DEFAULT_RESOURCES_DATA_DIR, default_value)
-                            )
-                        )
-                elif default_filename is not None:
-                    resolved_path = Path(os.path.join(DEFAULT_RESOURCES_DATA_DIR, default_filename))
-            elif os.path.isabs(user_value):
-                resolved_path = Path(user_value)
-            else:
-                resolved_path = Path(
-                    os.path.normpath(os.path.join(self._config_base_dir, user_value))
-                )
-
-        # Check if value exists in merged config (from default config)
-        elif (config_value := self._get_config_value(*keys)) is not None and isinstance(
-            config_value, str
+        if (
+            not configuration_model.data_directory
+            or not Path(configuration_model.data_directory).exists()
         ):
-            if os.path.isabs(config_value):
-                resolved_path = Path(config_value)
-            else:
-                # Resolve relative to default resources/data directory
-                resolved_path = Path(
-                    os.path.normpath(os.path.join(DEFAULT_RESOURCES_DATA_DIR, config_value))
-                )
-
-        # Fallback to default filename if provided
-        elif default_filename is not None:
-            resolved_path = Path(os.path.join(DEFAULT_RESOURCES_DATA_DIR, default_filename))
-
-        # Warn if the resolved path doesn't exist
-        if resolved_path is not None and not resolved_path.exists():
-            config_key = ".".join(keys)
-            logging.warning(
-                f"Configuration file not found: '{resolved_path}' "
-                f"(config key: {config_key}). Please check the path in your configuration file."
+            raise ValueError(
+                f"A data directory must be provided when using a {self._CONFIG_MODEL} model for configuration. Data directory is {configuration_model.data_directory}"
             )
 
-        return resolved_path
+        self.config = configuration_model
+        self._config_base_dir = configuration_model.data_directory
 
     def _initialize_data(self):
         """Initialize core data containers and indices."""
@@ -1468,11 +1294,8 @@ class AeroMAPSProcess(object):
         # Always load markets — default_markets/markets.yaml is the fallback when the
         # user config has no models.markets block.  A custom file can be pointed to via
         # models.markets.markets_data_file in the user config.yaml.
-        markets_file_path = self._resolve_config_path(
-            "models",
-            "markets",
-            "markets_data_file",
-            default_filename="default_markets/markets.yaml",
+        markets_file_path = self._resolve_path_field(
+            self.config.models.markets, "markets_data_file"
         )
         if markets_file_path is None or not markets_file_path.exists():
             return
@@ -1660,15 +1483,21 @@ class AeroMAPSProcess(object):
 
         This method calls the internal methods to read resource and
         process data, and to instantiate the generic energy carrier models.
-        Skipped if models.energy key is not present in the user configuration.
         """
-        # Check if energy models should be used (key must be present in user config)
-        energy_config = self._get_user_config_value("models", "energy", default=None)
-        if energy_config is None:
-            return
+        self.energy_resources_data = {}
+        self.energy_processes_data = {}
 
-        self._read_generic_resources_data()
-        self._read_generic_process_data()
+        energy_config = self.config.models.energy
+        energy_resources_set = self._check_if_field_was_set(
+            "resources_model_data_file", energy_config
+        )
+        if energy_resources_set:
+            self._read_generic_resources_data()
+        process_config_was_set = self._check_if_field_was_set(
+            "processes_model_data_file", energy_config
+        )
+        if process_config_was_set:
+            self._read_generic_process_data()
         self._instantiate_generic_energy_models()
 
     def _read_generic_resources_data(self):
@@ -1678,20 +1507,8 @@ class AeroMAPSProcess(object):
         flattens nested inputs, converts custom data types, and updates
         parameters and internal resource metadata.
         """
-        self.energy_resources_data = {}
-
-        # Check if resources model data file is specified in config
-        resources_config = self._get_user_config_value(
-            "models", "energy", "resources_model_data_file", default=None
-        )
-        if resources_config is None:
-            return
-
-        resources_data_file_path = self._resolve_config_path(
-            "models",
-            "energy",
-            "resources_model_data_file",
-            default_filename="default_energy_carriers/resources_data.yaml",
+        resources_data_file_path = self._resolve_path_field(
+            self.config.models.energy, "resources_model_data_file"
         )
 
         self.energy_resources_data = read_yaml_file(str(resources_data_file_path))
@@ -1721,22 +1538,9 @@ class AeroMAPSProcess(object):
         flattens nested inputs, converts custom data types, and updates
         parameters and internal process metadata.
         """
-        self.energy_processes_data = {}
-
-        # Check if processes model data file is specified in config
-        processes_config = self._get_user_config_value(
-            "models", "energy", "processes_model_data_file", default=None
+        processes_data_path = self._resolve_path_field(
+            self.config.models.energy, "processes_model_data_file"
         )
-        if processes_config is None:
-            return
-
-        processes_data_path = self._resolve_config_path(
-            "models",
-            "energy",
-            "processes_model_data_file",
-            default_filename="default_energy_carriers/processes_data.yaml",
-        )
-
         self.energy_processes_data = read_yaml_file(str(processes_data_path))
         validate_processes_data(self.energy_processes_data, str(processes_data_path))
 
@@ -1771,13 +1575,9 @@ class AeroMAPSProcess(object):
         consumption, and choice models, which are added to the models
         dictionary.
         """
-        energy_carriers_data_file_path = self._resolve_config_path(
-            "models",
-            "energy",
-            "energy_carriers_model_data_file",
-            default_filename="default_energy_carriers/energy_carriers_data.yaml",
+        energy_carriers_data_file_path = self._resolve_path_field(
+            self.config.models.energy, "energy_carriers_model_data_file"
         )
-
         self.energy_carriers_data = read_yaml_file(str(energy_carriers_data_file_path))
         validate_energy_carriers_data(
             self.energy_carriers_data, str(energy_carriers_data_file_path)
@@ -1871,19 +1671,11 @@ class AeroMAPSProcess(object):
         ``operations_contrails_gain``, ``operations_contrails_overconsumption``).
         The generic model replaces the simple operations and contrails models, so
         those are removed from the models dictionary.
-        Skipped if the models.operations key is not present in the user configuration.
         """
-        operations_config = self._get_user_config_value("models", "operations", default=None)
-        if operations_config is None:
-            return
 
-        operations_data_file_path = self._resolve_config_path(
-            "models",
-            "operations",
-            "operations_model_data_file",
-            default_filename="default_operations/operations_data.yaml",
+        operations_data_file_path = self._resolve_path_field(
+            self.config.models.operations, "operations_model_data_file"
         )
-
         self.operations_data = read_yaml_file(str(operations_data_file_path))
 
         # The first level of the yaml conf file contains all the operational concepts
@@ -1948,17 +1740,9 @@ class AeroMAPSProcess(object):
         ``carbon_offset_price``, ``noc_carbon_offset_per_ask``). The generic model
         replaces the simple offset models and the single-price offset cost model, so
         those are removed from the models dictionary.
-        Skipped if the models.offsets key is not present in the user configuration.
         """
-        offsets_config = self._get_user_config_value("models", "offsets", default=None)
-        if offsets_config is None:
-            return
-
-        offsets_data_file_path = self._resolve_config_path(
-            "models",
-            "offsets",
-            "offsets_model_data_file",
-            default_filename="default_offsets/offsets_data.yaml",
+        offsets_data_file_path = self._resolve_path_field(
+            self.config.models.offsets, "offsets_model_data_file"
         )
 
         self.offsets_data = read_yaml_file(str(offsets_data_file_path))
@@ -2029,18 +1813,9 @@ class AeroMAPSProcess(object):
         - model_settings: dict, settings for the climate model
         Refer to the documentation of AeroCM for more details: https://github.com/AeroMAPS/AeroCM
 
-        Skipped if models.climate key is not present in the user configuration.
         """
-        # Check if climate model should be used (key must be present in user config)
-        climate_config = self._get_user_config_value("models", "climate", default=None)
-        if climate_config is None:
-            return
-
-        climate_model_file_path = self._resolve_config_path(
-            "models",
-            "climate",
-            "climate_model_data_file",
-            default_filename="../climate_data/climate_model_fair.yaml",
+        climate_model_file_path = self._resolve_path_field(
+            self.config.models.climate, "climate_model_data_file"
         )
 
         if climate_model_file_path and climate_model_file_path.exists():
@@ -2065,20 +1840,18 @@ class AeroMAPSProcess(object):
 
         Skipped if models.life_cycle_assessment key is not present in the user configuration.
         """
-
-        # Check if LCA model should be used (key must be present in user config)
-        lca_config = self._get_user_config_value("models", "life_cycle_assessment", default=None)
-        if lca_config is None:
+        if not self._check_if_field_was_set("life_cycle_assessment", self.config.models):
             return
+        lca_config = self.config.models.life_cycle_assessment
 
         # Set up temporary file path for LCA model caching (for better performance within the same session)
-        config_dir = Path(self.configuration_file).resolve().parent
+        config_dir = self._config_base_dir
         tmp_dir = config_dir / "tmp"
         tmp_dir.mkdir(parents=True, exist_ok=True)  # create folder if needed
         lca_tmp_file_path = tmp_dir / "lca_tmp.pkl"
 
         # The user can specify to load the LCA model from a temporary file, e.g. if already compiled in the same session
-        if lca_config.get("lca_model_data_file") == "#tmp":
+        if lca_config.lca_model_data_file == "#tmp":
             with open(lca_tmp_file_path, "rb") as f:
                 lca_instance = dill.load(f)
             logging.info(
@@ -2088,24 +1861,18 @@ class AeroMAPSProcess(object):
             return
 
         # Otherwise, read the LCA model file path from config
-        lca_model_file_path = self._resolve_config_path(
-            "models",
-            "life_cycle_assessment",
-            "lca_model_data_file",
-            default_filename="../lca_data/default_lca_model.json",
+        lca_model_file_path = self._resolve_path_field(
+            self.config.models.life_cycle_assessment, "lca_model_data_file"
         )
+
         if lca_model_file_path and lca_model_file_path.exists():
             # If json file, use the default LCA model class
             if lca_model_file_path.suffix.lower() == ".json":
                 lca_instance = LifeCycleAssessmentDefault(
                     name="life_cycle_assessment",
                     json_file=str(lca_model_file_path),
-                    split_by=self._get_config_value(
-                        "models", "life_cycle_assessment", "split_by", default=None
-                    ),
-                    methods=self._get_config_value(
-                        "models", "life_cycle_assessment", "methods", default=None
-                    ),
+                    split_by=self.config.models.life_cycle_assessment.split_by or None,
+                    methods=self.config.models.life_cycle_assessment.methods or None,
                 )
             # If yaml file, use the custom LCA model class
             elif lca_model_file_path.suffix.lower() in [".yaml", ".yml"]:
@@ -2117,9 +1884,7 @@ class AeroMAPSProcess(object):
                 lca_instance = LifeCycleAssessmentCustom(
                     name="life_cycle_assessment",
                     configuration_file=lca_model_file_path,
-                    split_by=self._get_config_value(
-                        "models", "life_cycle_assessment", "split_by", default=None
-                    ),
+                    split_by=self.config.models.life_cycle_assessment.split_by or None,
                 )
             else:
                 raise ValueError(
@@ -2197,25 +1962,17 @@ class AeroMAPSProcess(object):
         list.
 
         """
-        # Check if fleet model should be used
-        # Fleet model is enabled only if models.fleet key exists in user config and is a dict
-        fleet_config = self._get_user_config_value("models", "fleet", default=None)
-        use_fleet_model = isinstance(fleet_config, dict)
+        use_fleet_model = self._check_if_field_was_set("fleet", self.config.models)
 
         if use_fleet_model:
-            aircraft_inventory_path = self._resolve_config_path(
-                "models",
-                "fleet",
-                "aircraft_inventory_model_data_file",
-                default_filename="default_fleet/aircraft_inventory.yaml",
+            aircraft_inventory_path = self._resolve_path_field(
+                self.config.models.fleet, "aircraft_inventory_model_data_file"
             )
 
-            fleet_config_path = self._resolve_config_path(
-                "models",
-                "fleet",
-                "fleet_model_data_file",
-                default_filename="default_fleet/fleet.yaml",
+            fleet_config_path = self._resolve_path_field(
+                self.config.models.fleet, "fleet_model_data_file"
             )
+
             self.fleet = Fleet(
                 parameters=self.parameters,
                 aircraft_inventory_path=aircraft_inventory_path,
@@ -2237,7 +1994,7 @@ class AeroMAPSProcess(object):
         self.push_fleet_model = self._get_model_instance(PassengerAircraftEfficiencyFleetPush)
         if self.push_fleet_model is not None:
             self.push_fleet_model.input_files = {
-                fkey: str(self._resolve_config_path("models", "fleet_push", fkey))
+                fkey: str(self._resolve_path_field(self.config.models.fleet_push, fkey))
                 for fkey in PUSH_FLEET_INPUT_FILE_KEYS
             }
 
@@ -2365,20 +2122,21 @@ class AeroMAPSProcess(object):
         self.parameters = Parameters()
 
         # First use main parameters.json as default values (always from resources/data)
-        default_params_path = Path(os.path.join(DEFAULT_RESOURCES_DATA_DIR, "parameters.json"))
+        default_params_path = DEFAULT_RESOURCES_DATA_DIR / "parameters.json"
         if use_defaults:
             self.parameters.read_json(file_name=str(default_params_path))
 
         # Load additional parameters from user configuration if provided
-        # Use _get_user_config_value to check what the user explicitly set
-        # (not the merged config which includes defaults)
-        json_inputs_config = self._get_user_config_value("data", "inputs", "json_inputs_file")
-        if self.configuration_file is not None and json_inputs_config is not None:
+        json_inputs_file_was_set = self._check_if_field_was_set(
+            "json_inputs_file", self.config.data.inputs
+        )
+        if json_inputs_file_was_set:
+            json_inputs_file = self.config.data.inputs.json_inputs_file
             # If the alternative file is a list of json files
-            if isinstance(json_inputs_config, list):
+            if isinstance(json_inputs_file, list):
                 merged_data = {}
-                for json_file in json_inputs_config:
-                    file_path = os.path.join(self._config_base_dir, json_file)
+                for json_file in json_inputs_file:
+                    file_path = self._config_base_dir / json_file
                     try:
                         with open(file_path, "r") as f:
                             data = load(f)
@@ -2403,10 +2161,9 @@ class AeroMAPSProcess(object):
                 self.parameters.read_json_direct(merged_data)
             # If the alternative file is a single json file
             else:
-                user_input_file_path = self._resolve_config_file_path(
-                    "data", "inputs", "json_inputs_file"
-                )
+                user_input_file_path = json_inputs_file or None
                 if user_input_file_path:
+                    user_input_file_path = self._get_absolute_path(Path(user_input_file_path))
                     self.parameters.read_json(file_name=str(user_input_file_path))
 
         # Check if parameter is pd.Series and update index
@@ -2452,8 +2209,8 @@ class AeroMAPSProcess(object):
             }
         }
         """
-        vector_inputs_data_file_path = self._resolve_config_path(
-            "data", "inputs", "partitioning_data_file", default_filename="partitioning_data.json"
+        vector_inputs_data_file_path = self._resolve_path_field(
+            self.config.data.inputs, "partitioning_data_file"
         )
 
         if vector_inputs_data_file_path is None:
@@ -2528,11 +2285,8 @@ class AeroMAPSProcess(object):
             return
 
         # Fallback to CSV file
-        climate_historical_data_file_path = self._resolve_config_path(
-            "data",
-            "inputs",
-            "partitioning_climate_data_file",
-            default_filename="../climate_data/temperature_historical_dataset.csv",
+        climate_historical_data_file_path = self._resolve_path_field(
+            self.config.data.inputs, "partitioning_climate_data_file"
         )
 
         try:
@@ -2873,12 +2627,10 @@ class AeroMAPSProcess(object):
             outputs.
         """
         if file_name is None:
-            file_name = self._resolve_config_path(
-                "data",
-                "inputs",
-                "csv_data_information_file",
-                default_filename="data_information.csv",
+            file_name = self._resolve_path_field(
+                self.config.data.inputs, "csv_data_information_file"
             )
+
         if file_name is None:
             raise ValueError(
                 "Cannot resolve data information CSV file path. Check your configuration."
@@ -2915,3 +2667,64 @@ class AeroMAPSProcess(object):
                     var_infos_df = pd.concat([var_infos_df, new_row], ignore_index=True)
 
         return var_infos_df
+
+    def _get_absolute_path(self, path: Path, base_dir: Path | str | None = None) -> Path:
+        """Return a resolved absolute path for a given path.
+        Args:
+
+            path: The path to check.
+            base_dir: Optional base directory to retrieve the absolute path from.
+        Returns:
+
+            The absolute path to the given path.
+        """
+        base = base_dir or self._config_base_dir
+        if path.is_absolute():
+            return path
+        else:
+            return Path(base) / path
+
+    def _check_if_field_was_set(
+        self, field_name: str, configuration_model: BaseProcessConfiguration
+    ) -> bool:
+        """Check if the given configuration field was set by the user or not
+
+        Args:
+            field_name: The field name to check.
+            configuration_model: The configuration data model to be checked.
+
+        Returns:
+            Wether the field was set on the model or not.
+        """
+
+        return field_name in configuration_model.model_fields_set
+
+    def _resolve_path_field(self, model: BaseProcessConfiguration, field: str) -> Path:
+        """Resolve a path-valued config field, falling back to the packaged default.
+
+        Args:
+            model (BaseProcessConfiguration): The configuration model from which the path is retrieved.
+            field (str): the field name containing the file path.
+
+        Returns:
+            Path: The absolute path to the file.
+        """
+        file_path = getattr(model, field)
+        is_default = field not in model.model_fields_set or (
+            isinstance(file_path, str) and file_path.lower() == "default"
+        )
+
+        if is_default:
+            file_path = model.model_fields[field].get_default()
+            base_dir = DEFAULT_RESOURCES_DATA_DIR
+        else:
+            base_dir = self._config_base_dir
+        path = self._get_absolute_path(Path(file_path), base_dir)
+        if not path.exists():
+            logging.warning(
+                "Configuration file not found: '%s' (field: %s.%s)",
+                path,
+                type(model).__name__,
+                field,
+            )
+        return path

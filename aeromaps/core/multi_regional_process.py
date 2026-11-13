@@ -20,7 +20,7 @@ import warnings
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from contextlib import contextmanager
 from copy import deepcopy
-from typing import Dict, List, Optional, Literal
+from typing import ClassVar, Dict, List, Optional, Literal, Type
 
 # Third-party imports
 import numpy as np
@@ -47,6 +47,10 @@ from aeromaps.plots.single_scenario import (
     available_plots,
     available_plots_fleet,
 )
+from aeromaps.process_configuration.multi_regional_process_configuration import (
+    MultiRegionalProcessConfiguration,
+)
+from aeromaps.core.gemseo import disable_gemseo_execution_statistics
 
 
 # Type alias for execution modes
@@ -159,11 +163,17 @@ class MultiRegionalProcess(AeroMAPSProcess):
     >>> global_emissions = process.data["vector_outputs"]["overall:co2_emissions"]
     """
 
+    _CONFIG_MODEL: ClassVar[Type[MultiRegionalProcessConfiguration]] = (
+        MultiRegionalProcessConfiguration
+    )
+    config: MultiRegionalProcessConfiguration
+
     def __init__(
         self,
         configuration_file: str,
         custom_models: Optional[dict] = None,
         disable_execution_statistics: Optional[bool] = None,
+        configuration_model: MultiRegionalProcessConfiguration | None = None,
     ):
         """Initialize a MultiRegionalProcess instance.
 
@@ -184,11 +194,7 @@ class MultiRegionalProcess(AeroMAPSProcess):
         # TODO: discuss if that is not satisfactory.
         logging.getLogger("gemseo.utils.source_parsing").setLevel(logging.ERROR)
 
-        # Store configuration file path early (before parent init)
-        self.configuration_file = os.path.abspath(os.fspath(configuration_file))
-
-        # Initialize configuration parsing (without full parent init)
-        self._initialize_configuration_only()
+        self._initialize_configuration(configuration_file, configuration_model)
 
         # Read regionalisation config to determine execution mode
         # How a non-converged MDA is reported: "raise" (default), "warn" or "ignore".
@@ -198,9 +204,7 @@ class MultiRegionalProcess(AeroMAPSProcess):
         self._read_regionalisation_config()
 
         # Set execution mode from config (default: separate_processes for scalability)
-        self._execution_mode: ExecutionMode = self._regionalisation_config.get(
-            "execution_mode", "separate_processes"
-        )
+        self._execution_mode = self._regionalisation_config.execution_mode
 
         # Handle execution statistics based on mode
         if disable_execution_statistics is None:
@@ -208,8 +212,6 @@ class MultiRegionalProcess(AeroMAPSProcess):
             disable_execution_statistics = self._execution_mode == "unified_mda"
 
         if disable_execution_statistics:
-            from aeromaps.core.gemseo import disable_gemseo_execution_statistics
-
             disable_gemseo_execution_statistics()
             logging.info("Disabled GEMSEO execution statistics")
 
@@ -249,39 +251,13 @@ class MultiRegionalProcess(AeroMAPSProcess):
             f"in '{self._execution_mode}' mode"
         )
 
-    def _initialize_configuration_only(self):
-        """Load configuration without triggering full AeroMAPSProcess initialization."""
-        from aeromaps.utils.yaml import read_yaml_file
-
-        # Load default config
-        from aeromaps.core.process import DEFAULT_CONFIG_PATH, DEFAULT_RESOURCES_DATA_DIR
-
-        self._default_config = read_yaml_file(DEFAULT_CONFIG_PATH)
-        self.config = deepcopy(self._default_config)
-        self._config_base_dir = DEFAULT_RESOURCES_DATA_DIR
-        self._user_config = {}
-
-        # Load user config if provided
-        if self.configuration_file is not None:
-            self._user_config = read_yaml_file(self.configuration_file)
-            self._config_base_dir = os.path.dirname(self.configuration_file)
-            self._deep_merge_config(self.config, self._user_config)
-
-    # Note: _deep_merge_config and _get_user_config_value are inherited from AeroMAPSProcess
-
     def _read_regionalisation_config(self):
         """Read and validate the regionalisation configuration."""
-        regionalisation_config = self._get_user_config_value("regionalisation", default=None)
-
-        if regionalisation_config is None:
-            raise ValueError(
-                "MultiRegionalProcess requires a 'regionalisation' section in the config file."
-            )
+        regionalisation_config = self.config.regionalisation
 
         self._regionalisation_config = regionalisation_config
-
         # Extract region definitions
-        regions_config = regionalisation_config.get("regions", {})
+        regions_config = regionalisation_config.regions
         if not regions_config:
             raise ValueError(
                 "Regionalisation config must specify at least one region under 'regions' key."
@@ -292,7 +268,7 @@ class MultiRegionalProcess(AeroMAPSProcess):
 
         # Resolve region config file paths
         for region_id, region_data in regions_config.items():
-            config_file = region_data.get("config_file")
+            config_file = region_data.config_file
             if config_file is None:
                 raise ValueError(f"Region '{region_id}' must specify a 'config_file'.")
 
@@ -301,13 +277,12 @@ class MultiRegionalProcess(AeroMAPSProcess):
 
             self._region_configs[region_id] = config_file
 
-        # Store aggregation config and global namespace
-        self._aggregation_config = regionalisation_config.get("aggregation", {})
-        self._global_namespace = regionalisation_config.get("global_namespace", "overall")
+        self._aggregation_config = regionalisation_config.aggregation
+        self._global_namespace = regionalisation_config.global_namespace
 
         logging.info(
             f"Multi-regional configuration: {len(self._region_ids)} regions, "
-            f"execution_mode='{self._regionalisation_config.get('execution_mode', 'separate_processes')}'"
+            f"execution_mode='{regionalisation_config.execution_mode}'"
         )
 
     def _create_regional_processes(self):
@@ -373,13 +348,14 @@ class MultiRegionalProcess(AeroMAPSProcess):
         """
         self._top_level_model_names = []
 
-        top_level_config = self._regionalisation_config.get("top_level_models", {})
+        top_level_config = self._regionalisation_config.top_level_models
         if not top_level_config:
             return
 
         # Resolve standard model groups by name from aeromaps.core.models
         loaded = {}
-        for model_name in top_level_config.get("standards", []):
+        top_level_config
+        for model_name in top_level_config.standards:
             if hasattr(aeromaps_models, model_name):
                 loaded[model_name] = getattr(aeromaps_models, model_name)
             else:
@@ -389,7 +365,7 @@ class MultiRegionalProcess(AeroMAPSProcess):
                 )
 
         # Resolve custom models (path::Class specs), reusing the AeroMAPSProcess loader
-        customs = top_level_config.get("customs", None)
+        customs = top_level_config.customs
         if customs is not None:
             loaded.update(self._load_custom_models_from_config(customs))
 
@@ -549,12 +525,13 @@ class MultiRegionalProcess(AeroMAPSProcess):
         """
         self._global_model_names = []
 
-        global_config = self._regionalisation_config.get("global_models", {})
+        global_config = self._regionalisation_config.global_models
         if not global_config:
             return
 
+        global_config = global_config
         loaded = {}
-        for model_name in global_config.get("standards", []):
+        for model_name in global_config.standards:
             if hasattr(aeromaps_models, model_name):
                 loaded[model_name] = getattr(aeromaps_models, model_name)
             else:
@@ -563,8 +540,8 @@ class MultiRegionalProcess(AeroMAPSProcess):
                     f"global_models.standards' is not found in aeromaps.core.models."
                 )
 
-        customs = global_config.get("customs", None)
-        if customs is not None:
+        customs = global_config.customs
+        if customs:
             loaded.update(self._load_custom_models_from_config(customs))
 
         self._register_models_into(loaded, self._global_model_names)
