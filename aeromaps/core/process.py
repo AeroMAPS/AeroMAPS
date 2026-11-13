@@ -11,7 +11,7 @@ import logging
 import os
 from json import load, dump
 from pathlib import Path
-from typing import Type
+from typing import ClassVar, Type
 import dill
 
 # Third-party imports
@@ -207,6 +207,9 @@ class AeroMAPSProcess:
     optimisation
         Whether to configure GEMSEO for optimisation instead of a pure
         MDA chain.
+    configuration_model
+        The data model for the configuration, if used the configuration file is
+        ignored.
 
     Attributes
     ----------
@@ -254,7 +257,7 @@ class AeroMAPSProcess:
         Historical climate dataset used by climate-related models.
     """
 
-    CONFIG_MODEL: Type[AeroMAPSProcessConfiguration] = AeroMAPSProcessConfiguration
+    _CONFIG_MODEL: ClassVar[Type[AeroMAPSProcessConfiguration]] = AeroMAPSProcessConfiguration
     """The class to be used to load the process configuration."""
 
     def __init__(
@@ -289,7 +292,7 @@ class AeroMAPSProcess:
             Whether to disable GEMSEO's execution statistics shared memory.
             If False, statistics are enabled. Set to True to disable
             (useful when running many disciplines to avoid semaphore exhaustion).
-        configuration_model:
+        configuration_model
             The data model for the configuration, if used the configuration file is
             ignored.
         """
@@ -1195,7 +1198,7 @@ class AeroMAPSProcess:
         else:
             if configuration_file is not None:
                 self.configuration_file = Path(configuration_file)
-                self.config = self.CONFIG_MODEL(**read_yaml_file(self.configuration_file))
+                self.config = self._CONFIG_MODEL(**read_yaml_file(self.configuration_file))
                 self._config_base_dir = self.configuration_file.parent
             else:
                 self.config = self._default_config
@@ -1212,16 +1215,16 @@ class AeroMAPSProcess:
         Raise:
             TypeError if the configuration model is not a :attr:`CONFIG_MODEL` instance.
         """
-        if not isinstance(configuration_model, self.CONFIG_MODEL):
+        if not isinstance(configuration_model, self._CONFIG_MODEL):
             raise TypeError(
-                f"Expected a {self.CONFIG_MODEL}, got instead {type(configuration_model)}"
+                f"Expected a {self._CONFIG_MODEL}, got instead {type(configuration_model)}"
             )
         if (
             not configuration_model.data_directory
             or not Path(configuration_model.data_directory).exists()
         ):
             raise ValueError(
-                f"A data directory must be provided when using a {self.CONFIG_MODEL} model for configuration. Data directory is {configuration_model.data_directory}"
+                f"A data directory must be provided when using a {self._CONFIG_MODEL} model for configuration. Data directory is {configuration_model.data_directory}"
             )
 
         self.config = configuration_model

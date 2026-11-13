@@ -20,7 +20,7 @@ import warnings
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from contextlib import contextmanager
 from copy import deepcopy
-from typing import Dict, List, Optional, Literal, Type
+from typing import ClassVar, Dict, List, Optional, Literal, Type
 
 # Third-party imports
 import numpy as np
@@ -163,7 +163,9 @@ class MultiRegionalProcess(AeroMAPSProcess):
     >>> global_emissions = process.data["vector_outputs"]["overall:co2_emissions"]
     """
 
-    CONFIG_MODEL: Type[MultiRegionalProcessConfiguration] = MultiRegionalProcessConfiguration
+    _CONFIG_MODEL: ClassVar[Type[MultiRegionalProcessConfiguration]] = (
+        MultiRegionalProcessConfiguration
+    )
     config: MultiRegionalProcessConfiguration
 
     def __init__(
