@@ -9,7 +9,6 @@ AeroMAPS framework.
 import json
 import logging
 import os
-import warnings
 from json import load, dump
 from pathlib import Path
 from typing import ClassVar, Type
@@ -2767,15 +2766,12 @@ class AeroMAPSProcess:
 
     def _load_data_information(self, file_name=None) -> DataInformation:
         """Return the metadata registry, loading it from the configured file once."""
-        resolved_path = self._resolve_path_field(
-                self.config.data.inputs, "csv_data_information_file"
-            )
+        resolved_path = self._resolve_path_field(self.config.data.inputs, "data_information_file")
         file_name = file_name or resolved_path
         new_file = file_name != resolved_path
         if self._data_information is None or new_file:
             self._data_information = DataInformation.from_file(file_name)
         return self._data_information
-
 
     def _build_data_information_df(self):
         """Build the consolidated metadata table of the process data.
@@ -2835,7 +2831,7 @@ class AeroMAPSProcess:
 
         return field_name in configuration_model.model_fields_set
 
-    def _resolve_path_field(self, model: BaseProcessConfiguration, field: str) -> Path:
+    def _resolve_path_field(self, model: BaseProcessConfiguration, field: str) -> Path | None:
         """Resolve a path-valued config field, falling back to the packaged default.
 
         Args:
@@ -2843,9 +2839,11 @@ class AeroMAPSProcess:
             field (str): the field name containing the file path.
 
         Returns:
-            Path: The absolute path to the file.
+            The absolute path to the file or None if the path is none.
         """
         file_path = getattr(model, field)
+        if not file_path:
+            return None
         is_default = field not in model.model_fields_set or (
             isinstance(file_path, str) and file_path.lower() == "default"
         )

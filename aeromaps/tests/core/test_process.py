@@ -23,7 +23,7 @@ BASIC_FULL_CONFIG_FILE = CONFIG_DIR / "config_basic_full.yaml"
 MERGED_BASIC_FULL_CONFIG = {
     "data": {
         "inputs": {
-            "csv_data_information_file": "./data_information.csv",
+            "data_information_file": "./data_information.yaml",
             "json_inputs_file": "./parameters.json",
             "partitioning_data_file": "./partitioning_inputs.json",
         },
@@ -258,10 +258,12 @@ def test_process_configuration():
     default_config["data"]["inputs"]["partitioning_other_data_file"] = None
     default_config["data"]["inputs"]["partitioning_climate_data_file"] = None
     default_config["models"]["life_cycle_assessment"]["methods"] = None
+    default_config["data"]["inputs"]["csv_data_information_file"] = None
     default_config["data_directory"] = None
     MERGED_BASIC_FULL_CONFIG["models"]["customs"] = {}
     MERGED_BASIC_FULL_CONFIG["data"]["inputs"]["partitioning_other_data_file"] = None
     MERGED_BASIC_FULL_CONFIG["data"]["inputs"]["partitioning_climate_data_file"] = None
+    MERGED_BASIC_FULL_CONFIG["data"]["inputs"]["csv_data_information_file"] = None
     MERGED_BASIC_FULL_CONFIG["models"]["life_cycle_assessment"]["methods"] = None
     MERGED_BASIC_FULL_CONFIG["data_directory"] = None
     assert process._user_config == basic_full_config

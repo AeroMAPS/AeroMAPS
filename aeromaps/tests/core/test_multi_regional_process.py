@@ -50,7 +50,7 @@ SINGLE_REGION_MAX_ITER = 200
 SEPARATED_PROCESS_FULL_CONFIG = {
     "data": {
         "inputs": {
-            "csv_data_information_file": "./data_information.csv",
+            "data_information_file": "./data_information.yaml",
             "json_inputs_file": "./parameters.json",
             "partitioning_data_file": "./partitioning_inputs.json",
         },
@@ -538,12 +538,14 @@ def test_multi_regional_process_configuration(tutorial_dir):
     default_config["models"]["customs"] = {}
     default_config["data"]["inputs"]["partitioning_other_data_file"] = None
     default_config["data"]["inputs"]["partitioning_climate_data_file"] = None
+    default_config["data"]["inputs"]["csv_data_information_file"] = None
     default_config["models"]["life_cycle_assessment"]["methods"] = None
     default_config["data_directory"] = None
     SEPARATED_PROCESS_FULL_CONFIG["regionalisation"]["global_models"] = {}
     SEPARATED_PROCESS_FULL_CONFIG["models"]["customs"] = {}
     SEPARATED_PROCESS_FULL_CONFIG["data"]["inputs"]["partitioning_other_data_file"] = None
     SEPARATED_PROCESS_FULL_CONFIG["data"]["inputs"]["partitioning_climate_data_file"] = None
+    SEPARATED_PROCESS_FULL_CONFIG["data"]["inputs"]["csv_data_information_file"] = None
     SEPARATED_PROCESS_FULL_CONFIG["models"]["life_cycle_assessment"]["methods"] = None
     SEPARATED_PROCESS_FULL_CONFIG["regionalisation"]["top_level_models"] = None
     SEPARATED_PROCESS_FULL_CONFIG["regionalisation"]["global_models"] = None
