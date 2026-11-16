@@ -147,7 +147,7 @@ class DataInformation:
         return valid_patterns
 
     @classmethod
-    def from_file(cls, file_name) -> DataInformation:
+    def from_file(cls, file_name: str | Path) -> DataInformation:
         """
         Load metadata from a YAML file (or a legacy CSV file).
 
@@ -169,11 +169,11 @@ class DataInformation:
                 "aeromaps/resources/data).",
                 DeprecationWarning,
             )
-            return cls.from_csv(path)
-        return cls.from_yaml(path)
+            return cls._from_csv(path)
+        return cls._from_yaml(path)
 
     @classmethod
-    def from_yaml(cls, file_name) -> DataInformation:
+    def _from_yaml(cls, file_name) -> DataInformation:
         """Load metadata from the YAML format (sections 'variables' and 'patterns')."""
         content = read_yaml_file(file_name)
         return cls(
@@ -183,7 +183,7 @@ class DataInformation:
         )
 
     @classmethod
-    def from_csv(cls, file_name) -> DataInformation:
+    def _from_csv(cls, file_name) -> DataInformation:
         """Load metadata from the legacy semicolon-separated CSV format."""
         try:
             df = pd.read_csv(file_name, encoding="utf-8-sig", sep=";")

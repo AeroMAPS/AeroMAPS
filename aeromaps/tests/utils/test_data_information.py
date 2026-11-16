@@ -182,7 +182,9 @@ def test_legacy_csv_is_deprecated_but_supported(tmp_path):
         "rpk;Vector;RPK;Revenue Passenger Kilometer;ICAO\n",
         encoding="utf-8",
     )
-    with pytest.warns(DeprecationWarning):
+    with pytest.warns(
+        DeprecationWarning, match=r"Reading data information from CSV \('.*'\) is deprecated\."
+    ):
         info = DataInformation.from_file(csv_file)
     entry = info.lookup("rpk")
     assert entry["Unit"] == "RPK"
@@ -199,7 +201,7 @@ def test_bad_csv_file(tmp_path):
     )
 
     with pytest.raises(FileNotFoundError) as e:
-        DataInformation.from_csv("fake_file.csv")
+        DataInformation.from_file("fake_file.csv")
     assert "Data information file not found:" in str(e.value)
     # TODO: Can't replicate exception explicitly.
     # with pytest.raises(ValueError) as e:
