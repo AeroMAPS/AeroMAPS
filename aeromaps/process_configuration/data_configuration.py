@@ -3,7 +3,7 @@
 from pathlib import Path
 import warnings
 
-from pydantic import model_validator
+from pydantic import field_validator, model_validator
 from aeromaps.process_configuration.base_process_configuration import BaseProcessConfiguration
 
 
@@ -39,10 +39,28 @@ class ProcessDataInputs(BaseProcessConfiguration):
             data["data_information_file"] = data.pop("csv_data_information_file")
             warnings.warn(
                 "The 'csv_data_information_file' configuration key is deprecated. "
-                "Use 'data_information_file' with a YAML file instead.",
+                "Use 'data_information_file' with a YAML file instead. "
+                "Check the documentation for more information.",
                 DeprecationWarning,
             )
         return data
+
+    @field_validator("data_information_file", mode="before")
+    @classmethod
+    def check_data_information_file_format(cls, value: str | Path | None):
+        value_is_default = isinstance(value, str) and value.lower() == "default"
+        value_is_path = value is not None and not value_is_default
+        if value_is_path:
+            path = Path(value)
+            is_csv = path.suffix == ".csv"
+
+            if is_csv:
+                warnings.warn(
+                    "`.csv` format data information file is deprecated. "
+                    "Use a YAML file instead. Check the documentation for more information.",
+                    DeprecationWarning,
+                )
+        return value
 
 
 class ProcessDataOutputs(BaseProcessConfiguration):
