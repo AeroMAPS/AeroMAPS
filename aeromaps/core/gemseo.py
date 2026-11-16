@@ -89,7 +89,8 @@ from gemseo.disciplines.auto_py import AutoPyDiscipline
 from gemseo.core.discipline import Discipline
 
 from aeromaps.models.base import AeroMAPSModel
-from aeromaps.units.units import UnitError, normalize_unit, parse_unit
+from aeromaps.units.parsing import normalize_unit, parse_unit
+from aeromaps.units.unit_error import UnitError
 
 if TYPE_CHECKING:
     from gemseo.typing import NumberArray

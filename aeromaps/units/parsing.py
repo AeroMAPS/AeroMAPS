@@ -15,13 +15,11 @@ which are kept dimensionally distinct per species so that, for instance, tCO2
 and tCO2e cannot be silently mixed.
 """
 
+from __future__ import annotations
 from dataclasses import dataclass
 from functools import lru_cache
+from aeromaps.units.unit_error import UnitError
 from aeromaps.units.units_vocabulary import ATOMIC_UNITS, UNIT_ALIASES, _SPECIES_MASS_RE, _TOKEN_RE
-
-
-class UnitError(ValueError):
-    """Raised when a unit string cannot be parsed or units are incompatible."""
 
 
 @dataclass(frozen=True)
@@ -54,7 +52,7 @@ class Unit:
 
         return "·".join(f"{d}{_exp(e)}" for d, e in self.dims)
 
-    def is_compatible_with(self, other: "Unit") -> bool:
+    def is_compatible_with(self, other: Unit) -> bool:
         """Return True if both units share the same dimension."""
         return self.dims == other.dims
 

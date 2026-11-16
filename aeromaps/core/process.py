@@ -41,7 +41,7 @@ from aeromaps.core.gemseo import (
     check_coupling_units,
     strip_namespace,
 )
-from aeromaps.units.units import UnitError
+from aeromaps.units.unit_error import UnitError
 from aeromaps.core import models as aeromaps_models
 
 from aeromaps.models.parameters import Parameters

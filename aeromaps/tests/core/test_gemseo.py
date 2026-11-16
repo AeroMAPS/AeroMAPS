@@ -18,7 +18,7 @@ from aeromaps.core.gemseo import (
 )
 from aeromaps.models.base import AeroMAPSModel
 from aeromaps.data_information.data_information import DataInformation
-from aeromaps.units.units import UnitError
+from aeromaps.units.unit_error import UnitError
 
 
 class DummyModel(AeroMAPSModel):

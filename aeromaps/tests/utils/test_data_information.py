@@ -10,7 +10,8 @@ from yaml import YAMLError
 
 from aeromaps.data_information.variable_model import Variable
 from aeromaps.data_information.data_information import DataInformation
-from aeromaps.units.units import UnitError, normalize_unit, parse_unit
+from aeromaps.units.parsing import normalize_unit, parse_unit
+from aeromaps.units.unit_error import UnitError
 
 DEFAULT_FILE = Path(__file__).parent.parent.parent / "resources" / "data" / "data_information.yaml"
 
