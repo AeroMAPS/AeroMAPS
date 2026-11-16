@@ -1,6 +1,6 @@
 """Units validator for data models."""
 
-from aeromaps.utils.units import UnitError, parse_unit
+from aeromaps.units.units import UnitError, parse_unit
 
 
 def unit_validator(unit: str, context: str) -> str:

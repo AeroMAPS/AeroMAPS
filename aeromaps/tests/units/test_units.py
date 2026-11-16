@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from aeromaps.utils.units import (
+from aeromaps.units.units import (
     UnitError,
     convert,
     convert_factor,
