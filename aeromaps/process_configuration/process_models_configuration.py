@@ -1,12 +1,22 @@
 """AeroMAPS process models configuration."""
 
-from enum import StrEnum
+from enum import Enum
 from typing import Any
 
 # from pydantic import field_validator
 
 from aeromaps.process_configuration.base_process_configuration import BaseProcessConfiguration
 from pathlib import Path
+
+
+# TODO: To be removed once support for 3.10 is dropped.
+# Work around as StrEnum is not available on python 3.10.
+try:
+    from enum import StrEnum
+except ImportError:
+
+    class StrEnum(str, Enum):
+        pass
 
 
 class StandardModels(StrEnum):
