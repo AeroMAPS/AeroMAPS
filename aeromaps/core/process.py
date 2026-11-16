@@ -2688,7 +2688,8 @@ class AeroMAPSProcess:
             DataFrame summarizing inputs and outputs with metadata from
             the data information CSV file.
         """
-        return self._read_data_information()
+        self._load_data_information()
+        return self._build_data_information_df()
 
     def _data_to_json(self):
         """Convert internal data structures into JSON-compatible containers.
@@ -2739,30 +2740,6 @@ class AeroMAPSProcess:
         # )
 
         return json_data
-
-    def _read_data_information(self, file_name=None):
-        """Read and merge variable metadata from the data information file.
-
-        This method scans the current inputs and outputs, looks up their
-        metadata (unit, description, source) in the data information
-        registry, and builds a consolidated table. The registry is a YAML
-        file (see ``aeromaps/utils/data_information.py``); the legacy CSV
-        format is still supported for backward compatibility.
-
-        Parameters
-        ----------
-        file_name
-            Path to the data information file. If None, the path from the
-            configuration is used.
-
-        Returns
-        -------
-        data_information_df
-            DataFrame containing metadata for all current inputs and
-            outputs.
-        """
-        self._load_data_information(file_name=file_name)
-        return self._build_data_information_df()
 
     def _load_data_information(self, file_name=None) -> DataInformation:
         """Return the metadata registry, loading it from the configured file once."""
