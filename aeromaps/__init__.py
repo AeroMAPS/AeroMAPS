@@ -11,6 +11,10 @@ from typing import Optional, Union
 from aeromaps.core.process import AeroMAPSProcess
 from aeromaps.core.multi_regional_process import MultiRegionalProcess
 from aeromaps.core.processes_assembly import AeroMAPSProcessesAssembly
+from aeromaps.process_configuration.multi_regional_process_configuration import (
+    MultiRegionalProcessConfiguration,
+)
+from aeromaps.process_configuration.process_configuration import AeroMAPSProcessConfiguration
 
 
 def create_process(
@@ -19,6 +23,9 @@ def create_process(
     optimisation: bool = False,
     multi_regional: bool = False,
     disable_execution_statistics: Optional[bool] = None,
+    process_configuration_data_model: AeroMAPSProcessConfiguration
+    | MultiRegionalProcessConfiguration
+    | None = None,
 ) -> Union[AeroMAPSProcess, MultiRegionalProcess]:
     """
     Create an AeroMAPS process, auto-detecting single vs multi-regional mode.
@@ -99,6 +106,7 @@ def create_process(
             configuration_file=configuration_file,
             custom_models=custom_models,
             disable_execution_statistics=disable_execution_statistics,
+            configuration_model=process_configuration_data_model,
         )
     else:
         return AeroMAPSProcess(
@@ -106,6 +114,7 @@ def create_process(
             custom_models=custom_models,
             optimisation=optimisation,
             disable_execution_statistics=disable_execution_statistics,
+            configuration_model=process_configuration_data_model,
         )
 
 

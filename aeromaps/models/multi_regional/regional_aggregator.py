@@ -11,6 +11,9 @@ import numpy as np
 from typing import Dict, List, Any
 
 from aeromaps.models.base import AeroMAPSModel
+from aeromaps.process_configuration.multi_regional_process_configuration import (
+    AggregationConfiguration,
+)
 
 
 class RegionalAggregator(AeroMAPSModel):
@@ -85,19 +88,23 @@ class RegionalAggregator(AeroMAPSModel):
         self,
         name: str,
         regions: List[str],
-        aggregation_config: Dict[str, Any],
+        aggregation_config: AggregationConfiguration | Dict[str, Any],
         global_namespace: str = "overall",
         parameters=None,
     ):
         super().__init__(name=name, parameters=parameters, model_type="custom")
 
         self.regions = regions
-        self.aggregation_config = aggregation_config
+        self.aggregation_config = (
+            aggregation_config
+            if isinstance(aggregation_config, AggregationConfiguration)
+            else AggregationConfiguration(**aggregation_config)
+        )
         self.global_namespace = global_namespace
 
         # Parse aggregation config
-        self.sum_variables = aggregation_config.get("sum", [])
-        self.weighted_avg_configs = aggregation_config.get("weighted_average", [])
+        self.sum_variables = aggregation_config.sum
+        self.weighted_avg_configs = aggregation_config.weighted_average
 
         # The variables' types cannot be known when the grammars are built: regional
         # outputs may be vector series, climate series or floats, and some (e.g.
@@ -126,8 +133,8 @@ class RegionalAggregator(AeroMAPSModel):
 
         # For weighted average: need both the variable and the weight
         for config in self.weighted_avg_configs:
-            var = config["variable"]
-            weight = config["weight_by"]
+            var = config.variable
+            weight = config.weight_by
 
             for region in self.regions:
                 # Need the variable
@@ -178,8 +185,8 @@ class RegionalAggregator(AeroMAPSModel):
 
         # Weighted average aggregation
         for config in self.weighted_avg_configs:
-            var = config["variable"]
-            weight = config["weight_by"]
+            var = config.variable
+            weight = config.weight_by
             weighted_avg = self._aggregate_weighted_average(input_data, var, weight)
             if weighted_avg is None:
                 raise ValueError(
