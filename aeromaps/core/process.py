@@ -1191,8 +1191,6 @@ class AeroMAPSProcess:
 
     def _initialize_configuration(self, configuration_file: Path | str | None, configuration_model):
         """Load the process configuration settings."""
-        self._default_config = AeroMAPSProcessConfiguration()
-
         if configuration_model:
             self._load_configuration_from_model(configuration_model)
         else:
@@ -1201,11 +1199,10 @@ class AeroMAPSProcess:
                 self.config = self._CONFIG_MODEL(**read_yaml_file(self.configuration_file))
                 self._config_base_dir = self.configuration_file.parent
             else:
-                self.config = self._default_config
+                self.config = self._CONFIG_MODEL()
                 self._config_base_dir = DEFAULT_RESOURCES_DATA_DIR
                 self.configuration_file = None
                 logging.warning("No configuration was given, using default configuration instead.")
-        self._user_config = self.config.model_dump(exclude_unset=True)
 
     def _load_configuration_from_model(self, configuration_model: AeroMAPSProcessConfiguration):
         """Load the process configuration from a configuration data model.

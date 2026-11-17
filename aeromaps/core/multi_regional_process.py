@@ -166,7 +166,6 @@ class MultiRegionalProcess(AeroMAPSProcess):
     _CONFIG_MODEL: ClassVar[Type[MultiRegionalProcessConfiguration]] = (
         MultiRegionalProcessConfiguration
     )
-    config: MultiRegionalProcessConfiguration
 
     def __init__(
         self,
