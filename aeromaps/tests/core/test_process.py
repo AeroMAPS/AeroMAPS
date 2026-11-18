@@ -186,8 +186,23 @@ def test_process_configuration_with_config_model():
     """Test that the process can be configured with an instance of the configuration data model."""
     config = AeroMAPSProcessConfiguration(**read_yaml_file(BASIC_FULL_CONFIG_FILE))
     config.data_directory = Path(BASIC_FULL_CONFIG_FILE).parent
-    process = create_process(
-        configuration_file=BASIC_FULL_CONFIG_FILE, process_configuration_data_model=config
-    )
+    process = create_process(process_configuration_data_model=config)
 
     assert isinstance(process.config, AeroMAPSProcessConfiguration)
+
+
+def test_error_with_config_model_no_directory():
+    """Test that an error is raised when a process is instantiated with a configuration model without a data directory."""
+    config = AeroMAPSProcessConfiguration()
+    with pytest.raises(
+        ValueError, match=r"A data directory must be provided when using a .+ model"
+    ):
+        create_process(process_configuration_data_model=config)
+
+
+def test_error_with_wrong_configuration_model_object():
+    """Test that an error is raise when instantiating a process given an object that's not a configuration model as argument."""
+    config = {"foo": "bar"}
+
+    with pytest.raises(TypeError, match=r"Expected a .+, got instead .+"):
+        create_process(process_configuration_data_model=config)
