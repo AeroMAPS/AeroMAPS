@@ -200,4 +200,4 @@ class ProcessModelsConfiguration(BaseModelConfiguration):
     )
     """The optional life cycle assessment model configuration of the process."""
 
-    standards = [model.value for model in StandardModels]
+    standards: list[str] = [model.value for model in StandardModels]

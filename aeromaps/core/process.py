@@ -2724,4 +2724,4 @@ class AeroMAPSProcess:
                 type(model).__name__,
                 field,
             )
-        return path
+        return path.resolve()
