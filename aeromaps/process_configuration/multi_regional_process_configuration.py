@@ -13,7 +13,7 @@ class RegionConfiguration(BaseProcessConfiguration):
     """The multi-regional process region configuration."""
 
     config_file: str | None = None
-    """The region configuration file, either relative or absolute.."""
+    """The region configuration file, either relative or absolute."""
 
 
 class WeightedAverageConfiguration(BaseProcessConfiguration):
@@ -37,7 +37,7 @@ class AggregationConfiguration(BaseProcessConfiguration):
 
 
 class RegionalisationConfiguration(BaseProcessConfiguration):
-    """The process' regionalisation configuration."""
+    """The regionalisation configuration of the process."""
 
     execution_mode: Literal["separate_processes", "unified_mda"] = "separate_processes"
     """The multi-regional process execution mode."""
@@ -46,7 +46,10 @@ class RegionalisationConfiguration(BaseProcessConfiguration):
     """Namespace prefix for aggregated global outputs."""
 
     regions: dict[str, RegionConfiguration] = {}
-    """The region name to region configuration mapping of regions for the multi-regional process."""
+    """The regions configuration for the multi-regional process.
+    Each region contains it's own configuration that follow the same structure as the
+    `AeroMAPSProcessConfiguration` class and it gets validated against it.
+    """
 
     aggregation: AggregationConfiguration = AggregationConfiguration()
     """Process aggregation configuration."""
@@ -55,11 +58,12 @@ class RegionalisationConfiguration(BaseProcessConfiguration):
     """Models to  deliberately keep out of the multi-regional process namespacing."""
 
     top_level_models: BaseModelConfiguration | None = None
-    """Models that operate in a global namespace (under :attr:`MultiRegionalProcess._global_namespace`) in the multi-regional process."""
+    """Optional models that operate in a global namespace 
+    (under :attr:`MultiRegionalProcess._global_namespace`) in the multi-regional process."""
 
 
 class MultiRegionalProcessConfiguration(AeroMAPSProcessConfiguration):
     """Configuration data model for multi-regional processes."""
 
     regionalisation: RegionalisationConfiguration = RegionalisationConfiguration()
-    """The process' regionalisation configuration."""
+    """The regionalisation configuration of the process."""
