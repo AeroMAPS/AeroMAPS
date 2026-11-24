@@ -139,6 +139,7 @@ def market_process(
     future_ac_carac,
     ask_series,
     last_historical_year,
+    segment=None,
 ):
     """Pure, side-effect-free fleet-renewal engine for a single market segment.
 
@@ -155,6 +156,8 @@ def market_process(
     last_historical_year : int
         Pivot / calibration base year. ``first_projection_year`` is derived as
         ``last_historical_year + 1``.
+    segment : str, optional
+        Market segment label (e.g. ``"TP"``), used only in error messages.
 
     Returns
     -------
@@ -272,8 +275,15 @@ def market_process(
     )
     # Capacity check (legacy behaviour): raise when the delivered fleet activity
     # cannot meet the demand. A failed simulation in that case is acceptable.
-    if np.any(fleet_delivered_activity < 0.999999 * yearly_traffic):
-        raise ValueError("not enough aircraft in the fleet to meet the demand in market segment")
+    shortfall = fleet_delivered_activity < 0.999999 * yearly_traffic
+    if np.any(shortfall):
+        first = int(np.argmax(shortfall))
+        raise ValueError(
+            f"Not enough aircraft in the fleet to meet the demand in market segment "
+            f"'{segment}': first shortfall in {last_historical_year + first} "
+            f"(fleet activity {fleet_delivered_activity[first]:.4g} ASK vs demand "
+            f"{yearly_traffic[first]:.4g} ASK)."
+        )
 
     # retirement propensity array
     ret_year_delay_type = np.concatenate(
