@@ -1485,15 +1485,9 @@ class AeroMAPSProcess:
         self.energy_processes_data = {}
 
         energy_config = self.config.models.energy
-        energy_resources_set = self._check_if_field_was_set(
-            "resources_model_data_file", energy_config
-        )
-        if energy_resources_set:
+        if energy_config.resources_model_data_file:
             self._read_generic_resources_data()
-        process_config_was_set = self._check_if_field_was_set(
-            "processes_model_data_file", energy_config
-        )
-        if process_config_was_set:
+        if energy_config.processes_model_data_file:
             self._read_generic_process_data()
         self._instantiate_generic_energy_models()
 
