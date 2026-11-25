@@ -1989,64 +1989,70 @@ class AeroMAPSProcess:
                 for fkey in PUSH_FLEET_INPUT_FILE_KEYS
             }
 
-        def check_instance_in_dict(d):
-            # todo rename that function as it is now clearly much more than just checking instance in dict... ;)
-            for key, value in d.items():
-                if isinstance(value, dict):
-                    check_instance_in_dict(value)
-                elif isinstance(value, AeroMAPSModel):
-                    model = value
-                    # TODO: check how to avoid providing all parameters
-                    model.parameters = self.parameters
-                    model._initialize_df()
-                    needs_custom_setup = False
-                    if hasattr(model, "markets") and hasattr(model, "custom_setup"):
-                        model.markets = self.markets
-                        needs_custom_setup = True
-                    if (
-                        hasattr(model, "pathways_manager")
-                        and hasattr(model, "custom_setup")
-                        and self.pathways_manager is not None
-                    ):
-                        # TODO harmonise the way to pass the pathways manager with generic models
-                        # self.pathways_manager is only set when models.energy is present in config;
-                        # _initialize_generic_energy() returns early otherwise.
-                        if not hasattr(self, "pathways_manager"):
-                            raise RuntimeError(
-                                f"Model '{model.name}' requires a pathways_manager but "
-                                "generic energy has not been initialized. "
-                                "Add 'models.energy' to your configuration."
-                            )
-                        model.pathways_manager = self.pathways_manager
-                        needs_custom_setup = True
-                    if hasattr(self, "fleet_model"):
-                        model.fleet_model = self.fleet_model
-                        # Allow custom models to rebuild their I/O grammar once
-                        # fleet_model is injected (e.g. FleetEvolution 3.C).
-                        if hasattr(model, "custom_setup"):
-                            needs_custom_setup = True
-                    if needs_custom_setup:
-                        model.custom_setup()
-                    if hasattr(model, "climate_historical_data"):
-                        if not hasattr(self, "climate_historical_data"):
-                            raise RuntimeError(
-                                f"Model '{model.name}' requires climate_historical_data but "
-                                "climate data has not been initialized."
-                            )
-                        model.climate_historical_data = self.climate_historical_data
-                    if getattr(model, "model_type") == "custom":
-                        model = AeroMAPSCustomModelWrapper(model=model)
-                    else:
-                        model = AeroMAPSAutoModelWrapper(model=model)
-                    self.disciplines.append(model)
+        self._wrap_models_as_disciplines(self.models)
 
-                else:
-                    raise TypeError(
-                        f"Entry '{key}' in the models dict is not an AeroMAPSModel instance "
-                        f"(got {type(value).__name__}). Only AeroMAPSModel subclasses are allowed."
-                    )
+    def _wrap_models_as_disciplines(self, d):
+        """Wrap the process models to be digested as GEMSEO disciplines.
+        Args:
+            dict: The dictionary containing the process models.
 
-        check_instance_in_dict(self.models)
+        Raises:
+            TypeError if a model is not an instance of :class:`AeroMAPSModel`.
+        """
+        for key, value in d.items():
+            if isinstance(value, dict):
+                self._wrap_models_as_disciplines(value)
+            elif isinstance(value, AeroMAPSModel):
+                self._setup_model_as_discipline(value)
+            else:
+                raise TypeError(
+                    f"Entry '{key}' in the models dict is not an AeroMAPSModel instance "
+                    f"(got {type(value).__name__}). Only AeroMAPSModel subclasses are allowed."
+                )
+
+    def _setup_model_as_discipline(self, model: AeroMAPSModel):
+        """Initialize and register a process model.
+        Raises:
+            RuntimeError if model requires a pathways_manager but
+                generic energy models are not initialized.
+            RuntimeError if model requires climate_historical_data but climate data has
+                not been initialized.
+        """
+        # TODO: check how to avoid providing all parameters
+        model.parameters = self.parameters
+        model._initialize_df()
+        needs_custom_setup = hasattr(model, "custom_setup")
+        if hasattr(model, "markets"):
+            model.markets = self.markets
+        if hasattr(model, "pathways_manager") and self.pathways_manager is not None:
+            # TODO harmonise the way to pass the pathways manager with generic models
+            # self.pathways_manager is only set when models.energy is present in config;
+            # _initialize_generic_energy() returns early otherwise.
+            if not hasattr(self, "pathways_manager"):
+                raise RuntimeError(
+                    f"Model '{model.name}' requires a pathways_manager but "
+                    "generic energy has not been initialized. "
+                    "Add 'models.energy' to your configuration."
+                )
+            model.pathways_manager = self.pathways_manager
+        if hasattr(self, "fleet_model"):
+            model.fleet_model = self.fleet_model
+            # Allow custom models to rebuild their I/O grammar once
+            # fleet_model is injected (e.g. FleetEvolution 3.C).
+        if needs_custom_setup:
+            model.custom_setup()
+        if hasattr(model, "climate_historical_data"):
+            if not hasattr(self, "climate_historical_data"):
+                raise RuntimeError(
+                    f"Model '{model.name}' requires climate_historical_data but "
+                    "climate data has not been initialized."
+                )
+            model.climate_historical_data = self.climate_historical_data
+        if getattr(model, "model_type") == "custom":
+            discipline = AeroMAPSCustomModelWrapper(model=model)
+        else:
+            discipline = AeroMAPSAutoModelWrapper(model=model)
+        self.disciplines.append(discipline)
 
     def _initialize_years(self):
         """Initialize year index ranges for all time series.
