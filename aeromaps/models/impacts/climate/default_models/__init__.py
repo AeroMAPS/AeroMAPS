@@ -1,0 +1,1 @@
+"""Default climate model settings."""

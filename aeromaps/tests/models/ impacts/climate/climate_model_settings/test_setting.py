@@ -28,6 +28,6 @@ def test_error_for_wrong_default_model_name():
 def test_model_settings_instance_is_register():
     """Test that an instance of of a settings model is registered."""
 
-    FaIRModelSettings(climate_model="fair2")
+    FaIRModelSettings(climate_model="fair2").register_instance()
 
     assert "fair2" in ClimateModelSettings._instances.keys()

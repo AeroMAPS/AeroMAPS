@@ -31,6 +31,9 @@ class ClimateModelSettings(BaseProcessConfiguration):
         if user_data:
             data.update(user_data)
         super().__init__(**data)
+
+    def register_instance(self):
+        """Register a model settings instance."""
         if self.climate_model in ClimateModelSettings._instances:
             raise ValueError(
                 f"Climate Model settings {self.climate_model} exists already in the registry."
